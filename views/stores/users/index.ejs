@@ -1,0 +1,49 @@
+<!-- USERS INDEX PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class="container page_title">
+	<a href="/stores"><h2>Stores Management</h2></a>
+	<h3>Users</h3>
+</section>
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item">
+			<a class="nav-link" href="/stores/users/new">New User</a>
+		</li>
+	</ul>
+</nav>
+<div class="container mt-3 pt-3">
+	<label for="_system">Showing:</label>
+	<select id="_system" type="text" onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
+		<% statuses.forEach((stat) => { %>
+			<% if (stat.toLowerCase() === status.toLowerCase()) { %>
+				<option value="<%= stat %>" selected><%= stat %></option>
+			<% } else { %>
+				<option value="<%= stat %>"><%= stat %></option>
+			<% } %>
+		<% }) %>
+	</select>
+	<table style="width:90%" class="mx-auto">
+		<thead>
+			<th style="width:40%">Bader/Service #</th>
+			<th style="width:10%">Rank</th>
+			<th style="width:40%">Surname</th>
+			<th style="width:10%">Initials</th>
+		</thead>
+		<tbody>
+			<% users.forEach((user) => { %>
+				<tr>
+					<td><a href="/stores/users/<%=user.user_id%>"> <%= user._bader %></a></td>
+					<td><a href="/stores/users/<%=user.user_id%>"> <%= user._rank %></a></td>
+					<td><a href="/stores/users/<%=user.user_id%>"> <%= user._name %></a></td>
+					<td><a href="/stores/users/<%=user.user_id%>"> <%= user._ini %></a></td>
+				</tr>
+			<% }) %>
+		</tbody>
+	</table>
+</div>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<% include ../../partials/htmlBottom %>

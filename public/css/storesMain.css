@@ -1,0 +1,11 @@
+.oi {
+    fill: #B9CBE2;
+    stroke: #B9CBE2;
+    font-size: 6rem;
+    margin: 30px;
+}
+.menu_item {
+    border: 2px solid #B9CBE2;
+    /* margin: 1rem; */
+    padding: 0;
+}

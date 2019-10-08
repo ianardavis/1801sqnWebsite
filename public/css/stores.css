@@ -1,0 +1,51 @@
+table, th, td, thead {
+	border: 1px solid #B9CBE2;
+	border-collapse: collapse;
+}
+tr.padded td {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.bg-dark {
+	background-color: #010a1f !important;
+}
+.navbar-dark .navbar-nav .nav-link {
+	color: #B9CBE2;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+.navbar-dark .navbar-text {
+	color: #B9CBE2;
+}
+.stores .nav-link:hover {
+   background-color: #B9CBE2;
+   color: #010a1f !important; 
+}
+.body .nav-link {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+.bordered {
+	border: 3px solid #B9CBE2;
+}
+
+.alert {
+	margin-top: 10px;
+}
+.pwd_warn {
+	background: #f95056;
+}
+.form-control {
+	text-align: center;
+}
+/*menu colour #1c3a5c*/
+/*back colour #31639e*/
+/*text colour #B9CBE2*/
+/* #337ab7 */
+/* #4f6a99 */
+
+
+/* background colour #131c43 */
+/* hover colour #0101a1f */
+/* hover text colour #B9CBE2 */
