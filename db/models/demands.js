@@ -35,6 +35,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(128),
       allowNull: false,
       comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
     }
   }, {
     tableName: 'demands'

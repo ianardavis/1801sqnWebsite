@@ -41,7 +41,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_telephone': {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(20),
       allowNull: true,
       comment: "null"
     },
@@ -60,6 +60,16 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
+      comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
       comment: "null"
     }
   }, {

@@ -1,0 +1,166 @@
+<!-- ISSUES NEW PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class='container page_title'>
+	<div class='row'>
+		<div class='col-md-6 mx-auto'>
+			<a href='/stores'><h2>Stores Management</h2></a>
+		</div>
+    </div>
+	<p class='text-left'><a href='/stores'> Main Menu </a>> > ><a href='/stores/issues'> Issues </a>> > ><a href='/stores/issues/userlist'> Users </a>> > ><a href='/stores/issues?user=<%= issue.issued_to %>'> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %></a></p>
+	<div class='row'>
+		<div class='col-2 mx-auto'>
+			<h3>Issued Item:</h3>
+		</div>
+    </div>    
+    <% if (permissions.issues_edit) { %>
+        <nav class="navbar navbar-expand navbar-dark bg-dark stores">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/stores/issues/:id/edit">Edit Issue</a>
+                </li>
+            </ul>
+        </nav>
+    <% } %>
+</section>
+
+<section class="detailBox container-fluid pt-3">
+        <div class="row">
+            <div class="col-12 col-lg-6 col-xl-4 mb-3">
+                <div class="bordered" id="divUsers">
+                    <h4><a href="/stores/items_sizes/<%= issue.size.stock_id %>"> Item Details</a></h4>
+                    <div class="details">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Item:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<%= issue.size.item._description %>" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Size:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<%= issue.size.size._text %>" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Quantity:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<%= issue._qty %>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-4 mb-3">
+                <div class="bordered" id="divUsers">
+                    <h4>Issue Details</h4>
+                    <div class="details">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Issued To:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<%= issue.issuedTo.rank._rank %> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %>" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Loan Card:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<%= issue.loancard_id %><% if (issue.lc_line) { %>, line: <%= issue.lc_line.Loan_card_line %><% } %>" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Issued By:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<%= issue.issuedBy.rank._rank %> <%= issue.issuedBy._name %>, <%= issue.issuedBy._ini %>" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Issued From Location:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<% if (issue.issue_location) { %><%= issue.issueLocation._location %><% } %>" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Returned To:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<% if (issue.returnedTo) { %><%= issue.returnedTo.rank._rank %> <%= issue.returnedTo._name %>, <%= issue.returnedTo._ini %><% } %>" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="col-form-label">Returned To Location:</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" value="<% if (issue.return_location) { %><%= issue.returnLocation._location %><% } %>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-4 mb-3">
+                    <div class="bordered" id="divUsers">
+                        <h4>Dates</h4>
+                        <div class="details">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label class="col-form-label">Issued:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" value="<%= issue._date_issued.toDateString() %>" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label class="col-form-label">Due Back:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" value="<%= issue._date_due.toDateString() %>" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label class="col-form-label">Returned:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" value="<% if (issue._date_returned) { %><%= issue._date_returned.toDateString() %><% } %>" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% if (permissions.access_notes) { %> 
+                <div class="col-12 col-lg-6 col-xl-12 mb-3">
+                    <% include ../../partials/noteTable %>
+                </div>
+            <% } %>
+            <% if (permissions.issues_delete) { %>
+                <div class="col-12 mb-3">
+                    <form action="/stores/issues/<%= issue.issue_id %>?_method=DELETE&user=<%= issue.issued_to %>" method="POST">
+                        <button class="btn btn-danger">Delete Issue</button>
+                    </form>
+                </div>
+            <% } %>
+        </div>
+    </section>
+
+
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<% include ../../partials/htmlBottom %>

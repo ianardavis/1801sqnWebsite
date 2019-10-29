@@ -15,8 +15,23 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
+    '_parent': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
     '_option': {
       type: DataTypes.STRING(45),
+      allowNull: false,
+      comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
       allowNull: false,
       comment: "null"
     }

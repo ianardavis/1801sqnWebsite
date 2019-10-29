@@ -11,39 +11,51 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true
     },
     '_bader': {
-      type: DataTypes.STRING(13),
+      type: DataTypes.STRING(20),
       allowNull: false,
       comment: "null",
       unique: true
     },
     '_name': {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(50),
       allowNull: false,
       comment: "null"
     },
     '_ini': {
-      type: DataTypes.STRING(3),
+      type: DataTypes.STRING(5),
       allowNull: true,
       comment: "null"
     },
     '_rank': {
-      type: DataTypes.STRING(3),
+      type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "null"
+      comment: "null",
+      references: {
+        model: 'ranks',
+        key: 'rank_id'
+      }
     },
     '_gender': {
-      type: DataTypes.STRING(10),
+      type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "null"
+      comment: "null",
+      references: {
+        model: 'genders',
+        key: 'gender_id'
+      }
     },
     '_status': {
-      type: DataTypes.STRING(10),
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: 'Current',
-      comment: "null"
+      defaultValue: '12',
+      comment: "null",
+      references: {
+        model: 'statuses',
+        key: 'status_id'
+      }
     },
     '_login_id': {
-      type: DataTypes.STRING(256),
+      type: DataTypes.STRING(30),
       allowNull: false,
       comment: "null",
       unique: true
@@ -54,7 +66,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_salt': {
-      type: DataTypes.STRING(256),
+      type: DataTypes.STRING(255),
       allowNull: false,
       comment: "null"
     },
@@ -67,6 +79,16 @@ module.exports = function(sequelize, DataTypes) {
     '_last_login': {
       type: DataTypes.DATE,
       allowNull: true,
+      comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
       comment: "null"
     }
   }, {

@@ -1,6 +1,7 @@
 table, th, td, thead {
 	border: 1px solid #B9CBE2;
 	border-collapse: collapse;
+	font-size: 0.9rem;
 }
 tr.padded td {
 	padding-left: 10px;
@@ -27,6 +28,7 @@ tr.padded td {
 	padding-bottom: 0;
 }
 .bordered {
+	padding: 10px;
 	border: 3px solid #B9CBE2;
 }
 
@@ -38,6 +40,18 @@ tr.padded td {
 }
 .form-control {
 	text-align: center;
+	text-align-last: center;
+	margin-bottom: 5px;
+}
+.smallFont07 {
+	font-size: 0.7rem;
+}
+td a {
+	font-size: 1rem;
+}
+
+.dropdown_button {
+	font-size: 25px;
 }
 /*menu colour #1c3a5c*/
 /*back colour #31639e*/

@@ -10,13 +10,29 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'item_id': {
+    'stock_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
     '_location': {
       type: DataTypes.STRING(10),
+      allowNull: false,
+      comment: "null"
+    },
+    '_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
       allowNull: false,
       comment: "null"
     }

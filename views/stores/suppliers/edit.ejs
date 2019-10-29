@@ -1,0 +1,81 @@
+<!-- USERS NEW PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class="container page_title">
+    <a href="/stores"><h2>Stores Management</h2></a>
+    <h3>New Supplier</h3>
+</section>
+<section class="container-fluid p-5">
+    <div>
+        <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=PUT" method="POST">
+            <input type="hidden" name="failRedirect", value="/stores/suppliers" readonly>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <label class="col-form-label" for="_name">Supplier Name:</label>
+                </div>
+                <div class="col-sm-10">
+                    <input class="form-control" id="_name" name="supplier[_name]" type="text" value="<%= supplier._name %>" maxlength="20" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <label class="col-form-label" for="_address1">Address:</label>
+                </div>
+                <div class="col-sm-10">
+                    <input class="form-control" id="_address1" name="supplier[_address1]" type="text" value="<%= supplier._address1 %>" maxlength="45" required>
+                    <input class="form-control" name="supplier[_address2]" type="text" value="<%= supplier._address2 %>" maxlength="45">
+                    <input class="form-control" name="supplier[_address3]" type="text" value="<%= supplier._address3 %>" maxlength="45">
+                    <input class="form-control" name="supplier[_address4]" type="text" value="<%= supplier._address4 %>" maxlength="45">
+                    <input class="form-control" name="supplier[_address5]" type="text" value="<%= supplier._address5 %>" maxlength="45">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <label class="col-form-label" for="_telephone">Telephone:</label>
+                </div>
+                <div class="col-sm-10">
+                    <input class="form-control" id="_telephone" name="supplier[_telephone]" type="text" value="<%= supplier._telephone %>" maxlength="20">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <label class="col-form-label" for="_email">Email:</label>
+                </div>
+                <div class="col-sm-10">
+                    <input class="form-control" id="_email" name="supplier[_email]" type="text" value="<%= supplier._email %>" maxlength="255">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <label class="col-form-label" for="_stores">RAF Stores?:</label>
+                </div>
+                <div class="col-sm-10">
+                    <input class="form-control" id="_stores" name="supplier[_stores]" value="1" type="checkbox" >
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <label class="col-form-label" for="_default">Default?:</label>
+                </div>
+                <div class="col-sm-10">
+                    <input class="form-control" id="_default" name="supplier[_default]" value="1" type="checkbox" >
+                </div>
+            </div>
+            <div class="form-group row">
+                <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
+            </div>
+            <div class="form-group row">
+                <a href="/stores/suppliers">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<script>
+    document.querySelector('#_stores').checked = (Boolean(<%= supplier._stores %>));
+    document.querySelector('#_default').checked = (Boolean(<%= supplier._default %>));
+</script>
+<% include ../../partials/htmlBottom %>

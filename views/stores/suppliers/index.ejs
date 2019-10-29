@@ -1,0 +1,35 @@
+<!-- Suppliers INDEX PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class="container page_title">
+	<a href="/stores"><h2>Stores Management</h2></a>
+	<h3>Suppliers</h3>
+</section>
+<% if (permissions.suppliers_add) { %>
+	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link" href="/stores/suppliers/new">New Supplier</a>
+			</li>
+		</ul>
+	</nav>
+<% } %>
+<div class="container mt-3 pt-3">
+	<table style="width:100%" class="mx-auto">
+		<thead>
+			<th style="width:40%">Supplier Name</th>
+		</thead>
+		<tbody>
+			<% suppliers.forEach((supplier) => { %>
+				<tr>
+					<td><a href="/stores/suppliers/<%= supplier.supplier_id %>"> <%= supplier._name %></a></td>
+				</tr>
+			<% }) %>
+		</tbody>
+	</table>
+</div>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<% include ../../partials/htmlBottom %>

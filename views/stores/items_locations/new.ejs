@@ -1,0 +1,48 @@
+<!-- USER ITEM PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class="container page_title">
+    <a href="/stores"><h2>Stores Management</h2></a>
+    <p class="text-left"><a href="/stores">Main Menu</a>>   >   ><a href="/stores/items">Items</a>>   >   ><a href="/stores/items/<%= item.item_id %>"><%= item._description %></a>>   >   ><a href="/stores/items_sizes/<%= item.stock_id %>">Size:<%= item.size._text %></a></p>
+    <a href="/stores/items/<%= item.item_id %>"><h3><%= item.item._description %></h3></a>
+    <h4><%= item.size._text %></h4>
+</section> 
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<a class="dropdown-item" href="/stores/items_sizes/<%= item.stock_id %>">Back to <%= item.item._description %>/Size: <%= item.size._text %></a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 col-lg-3 mx-auto mb-3">
+			<div class="container bordered">
+                <h4>Location</h4>
+                <form action="/stores/items_locations" method="POST">
+					<div class="">
+						<input type="hidden" name="location[stock_id]" value="<%= item.stock_id %>" readonly>
+						<p><input type="text" name="location[_location]" maxlength="10" placeholder="Location" required></p>
+					</div>
+					<% if (permissions.items_count) { %>
+						<h4>Quantity</h4>
+						<div class="">
+							<p><input type="text" name="location[_qty]" maxlength="11" placeholder="Quantity" value="0"></p>
+						</div>
+					<% } %>
+					<p><button class="btn btn-success">Save</button></p>
+				</form>
+            </div>
+		</div>
+    </div>
+</section>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<% include ../../partials/htmlBottom %>

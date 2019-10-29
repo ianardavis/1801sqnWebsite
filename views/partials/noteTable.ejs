@@ -1,0 +1,33 @@
+<div class="bordered">
+    <h4>Notes:</h4>
+    <label for="_system">System Notes:</label>
+    <select id="_system" type="text" onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
+        <option value="include">Include</option>
+        <option value="exclude" selected="selected">Exclude</option>
+        <option value="only">Only</option>
+    </select>
+    <div style="overflow-x:auto;">
+        <table id="notesTable" class="smallFont07" style="width:100%">
+            <thead>
+                <th onclick="sortTable(0, 'notesTable')" style="width:25%">Date</th>
+                <th onclick="sortTable(1, 'notesTable')" style="width:10%">System</th>
+                <th onclick="sortTable(2, 'notesTable')" style="width:65%">Note</th>
+                <% if (permissions.notes_delete === 1) { %>
+                    <th></th>
+                <% } %>
+            </thead>
+            <tbody>
+                <% notes.forEach((note) => { %>
+                    <tr>
+                        <td><a href="/stores/notes/<%= note.note_id %>"><%= note.createdAt.toDateString() %></a></td>
+                        <td><a href="/stores/notes/<%= note.note_id %>"><%= Boolean(note._system) %></a></td>
+                        <td><a href="/stores/notes/<%= note.note_id %>"><%= note._note %></a></td>
+                        <% if (permissions.notes_delete === 1) { %>
+                            <td><form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST"><button><i class="fas fa-trash-alt"></i></button></form></td>
+                        <% } %>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,172 @@
+<!-- ITEMS EDIT PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class="container page_title">
+    <a href="/stores"><h2>Stores Management</h2></a>
+    <h3>Edit Permissions</h3>
+</section>
+<section class="container-fluid p-5 row">
+   <div class="details container bordered p-3 col-12 col-lg-9 col-xl-7">
+        <form action="/stores/permissions/<%= user.user_id %>?_method=PUT" method="POST">
+            <input type="hidden" name="failRedirect", value="/stores/users/<%= user.user_id %>" readonly>
+            <input type="hidden" name="user[user_id]", value="<%= user.user_id %>" readonly>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Bader #:</label>
+                </div> 
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<%= user._bader %>">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Rank:</label>
+                </div> 
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<%= user.rank._rank %>">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Initials:</label>
+                </div> 
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<%= user._ini %>">
+                </div>
+            </div>
+            <div class="form-group row p-3">
+                <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
+                <a href="/stores/users/<%= user.user_id %>">Cancel</a>
+            </div>
+            <div>
+                <h4>Common Permissions:</h4>
+                <div><a href="javascript:p_disabled()">Disabled</a></div>
+                <div><a href="javascript:p_user()">User - Basic access and requests</a></div>
+                <div><a href="javascript:p_issuer()">Issuer - As User with issuing and returns</a></div>
+                <div><a href="javascript:p_storeman()">Storeman - As Issuer with stores related permissions</a></div>
+                <div><a href="javascript:p_admin()">Admin - As Storeman with settings and suppliers</a></div>
+                <div><a href="javascript:p_super()">Superuser - All permissions</a></div>
+                <input class="form-control" type="text" id="inputSearch" onkeyup="searchTable('sizeTable', 'inputSearch')" placeholder="Search for permissions..">
+                <table id="sizeTable" style="width: 100%;">
+                    <thead>
+                        <th style="width: 80%">Permission</th>
+                        <th style="width: 20%">Select</th>
+                    </thead>
+                    <tbody>
+                        <% for (var permission in user.permission.dataValues) { %>
+                            <% if (permission !== 'user_id' && permission !== 'createdAt' && permission !== 'updatedAt') { %>
+                                <tr>
+                                    <td>
+                                        <label class="col-form-label" for="<%= permission %>"><%= permission %></label>
+                                    </td>
+                                    <td>
+                                        <input class="form-control" id="<%= permission %>" type="checkbox" name="permissions[<%= permission %>]" value="1" <% if (user.permission[permission] === 1) {%> checked <% } %>>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</section>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<script src="/js/tableSearch.js"></script>
+<script>
+    function p_disabled() {
+        var permissions;
+        permissions = [<%= permissions._options.attributes %>];
+        permissions.forEach((permission) => {
+            permission.checked = false;
+        });
+    };
+    function p_user() {
+        p_disabled();
+        document.querySelector('#account_enabled').checked = true;
+        document.querySelector('#access_requests').checked = true;
+        document.querySelector('#requests_add').checked = true;
+    };
+    function p_issuer() {
+        p_disabled();
+        p_user();
+        document.querySelector('#account_enabled').checked = true;
+        document.querySelector('#access_issues').checked = true;
+        document.querySelector('#access_items').checked = true;
+        document.querySelector('#access_locations').checked = true;
+        document.querySelector('#access_nsns').checked = true;
+        document.querySelector('#issues_add').checked = true;
+        document.querySelector('#issues_return').checked = true;
+        document.querySelector('#access_notes').checked = true;
+        document.querySelector('#notes_add').checked = true;
+        document.querySelector('#requests_edit').checked = true;
+        document.querySelector('#access_loan_cards').checked = true;
+        document.querySelector('#access_print').checked = true;
+        
+    };
+    function p_storeman() {
+        p_disabled();
+        p_user();
+        p_issuer();
+        document.querySelector('#items_add').checked = true;
+        document.querySelector('#items_edit').checked = true;
+        document.querySelector('#items_size_add').checked = true;
+        document.querySelector('#items_locations_add').checked = true;
+        document.querySelector('#items_locations_edit').checked = true;
+        document.querySelector('#items_nsn_add').checked = true;
+        document.querySelector('#items_nsn_edit').checked = true;
+        document.querySelector('#items_receive').checked = true;
+        document.querySelector('#items_count').checked = true;
+        document.querySelector('#items_scrap').checked = true;
+        document.querySelector('#items_stocktake').checked = true;
+        document.querySelector('#requests_approve').checked = true;
+        document.querySelector('#access_orders').checked = true;
+        document.querySelector('#orders_add').checked = true;
+        document.querySelector('#orders_place').checked = true;
+        document.querySelector('#orders_edit').checked = true;
+        document.querySelector('#access_demands').checked = true;
+        document.querySelector('#demands_raise').checked = true;
+        document.querySelector('#demands_search').checked = true;
+        document.querySelector('#access_reports').checked = true;
+    };
+    function p_admin() {
+        p_disabled();
+        p_user();
+        p_issuer();
+        p_storeman();
+        document.querySelector('#items_nsn_delete').checked = true;
+        document.querySelector('#access_settings').checked = true;
+        document.querySelector('#settings_edit').checked = true;
+        document.querySelector('#settings_dropdown').checked = true;
+        document.querySelector('#settings_dropdown_add').checked = true;
+        document.querySelector('#settings_dropdown_edit').checked = true;
+        document.querySelector('#settings_dropdown_delete').checked = true;
+        document.querySelector('#items_size_delete').checked = true;
+        document.querySelector('#items_nsn_delete').checked = true;
+        document.querySelector('#items_locations_delete').checked = true;
+        document.querySelector('#issues_edit').checked = true;
+        document.querySelector('#access_users').checked = true;
+        document.querySelector('#users_add').checked = true;
+        document.querySelector('#users_edit').checked = true;
+        document.querySelector('#users_permissions').checked = true;
+        document.querySelector('#users_password').checked = true;
+        document.querySelector('#users_status').checked = true;
+        document.querySelector('#users_others').checked = true;
+        document.querySelector('#notes_edit').checked = true;
+        document.querySelector('#access_suppliers').checked = true;
+        document.querySelector('#suppliers_add').checked = true;
+        document.querySelector('#suppliers_edit').checked = true;
+        document.querySelector('#suppliers_search').checked = true;
+    };
+    function p_super() {
+        var permissions;
+        permissions = [<%= permissions._options.attributes %>];
+        permissions.forEach((permission) => {
+            permission.checked = true;
+        });
+    };
+</script>
+<% include ../../partials/htmlBottom %>

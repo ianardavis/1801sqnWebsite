@@ -1,0 +1,94 @@
+<!-- USER SHOW PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class="container page_title">
+    <a href="/stores"><h2>Stores Management</h2></a>
+    <h3>Notes</h3>
+</section> 
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<a class="dropdown-item" href="/stores/notes/<%= note.note_id %>/edit">Edit</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="/stores/<%= note._link_table %>/<%= note._link_id %>">Back to <%= note._link_table %></a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-6 mb-3 mx-auto">
+			<div class="bordered" id="divUsers">
+                <h4>Details</h4>
+                <div class="details">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>User:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= user._name %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>Date:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= note.createdAt.toDateString() %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>For Table:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= note._link_table %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>Id:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= note._link_id %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>System note:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= Boolean(note.__system) %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <label>Text:</label>
+                        </div>
+                        <div class="col-12">
+                            <textarea style="width:100%;" rows="10" readonly><%= note._note %></textarea>
+                        </div>
+                    </div>
+                </div>
+			</div>
+		</div>
+    </div>
+    <% if (permissions.notes_delete) { %>
+        <div class="row">
+            <div class="col-12 text-left">
+                <form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete Note</button>
+                </form>
+            </div>
+        </div>
+    <% } %>
+</section>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<% include ../../partials/htmlBottom %>

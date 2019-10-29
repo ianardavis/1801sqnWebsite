@@ -1,0 +1,2 @@
+When returning multiple lines of same stock_id, async operation causes location qty to not update properly
+-------------------------------

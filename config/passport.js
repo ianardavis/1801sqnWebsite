@@ -58,11 +58,12 @@ module.exports = (passport, user, permissions) => {
                         );
                     }
                     if (permission.account_enabled === 0) {
-                        req.flash('danger', 'Account is disabled!')
-                        return done(null, false, {message: 'Account is disabled!'}
+                        req.flash('danger', 'Your account is disabled!')
+                        return done(null, false, {message: 'Your account is disabled!'}
                         );
                     }
                 var userInfo = user.get();
+                userInfo.permissions = permission;
                 return done(null, userInfo);
                 })
             }).catch((err) => {

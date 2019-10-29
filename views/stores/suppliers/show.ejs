@@ -1,0 +1,111 @@
+<!-- SUPPLIERS SHOW PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class="container page_title">
+    <a href="/stores"><h2>Stores Management</h2></a>
+    <p class="text-left"><a href="/stores">Main Menu</a>> > ><a href="/stores/suppliers">Suppliers</a></p>
+    <a href="/stores/suppliers"><h3>Suppliers</h3></a>
+</section> 
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <% if (permissions.suppliers_edit) { %>
+                    <a class="dropdown-item" href="/stores/suppliers/<%= supplier.supplier_id %>/edit">Edit</a>
+                    <div class="dropdown-divider"></div>
+				<% } %>
+                <% if (permissions.notes_add) { %>
+                    <a class="dropdown-item" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">Add Note</a>
+				    <div class="dropdown-divider"></div>
+				<% } %>
+                <a class="dropdown-item" href="/stores/suppliers">Back to Suppliers</a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 col-lg-4 mb-3">
+			<div class="bordered">
+                <h4>Details</h4>
+                <div class="details">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>Supplier Name:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= supplier._name %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>Address:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= supplier._address1 %>" readonly>
+                            <input type="text" value="<%= supplier._address2 %>" readonly>
+                            <input type="text" value="<%= supplier._address3 %>" readonly>
+                            <input type="text" value="<%= supplier._address4 %>" readonly>
+                            <input type="text" value="<%= supplier._address5 %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>Tel:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= supplier._telephone %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>_email:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" value="<%= supplier._email %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>RAF Stores?:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="checkbox" id="_stores" value="<%= supplier._stores %>" disabled>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>Is Default:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="checkbox" id="_default" value="<%= supplier._default %>" disabled>
+                        </div>
+                    </div>
+                </div>
+			</div>
+        </div>
+        <div class="col-lg-8">
+            <% include ../../partials/noteTable %>
+        </div>
+        <% if (permissions.suppliers_delete === 1) { %>
+            <div class="col-12">
+                <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete Supplier</button>
+                </form>
+            </div>
+        <% } %>
+    </div>
+</section>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<script src="/js/tableSort.js"></script>
+<script>
+    document.querySelector('#_stores').checked = (Boolean(<%= supplier._stores %>));
+    document.querySelector('#_default').checked = (Boolean(<%= supplier._default %>));
+</script>
+<% include ../../partials/htmlBottom %>

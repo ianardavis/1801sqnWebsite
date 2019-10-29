@@ -6,25 +6,22 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
-      comment: "null"
+      primaryKey: true,
+      comment: "null",
+      autoIncrement: true
     },
     '_link_table': {
-      type: DataTypes.STRING(15),
+      type: DataTypes.STRING(30),
       allowNull: false,
       comment: "null"
     },
-    '_link_value': {
+    '_link_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
     '_note': {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      comment: "null"
-    },
-    '_date': {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING(1000),
       allowNull: false,
       comment: "null"
     },
@@ -35,7 +32,17 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     'user_id': {
-      type: DataTypes.STRING(128),
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
       allowNull: false,
       comment: "null"
     }

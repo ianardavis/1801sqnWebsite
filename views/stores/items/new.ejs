@@ -1,0 +1,149 @@
+<!-- ITEMS NEW PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class="container page_title">
+    <a href="/stores"><h2>Stores Management</h2></a>
+    <h3>New Item</h3>
+</section>
+<section class="container-fluid p-5">
+   <div class="details container bordered p-3">
+        <form action="/stores/items" method="POST">
+            <input type="hidden" name="failRedirect", value="/stores/items" readonly>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Description:</label>
+                </div>                        
+                <div class="col-7">
+                    <input class="form-control" type="text" name="item[_description]" placeholder="Description">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Category:</label>
+                </div> 
+                <div class="col-7">
+                    <select name="item[_category]" id="_category" type="text">
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.categories.forEach((category) => { %>
+                            <option value="<%= category.category_id %>" data-tag='<%= category._parent %>'><%= category._category %></option>         
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Group:</label>
+                </div> 
+                <div class="col-7">
+                    <select name="item[_group]" id="_group" type="text">
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.groups.forEach((group) => { %>
+                            <option value="<%= group.group_id %>" data-tag='<%= group._parent %>'><%= group._group %></option>         
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Type:</label>
+                </div> 
+                <div class="col-7">
+                    <select name="item[_type]" id="_type" type="text">
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.types.forEach((type) => { %>
+                            <option value="<%= type.type_id %>" data-tag='<%= type._parent %>'><%= type._type %></option>         
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Sub Type:</label>
+                </div> 
+                <div class="col-7">
+                    <select name="item[_sub_type]" id="_sub_type" type="text">
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.subtypes.forEach((subtype) => { %>
+                            <option value="<%= subtype.subtype_id %>" data-tag='<%= subtype._parent %>'><%= subtype._sub_type %></option>         
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Gender:</label>
+                </div> 
+                <div class="col-7">
+                    <select name="item[_gender]" id="_gender" type="text">
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.genders.forEach((gender) => { %>
+                            <option value="<%= gender.gender_id %>"><%= gender._gender %></option>         
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Supplier:</label>
+                </div> 
+                <div class="col-7">
+                    <select name="item[supplier_id]" id="supplier_id" type="text">
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.suppliers.forEach((supplier) => { %>
+                            <option value="<%= supplier.supplier_id %>"><%= supplier._name %></option>         
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row p-3">
+                <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
+                <a href="/stores/items">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<script>
+	$('#_category').on('change', setGroup);	
+	$('#_group').on('change', setType);	
+	$('#_type').on('change', setSubtype);
+
+	function setGroup() {
+		hideSome("_group", $(this).val());
+		$("#_group").val($("#_group option:visible:first").val());
+		$("#_type").val($("#_type option:visible:first").val());
+		$("#_sub_type").val($("#_sub_type option:visible:first").val());
+		hideAll("_type")
+		hideAll("_sub_type")
+	}
+	function setType() {
+		hideSome("_type", $(this).val());
+		$("#_type").val($("#_type option:visible:first").val());
+		$("#_sub_type").val($("#_sub_type option:visible:first").val());
+		hideAll("_sub_type")
+	}
+	function setSubtype() {
+		hideSome("_sub_type", $(this).val());
+		$("#_sub_type").val($("#_sub_type option:visible:first").val());
+	}
+	function hideSome(select, selected) {
+		$("#" + select + " option").each(function(item){
+			var element =  $(this) ; 
+			if (element.data("tag") != selected && element.data("tag") != '<blank>'){
+				element.hide() ; 
+			} else {
+				element.show();
+			}
+		}) ; 
+	}
+	function hideAll(select) {
+		$("#" + select + " option").each(function(item){
+			var element =  $(this) ; 
+			element.hide() ; 
+		}) ; 
+	}
+</script>
+<% include ../../partials/htmlBottom %>

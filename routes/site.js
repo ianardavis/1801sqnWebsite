@@ -4,7 +4,8 @@ const   express     = require("express"),
         mw          = require('../config/middleware');
         
 router.get("/", (req, res) => {
-    res.render("index");
+    res.redirect('/resources');
+    // res.render("index");
 })
 
 router.get("/resources", (req, res) => {

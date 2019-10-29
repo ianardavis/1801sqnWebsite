@@ -1,0 +1,85 @@
+<!-- ISSUES NEW PAGE -->
+<% include ../../partials/header %>
+<% include ../../partials/nav %>
+<% include ../../partials/bodyTop %>
+<section class='container page_title'>
+	<div class='row'>
+		<div class='col-md-6 mx-auto'>
+			<a href='/stores'><h2>Stores Management</h2></a>
+		</div>
+	</div>
+	<p class='text-left'><a href='/stores'> Main Menu </a>> > ><a href='/stores/issues'> Issues </a>> > ><a href='/stores/issues/userlist'> Users </a>> > ><a href='/stores/issues?user=<%= selectedUser.user_id %>'> <%= selectedUser._name %>, <%= selectedUser._ini %></a></p>
+	<div>
+		<h3>Issue Items to:</h3>
+		<h4><%= selectedUser.rank._rank %> <%= selectedUser._name %>, <%= selectedUser._ini %></h4>
+	</div>
+</section>
+<section>
+	<div class="container">
+		<div class="row">
+			<div class="col-12 col-md-6 bordered mb-3">
+				<h5>Items</h5>
+				<input class="form-control" type="text" id="itemSearch" onkeyup="searchTable('itemsTable', 'itemSearch')" placeholder="Search for items..">
+                <select class='form-control' id="itemsTable" onchange="loadSizes(this.value);" style="width: 100%;" type="text" size="15">
+					<option value=""></option>
+					<% items.forEach((item) => { %>
+						<option value=<%= JSON.stringify(item.sizes) %><%= item.sizes %>><%= item._description %></option>
+					<% }); %>
+				</select>
+			</div>
+			<div class="col-12 col-md-6 bordered mb-3">
+				<h5>Sizes</h5>
+				<input class="form-control" type="text" id="sizeSearch" onkeyup="searchTable('sizeTable', 'sizeSearch')" placeholder="Search for sizes..">
+                <select class='form-control' id="sizeTable" onchange="loadLocations(this.value);" style="width: 100%;" type="text" size="15">
+				</select>
+			</div>
+			<div class="col-12 col-md-6 bordered mb-3">
+				<h5>NSNs</h5>
+				<input class="form-control" type="text" id="nsnSearch" onkeyup="searchTable('nsnTable', 'nsnSearch')" placeholder="Search for NSNs..">
+                <select class='form-control' id="nsnTable" style="width: 100%;" type="text" size="15">
+				</select>
+			</div>
+			<div class="col-12 col-md-6 bordered mb-3">
+				<h5>Issue From Location</h5>
+				<input class="form-control" type="text" id="locationSearch" onkeyup="searchTable('locationTable', 'locationSearch')" placeholder="Search for location..">
+                <select class='form-control' id="locationTable" style="width: 100%;" type="text" size="15">
+				</select>
+				<div class="row mx-auto">
+					<div class="col-4 col-md-2">
+						<label class="col-form-label" for="qty">Qty</label>
+					</div>
+					<div class="col-8 col-md-4">
+						<input class="form-control mt-1 mr-3" type="number" id="qty" value="1">
+					</div>
+					<div class="col-md-6">
+						<button class="btn btn-primary" style="width: 100%;" onclick="addSize();">Add Size</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 col-md-6 bordered mb-3">
+				<form id="issueForm" action="/stores/issues" method="POST">
+				<h5>Selected Items</h5>
+					<input type="hidden" name="issue[issued_to]" value="<%= selectedUser.user_id %>">
+					<div id="selectedItems">
+					</div>
+				</div>
+				<div class="col-12 col-md-6 bordered mb-3">
+					<h5>Issue Dates</h5>
+					<label>Date Issued</label>
+					<input id="issueDate" type="date" name="issue[_date_issued]" required>
+					<label>Date Due Back</label>
+					<input id="dueDate" type="date" name="issue[_date_due]" required>
+				</form>
+			</div>
+		</div>
+		<div>
+			<input type="submit" form="issueForm" class="btn btn-primary mt-3" value="Issue Selected Items">
+		</div>
+	</div>
+</section>
+<% include ../../partials/bodyBottom %>
+<% include ../../partials/footer %>
+<% include ../../partials/footjs %>
+<script src="/js/selectSearch.js"></script>
+<script src="/js/newIssue.js"></script>
+<% include ../../partials/htmlBottom %>

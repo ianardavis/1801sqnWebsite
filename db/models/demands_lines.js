@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'item_id': {
+    'stock_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -28,6 +28,16 @@ module.exports = function(sequelize, DataTypes) {
     'receive_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
+      comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
       comment: "null"
     }
   }, {

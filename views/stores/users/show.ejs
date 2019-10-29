@@ -4,7 +4,7 @@
 <% include ../../partials/bodyTop %>
 <section class="container page_title">
     <a href="/stores"><h2>Stores Management</h2></a>
-    <p class="text-left"><a href="/stores">Main Menu</a>><a href="/stores/users">Users</a></p>
+    <p class="text-left"><a href="/stores"> Main Menu </a>> > ><a href="/stores/users"> Users </a>> > ><a href="/stores/users/<%= user.user_id %>"> <%= user._name %> </a></p>
     <a href="/stores/users"><h3>Users</h3></a>
 </section> 
 <nav class="navbar navbar-expand navbar-dark bg-dark stores">
@@ -14,134 +14,136 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" id="btnEdit" href="/stores/users/<%= user.user_id %>/edit">Edit</a>
-				<a class="dropdown-item" id="btnPwd" href="/stores/password/<%= user.user_id %>">Reset Password</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" id="btnOrder" href="javascript:void(0)">Order Items</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" id="btnNoteAdd" href="javascript:void(0)">Add Note</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" id="btnNoteAdd" href="/stores/users">Back to Users</a>
+                <% if (permissions.users_permissions) { %>
+                    <a class="dropdown-item" href="/stores/users/<%= user.user_id %>/edit">Edit</a>
+                <% } %>
+                <% if (permissions.users_permissions && user.user_id !== currentUser.user_id) { %>
+				    <a class="dropdown-item" href="/stores/permissions/<%= user.user_id %>/edit">Edit Permissions</a>
+                <% } %>
+                <% if (permissions.users_permissions || user.user_id === currentUser.user_id) { %>
+				    <a class="dropdown-item" href="/stores/password/<%= user.user_id %>">Reset Password</a>
+                <% } %>
+                <% if (permissions.add_notes) { %>
+                    <div class="dropdown-divider"></div>
+				    <a class="dropdown-item" href="/stores/notes/new?table=users&id=<%= user.user_id %>">Add Note</a>
+				<% } %>
+                <div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="/stores/users">Back to Users</a>
 			</div>
 		</li>
 	</ul>
 </nav>
 <section class="detailBox container-fluid pt-3">
-	<div class="row">
+    <div class="row">
+        <% if (user.user_id !== currentUser.user_id && permissions.users_delete) { %>
+            <div class="col-12 mb-3">
+                <form action="/stores/users/<%= user.user_id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete User</button>
+                </form>
+            </div>
+        <% } %>
 		<div class="col-12 col-lg-4 mb-3">
 			<div class="bordered" id="divUsers">
                 <h4>Details</h4>
                 <div class="details">
                     <div class="row">
-                        <label class="col-sm-3" for="user_id">User ID:</label>
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Bader #:</label>
+                        </div>
                         <div class="col-sm-9">
-                            <input name="user_id" type="text" value="<%= user.user_id %>" readonly>
+                            <input class="form-control" type="text" value="<%= user._bader %>" readonly>
                         </div>
                     </div>
                     <div class="row">
-                        <label class="col-sm-3" for="_bader">Bader #:</label>
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Rank:</label>
+                        </div>
                         <div class="col-sm-9">
-                            <input name="_bader" type="text" value="<%= user._bader %>" readonly>
+                            <input class="form-control" type="text" value="<%= user.rank._rank %>" readonly>
                         </div>
                     </div>
                     <div class="row">
-                        <label class="col-sm-3" for="_name">Name:</label>
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Name:</label>
+                        </div>
                         <div class="col-sm-9">
-                            <input style="width:15%" name="_rank" type="text" value="<%= user._rank %>" readonly>
-                            <input style="width:60%" name="_name" type="text" value="<%= user._name %>" readonly>
-                            <input style="width:15%" name="_ini" type="text" value="<%= user._ini %>" readonly>
+                            <input class="form-control" type="text" value="<%= user._name %>" readonly>
                         </div>
                     </div>
                     <div class="row">
-                        <label class="col-sm-3" for="_gender">Gender:</label>
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Initials:</label>
+                        </div>
                         <div class="col-sm-9">
-                            <input name="_gender" type="text" value="<%= user._gender %>" readonly>
+                            <input class="form-control" type="text" value="<%= user._ini %>" readonly>
                         </div>
                     </div>
                     <div class="row">
-                        <label class="col-sm-3" for="_status">Status:</label>
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Gender:</label>
+                        </div>
                         <div class="col-sm-9">
-                            <input name="_status" type="text" value="<%= user._status %>" readonly>
+                            <input class="form-control" type="text" value="<%= user.gender._gender %>" readonly>
                         </div>
                     </div>
                     <div class="row">
-                        <label class="col-sm-3" for="_login_id">Login ID:</label>
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Status:</label>
+                        </div>
                         <div class="col-sm-9">
-                            <input name="_login_id" type="text" value="<%= user._login_id %>" readonly>
+                            <input class="form-control" type="text" value="<%= user.status._status %>" readonly>
                         </div>
                     </div>
                     <div class="row">
-                        <label class="col-sm-3" for="_reset">Reset:</label>
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Login ID:</label>
+                        </div>
                         <div class="col-sm-9">
-                            <input name="_reset" type="checkbox" value=<%= Boolean(user._reset) %> disabled>
+                            <input class="form-control" type="text" value="<%= user._login_id %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Reset:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input class="form-control" id="_reset" type="checkbox" disabled>
                         </div>
                     </div>
                 </div>
 			</div>
-		</div>	
-		<div class="col-12 col-lg-6 mb-3">
-			<div class="bordered" id="divNotes">
-				<h4>Notes:</h4>
-				<label for="_system">System Notes:</label>
-				<select id="_system" type="text" onchange="showNotes(document.getElementById('user_id').value)">
-					<option value="include">Include</option>
-					<option value="exclude" selected="selected">Exclude</option>
-					<option value="only">Only</option>
-				</select>
+			<div class="bordered">
+				<h4>Permissions</h4>
 				<div style="overflow-x:auto;">
-					<table style="width:100%">
-						<thead>
-							<th style="width:10%">ID</th>
-							<th style="width:20%">Date</th>
-							<th style="width:10%">System</th>
-							<th style="width:60%">Note</th>
+                    <table id="permissionTable" style="width:100%">
+                        <thead>
+                            <th onclick="sortTable(0, 'permissionTable')" >Permission Name</th>
                         </thead>
                         <tbody>
-                            <% notes.forEach((note) => { %>
-                                <tr>
-                                    <td><%= note.note_id %></td>
-                                    <td><%= note._date.toDateString() %></td>
-                                    <td><%= Boolean(note._system) %></td>
-                                    <td><%= note._note %></td>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-					</table>
-				</div>
-			</div>
-		</div> 	
-		<div class="col-12 col-lg-2 mb-3">
-			<div class="bordered" id="divPermissions">
-				<div style="overflow-x:auto;">
-					<table style="width:100%">
-						<thead>
-							<th><h4>Permissions</h4></th>
-                        </thead>
-                        <tbody>
-                            <% permissions._options.attributes.forEach((permission) => { %>
-                                <% if (permission !== 'user_id' && permission !== 'createdAt' && permission !== 'updatedAt' && permissions[permission] === 1) { %>
+                            <% for (var permission in user.permission.dataValues) { %>
+                                <% if (user.permission[permission] === 1 && permission !== 'user_id' && permission !== 'createdAt' && permission !== 'updatedAt') { %>
                                     <tr>
                                         <td><%= permission%></td>
                                     </tr>
                                 <% } %>
-                            <% }) %>
+                            <% } %>
                         </tbody>
 					</table>
 				</div>
 			</div>
-		</div> 
-            <% if (user.user_id !== currentUser.user_id) { %>
-                <div class="row">
-                    <div class="col-12 text-left">
-                        <form action="/stores/users/<%= user.user_id %>?_method=DELETE" method="POST">
-                            <button class="btn btn-danger">Delete User</button>
-                        </form>
-                    </div>
-                </div>
-            <% } %>
-    </div>
+        </div>
+        <% if (permissions.access_notes) { %> 
+            <div class="col-lg-8">
+                <% include ../../partials/noteTable %>
+            </div>
+        <% } %>
+	</div>
 </section>
 <% include ../../partials/bodyBottom %>
 <% include ../../partials/footer %>
 <% include ../../partials/footjs %>
+<script src="/js/tableSort.js"></script>
+<script>
+    document.querySelector('#_reset').checked = (Boolean(<%= user._reset %>));
+</script>
 <% include ../../partials/htmlBottom %>
