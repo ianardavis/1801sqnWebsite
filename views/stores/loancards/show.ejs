@@ -1,0 +1,112 @@
+<!-- loancards INDEX PAGE -->
+<% include ../../partials/head/full %>
+<section class="container page_title">
+	<a href="/stores"><h2>Stores Management</h2></a>
+	<h3>Loan Cards</h3>
+</section>
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<% if (permissions.notes_add) { %>
+					<a class="dropdown-item" href="/stores/notes/new?table=loancards&id=<%= loancard.loancard_id %>">Add Note</a>
+					<div class="dropdown-divider"></div>
+				<% } %>
+				<a class="dropdown-item" href="/stores/loancards">Back to Loan Cards</a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 mb-3">
+			<div class="container bordered px-1" id="divHeader">
+				<h4>Header</h4>
+				<div class="details pb-3">
+					<div class="row">
+						<div class="col-3">
+							<div class="row">
+								<div class="col-5" >
+									<label class="col-form-label">Issued To:</label>
+								</div>                        
+								<div class="col-7">
+									<input class="form-control" type="text" value="<%= loancard.issuedTo.rank._rank %> <%= loancard.issuedTo._name %>, <%= loancard.issuedTo._ini %>" readonly>
+								</div>
+							</div>
+						</div>
+						<div class="col-3">
+							<div class="row">
+								<div class="col-5" >
+									<label class="col-form-label">Issued By:</label>
+								</div> 
+								<div class="col-7">
+									<input class="form-control" type="text" value="<%= loancard.issuedBy.rank._rank %> <%= loancard.issuedBy._name %>, <%= loancard.issuedBy._ini %>" readonly>
+								</div>
+							</div>
+						</div>
+						<div class="col-3">
+							<div class="row">
+								<div class="col-5" >
+									<label class="col-form-label">Issued On:</label>
+								</div> 
+								<div class="col-7">
+									<input class="form-control" type="text" value="<%= loancard._date.toDateString() %>" readonly>
+								</div>
+							</div>
+						</div>
+						<div class="col-3">
+							<div class="row">
+								<div class="col-5" >
+									<label class="col-form-label">Closed on:</label>
+								</div> 
+								<div class="col-7">
+									<input class="form-control" type="text" value="<% if (loancard._closed) { %><%= loancard._closed.toDateString() %><% } %>" readonly>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 mb-3">
+			<div class="container bordered mt-3 pt-3">
+				<h4>Lines</h4>
+				<table id="lineTable" style="width:100%" class="mx-auto">
+					<thead>
+						<th style="width:5%" onclick="sortTable(0, 'lineTable')">Line</th>
+						<th style="width:15%" onclick="sortTable(1, 'lineTable')">NSN</th>
+						<th style="width:20%" onclick="sortTable(2, 'lineTable')">Item</th>
+						<th style="width:10%" onclick="sortTable(3, 'lineTable')">Size</th>
+						<th style="width:10%" onclick="sortTable(4, 'lineTable')">Qty Issued</th>
+						<th style="width:10%" onclick="sortTable(5, 'lineTable')">Qty Returned</th>
+						<th style="width:10%" onclick="sortTable(6, 'lineTable')">Date Returned</th>
+						<th style="width:20%" onclick="sortTable(7, 'lineTable')">Received By</th>
+					</thead>
+					<tbody>
+						<% loancard.lines.forEach((line) => { %>
+							<tr>
+								<td><%= line._line %></td>
+								<td><%= line.nsn._nsn %></td>
+								<td><a href="/stores/items/<%= line.item.item_id %>"> <%= line.item.item._description %></a></td>
+								<td><a href="/stores/item_sizes/<%= line.item.stock_id %>"> <%= line.item.size._text %></a></td>
+								<td><%= line._qty_issued %></td>
+								<td><% if (line._qty_returned) { %><%= line._qty_returned %><% } %></td>
+								<td><% if (line._date) { %><%= line._date.toDateString() %><% } %></td>
+								<td><a href="/stores/users/<%= line.received_by %>"> <% if (line.receivedBy) { %><%= line.receivedBy.rank._rank %> <%= line.receivedBy._name %>, <%= line.receivedBy._ini %><% } %></a></td>
+							</tr>
+						<% }) %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-lg-12">
+			<% include ../../partials/noteTable %>
+		</div>
+	</div>
+</section>
+<% include ../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
+<% include ../../partials/foot/htmlClose %>

@@ -74,91 +74,91 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Issuer"
     },
-    'items_add': {
+    'item_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_edit': {
+    'item_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_delete': {
+    'item_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Super"
     },
-    'items_size_add': {
+    'item_size_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_size_delete': {
+    'item_size_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Admin"
     },
-    'items_locations_add': {
+    'item_locations_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_locations_edit': {
+    'item_locations_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_locations_delete': {
+    'item_locations_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_nsn_add': {
+    'item_nsn_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_nsn_edit': {
+    'item_nsn_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_nsn_delete': {
+    'item_nsn_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Admin"
     },
-    'items_receive': {
+    'item_receive': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_count': {
+    'item_count': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_scrap': {
+    'item_scrap': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'items_stocktake': {
+    'item_stocktake': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -368,7 +368,7 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Admin"
     },
-    'access_loan_cards': {
+    'access_loancards': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',

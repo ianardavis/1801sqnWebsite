@@ -1,7 +1,5 @@
 <!-- CADET NEW PAGE -->
-<% include ../../partials/header %>
-<% include ../../partials/nav %>
-<% include ../../partials/bodyTop %>
+<% include ../../partials/head/full %>
 <section class='container page_title'>
     <a href='/stores'><h2>Stores Management</h2></a>
     <h3>Edit User: <%= user._rank %> <%= user._ini %> <%= user._name %></h3>
@@ -22,9 +20,9 @@
                 <label class='col-form-label' for='_name'>Rank:</label>
             </div>
             <div class='col-sm-10'>
-                <select id='_rank' class='form-control' name='user[_rank]' type='text'>
+                <select id='rank' class='form-control' name='user[rank]' type='text'>
                     <% classes.ranks.forEach((rank) => { %>
-                        <% if(user._rank === rank) { %>
+                        <% if(user.rank === rank) { %>
                             <option value='<%= rank.rank_id %>'selected><%= rank._rank %></option>
                         <% } else { %>
                             <option value='<%= rank.rank_id %>'><%= rank._rank %></option>
@@ -54,9 +52,9 @@
                 <label class='col-form-label' for='_gender'>Gender:</label>
             </div>
             <div class='col-sm-10'>
-                <select id='genderSel' class='form-control' name='user[_gender]' type='text'>
+                <select id='genderSel' class='form-control' name='user[gender]' type='text'>
                     <% classes.genders.forEach((gender) => { %>
-                        <% if(user._gender === gender) { %>
+                        <% if(user.gender === gender) { %>
                             <option value='<%= gender.gender_id %>'selected><%= gender._gender %></option>
                         <% } else { %>
                             <option value='<%= gender.gender_id %>'><%= gender._gender %></option>
@@ -70,13 +68,13 @@
                 <label class='col-form-label' for='_status'>Status:</label>
             </div>
             <div class='col-sm-10'>
-                <select id='statusSel' class='form-control' name='user[_status]' type='text' >
+                <select id='statusSel' class='form-control' name='user[status]' type='text' >
                     <% classes.statuses.forEach((status) => { %>
                         <% if (status.status_id !== 4) { %> 
-                            <% if(user._status === status) { %>
-                                <option value='<%= status._status_id %>'selected><%= status._status %></option>
+                            <% if(user.status === status) { %>
+                                <option value='<%= status.status_id %>'selected><%= status._status %></option>
                             <% } else { %>
-                                <option value='<%= status._status_id %>'><%= status._status %></option>
+                                <option value='<%= status.status_id %>'><%= status._status %></option>
                             <% } %>
                         <% } %>
                     <% }) %>
@@ -107,13 +105,11 @@
         </div>
     </form>
 </section>
-<% include ../../partials/bodyBottom %>
-<% include ../../partials/footer %>
-<% include ../../partials/footjs %>
+<% include ../../partials/foot/full %>
 <script src='/js/loginBaderMirror.js'></script>
 <script src='/js/editUserFieldCheck.js'></script>
 <script>
     document.querySelector('#_reset').checked = (Boolean(<%= user._reset %>));
     checkFilled();
 </script>
-<% include ../../partials/htmlBottom %>
+<% include ../../partials/foot/htmlClose %>

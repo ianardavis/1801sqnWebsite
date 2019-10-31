@@ -1,0 +1,22 @@
+<% include ../../partials/head/head %>
+<body>
+<% include ../../partials/head/flash %>
+<section id="body">
+<div class="row container mx-auto">
+    <div class="col-12 col-md-6 bordered my-5 mx-auto">
+        <h5>Items</h5>
+        <input class="form-control" type="text" id="itemSearch" onkeyup="searchTable('itemsTable', 'itemSearch')" placeholder="Search for items..">
+        <form action="/stores/itemSearch" method="POST">
+            <select class='form-control' name="item" id="itemsTable" style="width: 100%;" type="text" size="15">
+                <option value=""></option>
+                <% items.forEach((item) => { %>
+                    <option value='{"item_id":<%= item.item_id %>, "_description":"<%= item._description %>"}'><%= item._description %></option>
+                <% }); %>
+            </select>
+            <button class="btn btn-primary">Select</button>
+        </form>
+    </div>
+</div>
+<% include ../../partials/foot/js %>
+<script src="/js/selectSearch.js"></script>
+<% include ../../partials/foot/htmlClose %>

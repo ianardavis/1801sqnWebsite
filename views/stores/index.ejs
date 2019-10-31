@@ -1,77 +1,71 @@
 <!-- MAIN PAGE INDEX -->
-<% include ../partials/header %>
-<% include ../partials/nav %>
-<% include ../partials/bodyTop %>
+<% include ../partials/head/full %>
 <h3>Main Menu</h3>
 <section id="menu">
 	<div class="row container m-auto p-0">
-		<% if (permissions.access_issues && currentUser.user_id !== 1) { %>
+		<% if (permissions.access_suppliers) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/issues/userlist"><i class="fas fa-address-card fa-5x"></i></a><br>
-				<a id="issued" href="stores/issues/userlist">Issuing</a>
-			</div>
-		<% } else { %>
-			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/issues?users=<%= currentUser.user_id %>"><i class="fas fa-address-card fa-5x"></i></a><br>
-				<a id="issued" href="stores/issues?users=<%= currentUser.user_id %>">Issuing</a>
+				<a href="stores/suppliers"><i class="fas fa-warehouse fa-5x"></i></a><br>
+				<a href="stores/suppliers">Suppliers</a>
 			</div>
 		<% } %>
 		<% if (permissions.access_users) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/users"><i class="fas fa-user fa-5x"></i></a><br>
-				<a id="users" href="stores/users">Users</a>
+				<a href="stores/users"><i class="fas fa-user fa-5x"></i></a><br>
+				<a href="stores/users">Users</a>
 			</div>
 		<% } else { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/users/<%= currentUser.user_id %>"><i class="fas fa-user fa-5x"></i></a><br>
-				<a id="users" href="stores/users/<%= currentUser.user_id %>">Users</a>
+				<a href="stores/users/<%= currentUser.user_id %>"><i class="fas fa-user fa-5x"></i></a><br>
+				<a href="stores/users/<%= currentUser.user_id %>">Users</a>
 			</div>
 		<% } %>
 		<% if (permissions.access_items) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/items"><i class="fas fa-tshirt fa-5x"></i></a><br>
-				<a id="items" href="stores/items">Items</a>
+				<a href="stores/items"><i class="fas fa-tshirt fa-5x"></i></a><br>
+				<a href="stores/items">Items</a>
 			</div>
 		<% } %>
+		<div class="bordered col-6 col-sm-4 p-3 menu_item">
+			<% if (permissions.access_issues && currentUser.user_id !== 1) { %>
+				<a href="stores/issues/userlist"><i class="fas fa-address-card fa-5x"></i></a><br>
+				<a href="stores/issues/userlist">Issuing</a>
+			<% } else { %>
+				<a href="stores/issues?users=<%= currentUser.user_id %>"><i class="fas fa-address-card fa-5x"></i></a><br>
+				<a href="stores/issues?users=<%= currentUser.user_id %>">Issuing</a>
+			<% } %>
+		</div>
 		<% if (permissions.access_orders) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/orders"><i class="fas fa-list fa-5x"></i></a><br>
-				<a id="orders" href="stores/orders">Orders</a>
+				<a href="stores/orders"><i class="fas fa-list fa-5x"></i></a><br>
+				<a href="stores/orders">Orders</a>
 			</div>
 		<% } %>
 		<% if (permissions.access_requests) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/requests"><i class="fas fa-clipboard-list fa-5x"></i></a><br>
-				<a id="requests" href="stores/requests">Requests</a>
+				<a href="stores/requests"><i class="fas fa-clipboard-list fa-5x"></i></a><br>
+				<a href="stores/requests">Requests</a>
 			</div>
 		<% } %>
-		<% if (permissions.access_loan_cards) { %>
+		<% if (permissions.access_loancards) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/loanCards"><i class="fas fa-list-ol fa-5x"></i></a><br>
-				<a id="loancards" href="stores/loanCards">Loan Cards</a>
-			</div>
-		<% } %>
-		<% if (permissions.access_suppliers) { %>
-			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/suppliers"><i class="fas fa-warehouse fa-5x"></i></a><br>
-				<a id="suppliers" href="stores/suppliers">Suppliers</a>
+				<a href="stores/loanCards"><i class="fas fa-list-ol fa-5x"></i></a><br>
+				<a href="stores/loanCards">Loan Cards</a>
 			</div>
 		<% } %>
 		<% if (permissions.access_reports) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/reports"><i class="fas fa-chart-pie fa-5x"></i></a><br>
-				<a id="settings" href="stores/reports">Reports</a>
+				<a href="stores/reports"><i class="fas fa-chart-pie fa-5x"></i></a><br>
+				<a href="stores/reports">Reports</a>
 			</div>
 		<% } %>
 		<% if (permissions.access_settings) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
-				<a id="users" href="stores/settings"><i class="fas fa-cog fa-5x"></i></a><br>
-				<a id="settings" href="stores/settings">Settings</a>
+				<a href="stores/settings"><i class="fas fa-cog fa-5x"></i></a><br>
+				<a href="stores/settings">Settings</a>
 			</div>
 		<% } %>
 	</div>
 </section>
-<% include ../partials/bodyBottom %>
-<% include ../partials/footer %>
-<% include ../partials/footjs %>
-<% include ../partials/htmlBottom %>
+<% include ../partials/foot/full %>
+<% include ../partials/foot/htmlClose %>

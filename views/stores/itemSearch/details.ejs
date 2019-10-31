@@ -1,0 +1,77 @@
+<% include ../../partials/head/head %>
+<body>
+<% include ../../partials/head/flash %>
+<section id="body">
+<div class="row container mx-auto">
+    <div class="col-12 col-md-6 mx-auto">
+        <h4>Select NSN and Location for <%= size.item._description %>, Size: <%= size.size._text %></h4>
+        <div class="row">
+            <div class="col-12 bordered mt-5">
+                <h5>NSNs</h5>
+                <input class="form-control" type="text" id="nsnSearch" onkeyup="searchTable('nsns', 'nsnSearch')" placeholder="Search for NSNs..">
+                <select class='form-control' id="nsns" style="width: 100%;" type="text" size="5">
+                    <option value=""></option>
+                    <% size.nsns.forEach((nsn) => { %>
+                        <option value="<%= nsn.nsn_id %>"><%= nsn._nsn %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="col-12 bordered mt-5">
+                <h5>Issue From Location</h5>
+                <input class="form-control" type="text" id="locationSearch" onkeyup="searchTable('locations', 'locationSearch')" placeholder="Search for location..">
+                <select class='form-control' id="locations" style="width: 100%;" type="text" size="5">
+                    <option value=""></option>
+                    <% size.locations.forEach((location) => { %>
+                        <option value='{"id":<%= location.location_id %>,"qty":<%= location._qty %>}'><%= location._location %>, Qty: <%= location._qty %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="col-12 bordered mt-5">
+                <div class="row mx-auto">
+                    <div class="col-4 col-md-2">
+                        <label class="col-form-label" for="qty">Qty</label>
+                    </div>
+                    <div class="col-8 col-md-4">
+                        <input class="form-control mt-1 mr-3" type="number" id="qty" value="1">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addSize();">Add Size</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<% include ../../partials/foot/js %>
+<script src="/js/selectSearch.js"></script>
+<script>
+function addSize() {
+    var qty = Number(document.querySelector('#qty').value) || 0,
+        nsns =       document.querySelector('#nsns'),
+        locations =  document.querySelector('#locations');
+    if (locations.selectedIndex === -1 ||
+        nsns.selectedIndex === -1 ||
+        qty === 0) {
+        alert('No location, NSN or quantity selected!');
+    } else {
+        console.log(window.opener);
+        if (window.opener.addSize) {
+            var selected = {},
+                nsn_id =   Number(nsns.value),
+                location = JSON.parse(locations.value);
+            selected.stock_id = <%= size.stock_id %>;
+            selected._qty = qty;
+            selected.location_id = location.id;
+            selected.location_qty = location.qty - qty;
+            selected.nsn_id = nsn_id;
+            selected._description = '<%= size.item._description %>';
+            selected._size_text = <%= size.size._text %>;
+            console.log(selected);
+            window.opener.addSize(selected);
+        } else {
+            alert('unable to find issue window!\nClose window and try again');
+        }
+    }
+}
+</script>
+<% include ../../partials/foot/htmlClose %>

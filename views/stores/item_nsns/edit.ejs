@@ -1,0 +1,46 @@
+<!-- USER ITEM PAGE -->
+<% include ../../partials/head/full %>
+<section class="container page_title">
+    <a href="/stores"><h2>Stores Management</h2></a>
+    <p class="text-left"><a href="/stores">Main Menu</a>>   >   ><a href="/stores/items">Items</a>>   >   ><a href="/stores/items/<%= nsn.size.item_id %>"><%= nsn.size.item._description %></a>>   >   ><a href="/stores/items_sizes/<%= nsn.size.stock_id %>">Size:<%= nsn.size.size._text %></a></p>
+    <a href="/stores/items/<%= nsn.size.item.item_id %>"><h3><%= nsn.size.item._description %></h3></a>
+    <h4><%= nsn.size.size._text %></h4>
+</section> 
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<% if (permissions.notes_add) { %>
+					<a class="dropdown-item" href="/stores/notes/new?table=items_nsns&id=<%= nsn.nsn_id %>">Add Note</a>
+					<div class="dropdown-divider"></div>
+				<% } %>
+				<a class="dropdown-item" href="/stores/items_sizes/<%= nsn.size.stock_id %>">Back to <%= nsn.size.item._description %>/Size: <%= nsn.size.size._text %></a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 col-md-3 mx-auto">
+			<div class="container bordered">
+				<h4>NSN</h4>
+				<div class="details">
+					<form action="/stores/items_nsns/<%= nsn.nsn_id %>?_method=PUT" method="POST">
+						<input type="hidden" name="nsn[nsn_id]" value="<%= nsn.nsn_id %>" readonly>
+						<p><input type="text" name="nsn[_nsn]" maxlength="20" value="<%= nsn._nsn %>" required></p>
+						<p><button class="btn btn-success">Save</button></p>
+					</form>
+                </div>
+			</div>
+		</div>
+		<div class="col-12 col-md-9 mx-auto">
+			<% include ../../partials/noteTable %>
+		</div>
+	</div>
+</section>
+<% include ../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
+<% include ../../partials/foot/htmlClose %>

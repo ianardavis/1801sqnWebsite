@@ -1,2 +1,3 @@
 When returning multiple lines of same stock_id, async operation causes location qty to not update properly
 -------------------------------
+On issue, possibly move handling of location stock to new logic rather than ejs

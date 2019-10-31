@@ -1,0 +1,37 @@
+<!-- loancards INDEX PAGE -->
+<% include ../../partials/head/full %>
+<section class="container page_title">
+	<a href="/stores"><h2>Stores Management</h2></a>
+	<h3>Loan Cards</h3>
+</section>
+<div class="container mt-3 pt-3">
+	<label for="closedCards">Closed Cards:</label>
+	<select id="closedCards" class='form-control' type="text" onchange="window.location = '/stores/loancards?closed=' + this.options[this.selectedIndex].value">
+		<option value="1" <% if (closed === 1) { %>selected<% } %> >Include</option>
+		<option value="2" <% if (closed === 2) { %>selected<% } %> >Exclude</option>
+		<option value="3" <% if (closed === 3) { %>selected<% } %> >Only</option>
+	</select>
+	<table id="loancardTable" style="width:100%" class="mx-auto">
+		<thead>
+			<th style="width:10%" onclick="sortTable(0, 'loancardTable')">ID</th>
+			<th style="width:30%" onclick="sortTable(1, 'loancardTable')">Issued To</th>
+			<th style="width:15%" onclick="sortTable(2, 'loancardTable')">Date Raised</th>
+			<th style="width:15%" onclick="sortTable(3, 'loancardTable')">Date Closed</th>
+			<th style="width:30%" onclick="sortTable(4, 'loancardTable')">Raised By</th>
+		</thead>
+		<tbody>
+			<% loancards.forEach((loancard) => { %>
+				<tr>
+					<td><a href="/stores/loancards/<%= loancard.loancard_id %>"> <%= loancard.loancard_id %></a></td>
+					<td><a href="/stores/loancards/<%= loancard.loancard_id %>"> <%= loancard.issuedTo.rank._rank %> <%= loancard.issuedTo._name %>, <%= loancard.issuedTo._ini %></a></td>
+					<td><a href="/stores/loancards/<%= loancard.loancard_id %>"> <%= loancard._date.toDateString() %></a></td>
+					<td><a href="/stores/loancards/<%= loancard.loancard_id %>"> <% if (loancard._closed) { %><%= loancard._closed.toDateString() %><% } %></a></td>
+					<td><a href="/stores/loancards/<%= loancard.loancard_id %>"> <%= loancard.issuedBy.rank._rank %> <%= loancard.issuedBy._name %>, <%= loancard.issuedBy._ini %></a></td>
+				</tr>
+			<% }) %>
+		</tbody>
+	</table>
+</div>
+<% include ../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
+<% include ../../partials/foot/htmlClose %>

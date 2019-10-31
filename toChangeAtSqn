@@ -1,0 +1,6 @@
+DB:
+user table - remove underscores/add _id from rank, gender, status
+user item- remove underscores/add _id from categories type subtype group gender
+items_locations -> item_locations
+items_nsns -> item_nsns
+items_sizes -> item_sizes

@@ -1,7 +1,5 @@
 <!-- ITEMS EDIT PAGE -->
-<% include ../../partials/header %>
-<% include ../../partials/nav %>
-<% include ../../partials/bodyTop %>
+<% include ../../partials/head/full %>
 <section class="container page_title">
     <a href="/stores"><h2>Stores Management</h2></a>
     <h3>Edit Item</h3>
@@ -105,6 +103,14 @@
             </div>
             <div class="form-group row">
                 <div class="col-5" >
+                    <label class="col-form-label">Size Text:</label>
+                </div>                        
+                <div class="col-7">
+                    <input class="form-control" type="text" name="item[_size_text]" value="<%= item._size_text %>" maxlength="45">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
                     <label class="col-form-label">Supplier:</label>
                 </div> 
                 <div class="col-7">
@@ -127,9 +133,7 @@
         </form>
     </div>
 </section>
-<% include ../../partials/bodyBottom %>
-<% include ../../partials/footer %>
-<% include ../../partials/footjs %>
+<% include ../../partials/foot/full %>
 <script>
 	$('#_category').on('change', setGroup);	
 	$('#_group').on('change', setType);	
@@ -170,4 +174,4 @@
 		}) ; 
 	}
 </script>
-<% include ../../partials/htmlBottom %>
+<% include ../../partials/foot/htmlClose %>

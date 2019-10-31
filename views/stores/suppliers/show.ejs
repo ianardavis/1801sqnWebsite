@@ -1,7 +1,5 @@
 <!-- SUPPLIERS SHOW PAGE -->
-<% include ../../partials/header %>
-<% include ../../partials/nav %>
-<% include ../../partials/bodyTop %>
+<% include ../../partials/head/full %>
 <section class="container page_title">
     <a href="/stores"><h2>Stores Management</h2></a>
     <p class="text-left"><a href="/stores">Main Menu</a>> > ><a href="/stores/suppliers">Suppliers</a></p>
@@ -35,54 +33,54 @@
                 <div class="details">
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>Supplier Name:</label>
+                            <label class="col-form-label">Supplier Name:</label>
                         </div>
                         <div class="col-sm-9">
-                            <input type="text" value="<%= supplier._name %>" readonly>
+                            <input class="form-control" type="text" value="<%= supplier._name %>" readonly>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>Address:</label>
+                            <label class="col-form-label">Address:</label>
                         </div>
                         <div class="col-sm-9">
-                            <input type="text" value="<%= supplier._address1 %>" readonly>
-                            <input type="text" value="<%= supplier._address2 %>" readonly>
-                            <input type="text" value="<%= supplier._address3 %>" readonly>
-                            <input type="text" value="<%= supplier._address4 %>" readonly>
-                            <input type="text" value="<%= supplier._address5 %>" readonly>
+                            <input class="form-control" type="text" value="<%= supplier._address1 %>" readonly>
+                            <input class="form-control" type="text" value="<%= supplier._address2 %>" readonly>
+                            <input class="form-control" type="text" value="<%= supplier._address3 %>" readonly>
+                            <input class="form-control" type="text" value="<%= supplier._address4 %>" readonly>
+                            <input class="form-control" type="text" value="<%= supplier._address5 %>" readonly>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>Tel:</label>
+                            <label class="col-form-label">Tel:</label>
                         </div>
                         <div class="col-sm-9">
-                            <input type="text" value="<%= supplier._telephone %>" readonly>
+                            <input class="form-control" type="text" value="<%= supplier._telephone %>" readonly>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>_email:</label>
+                            <label class="col-form-label">Email:</label>
                         </div>
                         <div class="col-sm-9">
-                            <input type="text" value="<%= supplier._email %>" readonly>
+                            <input class="form-control" type="text" value="<%= supplier._email %>" readonly>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>RAF Stores?:</label>
+                            <label class="col-form-label">RAF Stores?:</label>
                         </div>
                         <div class="col-sm-9">
-                            <input type="checkbox" id="_stores" value="<%= supplier._stores %>" disabled>
+                            <input class="form-control" type="checkbox" id="_stores" value="<%= supplier._stores %>" disabled>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-3">
-                            <label>Is Default:</label>
+                            <label class="col-form-label">Is Default:</label>
                         </div>
                         <div class="col-sm-9">
-                            <input type="checkbox" id="_default" value="<%= supplier._default %>" disabled>
+                            <input class="form-control" type="checkbox" id="_default" value="<%= supplier._default %>" disabled>
                         </div>
                     </div>
                 </div>
@@ -100,12 +98,10 @@
         <% } %>
     </div>
 </section>
-<% include ../../partials/bodyBottom %>
-<% include ../../partials/footer %>
-<% include ../../partials/footjs %>
+<% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
 <script>
     document.querySelector('#_stores').checked = (Boolean(<%= supplier._stores %>));
     document.querySelector('#_default').checked = (Boolean(<%= supplier._default %>));
 </script>
-<% include ../../partials/htmlBottom %>
+<% include ../../partials/foot/htmlClose %>

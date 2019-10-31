@@ -1,7 +1,5 @@
 <!-- USER ITEM PAGE -->
-<% include ../../partials/header %>
-<% include ../../partials/nav %>
-<% include ../../partials/bodyTop %>
+<% include ../../partials/head/full %>
 <section class="container page_title">
     <div class="row">
         <div class="col-md-6 mx-auto">
@@ -22,7 +20,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.items_edit) { %>
+                <% if (permissions.item_edit) { %>
 				    <a class="dropdown-item" id="btnEdit" href="/stores/items/<%= item.item_id %>/edit">Edit</a>
                     <div class="dropdown-divider"></div>
 				<% } %>
@@ -91,6 +89,14 @@
                     </div>
                     <div class="row">
                         <div class="col-5" >
+                            <label class="col-form-label">Size Text:</label>
+                        </div> 
+                        <div class="col-7">
+                            <input class="form-control" type="text" value="<%= item._size_text %>" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5" >
                             <label class="col-form-label">Supplier:</label>
                         </div> 
                         <div class="col-7">
@@ -111,8 +117,8 @@
 		<div class="col-12 col-lg-2 mb-3">
 			<div class="container bordered" id="divSizes">
                 <h4>Sizes</h4>
-                <% if (permissions.items_size_add) { %>
-                    <a href="/stores/items_sizes/new?item_id=<%= item.item_id %>"><h5>Add Sizes</h5></a>
+                <% if (permissions.item_size_add) { %>
+                    <a href="/stores/item_sizes/new?item_id=<%= item.item_id %>"><h5>Add Sizes</h5></a>
                 <% } %>
                 <div class="pb-3">
                     <div style="overflow-x:auto;">
@@ -123,7 +129,7 @@
                             <tbody>
                                 <% item.sizes.forEach((size) => { %>
                                     <tr>
-                                        <td><a href="/stores/items_sizes/<%= size.stock_id %>"><%= size.size._text %></a></td>
+                                        <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.size._text %></a></td>
                                     </tr>
                                 <% }) %>
                             </tbody>
@@ -135,7 +141,7 @@
         <div class="col-lg-6">
             <% include ../../partials/noteTable %>
         </div>
-        <% if (permissions.items_delete) { %>
+        <% if (permissions.item_delete) { %>
             <div class="container">  
                 <div class="row">
                     <div class="col-12">
@@ -148,8 +154,6 @@
         <% } %>
     </div>
 </section>
-<% include ../../partials/bodyBottom %>
-<% include ../../partials/footer %>
-<% include ../../partials/footjs %>
+<% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
-<% include ../../partials/htmlBottom %>
+<% include ../../partials/foot/htmlClose %>

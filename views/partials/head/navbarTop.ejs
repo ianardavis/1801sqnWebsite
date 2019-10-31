@@ -1,0 +1,49 @@
+<nav class="navbar sticky-top navbar-expand-sm navbar-light bg-light">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#pageNav" aria-controls="pageNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        Menu
+    </button>
+    <div class="collapse navbar-collapse" id="pageNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                About Us
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/whoWeAre">Who We Are</a>
+                    <a class="dropdown-item" href="/whatWeDo">What We Do</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/gallery"><strong>Gallery</strong></a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Join Us
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/joinCadet">As a Cadet</a>
+                    <a class="dropdown-item" href="/joinStaff">As Staff</a>
+                </div>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <% if (!currentUser) { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login"><strong>Login</strong></a>
+                </li>
+            <% } else { %>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <%= currentUser._login_id %>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/stores/users/<%= currentUser.user_id %>">Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout">Logout</a>
+                    </div>
+                </li>
+            <% } %>  
+        </ul>
+    </div>
+</nav>

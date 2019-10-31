@@ -1,16 +1,16 @@
-<% include partials/header %>
-<% include partials/nav %>
-<% include partials/bodyTop %>
-<h2>Stores Management</h2>
-<h3>Login:</h3>
-<form action="/login" method="post">
-	<p><label for="username">Username</label></p>
-	<p><input id="username" type="text" name="_login_id" placeholder="Username" required></p>
-	<p><label for="password">Password</label></p>
-	<p><input id="password" type="password" name="_password" placeholder="Password" required></p>
-	<p><button>Log In</button></p>
-</form>
-<% include partials/bodyBottom %>
-<% include partials/footer %>
-<% include partials/footjs %>
-<% include partials/htmlBottom %>
+<% include partials/head/full %>
+<div class="container row">
+	<div class="col-12 col-md-6 mx-auto">
+		<h2>Stores Management</h2>
+		<h3>Login:</h3>
+		<form action="/login" method="post">
+			<p><label class="col-form-label" for="username">Username</label></p>
+			<p><input class="form-control" id="username" type="text" name="_login_id" placeholder="Username" required></p>
+			<p><label class="col-form-label" for="password">Password</label></p>
+			<p><input class="form-control" id="password" type="password" name="_password" placeholder="Password" required></p>
+			<p><button>Log In</button></p>
+		</form>
+	</div>
+</div>
+<% include partials/foot/full %>
+<% include partials/foot/htmlClose %>

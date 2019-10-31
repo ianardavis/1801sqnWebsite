@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    '_rank': {
+    'rank_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null",
@@ -35,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
         key: 'rank_id'
       }
     },
-    '_gender': {
+    'gender_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null",
@@ -44,7 +44,7 @@ module.exports = function(sequelize, DataTypes) {
         key: 'gender_id'
       }
     },
-    '_status': {
+    'status_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       defaultValue: '12',

@@ -33,14 +33,14 @@ app.use((req, res, next) => {
     } else {
         common_login(req, res, next)
     }
-})
+});
 function common_login(req, res, next) {
     res.locals.currentUser = req.user;
     res.locals.info        = req.flash('info');
     res.locals.danger      = req.flash('danger');
     res.locals.success     = req.flash('success');
     next();
-}
+};
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
@@ -49,13 +49,15 @@ var m                = require('./db/models'),
     storesRoutes     = require('./routes/stores/index'),
     userRoutes       = require('./routes/stores/users')(app, m),
     itemRoutes       = require('./routes/stores/items')(app, m),
-    sizeRoutes       = require('./routes/stores/items_sizes')(app, m),
-    locationRoutes   = require('./routes/stores/items_locations')(app, m),
-    NSNRoutes        = require('./routes/stores/items_nsns')(app, m),
+    sizeRoutes       = require('./routes/stores/item_sizes')(app, m),
+    locationRoutes   = require('./routes/stores/item_locations')(app, m),
+    NSNRoutes        = require('./routes/stores/item_nsns')(app, m),
     noteRoutes       = require('./routes/stores/notes')(app, m),
     supplierRoutes   = require('./routes/stores/suppliers')(app, m),
     issuesRoutes     = require('./routes/stores/issues')(app, m),
-    permissionRoutes = require('./routes/stores/permissions')(app, m);
+    permissionRoutes = require('./routes/stores/permissions')(app, m),
+    loancardRoutes   = require('./routes/stores/loancards')(app, m),
+    itemSearchRoutes = require('./routes/stores/itemSearch')(app, m);
 
     // Sync Database
 // m.sequelize.sync({force: false}).then(() => { 
@@ -75,4 +77,4 @@ app.listen(1801, (err) => {
     } else {
         console.log(err);
     }
-})
+});

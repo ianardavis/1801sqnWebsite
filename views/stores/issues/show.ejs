@@ -1,7 +1,5 @@
 <!-- ISSUES NEW PAGE -->
-<% include ../../partials/header %>
-<% include ../../partials/nav %>
-<% include ../../partials/bodyTop %>
+<% include ../../partials/head/full %>
 <section class='container page_title'>
 	<div class='row'>
 		<div class='col-md-6 mx-auto'>
@@ -75,7 +73,7 @@
                                 <label class="col-form-label">Loan Card:</label>
                             </div>
                             <div class="col-sm-8">
-                                <input class="form-control" type="text" value="<%= issue.loancard_id %><% if (issue.lc_line) { %>, line: <%= issue.lc_line.Loan_card_line %><% } %>" readonly>
+                                <input class="form-control" type="text" value="<% if (issue.lc_line) { %>Card # <%= issue.lc_line.loancard_id %>, Line: <%= issue.lc_line._line %><% } %>" readonly>
                             </div>
                         </div>
                         <div class="row">
@@ -158,9 +156,5 @@
             <% } %>
         </div>
     </section>
-
-
-<% include ../../partials/bodyBottom %>
-<% include ../../partials/footer %>
-<% include ../../partials/footjs %>
-<% include ../../partials/htmlBottom %>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

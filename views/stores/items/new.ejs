@@ -1,7 +1,5 @@
 <!-- ITEMS NEW PAGE -->
-<% include ../../partials/header %>
-<% include ../../partials/nav %>
-<% include ../../partials/bodyTop %>
+<% include ../../partials/head/full %>
 <section class="container page_title">
     <a href="/stores"><h2>Stores Management</h2></a>
     <h3>New Item</h3>
@@ -23,7 +21,7 @@
                     <label class="col-form-label">Category:</label>
                 </div> 
                 <div class="col-7">
-                    <select name="item[_category]" id="_category" type="text">
+                    <select class="form-control" name="item[_category]" id="_category" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.categories.forEach((category) => { %>
                             <option value="<%= category.category_id %>" data-tag='<%= category._parent %>'><%= category._category %></option>         
@@ -36,7 +34,7 @@
                     <label class="col-form-label">Group:</label>
                 </div> 
                 <div class="col-7">
-                    <select name="item[_group]" id="_group" type="text">
+                    <select class="form-control" name="item[_group]" id="_group" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.groups.forEach((group) => { %>
                             <option value="<%= group.group_id %>" data-tag='<%= group._parent %>'><%= group._group %></option>         
@@ -49,7 +47,7 @@
                     <label class="col-form-label">Type:</label>
                 </div> 
                 <div class="col-7">
-                    <select name="item[_type]" id="_type" type="text">
+                    <select class="form-control" name="item[_type]" id="_type" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.types.forEach((type) => { %>
                             <option value="<%= type.type_id %>" data-tag='<%= type._parent %>'><%= type._type %></option>         
@@ -62,7 +60,7 @@
                     <label class="col-form-label">Sub Type:</label>
                 </div> 
                 <div class="col-7">
-                    <select name="item[_sub_type]" id="_sub_type" type="text">
+                    <select class="form-control" name="item[_sub_type]" id="_sub_type" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.subtypes.forEach((subtype) => { %>
                             <option value="<%= subtype.subtype_id %>" data-tag='<%= subtype._parent %>'><%= subtype._sub_type %></option>         
@@ -75,7 +73,7 @@
                     <label class="col-form-label">Gender:</label>
                 </div> 
                 <div class="col-7">
-                    <select name="item[_gender]" id="_gender" type="text">
+                    <select class="form-control" name="item[_gender]" id="_gender" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.genders.forEach((gender) => { %>
                             <option value="<%= gender.gender_id %>"><%= gender._gender %></option>         
@@ -85,10 +83,18 @@
             </div>
             <div class="form-group row">
                 <div class="col-5" >
+                    <label class="col-form-label">Size Text:</label>
+                </div>                        
+                <div class="col-7">
+                    <input class="form-control" type="text" name="item[_size_text]" placeholder="Size Text" maxlength="45">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
                     <label class="col-form-label">Supplier:</label>
                 </div> 
                 <div class="col-7">
-                    <select name="item[supplier_id]" id="supplier_id" type="text">
+                    <select class="form-control" name="item[supplier_id]" id="supplier_id" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.suppliers.forEach((supplier) => { %>
                             <option value="<%= supplier.supplier_id %>"><%= supplier._name %></option>         
@@ -103,9 +109,7 @@
         </form>
     </div>
 </section>
-<% include ../../partials/bodyBottom %>
-<% include ../../partials/footer %>
-<% include ../../partials/footjs %>
+<% include ../../partials/foot/full %>
 <script>
 	$('#_category').on('change', setGroup);	
 	$('#_group').on('change', setType);	
@@ -146,4 +150,4 @@
 		}) ; 
 	}
 </script>
-<% include ../../partials/htmlBottom %>
+<% include ../../partials/foot/htmlClose %>

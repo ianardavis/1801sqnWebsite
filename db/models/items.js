@@ -15,28 +15,28 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_gender': {
+    'gender_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
     },
-    '_category': {
+    'category_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       defaultValue: '19',
       comment: "null"
     },
-    '_group': {
+    'group_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
     },
-    '_type': {
+    'type_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
     },
-    '_sub_type': {
+    'subtype_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
