@@ -1,17 +1,19 @@
 <!-- USER ITEM PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-    <div class="row">
-        <div class="col-md-6 mx-auto">
-            <a href="/stores"><h2>Stores Management</h2></a>
-        </div>
-    </div>
-    <p class="text-left"><a href="/stores"> Main Menu </a>> > ><a href="/stores/items"> Items </a>> > ><a href="/stores/items/<%= item.item_id %>"> <%= item._description %> </a></p>
-    <div class="row">
-        <div class="col-2 mx-auto">
-            <a href="/stores/items"><h3>Items</h3></a>
-        </div>
-    </div>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item._description %></a>
+            </li>
+        </ul>
+    </nav>
 </section>
 <nav class="navbar navbar-expand navbar-dark bg-dark stores">
 	<ul class="navbar-nav mr-auto">
@@ -95,22 +97,6 @@
                             <input class="form-control" type="text" value="<%= item._size_text %>" readonly>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Supplier:</label>
-                        </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<%= item.supplier._name %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Ordering Details:</label>
-                        </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<%= item._ordering_details %>" readonly>
-                        </div>
-                    </div>
                 </div>
 			</div>
 		</div>
@@ -122,9 +108,9 @@
                 <% } %>
                 <div class="pb-3">
                     <div style="overflow-x:auto;">
-                        <table id="sizeTable" style="width:100%">
-                            <thead>
-                                <th style="width:40%" onclick="sortTable(0, 'sizeTable')"><%= item._size_text %></th>
+                        <table id="sizeTable" class="table table-sm table-hover w-100">
+                            <thead class="thead-dark">
+                                <th class="w-40" onclick="sortTable(0, 'sizeTable')"><%= item._size_text %></th>
                             </thead>
                             <tbody>
                                 <% item.sizes.forEach((size) => { %>
@@ -138,9 +124,11 @@
                 </div>
 			</div>
         </div>
+        <% if (permissions.access_notes) {%>
         <div class="col-lg-6">
             <% include ../../partials/noteTable %>
         </div>
+        <% } %>
         <% if (permissions.item_delete) { %>
             <div class="container">  
                 <div class="row">

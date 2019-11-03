@@ -1,28 +1,13 @@
-var issueDate = document.querySelector('#issueDate'),
-    dueDate   = document.querySelector('#dueDate'),
-    addWindow = null;
-
-issueDate.value = TodaysDate();
-dueDate.value   = TodaysDate(7);
+var addWindow = null;
 
 function openAddWindow() {
     if (addWindow == null || addWindow.closed) {
-        addWindow = window.open("/stores/itemSearch?callType=issue",
+        addWindow = window.open("/stores/itemSearch?callType=order",
                                 "itemSearch",
                                 "width=600,height=840,resizeable=no,location=no");
     } else {
         addWindow.focus();
     };
-};
-
-function TodaysDate(addYears = 0) {
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var MM = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear() + addYears;
-
-    today = yyyy + '-' + MM + '-' + dd;
-    return today;
 };
 
 function addSize(selected) {
@@ -43,10 +28,7 @@ function addSize(selected) {
         input.name = 'selected[]';
         input.value = JSON.stringify({
             stock_id: selected.stock_id, 
-            qty: selected._qty,
-            location_id: selected.location_id,
-            location_qty: selected.location_qty,
-            nsn_id: selected.nsn_id
+            qty: selected._qty
         });
 
         newSpan = document.createElement('span');

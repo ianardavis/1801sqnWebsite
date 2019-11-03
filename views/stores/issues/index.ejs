@@ -1,56 +1,60 @@
 <!-- ISSUES INDEX PAGE -->
 <% include ../../partials/head/full %>
-<section class='container page_title'>
-	<div class='row'>
-		<div class='col-md-6 mx-auto'>
-			<a href='/stores'><h2>Stores Management</h2></a>
-		</div>
-	</div>
-	<p class='text-left'><a href='/stores'> Main Menu </a>> > ><a href='/stores/issues'> Issues </a>> > ><a href='/stores/issues/userlist'> Users </a>> > ><a href='/stores/issues?user=<%= selectedUser.user_id %>'> <%= selectedUser._name %>, <%= selectedUser._ini %></a></p>
-	<div class='mx-auto'>
-		<h3>Issued Items for:</h3>
-		<h4><%= selectedUser.rank._rank %> <%= selectedUser._name %>, <%= selectedUser._ini %></h4>
-	</div>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/issues">Issues</a>
+            </li>
+        </ul>
+    </nav>
 </section>
-<nav class='navbar navbar-expand navbar-dark bg-dark stores'>
-	<ul class='navbar-nav mr-auto'>
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<% if (permissions.issues_add && selectedUser.user_id !== currentUser.user_id) { %>
-					<a class='dropdown-item' href='/stores/issues/new?user=<%= selectedUser.user_id %>'>New Issue</a>
-				<% } %>
-				<% if (permissions.issues_return && selectedUser.user_id !== currentUser.user_id) { %>
-					<button form='returnedLines' class="dropdown-item dropdown_button" action="/stores/issues?_method=PUT" method='POST'>Return Selected Lines</button>
-				<% } %>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="/stores/issues/userlist">Back to User List</a>
-			</div>
-		</li>
-	</ul>
-</nav>
-<div class='container mt-3 pt-3'>
+<section>
+	<nav class='navbar navbar-expand navbar-dark bg-dark stores'>
+		<ul class='navbar-nav mr-auto'>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Options
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<% if (permissions.issues_return) { %>
+						<button form='returnedLines' class="dropdown-item dropdown_button">Return Selected Lines</button>
+					<% } %>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="/stores">Back to Stores</a>
+				</div>
+			</li>
+		</ul>
+	</nav>
+</section>
+<section>
 	<div class='container mt-3 pt-3'>
-		<label for="_returned">Returned Lines:</label>
-		<select id="_returned" class='form-control' type="text" onchange="window.location = '/stores/issues?user=<%= selectedUser.user_id %>&returned=' + this.options[this.selectedIndex].value">
-			<option value="1" <% if (returned === 1) { %>selected<% } %> >Include</option>
-			<option value="2" <% if (returned === 2) { %>selected<% } %> >Exclude</option>
-			<option value="3" <% if (returned === 3) { %>selected<% } %> >Only</option>
-		</select>
-		<table id="tableResults" class='mx-auto'>
-			<thead>
-				<th onclick="sortTable(0, 'tableResults')" style='width:50%'>Item</th>
-				<th onclick="sortTable(1, 'tableResults')" style='width:20%'>Size</th>
-				<th onclick="sortTable(2, 'tableResults')" style='width:10%'>Quantity</th>
-				<th style='width:20%'>Return to: </th>
+		<div class="row mx-1">
+			<label class="col-5 col-form-label" for="_returned">Returned Lines:</label>
+			<select class='col-7 form-control' id="_returned" type="text" onchange="window.location = '/stores/issues?returned=' + this.options[this.selectedIndex].value">
+				<option value="1" <% if (returned === 1) { %>selected<% } %> >Include</option>
+				<option value="2" <% if (returned === 2) { %>selected<% } %> >Exclude</option>
+				<option value="3" <% if (returned === 3) { %>selected<% } %> >Only</option>
+			</select>
+		</div>
+		<table id="tableIssues" class='table table-sm table-hover mx-auto'>
+			<thead class="thead-dark">
+				<th onclick="sortTable(0, 'tableIssues')" class='w-20'>Issued</th>
+				<th onclick="sortTable(1, 'tableIssues')" class='w-20'>To</th>
+				<th onclick="sortTable(2, 'tableIssues')" class='w-30'>Item</th>
+				<th onclick="sortTable(3, 'tableIssues')" class='w-15'>Size</th>
+				<th onclick="sortTable(4, 'tableIssues')" class='w-5'>Quantity</th>
+				<th class='w-10'>Return to: </th>
 			</thead>
 			<tbody>
 				<form id='returnedLines' action="/stores/issues?_method=PUT" method='POST'>
-					<input type="hidden" name="selectedUser" value="<%= selectedUser.user_id %>">
 					<% issues.forEach((issue) => { %>
 						<tr>
+							<td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue._date.toDateString() %></a></td>
+							<td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.issuedTo.rank._rank %> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %></a></td>
 							<td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.size.item._description %></a></td>
 							<td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.size.size._text %></a></td>
 							<td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue._qty %></a></td>
@@ -58,10 +62,10 @@
 								<% if (issue.return_location) { %>
 									<a href='/stores/issues/<%= issue.issue_id %>'><%= issue.returnLocation._location %></a>
 								<% } else { %>
-									<select class='form-control' name="locations[]">
+									<select class='form-control form-control-sm' name="locations[]">
 										<option value=""></option>
 										<% issue.size.locations.forEach((location) => { %>
-											<option value='<%= JSON.stringify({'issue_id': issue.issue_id, 'location_id': location.location_id}) %>'><%= location._location %></option>
+											<option value="<%= JSON.stringify({'issue_id': issue.issue_id, 'location_id': location.location_id}) %>"><%= location._location %></option>
 										<% }) %>
 									</select>
 								<% } %>
@@ -72,7 +76,7 @@
 			</tbody>
 		</table>
 	</div>
-</div>
+</section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
 <% include ../../partials/foot/htmlClose %>

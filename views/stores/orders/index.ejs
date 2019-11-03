@@ -1,0 +1,91 @@
+<!-- loancards INDEX PAGE -->
+<% include ../../partials/head/full %>
+<section class="mb-2">
+	<nav class="navbar navbar-expand navbar-light bg-nav">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores">Stores</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/orders">Orders</a>
+			</li>
+		</ul>
+	</nav>
+</section>
+<div class="container mt-3 pt-3">
+	<div class="container mt-3 pt-3">
+		<div>
+			<div class="row">
+				<label class="col-3 col-form-label text-right" for="placed">Placed Orders:</label>
+				<select id="placed" class='form-control col-9' type="text">
+					<option value="1" <% if (query.placed === '1') { %>selected<% } %> >Include</option>
+					<option value="2" <% if (query.placed === '2') { %>selected<% } %> >Exclude</option>
+					<option value="3" <% if (query.placed === '3') { %>selected<% } %> >Only</option>
+				</select>
+			</div>
+			<div class="row">
+				<label class="col-3 col-form-label text-right"  for="received">Received Orders:</label>
+				<select id="received" class='form-control col-9' type="text">
+					<option value="1" <% if (query.received === '1') { %>selected<% } %> >Include</option>
+					<option value="2" <% if (query.received === '2') { %>selected<% } %> >Exclude</option>
+					<option value="3" <% if (query.received === '3') { %>selected<% } %> >Only</option>
+				</select>
+			</div>
+			<div class="row">
+				<label class="col-3 col-form-label text-right"  for="issued">Issued Orders:</label>
+				<select id="issued" class='form-control col-9' type="text">
+					<option value="1" <% if (query.issued === '1') { %>selected<% } %> >Include</option>
+					<option value="2" <% if (query.issued === '2') { %>selected<% } %> >Exclude</option>
+					<option value="3" <% if (query.issued === '3') { %>selected<% } %> >Only</option>
+				</select>
+			</div>
+			<div>
+				<form class="mb-3" action="/stores/items" method="GET">
+					<input class="btn btn-warning" type="button" value="Filter Results" onclick="filter();">
+				</form>
+			</div>
+		</div>
+	</div>
+	<div>
+		<table id="orderTable" class="table table-sm table-hover mx-auto w-100">
+			<thead class="thead-dark">
+				<th class="w-20" onclick="sortTable(0, 'orderTable')">Item</th>
+				<th class="w-10" onclick="sortTable(1, 'orderTable')">Size</th>
+				<th class="w-5" onclick="sortTable(4, 'orderTable')">Quantity</th>
+				<th class="w-15" onclick="sortTable(2, 'orderTable')">Ordered For</th>
+				<th class="w-15" onclick="sortTable(3, 'orderTable')">Order Date</th>
+				<th class="w-10" onclick="sortTable(6, 'orderTable')">Demand Date</th>
+				<th class="w-10" onclick="sortTable(7, 'orderTable')">Receipt Date</th>
+				<th class="w-10" onclick="sortTable(8, 'orderTable')">Issue Date</th>
+			</thead>
+			<tbody>
+				<% if (orders) { %>
+					<% orders.forEach((order) => { %>
+						<tr>
+							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.size.item._description %></a></td>
+							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.size.size._text %> <%= loancard.issuedTo._name %>, <%= loancard.issuedTo._ini %></a></td>
+							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order._qty %></a></td>
+							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.orderedFor.rank._rank %> <%= order.orderedFor._name %>, <%= order.orderedFor._ini %></a></td>
+							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order._date.toDateString() %></a></td>
+							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.demand._date.toDateString() %></a></td>
+							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.receipt._date.toDateString() %></a></td>
+							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.issue._date.toDateString() %></a></td>
+						</tr>
+					<% }) %>
+				<% } %>
+			</tbody>
+		</table>
+	</div>
+</div>
+<% include ../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
+<script>
+	function filter() {
+		var filters = [];
+		if ($("#placed").val() != '') 	{filters.push("placed=" +   $("#placed").val());}
+		if ($("#received").val() != '') {filters.push("received=" + $("#received").val());}
+		if ($("#issued").val() != '')   {filters.push("issued=" +   $("#issued").val());}
+		window.location.replace("/stores/orders?" + filters.join("&"))
+	}	
+</script>
+<% include ../../partials/foot/htmlClose %>

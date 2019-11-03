@@ -47,17 +47,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: 'Size',
       comment: "null"
     },
-    'supplier_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      defaultValue: '3',
-      comment: "null"
-    },
-    '_ordering_details': {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-      comment: "null"
-    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,

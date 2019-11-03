@@ -20,6 +20,17 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
+    'supplier_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      defaultValue: '3',
+      comment: "null"
+    },
+    '_ordering_details': {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+      comment: "null"
+    },
     '_orderable': {
       type: DataTypes.INTEGER(4),
       allowNull: false,

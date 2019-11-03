@@ -8,7 +8,8 @@
         <input class="form-control" type="text" id="sizeSearch" onkeyup="searchTable('sizesTable', 'sizeSearch')" placeholder="Search forsizes..">
         <form action="/stores/itemSearch/size" method="POST">
             <input type="hidden" name="item_id" value="<%= item_id %>">
-            <select class='form-control' name="size" id="sizesTable" style="width: 100%;" type="text" size="15">
+            <input type="hidden" name="callType" value="<%= callType %>">
+            <select class='form-control w-100' name="size" id="sizesTable" type="text" size="15">
                 <option value=""></option>
                 <% sizes.forEach((size) => { %>
                     <option value="<%= size.stock_id %>"><%= size.size._text %></option>

@@ -26,7 +26,7 @@ module.exports = (app, m) => {
 
     // New Logic
     app.post('/stores/items', mw.isLoggedIn, (req, res) => {
-        fn.allowed('items_add', true, req, res, (allowed) => {
+        fn.allowed('item_add', true, req, res, (allowed) => {
             fn.create(m.items, req.body.item, req, (item) => {
                 if (item) {
                     res.redirect('/stores/items/' + item.item_id);
@@ -39,8 +39,8 @@ module.exports = (app, m) => {
 
     // New Form
     app.get('/stores/items/new', mw.isLoggedIn, (req, res) => {
-        fn.allowed('items_add', true, req, res, (allowed) => {
-            fn.getAllItemClasses(req, res, (classes) => {
+        fn.allowed('item_add', true, req, res, (allowed) => {
+            fn.getAllItemClasses(req, (classes) => {
                 res.render('stores/items/new', {
                     classes: classes});
             });
@@ -49,21 +49,18 @@ module.exports = (app, m) => {
 
     // Edit
     app.get('/stores/items/:id/edit', mw.isLoggedIn, (req, res) => {
-        fn.allowed('items_edit', true, req, res, (allowed) => {
-            fn.getAllItemClasses(req, res, (classes) => {
-                fn.getAll(m.suppliers, req, true, (suppliers) => {
-                    fn.getOne(m.items, {item_id: req.params.id}, req, (item) => {
-                        if (item) {
-                            res.render('stores/items/edit', {
-                                item:      item, 
-                                classes:   classes,
-                                suppliers: suppliers
-                            });
-                        } else {
-                            req.flash('danger', 'Error retrieving Item!');
-                            res.render('stores/items/' + req.params.id);
-                        };
-                    });
+        fn.allowed('item_edit', true, req, res, (allowed) => {
+            fn.getAllItemClasses(req, (classes) => {
+                fn.getOne(m.items, {item_id: req.params.id}, req, (item) => {
+                    if (item) {
+                        res.render('stores/items/edit', {
+                            item:      item, 
+                            classes:   classes
+                        });
+                    } else {
+                        req.flash('danger', 'Error retrieving Item!');
+                        res.render('stores/items/' + req.params.id);
+                    };
                 });
             });
         });
@@ -71,7 +68,7 @@ module.exports = (app, m) => {
 
     // Put
     app.put('/stores/items/:id', mw.isLoggedIn, (req, res) => {
-        fn.allowed('items_edit', true, req, res, (allowed) => {
+        fn.allowed('item_edit', true, req, res, (allowed) => {
             fn.update(m.items, req.body.item, {item_id: req.params.id},req, (result) => {
                 if (result) {
                     res.redirect('/stores/items/' + req.params.id)
@@ -84,8 +81,8 @@ module.exports = (app, m) => {
 
     // Delete
     app.delete('/stores/items/:id', mw.isLoggedIn, (req, res) => {
-        fn.allowed('items_delete', true, req, res, (allowed) => {
-            fn.getOne(m.items_sizes, {item_id: req.params.id}, req, (item_sizes) => {
+        fn.allowed('item_delete', true, req, res, (allowed) => {
+            fn.getOne(m.item_sizes, {item_id: req.params.id}, req, (item_sizes) => {
                 if (!item_sizes) {
                     fn.delete(m.items, {item_id: req.params.id}, req, (result) => {
                         res.redirect('/stores/items');
@@ -103,7 +100,7 @@ module.exports = (app, m) => {
         fn.allowed('access_items', true, req, res, (allowed) => {
             fn.getItem(req.params.id, true, req, (item) => {
                 if (item) {
-                    fn.getNotes('items', req.params.id,req, (notes) => {
+                    fn.getNotes('items', req.params.id, req, res, (notes) => {
                         res.render('stores/items/show', {
                                 item:   item,
                                 notes:  notes

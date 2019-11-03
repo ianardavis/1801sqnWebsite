@@ -1,30 +1,42 @@
 <!-- SUPPLIERS SHOW PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-    <a href="/stores"><h2>Stores Management</h2></a>
-    <p class="text-left"><a href="/stores">Main Menu</a>> > ><a href="/stores/suppliers">Suppliers</a></p>
-    <a href="/stores/suppliers"><h3>Suppliers</h3></a>
-</section> 
-<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.suppliers_edit) { %>
-                    <a class="dropdown-item" href="/stores/suppliers/<%= supplier.supplier_id %>/edit">Edit</a>
-                    <div class="dropdown-divider"></div>
-				<% } %>
-                <% if (permissions.notes_add) { %>
-                    <a class="dropdown-item" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">Add Note</a>
-				    <div class="dropdown-divider"></div>
-				<% } %>
-                <a class="dropdown-item" href="/stores/suppliers">Back to Suppliers</a>
-			</div>
-		</li>
-	</ul>
-</nav>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/suppliers">Suppliers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/suppliers/<%= supplier.supplier_id %>"><%= supplier._name %></a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section>
+    <nav class="navbar navbar-expand navbar-dark bg-dark stores">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Options
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <% if (permissions.suppliers_edit) { %>
+                        <a class="dropdown-item" href="/stores/suppliers/<%= supplier.supplier_id %>/edit">Edit</a>
+                        <div class="dropdown-divider"></div>
+                    <% } %>
+                    <% if (permissions.notes_add) { %>
+                        <a class="dropdown-item" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">Add Note</a>
+                        <div class="dropdown-divider"></div>
+                    <% } %>
+                    <a class="dropdown-item" href="/stores/suppliers">Back to Suppliers</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</section>
 <section class="detailBox container-fluid pt-3">
 	<div class="row">
 		<div class="col-12 col-lg-4 mb-3">

@@ -1,23 +1,33 @@
 <!-- loancards INDEX PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-	<a href="/stores"><h2>Stores Management</h2></a>
-	<h3>Loan Cards</h3>
+<section class="mb-2">
+	<nav class="navbar navbar-expand navbar-light bg-nav">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores">Stores</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/loancards">Loancards</a>
+			</li>
+		</ul>
+	</nav>
 </section>
 <div class="container mt-3 pt-3">
-	<label for="closedCards">Closed Cards:</label>
-	<select id="closedCards" class='form-control' type="text" onchange="window.location = '/stores/loancards?closed=' + this.options[this.selectedIndex].value">
-		<option value="1" <% if (closed === 1) { %>selected<% } %> >Include</option>
-		<option value="2" <% if (closed === 2) { %>selected<% } %> >Exclude</option>
-		<option value="3" <% if (closed === 3) { %>selected<% } %> >Only</option>
-	</select>
-	<table id="loancardTable" style="width:100%" class="mx-auto">
-		<thead>
-			<th style="width:10%" onclick="sortTable(0, 'loancardTable')">ID</th>
-			<th style="width:30%" onclick="sortTable(1, 'loancardTable')">Issued To</th>
-			<th style="width:15%" onclick="sortTable(2, 'loancardTable')">Date Raised</th>
-			<th style="width:15%" onclick="sortTable(3, 'loancardTable')">Date Closed</th>
-			<th style="width:30%" onclick="sortTable(4, 'loancardTable')">Raised By</th>
+	<div class="row mx-1">
+		<label class="col-5 col-form-label" for="closedCards">Closed Cards:</label>
+		<select class='col-7 form-control form-control-sm' id="closedCards" type="text" onchange="window.location = '/stores/loancards?closed=' + this.options[this.selectedIndex].value">
+			<option value="1" <% if (closed === 1) { %>selected<% } %> >Include</option>
+			<option value="2" <% if (closed === 2) { %>selected<% } %> >Exclude</option>
+			<option value="3" <% if (closed === 3) { %>selected<% } %> >Only</option>
+		</select>
+	</div>
+	<table id="loancardTable" class="table table-sm table-hover mx-auto w-100">
+		<thead class="thead-dark">
+			<th class="w-10" onclick="sortTable(0, 'loancardTable')">ID</th>
+			<th class="w-30" onclick="sortTable(1, 'loancardTable')">Issued To</th>
+			<th class="w-15" onclick="sortTable(2, 'loancardTable')">Date Raised</th>
+			<th class="w-15" onclick="sortTable(3, 'loancardTable')">Date Closed</th>
+			<th class="w-30" onclick="sortTable(4, 'loancardTable')">Raised By</th>
 		</thead>
 		<tbody>
 			<% loancards.forEach((loancard) => { %>

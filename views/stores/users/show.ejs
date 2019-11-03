@@ -1,141 +1,319 @@
 <!-- USER SHOW PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-    <a href="/stores"><h2>Stores Management</h2></a>
-    <p class="text-left"><a href="/stores"> Main Menu </a>> > ><a href="/stores/users"> Users </a>> > ><a href="/stores/users/<%= user.user_id %>"> <%= user._name %> </a></p>
-    <a href="/stores/users"><h3>Users</h3></a>
-</section> 
-<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.users_permissions) { %>
-                    <a class="dropdown-item" href="/stores/users/<%= user.user_id %>/edit">Edit</a>
-                <% } %>
-                <% if (permissions.users_permissions && user.user_id !== currentUser.user_id) { %>
-				    <a class="dropdown-item" href="/stores/permissions/<%= user.user_id %>/edit">Edit Permissions</a>
-                <% } %>
-                <% if (permissions.users_permissions || user.user_id === currentUser.user_id) { %>
-				    <a class="dropdown-item" href="/stores/password/<%= user.user_id %>">Reset Password</a>
-                <% } %>
-                <% if (permissions.add_notes) { %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/users">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/users/<%= user.user_id %>"><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section>
+    <nav class="navbar navbar-expand navbar-dark bg-dark stores">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Options
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <% if (permissions.users_permissions) { %>
+                        <a class="dropdown-item" href="/stores/users/<%= user.user_id %>/edit">Edit</a>
+                    <% } %>
+                    <% if (permissions.users_permissions && user.user_id !== currentUser.user_id) { %>
+                        <a class="dropdown-item" href="/stores/permissions/<%= user.user_id %>/edit">Edit Permissions</a>
+                    <% } %>
+                    <% if (permissions.users_permissions || user.user_id === currentUser.user_id) { %>
+                        <a class="dropdown-item" href="/stores/password/<%= user.user_id %>">Reset Password</a>
+                    <% } %>
+                    <% if (permissions.add_notes) { %>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/stores/notes/new?table=users&id=<%= user.user_id %>">Add Note</a>
+                    <% } %>
+                    <% if (user.user_id !== currentUser.user_id && permissions.issues_add) { %>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/stores/issues/new?user=<%= user.user_id %>">New Issue</a>
+                    <% } %>
+					<% if (user.user_id !== currentUser.user_id && permissions.issues_return) { %>
+						<button form='returnedLines' class="dropdown-item dropdown_button">Return Selected Issues</button>
+					<% } %>
+                    <% if (user.user_id !== currentUser.user_id && permissions.orders_add) { %>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/stores/orders/new?user=<%= user.user_id %>">New Order</a>
+                    <% } %>
+                    <% if (user.user_id === currentUser.user_id || permissions.requests_add) { %>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/stores/requests/new?user=<%= user.user_id %>">New Request</a>
+                    <% } %>
+
+                    <% if (user.user_id !== currentUser.user_id && permissions.users_delete) { %>
+                        <div class="dropdown-divider"></div>
+                        <form action="/stores/users/<%= user.user_id %>?_method=DELETE" method="POST">
+                            <button class="dropdown-item dropdown_button">Delete User</button>
+                        </form>
+                    <% } %>
+
                     <div class="dropdown-divider"></div>
-				    <a class="dropdown-item" href="/stores/notes/new?table=users&id=<%= user.user_id %>">Add Note</a>
-				<% } %>
-                <div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="/stores/users">Back to Users</a>
-			</div>
-		</li>
-	</ul>
-</nav>
-<section class="detailBox container-fluid pt-3">
-    <div class="row">
-        <% if (user.user_id !== currentUser.user_id && permissions.users_delete) { %>
-            <div class="col-12 mb-3">
-                <form action="/stores/users/<%= user.user_id %>?_method=DELETE" method="POST">
-                    <button class="btn btn-danger">Delete User</button>
-                </form>
-            </div>
-        <% } %>
-		<div class="col-12 col-lg-4 mb-3">
-			<div class="bordered" id="divUsers">
-                <h4>Details</h4>
-                <div class="details">
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Bader #:</label>
+                    <a class="dropdown-item" href="/stores/users">Back to Users</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class="container pt-3 row mx-auto">
+    <div class="col-12 col-lg-4">
+        <div class="row">
+            <div class="col-12 mb-3 bordered">
+                <div id="divUsers">
+                    <h4>Details</h4>
+                    <div class="details">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="col-form-label">Bader #:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" value="<%= user._bader %>" readonly>
+                            </div>
                         </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= user._bader %>" readonly>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="col-form-label">Rank:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" value="<%= user.rank._rank %>" readonly>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Rank:</label>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="col-form-label">Name:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" value="<%= user._name %>" readonly>
+                            </div>
                         </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= user.rank._rank %>" readonly>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="col-form-label">Initials:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" value="<%= user._ini %>" readonly>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Name:</label>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="col-form-label">Gender:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" value="<%= user.gender._gender %>" readonly>
+                            </div>
                         </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= user._name %>" readonly>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="col-form-label">Status:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" value="<%= user.status._status %>" readonly>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Initials:</label>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="col-form-label">Login ID:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" value="<%= user._login_id %>" readonly>
+                            </div>
                         </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= user._ini %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Gender:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= user.gender._gender %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Status:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= user.status._status %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Login ID:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= user._login_id %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Reset:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" id="_reset" type="checkbox" disabled>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="col-form-label">Reset:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="_reset" type="checkbox" disabled>
+                            </div>
                         </div>
                     </div>
                 </div>
-			</div>
-			<div class="bordered">
-				<h4>Permissions</h4>
-				<div style="overflow-x:auto;">
-                    <table id="permissionTable" style="width:100%">
-                        <thead>
+            </div>
+            <div class="col-12 my-3 bordered">
+                <h4>Permissions</h4>
+                <div style="overflow-x:auto;">
+                    <table id="permissionTable" class="table table-sm w-100 limit-height-200">
+                        <thead class="thead-dark">
                             <th onclick="sortTable(0, 'permissionTable')" >Permission Name</th>
                         </thead>
                         <tbody>
                             <% for (var permission in user.permission.dataValues) { %>
                                 <% if (user.permission[permission] === 1 && permission !== 'user_id' && permission !== 'createdAt' && permission !== 'updatedAt') { %>
-                                    <tr>
-                                        <td><%= permission%></td>
-                                    </tr>
+                            <tr>
+                                <td><%= permission%></td>
+                            </tr>
                                 <% } %>
                             <% } %>
                         </tbody>
-					</table>
-				</div>
-			</div>
-        </div>
-        <% if (permissions.access_notes) { %> 
-            <div class="col-lg-8">
-                <% include ../../partials/noteTable %>
+                    </table>
+                </div>
             </div>
+        </div>
+    </div>
+    <% if (permissions.access_issues || currentUser.user_id === user.user_id) { %>
+    <div class="col-12 col-lg-8">
+        <div class="container bordered pt-3">
+            <h4>Issued Items</h4>
+            <div class="row px-3">
+                <label class="col-5 col-form-label" for="_returned">Returned Lines:</label>
+                <select class='form-control form-control-sm col-7' id="_returned" type="text" onchange="window.location = '/stores/issues?user=<%= user.user_id %>&returned=' + this.options[this.selectedIndex].value">
+                    <option value="1" <% if (query.returnedIssues === 1) { %>selected<% } %> >Include</option>
+                    <option value="2" <% if (query.returnedIssues === 2) { %>selected<% } %> >Exclude</option>
+                    <option value="3" <% if (query.returnedIssues === 3) { %>selected<% } %> >Only</option>
+                </select>
+            </div>
+            <table id="tableIssues" class='table table-sm table-hover mx-auto w-100'>
+                <thead class="thead-dark">
+                    <th class="w-50" onclick="sortTable(0, 'tableIssues')">Item</th>
+                    <th class="w-20" onclick="sortTable(1, 'tableIssues')">Size</th>
+                    <th class="w-10" onclick="sortTable(2, 'tableIssues')">Quantity</th>
+                    <th class="w-20">Return to: </th>
+                </thead>
+                <tbody>
+                    <form id='returnedLines' action="/stores/issues?_method=PUT&source=/stores/users/<%= user.user_id %>" method='POST'>
+                        <input type="hidden" name="selectedUser" value="<%= user.user_id %>">
+                        <% user.issues.forEach((issue) => { %>
+                            <tr>
+                                <td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.size.item._description %></a></td>
+                                <td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.size.size._text %></a></td>
+                                <td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue._qty %></a></td>
+                                <td>
+                                    <% if (issue.return_location) { %>
+                                        <a href='/stores/issues/<%= issue.issue_id %>'><%= issue.returnLocation._location %></a>
+                                    <% } else { %>
+                                        <% if (user.user_id !== currentUser.user_id && permissions.issues_return) { %>
+                                            <select class='form-control form-control-sm' name="locations[]">
+                                                <option value=""></option>
+                                                <% if (issue.size.locations) { %>
+                                                    <% issue.size.locations.forEach((location) => { %>
+                                                        <option value="<%= JSON.stringify({'issue_id': issue.issue_id, 'location_id': location.location_id}) %>"><%= location._location %></option>
+                                                    <% }) %>
+                                                <% }; %>
+                                            </select>
+                                        <% } %>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </form>
+                </tbody>
+            </table>
+        </div>
         <% } %>
-	</div>
+        <% if (permissions.access_loancards || currentUser.user_id === user.user_id) { %>
+        <div class="container bordered mt-3 pt-3">
+            <h4>Loan Cards</h4>
+            <div class="row px-3">
+                <label class="col-form-label col-5" for="closed">Closed Cards:</label>
+                <select id="closed" class='form-control form-control-sm col-7' type="text" onchange="window.location = '/stores/issues?user=<%= user.user_id %>&returned=' + this.options[this.selectedIndex].value">
+                    <option value="1" <% if (query.closedLoancards === 1) { %>selected<% } %> >Include</option>
+                    <option value="2" <% if (query.closedLoancards === 2) { %>selected<% } %> >Exclude</option>
+                    <option value="3" <% if (query.closedLoancards === 3) { %>selected<% } %> >Only</option>
+                </select>
+            </div>
+            <table id="tableLoancards" class='table table-sm table-hover mx-auto w-100'>
+                <thead class="thead-dark">
+                    <th class="w-10" onclick="sortTable(0, 'tableOrders')">ID</th>
+                    <th class="w-45" onclick="sortTable(1, 'tableOrders')">Issue Date</th>
+                    <th class="w-45" onclick="sortTable(2, 'tableOrders')">Close Date</th>
+                </thead>
+                <tbody>
+                    <% if (user.loancards) { %>
+                        <% user.loancards.forEach((loancard) => { %>
+                    <tr>
+                        <td><a href='/stores/loancards/<%= loancard.loancard_id %>'> <%= loancard.loancard_id %></a></td>
+                        <td><a href='/stores/loancards/<%= loancard.loancard_id %>'> <%= loancard._date.toDateString() %></a></td>
+                        <td><a href='/stores/loancards/<%= loancard.loancard_id %>'> <% if (loancard._closed) { %><%= loancard._closed.toDateString() %><% } %></a></td>
+                    </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <% } %>
+        <% if (permissions.access_orders || currentUser.user_id === user.user_id) { %>
+        <div class="container bordered mt-3 pt-3">
+            <h4>Orders</h4>
+            <div class="row px-3">
+            <label class="col-form-label col-5" for="_returned">Issued Orders:</label>
+                <select id="_returned" class='form-control form-control-sm col-7' type="text" onchange="window.location = '/stores/issues?user=<%= user.user_id %>&returned=' + this.options[this.selectedIndex].value">
+                    <option value="1" <% if (query.issuedOrders === 1) { %>selected<% } %> >Include</option>
+                    <option value="2" <% if (query.issuedOrders === 2) { %>selected<% } %> >Exclude</option>
+                    <option value="3" <% if (query.issuedOrders === 3) { %>selected<% } %> >Only</option>
+                </select>
+            </div>
+            <table id="tableOrders" class='table table-sm table-hover mx-auto w-100'>
+                <thead class="thead-dark">
+                    <th class="w-40" onclick="sortTable(0, 'tableLoancards')">Item</th>
+                    <th class="w-30" onclick="sortTable(1, 'tableLoancards')">Size</th>
+                    <th class="w-10" onclick="sortTable(2, 'tableLoancards')">Qty</th>
+                    <th class="w-20" onclick="sortTable(3, 'tableLoancards')">Ordered</th>
+                </thead>
+                <tbody>
+                    <% if(user.orders) { %>
+                        <% user.orders.forEach((order) => { %>
+                            <tr>
+                    <td><a href='/stores/orders/<%= order.order_id %>'> <%= order.size.item._description %></a></td>
+                    <td><a href='/stores/orders/<%= order.order_id %>'> <%= order.size.size._text %></a></td>
+                    <td><a href='/stores/orders/<%= order.order_id %>'> <%= order._qty %></a></td>
+                    <td><a href='/stores/orders/<%= order.order_id %>'> <%= order._date.toDateString() %></a></td>
+                    </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <% } %>
+        <% if (permissions.access_requests || currentUser.user_id === user.user_id) { %>
+        <div class="container bordered mt-3 pt-3">
+            <h4>Requests</h4>
+            <div class="row px-3">
+                <label class="col-form-label col-5" for="_returned">Closed Requests:</label>
+                <select id="_returned" class='form-control form-control-sm col-7' type="text" onchange="window.location = '/stores/issues?user=<%= user.user_id %>&returned=' + this.options[this.selectedIndex].value">
+                    <option value="1" <% if (query.closedRequests === 1) { %>selected<% } %> >Include</option>
+                    <option value="2" <% if (query.closedRequests === 2) { %>selected<% } %> >Exclude</option>
+                    <option value="3" <% if (query.closedRequests === 3) { %>selected<% } %> >Only</option>
+                </select>
+            </div>
+            <table id="tableRequests" class='table table-sm table-hover mx-auto w-100'>
+                <thead class="thead-dark">
+                    <th class="w-40" onclick="sortTable(0, 'tableRequests')">Item</th>
+                    <th class="w-30" onclick="sortTable(1, 'tableRequests')">Size</th>
+                    <th class="w-10" onclick="sortTable(2, 'tableRequests')">Qty</th>
+                    <th class="w-20" onclick="sortTable(3, 'tableRequests')">Ordered</th>
+                </thead>
+                <tbody>
+                    <% if(user.requests) { %>
+                        <% user.requests.forEach((request) => { %>
+                            <tr>
+                    <td><a href='/stores/requests/<%= request.request_id %>'> <%= request.size.item._description %></a></td>
+                    <td><a href='/stores/requests/<%= request.request_id %>'> <%= request.size.size._text %></a></td>
+                    <td><a href='/stores/requests/<%= request.request_id %>'> <%= request._qty %></a></td>
+                    <td><a href='/stores/requests/<%= request.request_id %>'> <%= request._date.toDateString() %></a></td>
+                    </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <% } %>
+        <% if (permissions.access_notes || currentUser.user_id === user.user_id) { %> 
+        <div class="mt-3 px-0">
+            <% include ../../partials/noteTable %>
+        </div>
+        <% } %>
+    </div>
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>

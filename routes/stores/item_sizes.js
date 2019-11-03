@@ -7,10 +7,13 @@ module.exports = (app, m) => {
     app.get('/stores/item_sizes/new', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_size_add', true, req, res, (allowed) => {
             fn.getOne(m.items, {item_id: req.query.item_id}, req, (item) => {
-                fn.getAll(m.sizes, req, true, (sizes) => {
-                    res.render('stores/item_sizes/new', {
-                        item:  item,
-                        sizes: sizes
+                fn.getAllSuppliers(req, (suppliers) => {
+                    fn.getAll(m.sizes, req, true, (sizes) => {
+                        res.render('stores/item_sizes/new', {
+                            item:     item,
+                            sizes:    sizes,
+                            suppliers: suppliers
+                        });
                     });
                 });
             });
@@ -57,14 +60,17 @@ module.exports = (app, m) => {
     app.get('/stores/item_sizes/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_edit', true, req, res, (allowed) => {
             fn.getItemSize(req.params.id, req, false, false, false, false, (size) => {
-                if (size) {
-                    res.render('stores/item_sizes/edit', {
-                        size: size
-                    });
-                } else {
-                    req.flash('danger', 'Error retrieving Item!');
-                    res.render('stores/item_sizes/' + req.params.id);
-                };
+                fn.getAllSuppliers(req, (suppliers) => {
+                    if (size) {
+                        res.render('stores/item_sizes/edit', {
+                            size:      size,
+                            suppliers: suppliers
+                        });
+                    } else {
+                        req.flash('danger', 'Error retrieving Item!');
+                        res.render('stores/item_sizes/' + req.params.id);
+                    };
+                });
             });
         });
     });
@@ -78,11 +84,6 @@ module.exports = (app, m) => {
                 req.body.item_size._orderable = 1
             };
             fn.update(m.item_sizes, req.body.item_size, {stock_id: req.params.id}, req, (result) => {
-                if (result) {
-                    req.flash('success', 'Item edited!');
-                } else {
-                    req.flash('danger', 'Details not edited!');
-                };
                 res.redirect('/stores/item_sizes/' + req.params.id);  
             });
         });
@@ -116,23 +117,24 @@ module.exports = (app, m) => {
     // Show
     app.get('/stores/item_sizes/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_items', true, req, res, (allowed) => {
-            fn.getItemSize(req.params.id, req, true, true, false, false, (item_size) => {
+            fn.getItemSize(
+                req.params.id,
+                req, 
+                {include: true}, 
+                {include: true}, 
+                {include: true, where: {stock_id: req.params.id, returned_to: null}},
+                {include: true, where: {stock_id: req.params.id, receipt_id: null}}, 
+                (item_size) => {
                 if (item_size) {
-                    fn.getAllWhere(m.orders, {stock_id: item_size.stock_id, receipt_id: null}, req, (orders) => {
-                        item_size.orders = orders;
-                        fn.getAllWhere(m.issues, {stock_id: item_size.stock_id, returned_to: null}, req, (orders) => {
-                            item_size.issues = orders;
-                            fn.getNotes('item_sizes', req.params.id, req, (notes) =>{
-                                var stock = new Object();
-                                stock._stock = fn.summer(item_size.locations);
-                                stock._ordered = fn.summer(item_size.orders);
-                                stock._issued = fn.summer(item_size.issues);
-                                res.render('stores/item_sizes/show', {
-                                    item:   item_size,
-                                    notes:  notes,
-                                    stock:  stock
-                                });
-                            });
+                    fn.getNotes('item_sizes', req.params.id, req, res, (notes) =>{
+                        var stock = new Object();
+                        stock._stock = fn.summer(item_size.locations);
+                        stock._ordered = fn.summer(item_size.orders);
+                        stock._issued = fn.summer(item_size.issues);
+                        res.render('stores/item_sizes/show', {
+                            item:   item_size,
+                            notes:  notes,
+                            stock:  stock
                         });
                     });
                 } else {

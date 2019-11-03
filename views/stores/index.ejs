@@ -1,6 +1,14 @@
 <!-- MAIN PAGE INDEX -->
 <% include ../partials/head/full %>
-<h3>Main Menu</h3>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+        </ul>
+    </nav>
+</section>
 <section id="menu">
 	<div class="row container m-auto p-0">
 		<% if (permissions.access_suppliers) { %>
@@ -25,16 +33,12 @@
 				<a href="stores/items"><i class="fas fa-tshirt fa-5x"></i></a><br>
 				<a href="stores/items">Items</a>
 			</div>
-		<% } %>
-		<div class="bordered col-6 col-sm-4 p-3 menu_item">
-			<% if (permissions.access_issues && currentUser.user_id !== 1) { %>
-				<a href="stores/issues/userlist"><i class="fas fa-address-card fa-5x"></i></a><br>
-				<a href="stores/issues/userlist">Issuing</a>
-			<% } else { %>
-				<a href="stores/issues?users=<%= currentUser.user_id %>"><i class="fas fa-address-card fa-5x"></i></a><br>
-				<a href="stores/issues?users=<%= currentUser.user_id %>">Issuing</a>
+		<% } %><% if (permissions.access_issues) { %>
+			<div class="bordered col-6 col-sm-4 p-3 menu_item">
+				<a href="stores/issues"><i class="fas fa-address-card fa-5x"></i></a><br>
+				<a href="stores/issues">Issues</a>
+			</div>
 			<% } %>
-		</div>
 		<% if (permissions.access_orders) { %>
 			<div class="bordered col-6 col-sm-4 p-3 menu_item">
 				<a href="stores/orders"><i class="fas fa-list fa-5x"></i></a><br>

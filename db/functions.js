@@ -1,6 +1,7 @@
-var fn  = {},
-    m   = require('./models');
-
+var fn = {},
+    m  = require('./models'),
+    op = require('sequelize').Op,
+    currentLine;
 fn.allowed = (permission, redirectIfDenied, req, res, cb) => {
     if (res.locals.permissions[permission]) {
         cb(true);
@@ -49,7 +50,7 @@ fn.getAllWhere = (table, where, req, cb) => {
         cb(null);
     });
 }; // issues: 16 // items: 17
-fn.getIssuesForUser = (where, req, cb) => {
+fn.getIssuesWhere = (where, req, cb) => {
     m.issues.findAll({
         where: where,
         include: [
@@ -128,22 +129,67 @@ fn.getIssue = (issue_id, req, cb) => {
             }
         ]
     }).then((issue) => {
-        if (!issue) req.flash('info', 'No issue found');
+        if (!issue) req.flash('danger', 'Issue not found!');
         cb(issue);
     }).catch((err) => {
         req.flash('danger', 'Error searching issues');
         console.log(err);
-        cb([]);
+        cb(null);
     });
 }; // issues: 313
-fn.getUser = (user_id, req, cb) => {
+fn.getUser = (user_id, extended, req, cb) => {
+    var include = [
+        m.ranks, 
+        m.genders, 
+        m.statuses, 
+        m.permissions
+    ];
+    if (extended.include) {
+        include.push({
+            model: m.orders,
+            where: extended.orders,
+            include: [{model: m.item_sizes, as: 'size', include: [m.items, m.sizes]},
+                      {model: m.users, include: [m.ranks], as: 'orderedBy'},
+                       m.demands,
+                       m.receipts,
+                       m.issues],
+            required: false
+        },{
+            model: m.issues,
+            where: extended.issues,
+            include: [{model: m.item_sizes, as: 'size', include: [m.items, m.sizes, {model: m.item_locations, as: 'locations'}]},
+                      {model: m.users, as: 'issuedBy', include: [m.ranks]},
+                      {model: m.users, as: 'returnedTo', include: [m.ranks]}],
+            required: false
+        },{
+            model: m.requests,
+            where: extended.requests,
+            include: [{model: m.item_sizes, as: 'size', include: [m.items, m.sizes]},
+                      {model: m.users, as: 'requestedBy', include: [m.ranks]},
+                      {model: m.users, as: 'approvedBy', include: [m.ranks]}],
+            required: false
+        },{
+            model: m.loancards,
+            where: extended.loancards,
+            include: [{model: m.users, as: 'issuedBy', include: [m.ranks]},
+                      {model: m.loancardlines,
+                       as: 'lines',
+                       include: [{model: m.item_sizes, as: 'item', include: [m.items, m.sizes]}]}],
+            required: false
+        });
+    }
     m.users.findOne({
         where: {user_id: user_id},
-        include: [m.ranks, m.genders, m.statuses, m.permissions]
-    }).then((results) => {
-        cb(results);
+        include: include
+    }).then((user) => {
+        if (user) {
+            cb(user);
+        } else {
+            req.flash('danger', 'User not found!');
+            cb(null);
+        };
     }).catch((err) => {
-        req.flash('danger', 'Error searching in ' + table)
+        req.flash('danger', 'Error Getting User!');
         console.log(err);
         cb(null);
     });
@@ -237,17 +283,14 @@ fn.getAllItemClasses = (req, cb) => {
             fn.getAll(m.types, req, true, (types) => {
                 fn.getAll(m.subtypes, req, true, (subtypes) => {
                     fn.getAll(m.genders, req, true, (genders) => {
-                        fn.getAll(m.suppliers, req, true, (suppliers) => {
-                            var results = {
-                            categories: categories,
-                            groups:     groups,
-                            types:      types,
-                            subtypes:   subtypes,
-                            genders:    genders,
-                            suppliers:  suppliers
-                        };
-                        cb(results);
-                        });
+                        var results = {
+                        categories: categories,
+                        groups:     groups,
+                        types:      types,
+                        subtypes:   subtypes,
+                        genders:    genders
+                    };
+                    cb(results);
                     });
                 });
             });
@@ -335,7 +378,6 @@ fn.getItem = (item_id, includeSizes, req, cb) => {
         m.groups, 
         m.types, 
         m.subtypes, 
-        m.suppliers
     ];
     if (includeSizes) include.push({model: m.item_sizes, as: 'sizes', include: [m.sizes]});
     m.items.findOne({
@@ -353,12 +395,16 @@ fn.getItem = (item_id, includeSizes, req, cb) => {
         cb(null);
     });
 }; // items: 127
-fn.getItemSize = (stock_id, req, includeNSNs, includeLocations, includeIssues, includeOrders, cb) => {
-    var include = [m.items, m.sizes];
-    if (includeIssues)    include.push(m.issues);
-    if (includeOrders)    include.push(m.orders);
-    if (includeNSNs)      include.push({model: m.item_nsns,as: 'nsns'});
-    if (includeLocations) include.push({model: m.item_locations,as: 'locations'});
+fn.getItemSize = (stock_id, req, nsns, locations, issues, orders, cb) => {
+    var include = [
+        m.items, 
+        m.sizes, 
+        m.suppliers
+    ];
+    if (issues.include)    include.push({model: m.issues, include: [{model: m.users, as: 'issuedTo', include: [m.ranks]}], where: issues.where, required: false});
+    if (orders.include)    include.push({model: m.orders, where: orders.where, required: false});
+    if (nsns.include)      include.push({model: m.item_nsns, as: 'nsns'});
+    if (locations.include) include.push({model: m.item_locations, as: 'locations'});
     m.item_sizes.findOne({
         where: {stock_id: stock_id},
         include: include
@@ -403,25 +449,31 @@ fn.getLocation = (location_id, req, cb) => {
         cb(null);
     });
 }; // item_locations: 37
-fn.getNotes = (table, id, req, cb) => {
-    var whereObj = {
-        _link_table: table, 
-        _link_id: id
-    },
-        sysnotes = Number(req.query.sys_notes) || 2;
-    if (sysnotes === 2) {
-        whereObj._system = false
-    } else if (sysnotes === 3) {
-        whereObj._system = true
-    };
-    m.notes.findAll({
-        where: whereObj
-    }).then((notes) => {
-        cb(notes);
-    }).catch((err) => {
-        req.flash('danger', 'Error searching notes')
-        console.log(err);
-        cb([]);
+fn.getNotes = (table, id, req, res, cb) => {
+    fn.allowed('access_notes', false, req, res, (allowed) => {
+        if (allowed || (table === 'users' && req.user.user_id === Number(id))) {
+            var whereObj = {
+                _link_table: table, 
+                _link_id: id
+            },
+                sysnotes = Number(req.query.sys_notes) || 2;
+            if (sysnotes === 2) {
+                whereObj._system = false
+            } else if (sysnotes === 3) {
+                whereObj._system = true
+            };
+            m.notes.findAll({
+                where: whereObj
+            }).then((notes) => {
+                cb(notes);
+            }).catch((err) => {
+                req.flash('danger', 'Error searching notes')
+                console.log(err);
+                cb(null);
+            });
+        } else {
+            cb(null)
+        };
     });
 }; // issues: 315 // item_locations: 39// item_nsns: 35
 fn.getNSN = (nsn_id, req, cb) => {
@@ -467,21 +519,50 @@ fn.issueLine = (issue, item, loancard_id) => {
                     {where: {location_id: item.location_id}}
                 ).then((result) => {
                     if (result) {
-                        resolve({flash_type: 'success', flash_message: 'Issue created, Location quantity updated, Issue Id: ' + newIssue.issue_id, error: null});
+                        resolve({flash_type: 'success', flash_message: 'Issue created, Location quantity updated, Id: ' + newIssue.issue_id, error: null});
                     } else {
                         reject({flash_type: 'danger', flash_message: 'Error Updating Location Quantity', error: null});
-                    }
+                    };
                 }).catch((err) => {
-                    reject({flash_type: 'danger', flash_message: 'Item Issued, But Error Updating Location Quantity, Issue Id: ' + newIssue.issue_id, error: null});
+                    reject({flash_type: 'danger', flash_message: 'Item Issued, But Error Updating Location Quantity, Id: ' + newIssue.issue_id, error: null});
                 });
             })
             .catch((err) => {
                 reject({flash_type: 'danger', flash_message: 'Error creating issue!', error: err});
             });
         });
-        
     });
 }; // Issues
+fn.orderLine = (order) => {
+    return new Promise((resolve, reject) => {
+        m.orders.create(order)
+        .then((newOrder) => {
+            if (newOrder) {
+                resolve({flash_type: 'success', flash_message: 'Order created, Id: ' + newOrder.order_id, error: null});
+            } else {
+                reject({flash_type: 'danger', flash_message: 'Error creating order!', error: null});
+            };
+        })
+        .catch((err) => {
+            reject({flash_type: 'danger', flash_message: 'Error creating order!', error: err});
+        });
+    });
+}; // orders
+fn.requestLine = (request) => {
+    return new Promise((resolve, reject) => {
+        m.requests.create(request)
+        .then((newRequest) => {
+            if (newRequest) {
+                resolve({flash_type: 'success', flash_message: 'Request created, Id: ' + newRequest.request_id, error: null});
+            } else {
+                reject({flash_type: 'danger', flash_message: 'Error creating request!', error: null});
+            };
+        })
+        .catch((err) => {
+            reject({flash_type: 'danger', flash_message: 'Error creating request!', error: err});
+        });
+    });
+}; // requests
 fn.counter = () => {
     var count = 0;
     return function() {
@@ -495,42 +576,46 @@ fn.returnLine = (line, user_id) => {
         m.issues.findOne({
             where: {issue_id: line.issue_id}
         }).then((issue) => {
-            m.issues.update(
-                returned,
-                {
-                    where: {issue_id: line.issue_id}
-                }
-            ).then((result) => {
-                if (result) {
-                    m.item_locations.findOne({
-                        where: {location_id: line.location_id}
-                    }).then((location) => {
-                        m.item_locations.update(
-                            {_qty: location._qty + issue._qty},
-                            {
-                                where: {location_id: location.location_id}
-                            }
-                        ).then((result) => {
-                            if (result) {
-                                fn.returnLoanCardLine(issue.line_id, issue._qty, user_id, (result) => {
+            if (Number(issue.issued_to) !== Number(user_id)) {
+                m.issues.update(
+                    returned,
+                    {
+                        where: {issue_id: line.issue_id}
+                    }
+                ).then((result) => {
+                    if (result) {
+                        m.item_locations.findOne({
+                            where: {location_id: line.location_id}
+                        }).then((location) => {
+                            m.item_locations.update(
+                                {_qty: location._qty + issue._qty},
+                                {
+                                    where: {location_id: location.location_id}
+                                }
+                            ).then((result) => {
+                                if (result) {
+                                    fn.returnLoanCardLine(issue.line_id, issue._qty, user_id, (result) => {
 
-                                });
-                                resolve({flash_type: 'success', flash_message: 'Line Returned: ' + line.issue_id, error: null});
-                            } else {
-                                reject({flash_type: 'danger', flash_message: 'Error Updating Location: ' + line.issue_id, error: null});
-                            }
+                                    });
+                                    resolve({flash_type: 'success', flash_message: 'Line Returned: ' + line.issue_id, error: null});
+                                } else {
+                                    reject({flash_type: 'danger', flash_message: 'Error Updating Location: ' + line.issue_id, error: null});
+                                }
+                            }).catch((err) => {
+                                reject({flash_type: 'danger', flash_message: 'Error Updating Location: ' + line.issue_id, error: err});
+                            });
                         }).catch((err) => {
-                            reject({flash_type: 'danger', flash_message: 'Error Updating Location: ' + line.issue_id, error: err});
+                            reject({flash_type: 'danger', flash_message: 'Error Getting Location: ' + line.issue_id, error: err});
                         });
-                    }).catch((err) => {
-                        reject({flash_type: 'danger', flash_message: 'Error Getting Location: ' + line.issue_id, error: err});
-                    });
-                } else {
-                    reject({flash_type: 'danger', flash_message: 'Error Returning Line: ' + line.issue_id, error: null});
-                };
-            }).catch((err) => {
-                reject({flash_type: 'danger', flash_message: 'Error Updating Issue: ' + line.issue_id, error: err});
-            });
+                    } else {
+                        reject({flash_type: 'danger', flash_message: 'Error Returning Line: ' + line.issue_id, error: null});
+                    };
+                }).catch((err) => {
+                    reject({flash_type: 'danger', flash_message: 'Error Updating Issue: ' + line.issue_id, error: err});
+                });
+            } else {
+                reject({flash_type: 'danger', flash_message: 'You cannot return an item issued to yourself: ' + line.issue_id, error: null});
+            };            
         }).catch((err) => {
             reject({flash_type: 'danger', flash_message: 'Error Getting Issue: ' + line.issue_id, error: err});
         });
@@ -581,10 +666,10 @@ fn.processPromiseResult = (results, req, cb) => {
         };
     });
     if (dangerFlash.length !== 0) {
-        req.flash('danger', '<li> ' + dangerFlash.join(' </li><li> ') + ' </li>');
+        req.flash('danger', '<p> ' + dangerFlash.join(' </p><p> ') + ' </p>');
     };
     if (successFlash.length !== 0) {
-        req.flash('success', '<li> ' + successFlash.join(' </li><li> ') + ' </li>');
+        req.flash('success', '<p> ' + successFlash.join(' </p><p> ') + ' </p>');
     };
     if (errors.length !== 0) {
         errors.forEach((err) => {
@@ -640,7 +725,7 @@ fn.getAllLoancards = (returned, req, cb) => {
             cb(null);
         }
     }).catch((err) => {
-        req.flash('danger', 'Error getting Loan Cards!');
+        req.flash('danger', 'Error getting Loancards!');
         console.log(err);
         cb(null);
     });
@@ -707,9 +792,9 @@ fn.getAllSuppliers = (req, cb) => {
     });
 }; // suppliers
 fn.getAllUserClasses = (req, res, cb) => {
-    fn.getAll(m.ranks, req, res, true, (ranks) => {
-        fn.getAll(m.genders, req, res, true, (genders) => {
-            fn.getAll(m.statuses, req, res, true, (statuses) => {
+    fn.getAll(m.ranks, req, true, (ranks) => {
+        fn.getAll(m.genders, req, true, (genders) => {
+            fn.getAll(m.statuses, req, true, (statuses) => {
                 var results = {
                     ranks: ranks,
                     statuses: statuses,
@@ -720,6 +805,180 @@ fn.getAllUserClasses = (req, res, cb) => {
         });
     });
 }; // users
+fn.getAllOrders = (req, cb) => {
+    var where = {},
+        placed =   Number(req.query.placed)   || 1,
+        received = Number(req.query.received) || 1,
+        issued =   Number(req.query.issued)   || 2;
+    if (placed === 2) {
+        where.demand_id = null
+    } else if (placed === 3) {
+        where.demand_id = {[op.not]: null}
+    };
+    if (received === 2) {
+        where.receipt_id = null
+    } else if (received === 3) {
+        where.receipt_id = {[op.not]: null}
+    };
+    if (issued === 2) {
+        where.issue_id = null
+    } else if (issued === 3) {
+        where.issue_id = {[op.not]: null}
+    };
+    m.orders.findAll({
+        where: where,
+        include: 
+        [
+            m.demands,
+            m.receipts,
+            m.issues,
+            {
+                model: m.item_sizes,
+                as: 'size',
+                include: [m.items, m.sizes]
+            },{
+                model: m.users,
+                as: 'orderedFor',
+                include: [m.ranks]
+            },{
+                model: m.users,
+                as: 'orderedBy',
+                include: [m.ranks]
+            }
+        ]
+    }).then((orders) => {
+        if (orders) {
+            cb(orders);
+        } else {
+            req.flash('info', 'No Orders Found!');
+            cb(null);
+        }
+    }).catch((err) => {
+        req.flash('danger', 'Error getting orders!');
+        console.log(err);
+        cb(null);
+    });
+}; // orders
+fn.closeLoancard = (loancard_id, cb) => {
+    m.loancards.update(
+        {_closed: Date.now()},
+        {
+            where: {loancard_id: loancard_id}
+        }).then((result) => {
+            if (result) {
+                cb(true);
+            } else {
+                cb(false);
+            };
+        }).catch((err) => {
+            console.log(err);
+            cb(false);
+        });
+}; // functions
+fn.getOrder = (order_id, req, cb) => {
+    m.orders.findOne({
+        where: {order_id: order_id},
+        include: [
+            {
+                model: m.item_sizes,
+                as: 'size',
+                include: [m.items, m.sizes]
+            },{
+                model: m.users,
+                as: 'orderedFor',
+                include: [m.ranks]
+            },{
+                model: m.users,
+                as: 'orderedBy',
+                include: [m.ranks]
+            },
+            m.demands,
+            m.receipts,
+            m.issues
+        ]
+    }).then((order) => {
+        if (order) {
+            cb(order);
+        } else {
+            req.flash('danger', 'Order not found!');
+            cb(null);
+        };  
+    }).catch((err) => {
+        req.flash('danger', 'Error getting Order!');
+        console.log(err);
+        cb(null);
+    });
+}; // orders
+fn.getRequest = (request_id, req, cb) => {
+    m.requests.findOne({
+        where: {request_id: request_id},
+        include: [
+            {
+                model: m.item_sizes,
+                as: 'size',
+                include: [m.items, m.sizes]
+            },{
+                model: m.users,
+                as: 'requestedFor',
+                include: [m.ranks]
+            },{
+                model: m.users,
+                as: 'requestedBy',
+                include: [m.ranks]
+            },{
+                model: m.users,
+                as: 'approvedBy',
+                include: [m.ranks]
+            },
+            m.orders
+        ]
+    }).then((request) => {
+        if (request) {
+            cb(request);
+        } else {
+            req.flash('danger', 'Request not found!');
+            cb(null);
+        };  
+    }).catch((err) => {
+        req.flash('danger', 'Error getting request!');
+        console.log(err);
+        cb(null);
+    });
+}; // requests
+fn.getAllRequests = (complete, req, cb) => {
+    var where = {},
+        closed = Number(complete) || 2;
+    if (closed === 2) {
+        where._status = 'Pending'
+    } else if (closed === 3) {
+        where._status = {[op.not]: 'Pending'}
+    };
+    m.requests.findAll({
+        where: where,
+        include: [
+            {
+                model: m.item_sizes,
+                as: 'size',
+                include: [m.items, m.sizes]
+            },{
+                model: m.users,
+                as: 'requestedFor',
+                include: [m.ranks]
+            }
+        ]
+    }).then((requests) => {
+        if (requests) {
+            cb(requests);
+        } else {
+            req.flash('info', 'No Requests Found!');
+            cb(null);
+        }
+    }).catch((err) => {
+        req.flash('danger', 'Error getting requests!');
+        console.log(err);
+        cb(null);
+    });
+}; // requests
 
 
 
@@ -757,7 +1016,7 @@ fn.getAllItems = (req, cb) => {
     }).catch((err) => {
         req.flash('danger', 'Error finding items!');
         console.log(err);
-        cb([]);
+        cb(null);
     });
 };
 fn.permissions = (user_id, cb) => {
@@ -772,22 +1031,6 @@ fn.permissions = (user_id, cb) => {
             cb(results);
         };
     })
-};
-fn.closeLoancard = (loancard_id, cb) => {
-    m.loancards.update(
-        {_closed: Date.now()},
-        {
-            where: {loancard_id: loancard_id}
-        }).then((result) => {
-            if (result) {
-                cb(true);
-            } else {
-                cb(false);
-            };
-        }).catch((err) => {
-            console.log(err);
-            cb(false);
-        });
 };
 fn.getOrCreate = (table, req, res, where, cb) => {
     table.findOrCreate({

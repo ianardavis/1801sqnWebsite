@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_date_issued': {
+    '_date': {
       type: DataTypes.DATE,
       allowNull: false,
       comment: "null"

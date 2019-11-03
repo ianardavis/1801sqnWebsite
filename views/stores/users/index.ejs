@@ -1,11 +1,19 @@
 <!-- USERS INDEX PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-	<a href="/stores"><h2>Stores Management</h2></a>
-    <p class="text-left"><a href="/stores"> Main Menu </a>> > ><a href="/stores/users"> Users </a></p>
-    <h3>Users</h3>
+<section class="mb-2">
+	<nav class="navbar navbar-expand navbar-light bg-nav">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores">Stores</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/users">Users</a>
+			</li>
+		</ul>
+	</nav>
 </section>
 <% if (permissions.users_add) { %>
+<section>
 	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
 		<ul class="navbar-nav mr-auto">
 			<li class="nav-item">
@@ -13,6 +21,7 @@
 			</li>
 		</ul>
 	</nav>
+</section>
 <% } %>
 <div class="container mt-3 pt-3">
 	<label for="_system">Showing:</label>
@@ -27,12 +36,12 @@
 			<% } %>
 		<% }) %>
 	</select>
-	<table class="mx-auto">
-		<thead>
-			<th style="width:40%">Bader/Service #</th>
-			<th style="width:10%">Rank</th>
-			<th style="width:40%">Surname</th>
-			<th style="width:10%">Initials</th>
+	<table class="table table-sm table-hover mx-auto">
+		<thead class="thead-dark">
+			<th class="w-40">Bader/Service #</th>
+			<th class="w-10">Rank</th>
+			<th class="w-40">Surname</th>
+			<th class="w-10">Initials</th>
 		</thead>
 		<tbody>
 			<% users.forEach((user) => { %>

@@ -1,0 +1,152 @@
+<!-- loancards INDEX PAGE -->
+<% include ../../partials/head/full %>
+<section class="mb-2">
+	<nav class="navbar navbar-expand navbar-light bg-nav">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores">Stores</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/users">Users</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/users/<%= request.requested_for %>"><%= request.requestedFor.rank._rank %> <%= request.requestedFor._name %>, <%= request.requestedFor._ini %></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/requests">Requests</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/requests/<%= request.request_id %>"><%= request.request_id %></a>
+			</li>
+		</ul>
+	</nav>
+</section>
+<section>
+	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Options
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<% if (permissions.notes_add) { %>
+						<a class="dropdown-item" href="/stores/notes/new?table=requests&id=<%= request.request_id %>">Add Note</a>
+						<div class="dropdown-divider"></div>
+					<% } %>
+					<a class="dropdown-item" href="/stores/requests">Back to Requests</a>
+				</div>
+			</li>
+		</ul>
+	</nav>
+</section>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 col-lg-6 col-xl-4 mb-3">
+			<div class="bordered" id="divUsers">
+				<h4><a href="/stores/item_sizes/<%= request.size.stock_id %>"> Item Details</a></h4>
+				<div class="details">
+					<div class="row">
+						<div class="col-sm-4">
+							<label class="col-form-label">Item:</label>
+						</div>
+						<div class="col-sm-8">
+							<input class="form-control" type="text" value="<%= request.size.item._description %>" readonly>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-4">
+							<label class="col-form-label">Size:</label>
+						</div>
+						<div class="col-sm-8">
+							<input class="form-control" type="text" value="<%= request.size.size._text %>" readonly>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-4">
+							<label class="col-form-label">Quantity:</label>
+						</div>
+						<div class="col-sm-8">
+							<input class="form-control" type="text" value="<%= request._qty %>" readonly>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-4">
+							<label class="col-form-label">Status:</label>
+						</div>
+						<div class="col-sm-8">
+							<input class="form-control" type="text" value="<%= request._status %>" readonly>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-lg-6 col-xl-4 mb-3">
+			<div class="bordered" id="divUsers">
+				<h4>User Details</h4>
+				<div class="details">
+					<div class="row">
+						<div class="col-sm-4">
+							<label class="col-form-label">Requested For:</label>
+						</div>
+						<div class="col-sm-8">
+							<input class="form-control" type="text" value="<%= request.requestedFor.rank._rank %> <%= request.requestedFor._name %>, <%= request.requestedFor._ini %>" readonly>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-4">
+							<label class="col-form-label">Requested By:</label>
+						</div>
+						<div class="col-sm-8">
+								<input class="form-control" type="text" value="<%= request.requestedBy.rank._rank %> <%= request.requestedBy._name %>, <%= request.requestedBy._ini %>" readonly>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-4">
+							<label class="col-form-label">Approved By:</label>
+						</div>
+						<div class="col-sm-8">
+								<input class="form-control" type="text" value="<% if (request.approvedBy) { %><%= request.approvedBy.rank._rank %> <%= request.approvedBy._name %>, <%= request.approvedBy._ini %><% } %>" readonly>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-lg-6 col-xl-4 mb-3">
+				<div class="bordered" id="divUsers">
+					<h4>Dates</h4>
+					<div class="details">
+						<div class="row">
+							<div class="col-sm-4">
+								<label class="col-form-label">Requested:</label>
+							</div>
+							<div class="col-sm-8">
+								<input class="form-control" type="text" value="<%= request._date.toDateString() %>" readonly>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-4">
+								<label class="col-form-label">Approved:</label>
+							</div>
+							<div class="col-sm-8">
+								<input class="form-control" type="text" value="<% if (request._date_approved) { %><%= request._date_approved.toDateString() %><% } %>" readonly>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% if (permissions.access_notes) { %> 
+			<div class="col-12 col-lg-6 col-xl-12 mb-3">
+				<% include ../../partials/noteTable %>
+			</div>
+		<% } %>
+		<% if (permissions.requests_delete) { %>
+			<div class="col-12 mb-3">
+				<form action="/stores/requests/<%= request.request_id %>?_method=DELETE&user=<%= request.requested_for %>" method="POST">
+					<button class="btn btn-danger">Delete Request</button>
+				</form>
+			</div>
+		<% } %>
+	</div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

@@ -57,14 +57,9 @@ var m                = require('./db/models'),
     issuesRoutes     = require('./routes/stores/issues')(app, m),
     permissionRoutes = require('./routes/stores/permissions')(app, m),
     loancardRoutes   = require('./routes/stores/loancards')(app, m),
-    itemSearchRoutes = require('./routes/stores/itemSearch')(app, m);
-
-    // Sync Database
-// m.sequelize.sync({force: false}).then(() => { 
-//     console.log('Database models synced') 
-// }).catch((err) => {
-//     console.log(err, "Something went wrong with the Database Update!") 
-// });
+    itemSearchRoutes = require('./routes/stores/itemSearch')(app, m),
+    orderRoutes      = require('./routes/stores/orders')(app, m),
+    requestRoutes    = require('./routes/stores/requests')(app, m);
 
 app.use('/stores', storesRoutes);
 app.use(siteRoutes);

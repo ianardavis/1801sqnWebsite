@@ -19,9 +19,9 @@ module.exports = (app, m) => {
                 if (!req.body.supplier._default) {req.body.supplier._default = 0}
                 fn.create(m.suppliers, req.body.supplier, req, (supplier) => {
                     if (supplier) {
-                        res.redirect('/stores/supplier/' + supplier.supplier_id);
+                        res.redirect('/stores/suppliers/' + supplier.supplier_id);
                     } else {
-                        res.redirect('/stores/supplier');
+                        res.redirect('/stores/suppliers');
                     };
                 });
         });
@@ -80,7 +80,7 @@ module.exports = (app, m) => {
         fn.allowed('access_suppliers', true, req, res, (allowed) => {
                 fn.getOne(m.suppliers, {supplier_id: req.params.id}, req, (supplier) => {
                     if (supplier) {
-                        fn.getNotes('suppliers', req.params.id, req, (notes) => {
+                        fn.getNotes('suppliers', req.params.id, req, res, (notes) => {
                             res.render('stores/suppliers/show', {
                                 supplier: supplier, 
                                 notes: notes

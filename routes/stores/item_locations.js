@@ -36,7 +36,7 @@ module.exports = (app, m) => {
         fn.allowed('item_locations_edit', true, req, res, (allowed) => {
             fn.getLocation(req.params.id, req, (location) => {
                 if (location) {
-                    fn.getNotes('item_locations', req.params.id, req, (notes) => {
+                    fn.getNotes('item_locations', req.params.id, req, res, (notes) => {
                         res.render('stores/item_locations/edit', {
                             location: location,
                             notes:    notes

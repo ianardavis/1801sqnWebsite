@@ -1,25 +1,38 @@
 <!-- loancards INDEX PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-	<a href="/stores"><h2>Stores Management</h2></a>
-	<h3>Loan Cards</h3>
+<section class="mb-2">
+	<nav class="navbar navbar-expand navbar-light bg-nav">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores">Stores</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/loancards">Loancards</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/loancards/<%= loancard.loancard_id %>"><%= loancard.loancard_id %></a>
+			</li>
+		</ul>
+	</nav>
 </section>
-<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<% if (permissions.notes_add) { %>
-					<a class="dropdown-item" href="/stores/notes/new?table=loancards&id=<%= loancard.loancard_id %>">Add Note</a>
-					<div class="dropdown-divider"></div>
-				<% } %>
-				<a class="dropdown-item" href="/stores/loancards">Back to Loan Cards</a>
-			</div>
-		</li>
-	</ul>
-</nav>
+<section>
+	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Options
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<% if (permissions.notes_add) { %>
+						<a class="dropdown-item" href="/stores/notes/new?table=loancards&id=<%= loancard.loancard_id %>">Add Note</a>
+						<div class="dropdown-divider"></div>
+					<% } %>
+					<a class="dropdown-item" href="/stores/loancards">Back to Loancards</a>
+				</div>
+			</li>
+		</ul>
+	</nav>
+</section>
 <section class="detailBox container-fluid pt-3">
 	<div class="row">
 		<div class="col-12 mb-3">
@@ -74,16 +87,16 @@
 		<div class="col-12 mb-3">
 			<div class="container bordered mt-3 pt-3">
 				<h4>Lines</h4>
-				<table id="lineTable" style="width:100%" class="mx-auto">
+				<table id="lineTable" class="mx-auto w-100">
 					<thead>
-						<th style="width:5%" onclick="sortTable(0, 'lineTable')">Line</th>
-						<th style="width:15%" onclick="sortTable(1, 'lineTable')">NSN</th>
-						<th style="width:20%" onclick="sortTable(2, 'lineTable')">Item</th>
-						<th style="width:10%" onclick="sortTable(3, 'lineTable')">Size</th>
-						<th style="width:10%" onclick="sortTable(4, 'lineTable')">Qty Issued</th>
-						<th style="width:10%" onclick="sortTable(5, 'lineTable')">Qty Returned</th>
-						<th style="width:10%" onclick="sortTable(6, 'lineTable')">Date Returned</th>
-						<th style="width:20%" onclick="sortTable(7, 'lineTable')">Received By</th>
+						<th class="w-5" onclick="sortTable(0, 'lineTable')">Line</th>
+						<th class="w-15" onclick="sortTable(1, 'lineTable')">NSN</th>
+						<th class="w-20" onclick="sortTable(2, 'lineTable')">Item</th>
+						<th class="w-10" onclick="sortTable(3, 'lineTable')">Size</th>
+						<th class="w-10" onclick="sortTable(4, 'lineTable')">Qty Issued</th>
+						<th class="w-10" onclick="sortTable(5, 'lineTable')">Qty Returned</th>
+						<th class="w-10" onclick="sortTable(6, 'lineTable')">Date Returned</th>
+						<th class="w-20" onclick="sortTable(7, 'lineTable')">Received By</th>
 					</thead>
 					<tbody>
 						<% loancard.lines.forEach((line) => { %>

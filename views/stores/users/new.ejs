@@ -1,11 +1,22 @@
 <!-- USERS NEW PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-    <a href="/stores"><h2>Stores Management</h2></a>
-    <h3>New User</h3>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/users">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/users/new">New</a>
+            </li>
+        </ul>
+    </nav>
 </section>
-<section class="container-fluid p-5">
-    <div>
+<section class="row">
+    <div class="col-md-9 col-xl-6 container bordered p-5">
         <form action="/stores/users" method="POST">
             <input type="hidden" name="failRedirect", value="/stores/users" readonly>
             <div class="form-group row">

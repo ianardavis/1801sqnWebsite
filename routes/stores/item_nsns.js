@@ -32,7 +32,7 @@ module.exports = (app, m) => {
         fn.allowed('item_nsn_edit', true, req, res, (allowed) => {
             fn.getNSN(req.params.id, req, (nsn) => {
                 if (nsn) {
-                    fn.getNotes('item_nsns', req.params.id, req, (notes) => {
+                    fn.getNotes('item_nsns', req.params.id, req, res, (notes) => {
                         res.render('stores/item_nsns/edit', {
                             nsn:   nsn,
                             notes: notes

@@ -25,14 +25,9 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_date_ordered': {
+    '_date': {
       type: DataTypes.DATE,
       allowNull: true,
-      comment: "null"
-    },
-    '_date_placed': {
-      type: DataTypes.DATE,
-      allowNull: false,
       comment: "null"
     },
     'demand_id': {
@@ -48,11 +43,6 @@ module.exports = function(sequelize, DataTypes) {
     'issue_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "null"
-    },
-    'supplier_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
       comment: "null"
     },
     'ordered_by': {

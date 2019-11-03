@@ -7,7 +7,7 @@ module.exports = (app, m) => {
     app.get('/stores/permissions/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('users_permissions', true, req, res, (allowed) => {
             if (Number(req.params.id) !== req.user.user_id && Number(req.params.id) !== 1) {
-                fn.getUser(req.params.id, req, (user) => {
+                fn.getUser(req.params.id, {include: false}, req, (user) => {
                     if (user) {
                         res.render('stores/permissions/edit', {
                             user: user

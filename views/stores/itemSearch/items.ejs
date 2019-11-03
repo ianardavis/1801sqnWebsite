@@ -7,7 +7,8 @@
         <h5>Items</h5>
         <input class="form-control" type="text" id="itemSearch" onkeyup="searchTable('itemsTable', 'itemSearch')" placeholder="Search for items..">
         <form action="/stores/itemSearch" method="POST">
-            <select class='form-control' name="item" id="itemsTable" style="width: 100%;" type="text" size="15">
+            <input type="hidden" name="callType" value="<%= callType %>">
+            <select class='form-control w-100' name="item" id="itemsTable" type="text" size="15">
                 <option value=""></option>
                 <% items.forEach((item) => { %>
                     <option value='{"item_id":<%= item.item_id %>, "_description":"<%= item._description %>"}'><%= item._description %></option>

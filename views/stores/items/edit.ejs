@@ -1,10 +1,24 @@
 <!-- ITEMS EDIT PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-    <a href="/stores"><h2>Stores Management</h2></a>
-    <h3>Edit Item</h3>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item._description %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>/edit">Edit</a>
+            </li>
+        </ul>
+    </nav>
 </section>
-<section class="container-fluid p-5" style="width: 50%;">
+<section class="container-fluid p-5 w-50">
    <div class="details container bordered p-3">
         <form action="/stores/items/<%= item.item_id %>?_method=PUT" method="POST">
             <input type="hidden" name="failRedirect", value="/stores/items/<%= item.item_id %>" readonly>
@@ -107,23 +121,6 @@
                 </div>                        
                 <div class="col-7">
                     <input class="form-control" type="text" name="item[_size_text]" value="<%= item._size_text %>" maxlength="45">
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Supplier:</label>
-                </div> 
-                <div class="col-7">
-                    <select class="form-control" name="item[supplier_id]" id="_supplier" type="text">
-                        <option value='' data-tag='<blank>'></option> 
-                        <% suppliers.forEach((supplier) => { %>
-                            <% if (supplier.supplier_id === item.supplier_id) { %>
-                                <option value="<%= supplier.supplier_id %>" selected><%= supplier._name %></option>         
-                            <% } else { %>
-                                <option value="<%= supplier.supplier_id %>"><%= supplier._name %></option>         
-                            <% } %>
-                        <% }) %>
-                    </select>
                 </div>
             </div>
             <div class="form-group row p-3">

@@ -1,33 +1,42 @@
 <!-- ISSUES NEW PAGE -->
 <% include ../../partials/head/full %>
-<section class='container page_title'>
-	<div class='row'>
-		<div class='col-md-6 mx-auto'>
-			<a href='/stores'><h2>Stores Management</h2></a>
-		</div>
-    </div>
-	<p class='text-left'><a href='/stores'> Main Menu </a>> > ><a href='/stores/issues'> Issues </a>> > ><a href='/stores/issues/userlist'> Users </a>> > ><a href='/stores/issues?user=<%= issue.issued_to %>'> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %></a></p>
-	<div class='row'>
-		<div class='col-2 mx-auto'>
-			<h3>Issued Item:</h3>
-		</div>
-    </div>    
-    <% if (permissions.issues_edit) { %>
-        <nav class="navbar navbar-expand navbar-dark bg-dark stores">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/stores/issues/:id/edit">Edit Issue</a>
-                </li>
-            </ul>
-        </nav>
-    <% } %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/users">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/users/<%= issue.issued_to %>"><%= issue.issuedTo.rank._rank %> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/issues">Issues</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/issues/<%= issue.issue_id %>"><%= issue.issue_id %></a>
+            </li>
+        </ul>
+    </nav>
 </section>
-
+<% if (permissions.issues_edit) { %>
+<section> 
+    <nav class="navbar navbar-expand navbar-dark bg-dark stores">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/stores/issues/:id/edit">Edit Issue</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<% } %>
 <section class="detailBox container-fluid pt-3">
         <div class="row">
             <div class="col-12 col-lg-6 col-xl-4 mb-3">
                 <div class="bordered" id="divUsers">
-                    <h4><a href="/stores/items_sizes/<%= issue.size.stock_id %>"> Item Details</a></h4>
+                    <h4><a href="/stores/item_sizes/<%= issue.size.stock_id %>"> Item Details</a></h4>
                     <div class="details">
                         <div class="row">
                             <div class="col-sm-4">
@@ -120,7 +129,7 @@
                                     <label class="col-form-label">Issued:</label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <input class="form-control" type="text" value="<%= issue._date_issued.toDateString() %>" readonly>
+                                    <input class="form-control" type="text" value="<%= issue._date.toDateString() %>" readonly>
                                 </div>
                             </div>
                             <div class="row">

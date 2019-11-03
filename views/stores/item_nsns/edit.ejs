@@ -1,11 +1,26 @@
 <!-- USER ITEM PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-    <a href="/stores"><h2>Stores Management</h2></a>
-    <p class="text-left"><a href="/stores">Main Menu</a>>   >   ><a href="/stores/items">Items</a>>   >   ><a href="/stores/items/<%= nsn.size.item_id %>"><%= nsn.size.item._description %></a>>   >   ><a href="/stores/items_sizes/<%= nsn.size.stock_id %>">Size:<%= nsn.size.size._text %></a></p>
-    <a href="/stores/items/<%= nsn.size.item.item_id %>"><h3><%= nsn.size.item._description %></h3></a>
-    <h4><%= nsn.size.size._text %></h4>
-</section> 
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items/<%= nsn.size.item_id %>"><%= nsn.size.item._description %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= nsn.size.stock_id %>">Size: <%= nsn.size.size._text %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/item_nsns/<%= nsn.nsn_id %>">NSN: <%= nsn._nsn %></a>
+            </li>
+        </ul>
+    </nav>
+</section>
 <nav class="navbar navbar-expand navbar-dark bg-dark stores">
 	<ul class="navbar-nav mr-auto">
 		<li class="nav-item dropdown">

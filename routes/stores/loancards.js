@@ -17,14 +17,19 @@ module.exports = (app, m) => {
 
     //Show
     app.get('/stores/loancards/:id', mw.isLoggedIn, (req, res) => {
-        fn.allowed('access_loancards', true, req, res, (allowed) => {
+        fn.allowed('access_loancards', false, req, res, (allowed) => {
             fn.getLoancard(req.params.id, req, (loancard) => {
-                fn.getNotes('loancards', req.params.id, req, (notes) => {
-                    res.render('stores/loancards/show',{
-                        loancard: loancard,
-                        notes:    notes
+                if (allowed || loancard.issuedTo.user_id === req.user.user_id) {
+                    fn.getNotes('loancards', req.params.id, req, res, (notes) => {
+                        res.render('stores/loancards/show',{
+                            loancard: loancard,
+                            notes:    notes
+                        });
                     });
-                });
+                } else {
+                    req.flash('danger', 'Permission Denied!')
+                    res.redirect('back');
+                }; 
             });
         });
     });

@@ -1,10 +1,24 @@
 <!-- ITEMS EDIT PAGE -->
 <% include ../../partials/head/full %>
-<section class="container page_title">
-    <a href="/stores"><h2>Stores Management</h2></a>
-    <h3>Assign New Size to Item</h3>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item._description %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/item_sizes/new">Add Size</a>
+            </li>
+        </ul>
+    </nav>
 </section>
-<section class="container-fluid p-5" style="width: 50%;">
+<section class="container-fluid p-5 w-50">
     <div class="form-group row bordered">
         <div class="col-5" >
             <label class="col-form-label">Add Size to:</label>
@@ -17,6 +31,27 @@
         <form action="/stores/items_sizes" method="POST">
             <input type="hidden" name="failRedirect", value="/stores/items/<%= item.item_id %>" readonly>
             <input type="hidden" name="details[item_id]", value="<%= item.item_id %>" readonly>
+            <div class="form-group row">
+                <div class="col-5">
+                    <label class="col-form-label">Orderable:</label>
+                </div>
+                <div class="col-7">
+                    <input class="form-control" id="_orderable" type="checkbox" name="details[_orderable]" value="1">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-5" >
+                    <label class="col-form-label">Supplier:</label>
+                </div> 
+                <div class="col-7">
+                    <select class="form-control" name="details[supplier_id]" id="supplier_id" type="text">
+                        <option value='' data-tag='<blank>'></option> 
+                        <% suppliers.forEach((supplier) => { %>
+                            <option value="<%= supplier.supplier_id %>"<% if (supplier._default) { %>selected<% } %>><%= supplier._name %></option>         
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
             <div class="form-group row">
                 <div class="col-5" >
                     <label class="col-form-label">Demand Page:</label>
@@ -34,23 +69,23 @@
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-5">
-                    <label class="col-form-label">Orderable:</label>
-                </div>
+                <div class="col-5" >
+                    <label class="col-form-label">Ordering Details:</label>
+                </div> 
                 <div class="col-7">
-                        <input class="form-control" id="_orderable" type="checkbox" name="details[_orderable]" value="1">
-                    </div>
+                    <textarea name="details[_ordering_details]" cols="30" rows="10" maxlength="1000"></textarea>
                 </div>
+            </div>
             <div class="form-group row p-3">
                 <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
                 <a href="/stores/items/<%= item.item_id %>">Cancel</a>
             </div>
             <div>
                 <input class="form-control" type="text" id="sizeSearch" onkeyup="searchTable('sizeTable', 'sizeSearch')" placeholder="Search for sizes..">
-                <table id="sizeTable" style="width: 100%;">
+                <table id="sizeTable" class="w-100">
                     <thead>
-                        <th style="width: 80%">Size</th>
-                        <th style="width: 20%">Select</th>
+                        <th class="w-80">Size</th>
+                        <th class="w-20">Select</th>
                     </thead>
                     <tbody>
                         <% sizes.forEach((size) => { %>

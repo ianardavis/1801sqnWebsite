@@ -57,9 +57,9 @@ module.exports = (app, m) => {
 
     // Edit password
     app.get('/stores/password/:id', mw.isLoggedIn, (req, res) => {
-        fn.allowed('users_password', true, req, res, (allowed) => {
-            if (req.user.user_id === Number(req.params.id)) {
-                fn.getUser(req.params.id, req, (user) => {
+        fn.allowed('users_password', false, req, res, (allowed) => {
+            if (allowed || req.user.user_id === Number(req.params.id)) {
+                fn.getUser(req.params.id, {include: false}, req, (user) => {
                     if (user) {
                         res.render('stores/users/password', {user: user});
                     } else {
@@ -88,7 +88,7 @@ module.exports = (app, m) => {
     app.get('/stores/users/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('users_edit', true, req, res, (allowed) => {
             fn.getAllUserClasses(req, res, (classes) => {
-                fn.getUser(req.params.id, req, (user) => {
+                fn.getUser(req.params.id, {include: false}, req, (user) => {
                     if (user) {
                         res.render('stores/users/edit', {
                             user:    user,
@@ -132,12 +132,48 @@ module.exports = (app, m) => {
     app.get('/stores/users/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_users', false, req, res, (allowed) => {
             if (allowed || req.user.user_id === Number(req.params.id)) {
-                fn.getUser(req.params.id, req, (user) => {
+                var extended = {},
+                    query = {};
+                query.issuedOrders    = Number(req.query.orders)    || 2,
+                query.closedLoancards = Number(req.query.loancards) || 2,
+                query.closedRequests  = Number(req.query.requests)  || 2,
+                query.returnedIssues  = Number(req.query.issues)    || 2;
+                extended.include = true;
+                if (query.issuedOrders === 2) {
+                    extended.orders = {issue_id: null};
+                } else if (query.issuedOrders === 3) {
+                    extended.orders = {issue_id: {[op.not]: null}};
+                } else {
+                    extended.orders = {};
+                };
+                if (query.closedLoancards === 2) {
+                    extended.loancards = {_closed: null};
+                } else if (query.closedLoancards === 3) {
+                    extended.loancards = {_closed: {[op.not]: null}};
+                } else {
+                    extended.loancards = {};
+                };
+                if (query.closedRequests === 2) {
+                    extended.requests = {_status: 'Pending'};
+                } else if (query.closedRequests === 3) {
+                    extended.requests = {_status: {[op.not]: 'Pending'}};
+                } else {
+                    extended.requests = {};
+                };
+                if (query.returnedIssues === 2) {
+                    extended.issues = {_date_returned: null};
+                } else if (query.returnedIssues === 3) {
+                    extended.issues = {_date_returned: {[op.not]: null}};
+                } else {
+                    extended.issues = {};
+                };
+                fn.getUser(req.params.id, extended, req, (user) => {
                     if (user) {
-                        fn.getNotes('users', req.params.id, req, (notes) => {
+                        fn.getNotes('users', req.params.id, req, res, (notes) => {
                             res.render('stores/users/show', {
                                 user:  user, 
-                                notes: notes
+                                notes: notes,
+                                query: query
                             });
                         });
                     } else {
