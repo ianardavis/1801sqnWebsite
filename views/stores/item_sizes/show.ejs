@@ -42,12 +42,6 @@
 				<% if (permissions.item_receive) { %> 
                 <a class="dropdown-item" href="/stores/adjusts/new?stock_id=<%= item.stock_id %>">Receive</a>
                 <% } %>
-                <% if (permissions.item_count) { %> 
-                <a class="dropdown-item" href="/stores/adjusts/new?stock_id=<%= item.stock_id %>">Count</a>
-                <% } %>
-                <% if (permissions.item_scrap) { %> 
-                <a class="dropdown-item" href="/stores/adjusts/new?stock_id=<%= item.stock_id %>">Scrap</a>
-                <% } %>
                 <div class="dropdown-divider"></div>
 				<a class="dropdown-item" href="/stores/items/<%= item.item_id %>">Back to <%= item.item._description %></a>
 			</div>
@@ -65,7 +59,7 @@
                             <label class="col-form-label">Orderable:</label>
                         </div>   
                         <div class="col-7">
-                            <input id="_orderable" class="form-control" type="checkbox" disabled>
+                            <input id="_orderable" class="form-control" type="checkbox"<% if (item._orderable) { %> selected<% } %> disabled>
                         </div>
                     </div>
                     <div class="row">
@@ -108,8 +102,8 @@
                 <div class="bordered">
                     <h4><% if (permissions.item_locations_add) { %><a href="/stores/item_locations/new?stock_id=<%= item.stock_id %>"><i class="fas fa-plus-circle"></i></a> <% } %>Stock: <%= stock._stock %></h4>
                     <div style="overflow-x:auto;">
-                        <table id="locationTable" class="w-100">
-                            <thead>
+                        <table id="locationTable" class="table table-sm table-hover w-100">
+                            <thead class="thead-dark">
                                 <th onclick="sortTable(0, 'locationTable')" class="w-80">Location</th>
                                 <th onclick="sortTable(1, 'locationTable')" class="w-20">Qty</th>
                                 <% if (permissions.item_locations_delete === 1) { %>
@@ -139,8 +133,8 @@
                 <div class="bordered">
                     <h4>On Order: <%= stock._ordered %></h4>
                     <div style="overflow-x:auto;">
-                        <table id="orderTable" class="w-100">
-                            <thead>
+                        <table id="orderTable" class="table table-sm table-hover w-100">
+                            <thead class="thead-dark">
                                 <th onclick="sortTable(0, 'orderTable')" class="w-80">For</th>
                                 <th onclick="sortTable(2, 'orderTable')" class="w-20">Qty</th>
                             </thead>
@@ -164,8 +158,8 @@
                 <div class="bordered">
                     <h4>Issued: <%= stock._issued %></h4>
                     <div style="overflow-x:auto;">
-                        <table id="issueTable" class="w-100">
-                            <thead>
+                        <table id="issueTable" class="table table-sm table-hover w-100">
+                            <thead class="thead-dark">
                                 <th onclick="sortTable(0, 'issueTable')" class="w-80">To</th>
                                 <th onclick="sortTable(2, 'issueTable')" class="w-20">Qty</th>
                             </thead>
@@ -190,8 +184,8 @@
                     <h4><% if (permissions.item_nsn_add) { %> <a href="/stores/item_nsns/new?stock_id=<%= item.stock_id %>"><i class="fas fa-plus-circle"></i></a> <% } %>NSNs</h4>
                     
                     <div style="overflow-x:auto;">
-                        <table id="nsnTable" class="w-100">
-                                <thead>
+                        <table id="nsnTable" class="table table-sm table-hover w-100">
+                                <thead class="thead-dark">
                                     <th class="w-80" onclick="sortTable(0, 'nsnTable')" >NSN</th>
                                     <th class="w-20">default</th>
                                     <% if (permissions.item_nsn_delete === 1) { %>
@@ -235,7 +229,10 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
 <script>
-    document.querySelector('#_orderable').checked = (Boolean(<%= item._orderable %>));
+    function filterSelects() {
+        filter(['sn'],"/stores/item_sizes/<%= item.stock_id %>");
+    };
 </script>
 <% include ../../partials/foot/htmlClose %>

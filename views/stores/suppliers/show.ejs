@@ -84,7 +84,7 @@
                             <label class="col-form-label">RAF Stores?:</label>
                         </div>
                         <div class="col-sm-9">
-                            <input class="form-control" type="checkbox" id="_stores" value="<%= supplier._stores %>" disabled>
+                            <input class="form-control" type="checkbox" id="_stores" value="1" <% if (supplier._stores) { %>checked<% } %> disabled>
                         </div>
                     </div>
                     <div class="row">
@@ -92,7 +92,7 @@
                             <label class="col-form-label">Is Default:</label>
                         </div>
                         <div class="col-sm-9">
-                            <input class="form-control" type="checkbox" id="_default" value="<%= supplier._default %>" disabled>
+                            <input class="form-control" type="checkbox" id="_default" value="1" <% if (supplier._default) { %>checked<% } %> disabled>
                         </div>
                     </div>
                 </div>
@@ -112,8 +112,10 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
 <script>
-    document.querySelector('#_stores').checked = (Boolean(<%= supplier._stores %>));
-    document.querySelector('#_default').checked = (Boolean(<%= supplier._default %>));
+    function filterSelects() {
+        filter(['sn'],"/stores/suppliers/<%= supplier.supplier_id %>");
+	};
 </script>
 <% include ../../partials/foot/htmlClose %>

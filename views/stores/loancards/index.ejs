@@ -14,11 +14,11 @@
 </section>
 <div class="container mt-3 pt-3">
 	<div class="row mx-1">
-		<label class="col-5 col-form-label" for="closedCards">Closed Cards:</label>
-		<select class='col-7 form-control form-control-sm' id="closedCards" type="text" onchange="window.location = '/stores/loancards?closed=' + this.options[this.selectedIndex].value">
-			<option value="1" <% if (closed === 1) { %>selected<% } %> >Include</option>
-			<option value="2" <% if (closed === 2) { %>selected<% } %> >Exclude</option>
-			<option value="3" <% if (closed === 3) { %>selected<% } %> >Only</option>
+		<label class="col-5 col-form-label" for="cl">Closed Cards:</label>
+		<select class='col-7 form-control form-control-sm' id="cl" type="text" onchange=filterSelects()>
+			<option value="1" <% if (query.cl === 1) { %>selected<% } %> >Include</option>
+			<option value="2" <% if (query.cl === 2) { %>selected<% } %> >Exclude</option>
+			<option value="3" <% if (query.cl === 3) { %>selected<% } %> >Only</option>
 		</select>
 	</div>
 	<table id="loancardTable" class="table table-sm table-hover mx-auto w-100">
@@ -44,4 +44,10 @@
 </div>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['cl'], "/stores/loancards");
+    };
+</script>
 <% include ../../partials/foot/htmlClose %>

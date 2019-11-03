@@ -80,10 +80,13 @@ module.exports = (app, m) => {
         fn.allowed('access_suppliers', true, req, res, (allowed) => {
                 fn.getOne(m.suppliers, {supplier_id: req.params.id}, req, (supplier) => {
                     if (supplier) {
+                        var query = {};
+                        query.sn = Number(req.query.sn) || 2
                         fn.getNotes('suppliers', req.params.id, req, res, (notes) => {
                             res.render('stores/suppliers/show', {
                                 supplier: supplier, 
-                                notes: notes
+                                notes:    notes,
+                                query:    query
                             });
                         });
                     } else {

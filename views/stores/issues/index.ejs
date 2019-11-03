@@ -33,11 +33,11 @@
 <section>
 	<div class='container mt-3 pt-3'>
 		<div class="row mx-1">
-			<label class="col-5 col-form-label" for="_returned">Returned Lines:</label>
-			<select class='col-7 form-control' id="_returned" type="text" onchange="window.location = '/stores/issues?returned=' + this.options[this.selectedIndex].value">
-				<option value="1" <% if (returned === 1) { %>selected<% } %> >Include</option>
-				<option value="2" <% if (returned === 2) { %>selected<% } %> >Exclude</option>
-				<option value="3" <% if (returned === 3) { %>selected<% } %> >Only</option>
+			<label class="col-5 col-form-label" for="rl">Returned Lines:</label>
+			<select class='col-7 form-control form-control-sm' id="rl" type="text" onchange=filterSelects()>
+				<option value="1" <% if (query.rl === 1) { %>selected<% } %> >Include</option>
+				<option value="2" <% if (query.rl === 2) { %>selected<% } %> >Exclude</option>
+				<option value="3" <% if (query.rl === 3) { %>selected<% } %> >Only</option>
 			</select>
 		</div>
 		<table id="tableIssues" class='table table-sm table-hover mx-auto'>
@@ -79,4 +79,10 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['rl'],"/stores/issues");
+    };
+</script>
 <% include ../../partials/foot/htmlClose %>

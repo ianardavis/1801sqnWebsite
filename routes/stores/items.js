@@ -98,12 +98,15 @@ module.exports = (app, m) => {
     // Show
     app.get('/stores/items/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_items', true, req, res, (allowed) => {
+            var query = {};
+            query.sn = req.query.sn || 2;
             fn.getItem(req.params.id, true, req, (item) => {
                 if (item) {
                     fn.getNotes('items', req.params.id, req, res, (notes) => {
                         res.render('stores/items/show', {
-                                item:   item,
-                                notes:  notes
+                                item:  item,
+                                notes: notes,
+                                query: query
                         });
                     });
                 } else {

@@ -4,3 +4,4 @@ config/config.json
 public/images/icons/svgs
 public/images/icons/webfonts
 public/images/favicon
+mysqldump.sql

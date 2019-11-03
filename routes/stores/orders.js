@@ -69,10 +69,15 @@ module.exports = (app, m) => {
     //Index
     app.get('/stores/orders', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_orders', true, req, res, (allowed) => {
-            fn.getAllOrders(req, (orders) => {
+            var query = {};
+            query.pl = Number(req.query.pl) || 1,
+            query.rx = Number(req.query.rx) || 1,
+            query.is = Number(req.query.is) || 2;
+            query.sn = Number(req.query.sn) || 2;
+            fn.getAllOrders(query, req, (orders) => {
                 res.render('stores/orders/index',{
                     orders: orders,
-                    query:  req.query
+                    query:  query
                 });
             });
         });
@@ -81,12 +86,15 @@ module.exports = (app, m) => {
     //Show
     app.get('/stores/orders/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_orders', false, req, res, (allowed) => {
+            var query = {};
+            query.sn = Number(req.query.sn) || 2;
             fn.getOrder(req.params.id, req, (order) => {
                 if (allowed || order.orderedFor.user_id === req.user.user_id) {
                     fn.getNotes('orders', req.params.id, req, res, (notes) => {
                         res.render('stores/orders/show',{
                             order: order,
-                            notes: notes
+                            notes: notes,
+                            query: query
                         });
                     });
                 } else {

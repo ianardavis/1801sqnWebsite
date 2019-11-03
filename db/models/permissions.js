@@ -146,13 +146,7 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Storeman"
     },
-    'item_count': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'item_scrap': {
+    'item_adjust': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',

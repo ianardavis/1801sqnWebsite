@@ -28,9 +28,13 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<% if (permissions.item_adjust) { %> 
+				<a class="dropdown-item" href="/stores/adjusts/new?li=<%= location.location_id %>&at=Count">Count</a>
+				<a class="dropdown-item" href="/stores/adjusts/new?li=<%= location.location_id %>&at=Scrap">Scrap</a>
+				<% } %>
 				<% if (permissions.notes_add) { %>
-					<a class="dropdown-item" href="/stores/notes/new?table=items_locations&id=<%= location.location_id %>">Add Note</a>
-					<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="/stores/notes/new?table=item_locations&id=<%= location.location_id %>">Add Note</a>
+				<div class="dropdown-divider"></div>
 				<% } %>
 				<a class="dropdown-item" href="/stores/items_sizes/<%= location.size.stock_id %>">Back to <%= location.size.item._description %>/Size: <%= location.size.size._text %></a>
 			</div>
@@ -45,7 +49,7 @@
 				<div class="details">
 					<form action="/stores/items_locations/<%= location.location_id %>?_method=PUT" method="POST">
 						<input type="hidden" name="location[location_id]" value="<%= location.location_id %>" readonly>
-						<p><input type="text" name="location[_location]" maxlength="10" value="<%= location._location %>" required></p>
+						<p><input type="text" class="form-control" name="location[_location]" maxlength="10" value="<%= location._location %>" required></p>
 						<p><button class="btn btn-success">Save</button></p>
 					</form>
                 </div>
@@ -58,4 +62,10 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['sn'],"/stores/item_locations/<%= location.location_id %>/edit");
+    };
+</script>
 <% include ../../partials/foot/htmlClose %>

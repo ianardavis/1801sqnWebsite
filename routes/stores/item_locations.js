@@ -34,12 +34,15 @@ module.exports = (app, m) => {
     // Edit
     app.get('/stores/item_locations/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_locations_edit', true, req, res, (allowed) => {
+            var query = {};
+            query.sn = req.query.sn || 2;
             fn.getLocation(req.params.id, req, (location) => {
                 if (location) {
                     fn.getNotes('item_locations', req.params.id, req, res, (notes) => {
                         res.render('stores/item_locations/edit', {
                             location: location,
-                            notes:    notes
+                            notes:    notes,
+                            query:    query
                         });
                     });
                 } else {

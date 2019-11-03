@@ -456,10 +456,10 @@ fn.getNotes = (table, id, req, res, cb) => {
                 _link_table: table, 
                 _link_id: id
             },
-                sysnotes = Number(req.query.sys_notes) || 2;
-            if (sysnotes === 2) {
+            sn = Number(req.query.sn) || 2;
+            if (sn === 2) {
                 whereObj._system = false
-            } else if (sysnotes === 3) {
+            } else if (sn === 3) {
                 whereObj._system = true
             };
             m.notes.findAll({
@@ -805,24 +805,21 @@ fn.getAllUserClasses = (req, res, cb) => {
         });
     });
 }; // users
-fn.getAllOrders = (req, cb) => {
-    var where = {},
-        placed =   Number(req.query.placed)   || 1,
-        received = Number(req.query.received) || 1,
-        issued =   Number(req.query.issued)   || 2;
-    if (placed === 2) {
+fn.getAllOrders = (query, req, cb) => {
+    var where = {};
+    if (query.placed === 2) {
         where.demand_id = null
-    } else if (placed === 3) {
+    } else if (query.placed === 3) {
         where.demand_id = {[op.not]: null}
     };
-    if (received === 2) {
+    if (query.received === 2) {
         where.receipt_id = null
-    } else if (received === 3) {
+    } else if (query.received === 3) {
         where.receipt_id = {[op.not]: null}
     };
-    if (issued === 2) {
+    if (query.issued === 2) {
         where.issue_id = null
-    } else if (issued === 3) {
+    } else if (query.issued === 3) {
         where.issue_id = {[op.not]: null}
     };
     m.orders.findAll({

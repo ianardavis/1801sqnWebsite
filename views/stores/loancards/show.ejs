@@ -122,4 +122,10 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['sn'], "/stores/loancards/<%= loancard.loancard_id %>");
+    };
+</script>
 <% include ../../partials/foot/htmlClose %>

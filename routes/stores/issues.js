@@ -8,16 +8,17 @@ module.exports = (app, m) => {
     app.get('/stores/issues', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_issues', true, req, res, (allowed) => {
             var whereObj = {},
-                returned = Number(req.query.returned) || 2;
-            if (returned === 2) {
+                query = {};
+            query.rl = Number(req.query.rl) || 2;
+            if (query.rl === 2) {
                 whereObj.returned_to = null
-            } else if (returned === 3) {
+            } else if (query.rl === 3) {
                 whereObj.returned_to = {[op.not]: null}
             };
             fn.getIssuesWhere(whereObj, req, (issues) => {
                 res.render('stores/issues/index', {
-                    returned: returned,
-                    issues:   issues
+                    query:  query,
+                    issues: issues
                 });
             });
         });
@@ -141,13 +142,16 @@ module.exports = (app, m) => {
     //show
     app.get('/stores/issues/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_issues', false, req, res, (allowed) => {
+            var query = {};
+            query.sn = Number(req.query.sn) || 2
             fn.getIssue(req.params.id, req, (issue) => {
                 if (issue) {
                     if (allowed || issue.issuedTo.user_id === req.user.user_id) {
                         fn.getNotes('issues', req.params.id, req, res, (notes) => {
                             res.render('stores/issues/show', {
-                                    issue: issue,
-                                    notes: notes
+                                issue: issue,
+                                notes: notes,
+                                query: query
                             })
                         });
                     } else {

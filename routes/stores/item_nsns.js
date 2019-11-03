@@ -30,12 +30,15 @@ module.exports = (app, m) => {
     // Edit
     app.get('/stores/item_nsns/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_nsn_edit', true, req, res, (allowed) => {
+            var query = {};
+            query.sn = req.query.sn || 2;
             fn.getNSN(req.params.id, req, (nsn) => {
                 if (nsn) {
                     fn.getNotes('item_nsns', req.params.id, req, res, (notes) => {
                         res.render('stores/item_nsns/edit', {
                             nsn:   nsn,
-                            notes: notes
+                            notes: notes,
+                            query: query
                         });
                     });
                 } else {

@@ -10,13 +10,13 @@
                 <a class="nav-link stores_nav" href="/stores/items">Items</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= size.item_id %>"><%= size.item._description %></a>
+                <a class="nav-link stores_nav" href="/stores/items/<%= location.size.item.item_id %>"><%= location.size.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= size.stock_id %>">Size: <%= size.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= location.stock_id %>">Size: <%= location.size.size._text %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_nsns/new">Add NSN</a>
+                <a class="nav-link stores_nav" href="/stores/adjusts/new?si=<%= location.stock_id %>&at=<%= query.at %>"><%= query.at %></a>
             </li>
         </ul>
     </nav>
@@ -28,7 +28,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/item_sizes/<%= size.stock_id %>">Back to <%= size.item._description %>/Size: <%= size.size._text %></a>
+				<a class="dropdown-item" href="/stores/items_sizes/<%= location.stock_id %>">Back to <%= location.size.item._description %>/Size: <%= location.size.size._text %></a>
 			</div>
 		</li>
 	</ul>
@@ -37,15 +37,16 @@
 	<div class="row">
 		<div class="col-12 col-lg-3 mx-auto mb-3">
 			<div class="container bordered">
-				<h4>NSN</h4>
-				<div class="details">
-					<form action="/stores/items_nsns" method="POST">
-						<input type="hidden" name="nsn[stock_id]" value="<%= size.stock_id %>" readonly>
-						<p><input class="form-control" type="text" inputmode="numeric" name="nsn[_nsn]" maxlength="20" placeholder="NSN" required></p>
-						<p><button class="btn btn-success">Save</button></p>
-					</form>
-                </div>
-			</div>
+                <h4><%= query.at %></h4>
+                <form action="/stores/adjusts" method="POST">
+					<div class="">
+						<input type="hidden" name="adjust[_adjust_type]" value="<%= query.at %>" readonly>
+						<input type="hidden" name="adjust[location_id]" value="<%= location.stock_id %>" readonly>
+						<p><input type="text" name="adjust[_qty]" inputmode="numeric" maxlength="11" placeholder="Quantity" required></p>
+					</div>
+					<p><button class="btn btn-success">Save</button></p>
+				</form>
+            </div>
 		</div>
     </div>
 </section>

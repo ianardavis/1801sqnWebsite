@@ -16,11 +16,11 @@
 	<div class="container mt-3 pt-3">
 		<div>
 			<div class="row">
-				<label class="col-3 col-form-label text-right" for="placed">Completed Requests:</label>
-				<select id="placed" class='form-control col-9' type="text">
-					<option value="1" <% if (query.placed === '1') { %>selected<% } %> >Include</option>
-					<option value="2" <% if (query.placed === '2') { %>selected<% } %> >Exclude</option>
-					<option value="3" <% if (query.placed === '3') { %>selected<% } %> >Only</option>
+				<label class="col-3 col-form-label text-right" for="cr">Completed Requests:</label>
+				<select id="cr" class='form-control col-9' type="text" onchange="window.location = '/stores/requests?complete=' + this.options[this.selectedIndex].value">
+					<option value="1" <% if (query.cr === '1') { %>selected<% } %> >Include</option>
+					<option value="2" <% if (query.cr === '2') { %>selected<% } %> >Exclude</option>
+					<option value="3" <% if (query.cr === '3') { %>selected<% } %> >Only</option>
 				</select>
 			</div>
 		</div>
@@ -58,13 +58,10 @@
 </div>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
 <script>
-	function filter() {
-		var filters = [];
-		if ($("#placed").val() != '') 	{filters.push("placed=" +   $("#placed").val());}
-		if ($("#received").val() != '') {filters.push("received=" + $("#received").val());}
-		if ($("#issued").val() != '')   {filters.push("issued=" +   $("#issued").val());}
-		window.location.replace("/stores/requests?" + filters.join("&"))
-	}	
+    function filterSelects() {
+        filter(['cr'], "/stores/requests");
+    };
 </script>
 <% include ../../partials/foot/htmlClose %>

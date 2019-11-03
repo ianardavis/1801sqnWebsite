@@ -149,4 +149,10 @@
 	</div>
 </section>
 <% include ../../partials/foot/full %>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['sn'],"/stores/requests/<%= request.request_id %>");
+    };
+</script>
 <% include ../../partials/foot/htmlClose %>

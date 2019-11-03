@@ -75,6 +75,8 @@ module.exports = (app, m) => {
     //Index
     app.get('/stores/requests', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_requests', true, req, res, (allowed) => {
+            var query = {};
+            query.cr = Number(req.query.cr) || 2;
             fn.getAllRequests(req.query.complete ,req, (requests) => {
                 res.render('stores/requests/index',{
                     requests: requests,
@@ -87,12 +89,15 @@ module.exports = (app, m) => {
     //Show
     app.get('/stores/requests/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_requests', false, req, res, (allowed) => {
+            var query = {};
+            query.sn = Number(req.query.sn) || 2;
             fn.getRequest(req.params.id, req, (request) => {
                 if (allowed || request.requestedFor.user_id === req.user.user_id) {
                     fn.getNotes('requests', req.params.id, req, res, (notes) => {
                         res.render('stores/requests/show',{
                             request: request,
-                            notes: notes
+                            notes:   notes,
+                            query:   query
                         });
                     });
                 } else {

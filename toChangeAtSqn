@@ -11,3 +11,5 @@ orders - remove supplier_id
 items - remove supplier_id and _ordering_details
 item_sizes - add supplier_id and _ordering_details
 requests - change _date_requested to _date and _date_approval to _date_approved
+permissions - item_count to item_adjust, remove item_scrap
+adjusts - change stock_id to location_id

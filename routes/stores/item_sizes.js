@@ -117,6 +117,8 @@ module.exports = (app, m) => {
     // Show
     app.get('/stores/item_sizes/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_items', true, req, res, (allowed) => {
+            var query = {};
+            query.sn = req.query.sn || 2;
             fn.getItemSize(
                 req.params.id,
                 req, 
@@ -132,9 +134,10 @@ module.exports = (app, m) => {
                         stock._ordered = fn.summer(item_size.orders);
                         stock._issued = fn.summer(item_size.issues);
                         res.render('stores/item_sizes/show', {
-                            item:   item_size,
-                            notes:  notes,
-                            stock:  stock
+                            item:  item_size,
+                            notes: notes,
+                            stock: stock,
+                            query: query
                         });
                     });
                 } else {

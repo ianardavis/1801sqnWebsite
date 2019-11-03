@@ -59,7 +59,8 @@ var m                = require('./db/models'),
     loancardRoutes   = require('./routes/stores/loancards')(app, m),
     itemSearchRoutes = require('./routes/stores/itemSearch')(app, m),
     orderRoutes      = require('./routes/stores/orders')(app, m),
-    requestRoutes    = require('./routes/stores/requests')(app, m);
+    requestRoutes    = require('./routes/stores/requests')(app, m),
+    adjustRoutes     = require('./routes/stores/adjusts')(app, m);
 
 app.use('/stores', storesRoutes);
 app.use(siteRoutes);

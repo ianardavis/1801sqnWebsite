@@ -134,7 +134,7 @@
                                 <label class="col-form-label">Reset:</label>
                             </div>
                             <div class="col-sm-9">
-                                <input class="form-control" id="_reset" type="checkbox" disabled>
+                                <input class="form-control" id="_reset" type="checkbox" <% if (user._reset) { %>selected <% } %>disabled>
                             </div>
                         </div>
                     </div>
@@ -166,11 +166,11 @@
         <div class="container bordered pt-3">
             <h4>Issued Items</h4>
             <div class="row px-3">
-                <label class="col-5 col-form-label" for="_returned">Returned Lines:</label>
-                <select class='form-control form-control-sm col-7' id="_returned" type="text" onchange="window.location = '/stores/issues?user=<%= user.user_id %>&returned=' + this.options[this.selectedIndex].value">
-                    <option value="1" <% if (query.returnedIssues === 1) { %>selected<% } %> >Include</option>
-                    <option value="2" <% if (query.returnedIssues === 2) { %>selected<% } %> >Exclude</option>
-                    <option value="3" <% if (query.returnedIssues === 3) { %>selected<% } %> >Only</option>
+                <label class="col-5 col-form-label" for="ri">Returned Lines:</label>
+                <select class='form-control form-control-sm col-7' id="ri" type="text" onchange=filterSelects()>
+                    <option value="1" <% if (query.ri === 1) { %>selected<% } %> >Include</option>
+                    <option value="2" <% if (query.ri === 2) { %>selected<% } %> >Exclude</option>
+                    <option value="3" <% if (query.ri === 3) { %>selected<% } %> >Only</option>
                 </select>
             </div>
             <table id="tableIssues" class='table table-sm table-hover mx-auto w-100'>
@@ -215,11 +215,11 @@
         <div class="container bordered mt-3 pt-3">
             <h4>Loan Cards</h4>
             <div class="row px-3">
-                <label class="col-form-label col-5" for="closed">Closed Cards:</label>
-                <select id="closed" class='form-control form-control-sm col-7' type="text" onchange="window.location = '/stores/issues?user=<%= user.user_id %>&returned=' + this.options[this.selectedIndex].value">
-                    <option value="1" <% if (query.closedLoancards === 1) { %>selected<% } %> >Include</option>
-                    <option value="2" <% if (query.closedLoancards === 2) { %>selected<% } %> >Exclude</option>
-                    <option value="3" <% if (query.closedLoancards === 3) { %>selected<% } %> >Only</option>
+                <label class="col-form-label col-5" for="cl">Closed Cards:</label>
+                <select id="cl" class='form-control form-control-sm col-7' type="text" onchange=filterSelects()>
+                    <option value="1" <% if (query.cl === 1) { %>selected<% } %> >Include</option>
+                    <option value="2" <% if (query.cl === 2) { %>selected<% } %> >Exclude</option>
+                    <option value="3" <% if (query.cl === 3) { %>selected<% } %> >Only</option>
                 </select>
             </div>
             <table id="tableLoancards" class='table table-sm table-hover mx-auto w-100'>
@@ -246,11 +246,11 @@
         <div class="container bordered mt-3 pt-3">
             <h4>Orders</h4>
             <div class="row px-3">
-            <label class="col-form-label col-5" for="_returned">Issued Orders:</label>
-                <select id="_returned" class='form-control form-control-sm col-7' type="text" onchange="window.location = '/stores/issues?user=<%= user.user_id %>&returned=' + this.options[this.selectedIndex].value">
-                    <option value="1" <% if (query.issuedOrders === 1) { %>selected<% } %> >Include</option>
-                    <option value="2" <% if (query.issuedOrders === 2) { %>selected<% } %> >Exclude</option>
-                    <option value="3" <% if (query.issuedOrders === 3) { %>selected<% } %> >Only</option>
+            <label class="col-form-label col-5" for="io">Issued Orders:</label>
+                <select id="io" class='form-control form-control-sm col-7' type="text" onchange=filterSelects()>
+                    <option value="1" <% if (query.io === 1) { %>selected<% } %> >Include</option>
+                    <option value="2" <% if (query.io === 2) { %>selected<% } %> >Exclude</option>
+                    <option value="3" <% if (query.io === 3) { %>selected<% } %> >Only</option>
                 </select>
             </div>
             <table id="tableOrders" class='table table-sm table-hover mx-auto w-100'>
@@ -279,11 +279,11 @@
         <div class="container bordered mt-3 pt-3">
             <h4>Requests</h4>
             <div class="row px-3">
-                <label class="col-form-label col-5" for="_returned">Closed Requests:</label>
-                <select id="_returned" class='form-control form-control-sm col-7' type="text" onchange="window.location = '/stores/issues?user=<%= user.user_id %>&returned=' + this.options[this.selectedIndex].value">
-                    <option value="1" <% if (query.closedRequests === 1) { %>selected<% } %> >Include</option>
-                    <option value="2" <% if (query.closedRequests === 2) { %>selected<% } %> >Exclude</option>
-                    <option value="3" <% if (query.closedRequests === 3) { %>selected<% } %> >Only</option>
+                <label class="col-form-label col-5" for="cr">Closed Requests:</label>
+                <select id="cr" class='form-control form-control-sm col-7' type="text" onchange=filterSelects()>
+                    <option value="1" <% if (query.cr === 1) { %>selected<% } %> >Include</option>
+                    <option value="2" <% if (query.cr === 2) { %>selected<% } %> >Exclude</option>
+                    <option value="3" <% if (query.cr === 3) { %>selected<% } %> >Only</option>
                 </select>
             </div>
             <table id="tableRequests" class='table table-sm table-hover mx-auto w-100'>
@@ -317,7 +317,10 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
 <script>
-    document.querySelector('#_reset').checked = (Boolean(<%= user._reset %>));
+    function filterSelects() {
+        filter(['sn', 'io', 'cl', 'cr', 'ri'],"/stores/users/<%= user.user_id %>");
+    };
 </script>
 <% include ../../partials/foot/htmlClose %>

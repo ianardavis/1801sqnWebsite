@@ -144,4 +144,10 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['sn'],"/stores/items/<%= item.item_id %>");
+    };
+</script>
 <% include ../../partials/foot/htmlClose %>

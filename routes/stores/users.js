@@ -134,35 +134,36 @@ module.exports = (app, m) => {
             if (allowed || req.user.user_id === Number(req.params.id)) {
                 var extended = {},
                     query = {};
-                query.issuedOrders    = Number(req.query.orders)    || 2,
-                query.closedLoancards = Number(req.query.loancards) || 2,
-                query.closedRequests  = Number(req.query.requests)  || 2,
-                query.returnedIssues  = Number(req.query.issues)    || 2;
+                query.io = Number(req.query.io) || 2,
+                query.cl = Number(req.query.cl) || 2,
+                query.cr = Number(req.query.cr) || 2,
+                query.ri = Number(req.query.ri) || 2;
+                query.sn = Number(req.query.sn) || 2;
                 extended.include = true;
-                if (query.issuedOrders === 2) {
+                if (query.io === 2) {
                     extended.orders = {issue_id: null};
-                } else if (query.issuedOrders === 3) {
+                } else if (query.io === 3) {
                     extended.orders = {issue_id: {[op.not]: null}};
                 } else {
                     extended.orders = {};
                 };
-                if (query.closedLoancards === 2) {
+                if (query.cl === 2) {
                     extended.loancards = {_closed: null};
-                } else if (query.closedLoancards === 3) {
+                } else if (query.cl === 3) {
                     extended.loancards = {_closed: {[op.not]: null}};
                 } else {
                     extended.loancards = {};
                 };
-                if (query.closedRequests === 2) {
+                if (query.cr === 2) {
                     extended.requests = {_status: 'Pending'};
-                } else if (query.closedRequests === 3) {
+                } else if (query.cr === 3) {
                     extended.requests = {_status: {[op.not]: 'Pending'}};
                 } else {
                     extended.requests = {};
                 };
-                if (query.returnedIssues === 2) {
+                if (query.ri === 2) {
                     extended.issues = {_date_returned: null};
-                } else if (query.returnedIssues === 3) {
+                } else if (query.ri === 3) {
                     extended.issues = {_date_returned: {[op.not]: null}};
                 } else {
                     extended.issues = {};

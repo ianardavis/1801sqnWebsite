@@ -1,11 +1,11 @@
 <div class="bordered">
     <h4>Notes:</h4>
     <div class="row px-3">
-        <label class="col-5 col-form-label" for="_system">System Notes:</label>
-        <select class='form-control form-control-sm col-7' id="_system" type="text" onchange="window.location = '/stores/users?sysnotes=' + this.options[this.selectedIndex].value">
-            <option value="1">Include</option>
-            <option value="2" selected="selected">Exclude</option>
-            <option value="3">Only</option>
+        <label class="col-5 col-form-label" for="sn">System Notes:</label>
+        <select class='form-control form-control-sm col-7' id="sn" type="text" onchange=filterSelects()>
+            <option value="1" <% if (query.sn === 1) { %> selected <% } %>>Include</option>
+            <option value="2" <% if (query.sn === 2) { %> selected <% } %>>Exclude</option>
+            <option value="3" <% if (query.sn === 3) { %> selected <% } %>>Only</option>
         </select>
     </div>
     <!-- <div style="overflow-x:auto;"> -->
