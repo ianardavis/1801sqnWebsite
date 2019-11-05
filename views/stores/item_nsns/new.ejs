@@ -39,7 +39,7 @@
 			<div class="container bordered">
 				<h4>NSN</h4>
 				<div class="details">
-					<form action="/stores/items_nsns" method="POST">
+					<form action="/stores/item_nsns" method="POST">
 						<input type="hidden" name="nsn[stock_id]" value="<%= size.stock_id %>" readonly>
 						<p><input class="form-control" type="text" inputmode="numeric" name="nsn[_nsn]" maxlength="20" placeholder="NSN" required></p>
 						<p><button class="btn btn-success">Save</button></p>
