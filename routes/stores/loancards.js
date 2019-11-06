@@ -8,7 +8,7 @@ module.exports = (app, m) => {
         fn.allowed('access_loancards', true, req, res, (allowed) => {
             var query = {};
             query.cl = Number(req.query.cl) || 2;
-            fn.getAllLoancards(req.query.closed, req, (loancards) => {
+            fn.getAllLoancards(query.cl, req, (loancards) => {
                 res.render('stores/loancards/index',{
                     loancards: loancards,
                     query:     query

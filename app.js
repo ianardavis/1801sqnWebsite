@@ -7,7 +7,7 @@ var   express      = require('express'),
         flash      = require('connect-flash'),
         m_Override = require('method-override'),
         fn         = require('./db/functions');
-
+console.log('environment: ' + process.env.NODE_ENV)
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
@@ -28,7 +28,12 @@ app.use((req, res, next) => {
             where: {user_id: req.user.user_id}
         }).then((permissions) => {
             res.locals.permissions = permissions;
-            common_login(req, res, next)
+            common_login(req, res, next);
+            return null;
+        }).catch((err) => {
+            console.log(err);
+            
+            return null;
         });
     } else {
         common_login(req, res, next)

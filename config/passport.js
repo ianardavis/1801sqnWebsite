@@ -17,7 +17,12 @@ module.exports = (passport, user, permissions) => {
                 done(null, user.get());
             } else {
                 done(user.errors, null);
-            }
+            };
+            return null;
+        }).catch((err) => {
+            console.log(err);
+            done(user.errors, null);
+            return null;
         });
     });
 
@@ -65,13 +70,16 @@ module.exports = (passport, user, permissions) => {
                 var userInfo = user.get();
                 userInfo.permissions = permission;
                 return done(null, userInfo);
-                })
+                }).catch((err) => {
+                    console.log(err);
+                    req.flash('danger', 'Something went wrong with your signin!')
+                    return done(null, false, {message: 'Something went wrong with your signin!'});
+                });
             }).catch((err) => {
                 console.log(err);
                 req.flash('danger', 'Something went wrong with your signin!')
-                return done(null, false, {message: 'Something went wrong with your signin!'}
-                );
+                return done(null, false, {message: 'Something went wrong with your signin!'});
             });
         }
     ));
-}
+};
