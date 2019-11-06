@@ -60,6 +60,7 @@ function addSize() {
     } else {
         if (window.opener.addSize) {
             var selected = {}
+            alert(locations.value);
             if ('<%= callType %>' === 'issue') {
                 nsn_id =   Number(nsns.value),
                 location = JSON.parse(locations.value);
@@ -67,6 +68,7 @@ function addSize() {
                 selected.location_qty = location.qty - qty;
                 selected.nsn_id = nsn_id;
             }
+            console.log(selected);
             selected.stock_id = <%= size.stock_id %>;
             selected._qty = qty;
             selected._description = '<%= size.item._description %>';

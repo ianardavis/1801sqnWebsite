@@ -1,7 +1,6 @@
 var fn = {},
     m  = require('./models'),
-    op = require('sequelize').Op,
-    currentLine;
+    op = require('sequelize').Op;
 fn.allowed = (permission, redirectIfDenied, req, res, cb) => {
     if (res.locals.permissions[permission]) {
         cb(true);
@@ -755,9 +754,9 @@ fn.getNotes = (table, id, req, res, cb) => {
     });
 }; // issues: 315 // item_locations: 39// item_nsns: 35
 
-fn.issueLine = (issue, item, loancard_id) => {
+fn.issueLine = (issue, item, loancard_id, currentLine) => {
     return new Promise((resolve, reject) => {
-        fn.createLoanCardLine(loancard_id, currentLine(), issue.stock_id, item.nsn_id, issue._qty, (line_id) => {
+        fn.createLoanCardLine(loancard_id, currentLine, issue.stock_id, item.nsn_id, issue._qty, (line_id) => {
             issue.line_id = line_id;
             m.issues.create(issue)
             .then((newIssue) => {

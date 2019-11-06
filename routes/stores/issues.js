@@ -2,6 +2,7 @@ const   mw = require('../../config/middleware'),
         op = require('sequelize').Op,
         fn = require("../../db/functions"),
         cn = require("../../db/constructors");
+var currentLine;
 
 module.exports = (app, m) => {    
     // Index
@@ -35,30 +36,30 @@ module.exports = (app, m) => {
                         if (item) {
                             item = JSON.parse(item);
                             var issue = new cn.Issue(req.body.issue, item, req.user.user_id);
-                            issues.push(fn.issueLine(issue, item, loancard_id))
+                            issues.push(fn.issueLine(issue, item, loancard_id, currentLine()))
                         };
                     });
                     if (issues.length > 0) {
                         Promise.all(issues)
                         .then(results => {
                             fn.processPromiseResult(results, req, (then) => {
-                                res.redirect('/stores/issues?user=' + req.body.issue.issued_to);
+                                res.redirect('/stores/issues');
                             });
                         })
                         .catch(err => {
                             console.log(err);
-                            res.redirect('/stores/issues?user=' + req.body.issue.issued_to);
+                            res.redirect('/stores/issues');
                         });
                     } else {
                         fn.deleteLoanCard(loancard_id, (result) => {
-                            res.redirect('/stores/issues?user=' + req.body.issue.issued_to);
+                            res.redirect('/stores/issues');
                         });
                     };
                 });
                 
             } else {
                 req.flash('info', 'No items selected!');
-                res.redirect('/stores/issues?user=' + req.body.issue.issued_to);
+                res.redirect('/stores/issues');
             };
         });
     });
