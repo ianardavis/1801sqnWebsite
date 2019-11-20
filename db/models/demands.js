@@ -32,13 +32,18 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     'user_id': {
-      type: DataTypes.STRING(128),
+      type: DataTypes.INTEGER(4),
       allowNull: false,
+      comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {

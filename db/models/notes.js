@@ -10,12 +10,12 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    '_link_table': {
+    '_table': {
       type: DataTypes.STRING(30),
       allowNull: false,
       comment: "null"
     },
-    '_link_id': {
+    '_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -33,6 +33,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     'user_id': {
       type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
+    '_date': {
+      type: DataTypes.DATE,
       allowNull: false,
       comment: "null"
     },

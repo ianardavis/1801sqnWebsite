@@ -58,7 +58,7 @@ module.exports = (app, m) => {
     app.get('/stores/itemSearch/size/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_items', true, req, res, (allowed) => {
             var callType = req.query.callType || 'issue';
-            fn.getItemSize(req.params.id,req, {include: true}, {include: true}, {include: false}, {include: false}, (size) => {
+            fn.getItemSize(req.params.id,req, {include: true}, {include: true}, {include: false}, {include: false}, {include: false}, (size) => {
                 if (size) {
                     res.render('stores/itemSearch/details', {
                         size:     size,

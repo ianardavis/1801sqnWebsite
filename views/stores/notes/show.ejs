@@ -13,78 +13,70 @@
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				<a class="dropdown-item" href="/stores/notes/<%= note.note_id %>/edit">Edit</a>
 				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="/stores/<%= note._link_table %>/<%= note._link_id %>">Back to <%= note._link_table %></a>
-			</div>
+				<a class="dropdown-item" href="/stores/<%= note._table %>/<%= note._id %>">Back to <%= note._table %></a>
+                <% if (permissions.notes_delete) { %>
+                    <form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST">
+                        <button class="dropdown-item dropdown_button">Delete Note</button>
+                    </form>
+                <% } %>
+            </div>
 		</li>
 	</ul>
 </nav>
-<section class="detailBox container-fluid pt-3">
+<section class="container-fluid pt-3">
 	<div class="row">
-		<div class="col-6 mb-3 mx-auto">
-			<div class="bordered" id="divUsers">
-                <h4>Details</h4>
-                <div class="details">
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label>User:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" value="<%= user._name %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label>Date:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" value="<%= note.createdAt.toDateString() %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label>For Table:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" value="<%= note._link_table %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label>Id:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" value="<%= note._link_id %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label>System note:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input type="text" value="<%= Boolean(note.__system) %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <label>Text:</label>
-                        </div>
-                        <div class="col-12">
-                            <textarea class="w-100" rows="10" readonly><%= note._note %></textarea>
-                        </div>
-                    </div>
+		<div class="col-6 mb-3 mx-auto bordered">
+            <h4>Details</h4>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label class= col-form-label>User:</label>
                 </div>
-			</div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" value="<%= user.rank._rank %> <%= user._name %>, <%= user._ini %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label class= col-form-label>Date:</label>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" value="<%= note.createdAt.toDateString() %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label class= col-form-label>For Table:</label>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" value="<%= note._table %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label class= col-form-label>Id:</label>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" value="<%= note._id %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label class= col-form-label>System note:</label>
+                </div>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" value="<%= Boolean(note._system) %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <label class= col-form-label>Text:</label>
+                </div>
+                <div class="col-12">
+                    <textarea class="w-100 form-control" rows="10" readonly><%= note._note %></textarea>
+                </div>
+            </div>
 		</div>
     </div>
-    <% if (permissions.notes_delete) { %>
-        <div class="row">
-            <div class="col-12 text-left">
-                <form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST">
-                    <button class="btn btn-danger">Delete Note</button>
-                </form>
-            </div>
-        </div>
-    <% } %>
 </section>
 <% include ../../partials/foot/full %>
 <% include ../../partials/foot/htmlClose %>

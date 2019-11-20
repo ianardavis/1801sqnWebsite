@@ -16,7 +16,7 @@
     </nav>
 </section>
 <section>
-    <nav class="navbar navbar-expand navbar-dark bg-dark stores">
+    <nav class="navbar navbar-expand navbar-dark bg-dark mb-3">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -30,6 +30,11 @@
                     <% if (permissions.notes_add) { %>
                         <a class="dropdown-item" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">Add Note</a>
                         <div class="dropdown-divider"></div>
+                    <% } %>                    
+                    <% if (permissions.suppliers_delete === 1) { %>
+                        <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST">
+                            <button class="dropdown-item dropdown_button">Delete Supplier</button>
+                        </form>
                     <% } %>
                     <a class="dropdown-item" href="/stores/suppliers">Back to Suppliers</a>
                 </div>
@@ -37,77 +42,99 @@
         </ul>
     </nav>
 </section>
-<section class="detailBox container-fluid pt-3">
+<section class="container">
 	<div class="row">
-		<div class="col-12 col-lg-4 mb-3">
-			<div class="bordered">
-                <h4>Details</h4>
-                <div class="details">
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Supplier Name:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= supplier._name %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Address:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= supplier._address1 %>" readonly>
-                            <input class="form-control" type="text" value="<%= supplier._address2 %>" readonly>
-                            <input class="form-control" type="text" value="<%= supplier._address3 %>" readonly>
-                            <input class="form-control" type="text" value="<%= supplier._address4 %>" readonly>
-                            <input class="form-control" type="text" value="<%= supplier._address5 %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Tel:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= supplier._telephone %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Email:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="text" value="<%= supplier._email %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">RAF Stores?:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="checkbox" id="_stores" value="1" <% if (supplier._stores) { %>checked<% } %> disabled>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <label class="col-form-label">Is Default:</label>
-                        </div>
-                        <div class="col-sm-9">
-                            <input class="form-control" type="checkbox" id="_default" value="1" <% if (supplier._default) { %>checked<% } %> disabled>
-                        </div>
-                    </div>
+		<div class="col-12 col-lg-5 bordered">
+            <h4>Details</h4>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Supplier Name:</label>
                 </div>
-			</div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= supplier._name %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Address:</label>
+                </div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= supplier._address1 %>" readonly>
+                    <input class="form-control" type="text" value="<%= supplier._address2 %>" readonly>
+                    <input class="form-control" type="text" value="<%= supplier._address3 %>" readonly>
+                    <input class="form-control" type="text" value="<%= supplier._address4 %>" readonly>
+                    <input class="form-control" type="text" value="<%= supplier._address5 %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Tel:</label>
+                </div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= supplier._telephone %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Email:</label>
+                </div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= supplier._email %>" readonly>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Demand File:</label>
+                </div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= supplier._demand %>" readonly>
+                </div>
+                <div class="col-12">
+                    <form ref="uploadForm" id="uploadForm" action="/stores/suppliers/<%= supplier.supplier_id %>/upload" method="POST" encType="multipart/form-data">
+                        <input class="mb-1" type="file" name="demandfile">
+                        <input class="btn btn-primary" type="submit" value="Upload Demand Spreadsheet">
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">RAF Stores?:</label>
+                </div>
+                <div class="col-sm-8">
+                    <input class="form-control form-control-sm" type="checkbox" id="_stores" value="1" <% if (supplier._stores) { %>checked<% } %> disabled>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Is Default:</label>
+                </div>
+                <div class="col-sm-8">
+                    <input class="form-control form-control-sm" type="checkbox" id="_default" value="1" <% if (supplier._default) { %>checked<% } %> disabled>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-8">
+        <div class="col-12 col-lg-7 bordered">
+            <h4>Items From This Supplier</h4>
+            <table id="sizeTable" class="table table-sm table-hover w-100">
+                <thead class="thead-dark">
+                    <th class="w-40" onclick="sortTable(0, 'sizeTable')">Description</th>
+                    <th class="w-40" onclick="sortTable(1, 'sizeTable')">Size</th>
+                </thead>
+                <tbody>
+                    <% if (supplier.sizes) { %>
+                        <% supplier.sizes.forEach((size) => { %>
+                            <tr>
+                                <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.item._description %></a></td>
+                                <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.size._text %></a></td>
+                            </tr>
+                        <% }); %>
+                    <% }; %>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 bordered">
             <% include ../../partials/noteTable %>
         </div>
-        <% if (permissions.suppliers_delete === 1) { %>
-            <div class="col-12">
-                <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST">
-                    <button class="btn btn-danger">Delete Supplier</button>
-                </form>
-            </div>
-        <% } %>
     </div>
 </section>
 <% include ../../partials/foot/full %>

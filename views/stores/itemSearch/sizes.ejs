@@ -3,7 +3,10 @@
 <% include ../../partials/head/flash %>
 <section id="body">
 <div class="row container mx-auto">
-    <div class="col-12 col-md-6 bordered my-5 mx-auto">
+    <div class="col-12 mb-3">
+        <a class="btn btn-primary w-100" href="/stores/itemSearch">Back</a>
+    </div>
+    <div class="col-12 col-md-6 bordered mb-3 mx-auto">
         <h5>Sizes for <%= description %></h5>
         <input class="form-control" type="text" id="sizeSearch" onkeyup="searchTable('sizesTable', 'sizeSearch')" placeholder="Search forsizes..">
         <form action="/stores/itemSearch/size" method="POST">
@@ -15,8 +18,11 @@
                     <option value="<%= size.stock_id %>"><%= size.size._text %></option>
                 <% }); %>
             </select>
-            <button class="btn btn-primary">Select</button>
+            <button class="btn btn-success w-100">Select</button>
         </form>
+    </div>
+    <div class="col-12">
+        <a class="btn btn-danger w-100" href="javascript:close()">Finished Adding Items</a>
     </div>
 </div>
 <% include ../../partials/foot/js %>

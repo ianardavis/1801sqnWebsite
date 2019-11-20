@@ -10,10 +10,10 @@
                 <a class="nav-link stores_nav" href="/stores/users">Users</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users/<%= selectedUser.user_id %>"><%= selectedUser.rank._rank %> <%= selectedUser._name %>, <%= selectedUser._ini %></a>
+                <a class="nav-link stores_nav" href="/stores/users/<%= user.user_id %>"><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/issues/new?user=<%= selectedUser.user_id %>">New Issue</a>
+                <a class="nav-link stores_nav" href="/stores/issues/new?user=<%= user.user_id %>">New Issue</a>
             </li>
         </ul>
     </nav>
@@ -21,7 +21,7 @@
 <section>
 	<div class="container">
 		<form id="issueForm" action="/stores/issues" method="POST">
-			<input type="hidden" name="issue[issued_to]" value="<%= selectedUser.user_id %>">
+			<input type="hidden" name="issue[issued_to]" value="<%= user.user_id %>">
 			<div class="row">
 				<div class="col-12 col-md-6 bordered mb-3">
 					<h5>Selected Items</h5>

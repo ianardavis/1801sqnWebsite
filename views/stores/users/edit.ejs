@@ -1,4 +1,4 @@
-<!-- CADET NEW PAGE -->
+<!-- User Edit PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -35,7 +35,7 @@
                     <label class='col-form-label' for='_name'>Rank:</label>
                 </div>
                 <div class='col-sm-10'>
-                    <select id='rank' class='form-control' name='user[rank]' type='text'>
+                    <select id='rank' class='form-control' name='user[rank_id]' type='text'>
                         <% classes.ranks.forEach((rank) => { %>
                             <% if(user.rank === rank) { %>
                                 <option value='<%= rank.rank_id %>'selected><%= rank._rank %></option>
@@ -67,7 +67,7 @@
                     <label class='col-form-label' for='_gender'>Gender:</label>
                 </div>
                 <div class='col-sm-10'>
-                    <select id='genderSel' class='form-control' name='user[gender]' type='text'>
+                    <select id='genderSel' class='form-control' name='user[gender_id]' type='text'>
                         <% classes.genders.forEach((gender) => { %>
                             <% if(user.gender === gender) { %>
                                 <option value='<%= gender.gender_id %>'selected><%= gender._gender %></option>
@@ -83,7 +83,7 @@
                     <label class='col-form-label' for='_status'>Status:</label>
                 </div>
                 <div class='col-sm-10'>
-                    <select id='statusSel' class='form-control' name='user[status]' type='text' >
+                    <select id='statusSel' class='form-control' name='user[status_id]' type='text' >
                         <% classes.statuses.forEach((status) => { %>
                             <% if (status.status_id !== 4) { %> 
                                 <% if(user.status === status) { %>

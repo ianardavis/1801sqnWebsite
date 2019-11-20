@@ -12,7 +12,7 @@
         </ul>
     </nav>
 </section>
-<% if (permissions.items_add) { %>
+<% if (permissions.item_add) { %>
 <section>
 	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
 		<ul class="navbar-nav mr-auto">
@@ -28,7 +28,7 @@
 		<div class="row px-3">
 			<label class="col-3 col-form-label text-right" for="category_id">Category:</label>
 			<select class="form-control form-control-sm col-9" id="category_id" type="text">
-				<option value="" data-tag='<blank>'></option>	
+				<option value="" data-tag='<blank>'></option>
 				<% classes.categories.forEach((cat) => { %>
 					<option value="<%= cat.category_id %>"><%= cat._category %></option>
 				<% }) %>
@@ -39,16 +39,16 @@
 			<select class="form-control form-control-sm col-9" id="group_id" type="text">
 				<option value="" data-tag='<blank>'></option>
 				<% classes.groups.forEach((grp) => { %>
-					<option value="<%= grp.group_id %>" data-tag='<%= grp._parent %>' style="display: none;"><%= grp._group %></option>
+					<option value="<%= grp.group_id %>" data-tag='<%= grp.category_id %>' style="display: none;"><%= grp._group %></option>
 				<% }) %>
 			</select>
 		</div>
 		<div class="row px-3">
 			<label class="col-3 col-form-label text-right" for="type_id">Type:</label>
 			<select class="form-control form-control-sm col-9" id="type_id" type="text"> 
-				<option value="" data-tag='<blank>' ></option>	
+				<option value="" data-tag='<blank>' ></option>
 				<% classes.types.forEach((typ) => { %>
-					<option value="<%= typ.type_id %>" data-tag='<%= typ._parent %>' style="display: none;"><%= typ._type %></option>
+					<option value="<%= typ.type_id %>" data-tag='<%= typ.group_id %>' style="display: none;"><%= typ._type %></option>
 				<% }) %>
 			</select>
 		</div>
@@ -57,7 +57,7 @@
 			<select class="form-control form-control-sm col-9" id="subtype_id" type="text">
 				<option value="" data-tag='<blank>'></option>
 				<% classes.subtypes.forEach((sub) => { %>
-					<option value="<%= sub.subtype_id %>" data-tag='<%= sub._parent %>' style="display: none;"><%= sub._sub_type %></option>
+					<option value="<%= sub.subtype_id %>" data-tag='<%= sub.type_id %>' style="display: none;"><%= sub._subtype %></option>
 				<% }) %>
 			</select>
 		</div>
@@ -102,7 +102,7 @@ $(window).on("load", () => {
     setType;
     $('#_type').val(<%= query._type %>);
     setSubtype;
-    $('#_sub_type').val(<%= query._sub_type %>);
+    $('#_subtype').val(<%= query._subtype %>);
     $('#_gender').val(<%= query._gender %>);
 });
 $('#_category').on('change', setGroup);	
@@ -113,19 +113,19 @@ function setGroup() {
     hideSome("_group", $(this).val());
     $("#_group").val($("#_group option:visible:first").val());
     $("#_type").val($("#_type option:visible:first").val());
-    $("#_sub_type").val($("#_sub_type option:visible:first").val());
+    $("#_subtype").val($("#_subtype option:visible:first").val());
     hideAll("_type")
-    hideAll("_sub_type")
+    hideAll("_subtype")
 }
 function setType() {
     hideSome("_type", $(this).val());
     $("#_type").val($("#_type option:visible:first").val());
-    $("#_sub_type").val($("#_sub_type option:visible:first").val());
-    hideAll("_sub_type")
+    $("#_subtype").val($("#_subtype option:visible:first").val());
+    hideAll("_subtype")
 }
 function setSubtype() {
-    hideSome("_sub_type", $(this).val());
-    $("#_sub_type").val($("#_sub_type option:visible:first").val());
+    hideSome("_subtype", $(this).val());
+    $("#_subtype").val($("#_subtype option:visible:first").val());
 }
 function hideSome(select, selected) {
     $("#" + select + " option").each(function(item){

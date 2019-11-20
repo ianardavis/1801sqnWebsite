@@ -28,7 +28,7 @@
         </div>
     </div>
    <div class="container-fluid bordered p-3">
-        <form action="/stores/items_sizes" method="POST">
+        <form action="/stores/item_sizes" method="POST">
             <input type="hidden" name="failRedirect", value="/stores/items/<%= item.item_id %>" readonly>
             <input type="hidden" name="details[item_id]", value="<%= item.item_id %>" readonly>
             <div class="form-group row">
@@ -65,7 +65,7 @@
                     <label class="col-form-label">Cell:</label>
                 </div> 
                 <div class="col-7">
-                    <input class="form-control" type="text" name="details[_cell]" maxlength="3" placeholder="Cell">
+                    <input class="form-control" type="text" name="details[_demand_cell]" maxlength="3" placeholder="Cell">
                 </div>
             </div>
             <div class="form-group row">
@@ -94,7 +94,7 @@
                                     <label class="col-form-label" for="<%= size.size_id %>"><%= size._text %></label>
                                 </td>
                                 <td>
-                                    <input class="form-control" id="<%= size.size_id %>" type="checkbox" name="details[sizes]" value="<%= size.size_id %>">
+                                    <input class="form-control" id="<%= size.size_id %>" type="checkbox" name="sizes" value="<%= size.size_id %>">
                                 </td>
                                 </tr>
                         <% }) %>

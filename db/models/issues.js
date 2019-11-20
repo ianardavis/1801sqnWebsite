@@ -15,14 +15,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'stock_id': {
+    'issued_by': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_qty': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
+    '_complete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: true,
       comment: "null"
     },
     '_date': {
@@ -33,36 +33,6 @@ module.exports = function(sequelize, DataTypes) {
     '_date_due': {
       type: DataTypes.DATE,
       allowNull: false,
-      comment: "null"
-    },
-    'issue_location': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
-    'line_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'issued_by': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
-    '_date_returned': {
-      type: DataTypes.DATE,
-      allowNull: true,
-      comment: "null"
-    },
-    'return_location': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'returned_to': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
       comment: "null"
     },
     'createdAt': {

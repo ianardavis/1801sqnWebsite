@@ -1,0 +1,71 @@
+<!-- USER ITEM PAGE -->
+<% include ../../partials/head/full %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items/<%= location.size.item_id %>"><%= location.size.item._description %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= location.size.stock_id %>">Size: <%= location.size.size._text %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/locations/<%= location.location_id %>/edit">Location: <%= location._location %></a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<% if (permissions.item_adjust) { %> 
+				<a class="dropdown-item" href="/stores/adjusts/new?li=<%= location.location_id %>&at=Count">Count</a>
+				<a class="dropdown-item" href="/stores/adjusts/new?li=<%= location.location_id %>&at=Scrap">Scrap</a>
+				<% } %>
+				<% if (permissions.notes_add) { %>
+				<a class="dropdown-item" href="/stores/notes/new?table=locations&id=<%= location.location_id %>">Add Note</a>
+				<div class="dropdown-divider"></div>
+				<% } %>
+				<a class="dropdown-item" href="/stores/items_sizes/<%= location.size.stock_id %>/edit">Back to <%= location.size.item._description %>/Size: <%= location.size.size._text %></a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 col-md-3 mx-auto">
+			<div class="container bordered">
+				<h4>Location</h4>
+				<div class="details">
+					<form action="/stores/locations/<%= location.location_id %>?_method=PUT" method="POST">
+						<input type="hidden" name="location[location_id]" value="<%= location.location_id %>" readonly>
+						<p><input type="text" class="form-control" name="location[_location]" maxlength="10" value="<%= location._location %>" required></p>
+						<p><button class="btn btn-success">Save</button></p>
+					</form>
+                </div>
+			</div>
+		</div>
+		<div class="col-12 col-md-9 mx-auto bordered">
+			<% include ../../partials/noteTable %>
+		</div>
+	</div>
+</section>
+<% include ../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['sn'],"/stores/locations/<%= location.location_id %>/edit");
+    };
+</script>
+<% include ../../partials/foot/htmlClose %>

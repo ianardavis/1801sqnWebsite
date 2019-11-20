@@ -28,7 +28,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Rank:</label>
                 <div class="col-sm-10">
-                    <select class="form-control" name="user[_rank]" type="text">
+                    <select class="form-control" name="user[rank_id]" type="text">
                         <% classes.ranks.forEach((rank) => { %>
                             <option value="<%= rank.rank_id %>"><%= rank._rank %></option>         
                         <% }) %>
@@ -50,7 +50,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Gender:</label>
                 <div class="col-sm-10">
-                    <select class="form-control" name="user[_gender]" type="text" >
+                    <select class="form-control" name="user[gender_id]" type="text" >
                         <% classes.genders.forEach((gender) => { %>
                             <option value="<%= gender.gender_id %>"><%= gender._gender %></option>
                         <% }) %>
@@ -60,7 +60,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Status:</label>
                 <div class="col-sm-10">
-                    <select class="form-control" name="user[_status]" type="text" >
+                    <select class="form-control" name="user[status_id]" type="text" >
                         <% classes.statuses.forEach((status) => { %>
                             <% if (status.status_id !== 4) { %>
                                 <option value="<%= status.status_id %>"><%= status._status %></option>

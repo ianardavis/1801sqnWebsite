@@ -74,6 +74,12 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Issuer"
     },
+    'access_receipts': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
     'item_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
@@ -104,37 +110,37 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Admin"
     },
-    'item_locations_add': {
+    'locations_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'item_locations_edit': {
+    'locations_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'item_locations_delete': {
+    'locations_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'item_nsn_add': {
+    'nsns_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'item_nsn_edit': {
+    'nsns_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'item_nsn_delete': {
+    'nsns_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -320,7 +326,7 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Storeman"
     },
-    'demands_raise': {
+    'demands_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -362,12 +368,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Admin"
     },
-    'access_loancards': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
     'access_reports': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
@@ -379,6 +379,150 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: '0',
       comment: "Issuer"
+    },
+    'ranks_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'ranks_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'ranks_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'statuses_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'statuses_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'statuses_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'genders_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'genders_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'genders_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'categories_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'categories_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'categories_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'groups_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'groups_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'groups_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'types_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'types_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'types_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'subtypes_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'subtypes_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'subtypes_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'sizes_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'sizes_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'sizes_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
     },
     'createdAt': {
       type: DataTypes.DATE,

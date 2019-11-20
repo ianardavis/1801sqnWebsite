@@ -10,17 +10,12 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'stock_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     'ordered_for': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
     },
-    '_qty': {
+    'ordered_by': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -30,25 +25,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    'demand_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'receipt_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'issue_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'ordered_by': {
-      type: DataTypes.INTEGER(11),
+    '_complete': {
+      type: DataTypes.INTEGER(4),
       allowNull: false,
-      comment: "null"
+      comment: "null",
+      defaultValue: '0'
     },
     'createdAt': {
       type: DataTypes.DATE,

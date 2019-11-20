@@ -15,16 +15,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'stock_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
-    '_qty': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     'requested_for': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -35,24 +25,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_status': {
-      type: DataTypes.STRING(15),
+    '_complete': {
+      type: DataTypes.INTEGER(4),
       allowNull: false,
-      comment: "null"
-    },
-    '_date_approved': {
-      type: DataTypes.DATE,
-      allowNull: true,
-      comment: "null"
-    },
-    'order_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'approved_by': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      defaultValue: '0',
       comment: "null"
     },
     'createdAt': {

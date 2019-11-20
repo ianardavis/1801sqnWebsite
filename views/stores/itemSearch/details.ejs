@@ -4,20 +4,30 @@
 <section id="body">
 <div class="row container mx-auto">
     <div class="col-12 col-md-6 mx-auto">
+        <div class="row mb-3">
+            <div class="col-6">
+                <a class="btn btn-primary w-100" href="/stores/itemSearch?callType=<%= callType %>>">New Search</a>
+            </div>
+            <div class="col-6">
+                <a class="btn btn-primary w-100" href="/stores/itemSearch/item/<%= size.item_id %>?d=<%= size.item._description %>&callType=<%= callType %>">Back</a>
+            </div>
+        </div>
         <h4>Select<% if (callType === 'issue') { %> NSN, Location and<% } %> Qty for <%= size.item._description %>, Size: <%= size.size._text %></h4>
         <div class="row">
             <% if (callType === 'issue') { %>
-            <div class="col-12 bordered mt-5">
-                <h5>NSNs</h5>
-                <input class="form-control" type="text" id="nsnSearch" onkeyup="searchTable('nsns', 'nsnSearch')" placeholder="Search for NSNs..">
-                <select class='form-control w-100' id="nsns" type="text" size="5">
-                    <option value=""></option>
-                    <% size.nsns.forEach((nsn) => { %>
-                        <option value="<%= nsn.nsn_id %>"><%= nsn._nsn %></option>
-                    <% }); %>
-                </select>
-            </div>
-            <div class="col-12 bordered mt-5">
+                <div class="col-12 bordered mb-3">
+                    <h5>NSNs</h5>
+                    <input class="form-control" type="text" id="nsnSearch" onkeyup="searchTable('nsns', 'nsnSearch')" placeholder="Search for NSNs..">
+                    <select class='form-control w-100' id="nsns" type="text" size="5">
+                        <option value=""></option>
+                        <% size.nsns.forEach((nsn) => { %>
+                            <option value="<%= nsn.nsn_id %>"><%= nsn._nsn %></option>
+                        <% }); %>
+                    </select>
+                </div>
+            <% } %>
+            <% if (callType === 'issue' || callType === 'receipt') { %>
+                <div class="col-12 bordered mb-3">
                 <h5>Issue From Location</h5>
                 <input class="form-control" type="text" id="locationSearch" onkeyup="searchTable('locations', 'locationSearch')" placeholder="Search for location..">
                 <select class='form-control w-100' id="locations" type="text" size="5">
@@ -28,7 +38,7 @@
                 </select>
             </div>
             <% } %>
-            <div class="col-12 bordered mt-5">
+            <div class="col-12 bordered mb-3">
                 <div class="row mx-auto">
                     <div class="col-4 col-md-2">
                         <label class="col-form-label" for="qty">Qty</label>
@@ -37,9 +47,12 @@
                         <input class="form-control mt-1 mr-3" type="number" id="qty" value="1">
                     </div>
                     <div class="col-md-6">
-                        <button class="btn btn-primary w-100" onclick="addSize();">Add Size</button>
+                        <button class="btn btn-success w-100" onclick=addSize()>Add Size</button>
                     </div>
                 </div>
+            </div>
+            <div class="col-12">
+                <a class="btn btn-danger w-100" href="javascript:close()">Finished Adding Items</a>
             </div>
         </div>
     </div>
@@ -51,33 +64,39 @@ function addSize() {
     var qty = Number(document.querySelector('#qty').value) || 0,
         nsns =       document.querySelector('#nsns'),
         locations =  document.querySelector('#locations');
-    if (('<%= callType %>' === 'issue' && (locations.selectedIndex === -1 ||
-                                           nsns.selectedIndex === -1 ||
-                                           qty === 0)) || 
-        ('<%= callType %>' === 'order' && qty === 0) || 
-        ('<%= callType %>' === 'request' && qty === 0)) {
+    if (('<%= callType %>' === 'issue'   && (locations.selectedIndex === -1 ||
+                                             nsns.selectedIndex === -1 ||
+                                             qty === 0)) || 
+        ('<%= callType %>' === 'receipt' && (locations.selectedIndex === -1 ||
+                                             qty === 0)) || 
+        ('<%= callType %>' === 'order'   &&  qty === 0) || 
+        ('<%= callType %>' === 'request' &&  qty === 0)) {
         alert('Select all fields');
     } else {
         if (window.opener.addSize) {
             var selected = {}
-            alert(locations.value);
             if ('<%= callType %>' === 'issue') {
-                nsn_id =   Number(nsns.value),
-                location = JSON.parse(locations.value);
-                selected.location_id = location.id;
-                selected.location_qty = location.qty - qty;
+                var nsn_id      = Number(nsns.value);
                 selected.nsn_id = nsn_id;
-            }
-            console.log(selected);
-            selected.stock_id = <%= size.stock_id %>;
-            selected._qty = qty;
+            };
+            if ('<%= callType %>' === 'issue' || '<%= callType %>' === 'receipt') {
+                var itemLocation     = JSON.parse(locations.value);
+                selected.location_id = itemLocation.id;
+            };
+            if ('<%= callType %>' === 'issue') {
+                selected.location_qty = itemLocation.qty - qty;
+            } else if ('<%= callType %>' === 'receipt') {
+                selected.location_qty = itemLocation.qty + qty;
+            };
+            selected.stock_id     = <%= size.stock_id %>;
+            selected._qty         = qty;
             selected._description = '<%= size.item._description %>';
-            selected._size_text = '<%= size.size._text %>';
+            selected._size_text   = '<%= size.size._text %>';
             window.opener.addSize(selected);
         } else {
-            alert('unable to find issue window!\nClose window and try again');
-        }
-    }
-}
+            alert('unable to find issue window!\nClose this window and try again');
+        };
+    };
+};
 </script>
 <% include ../../partials/foot/htmlClose %>

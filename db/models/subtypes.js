@@ -10,12 +10,12 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    '_parent': {
+    'type_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_sub_type': {
+    '_subtype': {
       type: DataTypes.STRING(45),
       allowNull: false,
       comment: "null"

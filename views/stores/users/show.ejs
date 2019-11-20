@@ -29,9 +29,16 @@
                     <% if (permissions.users_permissions && user.user_id !== currentUser.user_id) { %>
                         <a class="dropdown-item" href="/stores/permissions/<%= user.user_id %>/edit">Edit Permissions</a>
                     <% } %>
-                    <% if (permissions.users_permissions || user.user_id === currentUser.user_id) { %>
-                        <a class="dropdown-item" href="/stores/password/<%= user.user_id %>">Reset Password</a>
+                    <% if (permissions.users_password || user.user_id === currentUser.user_id) { %>
+                        <a class="dropdown-item" href="/stores/password?user=<%= user.user_id %>">Change Password Now</a>
                     <% } %>
+                    <% if (permissions.users_password || user.user_id === currentUser.user_id) { %>
+                        <form action="/stores/users/<%= user.user_id %>?_method=PUT" method="POST">
+                            <input type="hidden" name="user[user_id]" value="<%=user.user_id %>">
+                            <input type="hidden" name="user[_reset]" value=<% if (user._reset === 0) { %>"1"<% } else { %>"0"<% } %>>
+                            <button class="dropdown-item dropdown_button" type="submit">Toggle Reset at Next Login</button>
+                        </form>
+                        <% } %>
                     <% if (permissions.add_notes) { %>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/stores/notes/new?table=users&id=<%= user.user_id %>">Add Note</a>
@@ -134,7 +141,7 @@
                                 <label class="col-form-label">Reset:</label>
                             </div>
                             <div class="col-sm-9">
-                                <input class="form-control" id="_reset" type="checkbox" <% if (user._reset) { %>selected <% } %>disabled>
+                                <input class="form-control" type="checkbox" <% if (user._reset) { %>checked <% } %>disabled>
                             </div>
                         </div>
                     </div>
@@ -175,69 +182,25 @@
             </div>
             <table id="tableIssues" class='table table-sm table-hover mx-auto w-100'>
                 <thead class="thead-dark">
-                    <th class="w-50" onclick="sortTable(0, 'tableIssues')">Item</th>
-                    <th class="w-20" onclick="sortTable(1, 'tableIssues')">Size</th>
-                    <th class="w-10" onclick="sortTable(2, 'tableIssues')">Quantity</th>
-                    <th class="w-20">Return to: </th>
+                    <th class="w-25" onclick="sortTable(0, 'tableIssues')">Date</th>
+                    <th class="w-25" onclick="sortTable(1, 'tableIssues')">Date Due</th>
+                    <th class="w-40" onclick="sortTable(2, 'tableIssues')">Issued By</th>
+                    <th class="w-10" onclick="sortTable(3, 'tableIssues')">Complete</th>
                 </thead>
                 <tbody>
                     <form id='returnedLines' action="/stores/issues?_method=PUT&source=/stores/users/<%= user.user_id %>" method='POST'>
                         <input type="hidden" name="selectedUser" value="<%= user.user_id %>">
-                        <% user.issues.forEach((issue) => { %>
-                            <tr>
-                                <td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.size.item._description %></a></td>
-                                <td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.size.size._text %></a></td>
-                                <td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue._qty %></a></td>
-                                <td>
-                                    <% if (issue.return_location) { %>
-                                        <a href='/stores/issues/<%= issue.issue_id %>'><%= issue.returnLocation._location %></a>
-                                    <% } else { %>
-                                        <% if (user.user_id !== currentUser.user_id && permissions.issues_return) { %>
-                                            <select class='form-control form-control-sm' name="locations[]">
-                                                <option value=""></option>
-                                                <% if (issue.size.locations) { %>
-                                                    <% issue.size.locations.forEach((location) => { %>
-                                                        <option value="<%= JSON.stringify({'issue_id': issue.issue_id, 'location_id': location.location_id}) %>"><%= location._location %></option>
-                                                    <% }) %>
-                                                <% }; %>
-                                            </select>
-                                        <% } %>
-                                    <% } %>
-                                </td>
-                            </tr>
-                        <% }) %>
+                        <% if (user.issues) { %>
+                            <% user.issues.forEach((issue) => { %>
+                                <tr>
+                                    <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._date.toDateString() %></a></td>
+                                    <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._date_due.toDateString() %></a></td>
+                                    <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue.issuedBy.rank._rank %> <%= issue.issuedBy._name %>, <%= issue.issuedBy._ini %></a></td>
+                                    <td><input class="form-control form-control-sm" type="checkbox" <% if (issue._complete) { %>checked <% } %>disabled></td>
+                                </tr>
+                            <% }); %>
+                        <% }; %>
                     </form>
-                </tbody>
-            </table>
-        </div>
-        <% } %>
-        <% if (permissions.access_loancards || currentUser.user_id === user.user_id) { %>
-        <div class="container bordered mt-3 pt-3">
-            <h4>Loan Cards</h4>
-            <div class="row px-3">
-                <label class="col-form-label col-5" for="cl">Closed Cards:</label>
-                <select id="cl" class='form-control form-control-sm col-7' type="text" onchange=filterSelects()>
-                    <option value="1" <% if (query.cl === 1) { %>selected<% } %> >Include</option>
-                    <option value="2" <% if (query.cl === 2) { %>selected<% } %> >Exclude</option>
-                    <option value="3" <% if (query.cl === 3) { %>selected<% } %> >Only</option>
-                </select>
-            </div>
-            <table id="tableLoancards" class='table table-sm table-hover mx-auto w-100'>
-                <thead class="thead-dark">
-                    <th class="w-10" onclick="sortTable(0, 'tableOrders')">ID</th>
-                    <th class="w-45" onclick="sortTable(1, 'tableOrders')">Issue Date</th>
-                    <th class="w-45" onclick="sortTable(2, 'tableOrders')">Close Date</th>
-                </thead>
-                <tbody>
-                    <% if (user.loancards) { %>
-                        <% user.loancards.forEach((loancard) => { %>
-                    <tr>
-                        <td><a href='/stores/loancards/<%= loancard.loancard_id %>'> <%= loancard.loancard_id %></a></td>
-                        <td><a href='/stores/loancards/<%= loancard.loancard_id %>'> <%= loancard._date.toDateString() %></a></td>
-                        <td><a href='/stores/loancards/<%= loancard.loancard_id %>'> <% if (loancard._closed) { %><%= loancard._closed.toDateString() %><% } %></a></td>
-                    </tr>
-                        <% }) %>
-                    <% } %>
                 </tbody>
             </table>
         </div>
@@ -255,19 +218,17 @@
             </div>
             <table id="tableOrders" class='table table-sm table-hover mx-auto w-100'>
                 <thead class="thead-dark">
-                    <th class="w-40" onclick="sortTable(0, 'tableLoancards')">Item</th>
-                    <th class="w-30" onclick="sortTable(1, 'tableLoancards')">Size</th>
-                    <th class="w-10" onclick="sortTable(2, 'tableLoancards')">Qty</th>
-                    <th class="w-20" onclick="sortTable(3, 'tableLoancards')">Ordered</th>
+                    <th class="w-40" onclick="sortTable(0, 'tableLoancards')">Date</th>
+                    <th class="w-50" onclick="sortTable(1, 'tableLoancards')">Ordered By</th>
+                    <th class="w-10" onclick="sortTable(2, 'tableLoancards')">Complete</th>
                 </thead>
                 <tbody>
                     <% if(user.orders) { %>
                         <% user.orders.forEach((order) => { %>
                             <tr>
-                    <td><a href='/stores/orders/<%= order.order_id %>'> <%= order.size.item._description %></a></td>
-                    <td><a href='/stores/orders/<%= order.order_id %>'> <%= order.size.size._text %></a></td>
-                    <td><a href='/stores/orders/<%= order.order_id %>'> <%= order._qty %></a></td>
-                    <td><a href='/stores/orders/<%= order.order_id %>'> <%= order._date.toDateString() %></a></td>
+                    <td><a href='/stores/orders/<%= order.order_id %>'><%= order._date.toDateString() %></a></td>
+                    <td><a href='/stores/orders/<%= order.order_id %>'><%= order.orderedBy.rank._rank %> <%= order.orderedBy._name %>, <%= order.orderedBy._ini %></a></td>
+                    <td><input class="form-control form-control-sm" type="checkbox" <% if (order._complete) { %>checked <% } %>disabled></td>
                     </tr>
                         <% }) %>
                     <% } %>
@@ -288,19 +249,17 @@
             </div>
             <table id="tableRequests" class='table table-sm table-hover mx-auto w-100'>
                 <thead class="thead-dark">
-                    <th class="w-40" onclick="sortTable(0, 'tableRequests')">Item</th>
-                    <th class="w-30" onclick="sortTable(1, 'tableRequests')">Size</th>
-                    <th class="w-10" onclick="sortTable(2, 'tableRequests')">Qty</th>
-                    <th class="w-20" onclick="sortTable(3, 'tableRequests')">Ordered</th>
+                    <th class="w-40" onclick="sortTable(0, 'tableLoancards')">Date</th>
+                    <th class="w-50" onclick="sortTable(1, 'tableLoancards')">Requested By</th>
+                    <th class="w-10" onclick="sortTable(2, 'tableLoancards')">Complete</th>
                 </thead>
                 <tbody>
                     <% if(user.requests) { %>
                         <% user.requests.forEach((request) => { %>
                             <tr>
-                    <td><a href='/stores/requests/<%= request.request_id %>'> <%= request.size.item._description %></a></td>
-                    <td><a href='/stores/requests/<%= request.request_id %>'> <%= request.size.size._text %></a></td>
-                    <td><a href='/stores/requests/<%= request.request_id %>'> <%= request._qty %></a></td>
-                    <td><a href='/stores/requests/<%= request.request_id %>'> <%= request._date.toDateString() %></a></td>
+                    <td><a href='/stores/requests/<%= request.request_id %>'><%= request._date.toDateString() %></a></td>
+                    <td><a href='/stores/requests/<%= request.request_id %>'><%= request.requestedBy.rank._rank %> <%= request.requestedBy._name %>, <%= request.requestedBy._ini %></a></td>
+                    <td><input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled></td>
                     </tr>
                         <% }) %>
                     <% } %>
@@ -309,7 +268,7 @@
         </div>
         <% } %>
         <% if (permissions.access_notes || currentUser.user_id === user.user_id) { %> 
-        <div class="mt-3 px-0">
+        <div class="bordered mt-3">
             <% include ../../partials/noteTable %>
         </div>
         <% } %>
@@ -320,7 +279,7 @@
 <script src="/js/filters.js"></script>
 <script>
     function filterSelects() {
-        filter(['sn', 'io', 'cl', 'cr', 'ri'],"/stores/users/<%= user.user_id %>");
+        filter(['sn', 'io', 'cr', 'ri'],"/stores/users/<%= user.user_id %>");
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -20,7 +20,7 @@ module.exports = (app, m) => {
             req.body.note.user_id = req.user.user_id;
             fn.create(m.notes, req.body.note, req, (note) => {
                 if (note) {
-                    res.redirect('/stores/' + note._link_table + '/' + note._link_id);
+                    res.redirect('/stores/' + note._table + '/' + note._id);
                 } else {
                     res.redirect('back');
                 };
@@ -52,7 +52,7 @@ module.exports = (app, m) => {
     app.get('/stores/notes/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_notes', true, req, res, (allowed) => {
             fn.getOne(m.notes, {note_id: req.params.id}, req, (note => {
-                fn.getOne(m.users, {user_id: note.user_id}, req, (user => {   
+                fn.getUser(note.user_id, {include: false}, req, (user => {   
                     res.render('stores/notes/show', {
                         note: note,
                         user: user

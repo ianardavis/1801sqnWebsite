@@ -5,14 +5,19 @@
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores">Stores</a>
             </li>
+            <% if (user.user_id !== -1) { %>
+                <li class="nav-item">
+                    <a class="nav-link stores_nav" href="/stores/users">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link stores_nav" href="/stores/users/<%= user.user_id %>"><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></a>
+                </li>
+            <% } %>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users">Users</a>
+                <a class="nav-link stores_nav" href="/stores/orders">Orders</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users/<%= selectedUser.user_id %>"><%= selectedUser.rank._rank %> <%= selectedUser._name %>, <%= selectedUser._ini %></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/orders/new?user=<%= selectedUser.user_id %>">New Order</a>
+                <a class="nav-link stores_nav" href="/stores/orders/new?user=<%= user.user_id %>">New</a>
             </li>
         </ul>
     </nav>
@@ -20,7 +25,7 @@
 <section>
 	<div class="container">
 		<form id="orderForm" action="/stores/orders" method="POST">
-			<input type="hidden" name="ordered_for" value="<%= selectedUser.user_id %>">
+			<input type="hidden" name="ordered_for" value="<%= user.user_id %>">
 			<div class="row mx-auto">
 				<div class="col-12 col-md-6 bordered mx-auto mb-3">
 					<h5>Selected Items</h5>

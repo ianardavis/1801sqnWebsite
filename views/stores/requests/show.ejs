@@ -1,4 +1,3 @@
-<!-- loancards INDEX PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
 	<nav class="navbar navbar-expand navbar-light bg-nav">
@@ -29,9 +28,17 @@
 					Options
 				</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<% if (permissions.requests_approve && permissions.orders_add) { %>
+						<button form='requestForm' class="dropdown-item dropdown_button">Action Selected Requests</button>
+					<% } %>
 					<% if (permissions.notes_add) { %>
 						<a class="dropdown-item" href="/stores/notes/new?table=requests&id=<%= request.request_id %>">Add Note</a>
 						<div class="dropdown-divider"></div>
+					<% } %>
+					<% if (permissions.requests_delete) { %>
+						<form action="/stores/requests/<%= request.request_id %>?_method=DELETE&user=<%= request.requested_for %>" method="POST">
+							<button class="dropdown-item dropdown_button">Delete Request</button>
+						</form>
 					<% } %>
 					<a class="dropdown-item" href="/stores/requests">Back to Requests</a>
 				</div>
@@ -39,113 +46,147 @@
 		</ul>
 	</nav>
 </section>
-<section class="detailBox container-fluid pt-3">
+<section class="container-fluid pt-3">
 	<div class="row">
-		<div class="col-12 col-lg-6 col-xl-4 mb-3">
-			<div class="bordered" id="divUsers">
-				<h4><a href="/stores/item_sizes/<%= request.size.stock_id %>"> Item Details</a></h4>
-				<div class="details">
-					<div class="row">
-						<div class="col-sm-4">
-							<label class="col-form-label">Item:</label>
-						</div>
-						<div class="col-sm-8">
-							<input class="form-control" type="text" value="<%= request.size.item._description %>" readonly>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-4">
-							<label class="col-form-label">Size:</label>
-						</div>
-						<div class="col-sm-8">
-							<input class="form-control" type="text" value="<%= request.size.size._text %>" readonly>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-4">
-							<label class="col-form-label">Quantity:</label>
-						</div>
-						<div class="col-sm-8">
-							<input class="form-control" type="text" value="<%= request._qty %>" readonly>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-4">
-							<label class="col-form-label">Status:</label>
-						</div>
-						<div class="col-sm-8">
-							<input class="form-control" type="text" value="<%= request._status %>" readonly>
-						</div>
-					</div>
+		<div class="col-12 col-lg-6 mb-3 bordered">
+			<h4>Request Details</h4>
+			<div class="row">
+				<div class="col-sm-4">
+					<p class="col-form-label">For:</p>
+				</div>
+				<div class="col-sm-8">
+					<p class="form-control"><%= request.requestedFor.rank._rank %> <%= request.requestedFor._name %>, <%= request.requestedFor._ini %></p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-4">
+					<p class="col-form-label">By:</p>
+				</div>
+				<div class="col-sm-8">
+					<p class="form-control"><%= request.requestedBy.rank._rank %> <%= request.requestedBy._name %>, <%= request.requestedBy._ini %></p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-4">
+					<p class="col-form-label">Date:</p>
+				</div>
+				<div class="col-sm-8">
+					<p class="form-control"><%= request._date.toDateString() %></p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-4">
+					<p class="col-form-label">Complete:</p>
+				</div>
+				<div class="col-sm-8">
+					<input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled>
 				</div>
 			</div>
 		</div>
-		<div class="col-12 col-lg-6 col-xl-4 mb-3">
-			<div class="bordered" id="divUsers">
-				<h4>User Details</h4>
-				<div class="details">
-					<div class="row">
-						<div class="col-sm-4">
-							<label class="col-form-label">Requested For:</label>
-						</div>
-						<div class="col-sm-8">
-							<input class="form-control" type="text" value="<%= request.requestedFor.rank._rank %> <%= request.requestedFor._name %>, <%= request.requestedFor._ini %>" readonly>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-4">
-							<label class="col-form-label">Requested By:</label>
-						</div>
-						<div class="col-sm-8">
-								<input class="form-control" type="text" value="<%= request.requestedBy.rank._rank %> <%= request.requestedBy._name %>, <%= request.requestedBy._ini %>" readonly>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-4">
-							<label class="col-form-label">Approved By:</label>
-						</div>
-						<div class="col-sm-8">
-								<input class="form-control" type="text" value="<% if (request.approvedBy) { %><%= request.approvedBy.rank._rank %> <%= request.approvedBy._name %>, <%= request.approvedBy._ini %><% } %>" readonly>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-12 col-lg-6 col-xl-4 mb-3">
-				<div class="bordered" id="divUsers">
-					<h4>Dates</h4>
-					<div class="details">
-						<div class="row">
-							<div class="col-sm-4">
-								<label class="col-form-label">Requested:</label>
-							</div>
-							<div class="col-sm-8">
-								<input class="form-control" type="text" value="<%= request._date.toDateString() %>" readonly>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm-4">
-								<label class="col-form-label">Approved:</label>
-							</div>
-							<div class="col-sm-8">
-								<input class="form-control" type="text" value="<% if (request._date_approved) { %><%= request._date_approved.toDateString() %><% } %>" readonly>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
 		<% if (permissions.access_notes) { %> 
-			<div class="col-12 col-lg-6 col-xl-12 mb-3">
-				<% include ../../partials/noteTable %>
-			</div>
+		<div class="col-12 col-lg-6 mb-3 bordered">
+			<% include ../../partials/noteTable %>
+		</div>
 		<% } %>
-		<% if (permissions.requests_delete) { %>
-			<div class="col-12 mb-3">
-				<form action="/stores/requests/<%= request.request_id %>?_method=DELETE&user=<%= request.requested_for %>" method="POST">
-					<button class="btn btn-danger">Delete Request</button>
-				</form>
-			</div>
-		<% } %>
+		<div class="col-12 mb-3 bordered">
+			<h4>Lines</h4>
+			<form id="requestForm" action="/stores/requests/<%= request.request_id %>/approval?_method=PUT" method="POST">
+				<button class="btn btn-success w-100 mb-3">Action Selected Requests</button>
+				<input type="hidden" name="requested_for" value="<%= request.requested_for %>">
+				<table id="requestTable" class="table table-sm table-hover mx-auto w-100">
+					<thead class="thead-dark">
+						<th class="w-15" onclick="sortTable(0, 'requestTable')">Item</th>
+						<th class="w-10" onclick="sortTable(1, 'requestTable')">Size</th>
+						<th class="w-5" onclick="sortTable(2, 'requestTable')">Qty</th>
+						<th class="w-10" onclick="sortTable(3, 'requestTable')">Status</th>
+						<th class="w-10" onclick="sortTable(4, 'requestTable')">Action</th>
+						<th class="w-10" onclick="sortTable(5, 'requestTable')">NSN</th>
+						<th class="w-15" onclick="sortTable(6, 'requestTable')">Date Approved</th>
+						<th class="w-15" onclick="sortTable(7, 'requestTable')">Approved By</th>
+						<th class="w-10" onclick="sortTable(8, 'requestTable')">ID</th>
+					</thead>
+					<tbody>
+						<% if (request.lines) { %>
+							<% request.lines.forEach(line => { %>
+								<tr>
+									<td><a href="/stores/items/<%= line.size.item_id %>"><%= line.size.item._description %></a></td>
+									<td><a href="/stores/item_sizes/<%= line.stock_id %>"><%= line.size.size._text %></a></td>
+									<td><a href="/stores/requests/<%= line.request_id %>"><%= line._qty %></a></td>
+									<td>
+									<% if (line._status !== 'Pending') { %>
+										<a href="/stores/requests/<%= line.request_id %>"><%= line._status %></a>
+									<% } else { %>
+										<select id="status_<%= line.line_id %>" class="form-control form-control-sm" name="declines[]" onchange=checkAction(<%= line.line_id %>)>
+											<option value="pending" selected>Pending</option>
+											<option value="approved">Approved</option>
+											<option value="{'line_id': <%= line.line_id %>, '_status': 'Declined'}">Declined</option>
+										</select>
+									<% }; %>
+									</td>
+									<td>
+										<% if (line._status !== 'Pending') { %>
+											<a href="/stores/requests/<%= line.request_id %>"><%= line._action %></a>
+										<% } else { %>
+											<select id="action_<%= line.line_id %>" style="display:none;" class="form-control form-control-sm" name="approves[]" onchange=checkNSNs(<%= line.line_id %>)>
+												<option value="" selected></option>
+												<% if (line.size.locations) { %>
+													<% line.size.locations.forEach(location => { %>
+														<option value='{"line_id": <%= line.line_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "stock_id": <%= line.stock_id %>, "location_id": <%= location.location_id %>}'>
+															Issue from: <%= location._location %>
+														</option>
+													<% }); %>
+												<% }; %>
+												<% if (line.size._orderable) { %>
+													<option value='{"line_id": <%= line.line_id %>, "_status": "Approved", "_action": "Order", "qty": <%= line._qty %>, "stock_id": <%= line.stock_id %>}'>Order</option>
+												<% }; %>
+											</select>
+										<% }; %>
+									</td>
+									<td>
+										<% if (line._status === 'Pending') { %>
+											<select name="nsns[line_<%= line.line_id %>]" class="form-control form-control-sm" id="nsns_<%= line.line_id %>" style="display:none;">
+												<% if (line.size.nsns) { %>
+													<% line.size.nsns.forEach(nsn => { %>
+														<option value='<%= nsn.nsn_id %>'<% if (nsn._default) { %> selected <% } %>>
+															<% if (nsn._default) { %>*<% } %><%= nsn._nsn %><% if (nsn._default) { %>*<% } %>
+														</option>
+													<% }); %>
+												<% }; %>
+											</select>
+										<% }; %>
+									</td>
+									<td>
+										<% if (line._date_approved) { %>
+											<a href="/stores/requests/<%= line.request_id %>">
+												<%= line._date_approved.toDateString() %>
+											</a>
+										<% } %>
+									</td>
+									<td>
+										<% if (line.approvedBy) { %>
+											<a href="/stores/requests/<%= line.request_id %>">
+												<%= line.approvedBy.rank._rank %> <%= line.approvedBy._name %>, <%= line.approvedBy._ini %>
+											</a>
+											<% } %>
+										</td>
+									<td>
+										<% if (line.issue_id) { %>
+											<a href="/stores/issues/<%= line.issue_id %>">
+												Issue: <%= line.issue_id %>
+											</a>
+										<% } else if (line.order_id) { %>
+											<a href="/stores/orders/<%= line.order_id %>">
+												Order: <%= line.order_id %>
+											</a>
+										<% } %>
+									</td>
+								</tr>
+							<% }); %>
+						<% }; %>
+					</tbody>
+				</table>
+			</form>
+		</div>
 	</div>
 </section>
 <% include ../../partials/foot/full %>
@@ -154,5 +195,25 @@
     function filterSelects() {
         filter(['sn'],"/stores/requests/<%= request.request_id %>");
     };
+	function checkAction(line) {
+		var status = document.querySelector('#status_' + line),
+			action = document.querySelector('#action_' + line);
+		if (status.value === 'approved') {
+			action.style.display = 'block';
+		} else {
+			action.style.display = 'none';
+			action.value = "";
+		};
+		checkNSNs(line);
+	};
+	function checkNSNs(line) {
+		var action = document.querySelector('#action_' + line),
+			nsns   = document.querySelector('#nsns_' + line);
+		if (action.value.indexOf('Issue') !== -1) {
+			nsns.style.display = 'block';
+		} else {
+			nsns.style.display = 'none';
+		};
+	};
 </script>
 <% include ../../partials/foot/htmlClose %>

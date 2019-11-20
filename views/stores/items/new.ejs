@@ -32,10 +32,9 @@
                     <label class="col-form-label">Category:</label>
                 </div> 
                 <div class="col-7">
-                    <select class="form-control" name="item[_category]" id="_category" type="text">
-                        <option value='' data-tag='<blank>'></option> 
+                    <select class="form-control" name="item[category_id]" id="_category" type="text">
                         <% classes.categories.forEach((category) => { %>
-                            <option value="<%= category.category_id %>" data-tag='<%= category._parent %>'><%= category._category %></option>         
+                            <option value="<%= category.category_id %>"><%= category._category %></option>         
                         <% }) %>
                     </select>
                 </div>
@@ -45,10 +44,10 @@
                     <label class="col-form-label">Group:</label>
                 </div> 
                 <div class="col-7">
-                    <select class="form-control" name="item[_group]" id="_group" type="text">
+                    <select class="form-control" name="item[group_id]" id="_group" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.groups.forEach((group) => { %>
-                            <option value="<%= group.group_id %>" data-tag='<%= group._parent %>'><%= group._group %></option>         
+                            <option value="<%= group.group_id %>" data-tag='<%= group.category_id %>'><%= group._group %></option>         
                         <% }) %>
                     </select>
                 </div>
@@ -58,10 +57,10 @@
                     <label class="col-form-label">Type:</label>
                 </div> 
                 <div class="col-7">
-                    <select class="form-control" name="item[_type]" id="_type" type="text">
+                    <select class="form-control" name="item[type_id]" id="_type" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.types.forEach((type) => { %>
-                            <option value="<%= type.type_id %>" data-tag='<%= type._parent %>'><%= type._type %></option>         
+                            <option value="<%= type.type_id %>" data-tag='<%= type.group_id %>'><%= type._type %></option>         
                         <% }) %>
                     </select>
                 </div>
@@ -71,10 +70,10 @@
                     <label class="col-form-label">Sub Type:</label>
                 </div> 
                 <div class="col-7">
-                    <select class="form-control" name="item[_sub_type]" id="_sub_type" type="text">
+                    <select class="form-control" name="item[subtype_id]" id="_subtype" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.subtypes.forEach((subtype) => { %>
-                            <option value="<%= subtype.subtype_id %>" data-tag='<%= subtype._parent %>'><%= subtype._sub_type %></option>         
+                            <option value="<%= subtype.subtype_id %>" data-tag='<%= subtype.type_id %>'><%= subtype._subtype %></option>         
                         <% }) %>
                     </select>
                 </div>
@@ -84,7 +83,7 @@
                     <label class="col-form-label">Gender:</label>
                 </div> 
                 <div class="col-7">
-                    <select class="form-control" name="item[_gender]" id="_gender" type="text">
+                    <select class="form-control" name="item[gender_id]" id="_gender" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.genders.forEach((gender) => { %>
                             <option value="<%= gender.gender_id %>"><%= gender._gender %></option>         
@@ -117,19 +116,19 @@
 		hideSome("_group", $(this).val());
 		$("#_group").val($("#_group option:visible:first").val());
 		$("#_type").val($("#_type option:visible:first").val());
-		$("#_sub_type").val($("#_sub_type option:visible:first").val());
+		$("#_subtype").val($("#_subtype option:visible:first").val());
 		hideAll("_type")
-		hideAll("_sub_type")
+		hideAll("_subtype")
 	}
 	function setType() {
 		hideSome("_type", $(this).val());
 		$("#_type").val($("#_type option:visible:first").val());
-		$("#_sub_type").val($("#_sub_type option:visible:first").val());
-		hideAll("_sub_type")
+		$("#_subtype").val($("#_subtype option:visible:first").val());
+		hideAll("_subtype")
 	}
 	function setSubtype() {
-		hideSome("_sub_type", $(this).val());
-		$("#_sub_type").val($("#_sub_type option:visible:first").val());
+		hideSome("_subtype", $(this).val());
+		$("#_subtype").val($("#_subtype option:visible:first").val());
 	}
 	function hideSome(select, selected) {
 		$("#" + select + " option").each(function(item){

@@ -1,4 +1,3 @@
-<!-- loancards INDEX PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
 	<nav class="navbar navbar-expand navbar-light bg-nav">
@@ -12,72 +11,87 @@
 		</ul>
 	</nav>
 </section>
-<div class="container mt-3 pt-3">
-	<div class="container mt-3 pt-3">
-		<div>
-			<div class="row">
-				<label class="col-3 col-form-label text-right" for="pl">Placed Orders:</label>
-				<select id="pl" class='form-control col-9' type="text" onchange=filterSelects()>
-					<option value="1" <% if (query.pl === 1) { %>selected<% } %> >Include</option>
-					<option value="2" <% if (query.pl === 2) { %>selected<% } %> >Exclude</option>
-					<option value="3" <% if (query.pl === 3) { %>selected<% } %> >Only</option>
-				</select>
+<section class="mb-3">
+	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Options
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<% if (permissions.orders_add) { %>
+						<a class="dropdown-item" href="/stores/orders/new?user=-1">New Order</a>
+					<% } %>
+					<a class="dropdown-item" href="/stores">Back to Stores</a>
+				</div>
+			</li>
+		</ul>
+	</nav>
+</section>
+<section class="container">
+	<form action="/stores/demands" method="POST">
+		<div class="row mb-3">
+			<div class="col-6">
+				<button class="btn btn-sm btn-success w-100">Raise Demands For:</button>
 			</div>
-			<div class="row">
-				<label class="col-3 col-form-label text-right"  for="rx">Received Orders:</label>
-				<select id="rx" class='form-control col-9' type="text" onchange=filterSelects()>
-					<option value="1" <% if (query.rx === 1) { %>selected<% } %> >Include</option>
-					<option value="2" <% if (query.rx === 2) { %>selected<% } %> >Exclude</option>
-					<option value="3" <% if (query.rx === 3) { %>selected<% } %> >Only</option>
-				</select>
-			</div>
-			<div class="row">
-				<label class="col-3 col-form-label text-right"  for="is">Issued Orders:</label>
-				<select id="is" class='form-control col-9' type="text" onchange=filterSelects()>
-					<option value="1" <% if (query.is === 1) { %>selected<% } %> >Include</option>
-					<option value="2" <% if (query.is === 2) { %>selected<% } %> >Exclude</option>
-					<option value="3" <% if (query.is === 3) { %>selected<% } %> >Only</option>
+			<div class="col-6">
+				<select class='form-control form-control-sm' name="supplier_id" type="text">
+					<% suppliers.forEach(supplier => { %>
+						<option value="<%= supplier.supplier_id %>"><%= supplier._name %></option>
+					<% }); %>
 				</select>
 			</div>
 		</div>
+	</form>
+	<div class="row mb-1">
+		<div class="col-3">
+			<label class="col-form-label text-right" for="co">Completed Orders:</label>
+		</div>
+		<div class="col-9">
+			<select id="co" class='form-control form-control-sm' type="text" onchange=filterSelects()>
+				<option value="1"<% if (query.co === 1) { %> selected<% } %>>Include</option>
+				<option value="2"<% if (query.co === 2) { %> selected<% } %>>Exclude</option>
+				<option value="3"<% if (query.co === 3) { %> selected<% } %>>Only</option>
+			</select>
+		</div>
 	</div>
-	<div>
-		<table id="orderTable" class="table table-sm table-hover mx-auto w-100">
-			<thead class="thead-dark">
-				<th class="w-20" onclick="sortTable(0, 'orderTable')">Item</th>
-				<th class="w-10" onclick="sortTable(1, 'orderTable')">Size</th>
-				<th class="w-5" onclick="sortTable(4, 'orderTable')">Quantity</th>
-				<th class="w-15" onclick="sortTable(2, 'orderTable')">Ordered For</th>
-				<th class="w-15" onclick="sortTable(3, 'orderTable')">Order Date</th>
-				<th class="w-10" onclick="sortTable(6, 'orderTable')">Demand Date</th>
-				<th class="w-10" onclick="sortTable(7, 'orderTable')">Receipt Date</th>
-				<th class="w-10" onclick="sortTable(8, 'orderTable')">Issue Date</th>
-			</thead>
-			<tbody>
-				<% if (orders) { %>
-					<% orders.forEach((order) => { %>
-						<tr>
-							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.size.item._description %></a></td>
-							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.size.size._text %></a></td>
-							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order._qty %></a></td>
-							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order.orderedFor.rank._rank %> <%= order.orderedFor._name %>, <%= order.orderedFor._ini %></a></td>
-							<td><a href="/stores/orders/<%= order.order_id %>"> <%= order._date.toDateString() %></a></td>
-							<td><a href="/stores/orders/<%= order.order_id %>"> <% if (order.demand) { %><%= order.demand._date.toDateString() %><% } %></a></td>
-							<td><a href="/stores/orders/<%= order.order_id %>"> <% if (order.receipt) { %><%= order.receipt._date.toDateString() %><% } %></a></td>
-							<td><a href="/stores/orders/<%= order.order_id %>"> <% if (order.issue) { %><%= order.issue._date.toDateString() %><% } %></a></td>
-						</tr>
-					<% }) %>
-				<% } %>
-			</tbody>
-		</table>
+	<div class="row">
+		<div class="col-12">
+			<table class="table table-sm table-hover mx-auto w-100" id="orderTable">
+				<thead class="thead-dark">
+					<th class="w-40" onclick="sortTable(0, 'orderTable')">Ordered For</th>
+					<th class="w-40" onclick="sortTable(1, 'orderTable')">Order Date</th>
+					<th class="w-20">Complete</th>
+				</thead>
+				<tbody>
+					<% if (orders) { %>
+						<% orders.forEach(order => { %>
+							<tr>
+								<td>
+									<a href="/stores/orders/<%= order.order_id %>">
+										<% if (order.ordered_for !== -1) { %>
+											<%= order.orderedFor.rank._rank %> <%= order.orderedFor._name %>, <%= order.orderedFor._ini %>
+										<% } else { %>
+											Backing Stock
+										<% } %>
+									</a>
+								</td>
+								<td><a href="/stores/orders/<%= order.order_id %>"><%= order._date.toDateString() %></a></td>
+								<td><input class="form-control form-control-sm" type="checkbox" disabled<% if (order._complete) { %> checked<% } %>></td>
+							</tr>
+						<% }) %>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
 	</div>
-</div>
+</section>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
 <script src="/js/filters.js"></script>
 <script>
     function filterSelects() {
-        filter(['pl', 'rx', 'is'], "/stores/orders");
+        filter(['co'], "/stores/orders");
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

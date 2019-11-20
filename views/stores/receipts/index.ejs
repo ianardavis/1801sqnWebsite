@@ -1,0 +1,45 @@
+<!-- receipts INDEX PAGE -->
+<% include ../../partials/head/full %>
+<section class="mb-2">
+	<nav class="navbar navbar-expand navbar-light bg-nav">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores">Stores</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/receipts">Receipts</a>
+			</li>
+		</ul>
+	</nav>
+</section>
+<section>
+	<div class="container mt-3 pt-3">
+		<table id="orderTable" class="table table-sm table-hover mx-auto w-100">
+			<thead class="thead-dark">
+				<th class="w-15" onclick="sortTable(0, 'orderTable')">Supplier</th>
+				<th class="w-15" onclick="sortTable(1, 'orderTable')">Receipt Date</th>
+				<th class="w-15" onclick="sortTable(2, 'orderTable')">Received By</th>
+			</thead>
+			<tbody>
+				<% if (receipts) { %>
+					<% receipts.forEach((receipt) => { %>
+						<tr>
+							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.supplier._name %></a></td>
+							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt._date.toDateString() %></a></td>
+							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.receivedBy.rank._rank %> <%= receipt.receivedBy._name %>, <%= receipt.receivedBy._ini %></a></td>
+						</tr>
+					<% }) %>
+				<% } %>
+			</tbody>
+		</table>
+	</div>
+</section>
+<% include ../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
+<!-- <script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['co'], "/stores/receipts");
+    };
+</script> -->
+<% include ../../partials/foot/htmlClose %>

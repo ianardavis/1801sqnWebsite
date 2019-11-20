@@ -23,122 +23,100 @@
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.item_edit) { %>
-				    <a class="dropdown-item" id="btnEdit" href="/stores/items/<%= item.item_id %>/edit">Edit</a>
+				    <a class="dropdown-item" href="/stores/items/<%= item.item_id %>/edit">Edit</a>
                     <div class="dropdown-divider"></div>
 				<% } %>
                 <% if (permissions.notes_add) { %>
-                    <a class="dropdown-item" id="btnNoteAdd" href="/stores/notes/new?table=items&id=<%= item.item_id %>">Add Note</a>
+                    <a class="dropdown-item" href="/stores/notes/new?table=items&id=<%= item.item_id %>">Add Note</a>
                     <div class="dropdown-divider"></div>
-				<% } %>
-                <a class="dropdown-item" id="btnNoteAdd" href="/stores/items">Back to Items</a>
-			</div>
+                <% } %>
+                <% if (permissions.item_delete) { %>
+                    <div class="dropdown-divider"></div>
+                    <form action="/stores/items/<%= item.item_id %>?_method=DELETE" method="POST">
+                        <button class="dropdown-item dropdown_button">Delete Item</button>
+                    </form>
+                <% } %>
+                <a class="dropdown-item" href="/stores/items">Back to Items</a>
+            </div>
 		</li>
 	</ul>
 </nav>
-<section class="detailBox container-fluid pt-3">
+<section class="container pt-3">
 	<div class="row">
-		<div class="col-12 col-lg-4 mb-3">
-			<div class="container bordered px-1" id="divUsers">
-                <h4>Details</h4>
-                <div class="details pb-3">
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Description:</label>
-                        </div>                        
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<%= item._description %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Category:</label>
-                        </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<% if(item.category) { %><%= item.category._category %><% } %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Group:</label>
-                        </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<% if(item.group) { %><%= item.group._group %><% } %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Type:</label>
-                        </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<% if(item.type) { %><%= item.type._type %><% } %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Sub Type:</label>
-                        </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<% if(item.subtype) { %><%= item.subtype._sub_type %><% } %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Gender:</label>
-                        </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<% if(item.gender) { %><%= item.gender._gender %><% } %>" readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Size Text:</label>
-                        </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" value="<%= item._size_text %>" readonly>
-                        </div>
-                    </div>
-                </div>
-			</div>
-		</div>
-		<div class="col-12 col-lg-2 mb-3">
-			<div class="container bordered" id="divSizes">
-                <h4>Sizes</h4>
-                <% if (permissions.item_size_add) { %>
-                    <a href="/stores/item_sizes/new?item_id=<%= item.item_id %>"><h5>Add Sizes</h5></a>
-                <% } %>
-                <div class="pb-3">
-                    <div style="overflow-x:auto;">
-                        <table id="sizeTable" class="table table-sm table-hover w-100">
-                            <thead class="thead-dark">
-                                <th class="w-40" onclick="sortTable(0, 'sizeTable')"><%= item._size_text %></th>
-                            </thead>
-                            <tbody>
-                                <% item.sizes.forEach((size) => { %>
-                                    <tr>
-                                        <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.size._text %></a></td>
-                                    </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-			</div>
-        </div>
-        <% if (permissions.access_notes) {%>
-        <div class="col-lg-6">
-            <% include ../../partials/noteTable %>
-        </div>
-        <% } %>
-        <% if (permissions.item_delete) { %>
-            <div class="container">  
-                <div class="row">
-                    <div class="col-12">
-                        <form action="/stores/items/<%= item.item_id %>?_method=DELETE" method="POST">
-                            <button class="btn btn-danger">Delete Item</button>
-                        </form>
-                    </div>
+		<div class="col-12 col-md-6 col-lg-7 mb-3 container bordered">
+            <h4>Details</h4>
+            <div class="row">
+                <div class="col-5" >
+                    <label class="col-form-label">Description:</label>
+                </div>                        
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<%= item._description %>" readonly>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-5" >
+                    <label class="col-form-label">Category:</label>
+                </div> 
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<% if(item.category) { %><%= item.category._category %><% } %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5" >
+                    <label class="col-form-label">Group:</label>
+                </div> 
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<% if(item.group) { %><%= item.group._group %><% } %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5" >
+                    <label class="col-form-label">Type:</label>
+                </div> 
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<% if(item.type) { %><%= item.type._type %><% } %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5" >
+                    <label class="col-form-label">Sub Type:</label>
+                </div> 
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<% if(item.subtype) { %><%= item.subtype._subtype %><% } %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5" >
+                    <label class="col-form-label">Gender:</label>
+                </div> 
+                <div class="col-7">
+                    <input class="form-control" type="text" value="<% if(item.gender) { %><%= item.gender._gender %><% } %>" readonly>
+                </div>
+            </div>
+		</div>
+		<div class="col-12 col-md-6 col-lg-5 mb-3 container bordered">
+			<h4><% if (permissions.item_size_add) { %><a href="/stores/item_sizes/new?item_id=<%= item.item_id %>"><i class="fas fa-plus-circle"></i></a> <% } %>Sizes</h4>
+            <div style="overflow-x:auto;">
+                <table id="sizeTable" class="table table-sm table-hover w-100">
+                    <thead class="thead-dark">
+                        <th class="w-40" onclick="sortTable(0, 'sizeTable')"><%= item._size_text %></th>
+                        <th class="w-40" onclick="sortTable(1, 'sizeTable')">Quantity</th>
+                    </thead>
+                    <tbody>
+                        <% item.sizes.forEach((size) => { %>
+                            <tr>
+                                <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.size._text %></a></td>
+                                <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.stock %></a></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <% if (permissions.access_notes) {%>
+        <div class="col-12 bordered">
+            <% include ../../partials/noteTable %>
+        </div>
         <% } %>
     </div>
 </section>

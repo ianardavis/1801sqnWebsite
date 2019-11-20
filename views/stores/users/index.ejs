@@ -36,12 +36,12 @@
 			<% } %>
 		<% }) %>
 	</select>
-	<table class="table table-sm table-hover mx-auto">
+	<table id="userTable" class="table table-sm table-hover mx-auto">
 		<thead class="thead-dark">
-			<th class="w-40">Bader/Service #</th>
-			<th class="w-10">Rank</th>
-			<th class="w-40">Surname</th>
-			<th class="w-10">Initials</th>
+			<th class="w-40" onclick="sortTable(0, 'userTable')">Bader/Service #</th>
+			<th class="w-10" onclick="sortTable(1, 'userTable')">Rank</th>
+			<th class="w-40" onclick="sortTable(2, 'userTable')">Surname</th>
+			<th class="w-10" onclick="sortTable(3, 'userTable')">Initials</th>
 		</thead>
 		<tbody>
 			<% users.forEach((user) => { %>
@@ -56,4 +56,5 @@
 	</table>
 </div>
 <% include ../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
 <% include ../../partials/foot/htmlClose %>

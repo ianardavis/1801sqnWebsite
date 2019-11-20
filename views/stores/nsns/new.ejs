@@ -1,0 +1,54 @@
+<!-- USER ITEM PAGE -->
+<% include ../../partials/head/full %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/items/<%= size.item_id %>"><%= size.item._description %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= size.stock_id %>">Size: <%= size.size._text %></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/nsns/new">Add NSN</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<a class="dropdown-item" href="/stores/item_sizes/<%= size.stock_id %>">Back to <%= size.item._description %>/Size: <%= size.size._text %></a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 col-lg-3 mx-auto mb-3">
+			<div class="container bordered">
+				<h4>NSN</h4>
+				<div class="details">
+					<form action="/stores/nsns" method="POST">
+						<input type="hidden" name="nsn[stock_id]" value="<%= size.stock_id %>" readonly>
+						<p><input class="form-control" type="text" inputmode="numeric" name="nsn[_nsn]" maxlength="20" placeholder="NSN" required></p>
+						<p><input class="form-control" type="checkbox" name="nsn[_default]" value="1"></p>
+						<p><button class="btn btn-success">Save</button></p>
+					</form>
+                </div>
+			</div>
+		</div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

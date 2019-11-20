@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    '_parent': {
+    'category_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"

@@ -1,0 +1,258 @@
+<% include ../../partials/head/full %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/settings">Settings</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item active">
+            <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="settings" aria-selected="true">Settings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="options-tab" data-toggle="tab" href="#options" role="tab" aria-controls="options" aria-selected="true">Options</a>
+        </li>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+
+        </div>
+        <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
+            <ul class="nav nav-tabs" id="optionsTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link" id="ranks-tab" data-toggle="tab" href="#ranks" role="tab" aria-controls="ranks" aria-selected="true">Ranks<% if (permissions.ranks_add) { %><a href="/stores/ranks/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="statuses-tab" data-toggle="tab" href="#statuses" role="tab" aria-controls="statuses" aria-selected="true">Statuses<% if (permissions.statuses_add) { %><a href="/stores/statuses/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="genders-tab" data-toggle="tab" href="#genders" role="tab" aria-controls="genders" aria-selected="true">Genders<% if (permissions.genders_add) { %><a href="/stores/genders/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="categories-tab" data-toggle="tab" href="#categories" role="tab" aria-controls="categories" aria-selected="true">Categories<% if (permissions.categories_add) { %><a href="/stores/categories/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="groups-tab" data-toggle="tab" href="#groups" role="tab" aria-controls="groups" aria-selected="true">Groups<% if (permissions.groups_add) { %><a href="/stores/groups/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="types-tab" data-toggle="tab" href="#types" role="tab" aria-controls="types" aria-selected="true">Types<% if (permissions.types_add) { %><a href="/stores/types/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="subtypes-tab" data-toggle="tab" href="#subtypes" role="tab" aria-controls="subtypes" aria-selected="true">Sub Types<% if (permissions.subtypes_add) { %><a href="/stores/subtypes/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="sizes-tab" data-toggle="tab" href="#sizes" role="tab" aria-controls="sizes" aria-selected="true">Sizes<% if (permissions.sizes_add) { %><a href="/stores/sizes/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                </li>
+            </ul>
+            <div class="tab-content pt-3" id="myTabContent">
+                <div class="tab-pane fade show active" id="ranks" role="tabpanel" aria-labelledby="rank-tab">
+                    <div class="container">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-100">Rank</th>
+                                <% if (permissions.ranks_delete) { %><th></th><% } %>
+                            </thead>
+                            <tbody>
+                                <% classes.ranks.forEach((rank) => { %>
+                                    <tr>
+                                        <td><a href="/stores/ranks/<%= rank.rank_id %>/edit"><%= rank._rank %></a></td>
+                                        <% if (permissions.ranks_delete) { %>
+                                            <td>
+                                                <form action="/stores/ranks/<%= rank.rank_id %>?_method=DELETE" method="POST">
+                                                    <button><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="statuses" role="tabpanel" aria-labelledby="statuses-tab">
+                    <div class="container">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-100">Status</th>
+                                <% if (permissions.statuses_delete) { %><th></th><% } %>
+                            </thead>
+                            <tbody>
+                                <% classes.statuses.forEach((status) => { %>
+                                    <tr>
+                                        <td><a href="/stores/statuses/<%= status.status_id %>/edit?t=statuses"><%= status._status %></a></td>
+                                        <% if (permissions.statuses_delete) { %>
+                                            <td>
+                                                <form action="/stores/statuses/<%= status.status_id %>?_method=DELETE&table=statuses" method="POST">
+                                                    <button><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
+                    <div class="container">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-100">Gender</th>
+                                <% if (permissions.genders_delete) { %><th></th><% } %>
+                            </thead>
+                            <tbody>
+                                <% classes.genders.forEach((gender) => { %>
+                                    <tr>
+                                        <td><a href="/stores/genders/<%= gender.gender_id %>/edit?t=genders"><%= gender._gender %></a></td>
+                                        <% if (permissions.genders_delete) { %>
+                                            <td>
+                                                <form action="/stores/genders/<%= gender.gender_id %>?_method=DELETE&table=genders" method="POST">
+                                                    <button><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+                    <div class="container">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-100">Category</th>
+                                <% if (permissions.categories_delete) { %><th></th><% } %>
+                            </thead>
+                            <tbody>
+                                <% classes.categories.forEach((category) => { %>
+                                    <tr>
+                                    <td><a href="/stores/categories/<%= category.category_id %>/edit?t=categories"><%= category._category %></a></td>
+                                        <% if (permissions.categories_delete) { %>
+                                            <td>
+                                                <form action="/stores/categories/<%= category.category_id %>?_method=DELETE&table=categories" method="POST">
+                                                    <button><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="groups" role="tabpanel" aria-labelledby="groups-tab">
+                    <div class="container">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-50">Group</th>
+                                <th class="w-50">Parent</th>
+                                <% if (permissions.groups_delete) { %><th></th><% } %>
+                            </thead>
+                            <tbody>
+                                <% classes.groups.forEach((group) => { %>
+                                    <tr>
+                                        <td><a href="/stores/groups/<%= group.group_id %>/edit?t=groups"><%= group._group %></a></td>
+                                        <td><a href="/stores/groups/<%= group.group_id %>/edit?t=groups"><%= group.category._category %></a></td>
+                                        <% if (permissions.groups_delete) { %>
+                                            <td>
+                                                <form action="/stores/groups/<%= group.group_id %>?_method=DELETE&table=groups" method="POST">
+                                                    <button><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="types" role="tabpanel" aria-labelledby="types-tab">
+                    <div class="container">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-50">Type</th>
+                                <th class="w-50">Parent</th>
+                                <% if (permissions.types_delete) { %><th></th><% } %>
+                            </thead>
+                            <tbody>
+                                <% classes.types.forEach((type) => { %>
+                                    <tr>
+                                        <td><a href="/stores/types/<%= type.type_id %>/edit?t=types"><%= type._type %></a></td>
+                                        <td><a href="/stores/types/<%= type.type_id %>/edit?t=types"><%= type.group._group %></a></td>
+                                        <% if (permissions.types_delete) { %>
+                                            <td>
+                                                <form action="/stores/types/<%= type.type_id %>?_method=DELETE&table=types" method="POST">
+                                                    <button><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="subtypes" role="tabpanel" aria-labelledby="subtypes-tab">
+                    <div class="container">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-50">Sub Type</th>
+                                <th class="w-50">Parent</th>
+                                <% if (permissions.subtypes_delete) { %><th></th><% } %>
+                            </thead>
+                            <tbody>
+                                <% classes.subtypes.forEach((subtype) => { %>
+                                    <tr>
+                                        <td><a href="/stores/subtypes/<%= subtype.subtype_id %>/edit?t=subtypes"><%= subtype._subtype %></a></td>
+                                        <td><a href="/stores/subtypes/<%= subtype.subtype_id %>/edit?t=subtypes"><%= subtype.type._type %></a></td>
+                                        <% if (permissions.subtypes_delete) { %>
+                                            <td>
+                                                <form action="/stores/subtypes/<%= subtype.subtype_id %>?_method=DELETE&table=subtypes" method="POST">
+                                                    <button><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
+                    <div class="container">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-100">Sizes</th>
+                                <% if (permissions.sizes_delete) { %><th></th><% } %>
+                            </thead>
+                            <tbody>
+                                <% sizes.forEach((size) => { %>
+                                    <tr>
+                                        <td><a href="/stores/sizes/<%= size.size_id %>/edit"><%= size._text %></a></td>
+                                        <% if (permissions.sizes_delete) { %>
+                                            <td>
+                                                <form action="/stores/sizes/<%= size.size_id %>?_method=DELETE" method="POST">
+                                                    <button><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

@@ -1,6 +1,6 @@
 module.exports = (passport, user, permissions) => {
-    var bCrypt          = require('bcrypt'),
-        LocalStrategy   = require('passport-local').Strategy;
+    var bCrypt        = require('bcrypt'),
+        LocalStrategy = require('passport-local').Strategy;
 
     passport.serializeUser((user, done) => {
         done(null, user._login_id);
@@ -8,18 +8,18 @@ module.exports = (passport, user, permissions) => {
 
     passport.deserializeUser((_login_id, done) => {
         user.findOne({
-            attributes: [`_login_id`, 'user_id'],
+            attributes: [`_login_id`, 'user_id', '_reset'],
             where: {
                 _login_id: _login_id
             }
-        }).then((user) => {
+        }).then(user => {
             if (user) {
                 done(null, user.get());
             } else {
                 done(user.errors, null);
             };
             return null;
-        }).catch((err) => {
+        }).catch(err => {
             console.log(err);
             done(user.errors, null);
             return null;
@@ -40,7 +40,7 @@ module.exports = (passport, user, permissions) => {
                 where: {
                     _login_id: _login_id
                 }
-            }).then((user) => {
+            }).then(user => {
                 if (!user) {
                     req.flash('danger', 'Invalid username or password!')
                     return done(null, false, {message: 'Invalid username or password!'}
@@ -56,7 +56,7 @@ module.exports = (passport, user, permissions) => {
                     where: {
                         user_id: user.user_id
                     }
-                }).then((permission) => {
+                }).then(permission => {
                     if (!permission) {
                         req.flash('danger', 'Permissions not found, contact the system administrator!')
                         return done(null, false, {message: 'Permissions not found, contact the system administrator!'}
@@ -70,12 +70,13 @@ module.exports = (passport, user, permissions) => {
                 var userInfo = user.get();
                 userInfo.permissions = permission;
                 return done(null, userInfo);
-                }).catch((err) => {
+                }).catch(err => {
                     console.log(err);
                     req.flash('danger', 'Something went wrong with your signin!')
                     return done(null, false, {message: 'Something went wrong with your signin!'});
                 });
-            }).catch((err) => {
+                return null;
+            }).catch(err => {
                 console.log(err);
                 req.flash('danger', 'Something went wrong with your signin!')
                 return done(null, false, {message: 'Something went wrong with your signin!'});

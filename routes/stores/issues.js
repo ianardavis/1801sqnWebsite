@@ -4,19 +4,13 @@ const   mw = require('../../config/middleware'),
         cn = require("../../db/constructors");
 var currentLine;
 
-module.exports = (app, m) => {    
+module.exports = (app, m) => {
     // Index
     app.get('/stores/issues', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_issues', true, req, res, (allowed) => {
-            var whereObj = {},
-                query = {};
-            query.rl = Number(req.query.rl) || 2;
-            if (query.rl === 2) {
-                whereObj.returned_to = null
-            } else if (query.rl === 3) {
-                whereObj.returned_to = {[op.not]: null}
-            };
-            fn.getIssuesWhere(whereObj, req, (issues) => {
+            var query = {};
+            query.ci = Number(req.query.ci) || 2;
+            fn.getAllIssues(query, false, req, (issues) => {
                 res.render('stores/issues/index', {
                     query:  query,
                     issues: issues
@@ -25,38 +19,89 @@ module.exports = (app, m) => {
         });
     });
 
-    //New Logic
-    app.post('/stores/issues', mw.isLoggedIn, (req, res) => {
-        fn.allowed('issues_add', true, req, res, (allowed) => {
-            if (req.body.selected) {
-                currentLine = fn.counter();
-                fn.createLoanCard(req.body.issue.issued_to, req.user.user_id, (loancard_id) => {
-                    var issues = [];
-                    req.body.selected.map((item) => {
-                        if (item) {
-                            item = JSON.parse(item);
-                            var issue = new cn.Issue(req.body.issue, item, req.user.user_id);
-                            issues.push(fn.issueLine(issue, item, loancard_id, currentLine()))
-                        };
-                    });
-                    if (issues.length > 0) {
-                        Promise.all(issues)
-                        .then(results => {
-                            fn.processPromiseResult(results, req, (then) => {
-                                res.redirect('/stores/issues');
+    //Return
+    app.put('/stores/issues', mw.isLoggedIn, (req, res) => {
+        fn.allowed('issues_return', true, req, res, (allowed) => {
+            var source = req.query.source || '/stores/issues',
+                lines = [];
+            if (req.body.lines) {
+                req.body.lines.map((line) => {
+                    if (line) {
+                        line = JSON.parse(line);
+                        lines.push(fn.updateLocationQty(line.location_id, line.qty, '+'));
+                        lines.push(fn.returnLine(line, req.user.user_id));
+                    };
+                });
+                if (lines.length > 0) {
+                    Promise.all(lines)
+                    .then(results => {
+                        fn.closeIssueIfAllReturned(req.body.issue_id).then(checkResults => {
+                            fn.processPromiseResult(
+                                results.concat(checkResults), 
+                                req, 
+                                (next) => {
+                                res.redirect(source);
                             });
                         })
                         .catch(err => {
                             console.log(err);
-                            res.redirect('/stores/issues');
+                            res.redirect(source);
                         });
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.redirect(source);
+                    });
+                } else {
+                    res.redirect(source);
+                };
+            } else {
+                res.redirect(source);
+            };
+        });
+    });
+
+    //New Logic
+    app.post('/stores/issues', mw.isLoggedIn, (req, res) => {
+        fn.allowed('issues_add', true, req, res, (allowed) => {
+            if (req.body.selected) {
+                var newIssue = new cn.Issue(req.body.issue, req.user.user_id);
+                fn.create(m.issues, newIssue, req, (issue) => {
+                    if (issue) {
+                        currentLine = fn.counter();
+                        var issues = [];
+                        req.body.selected.map((item) => {
+                            if (item) {
+                                item = JSON.parse(item);
+                                var line = new cn.IssueLine(issue.issue_id, item, currentLine());
+                                issues.push(fn.updateLocationQty(item.location_id, item._qty, '-'));
+                                issues.push(fn.issueLine(line));
+                            };
+                        });
+                        if (issues.length > 0) {
+                            Promise.all(issues)
+                            .then(results => {
+                                fn.processPromiseResult(results, req, (then) => {
+                                    if (currentLine() === 1) {
+                                        fn.delete(m.issues, {issue_id: issue.issue_id}, req, (next) => {
+                                            res.redirect('/stores/users/' + issue.issued_to);
+                                        });
+                                    } else {
+                                        res.redirect('/stores/users/' + issue.issued_to);
+                                    }
+                                });
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                res.redirect('/stores/users/' + issue.issued_to);
+                            });
+                        } else {
+                            res.redirect('/stores/users/' + issue.issued_to);
+                        };
                     } else {
-                        fn.deleteLoanCard(loancard_id, (result) => {
-                            res.redirect('/stores/issues');
-                        });
+                        res.redirect('/stores/issues');
                     };
                 });
-                
             } else {
                 req.flash('info', 'No items selected!');
                 res.redirect('/stores/issues');
@@ -71,12 +116,12 @@ module.exports = (app, m) => {
                 fn.getUser(req.query.user, {include: false}, req, (user) => {
                     if (user) {
                         if (req.query.user !== req.user.user_id) {
-                            if (user.status.status_id !== 1) {
+                            if (user.status_id !== 1) {
                                 req.flash('danger', 'Issues can only be made to current users')
                                 res.redirect('/stores/users/' + req.query.user);
                             } else {
                                 res.render('stores/issues/new', {
-                                    selectedUser: user
+                                    user: user
                                 }); 
                             };
                         } else {
@@ -94,47 +139,16 @@ module.exports = (app, m) => {
         });
     });
 
-    //Return
-    app.put('/stores/issues', mw.isLoggedIn, (req, res) => {
-        fn.allowed('issues_return', true, req, res, (allowed) => {
-            var source = req.query.source || '/stores/issues';
-            var lines = [];
-            if (req.body.locations) {
-                req.body.locations.map((line) => {
-                    if (line) {
-                        lines.push(fn.returnLine(line, req.user.user_id))
-                    };
-                });
-                if (lines.length > 0) {
-                    Promise.all(lines)
-                    .then(results => {
-                        fn.processPromiseResult(
-                            results, 
-                            req, 
-                            (complete) => {
-                            res.redirect(source);
-                        });
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        res.redirect(source);
-                    });
-                } else {
-                    res.redirect(source);
-                };
-            } else {
-                res.redirect(source);
-            };
-        });
-    });
-
     //delete
-    app.delete('/stores/issues/id', mw.isLoggedIn, (req, res) => {
+    app.delete('/stores/issues/:id', mw.isLoggedIn, (req, res) => {
         if (req.query.user) {
-            fn.allowed('issues_delete', true, res, (allowed) => {
-                fn.delete(m.issues, {issue_id: req.params.id}, req, (result) => {
-                    if (!result) req.flash('danger', 'Error deleting record');
-                    res.redirect('/stores/issues?user=' + req.query.user)
+            fn.allowed('issues_delete', true, req, res, (allowed) => {
+                fn.delete(m.issues_l, {issue_id: req.params.id}, req, (line_result) => {
+                    if (!line_result) req.flash('danger', 'No lines deleted');
+                    fn.delete(m.issues, {issue_id: req.params.id}, req, (issue_result) => {
+                        if (!issue_result) req.flash('danger', 'Error deleting issue');
+                        res.redirect('/stores/issues');
+                    });
                 });
             });
         };
@@ -145,7 +159,7 @@ module.exports = (app, m) => {
         fn.allowed('access_issues', false, req, res, (allowed) => {
             var query = {};
             query.sn = Number(req.query.sn) || 2
-            fn.getIssue(req.params.id, req, (issue) => {
+            fn.getIssue(req.params.id, true, req, (issue) => {
                 if (issue) {
                     if (allowed || issue.issuedTo.user_id === req.user.user_id) {
                         fn.getNotes('issues', req.params.id, req, res, (notes) => {

@@ -8,15 +8,15 @@ function sortTable(n, tableName) {
       rows = table.rows;
       for (i = 1; i < (rows.length - 1); i++) {
         shouldSwitch = false;
-        x = rows[i].getElementsByTagName("td")[n];
-        y = rows[i + 1].getElementsByTagName("td")[n];
+        x = rows[i].getElementsByTagName("td")[n].dataset.sort || rows[i].getElementsByTagName("td")[n].innerText.toLowerCase();
+        y = rows[i + 1].getElementsByTagName("td")[n].dataset.sort ||rows[i + 1].getElementsByTagName("td")[n].innerText.toLowerCase();
         if (dir == "asc") {
-          if (x.innerText.toLowerCase() > y.innerText.toLowerCase()) {
+          if (x > y) {
             shouldSwitch = true;
             break;
           }
         } else if (dir == "desc") {
-          if (x.innerText.toLowerCase() < y.innerText.toLowerCase()) {
+          if (x < y) {
             shouldSwitch = true;
             break;
           }

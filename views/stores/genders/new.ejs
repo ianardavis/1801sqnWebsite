@@ -1,0 +1,46 @@
+<!-- USER ITEM PAGE -->
+<% include ../../partials/head/full %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/settings">Settings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/genders/new">New Gender</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<a class="dropdown-item" href="/stores/settings">Back to Settings</a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="container pt-3">
+	<div class="row">
+		<div class="col-12 col-lg-3 mx-auto mb-3">
+			<div class="container bordered">
+				<h4>Gender</h4>
+				<div>
+					<form action="/stores/genders" method="POST">
+						<p><input class="form-control" type="text" name="gender[_gender]" maxlength="20" placeholder="Gender" required></p>
+						<p><button class="btn btn-success">Save</button></p>
+					</form>
+                </div>
+			</div>
+		</div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

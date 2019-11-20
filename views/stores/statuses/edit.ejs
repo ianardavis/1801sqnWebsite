@@ -1,0 +1,64 @@
+<!-- USER ITEM PAGE -->
+<% include ../../partials/head/full %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores">Stores</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/settings">Settings</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/settings">Status: <%= status._status %></a>
+			</li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/statuses/<%= status.status_id %>">Edit</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Options
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<% if (permissions.notes_add) { %>
+					<a class="dropdown-item" href="/stores/notes/new?table=statuses&id=<%= status.status_id %>">Add Note</a>
+					<div class="dropdown-divider"></div>
+				<% } %>
+				<a class="dropdown-item" href="/stores/settings">Back to Settings</a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<section class="detailBox container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 col-md-3 mx-auto">
+			<div class="container bordered">
+				<h4>status</h4>
+				<div class="details">
+					<form action="/stores/statuses/<%= status.status_id %>?_method=PUT" method="POST">
+						<input type="hidden" name="status_id" value="<%= status.status_id %>" readonly>
+						<p><input class="form-control" type="text" name="status[_status]" maxlength="10" value="<%= status._status %>" required></p>
+						<p><button class="btn btn-success">Save</button></p>
+					</form>
+                </div>
+			</div>
+		</div>
+		<div class="col-12 col-md-9 mx-auto bordered">
+			<% include ../../partials/noteTable %>
+		</div>
+	</div>
+</section>
+<% include ../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['sn'],"/stores/statuses/<%= status.status_id %>/edit");
+    };
+</script>
+<% include ../../partials/foot/htmlClose %>

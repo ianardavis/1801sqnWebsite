@@ -1,0 +1,106 @@
+<!-- loancards INDEX PAGE -->
+<% include ../../partials/head/full %>
+<section class="mb-2">
+	<nav class="navbar navbar-expand navbar-light bg-nav">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores">Stores</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/receipts">Receipts</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/receipts/<%= receipt.receipt_id %>"><%= receipt.receipt_id %></a>
+			</li>
+		</ul>
+	</nav>
+</section>
+<section>
+	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Options
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<% if (permissions.notes_add) { %>
+						<a class="dropdown-item" href="/stores/notes/new?table=receipt&id=<%= receipt.receipt_id %>">Add Note</a>
+						<div class="dropdown-divider"></div>
+					<% } %>
+					<% if (permissions.receipts_delete) { %>
+						<div class="col-12 mb-3">
+							<form action="/stores/receipts/<%= receipt.receipt_id %>?_method=DELETE" method="POST">
+								<button class="dropdown-item dropdown_button">Delete Receipt</button>
+							</form>
+						</div>
+					<% } %>
+					<a class="dropdown-item" href="/stores/reeipts">Back to Receipts</a>
+				</div>
+			</li>
+		</ul>
+	</nav>
+</section>
+<section class="container-fluid pt-3">
+	<div class="row">
+		<div class="col-12 col-lg-6 col-xl-4 mb-3 bordered">
+			<h4>Receipt Details</h4>
+			<div class="row">
+				<div class="col-sm-4">
+					<label class="col-form-label">Supplier:</label>
+				</div>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" value="<%= receipt.supplier._name %>" readonly>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-4">
+					<label class="col-form-label">Received:</label>
+				</div>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" value="<%= receipt._date.toDateString() %>" readonly>
+				</div>
+			</div>	
+			<div class="row">
+				<div class="col-sm-4">
+					<label class="col-form-label">Received By:</label>
+				</div>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" value="<%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>" readonly>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 bordered">
+			<table id="receiptTable" class="table table-sm table-hover mx-auto w-100">
+				<thead class="thead-dark">
+					<th class="w-40" onclick="sortTable(0, 'receiptTable')">Item</th>
+					<th class="w-40" onclick="sortTable(1, 'receiptTable')">Size</th>
+					<th class="w-20" onclick="sortTable(2, 'receiptTable')">Quantity</th>
+				</thead>
+				<tbody>
+					<% if (receipt.lines) { %>
+						<% receipt.lines.forEach((line) => { %>
+							<tr>
+								<td><%= line.size.item._description %></td>
+								<td><%= line.size.size._text %></td>
+								<td><%= line._qty %></td>
+							</tr>
+						<% }) %>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
+		<% if (permissions.access_notes) { %> 
+			<div class="col-12 col-lg-6 col-xl-12 mb-3 bordered">
+				<% include ../../partials/noteTable %>
+			</div>
+		<% } %>
+	</div>
+</section>
+<% include ../../partials/foot/full %>
+<script src="/js/filters.js"></script>
+<script>
+    function filterSelects() {
+        filter(['sn'],"/stores/receipts/<%= receipt.receipt_id %>");
+    };
+</script>
+<% include ../../partials/foot/htmlClose %>
