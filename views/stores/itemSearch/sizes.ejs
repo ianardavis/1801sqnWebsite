@@ -4,7 +4,7 @@
 <section id="body">
 <div class="row container mx-auto">
     <div class="col-12 mb-3">
-        <a class="btn btn-primary w-100" href="/stores/itemSearch">Back</a>
+        <a class="btn btn-primary w-100" href="/stores/itemSearch?c=<%= callType %>&s=<%= supplier_id %>">Back</a>
     </div>
     <div class="col-12 col-md-6 bordered mb-3 mx-auto">
         <h5>Sizes for <%= description %></h5>
@@ -12,10 +12,11 @@
         <form action="/stores/itemSearch/size" method="POST">
             <input type="hidden" name="item_id" value="<%= item_id %>">
             <input type="hidden" name="callType" value="<%= callType %>">
-            <select class='form-control w-100' name="size" id="sizesTable" type="text" size="15">
+            <input type="hidden" name="supplier_id" value="<%= supplier_id %>">
+            <select class='form-control w-100' name="item_size" id="sizesTable" type="text" size="15">
                 <option value=""></option>
-                <% sizes.forEach((size) => { %>
-                    <option value="<%= size.stock_id %>"><%= size.size._text %></option>
+                <% item_sizes.forEach(item_size => { %>
+                    <option value="<%= item_size.itemsize_id %>"><%= item_size.size._text %></option>
                 <% }); %>
             </select>
             <button class="btn btn-success w-100">Select</button>

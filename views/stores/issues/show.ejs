@@ -47,42 +47,40 @@
         </ul>
     </nav>
 </section>
-<section class="container-fluid pt-3">
+<section class="container pt-3">
     <div class="row">
         <div class="col-12 col-lg-6 col-xl-4 mb-3 bordered">
             <h4>Issue Details</h4>
-            <div class="details">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label class="col-form-label">Issued To:</label>
-                    </div>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" value="<%= issue.issuedTo.rank._rank %> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %>" readonly>
-                    </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Issued To:</label>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label class="col-form-label">Issued By:</label>
-                    </div>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" value="<%= issue.issuedBy.rank._rank %> <%= issue.issuedBy._name %>, <%= issue.issuedBy._ini %>" readonly>
-                    </div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= issue.issuedTo.rank._rank %> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %>" readonly>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label class="col-form-label">Issued On:</label>
-                    </div>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" value="<%= issue._date.toDateString() %>" readonly>
-                    </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Issued By:</label>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label class="col-form-label">Due Back On:</label>
-                    </div>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" value="<%= issue._date_due.toDateString() %>" readonly>
-                    </div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= issue.issuedBy.rank._rank %> <%= issue.issuedBy._name %>, <%= issue.issuedBy._ini %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Issued On:</label>
+                </div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= issue._date.toDateString() %>" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="col-form-label">Due Back On:</label>
+                </div>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" value="<%= issue._date_due.toDateString() %>" readonly>
                 </div>
             </div>
         </div>
@@ -109,23 +107,23 @@
                     </thead>
                     <tbody>
                         <% if (issue.lines) { %>
-                            <% issue.lines.forEach((line) => { %>
+                            <% issue.lines.forEach(line => { %>
                                 <tr>
                                     <td><a href="#"><%= line._line %></a></td>
                                     <td><a href="/stores/nsns/<%= line.nsn_id %>/edit"><%= line.nsn._nsn %></a></td>
-                                    <td><a href="/stores/items/<%= line.size.item_id %>"><%= line.size.item._description %></a></td>
-                                    <td><a href="/stores/item_sizes/<%= line.stock_id %>"><%= line.size.size._text %></a></td>
+                                    <td><a href="/stores/items/<%= line.item_size.item_id %>"><%= line.item_size.item._description %></a></td>
+                                    <td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size.size._text %></a></td>
                                     <td><a href="#"><%= line._qty %></a></td>
-                                    <td><a href="/stores/locations/<%= line.issue_location %>/edit"><%= line.issueLocation._location %></a></td>
+                                    <td><a href="/stores/stock/<%= line.issue_stock %>/edit"><%= line.issueStock.location._location %></a></td>
                                     <td>
-                                        <% if (line.returnLocation) { %>
-                                            <a href="/stores/locations/<%= line.return_location %>/edit"><%= line.returnLocation._location %></a>
+                                        <% if (line.returnStock) { %>
+                                            <a href="/stores/stock/<%= line.return_stock %>/edit"><%= line.returnStock.location._location %></a>
                                         <% } else { %>
                                             <select class="form-control form-control-sm" name="lines[]">
                                                 <option value="" selected></option>
-                                                <% if (line.size.locations) { %>
-                                                    <% line.size.locations.forEach((location) => { %>
-                                                        <option value='{"line_id": <%= line.line_id %>, "qty":<%= line._qty %>, "location_id": <%= location.location_id %>}'><%= location._location %></option>
+                                                <% if (line.item_size.stocks) { %>
+                                                    <% line.item_size.stocks.forEach(stock => { %>
+                                                        <option value='{"line_id": <%= line.line_id %>, "qty":<%= line._qty %>, "stock_id": <%= stock.stock_id %>}'><%= stock.location._location %></option>
                                                     <% }); %>
                                                 <% }; %>
                                             </select>

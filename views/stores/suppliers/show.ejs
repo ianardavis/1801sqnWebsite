@@ -27,6 +27,10 @@
                         <a class="dropdown-item" href="/stores/suppliers/<%= supplier.supplier_id %>/edit">Edit</a>
                         <div class="dropdown-divider"></div>
                     <% } %>
+                    <% if (permissions.receipts_add) { %>
+                        <a class="dropdown-item" href="/stores/receipts/new?s=<%= supplier.supplier_id %>">Receive</a>
+                        <div class="dropdown-divider"></div>
+                    <% } %>
                     <% if (permissions.notes_add) { %>
                         <a class="dropdown-item" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">Add Note</a>
                         <div class="dropdown-divider"></div>
@@ -121,11 +125,11 @@
                     <th class="w-40" onclick="sortTable(1, 'sizeTable')">Size</th>
                 </thead>
                 <tbody>
-                    <% if (supplier.sizes) { %>
-                        <% supplier.sizes.forEach((size) => { %>
+                    <% if (supplier.item_sizes) { %>
+                        <% supplier.item_sizes.forEach(item_size => { %>
                             <tr>
-                                <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.item._description %></a></td>
-                                <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.size._text %></a></td>
+                                <td><a href="/stores/items/<%= item_size.item_id %>"><%= item_size.item._description %></a></td>
+                                <td><a href="/stores/item_sizes/<%= item_size.itemsize_id %>"><%= item_size.size._text %></a></td>
                             </tr>
                         <% }); %>
                     <% }; %>

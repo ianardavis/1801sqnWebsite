@@ -13,7 +13,7 @@
                 <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= item.stock_id %>">Size: <%= item.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= item.itemsize_id %>">Size: <%= item.size._text %></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/locations/new">Add Location</a>
@@ -28,7 +28,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/item_sizes/<%= item.stock_id %>">Back to <%= item.item._description %>/Size: <%= item.size._text %></a>
+				<a class="dropdown-item" href="/stores/item_sizes/<%= item.itemsize_id %>">Back to <%= item.item._description %>/Size: <%= item.size._text %></a>
 			</div>
 		</li>
 	</ul>
@@ -40,7 +40,7 @@
                 <h4>Location</h4>
                 <form action="/stores/locations" method="POST">
 					<div class="">
-						<input type="hidden" name="location[stock_id]" value="<%= item.stock_id %>" readonly>
+						<input type="hidden" name="location[itemsize_id]" value="<%= item.itemsize_id %>" readonly>
 						<p><input class="form-control" type="text" name="location[_location]" maxlength="10" placeholder="Location" required></p>
 					</div>
 					<% if (permissions.item_adjust) { %>

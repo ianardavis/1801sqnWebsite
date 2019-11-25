@@ -10,20 +10,9 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'stock_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     '_location': {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(20),
       allowNull: false,
-      comment: "null"
-    },
-    '_qty': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      defaultValue: '0',
       comment: "null"
     },
     'createdAt': {

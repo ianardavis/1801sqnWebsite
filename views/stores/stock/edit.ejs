@@ -1,4 +1,3 @@
-<!-- USER ITEM PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -10,13 +9,13 @@
                 <a class="nav-link stores_nav" href="/stores/items">Items</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= location.size.item_id %>"><%= location.size.item._description %></a>
+                <a class="nav-link stores_nav" href="/stores/items/<%= stock.item_size.item_id %>"><%= stock.item_size.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= location.size.stock_id %>">Size: <%= location.size.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= stock.item_size.itemsize_id %>">Size: <%= stock.item_size.size._text %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/locations/<%= location.location_id %>/edit">Location: <%= location._location %></a>
+                <a class="nav-link stores_nav" href="/stores/stock/<%= stock.stock_id %>/edit">Location: <%= stock.location._location %></a>
             </li>
         </ul>
     </nav>
@@ -29,14 +28,14 @@
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				<% if (permissions.item_adjust) { %> 
-				<a class="dropdown-item" href="/stores/adjusts/new?li=<%= location.location_id %>&at=Count">Count</a>
-				<a class="dropdown-item" href="/stores/adjusts/new?li=<%= location.location_id %>&at=Scrap">Scrap</a>
+				<a class="dropdown-item" href="/stores/adjusts/new?si=<%= stock.stock_id %>&at=Count">Count</a>
+				<a class="dropdown-item" href="/stores/adjusts/new?si=<%= stock.stock_id %>&at=Scrap">Scrap</a>
 				<% } %>
 				<% if (permissions.notes_add) { %>
-				<a class="dropdown-item" href="/stores/notes/new?table=locations&id=<%= location.location_id %>">Add Note</a>
+				<a class="dropdown-item" href="/stores/notes/new?table=stock&id=<%= stock.stock_id %>">Add Note</a>
 				<div class="dropdown-divider"></div>
 				<% } %>
-				<a class="dropdown-item" href="/stores/items_sizes/<%= location.size.stock_id %>/edit">Back to <%= location.size.item._description %>/Size: <%= location.size.size._text %></a>
+				<a class="dropdown-item" href="/stores/items_sizes/<%= stock.item_size.itemsize_id %>/edit">Back to <%= stock.item_size.item._description %>/Size: <%= stock.item_size.size._text %></a>
 			</div>
 		</li>
 	</ul>
@@ -47,9 +46,9 @@
 			<div class="container bordered">
 				<h4>Location</h4>
 				<div class="details">
-					<form action="/stores/locations/<%= location.location_id %>?_method=PUT" method="POST">
-						<input type="hidden" name="location[location_id]" value="<%= location.location_id %>" readonly>
-						<p><input type="text" class="form-control" name="location[_location]" maxlength="10" value="<%= location._location %>" required></p>
+					<form action="/stores/stock/<%= stock.stock_id %>?_method=PUT" method="POST">
+						<input type="hidden" name="stock[stock_id]" value="<%= stock.stock_id %>" readonly>
+						<p><input type="text" class="form-control" name="stock[location_id]" maxlength="10" value="<%= stock.location._location %>" required></p>
 						<p><button class="btn btn-success">Save</button></p>
 					</form>
                 </div>
@@ -65,7 +64,7 @@
 <script src="/js/filters.js"></script>
 <script>
     function filterSelects() {
-        filter(['sn'],"/stores/locations/<%= location.location_id %>/edit");
+        filter(['sn'],"/stores/stock/<%= stock.stock_id %>/edit");
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -12,17 +12,13 @@ module.exports = function(sequelize, DataTypes) {
     },
     'ordered_for': {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'ordered_by': {
-      type: DataTypes.INTEGER(11),
       allowNull: false,
+      defaultValue: '-1',
       comment: "null"
     },
     '_date': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
       comment: "null"
     },
     '_complete': {
@@ -31,14 +27,19 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       defaultValue: '0'
     },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {

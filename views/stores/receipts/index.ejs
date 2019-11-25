@@ -18,7 +18,8 @@
 			<thead class="thead-dark">
 				<th class="w-15" onclick="sortTable(0, 'orderTable')">Supplier</th>
 				<th class="w-15" onclick="sortTable(1, 'orderTable')">Receipt Date</th>
-				<th class="w-15" onclick="sortTable(2, 'orderTable')">Received By</th>
+				<th class="w-15" onclick="sortTable(2, 'orderTable')">Lines</th>
+				<th class="w-15" onclick="sortTable(3, 'orderTable')">Received By</th>
 			</thead>
 			<tbody>
 				<% if (receipts) { %>
@@ -26,7 +27,8 @@
 						<tr>
 							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.supplier._name %></a></td>
 							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt._date.toDateString() %></a></td>
-							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.receivedBy.rank._rank %> <%= receipt.receivedBy._name %>, <%= receipt.receivedBy._ini %></a></td>
+							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.lines.length %></a></td>
+							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %></a></td>
 						</tr>
 					<% }) %>
 				<% } %>

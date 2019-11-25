@@ -72,16 +72,18 @@
 		<div class="col-12 bordered">
 			<table id="receiptTable" class="table table-sm table-hover mx-auto w-100">
 				<thead class="thead-dark">
-					<th class="w-40" onclick="sortTable(0, 'receiptTable')">Item</th>
-					<th class="w-40" onclick="sortTable(1, 'receiptTable')">Size</th>
-					<th class="w-20" onclick="sortTable(2, 'receiptTable')">Quantity</th>
+					<th class="w-20" onclick="sortTable(0, 'receiptTable')">Location</th>
+					<th class="w-30" onclick="sortTable(1, 'receiptTable')">Item</th>
+					<th class="w-30" onclick="sortTable(2, 'receiptTable')">Size</th>
+					<th class="w-20" onclick="sortTable(3, 'receiptTable')">Quantity</th>
 				</thead>
 				<tbody>
 					<% if (receipt.lines) { %>
-						<% receipt.lines.forEach((line) => { %>
+						<% receipt.lines.forEach(line => { %>
 							<tr>
-								<td><%= line.size.item._description %></td>
-								<td><%= line.size.size._text %></td>
+								<td><%= line.stock.location._location %></td>
+								<td><%= line.stock.item_size.item._description %></td>
+								<td><%= line.stock.item_size.size._text %></td>
 								<td><%= line._qty %></td>
 							</tr>
 						<% }) %>

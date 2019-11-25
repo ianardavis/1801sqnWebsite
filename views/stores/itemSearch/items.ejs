@@ -8,6 +8,7 @@
         <input class="form-control" type="text" id="itemSearch" onkeyup="searchTable('itemsTable', 'itemSearch')" placeholder="Search for items..">
         <form action="/stores/itemSearch" method="POST">
             <input type="hidden" name="callType" value="<%= callType %>">
+            <input type="hidden" name="supplier_id" value="<%= supplier_id %>">
             <select class='form-control w-100' name="item" id="itemsTable" type="text" size="15">
                 <option value=""></option>
                 <% items.forEach((item) => { %>

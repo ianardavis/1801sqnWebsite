@@ -10,16 +10,16 @@
                 <a class="nav-link stores_nav" href="/stores/items">Items</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= location.size.item.item_id %>"><%= location.size.item._description %></a>
+                <a class="nav-link stores_nav" href="/stores/items/<%= stock.item_size.item.item_id %>"><%= stock.item_size.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= location.stock_id %>">Size: <%= location.size.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= stock.itemsize_id %>">Size: <%= stock.item_size.size._text %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/locations/<%= location.location_id %>">Location: <%= location._location %></a>
+                <a class="nav-link stores_nav" href="/stores/stock/<%= stock.stock_id %>">Stock: <%= stock.location_id %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/adjusts/new?si=<%= location.stock_id %>&at=<%= query.at %>"><%= query.at %></a>
+                <a class="nav-link stores_nav" href="/stores/adjusts/new?si=<%= stock.itemsize_id %>&at=<%= query.at %>"><%= query.at %></a>
             </li>
         </ul>
     </nav>
@@ -31,7 +31,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/locations/<%= location.location_id %>">Back to <%= location._location %></a>
+				<a class="dropdown-item" href="/stores/stock/<%= stock.stock_id %>">Back to <%= stock.location_id %></a>
 			</div>
 		</li>
 	</ul>
@@ -41,11 +41,11 @@
 		<div class="col-12 col-lg-3 mx-auto mb-3">
 			<div class="container bordered">
                 <h4><%= query.at %></h4>
-                <h5>Current Quantity: <%= location._qty %></h5>
+                <h5>Current Quantity: <%= stock._qty %></h5>
                 <form action="/stores/adjusts" method="POST">
 					<div class="">
-						<input type="hidden" name="adjust[_adjust_type]" value="<%= query.at %>" readonly>
-						<input type="hidden" name="adjust[location_id]" value="<%= location.location_id %>" readonly>
+						<input type="hidden" name="adjust[_type]" value="<%= query.at %>" readonly>
+						<input type="hidden" name="adjust[stock_id]" value="<%= stock.stock_id %>" readonly>
 						<p><input type="number" name="adjust[_qty]" inputmode="numeric" maxlength="11" placeholder="Quantity" required></p>
 					</div>
 					<p><button class="btn btn-success">Save</button></p>

@@ -6,8 +6,15 @@ module.exports = (app, m) => {
     // New Logic
     app.post('/stores/ranks', mw.isLoggedIn, (req, res) => {
         fn.allowed('ranks_add', true, req, res, allowed => {
-            fn.create(m.ranks, req.body.rank, req, rank => {
+            fn.create(
+                m.ranks, 
+                req.body.rank
+            )
+            .then(rank => {
                 res.redirect('/stores/settings');
+            })
+            .catch(err => {
+                fn.error(err, '/stores/settings', req, res);
             });
         });
     });
@@ -18,24 +25,28 @@ module.exports = (app, m) => {
             res.render('stores/ranks/new');
         });
     });
+
     // Edit
     app.get('/stores/ranks/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('ranks_edit', true, req, res, allowed => {
-            fn.getOne(m.ranks, {rank_id: req.params.id}, req, rank => {
-                if (rank) {
-                    var query = {};
-                    query.sn = req.query.sn || 2;
-                    fn.getNotes('ranks', req.params.id, req, res, notes => {
-                        res.render('stores/ranks/edit', {
-                            rank:  rank,
-                            query: query,
-                            notes: notes
-                        });
+            fn.getOne(
+                m.ranks,
+                {rank_id: req.params.id}
+            )
+            .then(rank => {
+                var query = {};
+                query.sn = req.query.sn || 2;
+                fn.getNotes('ranks', req.params.id, req, res)
+                .then(notes => {
+                    res.render('stores/ranks/edit', {
+                        rank:  rank,
+                        query: query,
+                        notes: notes
                     });
-                } else {
-                    req.flash('danger', 'Error retrieving rank!');
-                    res.redirect('back');
-                };
+                });
+            })
+            .catch(err => {
+                fn.error(err, '/stores/settings', req, res);
             });
         });
     });
@@ -43,8 +54,16 @@ module.exports = (app, m) => {
     // Put
     app.put('/stores/ranks/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('ranks_edit', true, req, res, allowed => {
-            fn.update(m.ranks, req.body.rank, {rank_id: req.params.id}, req, result => {
+            fn.update(
+                m.ranks,
+                req.body.rank,
+                {rank_id: req.params.id}
+            )
+            .then(result => {
                 res.redirect('/stores/settings')
+            })
+            .catch(err => {
+                fn.error(err, '/stores/settings', req, res);
             });
         });
     });
@@ -52,15 +71,22 @@ module.exports = (app, m) => {
     // Delete
     app.delete('/stores/ranks/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('ranks_delete', true, req, res, allowed => {
-            fn.getOne(m.users, {rank_id: req.params.id}, req, rank => {
+            fn.getOne(
+                m.users,
+                {rank_id: req.params.id}
+            )
+            .then(rank => {
                 if (!rank) {
                     fn.delete(m.ranks, {rank_id: req.params.id}, req, result => {
-                        res.redirect('back');
+                        res.redirect('/stores/settings');
                     });
                 } else {
                     req.flash('danger', 'Cannot delete a rank whilst it is assigned to a user!');
-                    res.redirect('back');
+                    res.redirect('/stores/settings');
                 };
+            })
+            .catch(err => {
+                fn.error(err, '/stores/settings', req, res);
             });
         });
     });

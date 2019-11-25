@@ -95,7 +95,14 @@
             </div>
 		</div>
 		<div class="col-12 col-md-6 col-lg-5 mb-3 container bordered">
-			<h4><% if (permissions.item_size_add) { %><a href="/stores/item_sizes/new?item_id=<%= item.item_id %>"><i class="fas fa-plus-circle"></i></a> <% } %>Sizes</h4>
+			<h4>
+                <% if (permissions.item_size_add) { %>
+                    <a href="/stores/item_sizes/new?item_id=<%= item.item_id %>">
+                        <i class="fas fa-plus-circle"></i>
+                    </a>
+                <% } %>
+                Sizes
+            </h4>
             <div style="overflow-x:auto;">
                 <table id="sizeTable" class="table table-sm table-hover w-100">
                     <thead class="thead-dark">
@@ -103,10 +110,10 @@
                         <th class="w-40" onclick="sortTable(1, 'sizeTable')">Quantity</th>
                     </thead>
                     <tbody>
-                        <% item.sizes.forEach((size) => { %>
+                        <% item.item_sizes.forEach(item_size => { %>
                             <tr>
-                                <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.size._text %></a></td>
-                                <td><a href="/stores/item_sizes/<%= size.stock_id %>"><%= size.stock %></a></td>
+                                <td><a href="/stores/item_sizes/<%= item_size.itemsize_id %>"><%= item_size.size._text %></a></td>
+                                <td><a href="/stores/item_sizes/<%= item_size.itemsize_id %>"><%= item_size.locationStock %></a></td>
                             </tr>
                         <% }) %>
                     </tbody>

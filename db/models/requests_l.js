@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'stock_id': {
+    'itemsize_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -36,7 +36,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    '_date_approved': {
+    '_date': {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
@@ -51,7 +51,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    'approved_by': {
+    'user_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"

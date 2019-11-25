@@ -62,19 +62,13 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Issuer"
     },
-    'access_locations': {
+    'access_stock': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Issuer"
     },
     'access_nsns': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'access_receipts': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -110,19 +104,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Admin"
     },
-    'locations_add': {
+    'stock_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'locations_edit': {
+    'stock_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "Storeman"
     },
-    'locations_delete': {
+    'stock_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -146,12 +140,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Admin"
     },
-    'item_receive': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
     'item_adjust': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
@@ -159,6 +147,24 @@ module.exports = function(sequelize, DataTypes) {
       comment: "Storeman"
     },
     'item_stocktake': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Storeman"
+    },
+    'access_receipts': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'receipts_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Storeman"
+    },
+    'receipts_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',

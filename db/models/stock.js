@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('demand_lines', {
-    'line_id': {
+  return sequelize.define('stock', {
+    'stock_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,12 +10,12 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'demand_id': {
+    'itemsize_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'stock_id': {
+    'location_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -23,11 +23,7 @@ module.exports = function(sequelize, DataTypes) {
     '_qty': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "null"
-    },
-    'receive_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      defaultValue: '0',
       comment: "null"
     },
     'createdAt': {
@@ -41,6 +37,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'demand_lines'
+    tableName: 'stock'
   });
 };

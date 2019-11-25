@@ -15,11 +15,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'issued_by': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     '_complete': {
       type: DataTypes.INTEGER(4),
       allowNull: true,
@@ -32,6 +27,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     '_date_due': {
       type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
+    },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },

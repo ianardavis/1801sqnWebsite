@@ -10,11 +10,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'requested_by': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     'requested_for': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -29,6 +24,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
+      comment: "null"
+    },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     'createdAt': {

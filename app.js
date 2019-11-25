@@ -37,13 +37,12 @@ app.use((req, res, next) => {
         m.permissions.findOne({
             attributes: {exclude: ['createdAt', 'updatedAt', 'user_id']},
             where: {user_id: req.user.user_id}
-        }).then((permissions) => {
+        }).then(permissions => {
             res.locals.permissions = permissions;
             common_login(req, res, next);
             return null;
-        }).catch((err) => {
+        }).catch(err => {
             console.log(err);
-            
             return null;
         });
     } else {
@@ -58,7 +57,7 @@ var m                = require('./db/models'),
     userRoutes       = require('./routes/stores/users')(app, m),
     itemRoutes       = require('./routes/stores/items')(app, m),
     sizeRoutes       = require('./routes/stores/item_sizes')(app, m),
-    locationRoutes   = require('./routes/stores/locations')(app, m),
+    stockRoutes      = require('./routes/stores/stock')(app, m),
     NSNRoutes        = require('./routes/stores/nsns')(app, m),
     noteRoutes       = require('./routes/stores/notes')(app, m),
     supplierRoutes   = require('./routes/stores/suppliers')(app, m),
@@ -74,11 +73,12 @@ var m                = require('./db/models'),
     statusRoutes     = require('./routes/stores/statuses')(app, m),
     genderRoutes     = require('./routes/stores/genders')(app, m),
     demandRoutes     = require('./routes/stores/demands')(app, m),
+    requestRoutes    = require('./routes/stores/receipts')(app, m),
     siteRoutes       = require('./routes/site')(app, m);
 
 require('./config/passport.js')(passport, m.users, m.permissions);
 
-app.listen(1801, (err) => {
+app.listen(1801, err => {
     if (!err) {
         console.log('Server listening on port 1801');
     } else {

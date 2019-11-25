@@ -28,7 +28,7 @@ function TodaysDate(addYears = 0) {
 function addSize(selected) {
     var selectedList = document.querySelector('#selectedItems'),
         newItem = document.createElement('p'),
-        existingID = document.getElementById('id-' + selected.stock_id); //////
+        existingID = document.getElementById('id-' + selected.itemsize_id); //////
     if (typeof(existingID) === 'undefined' || 
         existingID !== null) {
         alert('Size already added!');
@@ -36,17 +36,16 @@ function addSize(selected) {
         newItem.classList.add('row');
         newItem.classList.add('container');
         newItem.classList.add('mx-auto');
-        newItem.id = 'id-' + selected.stock_id;
+        newItem.id = 'id-' + selected.itemsize_id;
         
         var input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'selected[]';
         input.value = JSON.stringify({
-            stock_id: selected.stock_id, 
-            qty: selected._qty,
-            location_id: selected.location_id,
-            location_qty: selected.location_qty,
-            nsn_id: selected.nsn_id
+            itemsize_id: selected.itemsize_id, 
+            qty:         selected._qty,
+            stock_id:    selected.stock_id,
+            nsn_id:      selected.nsn_id
         });
 
         newSpan = document.createElement('span');
@@ -55,7 +54,7 @@ function addSize(selected) {
         newSpan.innerText = selected._description + ' - Size: ' + selected._size_text + ' - Qty: ' + selected._qty;
         
         delBtn = document.createElement('a');
-        delBtn.href='javascript:removeSize("id-' + selected.stock_id + '")';
+        delBtn.href='javascript:removeSize("' + selected.itemsize_id + '")';
         delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
         delBtn.classList.add('col-2');
         
@@ -67,7 +66,7 @@ function addSize(selected) {
     };
 };
 
-function removeSize(stock_id) {
-    var selectedList = document.querySelector('#' + stock_id);
+function removeSize(itemsize_id) {
+    var selectedList = document.querySelector('#id-' + itemsize_id);
     selectedList.remove();
 };

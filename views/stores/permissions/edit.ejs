@@ -66,16 +66,15 @@
                     </thead>
                     <tbody>
                         <% for (var permission in user.permission.dataValues) { %>
-                            <% if (permission !== 'user_id' && permission !== 'createdAt' && permission !== 'updatedAt') { %>
-                                <tr>
-                                    <td>
-                                        <label class="col-form-label" for="<%= permission %>"><%= permission %></label>
-                                    </td>
-                                    <td>
-                                        <input class="form-control" id="<%= permission %>" type="checkbox" name="permissions[<%= permission %>]" value="1" <% if (user.permission[permission] === 1) {%> checked <% } %>>
-                                    </td>
-                                </tr>
-                            <% } %>
+                        <% console.log(permission) %>
+                            <tr>
+                                <td>
+                                    <label class="col-form-label" for="<%= permission %>"><%= permission %></label>
+                                </td>
+                                <td>
+                                    <input class="form-control" id="<%= permission %>" type="checkbox" name="permissions[<%= permission %>]" value="1" <% if (user.permission[permission] === 1) {%> checked <% } %>>
+                                </td>
+                            </tr>
                         <% } %>
                     </tbody>
                 </table>

@@ -32,13 +32,13 @@
                     <% if (permissions.users_password || user.user_id === currentUser.user_id) { %>
                         <a class="dropdown-item" href="/stores/password?user=<%= user.user_id %>">Change Password Now</a>
                     <% } %>
-                    <% if (permissions.users_password || user.user_id === currentUser.user_id) { %>
+                    <% if (permissions.users_password) { %>
                         <form action="/stores/users/<%= user.user_id %>?_method=PUT" method="POST">
                             <input type="hidden" name="user[user_id]" value="<%=user.user_id %>">
-                            <input type="hidden" name="user[_reset]" value=<% if (user._reset === 0) { %>"1"<% } else { %>"0"<% } %>>
+                            <input type="hidden" name="user[_reset]" value=<% if (user._reset === 0) { %>"1" <% } else { %>"0" <% } %>>
                             <button class="dropdown-item dropdown_button" type="submit">Toggle Reset at Next Login</button>
                         </form>
-                        <% } %>
+                    <% } %>
                     <% if (permissions.add_notes) { %>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/stores/notes/new?table=users&id=<%= user.user_id %>">Add Note</a>
@@ -184,7 +184,7 @@
                 <thead class="thead-dark">
                     <th class="w-25" onclick="sortTable(0, 'tableIssues')">Date</th>
                     <th class="w-25" onclick="sortTable(1, 'tableIssues')">Date Due</th>
-                    <th class="w-40" onclick="sortTable(2, 'tableIssues')">Issued By</th>
+                    <th class="w-40" onclick="sortTable(2, 'tableIssues')">Lines</th>
                     <th class="w-10" onclick="sortTable(3, 'tableIssues')">Complete</th>
                 </thead>
                 <tbody>
@@ -195,7 +195,7 @@
                                 <tr>
                                     <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._date.toDateString() %></a></td>
                                     <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._date_due.toDateString() %></a></td>
-                                    <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue.issuedBy.rank._rank %> <%= issue.issuedBy._name %>, <%= issue.issuedBy._ini %></a></td>
+                                    <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue.lines.length %></a></td>
                                     <td><input class="form-control form-control-sm" type="checkbox" <% if (issue._complete) { %>checked <% } %>disabled></td>
                                 </tr>
                             <% }); %>
@@ -218,16 +218,16 @@
             </div>
             <table id="tableOrders" class='table table-sm table-hover mx-auto w-100'>
                 <thead class="thead-dark">
-                    <th class="w-40" onclick="sortTable(0, 'tableLoancards')">Date</th>
-                    <th class="w-50" onclick="sortTable(1, 'tableLoancards')">Ordered By</th>
-                    <th class="w-10" onclick="sortTable(2, 'tableLoancards')">Complete</th>
+                    <th class="w-40" onclick="sortTable(0, 'tableOrders')">Date</th>
+                    <th class="w-40" onclick="sortTable(1, 'tableOrders')">Lines</th>
+                    <th class="w-10" onclick="sortTable(2, 'tableOrders')">Complete</th>
                 </thead>
                 <tbody>
                     <% if(user.orders) { %>
                         <% user.orders.forEach((order) => { %>
                             <tr>
                     <td><a href='/stores/orders/<%= order.order_id %>'><%= order._date.toDateString() %></a></td>
-                    <td><a href='/stores/orders/<%= order.order_id %>'><%= order.orderedBy.rank._rank %> <%= order.orderedBy._name %>, <%= order.orderedBy._ini %></a></td>
+                    <td><a href='/stores/orders/<%= order.order_id %>'><%= order.lines.length %></a></td>
                     <td><input class="form-control form-control-sm" type="checkbox" <% if (order._complete) { %>checked <% } %>disabled></td>
                     </tr>
                         <% }) %>
@@ -249,18 +249,18 @@
             </div>
             <table id="tableRequests" class='table table-sm table-hover mx-auto w-100'>
                 <thead class="thead-dark">
-                    <th class="w-40" onclick="sortTable(0, 'tableLoancards')">Date</th>
-                    <th class="w-50" onclick="sortTable(1, 'tableLoancards')">Requested By</th>
-                    <th class="w-10" onclick="sortTable(2, 'tableLoancards')">Complete</th>
+                    <th class="w-40" onclick="sortTable(0, 'tableRequests')">Date</th>
+                    <th class="w-40" onclick="sortTable(1, 'tableRequests')">Lines</th>
+                    <th class="w-10" onclick="sortTable(2, 'tableRequests')">Complete</th>
                 </thead>
                 <tbody>
                     <% if(user.requests) { %>
                         <% user.requests.forEach((request) => { %>
                             <tr>
-                    <td><a href='/stores/requests/<%= request.request_id %>'><%= request._date.toDateString() %></a></td>
-                    <td><a href='/stores/requests/<%= request.request_id %>'><%= request.requestedBy.rank._rank %> <%= request.requestedBy._name %>, <%= request.requestedBy._ini %></a></td>
-                    <td><input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled></td>
-                    </tr>
+                                <td><a href='/stores/requests/<%= request.request_id %>'><%= request._date.toDateString() %></a></td>
+                                <td><a href='/stores/requests/<%= request.request_id %>'><%= request.lines.length %></a></td>
+                                <td><input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled></td>
+                            </tr>
                         <% }) %>
                     <% } %>
                 </tbody>

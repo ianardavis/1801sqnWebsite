@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'stock_id': {
+    'itemsize_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -28,6 +28,11 @@ module.exports = function(sequelize, DataTypes) {
     'receipt_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
+      comment: "null"
+    },
+    '_status': {
+      type: DataTypes.STRING(10),
+      allowNull: false,
       comment: "null"
     },
     'createdAt': {

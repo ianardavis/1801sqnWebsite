@@ -10,10 +10,10 @@
                 <a class="nav-link stores_nav" href="/stores/items">Items</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= nsn.size.item_id %>"><%= nsn.size.item._description %></a>
+                <a class="nav-link stores_nav" href="/stores/items/<%= nsn.item_size.item_id %>"><%= nsn.item_size.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= nsn.size.stock_id %>">Size: <%= nsn.size.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= nsn.item_size.itemsize_id %>">Size: <%= nsn.item_size.size._text %></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/nsns/<%= nsn.nsn_id %>">NSN: <%= nsn._nsn %></a>
@@ -32,25 +32,21 @@
 					<a class="dropdown-item" href="/stores/notes/new?table=nsns&id=<%= nsn.nsn_id %>">Add Note</a>
 					<div class="dropdown-divider"></div>
 				<% } %>
-				<a class="dropdown-item" href="/stores/items_sizes/<%= nsn.size.stock_id %>">Back to <%= nsn.size.item._description %>/Size: <%= nsn.size.size._text %></a>
+				<a class="dropdown-item" href="/stores/items_sizes/<%= nsn.item_size.itemsize_id %>">Back to <%= nsn.item_size.item._description %>/Size: <%= nsn.item_size.size._text %></a>
 			</div>
 		</li>
 	</ul>
 </nav>
-<section class="detailBox container-fluid pt-3">
+<section class="container pt-3">
 	<div class="row">
-		<div class="col-12 col-md-3 mx-auto">
-			<div class="container bordered">
-				<h4>NSN</h4>
-				<div class="details">
-					<form action="/stores/nsns/<%= nsn.nsn_id %>?_method=PUT" method="POST">
-						<input type="hidden" name="nsn[nsn_id]" value="<%= nsn.nsn_id %>" readonly>
-						<p><input class="form-control" type="text" name="nsn[_nsn]" maxlength="20" value="<%= nsn._nsn %>" required></p>
-						<p>Default:<input class="form-control" type="checkbox" name="nsn[_default]" value="1" <% if (nsn._default) { %> checked<% } %>></p>
-						<p><button class="btn btn-success">Save</button></p>
-					</form>
-                </div>
-			</div>
+		<div class="col-12 col-md-3 mx-auto bordered">
+			<h4>NSN</h4>
+			<form action="/stores/nsns/<%= nsn.nsn_id %>?_method=PUT" method="POST">
+				<input type="hidden" name="nsn[nsn_id]" value="<%= nsn.nsn_id %>" readonly>
+				<p><input class="form-control" type="text" name="nsn[_nsn]" maxlength="20" value="<%= nsn._nsn %>" required></p>
+				<p>Default:<input class="form-control" type="checkbox" name="nsn[_default]" value="1" <% if (nsn._default) { %> checked<% } %>></p>
+				<p><button class="btn btn-success">Save</button></p>
+			</form>
 		</div>
 		<div class="col-12 col-md-9 mx-auto bordered">
 			<% include ../../partials/noteTable %>

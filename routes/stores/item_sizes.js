@@ -6,16 +6,36 @@ module.exports = (app, m) => {
     // New Form
     app.get('/stores/item_sizes/new', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_size_add', true, req, res, allowed => {
-            fn.getOne(m.items, {item_id: req.query.item_id}, req, item => {
-                fn.getAllSuppliers(req, suppliers => {
-                    fn.getAll(m.sizes, req, true, sizes => {
+            fn.getOne(
+                m.items,
+                {item_id: req.query.item_id}
+             )
+             .then(item => {
+                fn.getAllWhere(
+                    m.suppliers,
+                    {supplier_id: {[op.not]: 3}}
+                )
+                .then(suppliers => {
+                    fn.getAll(
+                        m.sizes
+                    )
+                    .then(sizes => {
                         res.render('stores/item_sizes/new', {
                             item:     item,
                             sizes:    sizes,
                             suppliers: suppliers
                         });
+                    })
+                    .catch(err => {
+                        fn.error(err, '/stores/items', req, res);
                     });
+                })
+                .catch(err => {
+                    fn.error(err, '/stores', req, res);
                 });
+            })
+            .catch(err => {
+                fn.error(err, '/stores/items', req, res);
             });
         });   
     });
@@ -24,16 +44,10 @@ module.exports = (app, m) => {
     app.post('/stores/item_sizes', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_size_add', true, req, res, allowed => {
             if (req.body.sizes) {
-                var newSizes = new Array();
-                if (typeof(req.body.sizes) === 'string') {
-                    newSizes.push(req.body.sizes);
-                } else {
-                    newSizes = req.body.sizes;
-                };
                 var lines = [];
-                newSizes.map(size_id => {
+                req.body.sizes.map(size_id => {
                     if (size_id) {
-                        lines.push(fn.addSize(size_id, req))
+                        lines.push(fn.addSize(size_id, req.body.details.item_id))
                     };
                 });
                 if (lines.length > 0) {
@@ -41,8 +55,7 @@ module.exports = (app, m) => {
                     .then(results => {
                         res.redirect('/stores/items/' + req.body.details.item_id);
                     }).catch((err) => {
-                        console.log(err);
-                        res.redirect('/stores/items/' + req.body.details.item_id)
+                        fn.error(err, '/stores/items/' + req.body.details.item_id, req, res);
                     });
                 } else {
                     res.redirect('/stores/items/' + req.body.details.item_id)
@@ -57,18 +70,27 @@ module.exports = (app, m) => {
     // Edit
     app.get('/stores/item_sizes/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_edit', true, req, res, allowed => {
-            fn.getItemSize(req.params.id, req, {include: false}, {include: false}, {include: false}, {include: false}, {include: false}, size => {
-                fn.getAllSuppliers(req, suppliers => {
-                    if (size) {
-                        res.render('stores/item_sizes/edit', {
-                            size:      size,
-                            suppliers: suppliers
-                        });
-                    } else {
-                        req.flash('danger', 'Error retrieving Item!');
-                        res.render('stores/item_sizes/' + req.params.id);
-                    };
+            fn.getOne(
+                m.item_sizes,
+                {itemsize_id: req.params.id},
+                fn.itemSizeInclude({include: false}, {include: false}, {include: false}, {include: false}, {include: false})
+            )
+            .then(item_size => {
+                fn.getAll(
+                    m.suppliers,
+                )
+                .then(suppliers => {
+                    res.render('stores/item_sizes/edit', {
+                        item_size:  item_size,
+                        suppliers: suppliers
+                    });
+                })
+                .catch(err => {
+                    fn.error(err, '/stores/item_sizes/' + req.params.id, req, res);
                 });
+            })
+            .catch(err => {
+                fn.error(err, 'stores/item_sizes/' + req.params.id, req, res)
             });
         });
     });
@@ -81,8 +103,16 @@ module.exports = (app, m) => {
             } else {
                 req.body.item_size._orderable = 1
             };
-            fn.update(m.item_sizes, req.body.item_size, {stock_id: req.params.id}, req, result => {
+            fn.update(
+                m.item_sizes,
+                req.body.item_size,
+                {itemsize_id: req.params.id}
+            )
+            .then(result => {
                 res.redirect('/stores/item_sizes/' + req.params.id);  
+            })
+            .catch(err => {
+                fn.error(err, '/stores/item_sizes/' + req.params.id, req, res);
             });
         });
     });
@@ -91,22 +121,44 @@ module.exports = (app, m) => {
     app.delete('/stores/item_sizes/:id', mw.isLoggedIn, (req, res) => {
         if (req.query.item_id) {
             fn.allowed('item_size_delete', true, req, res, allowed => {
-                fn.getOne(m.locations, {stock_id: req.params.id}, req, location => {
-                    if (location === null) {
-                        fn.getOne(m.nsns, {stock_id: req.params.id}, req, nsn => {
+                fn.getOne(
+                    m.stock,
+                    {itemsize_id: req.params.id}
+                 )
+                 .then(stock => {
+                    if (stock === null) {
+                        fn.getOne(
+                            m.nsns,
+                            {itemsize_id: req.params.id}
+                        )
+                        .then(nsn => {
                             if (nsn === null) {
-                                fn.delete(m.item_sizes, {stock_id: req.params.id}, req, result => {
+                                fn.delete(
+                                    m.item_sizes,
+                                    {itemsize_id: req.params.id}
+                                )
+                                .then(result => {
+                                    req.flash('success', 'Item size deleted');
                                     res.redirect('/stores/items/' + req.query.item_id);
+                                })
+                                .catch(err => {
+                                    fn.error(err, '/stores/item_sizes/' + req.params.id, req, res);
                                 });
                             } else {
-                                req.flash('danger', 'Cannot delete a size whilst it has NSNs assigned!');
+                                req.flash('danger', 'Cannot delete a size whilst it has NSNs assigned');
                                 res.redirect('/stores/item_sizes/' + req.params.id);
                             };
+                        })
+                        .catch(err => {
+                            fn.error(err, '/stores/item_sizes/' + req.params.id, req, res);
                         });
                     } else {
-                        req.flash('danger', 'Cannot delete a size whilst it has locations assigned!');
+                        req.flash('danger', 'Cannot delete a size whilst it has stock');
                         res.redirect('/stores/item_sizes/' + req.params.id);
                     };
+                })
+                .catch(err => {
+                    fn.error(err, ''/stores/item_sizes/' + req.params.id', req, res);
                 });
             });
         };
@@ -117,32 +169,35 @@ module.exports = (app, m) => {
         fn.allowed('access_items', true, req, res, allowed => {
             var query = {};
             query.sn = req.query.sn || 2;
-            fn.getItemSize(
-                req.params.id,
-                req, 
-                {include: true}, 
-                {include: true}, 
-                {include: true, where: {returned_to: null}},
-                {include: true, where: {receipt_id: null}},
-                {include: true, where: {_status: 'Pending'}}, 
-                item_size => {
-                if (item_size) {
-                    fn.getNotes('item_sizes', req.params.id, req, res, notes =>{
-                        var stock = new Object();
-                        stock._stock     = fn.summer(item_size.locations) || 0;
-                        stock._ordered   = fn.summer(item_size.orders_ls) || 0;
-                        stock._issued    = fn.summer(item_size.issues_ls) || 0;
-                        stock._requested = fn.summer(item_size.requests_ls) || 0;
-                        res.render('stores/item_sizes/show', {
-                            item:  item_size,
-                            notes: notes,
-                            stock: stock,
-                            query: query
-                        });
+            fn.getOne(
+                m.item_sizes,
+                {itemsize_id: req.params.id},
+                fn.itemSizeInclude(
+                    {include: true}, 
+                    {include: true}, 
+                    {include: true, where: {user_id: null}},
+                    {include: true, where: {receipt_line_id: null}},
+                    {include: true, where: {_status: 'Pending'}}
+                )
+            )
+            .then(item_size => {
+                fn.getNotes('item_sizes', req.params.id, req, res)
+                .then(notes =>{
+                    var stock = new Object();
+                    stock._stock     = fn.summer(item_size.stocks) || 0;
+                    stock._ordered   = fn.summer(item_size.orders_ls) || 0;
+                    stock._issued    = fn.summer(item_size.issues_ls) || 0;
+                    stock._requested = fn.summer(item_size.requests_ls) || 0;
+                    res.render('stores/item_sizes/show', {
+                        item_size:  item_size,
+                        notes: notes,
+                        stock: stock,
+                        query: query
                     });
-                } else {
-                    res.redirect('/stores/items');
-                };
+                });
+            })
+            .catch(err => {
+                fn.error(err, '/stores/items', req, res);
             });
         });
     });

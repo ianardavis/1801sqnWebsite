@@ -1,14 +1,22 @@
 const   mw = require('../../config/middleware'),
-        fn = require('../../db/functions');
+        fn = require('../../db/functions'),
+        op = require('sequelize').Op;
         
 module.exports = (app, m) => {
     // Index
     app.get('/stores/suppliers', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_suppliers', true, req, res, allowed => {
-            fn.getAllSuppliers(req, suppliers => {
+            fn.getAllWhere(
+                m.suppliers,
+                {supplier_id: {[op.not]: 3}}
+            )
+            .then(suppliers => {
                 res.render('stores/suppliers/index', {
                     suppliers: suppliers
                 });
+            })
+            .catch(err => {
+                fn.error(err, '/stores', req, res);
             });
         });
     });
@@ -16,15 +24,18 @@ module.exports = (app, m) => {
     // New Logic
     app.post('/stores/suppliers', mw.isLoggedIn, (req, res) => {
         fn.allowed('suppliers_add', true, req, res, allowed => {
-                if (!req.body.supplier._stores) {req.body.supplier._stores = 0}
-                if (!req.body.supplier._default) {req.body.supplier._default = 0}
-                fn.create(m.suppliers, req.body.supplier, req, supplier => {
-                    if (supplier) {
-                        res.redirect('/stores/suppliers/' + supplier.supplier_id);
-                    } else {
-                        res.redirect('/stores/suppliers');
-                    };
-                });
+            if (!req.body.supplier._stores) {req.body.supplier._stores = 0}
+            if (!req.body.supplier._default) {req.body.supplier._default = 0}
+            fn.create(
+                m.suppliers,
+                req.body.supplier
+            )
+            .then(supplier => {
+                res.redirect('/stores/suppliers/' + supplier.supplier_id);
+            })
+            .catch(err => {
+                fn.error(err, '/stores/suppliers', req, res);
+            });
         });
     });
 
@@ -38,7 +49,11 @@ module.exports = (app, m) => {
     // Edit
     app.get('/stores/suppliers/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('suppliers_edit', true, req, res, allowed => {
-            fn.getOne(m.suppliers, {supplier_id: req.params.id}, req, supplier => {
+            fn.getOne(
+                m.suppliers,
+                {supplier_id: req.params.id}
+            )
+            .then(supplier => {
                 if (supplier) {
                     res.render('stores/suppliers/edit', {
                         supplier: supplier
@@ -46,6 +61,9 @@ module.exports = (app, m) => {
                 } else {
                     res.render('stores/suppliers/' + req.params.id);
                 };
+            })
+            .catch(err => {
+                fn.error(err, '/stores/suppliers/' + req.params.id, req, res);
             });
         });
     });
@@ -55,8 +73,16 @@ module.exports = (app, m) => {
         fn.allowed('suppliers_edit', true, req, res, allowed => {
             if (!req.body.supplier._stores) {req.body.supplier._stores = 0}
             if (!req.body.supplier._default) {req.body.supplier._default = 0}
-            fn.update(m.suppliers, req.body.supplier, {supplier_id: req.params.id}, req, result => {
+            fn.update(
+                m.suppliers,
+                req.body.supplier,
+                {supplier_id: req.params.id}
+            )
+            .then(result => {
                 res.redirect('/stores/suppliers/' + req.params.id)
+            })
+            .catch(err => {
+                fn.error(err, '/stores/suppliers/' + req.params.id, req, res);
             });
         });
     });
@@ -69,13 +95,21 @@ module.exports = (app, m) => {
             } else {
                 let uploaded = req.files.demandfile;
                 uploaded.mv(process.env.ROOT + '/public/res/' + req.files.demandfile.name)
-                fn.update(m.suppliers, {_demand: req.files.demandfile.name}, {supplier_id: req.params.id}, req, result => {
+                fn.update(
+                    m.suppliers,
+                    {_demand: req.files.demandfile.name},
+                    {supplier_id: req.params.id}
+                )
+                .then(result => {
                     if (!result) { 
                         req.flash('danger', 'Error uploading demand file');
                     } else {
                         req.flash('success', 'Demand file uploaded');
                     }
                     res.redirect('/stores/suppliers/' + req.params.id);
+                })
+                .catch(err => {
+                    fn.error(err, '/stores/suppliers/' + req.params.id, req, res);
                 });
             };
         });
@@ -85,8 +119,15 @@ module.exports = (app, m) => {
     app.delete('/stores/suppliers/:id', mw.isLoggedIn, (req, res) => {
         if (req.params.id !== '1' && req.params.id !== '2' && req.params.id !== '3') {
             fn.allowed('suppliers_delete', true, req, res, allowed => {
-                fn.delete(m.suppliers, {supplier_id: req.params.id}, req, result => {
+                fn.delete(
+                    m.suppliers,
+                    {supplier_id: req.params.id}
+                )
+                .then(result => {
                     res.redirect('/stores/suppliers');
+                })
+                .catch(err => {
+                    fn.error(err, '/stores/suppliers', req, res);
                 });
             });
         } else {
@@ -98,26 +139,25 @@ module.exports = (app, m) => {
     // Show
     app.get('/stores/suppliers/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_suppliers', true, req, res, allowed => {
-            fn.getSupplier(req.params.id, true, true, true)
+            fn.getOne(
+                m.suppliers,
+                {supplier_id: req.params.id},
+                [m.files, m.inventories, {model: m.item_sizes, include: [m.items, m.sizes]}]
+            )
             .then(supplier => {
-                if (supplier) {
-                    var query = {};
-                    query.sn = Number(req.query.sn) || 2
-                    fn.getNotes('suppliers', req.params.id, req, res, notes => {
-                        res.render('stores/suppliers/show', {
-                            supplier: supplier, 
-                            notes:    notes,
-                            query:    query
-                        });
+                var query = {};
+                query.sn = Number(req.query.sn) || 2
+                fn.getNotes('suppliers', req.params.id, req, res)
+                .then(notes => {
+                    res.render('stores/suppliers/show', {
+                        supplier: supplier, 
+                        notes:    notes,
+                        query:    query
                     });
-                } else {
-                    res.redirect('/stores/suppliers');
-                };
+                });
             })
             .catch(err => {
-                console.log(err);
-                req.flash('danger', err.message);
-                res.redirect('/stores/suppliers');
+                fn.error(err, '/stores/suppliers', req, res);
             });
         });
     });

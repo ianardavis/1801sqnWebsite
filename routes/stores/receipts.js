@@ -6,40 +6,40 @@ const   mw = require('../../config/middleware'),
 module.exports = (app, m) => { 
     //New Form
     app.get('/stores/receipts/new', mw.isLoggedIn, (req, res) => {
-        fn.allowed('receipts_add', true, req, res, (allowed) => {
-            res.render('stores/orders/new');
+        fn.allowed('receipts_add', true, req, res, allowed => {
+            if (req.query.s && req.query.s !== '') {
+                fn.getOne(
+                    m.suppliers,
+                    {supplier_id: req.query.s}
+                )
+                .then(supplier => {
+                    res.render('stores/receipts/new',{supplier: supplier});
+                })
+                .catch(err => {
+                    console.log(err);
+                    req.flash('danger', err.message);
+                    res.redirect('back');
+                });
+            } else {
+                req.flash('danger', 'No supplier specified');
+                res.redirect('back');
+            };
         });
     });
     //New Logic
     app.post('/stores/receipts', mw.isLoggedIn, (req, res) => {
-        fn.allowed('receipts_add', true, req, res, (allowed) => {
+        fn.allowed('receipts_add', true, req, res, allowed => {
             if (req.body.selected) {
-                var newReceipt = new cn.Receipt(req.body.supplier_id, req.user.user_id)
-                fn.create(m.receipts, newReceipt, req, (receipt) => {
-                    var receipts = [];
-                    req.body.selected.map((receipt) => {
-                        if (receipt) {
-                            receipt = JSON.parse(receipt);
-                            var receiptLine = new cn.ReceiptLine(receipt.stock_id, receipt.qty, receipt.receipt_id);
-                            receipts.push(fn.receiveLine(receiptLine, {location_id: receipt.location_id, _qty: receipt.location_qty}));
-                        };
-                    });
-                    if (receipts.length > 0) {
-                        Promise.all(receipts)
-                        .then(results => {
-                            fn.processPromiseResult(results, req, (then) => {
-                                res.redirect('/stores/receipts/' + receipt.receipt_id);
-                            });
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            res.redirect('/stores/receipts/' + receipt.receipt_id);
-                        });
-                    } else {
-                        fn.delete(m.receipts, {receipt_id: receipt.receipt_id}, req, (next) => {
-                            res.redirect('/stores/receipts/' + receipt.receipt_id);
-                        });
-                    };
+                var lines = []
+                req.body.selected.forEach(line => {
+                    lines.push(JSON.parse(line));
+                });
+                fn.receiveStock(lines, req.body.supplier_id, req.user.user_id)
+                .then(result => {
+                    res.redirect('/stores/receipts/' + result);
+                })
+                .catch(err => {
+                    fn.error(err, '/stores/receipts', req, res);
                 });
             } else {
                 req.flash('info', 'No items selected!');
@@ -50,31 +50,66 @@ module.exports = (app, m) => {
 
     //Show
     app.get('/stores/receipts/:id', mw.isLoggedIn, (req, res) => {
-        fn.allowed('access_receipts', true, req, res, (allowed) => {
+        fn.allowed('access_receipts', true, req, res, allowed => {
             var query = {};
             query.sn = Number(req.query.sn) || 2;
-            fn.getReceipt(query, req.params.id, req, (receipt) => {
-                fn.getNotes('receipts', req.params.id, req, res, (notes) => {
-                    res.render('stores/receipts/show',{
+            fn.getOne(
+                m.receipts,
+                {receipt_id: req.params.id},
+                [
+                    {
+                        model: m.receipts_l,
+                        as: 'lines',
+                        include: [
+                            {
+                                model: m.stock, include: [m.locations, fn.item_sizes(false, true)]
+                            }
+                        ]
+                    },
+                    fn.users(),
+                    m.suppliers
+                ]
+            )
+            .then(receipt => {
+                fn.getNotes('receipts', req.params.id, req, res)
+                .then(notes => {
+                    res.render('stores/receipts/show', {
                         receipt: receipt,
                         notes:   notes,
                         query:   query
                     });
                 });
+            })
+            .catch(err => {
+                fn.error(err, '/stores/receipts', req, res);
             });
         });
     });
     
     //Index
     app.get('/stores/receipts', mw.isLoggedIn, (req, res) => {
-        fn.allowed('access_receipts', true, req, res, (allowed) => {
+        fn.allowed('access_receipts', true, req, res, allowed => {
             var query = {};
             query.cr = Number(req.query.cr) || 2;
-            fn.getAllReceipts(query, req, (receipts) => {
+            fn.getAll(
+                m.receipts,
+                [
+                    m.suppliers,
+                    fn.users(),
+                    {
+                        model: m.receipts_l,
+                        as: 'lines'
+                    }
+                ]
+            )
+            .then(receipts => {
                 res.render('stores/receipts/index',{
                     receipts: receipts,
                     query:    query
                 });
+            })
+            .catch(err => {
+                fn.error(err, '/stores', req, res);
             });
         });
     });

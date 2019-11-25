@@ -46,10 +46,10 @@
 					<% if (demands) { %>
 						<% demands.forEach((demand) => { %>
 							<tr>
-								<td><a href="/stores/demands/<%= demands.demand_id %>"> <%= demand.supplier._name %></a></td>
-								<td><a href="/stores/demands/<%= demands.demand_id %>"> <%= demand._date.toDateString() %></a></td>
-								<td><a href="/stores/demands/<%= demands.demand_id %>"> <%= demand.raisedBy.rank._rank %> <%= demand.raisedBy._name %>, <%= demand.raisedBy._ini %></a></td>
-								<td><a href="/stores/demands/<%= demands.demand_id %>"> <%= demand._complete %></a></td>
+								<td><a href="/stores/demands/<%= demand.demand_id %>"> <%= demand.supplier._name %></a></td>
+								<td><a href="/stores/demands/<%= demand.demand_id %>"> <%= demand._date.toDateString() %></a></td>
+								<td><a href="/stores/demands/<%= demand.demand_id %>"> <%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %></a></td>
+								<td><input class="form-control form-control-sm" type="checkbox" disabled<% if (demand._complete) { %> checked <% } %>></td>
 							</tr>
 						<% }) %>
 					<% } %>

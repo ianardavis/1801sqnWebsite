@@ -38,4 +38,15 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/newReceipt.js"></script>
+<script>
+	function openAddWindow() {
+    if (addWindow == null || addWindow.closed) {
+        addWindow = window.open("/stores/itemSearch?c=receipt&s=<%= supplier.supplier_id %>",
+                                "itemSearch",
+                                "width=600,height=840,resizeable=no,location=no");
+    } else {
+        addWindow.focus();
+    };
+};
+</script>
 <% include ../../partials/foot/htmlClose %>

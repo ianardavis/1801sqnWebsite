@@ -12,6 +12,13 @@ module.exports = (app, m) => {
             {table: 'genders'}
         ]
     };
+    function nullify(item) {
+        if (item.group_id === '')   item.group_id   = null;
+        if (item.type_id === '')    item.type_id    = null;
+        if (item.subtype_id === '') item.subtype_id = null;
+        if (item.gender_id === '')  item.gender_id  = null;
+        return item;
+    };
     
     // Index
     app.get('/stores/items', mw.isLoggedIn, (req, res) => {
@@ -20,15 +27,22 @@ module.exports = (app, m) => {
             if (req.query.category) {whereObj.category_id = req.query.category};
             if (req.query.group)    {whereObj.group_id    = req.query.group};
             if (req.query.type)     {whereObj.type_id     = req.query.type};
-            if (req.query.subtype)  {whereObj.subtype_id = req.query.subtype};
+            if (req.query.subtype)  {whereObj.subtype_id  = req.query.subtype};
             if (req.query.gender)   {whereObj.gender_id   = req.query.gender};
             fn.getOptions(itemOptions(), req, classes => {
-                fn.getAllWhere(m.items, whereObj, req, items => {
+                fn.getAllWhere(
+                    m.items,
+                    whereObj
+                )
+                .then(items => {
                     res.render('stores/items/index', {
                         items:   items,
                         classes: classes,
                         query:   whereObj
                     });
+                })
+                .catch(err => {
+                    fn.error(err, '/stores', req, res);
                 });
             });
         });
@@ -38,12 +52,15 @@ module.exports = (app, m) => {
     app.post('/stores/items', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_add', true, req, res, allowed => {
             req.body.item = nullify(req.body.item);
-            fn.create(m.items, req.body.item, req, item => {
-                if (item) {
-                    res.redirect('/stores/items/' + item.item_id);
-                } else {
-                    res.redirect('/stores/items');
-                };
+            fn.create(
+                m.items,
+                req.body.item
+            )
+            .then(item => {
+                res.redirect('/stores/items/' + item.item_id);
+            })
+            .catch(err => {
+                fn.error(err, '/stores/items', req, res);
             });
         });
     });
@@ -60,39 +77,38 @@ module.exports = (app, m) => {
     // Edit
     app.get('/stores/items/:id/edit', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_edit', true, req, res, allowed => {
-            fn.getOptions(itemOptions(), req, classes => {
-                fn.getOne(m.items, {item_id: req.params.id}, req, item => {
-                    if (item) {
-                        res.render('stores/items/edit', {
-                            item:      item, 
-                            classes:   classes
-                        });
-                    } else {
-                        req.flash('danger', 'Error retrieving Item!');
-                        res.render('stores/items/' + req.params.id);
-                    };
+            fn.getOne(
+                m.items,
+                {item_id: req.params.id}
+            )
+            .then(item => {
+                fn.getOptions(itemOptions(), req, classes => {
+                    res.render('stores/items/edit', {
+                        item:    item, 
+                        classes: classes
+                    });
                 });
+            })
+            .catch(err => {
+                fn.error(err, 'stores/items/' + req.params.id, req, res);
             });
         });
     });
 
-    function nullify(item) {
-        if (item.group_id === '')   item.group_id   = null;
-        if (item.type_id === '')    item.type_id    = null;
-        if (item.subtype_id === '') item.subtype_id = null;
-        if (item.gender_id === '')  item.gender_id  = null;
-        return item;
-    }
     // Put
     app.put('/stores/items/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_edit', true, req, res, allowed => {
             req.body.item = nullify(req.body.item);
-            fn.update(m.items, req.body.item, {item_id: req.params.id},req, result => {
-                if (result) {
-                    res.redirect('/stores/items/' + req.params.id)
-                } else {
-                    res.redirect('/stores/items/' + req.params.id);
-                };
+            fn.update(
+                m.items,
+                req.body.item,
+                {item_id: req.params.id}
+            )
+            .then(result => {
+                res.redirect('/stores/items/' + req.params.id)
+            })
+            .catch(err => {
+                fn.error(err, '/stores/items/' + req.params.id, req, res);
             });
         });
     });
@@ -100,7 +116,11 @@ module.exports = (app, m) => {
     // Delete
     app.delete('/stores/items/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('item_delete', true, req, res, allowed => {
-            fn.getOne(m.item_sizes, {item_id: req.params.id}, req, item_sizes => {
+            fn.getOne(
+                m.item_sizes,
+                {item_id: req.params.id}
+            )
+            .then(item_sizes => {
                 if (!item_sizes) {
                     fn.delete(m.items, {item_id: req.params.id}, req, result => {
                         res.redirect('/stores/items');
@@ -109,6 +129,9 @@ module.exports = (app, m) => {
                     req.flash('danger', 'Cannot delete item while it has sizes assigned!');
                     res.redirect('/stores/items/' + req.params.id);
                 };
+            })
+            .catch(err => {
+                fn.error(err, '/stores/items/' + req.params.id, req, res);
             });
         });
     });
@@ -118,23 +141,34 @@ module.exports = (app, m) => {
         fn.allowed('access_items', true, req, res, allowed => {
             var query = {};
             query.sn = req.query.sn || 2;
-            fn.getItem(req.params.id, true, req, item => {
-                if (item) {
-                    item.sizes.forEach((size) => {
-                        if (size.locations) {
-                            size.stock = fn.summer(size.locations);
-                        };
+            var include = [
+                m.genders, 
+                m.categories, 
+                m.groups, 
+                m.types, 
+                m.subtypes,
+                fn.item_sizes(true, false, false)
+            ];
+            fn.getOne(
+                m.items,
+                {item_id: req.params.id}, 
+                include
+            )
+            .then(item => {
+                item.item_sizes.forEach(item_size => {
+                    item_size.locationStock = fn.summer(item_size.stocks);
+                });
+                fn.getNotes('items', req.params.id, req, res)
+                .then(notes => {
+                    res.render('stores/items/show', {
+                        item:  item,
+                        notes: notes,
+                        query: query
                     });
-                    fn.getNotes('items', req.params.id, req, res, notes => {
-                        res.render('stores/items/show', {
-                                item:  item,
-                                notes: notes,
-                                query: query
-                        });
-                    });
-                } else {
-                    res.redirect('/stores/items');
-                };
+                });
+            })
+            .catch(err => {
+                fn.error(err, '/stores/items', req, res);
             });
         });
     });

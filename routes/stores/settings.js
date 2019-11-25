@@ -19,11 +19,17 @@ module.exports = (app, m) => {
     app.get('/stores/settings', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_settings', true, req, res, allowed => {
             fn.getOptions(options(), req, classes => {
-                fn.getAll(m.sizes, req, false, sizes => {
+                fn.getAll(
+                    m.sizes
+                )
+                .then(sizes => {
                     res.render('stores/settings/show',{
                         classes: classes,
                         sizes:   sizes
                     });
+                })
+                .catch(err => {
+                    fn.error(err, '/stores', req, res);
                 })
             });
         });

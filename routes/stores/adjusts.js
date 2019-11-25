@@ -6,54 +6,79 @@ const   mw = require('../../config/middleware'),
 module.exports = (app, m) => { 
     //New Form
     app.get('/stores/adjusts/new', mw.isLoggedIn, (req, res) => {
-        fn.allowed('item_adjust', true, req, res, (allowed) => {
+        fn.allowed('item_adjust', true, req, res, allowed => {
             if (req.query.at === 'Scrap' || 'Count') {
-                if (req.query.li) {
-                    fn.getLocation(
-                        req.query.li,
-                        req, 
-                        (location) => {
-                            if (location) {
-                                res.render('stores/adjusts/new', {
-                                    location: location,
-                                    query:    req.query
-                                }); 
-                            } else {
-                                res.redirect('/stores/items')
-                            };
-                        }
-                    );
+                if (req.query.si) {
+                    fn.getOne(
+                        m.stock,
+                        {stock_id: req.query.si},
+                        [fn.item_sizes(false, true)]
+                    )
+                    .then(stock => {
+                        if (stock) {
+                            res.render('stores/adjusts/new', {
+                                stock: stock,
+                                query:    req.query
+                            }); 
+                        } else {
+                            req.flash('danger', 'Stock record not found');
+                            res.redirect('/stores/item_sizes/' + req.query.si);
+                        };
+                    })
+                    .catch(err => {
+                        fn.error(err, '/stores/item_sizes/' + req.query.si, req, res);
+                    });
                 } else {
-                    req.flash('danger', 'No item specified!');
+                    req.flash('danger', 'No item specified');
                     res.redirect('/stores/items');
                 };
             } else {
-                req.flash('danger', 'Invalid request!');
+                req.flash('danger', 'Invalid request');
                 res.redirect('/stores/items');
             };            
         });
     });
     //New Logic
     app.post('/stores/adjusts', mw.isLoggedIn, (req, res) => {
-        fn.allowed('item_adjust', true, req, res, (allowed) => {
-            if (req.body.adjust) {
-                req.body.adjust._date = Date.now();
-                req.body.adjust.user_id = req.user.user_id;
-                fn.create(m.adjusts, req.body.adjust, req, (newAdjust) => {
+        fn.allowed('item_adjust', true, req, res, allowed => {
+            var adjust = req.body.adjust;
+            if (adjust) {
+                adjust._date = Date.now();
+                adjust.user_id = req.user.user_id;
+                fn.create(
+                    m.adjusts, 
+                    adjust
+                )
+                .then(newAdjust => {
                     var newQty = {};
-                    if (req.body.adjust._adjust_type === 'Count') {
-                        newQty._qty = newAdjust._qty;
-                        fn.update(m.locations, newQty, {location_id: newAdjust.location_id}, req, (result) => {
-                            res.redirect('/stores/locations/' + newAdjust.location_id + '/edit');
+                    if (adjust._type === 'Count') {
+                        fn.update(
+                            m.stock,
+                            {_qty: qty},
+                            {stock_id: newAdjust.stock_id}
+                        )
+                        .then(result => {
+                            res.redirect('/stores/stock/' + newAdjust.stock_id + '/edit');
+                        })
+                        .catch(err => {
+                            req.flash('danger', err.message);
+                            res.redirect('/stores/stock/' + newAdjust.stock_id + '/edit');
                         });
-                    } else if (req.body.adjust._adjust_type === 'Scrap'){
-                        fn.getLocation(newAdjust.location_id,req, (location) => {
-                            newQty._qty = location._qty - newAdjust._qty;
-                            fn.update(m.locations, newQty, {location_id: newAdjust.location_id}, req, (result) => {
-                                res.redirect('/stores/locations/' + newAdjust.location_id + '/edit');
-                            });
+                    } else if (adjust._type === 'Scrap'){
+                        fn.subtractStock(
+                            newAdjust.stock_id,
+                            newAdjust._qty
+                        )
+                        .then(result => {
+                            res.redirect('/stores/stock/' + newAdjust.stock_id + '/edit');
+                        })
+                        .catch(err => {
+                            fn.error(err, '/stores/stock/' + newAdjust.stock_id + '/edit', req, res);
                         });
                     };
+                })
+                .catch(err => {
+                    fn.error(err, '/stores/stock/' + newAdjust.stock_id + '/edit', req, res);
                 });
             } else {
                 req.flash('info', 'No adjustment entered!');
