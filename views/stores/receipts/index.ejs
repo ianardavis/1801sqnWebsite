@@ -26,7 +26,7 @@
 					<% receipts.forEach((receipt) => { %>
 						<tr>
 							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.supplier._name %></a></td>
-							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt._date.toDateString() %></a></td>
+							<td data-sort="<%= receipt._date.getTime() %>"><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt._date.toDateString() %></a></td>
 							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.lines.length %></a></td>
 							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %></a></td>
 						</tr>

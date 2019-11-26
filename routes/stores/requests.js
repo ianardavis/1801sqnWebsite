@@ -149,8 +149,7 @@ module.exports = (app, m) => {
                         model: m.requests_l,
                         as: 'lines'
                     },
-                    fn.users('requestedFor'),
-                    fn.users('requestedBy')
+                    fn.users('requestedFor')
                 ]
             )
             .then(requests => {

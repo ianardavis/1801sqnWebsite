@@ -77,7 +77,7 @@ cn.Demand = function (supplier_id, file, user_id) {
     this._filename   = file;
     this.user_id     = user_id;
 };
-cn.DemandLine = function (demand_id, stock_id, qty) {
+cn.DemandLine = function (demand_id, itemsize_id, qty) {
     this.demand_id   = demand_id;
     this.itemsize_id = itemsize_id;
     this._qty        = qty;

@@ -9,8 +9,7 @@ module.exports = (app, m) => {
     app.get('/stores/issues', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_issues', true, req, res, (allowed) => {
             var query = {},
-                where = {},
-                include = fn.issuesInclude(false);
+                where = {};
             query.ci = Number(req.query.ci) || 2;
             if (query.ci === 2) {
                 where._complete = 0;
@@ -20,7 +19,14 @@ module.exports = (app, m) => {
             fn.getAllWhere(
                 m.issues, 
                 where, 
-                include
+                [
+        			fn.users('issuedTo'),
+        			fn.users('issuedBy'),
+					{
+						model: m.issues_l,
+						as: 'lines'
+					}
+				]
             )
             .then(issues => {
                 res.render('stores/issues/index', {
@@ -104,7 +110,16 @@ module.exports = (app, m) => {
                                     res.redirect('/stores/users/' + issue.issued_to);
                                 });
                             } else {
-                                res.redirect('/stores/users/' + issue.issued_to);
+                                fn.createLoanCard(
+                                    issue.issue_id
+                                )
+                                .then(result => {
+                                    res.redirect('/stores/users/' + issue.issued_to);
+                                })
+                                .catch(err => {
+                                    fn.error(err, '/stores/issues/' + issue.issue_id, req, res);
+                                });
+                                
                             };
                         })
                         .catch(err => {
@@ -162,23 +177,15 @@ module.exports = (app, m) => {
     app.delete('/stores/issues/:id', mw.isLoggedIn, (req, res) => {
         if (req.query.user) {
             fn.allowed('issues_delete', true, req, res, allowed => {
-                fn.delete(
-                    m.issues_l,
-                    {issue_id: req.params.id}
+                var actions = [];
+                actions.push(fn.delete(m.issues_l,{issue_id: req.params.id}));
+                actions.push(fn.delete(m.issues, {issue_id: req.params.id}));
+                Promise.all(
+                    actions
                 )
-                .then(line_result => {
-                    req.flash('success', 'Issue lines deleted')
-                    fn.delete(
-                        m.issues, 
-                        {issue_id: req.params.id}
-                    )
-                    .then(issue_result => {
-                        req.flash('success', 'Issue deleted')
-                        res.redirect('/stores/issues');
-                    })
-                    .catch(err => {
-                        fn.error(err, '/stores/issues', req, res);
-                    });
+                .then(results => {
+                    req.flash('success', 'Issue deleted');
+                    res.redirect('/stores/issues');
                 })
                 .catch(err => {
                     fn.error(err, '/stores/issues', req, res);
@@ -190,13 +197,12 @@ module.exports = (app, m) => {
     //show
     app.get('/stores/issues/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_issues', false, req, res, allowed => {
-            var query = {},
-                include = fn.issuesInclude(true);
+            var query = {};
             query.sn = Number(req.query.sn) || 2
             fn.getOne(
                 m.issues, 
                 {issue_id: req.params.id}, 
-                include
+                fn.issuesInclude(true)
             )
             .then(issue => {
                 if (allowed || issue.issuedTo.user_id === req.user.user_id) {
@@ -209,12 +215,41 @@ module.exports = (app, m) => {
                         })
                     });
                 } else {
-                    req.flash('danger', 'Permission Denied!');
+                    req.flash('danger', 'Permission denied');
                     res.redirect('/stores/issues');
                 };
             })
             .catch(err => {
                 fn.error(err, '/stores/issues', req, res);
+            });
+        });
+    });
+    
+    //download loancard
+    app.get('/stores/issues/:id/loancard', mw.isLoggedIn, (req, res) => {
+        fn.allowed('access_issues', true, req, res, allowed => {
+            fn.getOne(
+                m.issues,
+                {issue_id: req.params.id}
+            )
+            .then(issue => {
+                if (issue._filename && issue._filename !== '') {
+                    fn.downloadFile(issue._filename, res);
+                } else {
+                    fn.createLoanCard(
+                        req.params.id
+                    )
+                    .then(result => {
+                        fn.downloadFile(result, res);
+                    })
+                    .catch(err => {
+                        req.flash('danger', err.message);
+                        res.redirect('/stores/issues/' + req.params.id);
+                    });
+                }
+            })
+            .catch(err => {
+                fn.error(err, '/stores/issues/' + req.params.id, req, res);
             });
         });
     });

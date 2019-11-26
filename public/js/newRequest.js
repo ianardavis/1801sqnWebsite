@@ -2,7 +2,7 @@ var addWindow = null;
 
 function openAddWindow() {
     if (addWindow == null || addWindow.closed) {
-        addWindow = window.open("/stores/itemSearch?callType=request",
+        addWindow = window.open("/stores/itemSearch?c=request",
                                 "itemSearch",
                                 "width=600,height=840,resizeable=no,location=no");
     } else {

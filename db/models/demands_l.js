@@ -33,7 +33,8 @@ module.exports = function(sequelize, DataTypes) {
     '_status': {
       type: DataTypes.STRING(10),
       allowNull: false,
-      comment: "null"
+      comment: "null",
+      defaultValue: 'Pending',
     },
     'createdAt': {
       type: DataTypes.DATE,

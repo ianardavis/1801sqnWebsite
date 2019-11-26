@@ -7,7 +7,7 @@ dueDate.value   = TodaysDate(7);
 
 function openAddWindow() {
     if (addWindow == null || addWindow.closed) {
-        addWindow = window.open("/stores/itemSearch?callType=issue",
+        addWindow = window.open("/stores/itemSearch?c=issue",
                                 "itemSearch",
                                 "width=600,height=840,resizeable=no,location=no");
     } else {

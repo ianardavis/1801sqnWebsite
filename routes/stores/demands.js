@@ -22,7 +22,11 @@ module.exports = (app, m) => {
                 where,
                 [
                     fn.users(),
-                    m.suppliers
+                    m.suppliers,
+                    {
+                        model: m.demands_l,
+                        as: 'lines'
+                    }
                 ]
             )
             .then(demands => {
@@ -73,9 +77,8 @@ module.exports = (app, m) => {
                                     req.user.user_id
                                 )
                                 .then(updateResult => {
-                                    console.log(updateResult.lineResults);
                                     req.flash('success', 'Demand raised, orders updated');
-                                    res.redirect('/stores/demands/' + updateResult.demand_id);
+                                    fn.downloadFile(raiseResult.file, res);
                                 })
                                 .catch(err => {
                                     fn.error(err, '/stores/orders', req, res);
@@ -102,6 +105,27 @@ module.exports = (app, m) => {
             });
         });
     });
+    
+    //download
+    app.get('/stores/demands/:id/download', mw.isLoggedIn, (req, res) => {
+        fn.allowed('access_demands', true, req, res, allowed => {
+            fn.getOne(
+                m.demands,
+                {demand_id: req.params.id}
+            )
+            .then(demand => {
+                if (demand && demand._filename && demand._filename !== '') {
+                    fn.downloadFile(demand._filename, res);
+                } else {
+                    req.flash('danger', 'No file found');
+                    res.redirect('/stores/demands/' + req.params.id);
+                };
+            })
+            .catch(err => {
+                fn.error(err, '/stores/demands', req, res);
+            });
+        });
+    });
 
     //receive
     app.put('/stores/demands/:id/receive', mw.isLoggedIn, (req, res) => {
@@ -115,7 +139,6 @@ module.exports = (app, m) => {
             };
             Promise.all(actions)
             .then(results => {
-                console.log(results);
                 req.flash('success', 'Lines actioned')
                 res.redirect('/stores/demands/' + req.params.id);
             })

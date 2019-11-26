@@ -34,8 +34,9 @@
                     <% } %>
                     <% if (permissions.notes_add) { %>
                         <a class="dropdown-item" href="/stores/notes/new?table=issues&id=<%= issue.issue_id %>">Add Note</a>
-                        <div class="dropdown-divider"></div>
                     <% } %>
+                    <a class="dropdown-item" href="/stores/issues/<%= issue.issue_id %>/loancard">Get Loan Card</a>
+                    <div class="dropdown-divider"></div>
                     <% if (permissions.issues_delete) { %>
                         <form action="/stores/issues/<%= issue.issue_id %>?_method=DELETE&user=<%= issue.issued_to %>" method="POST">
                             <button class="dropdown-item dropdown_button">Delete Issue</button>

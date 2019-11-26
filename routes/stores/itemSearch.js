@@ -6,10 +6,20 @@ module.exports = (app, m) => {
     //Display Items
     app.get('/stores/itemSearch', mw.isLoggedIn, (req, res) => {
         var callType    = req.query.c || 'issue',
-            supplier_id = req.query.s || -1
-
-        fn.getAll(
-            m.items
+            supplier_id = Number(req.query.s) || -1,
+			include		= [];
+			if (callType === 'receipt') {
+				include.push(
+					{
+						model: m.item_sizes,
+						where: {supplier_id: supplier_id}
+					}
+				)
+			};
+        fn.getAllWhere(
+            m.items,
+			{_description: {[op.not]: ''}},
+			include
         )
         .then(items => {
             res.render('stores/itemSearch/items', {

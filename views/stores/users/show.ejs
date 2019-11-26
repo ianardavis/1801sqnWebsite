@@ -1,4 +1,3 @@
-<!-- USER SHOW PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -193,8 +192,8 @@
                         <% if (user.issues) { %>
                             <% user.issues.forEach((issue) => { %>
                                 <tr>
-                                    <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._date.toDateString() %></a></td>
-                                    <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._date_due.toDateString() %></a></td>
+                                    <td data-sort="<%= issue._date.getTime() %>"><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._date.toDateString() %></a></td>
+                                    <td data-sort="<%= issue._date_due.getTime() %>"><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._date_due.toDateString() %></a></td>
                                     <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue.lines.length %></a></td>
                                     <td><input class="form-control form-control-sm" type="checkbox" <% if (issue._complete) { %>checked <% } %>disabled></td>
                                 </tr>
@@ -226,7 +225,7 @@
                     <% if(user.orders) { %>
                         <% user.orders.forEach((order) => { %>
                             <tr>
-                    <td><a href='/stores/orders/<%= order.order_id %>'><%= order._date.toDateString() %></a></td>
+                    <td data-sort="<%= order._date.getTime() %>"><a href='/stores/orders/<%= order.order_id %>'><%= order._date.toDateString() %></a></td>
                     <td><a href='/stores/orders/<%= order.order_id %>'><%= order.lines.length %></a></td>
                     <td><input class="form-control form-control-sm" type="checkbox" <% if (order._complete) { %>checked <% } %>disabled></td>
                     </tr>
@@ -257,7 +256,7 @@
                     <% if(user.requests) { %>
                         <% user.requests.forEach((request) => { %>
                             <tr>
-                                <td><a href='/stores/requests/<%= request.request_id %>'><%= request._date.toDateString() %></a></td>
+                                <td data-sort="<%= request._date.getTime() %>"><a href='/stores/requests/<%= request.request_id %>'><%= request._date.toDateString() %></a></td>
                                 <td><a href='/stores/requests/<%= request.request_id %>'><%= request.lines.length %></a></td>
                                 <td><input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled></td>
                             </tr>

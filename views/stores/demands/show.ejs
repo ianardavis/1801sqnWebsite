@@ -24,8 +24,11 @@
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					<% if (permissions.notes_add) { %>
 						<a class="dropdown-item" href="/stores/notes/new?table=demands&id=<%= demand.demand_id %>">Add Note</a>
-						<div class="dropdown-divider"></div>
 					<% } %>
+					<% if (demand._filename) { %>
+					<a class="dropdown-item" href="/stores/demands/<%= demand.demand_id %>/download">Download Demand</a>
+					<% } %>
+					<div class="dropdown-divider"></div>
 					<a class="dropdown-item" href="/stores/demands">Back to Demands</a>
 				</div>
 				<% if (permissions.demands_delete) { %>

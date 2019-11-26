@@ -4,8 +4,11 @@ const fn = {},
       cn = require('./constructors'), 
       se = require("sequelize"),
       fs = require('fs'),
-      excel = require('exceljs');
+      excel  = require('exceljs'),
+      http   = require('http'),
+      PDFDoc = require('pdfkit');
 var currentLine;
+    // path = process.env.ROOT + '/public/res/';
 
 fn.allowed = (permission, redirectIfDenied, req, res, cb) => {
     if (res.locals.permissions[permission]) {
@@ -107,7 +110,7 @@ fn.delete = (table, where) => {
             if (result === 1) {
                 resolve(result);
             } else {
-                reject(new Error(fn.singularise(table.tableName) + ' not deleted'))
+                reject(new Error('No ' + table.tableName + ' deleted'))
             }
         })
         .catch(err => {
@@ -203,6 +206,9 @@ fn.userInclude = (orders = false, issues = false, requests = false) => {
 fn.stock = () => {
     return {model: m.stock, include: [m.locations]};
 };
+fn.stock = as => {
+    return {model: m.stock, as: as, include: [m.locations]};
+} ;
 fn.issuesInclude = includeLines => {
     var include = [
         fn.users('issuedTo'),
@@ -215,8 +221,8 @@ fn.issuesInclude = includeLines => {
                 m.nsns,
                 fn.users(),
                 fn.item_sizes(true, true),
-                fn.locations('issueStock'),
-                fn.locations('returnStock')
+                fn.stock('issueStock'),
+                fn.stock('returnStock')
             ]
         });
     };
@@ -711,31 +717,33 @@ fn.sortOrdersForDemand = orderList => {
                 users   = [],
                 rejects = [];
             orderList.forEach(order => {
-                if (order.size._demand_page === null || order.size._demand_page === '') {
+                if (order.item_size._demand_page === null || order.item_size._demand_page === '') {
                     rejects.push({line_id: order.line_id, reason: 'page'});
-                } else if (order.size._demand_cell === null || order.size._demand_cell === '') {
+                } else if (order.item_size._demand_cell === null || order.item_size._demand_cell === '') {
                     rejects.push({line_id: order.line_id, reason: 'cell'});
                 } else {
                     var existing = orders.findIndex(e => e.itemsize_id === order.itemsize_id);
                     if (existing === -1) {
                         orders.push({
-                            lines:    [order.line_id],
+                            lines:       [order.line_id],
                             itemsize_id: order.itemsize_id,
-                            page:     order.size._demand_page, 
-                            cell:     order.size._demand_cell, 
-                            qty:      order._qty
+                            page:        order.item_size._demand_page, 
+                            cell:        order.item_size._demand_cell, 
+                            qty:         order._qty
                         });
                     } else {
                         orders[existing].qty += order._qty
                         orders[existing].lines.push(order.line_id);
                     };
-                    var user = {
-                        rank: order.order.orderedFor.rank._rank, 
-                        name: order.order.orderedFor._name, 
-                        bader: order.order.orderedFor._bader
-                    };
-                    if (!users.some(e => e.bader === user.bader)) {
-                       users.push(user);
+                    if (order.order.ordered_for !== -1) {
+                        var user = {
+                            rank: order.order.orderedFor.rank._rank, 
+                            name: order.order.orderedFor._name, 
+                            bader: order.order.orderedFor._bader
+                        };
+                        if (!users.some(e => e.bader === user.bader)) {
+                        users.push(user);
+                        };
                     };
                 };
             });
@@ -780,12 +788,16 @@ fn.raiseDemand = (supplier_id, orders, users) => {
 }; //OK
 fn.createDemandFile = supplier_id => {
     return new Promise((resolve, reject) => {
-        fn.getSupplier(supplier_id, false, true, false)
+        fn.getOne(
+            m.suppliers,
+            {supplier_id: supplier_id},
+            [m.files]
+        )
         .then(supplier => {
             if (supplier) {
                 if (supplier.file._path) {
                     var path       = process.env.ROOT + '/public/res/',
-                        newDemand  = 'demands/' + fn.timestamp() + ' ' + supplier._name + '.xlsx',
+                        newDemand  = 'demands/' + fn.timestamp() + ' demand - ' + supplier._name + '.xlsx',
                         demandFile = path + supplier.file._path;
                     fs.copyFile(demandFile, path + newDemand, err => {
                         if (!err) {
@@ -846,7 +858,11 @@ fn.writeCoverSheet = (file, supplier_id, users) => {
         var workbook = new excel.Workbook();
         workbook.xlsx.readFile(file)
         .then(() => {
-            fn.getSupplier(supplier_id, false, true, true)
+            fn.getOne(
+                m.suppliers,
+                {supplier_id: supplier_id},
+                [m.files, m.inventories]
+            )
             .then(supplier => {
                 try {
                     var worksheet = workbook.getWorksheet(supplier.file._cover_sheet),
@@ -911,7 +927,9 @@ fn.addDemandToOrders = (supplier_id, results, user_id) => {
             results.items.success.forEach(demandedLine => {
                 demandLines.push(fn.createDemandLine(demand.demand_id, demandedLine));
             });
-            Promise.all(demandLines)
+            Promise.all(
+                demandLines
+            )
             .then(results => {
                 resolve({lineResults: results, demand_id: demand.demand_id})
             })
@@ -1001,4 +1019,138 @@ fn.receiveDemandLines = lines => {
         resolve(true);
     });
 }; //OK
+
+fn.downloadFile = (file, res) => {
+    res.download(file, file, err => {
+        if (err) {
+            console.log(err);
+            req.flash('danger', err.message);
+        };
+    });
+}; //OK
+fn.createLoanCard = issue_id => {
+    return new Promise((resolve, reject) => {
+        fn.getOne(
+            m.issues, 
+            {issue_id: issue_id}, 
+            fn.issuesInclude(true)
+        )
+        .then(issue => {
+            try {
+                var docMetadata = {},
+                    file = process.env.ROOT + '/public/res/loancards/Issue ' + issue.issue_id + ' - ' + issue.issuedTo._name + '.pdf',
+                    writeStream = fs.createWriteStream(file);
+                docMetadata.Title         = 'Loan Card - Issue: ' + issue.issue_id;
+                docMetadata.Author        = issue.issuedBy.rank._rank + ' ' + issue.issuedBy._name + ', ' + issue.issuedBy._ini;
+                docMetadata.autoFirstPage = false;
+                docMetadata.bufferPages   = true;
+                const doc = new PDFDoc(docMetadata);
+
+                doc.pipe(writeStream);
+                doc.font(process.env.ROOT + '/public/lib/fonts/myriad-pro/d (1).woff');
+                fn.addPage(doc);
+
+                fn.drawHeader(doc, issue);
+                doc
+                    .fontSize(10)
+                    .text('NSN', 28, 205)
+                    .text('Description', 123.81, 205)
+                    .text('Size', 276.31, 205)
+                    .text('Qty', 373.56, 205)
+                    .text('Return Date', 404.21, 205)
+                    .text('Signature', 499.745, 205)
+                    .moveTo(28, 225).lineTo(567.28, 225).stroke();
+
+                fn.drawIssues(doc, issue);
+                fn.addPageNumbers(doc);
+                doc.end();
+                writeStream.on('finish', () => {
+                    fn.update(
+                        m.issues,
+                        {_filename: file},
+                        {issue_id: issue_id}
+                    )
+                    .then(result => {
+                        resolve(file);
+                    })
+                    .catch(err => {
+                        reject(err);
+                    });
+                })
+            } catch(err) {
+                reject(err);
+            }
+        })
+        .catch(err => {
+            reject(err);
+        });
+    });
+};
+fn.addPage = doc => {
+    var pageMetaData = {};
+    pageMetaData.size    = 'A4';
+    pageMetaData.margins = 28;
+    doc.addPage(pageMetaData);    
+} ;
+fn.drawHeader = (doc, issue) => {
+    try {
+        doc
+            .image(process.env.ROOT + '/public/img/rafac_logo.png', 28, 28, {fit: [112, 168]})
+            .image(process.env.ROOT + '/public/img/sqnCrest.png', 470.25, 28, {height: 100})
+            .fontSize(30)
+            .text('1801 SQUADRON ATC', 154.12, 28, {align: 'justify'})
+            .text('STORES LOAN CARD', 163.89, 78, {align: 'justify'})
+            .moveTo(28, 150).lineTo(567.28, 150).stroke()
+            .fontSize(15)
+            .text('Issue ID: ' + issue.issue_id, 28, 155)
+            .text('Bader/Service #: ' + issue.issuedTo._bader, 150, 155)
+            .text('Date: ' + issue._date.toDateString(), 415, 155)
+            .text('Rank: ' + issue.issuedTo.rank._rank, 28, 175)
+            .text('Surname: ' + issue.issuedTo._name, 150, 175)
+            .text('Initials: ' + issue.issuedTo._ini, 415, 175)
+            .moveTo(28, 200).lineTo(567.28, 200).stroke();
+    } catch(err) {
+        console.log(err);
+    };
+};
+fn.drawIssues = (doc, issue) => {
+    try{
+        var lineHeight = 230;
+        issue.lines.forEach(line => {
+            if (lineHeight >= 781.89) {
+                doc.addPage()
+                fn.drawHeader(doc, issue);
+            };
+            doc
+                .text(line.nsn._nsn, 28, lineHeight)
+                .text(line.item_size.item._description, 123.81, lineHeight)
+                .text(line.item_size.size._text, 276.31, lineHeight)
+                .text(line._qty, 373.56, lineHeight)
+                .moveTo(28, lineHeight + 15).lineTo(567.28, lineHeight + 15).stroke();
+            lineHeight += 20;
+        });
+        doc
+            .text('END OF ISSUE', 266.895, lineHeight)
+            .moveTo(116.81, 200).lineTo(116.81, lineHeight - 5).stroke()
+            .moveTo(269.31, 200).lineTo(269.31, lineHeight - 5).stroke()
+            .moveTo(366.56, 200).lineTo(366.56, lineHeight - 5).stroke()
+            .moveTo(397.21, 200).lineTo(397.21, lineHeight - 5).stroke()
+            .moveTo(116.81, 200).lineTo(116.81, lineHeight - 5).stroke()
+            .moveTo(492.745, 200).lineTo(492.745, lineHeight - 5).stroke();
+        lineHeight += 20;
+        var disclaimer = 'By signing below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
+        doc
+            .text(disclaimer, 28, lineHeight, {width: 539.28, align: 'center'})
+            .rect(197.64, lineHeight += 60, 200, 100).stroke();
+    } catch(err) {
+        console.log(err);
+    }
+};
+fn.addPageNumbers = doc => {
+    const range = doc.bufferedPageRange();
+    for (i = range.start, end = range.start + range.count, range.start <= end; i < end; i++) {
+        doc.switchToPage(i);
+        doc.text(`Page ${i + 1} of ${range.count}`, 28, 803.89);
+      }
+};
 module.exports = fn;

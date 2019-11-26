@@ -106,24 +106,20 @@ module.exports = (app, m) => {
     app.delete('/stores/orders/:id', mw.isLoggedIn, (req, res) => {
         if (req.query.user) {
             fn.allowed('orders_delete', true, req, res, allowed => {
-                fn.delete(
-                    m.orders_l,
-                    {order_id: req.params.id}
+                var actions = [];
+                actions.push(fn.delete(m.orders_l,{order_id: req.params.id}));
+                actions.push(fn.delete(m.orders,{order_id: req.params.id}));
+                Promise.all(
+                    actions
                 )
-                .then(line_result => {
-                    fn.delete(
-                        m.orders,
-                        {order_id: req.params.id}
-                    )
-                    .then(order_result => {
-                        res.redirect('/stores/orders');
-                    })
-                    .catch(err => {
-                        fn.error(err, '/stores/orders', req, res);
-                    });
+                .then(results => {
+                    req.flash('success', 'Order deleted')
+                    res.redirect('/stores/orders');
                 })
                 .catch(err => {
-                    fn.error(err, '/stores/orders', req, res);
+                    console.log(err);
+                    req.flash('danger', err.message)
+                    res.redirect('/stores/orders');
                 });
             });
         };
@@ -145,7 +141,8 @@ module.exports = (app, m) => {
                 where,
                 [
                     fn.users('orderedFor'),
-                    fn.users('orderedBy')
+                    fn.users('orderedBy'),
+                    {model: m.orders_l, as: 'lines'}
                 ]
             )
             .then(orders => {

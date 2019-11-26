@@ -23,22 +23,28 @@ module.exports = (app, m) => {
     // Index
     app.get('/stores/items', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_items', true, req, res, allowed => {
-            var whereObj = {};
-            if (req.query.category) {whereObj.category_id = req.query.category};
-            if (req.query.group)    {whereObj.group_id    = req.query.group};
-            if (req.query.type)     {whereObj.type_id     = req.query.type};
-            if (req.query.subtype)  {whereObj.subtype_id  = req.query.subtype};
-            if (req.query.gender)   {whereObj.gender_id   = req.query.gender};
+            var query = {},
+                where = {};
+            query.cat = Number(req.query.cat) || -1;
+            query.grp = Number(req.query.grp) || -1;
+            query.typ = Number(req.query.typ) || -1;
+            query.sub = Number(req.query.sub) || -1;
+            query.gen = Number(req.query.gen) || -1;
+            if (query.cat !== -1) where.category_id = query.cat;
+            if (query.grp !== -1) where.group_id    = query.grp;
+            if (query.typ !== -1) where.type_id     = query.typ;
+            if (query.sub !== -1) where.subtype_id  = query.sub;
+            if (query.gen !== -1) where.gender_id   = query.gen;
             fn.getOptions(itemOptions(), req, classes => {
                 fn.getAllWhere(
                     m.items,
-                    whereObj
+                    where
                 )
                 .then(items => {
                     res.render('stores/items/index', {
                         items:   items,
                         classes: classes,
-                        query:   whereObj
+                        query:   query
                     });
                 })
                 .catch(err => {

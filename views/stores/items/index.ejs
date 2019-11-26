@@ -26,49 +26,69 @@
 <div class="container mt-3 pt-3 mx-auto row">
 	<div class="col-12 col-md-6 mx-auto">
 		<div class="row px-3">
-			<label class="col-3 col-form-label text-right" for="category_id">Category:</label>
-			<select class="form-control form-control-sm col-9" id="category_id" type="text">
-				<option value="" data-tag='<blank>'></option>
-				<% classes.categories.forEach((cat) => { %>
-					<option value="<%= cat.category_id %>"><%= cat._category %></option>
-				<% }) %>
-			</select>
+			<div class="col-3">
+				<label class="col-form-label text-right" for="category_id">Category:</label>
+			</div>
+			<div class="col-9">
+				<select class="form-control form-control-sm" id="category_id" type="text" onchange=setGroup()>
+					<option value="" data-tag='<blank>'></option>
+					<% classes.categories.forEach(cat => { %>
+						<option value="<%= cat.category_id %>"<% if (query.cat === cat.category_id) { %> selected <% } %>><%= cat._category %></option>
+					<% }) %>
+				</select>
+			</div>
 		</div>
 		<div class="row px-3">
-			<label class="col-3 col-form-label text-right" for="group_id">Group:</label>
-			<select class="form-control form-control-sm col-9" id="group_id" type="text">
-				<option value="" data-tag='<blank>'></option>
-				<% classes.groups.forEach((grp) => { %>
-					<option value="<%= grp.group_id %>" data-tag='<%= grp.category_id %>' style="display: none;"><%= grp._group %></option>
-				<% }) %>
-			</select>
+			<div class="col-3">
+				<label class="col-form-label text-right" for="group_id">Group:</label>
+			</div>
+				<div class="col-9">
+				<select class="form-control form-control-sm" id="group_id" type="text" onchange=setType() >
+					<option value="" data-tag='<blank>'></option>
+					<% classes.groups.forEach(grp => { %>
+						<option value="<%= grp.group_id %>" data-tag='<%= grp.category_id %>' style="display: none;"<% if (query.grp === grp.group_id) { %> selected <% } %>><%= grp._group %></option>
+					<% }) %>
+				</select>
+			</div>
 		</div>
 		<div class="row px-3">
-			<label class="col-3 col-form-label text-right" for="type_id">Type:</label>
-			<select class="form-control form-control-sm col-9" id="type_id" type="text"> 
-				<option value="" data-tag='<blank>' ></option>
-				<% classes.types.forEach((typ) => { %>
-					<option value="<%= typ.type_id %>" data-tag='<%= typ.group_id %>' style="display: none;"><%= typ._type %></option>
-				<% }) %>
-			</select>
+			<div class="col-3">
+				<label class="col-form-label text-right" for="type_id">Type:</label>
+			</div>
+				<div class="col-9">
+				<select class="form-control form-control-sm" id="type_id" type="text" onchange=setSubtype() > 
+					<option value="" data-tag='<blank>' ></option>
+					<% classes.types.forEach(typ => { %>
+						<option value="<%= typ.type_id %>" data-tag='<%= typ.group_id %>' style="display: none;"<% if (query.typ === typ.type_id) { %> selected <% } %>><%= typ._type %></option>
+					<% }) %>
+				</select>
+			</div>
 		</div>
 		<div class="row px-3">
-			<label class="col-3 col-form-label text-right" for="subtype_id">Sub Type:</label>
-			<select class="form-control form-control-sm col-9" id="subtype_id" type="text">
-				<option value="" data-tag='<blank>'></option>
-				<% classes.subtypes.forEach((sub) => { %>
-					<option value="<%= sub.subtype_id %>" data-tag='<%= sub.type_id %>' style="display: none;"><%= sub._subtype %></option>
-				<% }) %>
-			</select>
+			<div class="col-3">
+				<label class="col-form-label text-right" for="subtype_id">Sub Type:</label>
+			</div>
+			<div class="col-9">
+				<select class="form-control form-control-sm" id="subtype_id" type="text">
+					<option value="" data-tag='<blank>'></option>
+					<% classes.subtypes.forEach(sub => { %>
+						<option value="<%= sub.subtype_id %>" data-tag='<%= sub.type_id %>' style="display: none;"<% if (query.sub === sub.subtype_id) { %> selected <% } %>><%= sub._subtype %></option>
+					<% }) %>
+				</select>
+			</div>
 		</div>
 		<div class="row px-3">
-			<label class="col-3 col-form-label text-right" for="gender_id">Gender:</label>
-			<select class="form-control form-control-sm col-9" id="gender_id" type="text">
-				<option value="" data-tag='<blank>'></option>
-				<% classes.genders.forEach((gen) => { %>
-					<option value="<%= gen.gender_id %>"><%= gen._gender %></option>
-				<% }) %>
-			</select>
+			<div class="col-3">
+				<label class="col-form-label text-right" for="gender_id">Gender:</label>
+			</div>
+				<div class="col-9">
+				<select class="form-control form-control-sm" id="gender_id" type="text">
+					<option value="" data-tag='<blank>'></option>
+					<% classes.genders.forEach(gen => { %>
+						<option value="<%= gen.gender_id %>"<% if (query.gen === gen.gender_id) { %> selected <% } %>><%= gen._gender %></option>
+					<% }) %>
+				</select>
+			</div>
 		</div>
 		<div>
 			<form class="mb-3" action="/stores/items" method="GET">
@@ -92,55 +112,5 @@
 </div>
 <% include ../../partials/foot/full %>
 <script src="/js/tableSearch.js"></script>
-<script src="/js/createClassQueryString.js"></script>
-<!-- <script src="/js/filterClassSelects.js"></script> -->
-<script>
-$(window).on("load", () => {
-    $('#_category').val(<%= query._category %>);
-    setGroup;
-    $('#_group').val(<%= query._group %>);
-    setType;
-    $('#_type').val(<%= query._type %>);
-    setSubtype;
-    $('#_subtype').val(<%= query._subtype %>);
-    $('#_gender').val(<%= query._gender %>);
-});
-$('#_category').on('change', setGroup);	
-$('#_group').on('change', setType);	
-$('#_type').on('change', setSubtype);
-
-function setGroup() {
-    hideSome("_group", $(this).val());
-    $("#_group").val($("#_group option:visible:first").val());
-    $("#_type").val($("#_type option:visible:first").val());
-    $("#_subtype").val($("#_subtype option:visible:first").val());
-    hideAll("_type")
-    hideAll("_subtype")
-}
-function setType() {
-    hideSome("_type", $(this).val());
-    $("#_type").val($("#_type option:visible:first").val());
-    $("#_subtype").val($("#_subtype option:visible:first").val());
-    hideAll("_subtype")
-}
-function setSubtype() {
-    hideSome("_subtype", $(this).val());
-    $("#_subtype").val($("#_subtype option:visible:first").val());
-}
-function hideSome(select, selected) {
-    $("#" + select + " option").each(function(item){
-        var element =  $(this) ; 
-        if (element.data("tag") != selected && element.data("tag") != '<blank>'){
-            element.hide() ; 
-        } else {
-            element.show();
-        }
-    }) ; 
-}
-function hideAll(select) {
-    $("#" + select + " option").each(function(item){
-        var element =  $(this) ; 
-        element.hide() ; 
-    }) ; 
-}</script>
+<script src="/js/itemsIndex.js"></script>
 <% include ../../partials/foot/htmlClose %>
