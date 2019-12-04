@@ -79,39 +79,12 @@ module.exports = (app, m) => {
                 {supplier_id: req.params.id}
             )
             .then(result => {
+                if (result) req.flash('success', 'Supplier updated')
                 res.redirect('/stores/suppliers/' + req.params.id)
             })
             .catch(err => {
                 fn.error(err, '/stores/suppliers/' + req.params.id, req, res);
             });
-        });
-    });
-    // Upload Demand File
-    app.post('/stores/suppliers/:id/upload', mw.isLoggedIn, (req, res) => {
-        fn.allowed('suppliers_edit', true, req, res, allowed => {
-            if (!req.files || Object.keys(req.files).length !== 1) {
-                req.flash('info', 'No file or multiple files selected')
-                res.redirect('/stores/suppliers/' + req.params.id)
-            } else {
-                let uploaded = req.files.demandfile;
-                uploaded.mv(process.env.ROOT + '/public/res/' + req.files.demandfile.name)
-                fn.update(
-                    m.suppliers,
-                    {_demand: req.files.demandfile.name},
-                    {supplier_id: req.params.id}
-                )
-                .then(result => {
-                    if (!result) { 
-                        req.flash('danger', 'Error uploading demand file');
-                    } else {
-                        req.flash('success', 'Demand file uploaded');
-                    }
-                    res.redirect('/stores/suppliers/' + req.params.id);
-                })
-                .catch(err => {
-                    fn.error(err, '/stores/suppliers/' + req.params.id, req, res);
-                });
-            };
         });
     });
 

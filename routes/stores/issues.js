@@ -94,7 +94,7 @@ module.exports = (app, m) => {
                 .then(issue => {
                     currentLine = fn.counter();
                     var actions = [];
-                    req.body.selected.map(item => {
+                    req.body.selected.forEach(item => {
                         if (item) {
                             item = JSON.parse(item);
                             var line = new cn.IssueLine(issue.issue_id, item, currentLine());

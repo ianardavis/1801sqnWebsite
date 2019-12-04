@@ -15,7 +15,14 @@ module.exports = (app, m) => {
 						where: {supplier_id: supplier_id}
 					}
 				)
-			};
+			} else if (callType === 'order') {
+                include.push(
+					{
+						model: m.item_sizes,
+						where: {_orderable: 1}
+					}
+				)
+            };
         fn.getAllWhere(
             m.items,
 			{_description: {[op.not]: ''}},

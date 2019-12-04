@@ -530,6 +530,30 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "Admin"
     },
+    'access_files': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'files_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Issuer"
+    },
+    'files_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
+    'files_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "Admin"
+    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,

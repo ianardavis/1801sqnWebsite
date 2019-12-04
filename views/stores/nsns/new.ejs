@@ -10,10 +10,10 @@
                 <a class="nav-link stores_nav" href="/stores/items">Items</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= item_size.item_id %>"><%= item_size.item._description %></a>
+                <a class="nav-link stores_nav" href="/stores/items/<%= itemsize.item_id %>"><%= itemsize.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= item_size.itemsize_id %>">Size: <%= item_size.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Size: <%= itemsize.size._text %></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/nsns/new">Add NSN</a>
@@ -28,7 +28,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/item_sizes/<%= item_size.itemsize_id %>">Back to <%= item_size.item._description %>/Size: <%= item_size.size._text %></a>
+				<a class="dropdown-item" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Back to <%= itemsize.item._description %>/Size: <%= itemsize.size._text %></a>
 			</div>
 		</li>
 	</ul>
@@ -40,7 +40,7 @@
 				<h4>NSN</h4>
 				<div class="details">
 					<form action="/stores/nsns" method="POST">
-						<input type="hidden" name="nsn[itemsize_id]" value="<%= item_size.itemsize_id %>" readonly>
+						<input type="hidden" name="nsn[itemsize_id]" value="<%= itemsize.itemsize_id %>" readonly>
 						<p><input class="form-control" type="text" inputmode="numeric" name="nsn[_nsn]" maxlength="20" placeholder="NSN" required></p>
 						<p><input class="form-control" type="checkbox" name="nsn[_default]" value="1"></p>
 						<p><button class="btn btn-success">Save</button></p>

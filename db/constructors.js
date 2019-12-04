@@ -54,11 +54,11 @@ cn.RequestLine = function (request_id, item) {
     this.itemsize_id = item.itemsize_id;
     this._qty        = item.qty;
 };
-cn.RequestStatus = function (line, approved_by) {
+cn.RequestStatus = function (line, user_id) {
     this._status = line._status;
     this._action = line._action || null;
     this._date   = Date.now();
-    this.user_id = approved_by;
+    this.user_id = user_id;
 };
 
 cn.Note = function (_table, _id, _note, _system, user_id) {

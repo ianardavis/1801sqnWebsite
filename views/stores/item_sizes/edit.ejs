@@ -24,7 +24,6 @@
 <section class="container-fluid p-5">
    <div class="details container bordered p-3">
         <form action="/stores/item_sizes/<%= item_size.itemsize_id %>?_method=PUT" method="POST">
-            <input type="hidden" name="failRedirect", value="/stores/item_sizes/<%= item_size.itemsize_id %>" readonly>
             <div class="form-group row">
                 <div class="col-5" >
                     <label class="col-form-label">Orderable:</label>

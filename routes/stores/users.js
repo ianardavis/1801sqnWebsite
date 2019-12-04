@@ -5,7 +5,6 @@ const   mw = require('../../config/middleware'),
 function options() {
     return [
         {table: 'ranks'},
-        {table: 'genders'},
         {table: 'statuses'}
     ]
 };
@@ -243,9 +242,9 @@ module.exports = (app, m) => {
                     fn.getNotes('users', req.params.id, req, res)
                     .then(notes => {
                         res.render('stores/users/show', {
-                            user:  user, 
-                            notes: notes,
-                            query: query
+                            f_user: user, 
+                            notes:  notes,
+                            query:  query
                         });
                     });
                 })

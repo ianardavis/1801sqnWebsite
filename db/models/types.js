@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_type': {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(20),
       allowNull: false,
       comment: "null"
     },

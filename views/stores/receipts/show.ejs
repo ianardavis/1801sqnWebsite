@@ -81,10 +81,10 @@
 					<% if (receipt.lines) { %>
 						<% receipt.lines.forEach(line => { %>
 							<tr>
-								<td><%= line.stock.location._location %></td>
-								<td><%= line.stock.item_size.item._description %></td>
-								<td><%= line.stock.item_size.size._text %></td>
-								<td><%= line._qty %></td>
+								<td><a href="#"><%= line.stock.location._location %></a></td>
+								<td><a href="/stores/items/<%= line.stock.item_size.item_id %>"><%= line.stock.item_size.item._description %></a></td>
+								<td><a href="/stores/item_sizes/<%= line.stock.itemsize_id %>"><%= line.stock.item_size.size._text %></a></td>
+								<td><a href="#"><%= line._qty %></a></td>
 							</tr>
 						<% }) %>
 					<% } %>

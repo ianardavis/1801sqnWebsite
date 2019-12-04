@@ -6,18 +6,41 @@ module.exports = (app, m) => {
     // New Logic
     app.post('/stores/stock', mw.isLoggedIn, (req, res) => {
         fn.allowed('stock_add', true, req, res, allowed => {
-            fn.create(
-                m.stock,
-                req.body.stock
+            fn.getOne(
+                m.locations,
+                {_location: req.body.location._location}
             )
-            .then(stock => {
-                res.redirect('/stores/item_sizes/' + stock.itemsize_id);
+            .then(location => {
+                req.body.stock.location_id = location.location_id;
+                createStock(req.body.stock, req, res);
             })
             .catch(err => {
-                fn.error(err, '/stores/items', req, res);
-            });;
+                fn.create(
+                    m.locations,
+                    {_location: req.body.location._location}
+                )
+                .then(location => {
+                    req.body.stock.location_id = location.location_id;
+                    createStock(req.body.stock, req, res);
+                })
+                .catch(err => {
+                    fn.error(err, '/stores/items', req, res);
+                })
+            });
         });
     });
+    function createStock(stock, req, res) {
+        fn.create(
+            m.stock,
+            stock
+        )
+        .then(stock => {
+            res.redirect('/stores/item_sizes/' + stock.itemsize_id);
+        })
+        .catch(err => {
+            fn.error(err, '/stores/items', req, res);
+        });;
+    };
 
     // New Form
     app.get('/stores/stock/new', mw.isLoggedIn, (req, res) => {

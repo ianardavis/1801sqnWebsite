@@ -36,22 +36,22 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_rank_column': {
-      type: DataTypes.STRING(4),
+      type: DataTypes.STRING(2),
       allowNull: true,
       comment: "null"
     },
     '_name_column': {
-      type: DataTypes.STRING(4),
+      type: DataTypes.STRING(2),
       allowNull: true,
       comment: "null"
     },
     '_request_start': {
-      type: DataTypes.STRING(4),
+      type: DataTypes.STRING(2),
       allowNull: true,
       comment: "null"
     },
     '_request_end': {
-      type: DataTypes.STRING(4),
+      type: DataTypes.STRING(2),
       allowNull: true,
       comment: "null"
     },
@@ -61,6 +61,11 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_cover_sheet': {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      comment: "null"
+    },
+    '_items_sheet': {
       type: DataTypes.STRING(20),
       allowNull: true,
       comment: "null"

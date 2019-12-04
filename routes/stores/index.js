@@ -1,6 +1,4 @@
-const mw = require('../../config/middleware'),
-      fn = require('../../db/functions');
-
+const mw = require('../../config/middleware');
 
 //root
 module.exports = (app, m) => {

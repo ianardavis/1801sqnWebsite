@@ -128,16 +128,18 @@ module.exports = (app, m) => {
     });
 
     //receive
-    app.put('/stores/demands/:id/receive', mw.isLoggedIn, (req, res) => {
+    app.put('/stores/demands/:id/action', mw.isLoggedIn, (req, res) => {
         fn.allowed('receipts_add', true, req, res, allowed => {
             var actions = [];
             if (req.body.cancels.filter(Number).length > 0) {
                 actions.push(fn.cancelDemandLines(req.body.cancels.filter(Number)));
             };
             if (req.body.receives.filter(String).length > 0) {
-                actions.push(fn.receiveDemandLines(req.body.receives.filter(String)));
+                actions.push(fn.receiveDemandLines(req.body.receives.filter(String), req));
             };
-            Promise.all(actions)
+            Promise.all(
+                actions
+            )
             .then(results => {
                 req.flash('success', 'Lines actioned')
                 res.redirect('/stores/demands/' + req.params.id);
@@ -151,30 +153,16 @@ module.exports = (app, m) => {
     //Show
     app.get('/stores/demands/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('access_demands', true, req, res, allowed => {
-            var query = {},
-                where = {};
+            var query = {};
             query.sn = Number(req.query.sn) || 2;
-            query.rl = Number(req.query.rl) || 0;
-            if (query.rl === 2) {
-                where.receipt_line_id = {[op.is]: null};
-            } else if (query.rl === 3) {
-                where.receipt_line_id = {[op.not]: null};
-            };
             var include = [
                 fn.users(),
                 m.suppliers,
                 {
                     model: m.demands_l,
                     as: 'lines',
-                    where: where,
-                    required: false,
                     include: [
-                        fn.item_sizes(true, true, false),
-                        {
-                            model: m.receipts_l,
-                            as: 'receipt',
-                            include: [m.receipts]
-                        }
+                        fn.item_sizes(true, true, false)
                     ]
                 }
             ];

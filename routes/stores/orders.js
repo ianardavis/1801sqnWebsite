@@ -13,6 +13,7 @@ module.exports = (app, m) => {
                 fn.getOne(
                     m.users,
                     {user_id: user},
+                    [m.ranks]
                 )
                 .then(user => {
                     if (user !== req.user.user_id) {

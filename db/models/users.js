@@ -35,15 +35,6 @@ module.exports = function(sequelize, DataTypes) {
         key: 'rank_id'
       }
     },
-    'gender_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null",
-      references: {
-        model: 'genders',
-        key: 'gender_id'
-      }
-    },
     'status_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,

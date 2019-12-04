@@ -90,7 +90,7 @@ module.exports = (app, m) => {
                 };
             } else {
                 req.flash('danger', 'Permission Denied!');
-                res.redirect('back');
+                res.redirect('/stores');
             };
         });
     });
@@ -175,43 +175,93 @@ module.exports = (app, m) => {
             } else if (query.cr === 3) {
                 where._status = {[op.not]: 'Pending'}
             };
-            fn.getOne(
-                m.requests,
-                {request_id: req.params.id},
-                [
-                    {
-                        model: m.requests_l,
-                        where: where,
-                        as: 'lines',
-                        include: [
-                            fn.item_sizes(true, true, true),
-                            fn.users(),
-                            m.orders,
-                            m.issues
-                        ]
-                    },
-                    fn.users('requestedFor'),
-                    fn.users('requestedBy')
-                ]
-            )
-            .then(request => {
-                if (allowed || request.requestedFor.user_id === req.user.user_id) {
-                    fn.getNotes('requests', req.params.id, req, res)
-                    .then(notes => {
-                        res.render('stores/requests/show',{
-                            request: request,
-                            notes:   notes,
-                            query:   query
+            if (req.query.sb === 'request') {
+                fn.getOne(
+                    m.requests,
+                    {request_id: req.params.id},
+                    [
+                        {
+                            model: m.requests_l,
+                            where: where,
+                            as: 'lines',
+                            include: [
+                                fn.item_sizes(true, true, true),
+                                fn.users(),
+                                m.orders,
+                                m.issues
+                            ]
+                        },
+                        fn.users('requestedFor'),
+                        fn.users('requestedBy')
+                    ]
+                )
+                .then(request => {
+                    if (allowed || request.requestedFor.user_id === req.user.user_id) {
+                        fn.getNotes('requests', req.params.id, req, res)
+                        .then(notes => {
+                            res.render('stores/requests/show',{
+                                sortBy:  'request',
+                                sortID:  request.request_id,
+                                request: request,
+                                notes:   notes,
+                                query:   query
+                            });
                         });
+                    } else {
+                        req.flash('danger', 'Permission Denied!')
+                        res.redirect('/stores/requests');
+                    };
+                })
+                .catch(err => {
+                    fn.error(err, '/stores/requests', req, res);
+                });
+            } else if (req.query.sb === 'user') {
+                if (allowed || req.params.id === req.user.user_id) {
+                    fn.getOne(
+                        m.users,
+                        {user_id: req.params.id},
+                        [m.ranks]
+                    )
+                    .then(user => {
+                        fn.getAllWhere(
+                            m.requests_l,
+                            where,
+                            [
+                                {
+                                    model: m.requests,
+                                    where: {requested_for: req.params.id}
+                                },
+                                fn.item_sizes(true, true, true),
+                                fn.users(),
+                                m.orders,
+                                m.issues
+                            ]
+                        )
+                        .then(requests => {
+                            res.render('stores/requests/show',{
+                                sortBy:   'user',
+                                sortID:   user.user_id,
+                                f_user:   user,
+                                requests: requests,
+                                query:    query
+                            });
+                        })
+                        .catch(err => {
+                            fn.error(err, '/stores/requests', req, res);
+                        });
+                    })
+                    .catch(err => {
+
                     });
+                    
                 } else {
                     req.flash('danger', 'Permission Denied!')
-                    res.redirect('back');
+                    res.redirect('/stores/requests');
                 };
-            })
-            .catch(err => {
-                fn.error(err, '/stores/requests', req, res);
-            });
+            } else {
+                req.flash('danger', 'No display criteria specified');
+                res.redirect('/stores/requests');
+            };
         });
     });
 };

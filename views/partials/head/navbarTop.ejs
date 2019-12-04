@@ -28,17 +28,17 @@
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-            <% if (!currentUser) { %>
+            <% if (!user) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/login"><strong>Login</strong></a>
                 </li>
             <% } else { %>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <%= currentUser._login_id %>
+                        <%= user._login_id %>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/stores/users/<%= currentUser.user_id %>">Profile</a>
+                        <a class="dropdown-item" href="/stores/users/<%= user.user_id %>">Profile</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/logout">Logout</a>
                     </div>

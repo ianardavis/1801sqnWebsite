@@ -97,14 +97,14 @@
 					</select>
 				</div>
 			</div>
-			<form id="requestForm" action="/stores/demands/<%= demand.demand_id %>/receive?_method=PUT" method="POST">
+			<form id="requestForm" action="/stores/demands/<%= demand.demand_id %>/action?_method=PUT" method="POST">
 				<button class="btn btn-success w-100 mb-3">Action Selected Lines</button>
 				<table id="demandTable" class="table table-sm table-hover mx-auto w-100">
 					<thead class="thead-dark">
 						<th class="w-20" onclick="sortTable(0, 'demandTable')">Item</th>
 						<th class="w-10" onclick="sortTable(1, 'demandTable')">Size</th>
 						<th class="w-5"  onclick="sortTable(2, 'demandTable')">Quantity</th>
-						<th class="w-10" onclick="sortTable(3, 'demandTable')">Receipt Date/Action</th>
+						<th class="w-10" onclick="sortTable(3, 'demandTable')">Action</th>
 						<th class="w-5"  onclick="sortTable(5, 'demandTable')">Location</th>
 					</thead>
 					<tbody>
@@ -115,10 +115,8 @@
 									<td><a href="/stores/item_sizes/<%= line.item_size.itemsize_id %>"> <%= line.item_size.size._text %></a></td>
 									<td><a href="#"> <%= line._qty %></a></td>
 									<td>
-										<% if (line.receipt) { %>
-											<a href="/stores/receipts/<%= demand.receipts_l.receipt_id %>"><%= line.receipt._date.toDateString() %></a>
-										<% } else if (line._status === 'Cancelled') { %>
-											<a href="#">Cancelled</a>
+										<% if (line._status === 'Cancelled' || line._status === 'Received') { %>
+											<a href="#"><%= line._status %></a>
 										<% } else { %>
 											<select id="action<%= line.line_id %>" type="select" class="form-control form-control-sm" name="cancels[]" onchange=checkLocations(<%= line.line_id %>)>
 												<option value=""></option>
@@ -128,7 +126,7 @@
 										<% } %>
 									</td>
 									<td>
-										<% if (line.item_size.stocks) { %>
+										<% if (line._status !== 'Received' && line.item_size.stocks) { %>
 											<select style="display:none;" id="locations<%= line.line_id %>" class="form-control form-control-sm" name="receives[]">
 												<option value=""></option>
 												<% line.item_size.stocks.forEach(stock => { %>

@@ -59,18 +59,6 @@
             </div>
             <div class='form-group row'>
                 <div class='col-sm-2'>
-                    <label class='col-form-label'>Gender:</label>
-                </div>
-                <div class='col-sm-10'>
-                    <select class='form-control' name='user[gender_id]' type='text'>
-                        <% classes.genders.forEach(gender => { %>
-                            <option value='<%= gender.gender_id %>' <% if (user.gender_id === gender.gender_id) { %> selected <% } %>><%= gender._gender %></option>
-                        <% }) %>
-                    </select>
-                </div>
-            </div>
-            <div class='form-group row'>
-                <div class='col-sm-2'>
                     <label class='col-form-label'>Status:</label>
                 </div>
                 <div class='col-sm-10'>

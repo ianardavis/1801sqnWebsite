@@ -45,8 +45,8 @@
 				<div class="col-9">
 				<select class="form-control form-control-sm" id="group_id" type="text" onchange=setType() >
 					<option value="" data-tag='<blank>'></option>
-					<% classes.groups.forEach(grp => { %>
-						<option value="<%= grp.group_id %>" data-tag='<%= grp.category_id %>' style="display: none;"<% if (query.grp === grp.group_id) { %> selected <% } %>><%= grp._group %></option>
+					<% classes.groups.forEach(group => { %>
+						<option value="<%= group.group_id %>" data-tag='<%= group.category_id %>' style="display: none;"<% if (query.grp === group.group_id) { %> selected <% } %>><%= group._group %></option>
 					<% }) %>
 				</select>
 			</div>
@@ -113,4 +113,5 @@
 <% include ../../partials/foot/full %>
 <script src="/js/tableSearch.js"></script>
 <script src="/js/itemsIndex.js"></script>
+<script src="/js/itemClasses.js"></script>
 <% include ../../partials/foot/htmlClose %>

@@ -25,7 +25,6 @@ Object.keys(db).forEach(function(modelName) {
 });
  
 db.users.hasOne(db.ranks,            {foreignKey: 'rank_id',       sourceKey: 'rank_id',         constraints: false});
-db.users.hasOne(db.genders,          {foreignKey: 'gender_id',     sourceKey: 'gender_id',       constraints: false});
 db.users.hasOne(db.statuses,         {foreignKey: 'status_id',     sourceKey: 'status_id',       constraints: false});
 db.users.hasOne(db.permissions,      {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
 db.users.hasMany(db.orders,          {foreignKey: 'ordered_for',   targetKey: 'user_id'});
@@ -103,7 +102,6 @@ db.demands.hasOne(db.users,          {foreignKey: 'user_id',       sourceKey: 'u
 db.demands.hasMany(db.demands_l,     {foreignKey: 'demand_id',     targetKey: 'demand_id',       as: 'lines'});
 
 db.demands_l.hasOne(db.item_sizes,   {foreignKey: 'itemsize_id',   sourceKey: 'itemsize_id',     constraints: false});
-db.demands_l.hasOne(db.receipts_l,   {foreignKey: 'line_id',       sourceKey: 'receipt_line_id', constraints: false, as: 'receipt'});
 db.demands_l.belongsTo(db.demands,   {foreignKey: 'demand_id',     targetKey: 'demand_id'});
 
 db.groups.belongsTo(db.categories,   {foreignKey: 'category_id',   targetKey: 'category_id'});

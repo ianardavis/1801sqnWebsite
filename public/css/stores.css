@@ -63,11 +63,10 @@ td a {
 }
 table {
 	overflow-x: auto;
-	/* overflow-y: auto; */
 }
-/* .limit-height-200 {
-	height: 100px;
-} */
+.a-label {
+	font-size: 15px;
+}
 .table {
 	color: #B9CBE2;
 }

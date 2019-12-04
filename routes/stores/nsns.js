@@ -14,7 +14,7 @@ module.exports = (app, m) => {
                 res.redirect('/stores/item_sizes/' + nsn.itemsize_id);
             })
             .catch(err => {
-                fn.error(err, '/stores/items/' + req.body.nsn.itemsize_id, req, res);
+                fn.error(err, '/stores/item_sizes/' + req.body.nsn.itemsize_id, req, res);
             });
         });
     });
@@ -73,14 +73,23 @@ module.exports = (app, m) => {
     // Put
     app.put('/stores/nsns/:id', mw.isLoggedIn, (req, res) => {
         fn.allowed('nsns_edit', true, req, res, allowed => {
-            if (!req.body.nsn._default) req.body.nsn._default = 0;
-            fn.update(
+            fn.getOne(
                 m.nsns,
-                req.body.nsn,
                 {nsn_id: req.params.id}
             )
-            .then(result => {
-                res.redirect('back');
+            .then(nsn => {
+                if (!req.body.nsn._default) req.body.nsn._default = 0;
+                fn.update(
+                    m.nsns,
+                    req.body.nsn,
+                    {nsn_id: req.params.id}
+                )
+                .then(result => {
+                    res.redirect('/stores/item_sizes/' + nsn.itemsize_id);
+                })
+                .catch(err => {
+                    fn.error(err, '/stores/item_sizes/' + nsn.itemsize_id, req, res);
+                });
             })
             .catch(err => {
                 fn.error(err, 'back', req, res);
@@ -96,10 +105,10 @@ module.exports = (app, m) => {
                 {nsn_id: req.params.id}
             )
             .then(result => {
-                res.redirect('/stores/item_sizes/' + nsn.itemsize_id);
+                res.redirect('back');
             })
             .catch(err => {
-                fn.error(err, '/stores/items', req, res);
+                fn.error(err, 'back', req, res);
             });
         });
     });
