@@ -19,7 +19,7 @@
 </section>
 <section class="row">
     <div class="col-md-9 col-xl-6 container bordered p-5">
-        <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=PUT" method="POST">
+        <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=PUT" method="POST" onsubmit="return confirm('Confirm edit supplier?');">
             <div class="form-group row">
                 <div class="col-sm-2">
                     <label class="col-form-label" for="_name">Supplier Name:</label>

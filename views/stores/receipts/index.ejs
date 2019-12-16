@@ -1,4 +1,3 @@
-<!-- receipts INDEX PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
 	<nav class="navbar navbar-expand navbar-light bg-nav">
@@ -23,7 +22,7 @@
 			</thead>
 			<tbody>
 				<% if (receipts) { %>
-					<% receipts.forEach((receipt) => { %>
+					<% receipts.forEach(receipt => { %>
 						<tr>
 							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.supplier._name %></a></td>
 							<td data-sort="<%= receipt._date.getTime() %>"><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt._date.toDateString() %></a></td>

@@ -33,7 +33,7 @@
 			<div class="container bordered">
 				<h4>Gender</h4>
 				<div>
-					<form action="/stores/genders" method="POST">
+					<form action="/stores/genders" method="POST" onsubmit="return confirm('Add gender ?');">
 						<p><input class="form-control" type="text" name="gender[_gender]" maxlength="20" placeholder="Gender" required></p>
 						<p><button class="btn btn-success">Save</button></p>
 					</form>

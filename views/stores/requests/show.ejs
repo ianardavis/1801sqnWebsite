@@ -9,9 +9,9 @@
 				<a class="nav-link stores_nav" href="/stores/users">Users</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/users/<% if (sortBy === 'request') { %><%= request.requested_for %><% } else if (sortBy === 'user') { %><%= user.requested_for %><% } %>">
+				<a class="nav-link stores_nav" href="/stores/users/<% if (sortBy === 'request') { %><%= request.requested_for %><% } else if (sortBy === 'user') { %><%= f_user.user_id %><% } %>">
 					<% if (sortBy === 'request') { %>
-						<%= request.requestedFor.rank._rank %> <%= request.requestedFor._name %>, <%= request.requestedFor._ini %>
+						<%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %>
 					<% } else if (sortBy === 'user') { %>
 						<%= f_user.rank._rank %> <%= f_user._name %>, <%= f_user._ini %>
 					<% } %>
@@ -45,7 +45,7 @@
 							<div class="dropdown-divider"></div>
 						<% }; %>
 						<% if (permissions.requests_delete) { %>
-							<form action="/stores/requests/<%= request.request_id %>?_method=DELETE&user=<%= request.requested_for %>" method="POST">
+							<form action="/stores/requests/<%= request.request_id %>?_method=DELETE&user=<%= request.requested_for %>" method="POST" onsubmit="return confirm('Confirm delete request?');">
 								<button class="dropdown-item dropdown_button">Delete Request</button>
 							</form>
 						<% }; %>
@@ -73,7 +73,7 @@
 						<p class="col-form-label">For:</p>
 					</div>
 					<div class="col-sm-8">
-						<p class="form-control"><%= request.requestedFor.rank._rank %> <%= request.requestedFor._name %>, <%= request.requestedFor._ini %></p>
+						<p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
 					</div>
 				</div>
 				<div class="row">
@@ -81,7 +81,7 @@
 						<p class="col-form-label">By:</p>
 					</div>
 					<div class="col-sm-8">
-						<p class="form-control"><%= request.requestedBy.rank._rank %> <%= request.requestedBy._name %>, <%= request.requestedBy._ini %></p>
+						<p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
 					</div>
 				</div>
 				<div class="row">
@@ -110,9 +110,9 @@
 		<div class="col-12 mb-3 bordered">
 			<h4>Lines</h4>
 			<% if (permissions.requests_approve) { %>
-				<form id="requestForm" action="/stores/requests/<% if (sortBy === 'request') { %><%= request.request_id %><% } else if (sortBy === 'user') { %><%= user.user_id %><% } %>/approval?_method=PUT" method="POST">
+				<form id="requestForm" action="/stores/requests/<% if (sortBy === 'request') { %><%= request.request_id %><% } else if (sortBy === 'user') { %><%= f_user.user_id %><% } %>/approval?_method=PUT" method="POST" onsubmit="return confirm('Confirm change of status?');">
 				<button class="btn btn-success w-100 mb-3">Action Selected Requests</button>
-				<input type="hidden" name="requested_for" value="<% if (sortBy === 'request') { %><%= request.requested_for %><% } else if (sortBy === 'user') { %><%= user.user_id %><% } %>">
+				<input type="hidden" name="requested_for" value="<% if (sortBy === 'request') { %><%= request.requested_for %><% } else if (sortBy === 'user') { %><%= f_user.user_id %><% } %>">
 			<% } %>
 				<table id="requestTable" class="table table-sm table-hover mx-auto w-100">
 					<thead class="thead-dark">
@@ -144,7 +144,7 @@
 										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size.size._text %></a></td>
 										<td><a href="#"><%= line._qty %></a></td>
 										<td>
-										<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== f_user.user_id) { %>
+										<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== request._for.user_id) { %>
 											<select id='status<%= line.line_id %>' class='form-control form-control-sm' name='declines[]' onchange='checkAction( <%= line.line_id %>)'>
 												<option value="pending" selected>Pending</option>
 												<option value="approved">Approved</option>
@@ -155,12 +155,12 @@
 										<% }; %>
 										</td>
 										<td>
-											<% if (line._status === 'Pending' && permissions.requests_approve) { %>
+											<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== request._for.user_id) { %>
 												<select id="action<%= line.line_id %>" style="display:none;" class="form-control form-control-sm" name="approves[]" onchange='checkNSNs( <%= line.line_id %>)'>
 													<option value="" selected></option>
 													<% if (line.item_size.stocks) { %>
 														<% line.item_size.stocks.forEach(stock => { %>
-															<option value='{"line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>, "stock_id": <%= stock.stock_id %>}'>
+															<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>, "stock_id": <%= stock.stock_id %>}'>
 																Issue from: <%= stock.location._location %>
 															</option>
 														<% }); %>
@@ -176,7 +176,7 @@
 											<% } %>
 										</td>
 										<td>
-											<% if (line._status === 'Pending' && permissions.requests_approve) { %>
+											<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== request._for.user_id) { %>
 												<select id="nsns<%= line.line_id %>" name="nsns[line<%= line.line_id %>]" class="form-control form-control-sm" style="display:none;">
 													<% if (line.item_size.nsns) { %>
 														<% line.item_size.nsns.forEach(nsn => { %>
@@ -193,13 +193,9 @@
 											<% } %>
 										</td>
 										<td>
-											<% if (line._action === 'Issue') { %>
-												<a href="/stores/issues/<%= line.issue_id %>">
-													Issue: <%= line.issue_id %>
-												</a>
-											<% } else if (line._action === 'Order') { %>
-												<a href="/stores/orders/<%= line.order_id %>">
-													Order: <%= line.order_id %>
+											<% if (line._id && line._id !== '') { %>
+												<a href="/stores/<% if (line._action === 'Issue') { %>issues<% } else if (line._action === 'Order') { %>orders<% } %>/<%= line._id %>">
+													<%= line._action %>: <%= line._id %>
 												</a>
 											<% } %>
 										</td>
@@ -216,28 +212,28 @@
 										<td><a href="#"><%= line._qty %></a></td>
 										<td>
 										<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== f_user.user_id) { %>
-											<select id='status<%= line.line_id %>' class='form-control form-control-sm' name='declines[]' onchange='checkAction( <%= line.line_id %>)'>
+											<select id='status<%= line.line_id %>' class='form-control form-control-sm' name='declines[]' onchange='checkAction(<%= line.line_id %>)'>
 												<option value="pending" selected>Pending</option>
 												<option value="approved">Approved</option>
-												<option value='{"line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Declined"}'>Declined</option>
+												<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Declined"}'>Declined</option>
 											</select>
 										<% } else { %>
 											<a href="#"><%= line._status %></a>
 										<% }; %>
 										</td>
 										<td>
-											<% if (line._status === 'Pending' && permissions.requests_approve) { %>
+											<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== f_user.user_id) { %>
 												<select id="action<%= line.line_id %>" style="display:none;" class="form-control form-control-sm" name="approves[]" onchange='checkNSNs( <%= line.line_id %>)'>
 													<option value="" selected></option>
 													<% if (line.item_size.stocks) { %>
 														<% line.item_size.stocks.forEach(stock => { %>
-															<option value='{"line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>, "stock_id": <%= stock.stock_id %>}'>
+															<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>, "stock_id": <%= stock.stock_id %>}'>
 																Issue from: <%= stock.location._location %>
 															</option>
 														<% }); %>
 													<% }; %>
 													<% if (line.item_size._orderable) { %>
-														<option value='{"line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Approved", "_action": "Order", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>}'>Order</option>
+														<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Approved", "_action": "Order", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>}'>Order</option>
 													<% }; %>
 												</select>
 											<% } else if (line._date) { %>
@@ -247,7 +243,7 @@
 											<% } %>
 										</td>
 										<td>
-											<% if (line._status === 'Pending' && permissions.requests_approve) { %>
+											<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== f_user.user_id) { %>
 												<select id="nsns<%= line.line_id %>" name="nsns[line<%= line.line_id %>]" class="form-control form-control-sm" style="display:none;">
 													<% if (line.item_size.nsns) { %>
 														<% line.item_size.nsns.forEach(nsn => { %>
@@ -264,13 +260,9 @@
 											<% } %>
 										</td>
 										<td>
-											<% if (line._action === 'Issue') { %>
-												<a href="/stores/issues/<%= line.issue_id %>">
-													Issue: <%= line.issue_id %>
-												</a>
-											<% } else if (line._action === 'Order') { %>
-												<a href="/stores/orders/<%= line.order_id %>">
-													Order: <%= line.order_id %>
+											<% if (line._id && line._id !== '') { %>
+												<a href="/stores/<% if (line._action === 'Issue') { %>issues<% } else if (line._action === 'Order') { %>orders<% } %>/<%= line._id %>">
+													<%= line._action %>: <%= line._id %>
 												</a>
 											<% } %>
 										</td>

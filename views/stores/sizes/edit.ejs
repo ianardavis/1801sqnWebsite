@@ -1,4 +1,3 @@
-<!-- USER ITEM PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -40,7 +39,7 @@
 			<div class="container bordered">
 				<h4>Size</h4>
 				<div class="details">
-					<form action="/stores/sizes/<%= size.size_id %>?_method=PUT" method="POST">
+					<form action="/stores/sizes/<%= size.size_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit size?');">
 						<input type="hidden" name="size_id" value="<%= size.size_id %>" readonly>
 						<p><input class="form-control" type="text" name="size[_text]" maxlength="20" value="<%= size._text %>" required></p>
 						<p><button class="btn btn-success">Save</button></p>

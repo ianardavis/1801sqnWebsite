@@ -33,7 +33,7 @@
 				</div>
 				<% if (permissions.demands_delete) { %>
 					<div class="col-12 mb-3">
-						<form action="/stores/demands/<%= demands.demand_id %>?_method=DELETE" method="POST">
+						<form action="/stores/demands/<%= demands.demand_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete demand?');">
 							<button class="btn btn-danger">Delete Demand</button>
 						</form>
 					</div>
@@ -97,7 +97,7 @@
 					</select>
 				</div>
 			</div>
-			<form id="requestForm" action="/stores/demands/<%= demand.demand_id %>/action?_method=PUT" method="POST">
+			<form id="requestForm" action="/stores/demands/<%= demand.demand_id %>/action?_method=PUT" method="POST" onsubmit="return confirm('Confirm action selected lines?');">
 				<button class="btn btn-success w-100 mb-3">Action Selected Lines</button>
 				<table id="demandTable" class="table table-sm table-hover mx-auto w-100">
 					<thead class="thead-dark">

@@ -46,7 +46,7 @@
 			<div class="container bordered">
 				<h4>Location</h4>
 				<div class="details">
-					<form action="/stores/stock/<%= stock.stock_id %>?_method=PUT" method="POST">
+					<form action="/stores/stock/<%= stock.stock_id %>?_method=PUT" method="POST" onsubmit="return confirm('Confirm edit stock?');">
 						<input type="hidden" name="stock[stock_id]" value="<%= stock.stock_id %>" readonly>
 						<p><input type="text" class="form-control" name="stock[location_id]" maxlength="10" value="<%= stock.location._location %>" required></p>
 						<p><button class="btn btn-success">Save</button></p>

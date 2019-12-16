@@ -1,10 +1,10 @@
-const   mw = require('../../config/middleware'),
-        op = require('sequelize').Op,
-        fn = require('../../db/functions'),
-        cn = require("../../db/constructors");
+const   mw = {},
+        fn = {};
 
 //root
-module.exports = (app, m) => {
+module.exports = (app, m, allowed) => {
+    require("../../db/functions")(fn, m);
+    require('../../config/middleware')(mw, fn);
     function options() {
         return [
             {table: 'categories'}, 
@@ -16,22 +16,20 @@ module.exports = (app, m) => {
             {table: 'statuses'}
         ]
     };
-    app.get('/stores/settings', mw.isLoggedIn, (req, res) => {
-        fn.allowed('access_settings', true, req, res, allowed => {
-            fn.getOptions(options(), req, classes => {
-                fn.getAll(
-                    m.sizes
-                )
-                .then(sizes => {
-                    res.render('stores/settings/show',{
-                        classes: classes,
-                        sizes:   sizes
-                    });
-                })
-                .catch(err => {
-                    fn.error(err, '/stores', req, res);
-                })
-            });
+    app.get('/stores/settings', mw.isLoggedIn, allowed('access_settings', true, fn.getOne, m.permissions), (req, res) => {
+        fn.getOptions(options(), req, classes => {
+            fn.getAll(
+                m.sizes
+            )
+            .then(sizes => {
+                res.render('stores/settings/show',{
+                    classes: classes,
+                    sizes:   sizes
+                });
+            })
+            .catch(err => {
+                fn.error(err, '/stores', req, res);
+            })
         });
     });
 };

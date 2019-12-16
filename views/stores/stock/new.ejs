@@ -37,7 +37,7 @@
 		<div class="col-12 col-lg-3 mx-auto mb-3">
 			<div class="container bordered">
                 <h4>Location</h4>
-                <form action="/stores/stock" method="POST">
+                <form action="/stores/stock" method="POST" onsubmit="return confirm('Confirm add stock record?');">
 					<div class="">
 						<input type="hidden" name="stock[itemsize_id]" value="<%= item.itemsize_id %>" readonly>
 						<p><input class="form-control" type="text" name="location[_location]" maxlength="10" placeholder="Location" required></p>

@@ -1,4 +1,3 @@
-<!-- USERS NEW PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -17,7 +16,7 @@
 </section>
 <section class="row">
     <div class="col-md-9 col-xl-6 container bordered p-5">
-        <form action="/stores/users" method="POST">
+        <form action="/stores/users" method="POST" onsubmit="return confirm('Confirm add user?');">
             <input type="hidden" name="failRedirect", value="/stores/users" readonly>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label" for="_bader">Bader #:</label>

@@ -27,7 +27,7 @@
         </div>
     </div>
    <div class="container-fluid bordered p-3">
-        <form action="/stores/item_sizes" method="POST">
+        <form action="/stores/item_sizes" method="POST" onsubmit="return confirm('Add item size(s) ?');">
             <input type="hidden" name="failRedirect", value="/stores/items/<%= item.item_id %>" readonly>
             <input type="hidden" name="details[item_id]", value="<%= item.item_id %>" readonly>
             <div class="form-group row">
@@ -46,7 +46,7 @@
                     <select class="form-control" name="details[supplier_id]" id="supplier_id" type="text">
                         <option value='' data-tag='<blank>'></option> 
                         <% suppliers.forEach((supplier) => { %>
-                            <option value="<%= supplier.supplier_id %>"<% if (supplier._default) { %>selected<% } %>><%= supplier._name %></option>         
+                            <option value="<%= supplier.supplier_id %>"<% if (supplier._default) { %> selected <% } %>><%= supplier._name %></option>         
                         <% }) %>
                     </select>
                 </div>

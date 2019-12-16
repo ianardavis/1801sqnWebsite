@@ -1,4 +1,3 @@
-<!-- USER ITEM PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -32,7 +31,7 @@
                 <% } %>
                 <% if (permissions.item_delete) { %>
                     <div class="dropdown-divider"></div>
-                    <form action="/stores/items/<%= item.item_id %>?_method=DELETE" method="POST">
+                    <form action="/stores/items/<%= item.item_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete item?');">
                         <button class="dropdown-item dropdown_button">Delete Item</button>
                     </form>
                 <% } %>

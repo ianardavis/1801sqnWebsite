@@ -1,4 +1,3 @@
-<!-- ISSUES NEW PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -10,7 +9,7 @@
                 <a class="nav-link stores_nav" href="/stores/users">Users</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users/<%= issue.issued_to %>"><%= issue.issuedTo.rank._rank %> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %></a>
+                <a class="nav-link stores_nav" href="/stores/users/<%= issue.issued_to %>"><%= issue._for.rank._rank %> <%= issue._for._name %>, <%= issue._for._ini %></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/issues">Issues</a>
@@ -38,7 +37,7 @@
                     <a class="dropdown-item" href="/stores/issues/<%= issue.issue_id %>/loancard">Get Loan Card</a>
                     <div class="dropdown-divider"></div>
                     <% if (permissions.issues_delete) { %>
-                        <form action="/stores/issues/<%= issue.issue_id %>?_method=DELETE&user=<%= issue.issued_to %>" method="POST">
+                        <form action="/stores/issues/<%= issue.issue_id %>?_method=DELETE&user=<%= issue.issued_to %>" method="POST" onsubmit="return confirm('Confirm delete issue?');">
                             <button class="dropdown-item dropdown_button">Delete Issue</button>
                         </form>
                     <% } %>
@@ -57,7 +56,7 @@
                     <label class="col-form-label">Issued To:</label>
                 </div>
                 <div class="col-sm-8">
-                    <input class="form-control" type="text" value="<%= issue.issuedTo.rank._rank %> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %>" readonly>
+                    <input class="form-control" type="text" value="<%= issue._for.rank._rank %> <%= issue._for._name %>, <%= issue._for._ini %>" readonly>
                 </div>
             </div>
             <div class="row">
@@ -65,7 +64,7 @@
                     <label class="col-form-label">Issued By:</label>
                 </div>
                 <div class="col-sm-8">
-                    <input class="form-control" type="text" value="<%= issue.issuedBy.rank._rank %> <%= issue.issuedBy._name %>, <%= issue.issuedBy._ini %>" readonly>
+                    <input class="form-control" type="text" value="<%= issue._by.rank._rank %> <%= issue._by._name %>, <%= issue._by._ini %>" readonly>
                 </div>
             </div>
             <div class="row">
@@ -92,9 +91,9 @@
         <% } %>
         <div class="col-12 mb-3 bordered">
             <h4>Lines</h4>
-            <form id="issues" action="/stores/issues?_method=PUT&source=/stores/issues/<%= issue.issue_id %>" method="POST">
-                <input type="hidden" name="issue_id" value="<%= issue.issue_id %>">
-                <button class="w-100 mb-3 btn btn-success">Return Selected Lines</button>
+            <% if (permissions.issues_return) { %><form id="issues" action="/stores/returns?src=/stores/issues/<%= issue.issue_id %>" method="POST" onsubmit="return confirm('Confirm return issued item?');"><% } %>
+                <% if (permissions.issues_return) { %><input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines"><% } %>
+                <% if (permissions.issues_return) { %><input type="hidden" name="from" value="<%= issue.issued_to %>"><% } %>
                 <table id="issueTable" class="table table-sm table-hover mx-auto w-100">
                     <thead class="thead-dark">
                         <th class="w-5" onclick="sortTable(0, 'issueTable')">Line</th>
@@ -115,28 +114,28 @@
                                     <td><a href="/stores/items/<%= line.item_size.item_id %>"><%= line.item_size.item._description %></a></td>
                                     <td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size.size._text %></a></td>
                                     <td><a href="#"><%= line._qty %></a></td>
-                                    <td><a href="/stores/stock/<%= line.issue_stock %>/edit"><%= line.issueStock.location._location %></a></td>
+                                    <td><a href="/stores/stock/<%= line.stock_id %>/edit"><%= line.stock.location._location %></a></td>
                                     <td>
-                                        <% if (line.returnStock) { %>
-                                            <a href="/stores/stock/<%= line.return_stock %>/edit"><%= line.returnStock.location._location %></a>
-                                        <% } else { %>
-                                            <select class="form-control form-control-sm" name="lines[]">
+                                        <% if (line.returns_l) { %>
+                                            <a href="/stores/stock/<%= line.returns_l.stock_id %>/edit"><%= line.returns_l.stock.location._location %></a>
+                                        <% } else if (permissions.issues_return) { %>
+                                            <select class="form-control form-control-sm" name="returnLines[]">
                                                 <option value="" selected></option>
                                                 <% if (line.item_size.stocks) { %>
                                                     <% line.item_size.stocks.forEach(stock => { %>
-                                                        <option value='{"line_id": <%= line.line_id %>, "qty":<%= line._qty %>, "stock_id": <%= stock.stock_id %>}'><%= stock.location._location %></option>
+                                                        <option value='{"line_id":<%= line.line_id %>,"qty":<%= line._qty %>,"stock_id":<%= stock.stock_id %>,"issue_id":<%= issue.issue_id %>}'><%= stock.location._location %></option>
                                                     <% }); %>
                                                 <% }; %>
                                             </select>
                                         <% }; %>
                                     </td>
-                                    <td><a href="#"><% if (line._date_returned) { %><%= line._date_returned.toDateString() %><% }; %></a></td>
+                                    <td><a href="#"><% if (line.returns_l) { %><%= line.returns_l.return._date.toDateString() %><% }; %></a></td>
                                 </tr>
                             <% }); %>
                         <% }; %>
                     </tbody>
                 </table>
-            </form>
+            <% if (permissions.issues_return) { %></form><% } %>
         </div>
     </div>
 </section>

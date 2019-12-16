@@ -7,7 +7,6 @@
         <option value="3" <% if (query.sn === 3) { %> selected <% } %>>Only</option>
     </select>
 </div>
-<!-- <div style="overflow-x:auto;"> -->
 <div>
     <table id="notesTable" class="table table-sm table-hover smallFont07 limit-height-200" style="width:100%">
         <thead class="thead-dark">
@@ -23,10 +22,10 @@
                 <% notes.forEach((note) => { %>
                     <tr>
                         <td data-sort="<%= note._date.getTime() %>"><a href="/stores/notes/<%= note.note_id %>"><%= note._date.toDateString() %></a></td>
-                        <td><input class="form-control form-control-sm" type="checkbox" <% if (note._system) { %>checked <% } %>disabled></td>
+                        <td><input class="form-control form-control-sm" type="checkbox"<% if (note._system) { %> checked <% } %> disabled></td>
                         <td><a href="/stores/notes/<%= note.note_id %>"><%= note._note %></a></td>
                         <% if (permissions.notes_delete === 1) { %>
-                            <td><form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST"><button><i class="fas fa-trash-alt"></i></button></form></td>
+                            <td><form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete note?');"><button><i class="fas fa-trash-alt"></i></button></form></td>
                         <% } %>
                     </tr>
                 <% }) %>

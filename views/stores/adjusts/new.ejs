@@ -42,7 +42,7 @@
 			<div class="container bordered">
                 <h4><%= query.at %></h4>
                 <h5>Current Quantity: <%= stock._qty %></h5>
-                <form action="/stores/adjusts" method="POST">
+                <form action="/stores/adjusts" method="POST" onsubmit="return confirm('Add adjustment?');">
 					<div class="">
 						<input type="hidden" name="adjust[_type]" value="<%= query.at %>" readonly>
 						<input type="hidden" name="adjust[stock_id]" value="<%= stock.stock_id %>" readonly>

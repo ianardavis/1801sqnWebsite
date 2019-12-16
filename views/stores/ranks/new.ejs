@@ -1,4 +1,3 @@
-<!-- USER ITEM PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -33,7 +32,7 @@
 			<div class="container bordered">
 				<h4>Rank</h4>
 				<div>
-					<form action="/stores/ranks" method="POST">
+					<form action="/stores/ranks" method="POST" onsubmit="return confirm('Add rank?');">
 						<p><input class="form-control" type="text" name="rank[_rank]" maxlength="10" placeholder="Rank" required></p>
 						<p><button class="btn btn-success">Save</button></p>
 					</form>

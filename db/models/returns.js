@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('issues_l', {
-    'line_id': {
+  return sequelize.define('returns', {
+    'return_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,39 +10,19 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'issue_id': {
+    'from': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_line': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'nsn_id': {
-      type: DataTypes.INTEGER(11),
+    '_date': {
+      type: DataTypes.DATE,
       allowNull: false,
       comment: "null"
     },
-    'itemsize_id': {
+    'user_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "null"
-    },
-    '_qty': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
-    'stock_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
-    'return_line_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
       comment: "null"
     },
     'createdAt': {
@@ -56,6 +36,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'issues_l'
+    tableName: 'returns'
   });
 };

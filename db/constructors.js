@@ -18,7 +18,18 @@ cn.IssueLine = function (issue_id, item, line) {
     this.nsn_id      = item.nsn_id;
     this.itemsize_id = item.itemsize_id;
     this._qty        = item.qty;
-    this.issue_stock = item.stock_id;
+    this.stock_id = item.stock_id;
+};
+
+cn.Return = function (from, user_id) {
+    this.from    = from;
+    this.user_id = user_id;
+    this._date   = Date.now();
+};
+cn.ReturnLine = function (return_id, line) {
+    this.return_id = return_id;
+    this.stock_id  = line.stock_id;
+    this._qty      = line.qty;
 };
 
 cn.Receipt = function (supplier_id, user_id) {
@@ -54,9 +65,10 @@ cn.RequestLine = function (request_id, item) {
     this.itemsize_id = item.itemsize_id;
     this._qty        = item.qty;
 };
-cn.RequestStatus = function (line, user_id) {
+cn.RequestStatus = function (line, user_id, _id) {
     this._status = line._status;
     this._action = line._action || null;
+    this._id     = _id          || null;
     this._date   = Date.now();
     this.user_id = user_id;
 };

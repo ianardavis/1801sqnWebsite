@@ -1,4 +1,3 @@
-<!-- ITEMS NEW PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -17,7 +16,7 @@
 </section>
 <section class="container-fluid p-5">
    <div class="details container bordered p-3">
-        <form action="/stores/items" method="POST">
+        <form action="/stores/items" method="POST" onsubmit="return confirm('Add item?');">
             <input type="hidden" name="failRedirect", value="/stores/items" readonly>
             <div class="form-group row">
                 <div class="col-5" >

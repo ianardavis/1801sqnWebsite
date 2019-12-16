@@ -76,7 +76,6 @@ function setEdit(field) {
     };
 };
 function setID(_id, action) {
-    console.log(_id, action);
     var field = document.querySelector('#' + _id).value,
         child = document.querySelector('#' + action + '_' + _id),
         obj = {};

@@ -1,7 +1,8 @@
 module.exports = (passport, m) => {
-    var bCrypt        = require('bcrypt'),
-        LocalStrategy = require('passport-local').Strategy,
-        fn            = require('../db/functions');
+    var bCrypt = require('bcrypt'),
+        local  = require('passport-local').Strategy,
+        fn     = {};
+        require('../db/functions')(fn, m);
 
     passport.serializeUser((user, done) => {
         done(null, user._login_id);
@@ -12,7 +13,7 @@ module.exports = (passport, m) => {
             m.users,
             {_login_id: _login_id},
             [],
-            [`_login_id`, 'user_id', '_reset']
+            ['_login_id', 'user_id', '_reset']
         )
         .then(user => {
             done(null, user.get());
@@ -20,12 +21,12 @@ module.exports = (passport, m) => {
         })
         .catch(err => {
             console.log(err);
-            done(m.user.errors, null);
+            done(err, null);
             return null;
         });
     });
 
-    passport.use('local-signin', new LocalStrategy(
+    passport.use('local-signin', new local(
         {
             usernameField: '_login_id',
             passwordField: '_password',

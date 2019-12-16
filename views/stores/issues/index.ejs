@@ -1,4 +1,3 @@
-<!-- ISSUES INDEX PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -33,14 +32,14 @@
 <section>
 	<div class='container mt-3 pt-3'>
 		<div class="row mx-1">
-			<label class="col-5 col-form-label" for="ci">Returned Lines:</label>
+			<label class="col-5 col-form-label" for="ci">Closed Issues:</label>
 			<select class='col-7 form-control form-control-sm' id="ci" type="text" onchange=filterSelects()>
 				<option value="1" <% if (query.ci === 1) { %>selected<% } %> >Include</option>
 				<option value="2" <% if (query.ci === 2) { %>selected<% } %> >Exclude</option>
 				<option value="3" <% if (query.ci === 3) { %>selected<% } %> >Only</option>
 			</select>
 		</div>
-		<form id='returnedLines' action="/stores/issues?_method=PUT" method='POST'>
+		<form id='returnedLines' action="/stores/issues?_method=PUT" method='POST' onsubmit="return confirm('Return issued items?');">
 			<table id="tableIssues" class='table table-sm table-hover mx-auto'>
 				<thead class="thead-dark">
 					<th onclick="sortTable(0, 'tableIssues')" class='w-40'>To</th>
@@ -50,12 +49,12 @@
 				</thead>
 					<tbody>
 					<% if (issues) { %>
-						<% issues.forEach((issue) => { %>
+						<% issues.forEach(issue => { %>
 							<tr>
-								<td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.issuedTo.rank._rank %> <%= issue.issuedTo._name %>, <%= issue.issuedTo._ini %></a></td>
+								<td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue._for.rank._rank %> <%= issue._for._name %>, <%= issue._for._ini %></a></td>
 								<td data-sort="<%= issue._date.getTime() %>"><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue._date.toDateString() %></a></td>
 								<td><a href='/stores/issues/<%= issue.issue_id %>'> <%= issue.lines.length %></a></td>
-								<td><input class="form-control form-control-sm" type="checkbox" disabled<% if (issue._complete) { %> checked<% } %>></td>
+								<td><input class="form-control form-control-sm" type="checkbox" disabled <% if (issue._complete) { %> checked <% } %>></td>
 							</tr>
 						<% }) %>
 					<% } %>

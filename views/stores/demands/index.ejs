@@ -19,7 +19,7 @@
 				<select id="su" class='form-control col-9' type="text" onchange=filterSelects()>
 					<option value="0" <% if (query.su === 0) { %>selected<% } %>>All</option>
 					<% suppliers.forEach(supplier => { %>
-						<option value="<%= supplier.supplier_id %>" <% if (query.su === supplier.supplier_id) { %>selected<% } %>>
+						<option value="<%= supplier.supplier_id %>" <% if (query.su === supplier.supplier_id) { %> selected <% } %>>
 							<%= supplier._name %>
 						</option>
 					<% }); %>
@@ -28,9 +28,9 @@
 			<div class="row">
 				<label class="col-3 col-form-label text-right"  for="cd">Completed Demands:</label>
 				<select id="cd" class='form-control col-9' type="text" onchange=filterSelects()>
-					<option value="1" <% if (query.cd === 1) { %>selected<% } %>>Include</option>
-					<option value="2" <% if (query.cd === 2) { %>selected<% } %>>Exclude</option>
-					<option value="3" <% if (query.cd === 3) { %>selected<% } %>>Only</option>
+					<option value="1" <% if (query.cd === 1) { %> selected <% } %>>Include</option>
+					<option value="2" <% if (query.cd === 2) { %> selected <% } %>>Exclude</option>
+					<option value="3" <% if (query.cd === 3) { %> selected <% } %>>Only</option>
 				</select>
 			</div>
 		</div>
@@ -51,7 +51,7 @@
 								<td data-sort="<%= demand._date.getTime() %>"><a href="/stores/demands/<%= demand.demand_id %>"> <%= demand._date.toDateString() %></a></td>
 								<td><a href="/stores/demands/<%= demand.demand_id %>"> <%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %></a></td>
 								<td><a href="/stores/demands/<%= demand.demand_id %>"> <%= demand.lines.length %></a></td>
-								<td><input class="form-control form-control-sm" type="checkbox" disabled<% if (demand._complete) { %> checked <% } %>></td>
+								<td><input class="form-control form-control-sm" type="checkbox" disabled <% if (demand._complete) { %> checked <% } %>></td>
 							</tr>
 						<% }) %>
 					<% } %>

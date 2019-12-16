@@ -16,7 +16,7 @@
 </section>
 <section class="row">
     <div class="col-md-9 col-xl-6 container bordered p-3">
-        <form action="/stores/files/<%= file.file_id %>?_method=PUT" method="POST">
+        <form action="/stores/files/<%= file.file_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit file properties ?');">
             <h4>File:</h4>
             <input class="form-control" type="text" value="<%= file._path %>" readonly>
             <h4>Cells</h4>

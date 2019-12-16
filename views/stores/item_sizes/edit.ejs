@@ -1,4 +1,3 @@
-<!-- ITEMS EDIT PAGE -->
 <% include ../../partials/head/full %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
@@ -23,7 +22,7 @@
 </section>
 <section class="container-fluid p-5">
    <div class="details container bordered p-3">
-        <form action="/stores/item_sizes/<%= item_size.itemsize_id %>?_method=PUT" method="POST">
+        <form action="/stores/item_sizes/<%= item_size.itemsize_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit item size?');">
             <div class="form-group row">
                 <div class="col-5" >
                     <label class="col-form-label">Orderable:</label>

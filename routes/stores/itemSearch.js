@@ -1,8 +1,11 @@
-const   mw = require('../../config/middleware'),
-        op = require('sequelize').Op,
-        fn = require("../../db/functions");
+const   fn = {},
+        mw = {},
+        op = require('sequelize').Op;
 
 module.exports = (app, m) => {
+    require("../../db/functions")(fn, m);
+    require('../../config/middleware')(mw, fn);
+
     //Display Items
     app.get('/stores/itemSearch', mw.isLoggedIn, (req, res) => {
         var callType    = req.query.c || 'issue',

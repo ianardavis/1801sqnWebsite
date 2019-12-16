@@ -1,9 +1,9 @@
-const   mw = require('../../config/middleware'),
-        op = require('sequelize').Op,
-        fn = require('../../db/functions'),
-        cn = require("../../db/constructors");
+const   mw = {},
+        fn = {};
 
-module.exports = (app, m) => {
+module.exports = (app, m, allowed) => {
+    require("../../db/functions")(fn, m);
+    require('../../config/middleware')(mw, fn);
     //new option
     app.post('/stores/options', mw.isLoggedIn, (req, res) => {
         fn.allowed(req.query.c + '_add', true, req, res, allowed => {
