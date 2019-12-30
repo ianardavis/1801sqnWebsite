@@ -1,16 +1,23 @@
 var cn  = {};
 
+function addYears (addYears = 0) {
+    var newDate = new Date();
+    var dd = String(newDate.getDate()).padStart(2, '0');
+    var MM = String(newDate.getMonth() + 1).padStart(2, '0');
+    var yyyy = newDate.getFullYear() + addYears;
+    newDate = yyyy + '-' + MM + '-' + dd;
+    return newDate;
+};
 cn.Returned = function (returnedTo, stock) {
     this.returned_to    = returnedTo;
     this.return_stock   = stock;
     this._date_returned = Date.now();
 };
-
 cn.Issue = function (issue, user_id) {
     this.issued_to = issue.issued_to;
     this.user_id   = user_id;
-    this._date     = issue._date;
-    this._date_due = issue._date_due;
+    this._date     = issue._date || Date.now();
+    this._date_due = issue._date_due || addYears(7);
 };
 cn.IssueLine = function (issue_id, item, line) {
     this.issue_id    = issue_id;
@@ -18,7 +25,7 @@ cn.IssueLine = function (issue_id, item, line) {
     this.nsn_id      = item.nsn_id;
     this.itemsize_id = item.itemsize_id;
     this._qty        = item.qty;
-    this.stock_id = item.stock_id;
+    this.stock_id    = item.stock_id;
 };
 
 cn.Return = function (from, user_id) {
@@ -65,10 +72,10 @@ cn.RequestLine = function (request_id, item) {
     this.itemsize_id = item.itemsize_id;
     this._qty        = item.qty;
 };
-cn.RequestStatus = function (line, user_id, _id) {
+cn.RequestStatus = function (line, user_id) {
     this._status = line._status;
     this._action = line._action || null;
-    this._id     = _id          || null;
+    this._id     = line._id || null;
     this._date   = Date.now();
     this.user_id = user_id;
 };
@@ -82,11 +89,10 @@ cn.Note = function (_table, _id, _note, _system, user_id) {
     this.user_id = user_id;
 };
 
-cn.Demand = function (supplier_id, file, user_id) {
+cn.Demand = function (supplier_id, user_id) {
     this.supplier_id = supplier_id;
     this._date       = Date.now();
     this._complete   = 0;
-    this._filename   = file;
     this.user_id     = user_id;
 };
 cn.DemandLine = function (demand_id, itemsize_id, qty) {

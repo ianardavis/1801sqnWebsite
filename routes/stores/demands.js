@@ -1,21 +1,14 @@
-const mw = {},
-      fn = {},
-      op = require('sequelize').Op;
+const op = require('sequelize').Op;
 
-module.exports = (app, m, allowed) => {
-    require('../../db/functions')(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //index
-    app.get('/stores/demands', mw.isLoggedIn, allowed('access_demands', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/demands', isLoggedIn, allowed('access_demands'), (req, res) => {
         var query = {};
         query.cd = Number(req.query.cd) || 2;
         query.su = Number(req.query.su) || 0;
         var where = {};
-        if (query.cd === 2) {
-            where._complete = 0;
-        } else if (query.cd === 3) {
-            where._complete = 1;
-        };
+        if (query.cd === 2) where._complete = 0
+        else if (query.cd === 3)  where._complete = 1;
         if (query.su !== 0) where.supplier_id = query.su;
         fn.getAllWhere(
             m.demands,
@@ -41,21 +34,15 @@ module.exports = (app, m, allowed) => {
                     query:     query
                 });
             })
-            .catch(err => {
-                fn.error(err, '/stores', req, res);
-            });
+            .catch(err => fn.error(err, '/stores', req, res));
         })
-        .catch(err => {
-            fn.error(err, '/stores', req, res);
-        });
+        .catch(err => fn.error(err, '/stores', req, res));
     });
 
     //New Logic
-    app.post('/stores/demands', mw.isLoggedIn, allowed('demands_add', true, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/demands', isLoggedIn, allowed('demands_add'), (req, res) => {
         var supplier_id = req.body.supplier_id;
-        fn.getUndemandedOrders(
-            supplier_id
-        )
+        fn.getUndemandedOrders(supplier_id)
         .then(orders => {
             if (orders) {
                 fn.sortOrdersForDemand(
@@ -68,86 +55,77 @@ module.exports = (app, m, allowed) => {
                             sortResults.orders, 
                             sortResults.users
                         )
-                        .then(raiseResult => {
-                            fn.addDemandToOrders(
-                                supplier_id, 
-                                raiseResult, 
-                                req.user.user_id
+                        .then(results => {
+                            fn.createDemand(
+                                supplier_id,
+                                results.items.success,
+                                req.user.user_id,
+                                results.file
                             )
-                            .then(updateResult => {
-                                req.flash('success', 'Demand raised, orders updated');
-                                fn.downloadFile(raiseResult.file, res);
+                            .then(demand_id => {
+                                req.flash('success', 'Demand raised, ID: ' + demand_id + ', orders updated');
+                                fn.downloadFile(results.file, res);
                             })
-                            .catch(err => {
-                                fn.error(err, '/stores/orders', req, res);
-                            });
+                            .catch(err => fn.error(err, '/stores/orders', req, res));
                         })
-                        .catch(err => {
-                            fn.error(err, '/stores/orders', req, res);
-                        });
+                        .catch(err => fn.error(err, '/stores/orders', req, res));
                     } else {
                         req.flash('info', 'No orders that can be demanded');
                         res.redirect('/stores/orders');
                     };
                 })
-                .catch(err => {
-                    fn.error(err, '/stores/orders', req, res);
-                });
+                .catch(err => fn.error(err, '/stores/orders', req, res));
             } else {
                 req.flash('info', 'No undemanded orders');
                 res.redirect('/stores/orders');
             };
         })
-        .catch(err => {
-            fn.error(err, '/stores/orders', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/orders', req, res));
     });
     
     //download
-    app.get('/stores/demands/:id/download', mw.isLoggedIn, allowed('access_demands', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/demands/:id/download', isLoggedIn, allowed('access_demands'), (req, res) => {
         fn.getOne(
             m.demands,
             {demand_id: req.params.id}
         )
         .then(demand => {
-            if (demand && demand._filename && demand._filename !== '') {
-                fn.downloadFile(demand._filename, res);
-            } else {
+            if (demand && demand._filename && demand._filename !== '') fn.downloadFile(demand._filename, res);
+            else {
                 req.flash('danger', 'No file found');
                 res.redirect('/stores/demands/' + req.params.id);
             };
         })
-        .catch(err => {
-            fn.error(err, '/stores/demands', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/demands', req, res));
     });
 
-    //receive
-    app.put('/stores/demands/:id/action', mw.isLoggedIn, allowed('receipts_add', true, fn.getOne, m.permissions), (req, res) => {
-        var actions = [];
-        if (req.body.cancels.filter(Number).length > 0) {
-            actions.push(fn.cancelDemandLines(req.body.cancels.filter(Number)));
-        };
-        if (req.body.receives.filter(String).length > 0) {
-            actions.push(fn.receiveDemandLines(req.body.receives.filter(String), req.user.user_id));
-        };
-        Promise.all(
-            actions
-        )
-        .then(results => {
-            results.forEach(result =>{
-                if (result.demandCLosed && result.demandClosed === true) req.flash('info', 'Demand closed')
-            });
-            req.flash('success', 'Lines actioned')
+    //action
+    app.put('/stores/demands/:id', isLoggedIn, allowed('receipts_add'), (req, res) => {
+        var actions = [],
+            cancels = req.body.actions.filter(e => JSON.parse(e).action === 'cancel'),
+            receipts = req.body.actions.filter(e => JSON.parse(e).action === 'receive');
+        if (cancels.length > 0) actions.push(fn.cancelDemandLines(cancels));
+        if (receipts.length > 0) actions.push(fn.receiveDemandLines(receipts, req.user.user_id));
+        if (actions.length > 0) {
+            Promise.all(
+                actions
+            )
+            .then(results => {
+                results.forEach(result =>{
+                    if (result.demandCLosed && result.demandClosed === true) req.flash('info', 'Demand closed')
+                });
+                req.flash('success', 'Lines actioned')
+                res.redirect('/stores/demands/' + req.params.id);
+            })
+            .catch(err => fn.error(err, '/stores/demands', req, res));
+        } else {
+            req.flash('info', 'No lines to action')
             res.redirect('/stores/demands/' + req.params.id);
-        })
-        .catch(err => {
-            fn.error(err, '/stores/demands', req, res);
-        });
+        };
     });
     
     //Show
-    app.get('/stores/demands/:id', mw.isLoggedIn, allowed('access_demands', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/demands/:id', isLoggedIn, allowed('access_demands'), (req, res) => {
         var query = {};
         query.sn = Number(req.query.sn) || 2;
         var include = [
@@ -164,10 +142,10 @@ module.exports = (app, m, allowed) => {
         fn.getOne(
             m.demands,
             {demand_id: req.params.id},
-            include
+            {include: include, attributes: null, nullOK: false}
         )
         .then(demand => {
-            fn.getNotes('demands', req.params.id, req, res)
+            fn.getNotes('demands', req.params.id, req)
             .then(notes => {
                 res.render('stores/demands/show', {
                     demand: demand,
@@ -176,8 +154,21 @@ module.exports = (app, m, allowed) => {
                 });
             })
         })
-        .catch(err => {
-            fn.error(err, '/stores/demands', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/demands', req, res));
+    });
+
+    
+    // Delete
+    app.delete('/stores/demands/:id', isLoggedIn, allowed('demands_delete'), (req, res) => {
+        fn.delete(
+            'demands',
+            {demand_id: req.params.id},
+            {hasLines: true}
+        )
+        .then(result => {
+            req.flash(result.success, result.message);
+            res.redirect('/stores/demands');
+        })
+        .catch(err => fn.error(err, '/stores/demands', req, res));
     });
 };

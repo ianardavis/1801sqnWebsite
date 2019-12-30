@@ -1,31 +1,19 @@
-const mw = {},
-      fn = {};
-
-module.exports = (app, m, allowed) => {
-    require('../../db/functions')(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // Edit
-    app.get('/stores/files/:id/edit', mw.isLoggedIn, allowed('files_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/files/:id/edit', isLoggedIn, allowed('files_edit'), (req, res) => {
         fn.getOne(
             m.files,
             {file_id: req.params.id}
         )
         .then(file => {
-            if (file) {
-                res.render('stores/files/edit', {
-                    file: file
-                });
-            } else {
-                res.render('stores/suppliers');
-            };
+            if (file) res.render('stores/files/edit', {file: file});
+            else res.redirect('/stores/suppliers');
         })
-        .catch(err => {
-            fn.error(err, '/stores/suppliers', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/suppliers', req, res));
     });
     
     // Put
-    app.put('/stores/files/:id', mw.isLoggedIn, allowed('files_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/files/:id', isLoggedIn, allowed('files_edit'), (req, res) => {
         fn.update(
             m.files,
             req.body.file,
@@ -35,21 +23,17 @@ module.exports = (app, m, allowed) => {
             if (result) req.flash('success', 'File updated')
             res.redirect('/stores/suppliers')
         })
-        .catch(err => {
-            fn.error(err, '/stores/suppliers', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/suppliers', req, res));
     });
     
     // New
-    app.post('/stores/files', mw.isLoggedIn, allowed('files_add', true, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/files', isLoggedIn, allowed('files_add'), (req, res) => {
         if (!req.files || Object.keys(req.files).length !== 1) {
             req.flash('info', 'No file or multiple files selected')
             res.redirect('/stores/suppliers/' + req.query.s)
         } else {
             let uploaded = req.files.demandfile;
-            uploaded.mv(
-                process.env.ROOT + '/public/res/files/' + req.files.demandfile.name
-            )
+            uploaded.mv(process.env.ROOT + '/public/res/files/' + req.files.demandfile.name)
             .then(result => {
                 fn.create(
                     m.files,
@@ -65,21 +49,13 @@ module.exports = (app, m, allowed) => {
                         if (result) {
                             req.flash('success', 'Demand file uploaded');
                             res.redirect('/stores/files/' + file.file_id + '/edit');
-                        } else {
-                            fn.error(new Error('Error uploading demand file'), '/stores/suppliers/' + req.query.s, req, res);
-                        };
+                        } else fn.error(new Error('Error uploading demand file'), '/stores/suppliers/' + req.query.s, req, res);
                     })
-                    .catch(err => {
-                        fn.error(err, '/stores/suppliers/' + req.query.s, req, res);
-                    });
+                    .catch(err => fn.error(err, '/stores/suppliers/' + req.query.s, req, res));
                 })
-                .catch(err => {
-                    fn.error(err, '/stores/suppliers/' + req.query.s, req, res);
-                });
+                .catch(err => fn.error(err, '/stores/suppliers/' + req.query.s, req, res));
             })
-            .catch(err => {
-                fn.error(err, '/stores/suppliers/' + req.query.s, req, res);
-            });
+            .catch(err => fn.error(err, '/stores/suppliers/' + req.query.s, req, res));
         };
     });
 };

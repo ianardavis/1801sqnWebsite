@@ -12,8 +12,7 @@ module.exports = (passport, m) => {
         fn.getOne(
             m.users,
             {_login_id: _login_id},
-            [],
-            ['_login_id', 'user_id', '_reset']
+            {include: [], attributes: ['_login_id', 'user_id', '_reset'], nullOK: false}
         )
         .then(user => {
             done(null, user.get());
@@ -38,19 +37,19 @@ module.exports = (passport, m) => {
             fn.getOne(
                 m.users,
                 {_login_id: _login_id},
-                [m.permissions],
-                ['_login_id', 'user_id', '_reset', '_password']
+                {include: [m.permissions], attributes: ['_login_id', 'user_id', '_reset', '_password'], nullOK: false}
             )
             .then(user => {
                 if (!user) {
-                    req.flash('danger', 'Invalid username or password!')
+                    req.flash('danger', 'Invalid username or password!');
                     return done(
                         null, 
                         false, 
                         {message: 'Invalid username or password!'}
                     );
                 } else if (!isValidPassword(user._password, _password)) {
-                    req.flash('danger', 'Invalid username or password!')
+                    req.flash('danger', 'Invalid username or password!');
+                    console.log(user, _login_id);
                     return done(
                         null, 
                         false, 

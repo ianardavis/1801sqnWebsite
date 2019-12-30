@@ -7,6 +7,7 @@ var express     = require('express'),
     m_Override  = require('method-override'),
     memoryStore = require('memorystore')(session),
     fileUpload  = require('express-fileupload');
+
 process.env.ROOT = __dirname;
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
 console.log('environment: ' + process.env.NODE_ENV);
@@ -41,9 +42,6 @@ require('./routes/site')(app, m);
 require('./config/passport.js')(passport, m);
 
 app.listen(1801, err => {
-    if (!err) {
-        console.log('Server listening on port 1801');
-    } else {
-        console.log(err);
-    };
+    if (err) console.log(err);
+    else console.log('Server listening on port 1801');
 });

@@ -28,7 +28,7 @@
                     <label class="col-form-label">Orderable:</label>
                 </div> 
                 <div class="col-7">
-                    <input class="form-control" id="_orderable" type="checkbox" name="item_size[_orderable]" value="1">
+                    <input class="form-control" id="_orderable" type="checkbox" name="item_size[_orderable]" value="1" <% if (item_size._orderable) { %> checked <% } %> onchange="orderableCheck()">
                 </div>
             </div>
             <div class="form-group row">
@@ -36,8 +36,8 @@
                     <label class="col-form-label">Supplier:</label>
                 </div> 
                 <div class="col-7">
-                    <select class="form-control" name="item_size[supplier_id]" id="_supplier" type="text">
-                        <% suppliers.forEach((supplier) => { %>
+                    <select class="form-control" name="item_size[supplier_id]" id="supplier_id" type="text" onchange="supplierCheck()">
+                        <% suppliers.forEach(supplier => { %>
                             <% if (supplier.supplier_id === item_size.supplier_id) { %>
                                 <option value="<%= supplier.supplier_id %>" selected><%= supplier._name %></option>         
                             <% } else { %>
@@ -52,7 +52,7 @@
                     <label class="col-form-label">Demand Page:</label>
                 </div> 
                 <div class="col-7">
-                    <input class="form-control" type="text" name="item_size[_demand_page]" maxlength="20" value="<%= item_size._demand_page %>">
+                    <input class="form-control" id="_demand_page" type="text" name="item_size[_demand_page]" maxlength="20" value="<%= item_size._demand_page %>">
                 </div>
             </div>
             <div class="form-group row">
@@ -60,7 +60,7 @@
                     <label class="col-form-label">Cell:</label>
                 </div> 
                 <div class="col-7">
-                    <input class="form-control" type="text" name="item_size[_demand_cell]" value="<%= item_size._demand_cell %>" maxlength="3">
+                    <input class="form-control" id="_demand_cell" type="text" name="item_size[_demand_cell]" value="<%= item_size._demand_cell %>" maxlength="3">
                 </div>
             </div>
             <div class="form-group row">
@@ -80,6 +80,27 @@
 </section>
 <% include ../../partials/foot/full %>
 <script>
-    document.querySelector('#_orderable').checked = (Boolean(<%= item_size._orderable %>));
+    function orderableCheck () {
+        var _orderable = document.querySelector('#_orderable');
+        if (!_orderable.checked) {
+            clearOptions()
+        };
+    };
+    function supplierCheck () {
+        var supplier = document.querySelector('#supplier_id');
+        if (Number(supplier.value) === 3) {
+            clearOptions()
+        };
+    };
+    function clearOptions() {
+        var _orderable  = document.querySelector('#_orderable'),
+            supplier    = document.querySelector('#supplier_id'),
+            demand_page = document.querySelector('#_demand_page'),
+            demand_cell = document.querySelector('#_demand_cell');
+        _orderable.checked = false;
+        supplier.value = 3;
+        demand_page.value = "";
+        demand_cell.value = "";
+    }
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -74,6 +74,36 @@ table {
 	background-color: #010a1f;
 	color: #B9CBE2;
 }
+
+ul, #treeUL {
+	list-style-type: none;
+}
+#treeUL {
+	margin: 0;
+	padding: 0;
+}
+.nested {
+	display: none;
+	transition: 0.5s;
+}
+.active {
+	display: block;
+	transition: 0.5s;
+}
+.caret {
+	cursor: pointer;
+	user-select: none; /* Prevent text selection */
+	vertical-align: middle;
+}
+.caret::before {
+	content: "\25B6";
+	display: inline-block;
+	margin-right: 6px;
+}
+.caret-down::before {
+	transform: rotate(90deg);
+}
+
 /*menu colour #1c3a5c*/
 /*back colour #31639e*/
 /*text colour #B9CBE2*/

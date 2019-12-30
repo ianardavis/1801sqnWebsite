@@ -17,7 +17,7 @@
         </ul>
     </nav>
 </section>
-<section class="container-fluid p-5 w-50">
+<section class="container p-5">
     <div class="form-group row bordered">
         <div class="col-5" >
             <label class="col-form-label">Add Size to:</label>
@@ -27,8 +27,7 @@
         </div>
     </div>
    <div class="container-fluid bordered p-3">
-        <form action="/stores/item_sizes" method="POST" onsubmit="return confirm('Add item size(s) ?');">
-            <input type="hidden" name="failRedirect", value="/stores/items/<%= item.item_id %>" readonly>
+        <form action="/stores/item_sizes" method="POST" onsubmit="return confirm('Add selected size(s) ?');">
             <input type="hidden" name="details[item_id]", value="<%= item.item_id %>" readonly>
             <div class="form-group row">
                 <div class="col-5">
@@ -45,7 +44,7 @@
                 <div class="col-7">
                     <select class="form-control" name="details[supplier_id]" id="supplier_id" type="text">
                         <option value='' data-tag='<blank>'></option> 
-                        <% suppliers.forEach((supplier) => { %>
+                        <% suppliers.forEach(supplier => { %>
                             <option value="<%= supplier.supplier_id %>"<% if (supplier._default) { %> selected <% } %>><%= supplier._name %></option>         
                         <% }) %>
                     </select>
@@ -87,7 +86,7 @@
                         <th class="w-20">Select</th>
                     </thead>
                     <tbody>
-                        <% sizes.forEach((size) => { %>
+                        <% sizes.forEach(size => { %>
                             <tr style="display: none;" >
                                 <td>
                                     <label class="col-form-label" for="<%= size.size_id %>"><%= size._text %></label>

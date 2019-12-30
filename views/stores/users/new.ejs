@@ -28,7 +28,7 @@
                 <label class="col-sm-2 col-form-label">Rank:</label>
                 <div class="col-sm-10">
                     <select class="form-control" name="user[rank_id]" type="text">
-                        <% classes.ranks.forEach((rank) => { %>
+                        <% classes.ranks.forEach(rank => { %>
                             <option value="<%= rank.rank_id %>"><%= rank._rank %></option>         
                         <% }) %>
                     </select>

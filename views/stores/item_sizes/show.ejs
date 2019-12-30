@@ -24,7 +24,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.item_edit) { %> 
+                <% if (permissions.item_sizes_edit) { %> 
                     <a class="dropdown-item" href="/stores/item_sizes/<%= item_size.itemsize_id %>/edit">Edit</a>
                     <div class="dropdown-divider"></div>
 				<% } %>
@@ -122,7 +122,7 @@
                                 <% item_size.nsns.forEach(nsn => { %>
                                     <tr>
                                         <td><a href="/stores/nsns/<%= nsn.nsn_id %>/edit"><%= nsn._nsn %></a></td>
-                                        <td><% if (nsn._default === 1) { %> <i class="fas fa-check"></i> <% } %></td>
+                                        <td><% if (item_size.nsn_id === nsn.nsn_id) { %> <i class="fas fa-check"></i> <% } %></td>
                                         <td>
                                             <% if (permissions.nsns_delete === 1) { %>
                                                 <form action="/stores/nsns/<%= nsn.nsn_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete NSN?');"><button><i class="fas fa-trash-alt"></i></button></form>

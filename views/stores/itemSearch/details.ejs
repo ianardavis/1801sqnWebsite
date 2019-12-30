@@ -20,7 +20,7 @@
                     <input class="form-control" type="text" id="nsnSearch" onkeyup="searchTable('nsns', 'nsnSearch')" placeholder="Search for NSNs..">
                     <select class='form-control w-100' id="nsns" type="text" size="5">
                         <option value=""></option>
-                        <% item_size.nsns.forEach((nsn) => { %>
+                        <% item_size.nsns.forEach(nsn => { %>
                             <option value="<%= nsn.nsn_id %>"><%= nsn._nsn %></option>
                         <% }); %>
                     </select>
@@ -47,7 +47,7 @@
                         <input class="form-control mt-1 mr-3" type="number" id="qty" value="1">
                     </div>
                     <div class="col-md-6">
-                        <button class="btn btn-success w-100" onclick=addSize()>Add Size</button>
+                        <button class="btn btn-success w-100" onclick="javascript:addSize()">Add Size</button>
                     </div>
                 </div>
             </div>
@@ -75,26 +75,37 @@ function addSize() {
     } else {
         if (window.opener.addSize) {
             var selected = {}
-            <% if (callType === 'issue') { %>
-                var nsn_id      = Number(nsns.value);
-                selected.nsn_id = nsn_id;
-            <% }; %>
             <% if (callType === 'issue' || callType === 'receipt') { %>
             var itemStock     = JSON.parse(stocks.value);
             selected.stock_id = itemStock.id;
-            <% }; %>
             <% if (callType === 'issue') { %>
+            selected.nsn_id = Number(nsns.value);
             selected.stock_qty = itemStock.qty - qty;
             <% } else if (callType === 'receipt') { %>
             selected.stock_qty = itemStock.qty + qty;
             <% }; %>
+            <% }; %>
             selected.itemsize_id  = <%= item_size.itemsize_id %>;
-            selected._qty         = qty;
+            selected.qty          = qty;
             selected._description = '<%= item_size.item._description %>';
             selected._size_text   = '<%= item_size.size._text %>';
-            window.opener.addSize(selected);
+
+            // window.opener.addSize(selected);
+            <% if (callType === 'issue') { %>
+            var _nsns = [],
+                _nsn_list = <%- JSON.stringify(item_size.nsns) %>;
+            _nsn_list.forEach(nsn => {
+                _nsns.push({nsn_id: nsn.nsn_id, _nsn: nsn._nsn});
+            });
+            var _stocks = [],
+                _stock_list = <%- JSON.stringify(item_size.stocks) %>;
+                _stock_list.forEach(stock => {
+                _stocks.push({stock_id: stock.stock_id, _location: stock.location._location});
+            });
+            <% } %>
+            window.opener.addSize(selected<% if (callType === 'issue') { %>, _nsns, _stocks<% } %>);
         } else {
-            alert('unable to find issue window!\nClose this window and try again');
+            alert('unable to find target window!\nClose this window and try again');
         };
     };
 };

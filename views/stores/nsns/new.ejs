@@ -41,7 +41,7 @@
 					<form action="/stores/nsns" method="POST" onsubmit="return confirm('Add NSN?');">
 						<input type="hidden" name="nsn[itemsize_id]" value="<%= itemsize.itemsize_id %>" readonly>
 						<p><input class="form-control" type="text" inputmode="numeric" name="nsn[_nsn]" maxlength="20" placeholder="NSN" required></p>
-						<p><input class="form-control" type="checkbox" name="nsn[_default]" value="1"></p>
+						<p><input class="form-control" type="checkbox" name="default" value="1"></p>
 						<p><button class="btn btn-success">Save</button></p>
 					</form>
                 </div>

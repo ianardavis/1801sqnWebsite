@@ -42,8 +42,9 @@
 			<h4>NSN</h4>
 			<form action="/stores/nsns/<%= nsn.nsn_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit NSN?');">
 				<input type="hidden" name="nsn[nsn_id]" value="<%= nsn.nsn_id %>" readonly>
+				<input type="hidden" name="currentDefault" value="<%= nsn.item_size.nsn_id %>" readonly>
 				<p><input class="form-control" type="text" name="nsn[_nsn]" maxlength="20" value="<%= nsn._nsn %>" required></p>
-				<p>Default:<input class="form-control" type="checkbox" name="nsn[_default]" value="1" <% if (nsn._default) { %> checked<% } %>></p>
+				<p>Default:<input class="form-control" type="checkbox" name="default" value="1" <% if (Number(nsn.item_size.nsn_id) === Number(nsn.nsn_id)) { %> checked <% } %>></p>
 				<p><button class="btn btn-success">Save</button></p>
 			</form>
 		</div>

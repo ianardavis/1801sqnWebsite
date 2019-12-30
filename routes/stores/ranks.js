@@ -1,84 +1,69 @@
-const   mw = {},
-        fn = {};
-
-module.exports = (app, m, allowed) => {
-    require("../../db/functions")(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // New Logic
-    app.post('/stores/ranks', mw.isLoggedIn, allowed('ranks_add', true, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/ranks', isLoggedIn, allowed('ranks_add'), (req, res) => {
         fn.create(
             m.ranks, 
             req.body.rank
         )
-        .then(rank => {
-            res.redirect('/stores/settings');
-        })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .then(rank => res.redirect('/stores/settings'))
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // New Form
-    app.get('/stores/ranks/new', mw.isLoggedIn, allowed('ranks_add', true, fn.getOne, m.permissions), (req, res) => {
-        res.render('stores/ranks/new');
-    });
+    app.get('/stores/ranks/new', isLoggedIn, allowed('ranks_add'), (req, res) => res.render('stores/ranks/new'));
 
     // Edit
-    app.get('/stores/ranks/:id/edit', mw.isLoggedIn, allowed('ranks_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/ranks/:id/edit', isLoggedIn, allowed('ranks_edit'), (req, res) => {
         fn.getOne(
             m.ranks,
             {rank_id: req.params.id}
         )
         .then(rank => {
-            var query = {};
-            query.sn = req.query.sn || 2;
-            fn.getNotes('ranks', req.params.id, req, res)
+            fn.getNotes('ranks', req.params.id, req)
             .then(notes => {
                 res.render('stores/ranks/edit', {
                     rank:  rank,
-                    query: query,
+                    query: {sn: req.query.sn || 2},
                     notes: notes
                 });
             });
         })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // Put
-    app.put('/stores/ranks/:id', mw.isLoggedIn, allowed('ranks_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/ranks/:id', isLoggedIn, allowed('ranks_edit'), (req, res) => {
         fn.update(
             m.ranks,
             req.body.rank,
             {rank_id: req.params.id}
         )
-        .then(result => {
-            res.redirect('/stores/settings')
-        })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .then(result => res.redirect('/stores/settings'))
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // Delete
-    app.delete('/stores/ranks/:id', mw.isLoggedIn, allowed('ranks_delete', true, fn.getOne, m.permissions), (req, res) => {
+    app.delete('/stores/ranks/:id', isLoggedIn, allowed('ranks_delete'), (req, res) => {
         fn.getOne(
             m.users,
             {rank_id: req.params.id}
         )
         .then(rank => {
             if (!rank) {
-                fn.delete(m.ranks, {rank_id: req.params.id}, req, result => {
-                    res.redirect('/stores/settings');
-                });
+                fn.delete(
+                    'ranks',
+                    {rank_id: req.params.id}
+                )
+                .then(result => {
+                    if (result) req.flash('success', 'Rank deleted')
+                    res.redirect('/stores/settings')
+                })
+                .catch(err => fn.error(err, '/stores/settings', req, res));
             } else {
                 req.flash('danger', 'Cannot delete a rank whilst it is assigned to a user!');
                 res.redirect('/stores/settings');
             };
         })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 };

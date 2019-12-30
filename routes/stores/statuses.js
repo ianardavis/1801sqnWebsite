@@ -1,67 +1,49 @@
-const   mw = {},
-        fn = {};
-
-module.exports = (app, m, allowed) => {
-    require("../../db/functions")(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // New Logic
-    app.post('/stores/statuses', mw.isLoggedIn, allowed('statuses_add', true, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/statuses', isLoggedIn, allowed('statuses_add'), (req, res) => {
         fn.create(
             m.statuses,
             req.body.status
         )
-        .then(status => {
-            res.redirect('/stores/settings');
-        })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .then(status => res.redirect('/stores/settings'))
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // New Form
-    app.get('/stores/statuses/new', mw.isLoggedIn, allowed('statuses_add', true, fn.getOne, m.permissions), (req, res) => {
-        res.render('stores/statuses/new');
-    });
+    app.get('/stores/statuses/new', isLoggedIn, allowed('statuses_add'), (req, res) => res.render('stores/statuses/new'));
+
     // Edit
-    app.get('/stores/statuses/:id/edit', mw.isLoggedIn, allowed('statuses_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/statuses/:id/edit', isLoggedIn, allowed('statuses_edit'), (req, res) => {
         fn.getOne(
             m.statuses,
             {status_id: req.params.id}
         )
         .then(status => {
-            var query = {};
-            query.sn = req.query.sn || 2;
-            fn.getNotes('statuses', req.params.id, req, res)
+            fn.getNotes('statuses', req.params.id, req)
             .then(notes => {
                 res.render('stores/statuses/edit', {
                     status: status,
-                    query:  query,
+                    query:  {sn: req.query.sn || 2},
                     notes:  notes
                 });
             });
         })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // Put
-    app.put('/stores/statuses/:id', mw.isLoggedIn, allowed('statuses_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/statuses/:id', isLoggedIn, allowed('statuses_edit'), (req, res) => {
         fn.update(
             m.statuses,
             req.body.status,
             {status_id: req.params.id}
         )
-        .then(result => {
-            res.redirect('/stores/settings')
-        })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .then(result => res.redirect('/stores/settings'))
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // Delete
-    app.delete('/stores/statuses/:id', mw.isLoggedIn, allowed('statuses_delete', true, fn.getOne, m.permissions), (req, res) => {
+    app.delete('/stores/statuses/:id', isLoggedIn, allowed('statuses_delete'), (req, res) => {
         fn.getOne(
             m.users,
             {status_id: req.params.id}
@@ -72,15 +54,14 @@ module.exports = (app, m, allowed) => {
         })
         .catch(err => {
             fn.delete(
-                m.statuses,
+                'statuses',
                 {status_id: req.params.id}
             )
             .then(result => {
+                if (result) req.flash('success', 'Status deleted');
                 res.redirect('/stores/settings');
             })
-            .catch(err => {
-                fn.error(err, '/stores/settings', req, res);
-            });
+            .catch(err => fn.error(err, '/stores/settings', req, res));
         });
     });
 };

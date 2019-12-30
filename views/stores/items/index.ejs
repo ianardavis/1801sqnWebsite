@@ -11,7 +11,7 @@
         </ul>
     </nav>
 </section>
-<% if (permissions.item_add) { %>
+<% if (permissions.items_add) { %>
 <section>
 	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
 		<ul class="navbar-nav mr-auto">
@@ -42,7 +42,7 @@
 				<label class="col-form-label text-right" for="group_id">Group:</label>
 			</div>
 				<div class="col-9">
-				<select class="form-control form-control-sm" id="group_id" type="text" onchange=setType() >
+				<select class="form-control form-control-sm" id="group_id" type="text" onchange="setType()">
 					<option value="" data-tag='<blank>'></option>
 					<% classes.groups.forEach(group => { %>
 						<option value="<%= group.group_id %>" data-tag='<%= group.category_id %>' style="display: none;"<% if (query.grp === group.group_id) { %> selected <% } %>><%= group._group %></option>
@@ -55,7 +55,7 @@
 				<label class="col-form-label text-right" for="type_id">Type:</label>
 			</div>
 				<div class="col-9">
-				<select class="form-control form-control-sm" id="type_id" type="text" onchange=setSubtype() > 
+				<select class="form-control form-control-sm" id="type_id" type="text" onchange="setSubtype()"> 
 					<option value="" data-tag='<blank>' ></option>
 					<% classes.types.forEach(typ => { %>
 						<option value="<%= typ.type_id %>" data-tag='<%= typ.group_id %>' style="display: none;"<% if (query.typ === typ.type_id) { %> selected <% } %>><%= typ._type %></option>

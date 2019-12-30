@@ -1,25 +1,17 @@
-const   mw = {},
-        fn = {},
-        op = require('sequelize').Op;
-
+const op = require('sequelize').Op;
 function options() {
     return [
         {table: 'ranks'},
         {table: 'statuses'}
     ]
 };
-module.exports = (app, m, allowed) => {
-    require("../../db/functions")(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // Index
-    app.get('/stores/users', mw.isLoggedIn, allowed('access_users', false, fn.getOne, m.permissions), (req, res) => {
-        if (!req.allowed) {
-            res.redirect('/stores/users/' + req.user.user_id);
-        } else {
+    app.get('/stores/users', isLoggedIn, allowed('access_users', false), (req, res) => {
+        if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id);
+        else {
             var query = Number(req.query.status) || 1;
-            fn.getAll(
-                m.statuses
-            )
+            fn.getAll(m.statuses)
             .then(statuses => {
                 fn.getAllWhere(
                     m.users,
@@ -36,15 +28,13 @@ module.exports = (app, m, allowed) => {
                         statuses: statuses
                     });
                 })
-                .catch(err => {
-                    fn.error(err, '/stores', req, res);
-                })
+                .catch(err => fn.error(err, '/stores', req, res))
             });
         };
     });
 
     // New Logic
-    app.post('/stores/users', mw.isLoggedIn, allowed('users_add', true, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/users', isLoggedIn, allowed('users_add'), (req, res) => {
         var bCrypt  = require('bcrypt'),
             salt = bCrypt.genSaltSync(10);
         req.body.user._salt = salt;
@@ -59,41 +49,25 @@ module.exports = (app, m, allowed) => {
                 m.permissions,
                 {user_id: user.user_id}
             )
-            .then(permission => {
-                res.redirect('/stores/users/' + user.user_id);
-            })
-            .catch(err => {
-                fn.error(err, '/stores/users', req, res);
-            })
+            .then(permission => res.redirect('/stores/users/' + user.user_id))
+            .catch(err => fn.error(err, '/stores/users', req, res))
         })
-        .catch(err => {
-            fn.error(err, '/stores/users', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/users', req, res));
     });
 
     // New Form
-    app.get('/stores/users/new', mw.isLoggedIn, allowed('users_add', true, fn.getOne, m.permissions), (req, res) => {
-        fn.getOptions(options(), req, classes => {
-            res.render('stores/users/new', {
-                classes: classes
-            });
-        });
-    });
+    app.get('/stores/users/new', isLoggedIn, allowed('users_add'), (req, res) => fn.getOptions(options(), req, classes => res.render('stores/users/new', {classes: classes})));
 
     // Edit password
-    app.get('/stores/password', mw.isLoggedIn, allowed('users_password', false, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/password', isLoggedIn, allowed('users_password', false), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.query.user)) {
             fn.getOne(
                 m.users,
                 {user_id: req.query.user},
-                [m.ranks]
+                {include: [m.ranks], attributes: null, nullOK: false}
             )
-            .then(user => {
-                res.render('stores/users/password', {user: user});
-            })
-            .catch(err => {
-                fn.error(err, '/stores/users/' + req.query.user, req, res);
-            });
+            .then(user => res.render('stores/users/password', {user: user}))
+            .catch(err => fn.error(err, '/stores/users/' + req.query.user, req, res));
         } else {
             req.flash('danger', 'Permission Denied!');
             res.redirect('back');
@@ -101,7 +75,7 @@ module.exports = (app, m, allowed) => {
     });
 
     // Edit password Put
-    app.put('/stores/password/:id', mw.isLoggedIn, allowed('users_password', false, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/password/:id', isLoggedIn, allowed('users_password', false), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             var bCrypt      = require('bcrypt');
             req.body.user._salt = bCrypt.genSaltSync(10)
@@ -111,12 +85,8 @@ module.exports = (app, m, allowed) => {
                 req.body.user,
                 {user_id: req.params.id}
             )
-            .then(result => {
-                res.redirect('/stores/users/' + req.params.id)
-            })
-            .catch(err => {
-                fn.error(err, '/stores/users/' + req.params.id, req, res);
-            });
+            .then(result => res.redirect('/stores/users/' + req.params.id))
+            .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
         } else {
             req.flash('danger', 'Permission Denied!');
             res.redirect('back');
@@ -124,12 +94,12 @@ module.exports = (app, m, allowed) => {
     });
 
     // Edit
-    app.get('/stores/users/:id/edit', mw.isLoggedIn, allowed('users_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/users/:id/edit', isLoggedIn, allowed('users_edit'), (req, res) => {
         fn.getOptions(options(), req, classes => {
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
-                [m.ranks]
+                {include: [m.ranks], attributes: null, nullOK: false}
             )
             .then(user => {
                 res.render('stores/users/edit', {
@@ -137,49 +107,41 @@ module.exports = (app, m, allowed) => {
                     classes: classes
                 });
             })
-            .catch(err => {
-                fn.error(err, '/stores/users/' + req.params.id, req, res);
-            });
+            .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
         });
     });
 
     // Put
-    app.put('/stores/users/:id', mw.isLoggedIn, allowed('users_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/users/:id', isLoggedIn, allowed('users_edit'), (req, res) => {
         fn.update(
             m.users,
             req.body.user,
             {user_id: req.params.id}
         )
-        .then(result => {
-            res.redirect('/stores/users/' + req.params.id)
-        })
-        .catch(err => {
-            fn.error(err, '/stores/users/' + req.params.id, req, res);
-        });
+        .then(result => res.redirect('/stores/users/' + req.params.id))
+        .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
     });
 
     // Delete
-    app.delete('/stores/users/:id', mw.isLoggedIn, allowed('users_delete', true, fn.getOne, m.permissions), (req, res) => {
-        if (req.user.user_id !== Number(req.params.id)) {
+    app.delete('/stores/users/:id', isLoggedIn, allowed('users_delete'), (req, res) => {
+        if (Number(req.user.user_id) !== Number(req.params.id)) {
             fn.delete(
-                m.users,
+                'users',
                 {user_id: req.params.id}
             )
             .then(result => {
+                if (result) req.flash('success', 'User deleted');
                 fn.delete(
-                    m.permissions,
+                    'permissions',
                     {user_id: req.params.id}
                 )
                 .then(result => {
+                    if (result) req.flash('success', 'Permission deleted');
                     res.redirect('/stores/users');
                 })
-                .catch(err => {
-                    fn.error(err, '/stores/users', req, res);
-                });
+                .catch(err => fn.error(err, '/stores/users', req, res));
             })
-            .catch(err => {
-                fn.error(err, '/stores/users', req, res);
-            });
+            .catch(err => fn.error(err, '/stores/users', req, res));
         } else {
             req.flash('danger', 'You can not delete your own account');
             res.redirect('/stores/users/' + req.params.id);
@@ -187,7 +149,7 @@ module.exports = (app, m, allowed) => {
     });
 
     // Show
-    app.get('/stores/users/:id', mw.isLoggedIn, allowed('access_users', false, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/users/:id', isLoggedIn, allowed('access_users', false), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             var where = {},
                 query = {};
@@ -199,28 +161,19 @@ module.exports = (app, m, allowed) => {
             where.requests = {};
             where.orders = {};
             where.issues = {};
-            if (query.io === 2) {
-                where.orders.issue_line_id = null;
-            } else if (query.io === 3) {
-                where.orders.issue_line_id = {[op.not]: null};
-            };
+            if (query.io === 2) where.orders.issue_line_id = null;
+            else if (query.io === 3) where.orders.issue_line_id = {[op.not]: null};
 
-            if (query.cr === 2) {
-                where.requests._status = 'Pending';
-            } else if (query.cr === 3) {
-                where.requests._status = {[op.not]: 'Pending'};
-            };
+            if (query.cr === 2) where.requests._status = 'Pending';
+            else if (query.cr === 3) where.requests._status = {[op.not]: 'Pending'};
 
-            if (query.ri === 2) {
-                where.issues.return_line_id = null;
-            } else if (query.ri === 3) {
-                where.issues.return_line_id = {[op.not]: null};
-            };
+            if (query.ri === 2) where.issues.return_line_id = null;
+            else if (query.ri === 3) where.issues.return_line_id = {[op.not]: null};
 
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
-                fn.userInclude(false, false, false)
+                {include: fn.userInclude(false, false, false), attributes: null, nullOK: false}
             )
             .then(user => {
                 fn.getAllWhere(
@@ -259,7 +212,7 @@ module.exports = (app, m, allowed) => {
                             ]
                         )
                         .then(issues => {
-                            fn.getNotes('users', req.params.id, req, res)
+                            fn.getNotes('users', req.params.id, req)
                             .then(notes => {
                                 res.render('stores/users/show', {
                                     f_user:   user, 
@@ -271,21 +224,13 @@ module.exports = (app, m, allowed) => {
                                 });
                             });
                         })
-                        .catch(err => {
-                            fn.error(err, '/stores/users', req, res);
-                        });
+                        .catch(err => fn.error(err, '/stores/users', req, res));
                     })
-                    .catch(err => {
-                        fn.error(err, '/stores/users', req, res);
-                    });
+                    .catch(err => fn.error(err, '/stores/users', req, res));
                 })
-                .catch(err => {
-                    fn.error(err, '/stores/users', req, res);
-                });
+                .catch(err => fn.error(err, '/stores/users', req, res));
             })
-            .catch(err => {
-                fn.error(err, '/stores/users', req, res);
-            });
+            .catch(err => fn.error(err, '/stores/users', req, res));
         } else {
             req.flash('danger', 'Permission denied!')
             res.redirect('/stores/users');

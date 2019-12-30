@@ -1,72 +1,54 @@
-const   mw = {},
-        fn = {};
-
-module.exports = (app, m, allowed) => {
-    require("../../db/functions")(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, m, allowed, fn, isLoggedIn) => {
     // New Logic
-    app.post('/stores/locations', mw.isLoggedIn, allowed('locations_add', true, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/locations', isLoggedIn, allowed('locations_add'), (req, res) => {
         fn.create(
             m.locations,
             req.body.location
         )
-        .then(location => {
-            res.redirect('/stores/item_sizes/' + location.stock_id);
-        })
-        .catch(err => {
-            fn.error(err, '/stores/items', req, res);
-        });
+        .then(location => res.redirect('/stores/item_sizes/' + location.stock_id))
+        .catch(err => fn.error(err, '/stores/items', req, res));
     });
 
     // New Form
-    app.get('/stores/locations/new', mw.isLoggedIn, allowed('locations_add', true, fn.getOne, m.permissions), (req, res) => {
-        fn.getItemSize(req.query.stock_id, req, {include: false}, {include: false}, {include: false}, {include: false}, {include: false}, (item) => {
-            if(item) {
-                res.render('stores/locations/new', {
-                    item: item,
-                });
-            } else {
-                res.redirect('/stores/item_sizes/' + req.query.stock_id)
-            };
-        });
+    app.get('/stores/locations/new', isLoggedIn, allowed('locations_add'), (req, res) => {
+        fn.getOne(
+            m.item_sizes,
+            {itemsize_id: req.query.itemsize_id},
+            fn.item_sizes()
+        )
+        .then(item_size => res.render('stores/locations/new', {item_size: item_size}))
+        .catch(err => fn.error(err, '/stores/item_sizes', req, res));
     });
 
     // Edit
-    app.get('/stores/locations/:id/edit', mw.isLoggedIn, allowed('locations_edit', true, fn.getOne, m.permissions), (req, res) => {
-        var query = {};
-        query.sn = req.query.sn || 2;
+    app.get('/stores/locations/:id/edit', isLoggedIn, allowed('locations_edit'), (req, res) => {
         fn.getLocation(req.params.id, req, location => {
             if (location) {
-                fn.getNotes('locations', req.params.id, req, res, notes => {
+                fn.getNotes('locations', req.params.id, req)
+                .then(notes => {
                     res.render('stores/locations/edit', {
                         location: location,
                         notes:    notes,
-                        query:    query
+                        query:    {sn: req.query.sn || 2}
                     });
                 });
-            } else {
-                res.redirect('/stores/items');
-            };
+            } else res.redirect('/stores/items');
         });
     });
 
     // Put
-    app.put('/stores/locations/:id', mw.isLoggedIn, allowed('locations_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/locations/:id', isLoggedIn, allowed('locations_edit'), (req, res) => {
         fn.update(
             m.locations,
             req.body.location,
             {location_id: req.params.id}
         )
-        .then(result => {
-            res.redirect('back');
-        })
-        .catch(err => {
-            fn.error(err, 'back', req, res);
-        });
+        .then(result => res.redirect('back'))
+        .catch(err => fn.error(err, 'back', req, res));
     });
 
     // Delete
-    app.delete('/stores/locations/:id', mw.isLoggedIn, allowed('locations_delete', true, fn.getOne, m.permissions), (req, res) => {
+    app.delete('/stores/locations/:id', isLoggedIn, allowed('locations_delete'), (req, res) => {
         fn.getOne(
             m.locations,
             {location_id: req.params.id}
@@ -74,22 +56,19 @@ module.exports = (app, m, allowed) => {
         .then(location => {
             if (location._qty === 0) {
                 fn.delete(
-                    m.locations,
+                    'locations',
                     {location_id: req.params.id}
                 )
                 .then(result => {
-                    res.redirect('/stores/item_sizes/' + location.stock_id);
+                    req.flash('success', 'Location deleted')
+                    res.redirect('/stores/item_sizes/' + location.stock_id)
                 })
-                .catch(err => {
-                    fn.error(err, '/stores/item_sizes/' + location.stock_id, req, res);
-                });
+                .catch(err => fn.error(err, '/stores/item_sizes/' + location.stock_id, req, res));
             } else {
                 req.flash('danger', 'Cannot delete a location with stock in!');
                 res.redirect('/stores/item_sizes/' + location.stock_id);
             };
         })
-        .catch(err => {
-            fn.error(err, 'back', req, res);
-        });
+        .catch(err => fn.error(err, 'back', req, res));
     });
 }

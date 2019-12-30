@@ -21,6 +21,12 @@
             </select>
             <button class="btn btn-success w-100">Select</button>
         </form>
+        <% if (callType === 'issue') { %>
+            <div>
+                <p>Note: only issueable sizes are shown.</p>
+                <p>Sizes must have associated NSNs and stock records to be issueable</p>
+            </div>
+        <% }; %>
     </div>
     <div class="col-12">
         <a class="btn btn-danger w-100" href="javascript:close()">Finished Adding Items</a>

@@ -91,8 +91,6 @@ db.requests.hasMany(db.requests_l,   {foreignKey: 'request_id',    targetKey: 'r
 
 db.requests_l.hasOne(db.users,       {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
 db.requests_l.hasOne(db.item_sizes,  {foreignKey: 'itemsize_id',   sourceKey: 'itemsize_id',     constraints: false});
-db.requests_l.hasOne(db.orders,      {foreignKey: 'order_id',      sourceKey: 'order_id',        constraints: false});
-db.requests_l.hasOne(db.issues,      {foreignKey: 'issue_id',      sourceKey: 'issue_id',        constraints: false});
 db.requests_l.belongsTo(db.requests, {foreignKey: 'request_id',    targetKey: 'request_id'});
 
 db.receipts.hasOne(db.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});

@@ -7,24 +7,18 @@ module.exports = (app, m) => {
         // res.render("index");
     });
     
-    app.get("/resources", (req, res) => {
-        res.render("resources");
-    });
+    app.get("/resources", (req, res) => res.render("resources"));
     
-    app.get('/login', (req, res) => {
-        res.render('login');
-    });
+    app.get('/login', (req, res) => res.render('login'));
+
     app.get('/logout', (req, res) => {
         req.logout();
         res.redirect('/');
     });
+    
     app.post('/login', passport.authenticate('local-signin', {
         failureRedirect: 'login',
-    }), (req, res) => {
-        res.redirect('/stores');
-    });
+    }), (req, res) => res.redirect('/stores'));
     
-    app.get("*",  (req, res) => {
-        res.render("404");
-    });
+    app.get("*",  (req, res) => res.render("404"));
 };

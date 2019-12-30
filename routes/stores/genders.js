@@ -1,10 +1,6 @@
-const   mw = {},
-        fn = {};
-module.exports = (app, m, allowed) => {
-    require("../../db/functions")(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // New Logic
-    app.post('/stores/genders', mw.isLoggedIn, allowed('genders_add', true, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/genders', isLoggedIn, allowed('genders_add'), (req, res) => {
         fn.create(
             m.genders, 
             req.body.gender
@@ -13,17 +9,13 @@ module.exports = (app, m, allowed) => {
             req.flash('success', 'Gender added')
             res.redirect('/stores/settings');
         })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // New Form
-    app.get('/stores/genders/new', mw.isLoggedIn, allowed('genders_add', true, fn.getOne, m.permissions), (req, res) => {
-        res.render('stores/genders/new');
-    });
+    app.get('/stores/genders/new', isLoggedIn, allowed('genders_add'), (req, res) => res.render('stores/genders/new'));
     // Edit
-    app.get('/stores/genders/:id/edit', mw.isLoggedIn, allowed('genders_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/genders/:id/edit', isLoggedIn, allowed('genders_edit'), (req, res) => {
         fn.getOne(
             m.genders, 
             {gender_id: req.params.id}
@@ -31,7 +23,7 @@ module.exports = (app, m, allowed) => {
         .then(gender => {
             var query = {};
             query.sn = req.query.sn || 2;
-            fn.getNotes('genders', req.params.id, req, res)
+            fn.getNotes('genders', req.params.id, req)
             .then(notes => {
                 res.render('stores/genders/edit', {
                     gender:  gender,
@@ -40,13 +32,11 @@ module.exports = (app, m, allowed) => {
                 });
             });
         })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // Put
-    app.put('/stores/genders/:id', mw.isLoggedIn, allowed('genders_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/genders/:id', isLoggedIn, allowed('genders_edit'), (req, res) => {
         fn.update(
             m.genders,
             req.body.gender,
@@ -55,23 +45,19 @@ module.exports = (app, m, allowed) => {
         .then(result => {
             req.flash('success', 'Gender updated');
             res.redirect('/stores/settings');
-        }).catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        }).catch(err => fn.error(err, '/stores/settings', req, res));
     });
 
     // Delete
-    app.delete('/stores/genders/:id', mw.isLoggedIn, allowed('genders_delete', true, fn.getOne, m.permissions), (req, res) => {
+    app.delete('/stores/genders/:id', isLoggedIn, allowed('genders_delete'), (req, res) => {
         fn.delete(
-            m.genders,
+            'genders',
             {gender_id: req.params.id}
         )
         .then(result => {
             req.flash('success', 'Gender deleted');
             res.redirect('back');
         })
-        .catch(err => {
-            fn.error(err, '/stores/settings', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 };

@@ -14,7 +14,7 @@
 		</ul>
 	</nav>
 </section>
-<section>
+<section class="mb-2">
 	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
 		<ul class="navbar-nav mr-auto">
 			<li class="nav-item dropdown">
@@ -37,7 +37,7 @@
 		</ul>
 	</nav>
 </section>
-<section class="container pt-3">
+<section class="container">
 	<div class="row">
 		<div class="col-12 col-xl-4 mb-3 bordered">
 			<h4>Details</h4>
@@ -79,65 +79,118 @@
 				<% include ../../partials/noteTable %>
 			</div>
 		<% } %>
-		<div class="col-12 mb-3 bordered">
-			<div class="container">
-				<div class="row">
-					<label class="col-3 col-form-label text-right" for="dl">Demanded Lines:</label>
-					<select id="dl" class='form-control form-control-sm col-9' type="text" onchange=filterSelects()>
-						<option value="1" <% if (query.dl === 1) { %>selected<% } %> >Include</option>
-						<option value="2" <% if (query.dl === 2) { %>selected<% } %> >Exclude</option>
-						<option value="3" <% if (query.dl === 3) { %>selected<% } %> >Only</option>
-					</select>
+		<div class="col-12 mb-3 bordered container">
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<div class="row">
+						<div class="col-5">
+							<label class="col-form-label text-right" for="dl">Demanded Lines:</label>
+						</div>
+						<div class="col-7">
+							<select id="dl" class='form-control form-control-sm' type="text" onchange=filterSelects()>
+								<option value="1" <% if (query.dl === 1) { %>selected<% } %> >Include</option>
+								<option value="2" <% if (query.dl === 2) { %>selected<% } %> >Exclude</option>
+								<option value="3" <% if (query.dl === 3) { %>selected<% } %> >Only</option>
+							</select>
+						</div>
+					</div>
 				</div>
-				<div class="row">
-					<label class="col-3 col-form-label text-right"  for="rl">Received Lines:</label>
-					<select id="rl" class='form-control form-control-sm col-9' type="text" onchange=filterSelects()>
-						<option value="1" <% if (query.rl === 1) { %>selected<% } %> >Include</option>
-						<option value="2" <% if (query.rl === 2) { %>selected<% } %> >Exclude</option>
-						<option value="3" <% if (query.rl === 3) { %>selected<% } %> >Only</option>
-					</select>
+				<div class="col-12 col-md-4">
+					<div class="row">
+						<div class="col-5">
+							<label class="col-form-label text-right"  for="rl">Received Lines:</label>
+						</div>
+						<div class="col-7">
+							<select id="rl" class='form-control form-control-sm' type="text" onchange=filterSelects()>
+								<option value="1" <% if (query.rl === 1) { %>selected<% } %> >Include</option>
+								<option value="2" <% if (query.rl === 2) { %>selected<% } %> >Exclude</option>
+								<option value="3" <% if (query.rl === 3) { %>selected<% } %> >Only</option>
+							</select>
+						</div>
+					</div>
 				</div>
-				<div class="row">
-					<label class="col-3 col-form-label text-right"  for="il">Issued Lines:</label>
-					<select id="il" class='form-control form-control-sm col-9' type="text" onchange=filterSelects()>
-						<option value="1" <% if (query.il === 1) { %>selected<% } %> >Include</option>
-						<option value="2" <% if (query.il === 2) { %>selected<% } %> >Exclude</option>
-						<option value="3" <% if (query.il === 3) { %>selected<% } %> >Only</option>
-					</select>
+				<div class="col-12 col-md-4">
+					<div class="row">
+						<div class="col-5">
+							<label class="col-form-label text-right"  for="il">Issued Lines:</label>
+						</div>
+						<div class="col-7">
+							<select id="il" class='form-control form-control-sm' type="text" onchange=filterSelects()>
+								<option value="1" <% if (query.il === 1) { %>selected<% } %> >Include</option>
+								<option value="2" <% if (query.il === 2) { %>selected<% } %> >Exclude</option>
+								<option value="3" <% if (query.il === 3) { %>selected<% } %> >Only</option>
+							</select>
+						</div>
+					</div>
 				</div>
 			</div>
-			<table id="orderTable" class="table table-sm table-hover mx-auto w-100">
-				<thead class="thead-dark">
-					<th class="w-20" onclick="sortTable(0, 'orderTable')">Item</th>
-					<th class="w-10" onclick="sortTable(1, 'orderTable')">Size</th>
-					<th class="w-5" onclick="sortTable(2, 'orderTable')">Quantity</th>
-					<th class="w-10" onclick="sortTable(3, 'orderTable')">Demand Date</th>
-					<th class="w-10" onclick="sortTable(4, 'orderTable')">Receipt Date</th>
-					<th class="w-10" onclick="sortTable(5, 'orderTable')">Issue Date</th>
-				</thead>
-				<tbody>
-					<% if (order.lines) { %>
-						<% order.lines.forEach(line => { %>
-							<tr>
-								<td><a href="/stores/items/<%= line.item_size.item_id %>"> <%= line.item_size.item._description %></a></td>
-								<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"> <%= line.item_size.size._text %></a></td>
-								<td><a href="#"> <%= line._qty %></a></td>
-								<td><% if (line.demands_l) { %><a href="/stores/demands/<%= line.demands_l.demand_id %>"><%= line.demands_l.demand._date.toDateString() %></a><% } %></td>
-								<td><% if (line.receipts_l) { %><a href="/stores/receipts/<%= line.receipts_l.receipt_id %>"><%= line.receipts_l.receipt._date.toDateString() %></a><% } %></td>
-								<td><% if (line.issues_l) { %><a href="/stores/issues/<%= line.issues_l.issue_id %>"><%= line.issues_l.issue._date.toDateString() %></a><% } %></td>
-							</tr>
-						<% }) %>
-					<% } %>
-				</tbody>
-			</table>
+			<form action="/stores/orders/<%= order.order_id %>?_method=PUT" method="POST" onsubmit="return confirm('Action selected lines?');">
+				<div class="row">
+					<div class="col-12 col-md-6">
+						<select class="w-100 form-control form-control-sm" name="action">
+							<option value="demand">Demand Selected Lines</option>
+							<option value="receive">Receive Selected Lines</option>
+							<option value="issue">Issue Selected Lines</option>
+						</select>
+					</div>
+					<div class="col-12 col-md-6">
+						<input class="w-100 btn btn-sm btn-primary mb-1" type="submit" value="Go">
+					</div>
+				</div>
+				<table id="orderTable" class="table table-sm table-hover mx-auto w-100">
+					<thead class="thead-dark">
+						<th class="w-5"></th>
+						<th class="w-25" onclick="sortTable(0, 'orderTable')">Item</th>
+						<th class="w-20" onclick="sortTable(1, 'orderTable')">Size</th>
+						<th class="w-5" onclick="sortTable(2, 'orderTable')">Quantity</th>
+						<th class="w-15" onclick="sortTable(3, 'orderTable')">Demand Date</th>
+						<th class="w-15" onclick="sortTable(4, 'orderTable')">Receipt Date</th>
+						<% if (Number(order.ordered_for) !== -1) { %><th class="w-15" onclick="sortTable(5, 'orderTable')">Issue Date</th><% } %>
+					</thead>
+					<tbody>
+						<% if (order.lines) { %>
+							<% order.lines.forEach(line => { %>
+								<tr>
+									<td><input class="form-control form-control-sm" type="checkbox" name="lines[]" value='{"line_id":<%= line.line_id %>,"itemsize_id":<%= line.itemsize_id %>,"qty":<%= line._qty %>,"supplier_id":<%= line.item_size.supplier_id %>,"_for":<%= order.ordered_for %><% if (line.demands_l) { %>,"demand_line_id":<%= line.demand_line_id %><% } %><% if (line.receipts_l) { %>,"receipt_line_id":<%= line.receipt_line_id %><% } %><% if (line.issues_l) { %>,"issue_line_id":<%= line.issue_line_id %><% } %>}'></td>
+									<td><a href="/stores/items/<%= line.item_size.item_id %>"><%= line.item_size.item._description %></a></td>
+									<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size.size._text %></a></td>
+									<td><a href="#"> <%= line._qty %></a></td>
+									<td>
+										<% if (line.demands_l) { %>
+											<a href="/stores/demands/<%= line.demands_l.demand_id %>">
+												<%= line.demands_l.demand._date.toDateString() %>
+											</a>
+										<% }; %>
+									</td>
+									<td>
+										<% if (line.receipts_l) { %>
+											<a href="/stores/receipts/<%= line.receipts_l.receipt_id %>">
+												<%= line.receipts_l.receipt._date.toDateString() %>
+											</a>
+										<% }; %>
+									</td>
+									<% if (Number(order.ordered_for) !== -1) { %>
+										<td>
+											<% if (line.issues_l) { %>
+												<a href="/stores/issues/<%= line.issues_l.issue_id %>">
+													<%= line.issues_l.issue._date.toDateString() %>
+												</a>
+											<% }; %>
+										</td>
+									<% }; %>
+								</tr>
+							<% }); %>
+						<% }; %>
+					</tbody>
+				</table>
+			</form>
 		</div>
 	</div>
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/filters.js"></script>
+<script src="/js/tableSort.js"></script>
 <script>
-    function filterSelects() {
-        filter(['sn', 'dl', 'rl', 'il'], "/stores/orders/<%= order.order_id %>");
-    };
+    function filterSelects() {filter(['sn', 'dl', 'rl', 'il'], "/stores/orders/<%= order.order_id %>")};
 </script>
 <% include ../../partials/foot/htmlClose %>

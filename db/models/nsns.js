@@ -21,12 +21,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       unique: true
     },
-    '_default': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "null"
-    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,

@@ -12,547 +12,517 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '1',
-      comment: "User"
-    },
-    'access_settings': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'settings_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'settings_dropdown': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'settings_dropdown_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'settings_dropdown_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'settings_dropdown_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'access_issues': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
+      comment: null
     },
     'access_items': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Issuer"
+      comment: "account_enabled"
+    },
+    'items_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_items"
+    },
+    'items_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_items"
+    },
+    'items_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_items"
+    },
+    'item_sizes_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_items"
+    },
+    'item_sizes_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_items"
+    },
+    'item_sizes_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_items"
     },
     'access_stock': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Issuer"
-    },
-    'access_nsns': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'item_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'item_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'item_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Super"
-    },
-    'item_size_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'item_size_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
+      comment: "access_items"
     },
     'stock_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_stock"
     },
     'stock_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_stock"
     },
     'stock_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_stock"
+    },
+    'adjusts_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_stock"
+    },
+    'access_locations': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_stock"
+    },
+    'locations_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_locations"
+    },
+    'locations_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_locations"
+    },
+    'locations_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_locations"
+    },
+    'access_nsns': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_items"
     },
     'nsns_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_nsns"
     },
     'nsns_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_nsns"
     },
     'nsns_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Admin"
-    },
-    'item_adjust': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'item_stocktake': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'access_receipts': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'receipts_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'receipts_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'issues_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'issues_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'issues_return': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'issues_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Super"
-    },
-    'access_users': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'users_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'users_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'users_permissions': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'users_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Super"
-    },
-    'users_password': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'users_status': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'users_others': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'access_notes': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'notes_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'notes_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'notes_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Super"
+      comment: "access_nsns"
     },
     'access_requests': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '1',
-      comment: "User"
+      comment: "account_enabled"
     },
     'requests_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '1',
-      comment: "User"
+      comment: "access_requests"
     },
     'requests_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Issuer"
+      comment: "access_requests"
     },
     'requests_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Super"
-    },
-    'requests_approve': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_requests"
     },
     'access_orders': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "account_enabled"
     },
     'orders_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_orders"
     },
     'orders_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
-    },
-    'orders_place': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_orders"
     },
     'orders_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "null"
+      comment: "access_orders"
     },
     'access_demands': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_orders"
     },
     'demands_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_demands"
     },
-    'demands_search': {
+    'demands_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Storeman"
+      comment: "access_demands"
+    },
+    'access_receipts': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
+    'receipts_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_receipts"
+    },
+    'receipts_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_receipts"
+    },
+    'access_issues': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
+    'issues_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_issues"
+    },
+    'issues_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_issues"
+    },
+    'access_returns': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_issues"
+    },
+    'returns_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_returns"
+    },
+    'returns_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_returns"
+    },
+    'access_users': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
+    'users_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_users"
+    },
+    'users_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_users"
+    },
+    'users_permissions': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_users"
+    },
+    'users_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_users"
+    },
+    'users_password': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_users"
+    },
+    'access_notes': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
+    'notes_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_notes"
+    },
+    'notes_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_notes"
+    },
+    'notes_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_notes"
     },
     'access_suppliers': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Admin"
+      comment: "account_enabled"
     },
     'suppliers_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Admin"
+      comment: "access_suppliers"
     },
     'suppliers_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Admin"
+      comment: "access_suppliers"
     },
     'suppliers_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Super"
-    },
-    'suppliers_search': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'access_reports': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Storeman"
-    },
-    'access_print': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'ranks_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'ranks_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'ranks_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'statuses_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'statuses_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'statuses_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'genders_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'genders_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'genders_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'categories_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'categories_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'categories_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'groups_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'groups_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'groups_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'types_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'types_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'types_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'subtypes_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'subtypes_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'subtypes_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'sizes_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Issuer"
-    },
-    'sizes_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
-    },
-    'sizes_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "Admin"
+      comment: "access_suppliers"
     },
     'access_files': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Issuer"
+      comment: "access_suppliers"
     },
     'files_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Issuer"
+      comment: "access_files"
     },
     'files_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Admin"
+      comment: "access_files"
     },
     'files_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "Admin"
+      comment: "access_files"
+    },
+    'access_reports': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
+    'access_settings': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
+    'settings_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'ranks_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'ranks_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'ranks_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'statuses_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'statuses_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'statuses_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'genders_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'genders_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'genders_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'categories_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'categories_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'categories_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'groups_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'groups_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'groups_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'types_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'types_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'types_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'subtypes_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'subtypes_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'subtypes_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'sizes_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'sizes_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
+    },
+    'sizes_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "settings_edit"
     },
     'createdAt': {
       type: DataTypes.DATE,

@@ -1,10 +1,4 @@
-const   mw = {},
-        fn = {};
-
-//root
-module.exports = (app, m, allowed) => {
-    require("../../db/functions")(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     function options() {
         return [
             {table: 'categories'}, 
@@ -16,20 +10,16 @@ module.exports = (app, m, allowed) => {
             {table: 'statuses'}
         ]
     };
-    app.get('/stores/settings', mw.isLoggedIn, allowed('access_settings', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/settings', isLoggedIn, allowed('access_settings'), (req, res) => {
         fn.getOptions(options(), req, classes => {
-            fn.getAll(
-                m.sizes
-            )
+            fn.getAll(m.sizes)
             .then(sizes => {
                 res.render('stores/settings/show',{
                     classes: classes,
                     sizes:   sizes
                 });
             })
-            .catch(err => {
-                fn.error(err, '/stores', req, res);
-            })
+            .catch(err => fn.error(err, '/stores', req, res));
         });
     });
 };

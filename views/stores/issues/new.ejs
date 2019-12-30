@@ -31,9 +31,9 @@
 				<div class="col-12 col-md-6 bordered mb-3">
 					<h5>Issue Dates</h5>
 					<label>Date Issued</label>
-					<input id="issueDate" type="date" name="issue[_date]" required>
+					<input class="form-control" id="issueDate" type="date" name="issue[_date]" required>
 					<label>Date Due Back</label>
-					<input id="dueDate" type="date" name="issue[_date_due]" required>
+					<input class="form-control" id="dueDate" type="date" name="issue[_date_due]" required>
 				</div>
 			</div>
 		</form>
@@ -44,4 +44,14 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/newIssue.js"></script>
+<script>
+	<% if (typeof(items) !== 'undefined' && items.length > 0) { %>
+		<%- JSON.stringify(items) %>.forEach(item => {
+			let nsns = item.nsns, stocks = item.stocks;
+			delete item.nsns;
+			delete item.stocks;
+			addSize(item, nsns, stocks);
+		});
+	<% }; %>
+</script>
 <% include ../../partials/foot/htmlClose %>

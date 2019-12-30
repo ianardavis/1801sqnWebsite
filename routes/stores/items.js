@@ -1,9 +1,4 @@
-const   mw = {},
-        fn = {};
-
-module.exports = (app, m, allowed) => {
-    require("../../db/functions")(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     function itemOptions() {
         return [
             {table: 'categories'}, 
@@ -22,7 +17,7 @@ module.exports = (app, m, allowed) => {
     };
     
     // Index
-    app.get('/stores/items', mw.isLoggedIn, allowed('access_items', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/items', isLoggedIn, allowed('access_items'), (req, res) => {
         var query = {},
             where = {};
         query.cat = Number(req.query.cat) || -1;
@@ -47,36 +42,26 @@ module.exports = (app, m, allowed) => {
                     query:   query
                 });
             })
-            .catch(err => {
-                fn.error(err, '/stores', req, res);
-            });
+            .catch(err => fn.error(err, '/stores', req, res));
         });
     });
 
     // New Logic
-    app.post('/stores/items', mw.isLoggedIn, allowed('item_add', true, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/items', isLoggedIn, allowed('items_add'), (req, res) => {
         req.body.item = nullify(req.body.item);
         fn.create(
             m.items,
             req.body.item
         )
-        .then(item => {
-            res.redirect('/stores/items/' + item.item_id);
-        })
-        .catch(err => {
-            fn.error(err, '/stores/items', req, res);
-        });
+        .then(item => res.redirect('/stores/items/' + item.item_id))
+        .catch(err => fn.error(err, '/stores/items', req, res));
     });
 
     // New Form
-    app.get('/stores/items/new', mw.isLoggedIn, allowed('item_add', true, fn.getOne, m.permissions), (req, res) => {
-        fn.getOptions(itemOptions(), req, classes => {
-            res.render('stores/items/new', {
-                classes: classes});
-        });
-    });
+    app.get('/stores/items/new', isLoggedIn, allowed('items_add'), (req, res) => fn.getOptions(itemOptions(), req, classes => res.render('stores/items/new', {classes: classes})));
+    
     // Edit
-    app.get('/stores/items/:id/edit', mw.isLoggedIn, allowed('item_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/items/:id/edit', isLoggedIn, allowed('items_edit'), (req, res) => {
         fn.getOne(
             m.items,
             {item_id: req.params.id}
@@ -89,52 +74,48 @@ module.exports = (app, m, allowed) => {
                 });
             });
         })
-        .catch(err => {
-            fn.error(err, 'stores/items/' + req.params.id, req, res);
-        });
+        .catch(err => fn.error(err, 'stores/items/' + req.params.id, req, res));
     });
 
     // Put
-    app.put('/stores/items/:id', mw.isLoggedIn, allowed('item_edit', true, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/items/:id', isLoggedIn, allowed('items_edit'), (req, res) => {
         req.body.item = nullify(req.body.item);
         fn.update(
             m.items,
             req.body.item,
             {item_id: req.params.id}
         )
-        .then(result => {
-            res.redirect('/stores/items/' + req.params.id)
-        })
-        .catch(err => {
-            fn.error(err, '/stores/items/' + req.params.id, req, res);
-        });
+        .then(result => res.redirect('/stores/items/' + req.params.id))
+        .catch(err => fn.error(err, '/stores/items/' + req.params.id, req, res));
     });
 
     // Delete
-    app.delete('/stores/items/:id', mw.isLoggedIn, allowed('item_delete', true, fn.getOne, m.permissions), (req, res) => {
+    app.delete('/stores/items/:id', isLoggedIn, allowed('items_delete'), (req, res) => {
         fn.getOne(
             m.item_sizes,
             {item_id: req.params.id}
         )
         .then(item_sizes => {
             if (!item_sizes) {
-                fn.delete(m.items, {item_id: req.params.id}, req, result => {
+                fn.delete(
+                    'items',
+                    {item_id: req.params.id}
+                )
+                .then(result => {
+                    req.flash('success', 'Item deleted')
                     res.redirect('/stores/items');
-                });
+                })
+                .catch(err => fn.error(err, '/stores/items', req, res));
             } else {
                 req.flash('danger', 'Cannot delete item while it has sizes assigned!');
                 res.redirect('/stores/items/' + req.params.id);
             };
         })
-        .catch(err => {
-            fn.error(err, '/stores/items/' + req.params.id, req, res);
-        });
+        .catch(err => fn.error(err, '/stores/items/' + req.params.id, req, res));
     });
 
     // Show
-    app.get('/stores/items/:id', mw.isLoggedIn, allowed('access_items', true, fn.getOne, m.permissions), (req, res) => {
-        var query = {};
-        query.sn = req.query.sn || 2;
+    app.get('/stores/items/:id', isLoggedIn, allowed('access_items'), (req, res) => {
         var include = [
             m.genders, 
             m.categories, 
@@ -145,24 +126,20 @@ module.exports = (app, m, allowed) => {
         ];
         fn.getOne(
             m.items,
-            {item_id: req.params.id}, 
-            include
+            {item_id: req.params.id},
+            {include: include, attributes: null, nullOK: false}
         )
         .then(item => {
-            item.item_sizes.forEach(item_size => {
-                item_size.locationStock = fn.summer(item_size.stocks);
-            });
-            fn.getNotes('items', req.params.id, req, res)
+            item.item_sizes.forEach(item_size => item_size.locationStock = fn.summer(item_size.stocks));
+            fn.getNotes('items', req.params.id, req)
             .then(notes => {
                 res.render('stores/items/show', {
                     item:  item,
                     notes: notes,
-                    query: query
+                    query: {sn: req.query.sn || 2}
                 });
             });
         })
-        .catch(err => {
-            fn.error(err, '/stores/items', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/items', req, res));
     });
 };

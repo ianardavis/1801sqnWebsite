@@ -6,7 +6,7 @@ module.exports = (mw, fn) => {
                     req.user.user_id
                 )
                 .then(permissions => {
-                    res.locals.permissions = permissions;
+                    res.locals.permissions = permissions.dataValues;
                     return next();
                 })
                 .catch(err => {

@@ -23,18 +23,20 @@
 </section>
 <% } %>
 <div class="container mt-3 pt-3">
-	<label for="_system">Showing:</label>
-	<select id="_system" type="text" onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
-		<% statuses.forEach((stat) => { %>
-			<% if (stat.status_id !== 4) { %>
-				<% if (stat.status_id === Number(status)) { %>
-					<option value="<%= stat.status_id %>" selected><%= stat._status %></option>
-				<% } else { %>
-					<option value="<%= stat.status_id %>"><%= stat._status %></option>
+	<div class="row mx-1">
+		<label class="col-md-3 col-form-label" for="_system">Showing:</label>
+		<select class="col-md-9 form-control" id="_system" type="text" onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
+			<% statuses.forEach((stat) => { %>
+				<% if (stat.status_id !== 4) { %>
+					<% if (stat.status_id === Number(status)) { %>
+						<option value="<%= stat.status_id %>" selected><%= stat._status %></option>
+					<% } else { %>
+						<option value="<%= stat.status_id %>"><%= stat._status %></option>
+					<% } %>
 				<% } %>
-			<% } %>
-		<% }) %>
-	</select>
+			<% }) %>
+		</select>
+	</div>
 	<table id="userTable" class="table table-sm table-hover mx-auto">
 		<thead class="thead-dark">
 			<th class="w-40" onclick="sortTable(0, 'userTable')">Bader/Service #</th>

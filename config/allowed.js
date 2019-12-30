@@ -1,35 +1,12 @@
-module.exports = function (permission, redirect, getOne, m) {
+module.exports = (permission, redirect = true) => {
     return (req, res, next) => {
-        getOne(
-            m,
-            {user_id: req.user.user_id},
-            [],
-            [permission]
-        )
-        .then(allowed => {
-            if (allowed[permission]) {
-                req.allowed = true;
-                next();
-            } else {
-                if (redirect) {
-                    req.flash('danger', 'Permission denied!');
-                    res.redirect('back');
-                } else {
-                    req.allowed = false;
-                    next();
-                };
-            };
-        })
-        .catch(err => {
-            console.log(err);
+        req.allowed = (res.locals.permissions[permission] === 1);
+        if (res.locals.permissions[permission]) next();
+        else {
             if (redirect) {
                 req.flash('danger', 'Permission denied!');
                 res.redirect('back');
-            } else {
-                req.allowed = false;
-                next();
-            };
-        });
-        return null;
+            } else next();
+        };
     };
 };

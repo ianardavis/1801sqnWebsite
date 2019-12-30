@@ -1,32 +1,23 @@
-const mw = {},
-      fn = {},
-      op = require('sequelize').Op;
+const op = require('sequelize').Op;
 
-module.exports = (app, m, allowed) => {
-    require("../../db/functions")(fn, m);
-    require('../../config/middleware')(mw, fn);
+module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //New Form
-    app.get('/stores/requests/new', mw.isLoggedIn, allowed('requests_add', false, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/requests/new', isLoggedIn, allowed('requests_add', false), (req, res) => {
         if (req.query.user) {
             if (req.allowed || Number(req.query.user) === req.user.user_id) {
                 fn.getOne(
                     m.users,
                     {user_id: req.query.user},
-                    [m.ranks]
+                    {include: [m.ranks], attributes: null, nullOK: false}
                 )
                 .then(user => {
-                    if (user.status_id === 1) {
-                        res.render('stores/requests/new', {
-                            user: user
-                        }); 
-                    } else {
+                    if (user.status_id === 1) res.render('stores/requests/new', {user: user}); 
+                    else {
                         req.flash('danger', 'Requests can only be made for current users')
                         res.redirect('/stores/users/' + req.query.user);
                     };
                 })
-                .catch(err => {
-                    fn.error(err, '/stores/users' + req.query.user, req, res);
-                });
+                .catch(err => fn.error(err, '/stores/users' + req.query.user, req, res));
             } else {
                 req.flash('danger', 'Permission Denied!');
                 res.redirect('/stores/users/' + req.query.user);
@@ -38,7 +29,7 @@ module.exports = (app, m, allowed) => {
     });
 
     //New Logic
-    app.post('/stores/requests', mw.isLoggedIn, allowed('requests_add', false, fn.getOne, m.permissions), (req, res) => {
+    app.post('/stores/requests', isLoggedIn, allowed('requests_add', false), (req, res) => {
         if (req.allowed || Number(req.body.requested_for) === req.user.user_id) {
             if (req.body.selected) {
                 fn.createRequest(
@@ -50,9 +41,7 @@ module.exports = (app, m, allowed) => {
                     req.flash('success', 'Request added');
                     res.redirect('/stores/users/' + req.body.requested_for);
                 })
-                .catch(err => {
-                    fn.error(err, '/stores/users/' + req.body.requested_for, req, res);
-                });
+                .catch(err => fn.error(err, '/stores/users/' + req.body.requested_for, req, res));
             } else {
                 req.flash('info', 'No items selected!');
                 res.redirect('/stores/users');
@@ -64,58 +53,42 @@ module.exports = (app, m, allowed) => {
     });
 
     //delete
-    app.delete('/stores/requests/:id', mw.isLoggedIn, allowed('requests_delete', true, fn.getOne, m.permissions), (req, res) => {
+    app.delete('/stores/requests/:id', isLoggedIn, allowed('requests_delete'), (req, res) => {
         if (req.query.user) {
             fn.delete(
-                m.requests_l,
-                {request_id: req.params.id}
+                'requests_l',
+                {request_id: req.params.id},
+                {hasLines: true}
             )
-            .then(line_result => {
-                fn.delete(
-                    m.requests,
-                    {request_id: req.params.id}
-                )
-                .then(request_result => {
-                    res.redirect('/stores/requests');
-                })
-                .catch(err => {
-                    fn.error(err, '/stores/requests', req, res);
-                });
+            .then(result => {
+                req.flash(result.success, result.message);
+                res.redirect('/stores/requests');
             })
-            .catch(err => {
-                fn.error(err, '/stores/requests', req, res);
-            });
+            .catch(err => fn.error(err, '/stores/requests', req, res));
         };
     });
 
     //Approve/Decline
-    app.put('/stores/requests/:id/approval', mw.isLoggedIn, allowed('requests_approve', true, fn.getOne, m.permissions), (req, res) => {
+    app.put('/stores/requests/:id/approval', isLoggedIn, allowed('requests_edit'), (req, res) => {
         fn.processRequests(
             req.body,
             req.user.user_id
         )
         .then(noNSNs => {
-            noNSNs.forEach(line_id => {
-                req.flash('danger', 'Can not issue line ' + line_id + ', no NSNs available');
-            });
+            noNSNs.forEach(line_id => req.flash('danger', 'Can not issue line ' + line_id + ', no NSNs available'));
             req.flash('success', 'Requests processed')
             res.redirect('/stores/requests');
         })
-        .catch(err => {
-            fn.error(err, '/stores/requests', req, res);
-        });
+        .catch(err => fn.error(err, '/stores/requests', req, res));
     });
 
     //Index
-    app.get('/stores/requests', mw.isLoggedIn, allowed('access_requests', false, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/requests', isLoggedIn, allowed('access_requests', false), (req, res) => {
         var query = {},
             where = {};
         query.cr = Number(req.query.cr) || 2;
-        if (query.cr === 2) {
-            where._complete = 0;
-        } else if (query.cr === 3) {
-            where._complete = 1;
-        };
+        if (query.cr === 2) where._complete = 0;
+        else if (query.cr === 3) where._complete = 1;
         if (req.allowed === false) where.requested_for = req.user.user_id
         fn.getAllWhere(
             m.requests,
@@ -134,13 +107,11 @@ module.exports = (app, m, allowed) => {
                 query:    query
             });
         })
-        .catch(err => {
-            fn.error(err, '/stores', req, res);
-        });
+        .catch(err => fn.error(err, '/stores', req, res));
     });
 
     //Show
-    app.get('/stores/requests/:id', mw.isLoggedIn, allowed('requests_approve', false, fn.getOne, m.permissions), (req, res) => {
+    app.get('/stores/requests/:id', isLoggedIn, allowed('requests_edit', false), (req, res) => {
         var query = {},
             where = {};
         query.sn = Number(req.query.sn) || 2;
@@ -153,25 +124,27 @@ module.exports = (app, m, allowed) => {
             fn.getOne(
                 m.requests,
                 {request_id: req.params.id},
-                [
-                    {
-                        model: m.requests_l,
-                        where: where,
-                        as: 'lines',
-                        include: [
-                            fn.item_sizes(true, true, true),
-                            fn.users(),
-                            m.orders,
-                            m.issues
-                        ]
-                    },
-                    fn.users('_for'),
-                    fn.users('_by')
-                ]
+                {
+                    include: [
+                        {
+                            model: m.requests_l,
+                            where: where,
+                            as: 'lines',
+                            include: [
+                                fn.item_sizes(true, true, true),
+                                fn.users()
+                            ]
+                        },
+                        fn.users('_for'),
+                        fn.users('_by')
+                    ],
+                    attributes: null,
+                    nullOK: false
+                }
             )
             .then(request => {
                 if (req.allowed || request._for.user_id === req.user.user_id) {
-                    fn.getNotes('requests', req.params.id, req, res)
+                    fn.getNotes('requests', req.params.id, req)
                     .then(notes => {
                         res.render('stores/requests/show', 
                             {
@@ -188,9 +161,7 @@ module.exports = (app, m, allowed) => {
                     res.redirect('/stores/requests');
                 };
             })
-            .catch(err => {
-                fn.error(err, '/stores/requests', req, res);
-            });
+            .catch(err => fn.error(err, '/stores/requests', req, res));
         } else if (req.query.sb === 'user') {
             if (req.allowed || req.params.id === req.user.user_id) {
                 fn.getAllWhere(
@@ -202,16 +173,14 @@ module.exports = (app, m, allowed) => {
                             where: {requested_for: req.params.id}
                         },
                         fn.item_sizes(true, true, true),
-                        fn.users(),
-                        m.orders,
-                        m.issues
+                        fn.users()
                     ]
                 )
                 .then(requests => {
                     fn.getOne(
                         m.users,
                         {user_id: req.params.id},
-                        [m.ranks]
+                        {include: [m.ranks], attributes: null, nullOK: false}
                     )
                     .then(user => {
                         res.render('stores/requests/show',
@@ -224,13 +193,9 @@ module.exports = (app, m, allowed) => {
                             }
                         );
                     })
-                    .catch(err => {
-                        fn.error(err, '/stores/requests', req, res);
-                    });
+                    .catch(err => fn.error(err, '/stores/requests', req, res));
                 })
-                .catch(err => {
-                    fn.error(err, '/stores/requests', req, res);
-                });
+                .catch(err => fn.error(err, '/stores/requests', req, res));
             } else {
                 req.flash('danger', 'Permission Denied!')
                 res.redirect('/stores/requests');

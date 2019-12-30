@@ -120,7 +120,7 @@
                         <div class="row">
                             <div class="col-12 col-md-3">
                                 <% if (permissions.categories_add) { %>
-                                    <form class="row" action="/stores/options?c=categories" method="POST" onsubmit="return confirm('Add category ?');">
+                                    <form class="row" action="/stores/options/categories" method="POST" onsubmit="return confirm('Add category ?');">
                                         <div class="col-9">
                                             <input class="form-control form-control-sm" type="text" name="record[_category]" maxlength="20">
                                         </div>
@@ -130,7 +130,7 @@
                                     </form>
                                 <% } %>
                                 <% if (permissions.categories_delete) { %>
-                                    <form action="/stores/options?_method=DELETE&c=categories" method="POST" onsubmit="return confirm('Confirm delete category?');">
+                                    <form action="/stores/options/categories?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete category?');">
                                         <input id="delete_category_id" type="hidden" name="where" value="{category_id: -1}">
                                         <button class="w-100 mb-1 btn btn-sm btn-danger">Delete Selected</button>
                                     </form>
@@ -142,7 +142,7 @@
                                     <% }); %>
                                 </select>
                                 <% if (permissions.categories_edit) { %>
-                                    <form class="row" action="/stores/options?_method=PUT&c=categories" method="POST" onsubmit="return confirm('Edit category?');">
+                                    <form class="row" action="/stores/options/categories?_method=PUT" method="POST" onsubmit="return confirm('Edit category?');">
                                         <input id="edit_category_id" type="hidden" name="where" value="{category_id: -1}">
                                         <div class="col-9">
                                             <input id="category_id_edit" class="form-control form-control-sm" type="text" name="record[_category]" maxlength="20">
@@ -155,7 +155,7 @@
                             </div>
                             <div class="col-12 col-md-3">
                                 <% if (permissions.groups_add) { %>
-                                    <form class="row" action="/stores/options?c=groups" method="POST" onsubmit="return confirm('Add group?');">
+                                    <form class="row" action="/stores/options/groups" method="POST" onsubmit="return confirm('Add group?');">
                                         <input id="group_category_id" type="hidden" name="record[category_id]" value="">
                                         <div class="col-9">
                                             <input class="form-control form-control-sm" type="text" name="record[_group]" maxlength="20">
@@ -166,7 +166,7 @@
                                     </form>
                                 <% } %>
                                 <% if (permissions.groups_delete) { %>
-                                    <form action="/stores/options?_method=DELETE&c=groups" method="POST" onsubmit="return confirm('Confirm delete group?');">
+                                    <form action="/stores/options/groups?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete group?');">
                                         <input id="delete_group_id" type="hidden" name="where" value="{group_id: -1}">
                                         <button class="w-100 mb-1 btn btn-sm btn-danger">Delete Selected</button>
                                     </form>
@@ -177,7 +177,7 @@
                                     <% }); %>
                                 </select>
                                 <% if (permissions.groups_edit) { %>
-                                    <form class="row" action="/stores/options?_method=PUT&c=groups" method="POST" onsubmit="return confirm('Edit group?');">
+                                    <form class="row" action="/stores/options/groups?_method=PUT" method="POST" onsubmit="return confirm('Edit group?');">
                                         <input id="edit_group_id" type="hidden" name="where" value="{category_id: -1}">
                                         <div class="col-9">
                                             <input id="group_id_edit" class="form-control form-control-sm" type="text" name="record[_group]" maxlength="20">
@@ -190,7 +190,7 @@
                             </div>
                             <div class="col-12 col-md-3">
                                 <% if (permissions.types_add) { %>
-                                    <form class="row" action="/stores/options?c=types" method="POST" onsubmit="return confirm('Add type ?');">
+                                    <form class="row" action="/stores/options/types" method="POST" onsubmit="return confirm('Add type ?');">
                                         <input id="type_group_id" type="hidden" name="record[group_id]" value="">
                                         <div class="col-9">
                                             <input class="form-control form-control-sm" type="text" name="record[_type]" maxlength="20">
@@ -201,7 +201,7 @@
                                     </form>
                                 <% } %>
                                 <% if (permissions.types_delete) { %>
-                                    <form action="/stores/options?_method=DELETE&c=types" method="POST" onsubmit="return confirm('Confirm delete type?');">
+                                    <form action="/stores/options/types?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete type?');">
                                         <input id="delete_type_id" type="hidden" name="where" value="{type_id: -1}">
                                         <button class="w-100 mb-1 btn btn-sm btn-danger">Delete Selected</button>
                                     </form>
@@ -212,7 +212,7 @@
                                     <% }); %>
                                 </select>
                                 <% if (permissions.types_edit) { %>
-                                    <form class="row" action="/stores/options?_method=PUT&c=types" method="POST" onsubmit="return confirm('Edit type?');">
+                                    <form class="row" action="/stores/options/types?_method=PUT" method="POST" onsubmit="return confirm('Edit type?');">
                                         <input id="edit_type_id" type="hidden" name="where" value="{type_id: -1}">
                                         <div class="col-9">
                                             <input id="type_id_edit" class="form-control form-control-sm" type="text" name="record[_type]" maxlength="20">
@@ -225,7 +225,7 @@
                             </div>
                             <div class="col-12 col-md-3">
                                 <% if (permissions.subtypes_add) { %>
-                                    <form class="row" action="/stores/options?c=subtypes" method="POST" onsubmit="return confirm('Add subtype?');">
+                                    <form class="row" action="/stores/options/subtypes" method="POST" onsubmit="return confirm('Add subtype?');">
                                         <input id="subtype_type_id" type="hidden" name="record[type_id]" value="">
                                         <div class="col-9">
                                             <input class="form-control form-control-sm" type="text" name="record[_subtype]" maxlength="20">
@@ -236,7 +236,7 @@
                                     </form>
                                 <% } %>
                                 <% if (permissions.subtypes_delete) { %>
-                                    <form action="/stores/options?_method=DELETE&c=subtypes" method="POST" onsubmit="return confirm('Confirm delete subtype?');">
+                                    <form action="/stores/options/subtypes?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete subtype?');">
                                         <input id="delete_subtype_id" type="hidden" name="where" value="{subtype_id: -1}">
                                         <button class="w-100 mb-1 btn btn-sm btn-danger">Delete Selected</button>
                                     </form>
@@ -247,7 +247,7 @@
                                     <% }); %>
                                 </select>
                                 <% if (permissions.subtypes_edit) { %>
-                                    <form class="row" action="/stores/options?_method=PUT&c=subtypes" method="POST" onsubmit="return confirm('Edit subtype ?');">
+                                    <form class="row" action="/stores/options/subtypes?_method=PUT" method="POST" onsubmit="return confirm('Edit subtype ?');">
                                         <input id="edit_subtype_id" type="hidden" name="where" value="{subtype_id: -1}">
                                         <div class="col-9">
                                             <input id="subtype_id_edit" class="form-control form-control-sm" type="text" name="record[_subtype]" maxlength="20">

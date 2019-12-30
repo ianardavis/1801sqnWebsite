@@ -24,7 +24,25 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <% if (permissions.users_permissions) { %>
                         <a class="dropdown-item" href="/stores/users/<%= f_user.user_id %>/edit">Edit</a>
+                        <div class="dropdown-divider"></div>
                     <% } %>
+                    <% if (user.user_id === f_user.user_id || permissions.requests_add) { %>
+                        <a class="dropdown-item" href="/stores/requests/new?user=<%= f_user.user_id %>">New Request</a>
+                    <% } %>
+                    <% if (user.user_id !== f_user.user_id && permissions.orders_add) { %>
+                        <a class="dropdown-item" href="/stores/orders/new?user=<%= f_user.user_id %>">New Order</a>
+                    <% } %>
+                    <% if (user.user_id !== f_user.user_id && permissions.issues_add) { %>
+                        <a class="dropdown-item" href="/stores/issues/new?user=<%= f_user.user_id %>">New Issue</a>
+                    <% } %>
+					<% if (user.user_id !== f_user.user_id && permissions.returns_add) { %>
+						<button form='returnedLines' class="dropdown-item dropdown_button">Return Selected Issues</button>
+					<% } %>
+                    <% if (permissions.notes_add) { %>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/stores/notes/new?table=users&id=<%= f_user.user_id %>">Add Note</a>
+                    <% } %>
+                        <div class="dropdown-divider"></div>
                     <% if (permissions.users_permissions && f_user.user_id !== user.user_id) { %>
                         <a class="dropdown-item" href="/stores/permissions/<%= f_user.user_id %>/edit">Edit Permissions</a>
                     <% } %>
@@ -32,39 +50,18 @@
                         <a class="dropdown-item" href="/stores/password?user=<%= f_user.user_id %>">Change Password Now</a>
                     <% } %>
                     <% if (permissions.users_password) { %>
-                        <form action="/stores/users/<%= f_user.user_id %>?_method=PUT" method="POST" onsubmit="return confirm('Confirm reset password on next login?');">
+                        <form action="/stores/users/<%= f_user.user_id %>?_method=PUT" method="POST" onsubmit="return confirm('Reset password on next login?');">
                             <input type="hidden" name="user[user_id]" value="<%=user.user_id %>">
-                            <input type="hidden" name="user[_reset]" value=<% if (user._reset === 0) { %>"1" <% } else { %>"0" <% } %>>
+                            <input type="hidden" name="user[_reset]" value=<% if (user._reset === 0) { %> "1" <% } else { %> "0" <% } %>>
                             <button class="dropdown-item dropdown_button" type="submit">Toggle Reset at Next Login</button>
                         </form>
                     <% } %>
-                    <% if (permissions.add_notes) { %>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/stores/notes/new?table=users&id=<%= f_user.user_id %>">Add Note</a>
-                    <% } %>
-                    <% if (user.user_id !== f_user.user_id && permissions.issues_add) { %>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/stores/issues/new?user=<%= f_user.user_id %>">New Issue</a>
-                    <% } %>
-					<% if (user.user_id !== f_user.user_id && permissions.issues_return) { %>
-						<button form='returnedLines' class="dropdown-item dropdown_button">Return Selected Issues</button>
-					<% } %>
-                    <% if (user.user_id !== f_user.user_id && permissions.orders_add) { %>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/stores/orders/new?user=<%= f_user.user_id %>">New Order</a>
-                    <% } %>
-                    <% if (user.user_id === f_user.user_id || permissions.requests_add) { %>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/stores/requests/new?user=<%= f_user.user_id %>">New Request</a>
-                    <% } %>
-
                     <% if (user.user_id !== f_user.user_id && permissions.users_delete) { %>
                         <div class="dropdown-divider"></div>
-                        <form action="/stores/users/<%= f_user.user_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete user?');">
+                        <form action="/stores/users/<%= f_user.user_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete user?');">
                             <button class="dropdown-item dropdown_button">Delete User</button>
                         </form>
                     <% } %>
-
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="/stores/users">Back to Users</a>
                 </div>
@@ -187,7 +184,7 @@
             <h4>Orders</h4>
             <div class="row px-3">
             <label class="col-form-label col-5" for="io">Issued Orders:</label>
-                <select id="io" class='form-control form-control-sm col-7' type="text" onchange=filterSelects()>
+                <select id="io" class='form-control form-control-sm col-7' type="text" onchange="filterSelects()">
                     <option value="1" <% if (query.io === 1) { %> selected <% } %> >Include</option>
                     <option value="2" <% if (query.io === 2) { %> selected <% } %> >Exclude</option>
                     <option value="3" <% if (query.io === 3) { %> selected <% } %> >Only</option>
@@ -211,9 +208,9 @@
                                 <td><a href='/stores/orders/<%= order.order_id %>'><%= order.item_size.item._description %></a></td>
                                 <td><a href='/stores/orders/<%= order.order_id %>'><%= order.item_size.size._text %></a></td>
                                 <td><a href='/stores/orders/<%= order.order_id %>'><%= order._qty %></a></td>
-                                <td><input class="form-control form-control-sm" type="checkbox" <% if (order.demands_l) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Demanded"></td>
-                                <td><input class="form-control form-control-sm" type="checkbox" <% if (order.receipts_l) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Received"></td>
-                                <td><input class="form-control form-control-sm" type="checkbox" <% if (order.issues_l) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Issued"></td>
+                                <td><input class="form-control form-control-sm" type="checkbox" <% if (order.demand_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Demanded"></td>
+                                <td><input class="form-control form-control-sm" type="checkbox" <% if (order.receipt_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Received"></td>
+                                <td><input class="form-control form-control-sm" type="checkbox" <% if (order.issue_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Issued"></td>
                             </tr>
                         <% }) %>
                     <% } %>
@@ -226,7 +223,7 @@
             <h4>Issues</h4>
             <div class="row px-3">
                 <label class="col-5 col-form-label" for="ri">Returned Lines:</label>
-                <select class='form-control form-control-sm col-7' id="ri" type="text" onchange=filterSelects()>
+                <select class='form-control form-control-sm col-7' id="ri" type="text" onchange="filterSelects()">
                     <option value="1"<% if (query.ri === 1) { %> selected <% } %>>Include</option>
                     <option value="2"<% if (query.ri === 2) { %> selected <% } %>>Exclude</option>
                     <option value="3"<% if (query.ri === 3) { %> selected <% } %>>Only</option>
@@ -241,9 +238,9 @@
                     <th class="w-20" onclick="sortTable(4, 'tableIssues')">Return Location</th>
                 </thead>
                 <tbody>
-                    <% if (permissions.issues_return) { %><form id='returnedLines' action="/stores/returns?src=/stores/users/<%= f_user.user_id %>" method='POST'><% } %>
-                        <% if (permissions.issues_return) { %><input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines"><% } %>
-                        <% if (permissions.issues_return) { %><input type="hidden" name="from" value="<%= f_user.user_id %>"><% } %>
+                    <% if (permissions.returns_add) { %><form id='returnedLines' action="/stores/returns?src=/stores/users/<%= f_user.user_id %>" method='POST'><% } %>
+                        <% if (permissions.returns_add) { %><input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines"><% } %>
+                        <% if (permissions.returns_add) { %><input type="hidden" name="from" value="<%= f_user.user_id %>"><% } %>
                         <% if (issues) { %>
                             <% issues.forEach(issue => { %>
                                 <tr>
@@ -254,7 +251,7 @@
                                     <td>
                                         <% if (issue.return) { %>
                                             <a href="#"><%= issue.return.stock.location._locatiion %></a>
-                                        <% } else if (permissions.issues_return) { %>
+                                        <% } else if (permissions.returns_add) { %>
                                             <select class="form-control form-control-sm" name="returnLines[]">
                                                 <option selected></option>
                                                 <% issue.item_size.stocks.forEach(stock => { %>
@@ -266,7 +263,7 @@
                                 </tr>
                             <% }); %>
                         <% }; %>
-                        <% if (permissions.issues_return) { %></form><% } %>
+                        <% if (permissions.returns_add) { %></form><% } %>
                 </tbody>
             </table>
         </div>
