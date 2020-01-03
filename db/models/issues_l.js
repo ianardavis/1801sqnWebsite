@@ -40,6 +40,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
+    'serial_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
     'return_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,

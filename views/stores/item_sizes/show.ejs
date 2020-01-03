@@ -59,13 +59,29 @@
 <section class="container pt-3">
 	<div class="row">
 		<div class="col-12 col-lg-3 mb-3 container bordered">
-            <h4>Ordering Details</h4>
+            <h4>Details</h4>
+            <div class="row">
+                <div class="col-5" >
+                    <label class="col-form-label">Issueable:</label>
+                </div>   
+                <div class="col-7">
+                    <input id="_issueable" class="form-control" type="checkbox"<% if (item_size._issueable) { %> checked<% } %> disabled>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-5" >
                     <label class="col-form-label">Orderable:</label>
                 </div>   
                 <div class="col-7">
                     <input id="_orderable" class="form-control" type="checkbox"<% if (item_size._orderable) { %> checked<% } %> disabled>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5" >
+                    <label class="col-form-label">Has Serial #:</label>
+                </div>   
+                <div class="col-7">
+                    <input id="_has_serial" class="form-control" type="checkbox"<% if (item_size._has_serial) { %> checked<% } %> disabled>
                 </div>
             </div>
             <div class="row">
@@ -125,7 +141,50 @@
                                         <td><% if (item_size.nsn_id === nsn.nsn_id) { %> <i class="fas fa-check"></i> <% } %></td>
                                         <td>
                                             <% if (permissions.nsns_delete === 1) { %>
-                                                <form action="/stores/nsns/<%= nsn.nsn_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete NSN?');"><button><i class="fas fa-trash-alt"></i></button></form>
+                                                <form action="/stores/nsns/<%= nsn.nsn_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete NSN?');">
+                                                    <button class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% } %><% if (item_size._issue_serial && permissions.access_serials) {%>
+            <div class="col-12 col-lg-3 mb-3 bordered">
+                <h4>
+                    <% if (permissions.serials_add) { %> 
+                        <a href="/stores/serials/new?itemsize_id=<%= item_size.itemsize_id %>">
+                            <i class="fas fa-plus-circle"></i>
+                        </a> 
+                    <% } %>
+                    Serial #
+                </h4>
+                <div style="overflow-x:auto;">
+                    <table id="serialTable" class="table table-sm table-hover w-100">
+                            <thead class="thead-dark">
+                                <th class="w-80" onclick="sortTable(0, 'serialTable')" >Serial #</th>
+                                <% if (permissions.serials_delete === 1) { %>
+                                    <th></th>
+                                <% } %>
+                            </thead>
+                            <tbody>
+                            <% if (item_size.serials) { %>
+                                <% item_size.serials.forEach(serial => { %>
+                                    <tr>
+                                        <td><a href="/stores/serials/<%= serial.serial_id %>/edit"><%= serial._serial %></a></td>
+                                        <td>
+                                            <% if (permissions.serials_delete === 1) { %>
+                                                <form action="/stores/serials/<%= serial.serial_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete Serial #?');">
+                                                    <button class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
                                             <% } %>
                                         </td>
                                     </tr>
@@ -164,7 +223,7 @@
                                 <% if (permissions.stock_delete === 1) { %>
                                 <td>
                                     <form action="/stores/stock/<%= stock.stock_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete stock record?');">
-                                        <button>
+                                        <button class="btn btn-sm btn-danger">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
@@ -178,7 +237,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.access_issues) {%>
+        <% if (item_size._issueable && permissions.access_issues) {%>
             <div class="col-12 col-lg-3 mb-3 bordered">
                 <h4>Issued: <%= stock._issued %></h4>
                 <div style="overflow-x:auto;">
@@ -201,7 +260,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.access_requests) {%>
+        <% if (item_size._issueable && permissions.access_requests) {%>
             <div class="col-12 col-lg-3 mb-3 bordered">
                 <h4>Requested: <%= stock._requested %></h4>
                 <div style="overflow-x:auto;">
@@ -224,7 +283,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.access_orders) {%>
+        <% if (item_size._orderable && permissions.access_orders) {%>
             <div class="col-12 col-lg-3 mb-3 bordered">
                 <h4>Ordered: <%= stock._ordered %></h4>
                 <div style="overflow-x:auto;">

@@ -154,19 +154,22 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //Index
     app.get('/stores/orders', isLoggedIn, allowed('access_orders'), (req, res) => {
-        let query = {},
-            where = {};
+        let query = {}, where = {};
         query.co = Number(req.query.co) || 2;
         if (query.co === 2) where._complete = 0
         else if (query.co === 3) where._complete = 1;
         fn.getAllWhere(
             m.orders,
             where,
-            [
-                fn.users('_for'),
-                fn.users('_by'),
-                {model: m.orders_l, as: 'lines'}
-            ]
+            {
+                include: [
+                    fn.users('_for'),
+                    fn.users('_by'),
+                    {model: m.orders_l, as: 'lines'}
+                ],
+                nullOk: false,
+                attributes: null
+            }
         )
         .then(orders => {
             fn.getAllWhere(
@@ -207,16 +210,18 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.orders,
             {order_id: req.params.id},
-            {include: [{
-                    model: m.orders_l,
-                    as:    'lines',
-                    where: where,
+            {include: [
+                {
+                    model:    m.orders_l,
+                    as:       'lines',
+                    where:    where,
                     required: false,
                     include: [
                         {model: m.demands_l, include:[m.demands]},
                         {model: m.receipts_l, include:[m.receipts]},
                         {model: m.issues_l, include:[m.issues]},
-                        fn.item_sizes(false, true)]
+                        {model: m.item_sizes, include: fn.itemSize_inc()}
+                    ]
                 },
                 fn.users('_for'),
                 fn.users('_by')

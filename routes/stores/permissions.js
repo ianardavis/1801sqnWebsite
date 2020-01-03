@@ -15,10 +15,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 }
             )
             .then(user => {
-                var attributes = [];
-                for (var attribute in m.permissions.rawAttributes) {
+                let attributes = [];
+                for (let attribute in m.permissions.rawAttributes) {
                     if (!m.permissions.rawAttributes.hasOwnProperty(attribute)) continue;
-                    var obj = m.permissions.rawAttributes[attribute];
+                    let obj = m.permissions.rawAttributes[attribute];
                     if (obj.fieldName !== 'user_id' && obj.fieldName !== 'createdAt' && obj.fieldName !== 'updatedAt') attributes.push(JSON.stringify({name: obj.fieldName, parent: obj.comment}))
                 };
                 res.render('stores/permissions/edit', {

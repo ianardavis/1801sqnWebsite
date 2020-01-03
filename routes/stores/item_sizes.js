@@ -2,21 +2,15 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // New Form
     app.get('/stores/item_sizes/new', isLoggedIn, allowed('item_sizes_add'), (req, res) => {
-        fn.getOne(
-            m.items,
-            {item_id: req.query.item_id}
-        )
+        fn.getOne(m.items, {item_id: req.query.item_id})
         .then(item => {
-            fn.getAllWhere(
-                m.suppliers,
-                {supplier_id: {[op.not]: 3}}
-            )
+            fn.getAll(m.suppliers)
             .then(suppliers => {
                 fn.getAll(m.sizes)
                 .then(sizes => {
                     res.render('stores/item_sizes/new', {
-                        item:     item,
-                        sizes:    sizes,
+                        item:      item,
+                        sizes:     sizes,
                         suppliers: suppliers
                     });
                 })
@@ -30,7 +24,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // New Logic
     app.post('/stores/item_sizes', isLoggedIn, allowed('item_sizes_add'), (req, res) => {
         if (req.body.sizes) {
-            var lines = [];
+            let lines = [];
             req.body.sizes.forEach(size_id => {
                 if (size_id) lines.push(fn.addSize(size_id, req.body.details));
             });
@@ -59,7 +53,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             m.item_sizes,
             {itemsize_id: req.params.id},
             {
-                include: fn.itemSizeInclude({include: false}, {include: false}, {include: false}, {include: false}, {include: false}),
+                include: fn.itemSize_inc({supplier: true}),
                 attributes: null,
                 nullOK: false
             }
@@ -79,8 +73,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     
     // Put
     app.put('/stores/item_sizes/:id', isLoggedIn, allowed('item_sizes_edit'), (req, res) => {
-        if (typeof(req.body.item_size._orderable) === 'undefined') req.body.item_size._orderable = 0
-        else req.body.item_size._orderable = 1;
+        ['_issueable', '_orderable', '_issue_serial'].forEach(checkbox => {
+            if (typeof(req.body.item_size[checkbox]) === 'undefined') req.body.item_size[checkbox] = 0
+            else req.body.item_size[checkbox] = 1;
+        });        
         fn.update(
             m.item_sizes,
             req.body.item_size,
@@ -133,18 +129,19 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     // Show
     app.get('/stores/item_sizes/:id', isLoggedIn, allowed('access_items'), (req, res) => {
-        var query = {};
-        query.sn = req.query.sn || 2;
         fn.getOne(
             m.item_sizes,
             {itemsize_id: req.params.id},
             {
-                include: fn.itemSizeInclude(
-                    {include: true},
-                    {include: true},
-                    {include: true, where: {return_line_id: null}},
-                    {include: true, where: {receipt_line_id: null}},
-                    {include: true, where: {_status: 'Pending'}}),
+                include: fn.itemSize_inc({
+                    supplier: true,
+                    nsns:     true,
+                    stock:    true,
+                    serials:  true,
+                    issues:   {return_line_id: null},
+                    orders:   {receipt_line_id: null},
+                    requests: {_status: 'Pending'}
+                }),
                 attributes: null,
                 nullOK: false
             }
@@ -153,7 +150,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .then(item_size => {
             fn.getNotes('item_sizes', req.params.id, req)
             .then(notes =>{
-                var stock = new Object();
+                let stock = {};
                 stock._stock     = fn.summer(item_size.stocks) || 0;
                 stock._ordered   = fn.summer(item_size.orders_ls) || 0;
                 stock._issued    = fn.summer(item_size.issues_ls) || 0;
@@ -162,7 +159,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     item_size:  item_size,
                     notes: notes,
                     stock: stock,
-                    query: query
+                    query: {sn: req.query.sn || 2}
                 });
             });
         })

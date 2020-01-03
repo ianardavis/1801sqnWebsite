@@ -9,7 +9,9 @@ module.exports = (app, m) => {
     
     app.get("/resources", (req, res) => res.render("resources"));
     
-    app.get('/login', (req, res) => res.render('login'));
+    app.get('/login', (req, res) => {
+        res.render('login')
+    });
 
     app.get('/logout', (req, res) => {
         req.logout();

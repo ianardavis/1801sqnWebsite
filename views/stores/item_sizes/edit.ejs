@@ -20,63 +20,77 @@
         </ul>
     </nav>
 </section>
-<section class="container-fluid p-5">
-   <div class="details container bordered p-3">
-        <form action="/stores/item_sizes/<%= item_size.itemsize_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit item size?');">
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Orderable:</label>
-                </div> 
-                <div class="col-7">
-                    <input class="form-control" id="_orderable" type="checkbox" name="item_size[_orderable]" value="1" <% if (item_size._orderable) { %> checked <% } %> onchange="orderableCheck()">
-                </div>
+<section class="container p-3 bordered">
+    <form action="/stores/item_sizes/<%= item_size.itemsize_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit item size?');">
+        <div class="form-group row">
+            <div class="col-5" >
+                <label class="col-form-label">Issueable:</label>
+            </div> 
+            <div class="col-7">
+                <input class="form-control" id="_issueable" type="checkbox" name="item_size[_issueable]" value="1" <% if (item_size._issueable) { %> checked <% } %> onchange="orderableCheck()">
             </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Supplier:</label>
-                </div> 
-                <div class="col-7">
-                    <select class="form-control" name="item_size[supplier_id]" id="supplier_id" type="text" onchange="supplierCheck()">
-                        <% suppliers.forEach(supplier => { %>
-                            <% if (supplier.supplier_id === item_size.supplier_id) { %>
-                                <option value="<%= supplier.supplier_id %>" selected><%= supplier._name %></option>         
-                            <% } else { %>
-                                <option value="<%= supplier.supplier_id %>"><%= supplier._name %></option>         
-                            <% } %>
-                        <% }) %>
-                    </select>
-                </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-5" >
+                <label class="col-form-label">Orderable:</label>
+            </div> 
+            <div class="col-7">
+                <input class="form-control" id="_orderable" type="checkbox" name="item_size[_orderable]" value="1" <% if (item_size._orderable) { %> checked <% } %> onchange="orderableCheck()">
             </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Demand Page:</label>
-                </div> 
-                <div class="col-7">
-                    <input class="form-control" id="_demand_page" type="text" name="item_size[_demand_page]" maxlength="20" value="<%= item_size._demand_page %>">
-                </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-5" >
+                <label class="col-form-label">Has Serial #:</label>
+            </div> 
+            <div class="col-7">
+                <input class="form-control" id="_has_serial" type="checkbox" name="item_size[_has_serial]" value="1" <% if (item_size._has_serial) { %> checked <% } %> onchange="orderableCheck()">
             </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Cell:</label>
-                </div> 
-                <div class="col-7">
-                    <input class="form-control" id="_demand_cell" type="text" name="item_size[_demand_cell]" value="<%= item_size._demand_cell %>" maxlength="3">
-                </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-5" >
+                <label class="col-form-label">Supplier:</label>
+            </div> 
+            <div class="col-7">
+                <select class="form-control" name="item_size[supplier_id]" id="supplier_id" type="text" onchange="supplierCheck()">
+                    <% suppliers.forEach(supplier => { %>
+                        <% if (supplier.supplier_id === item_size.supplier_id) { %>
+                            <option value="<%= supplier.supplier_id %>" selected><%= supplier._name %></option>         
+                        <% } else { %>
+                            <option value="<%= supplier.supplier_id %>"><%= supplier._name %></option>         
+                        <% } %>
+                    <% }) %>
+                </select>
             </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Ordering Details:</label>
-                </div> 
-                <div class="col-7">
-                    <textarea name="item_size[_ordering_details]" cols="50" rows="10" maxlength="1000"><%= item_size._ordering_details %></textarea>
-                </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-5" >
+                <label class="col-form-label">Demand Page:</label>
+            </div> 
+            <div class="col-7">
+                <input class="form-control" id="_demand_page" type="text" name="item_size[_demand_page]" maxlength="20" value="<%= item_size._demand_page %>">
             </div>
-            <div class="form-group row p-3">
-                <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
-                <a href="/stores/item_sizes/<%= item_size.itemsize_id %>">Cancel</a>
+        </div>
+        <div class="form-group row">
+            <div class="col-5" >
+                <label class="col-form-label">Cell:</label>
+            </div> 
+            <div class="col-7">
+                <input class="form-control" id="_demand_cell" type="text" name="item_size[_demand_cell]" value="<%= item_size._demand_cell %>" maxlength="3">
             </div>
-        </form>
-    </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-5" >
+                <label class="col-form-label">Ordering Details:</label>
+            </div> 
+            <div class="col-7">
+                <textarea name="item_size[_ordering_details]" cols="50" rows="10" maxlength="1000"><%= item_size._ordering_details %></textarea>
+            </div>
+        </div>
+        <div class="form-group row p-3">
+            <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
+            <a href="/stores/item_sizes/<%= item_size.itemsize_id %>">Cancel</a>
+        </div>
+    </form>
 </section>
 <% include ../../partials/foot/full %>
 <script>

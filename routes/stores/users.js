@@ -1,4 +1,5 @@
-const op = require('sequelize').Op;
+const op     = require('sequelize').Op,
+      bCrypt = require('bcrypt');
 function options() {
     return [
         {table: 'ranks'},
@@ -10,7 +11,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/users', isLoggedIn, allowed('access_users', false), (req, res) => {
         if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id);
         else {
-            var query = Number(req.query.status) || 1;
+            let query = Number(req.query.status) || 1;
             fn.getAll(m.statuses)
             .then(statuses => {
                 fn.getAllWhere(
@@ -19,7 +20,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         user_id: {[op.not]: 1},
                         status_id: query
                     },
-                    [m.ranks]
+                    {include: [m.ranks], nullOk: false, attributes: null}
                 )
                 .then(users => {
                     res.render('stores/users/index', {
@@ -35,8 +36,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     // New Logic
     app.post('/stores/users', isLoggedIn, allowed('users_add'), (req, res) => {
-        var bCrypt  = require('bcrypt'),
-            salt = bCrypt.genSaltSync(10);
+        let salt = bCrypt.genSaltSync(10);
         req.body.user._salt = salt;
         req.body.user._password = bCrypt.hashSync(req.body._password, salt);
         req.body.user._reset = 0
@@ -77,7 +77,6 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // Edit password Put
     app.put('/stores/password/:id', isLoggedIn, allowed('users_password', false), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            var bCrypt      = require('bcrypt');
             req.body.user._salt = bCrypt.genSaltSync(10)
             req.body.user._password = bCrypt.hashSync(req.body._password, req.body.user._salt);
             fn.update(
@@ -151,8 +150,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // Show
     app.get('/stores/users/:id', isLoggedIn, allowed('access_users', false), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            var where = {},
-                query = {};
+            let where = {}, query = {};
             query.io = Number(req.query.io) || 2,
             query.cl = Number(req.query.cl) || 2,
             query.cr = Number(req.query.cr) || 2,
@@ -173,43 +171,46 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
-                {include: fn.userInclude(false, false, false), attributes: null, nullOK: false}
+                {include: fn.user_inc({statuses: true, permissions: true}), attributes: null, nullOK: false}
             )
             .then(user => {
                 fn.getAllWhere(
                     m.requests_l,
                     where.requests,
-                    [
-                        {
-                            model: m.requests,
-                            where: {requested_for: user.user_id}
-                        },
-                        fn.item_sizes(true, true, false)
-                    ]
+                    {
+                        include: [
+                            {model: m.requests, where: {requested_for: user.user_id}},
+                            {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
+                        ],
+                        nullOk: false,
+                        attributes: null
+                    }
                 )
                 .then(requests => {
                     fn.getAllWhere(
                         m.orders_l,
                         where.orders,
-                        [
-                            {
-                                model: m.orders,
-                                where: {ordered_for: user.user_id}
-                            },
-                            fn.item_sizes(true, true, false)
-                        ]
+                        {
+                            include: [
+                                {model: m.orders, where: {ordered_for: user.user_id}},
+                                {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
+                            ],
+                            nullOk: false,
+                            attributes: null
+                        }
                     )
                     .then(orders => {
                         fn.getAllWhere(
                             m.issues_l,
                             where.issues,
-                            [
-                                {
-                                    model: m.issues,
-                                    where: {issued_to: user.user_id}
-                                },
-                                fn.item_sizes(true, true, false)
-                            ]
+                            {
+                                include: [
+                                    {model: m.issues, where: {issued_to: user.user_id}},
+                                    {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
+                                ],
+                                nullOk: false,
+                                attributes: null
+                            }
                         )
                         .then(issues => {
                             fn.getNotes('users', req.params.id, req)

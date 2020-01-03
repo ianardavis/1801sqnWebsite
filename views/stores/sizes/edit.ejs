@@ -33,19 +33,15 @@
 		</li>
 	</ul>
 </nav>
-<section class="detailBox container-fluid pt-3">
+<section class="container pt-3">
 	<div class="row">
-		<div class="col-12 col-md-3 mx-auto">
-			<div class="container bordered">
-				<h4>Size</h4>
-				<div class="details">
-					<form action="/stores/sizes/<%= size.size_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit size?');">
-						<input type="hidden" name="size_id" value="<%= size.size_id %>" readonly>
-						<p><input class="form-control" type="text" name="size[_text]" maxlength="20" value="<%= size._text %>" required></p>
-						<p><button class="btn btn-success">Save</button></p>
-					</form>
-                </div>
-			</div>
+		<div class="col-12 col-md-3 mx-auto bordered">
+			<h4>Size</h4>
+			<form action="/stores/sizes/<%= size.size_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit size?');">
+				<input type="hidden" name="size_id" value="<%= size.size_id %>" readonly>
+				<p><input class="form-control" type="text" name="size[_text]" maxlength="20" value="<%= size._text %>" required></p>
+				<p><button class="btn btn-success">Save</button></p>
+			</form>
 		</div>
 		<div class="col-12 col-md-9 mx-auto bordered">
 			<% include ../../partials/noteTable %>

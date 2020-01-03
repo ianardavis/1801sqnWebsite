@@ -26,13 +26,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             m.item_sizes,
             {itemsize_id: req.query.itemsize_id},
             {
-                include: fn.itemSizeInclude(
-                    {include: false}, 
-                    {include: false}, 
-                    {include: false}, 
-                    {include: false}, 
-                    {include: false}
-                ),
+                include: fn.itemSize_inc(),
                 attributes: null,
                 nullOK: false
             }
@@ -60,51 +54,36 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
-
-    function editDefault() {
-
-    };
     // Put
     app.put('/stores/nsns/:id', isLoggedIn, allowed('nsns_edit'), (req, res) => {
-        fn.getOne(
-            m.nsns,
-            {nsn_id: req.params.id}
-        )
-        .then(nsn => {
-            var actions = [];
-            if (req.body.default) {
-                if (Number(req.body.currentDefault) !== Number(nsn.nsn_id)) {
-                    actions.push(
-                        fn.update(
-                            m.item_sizes,
-                            {nsn_id: nsn.nsn_id},
-                            {itemsize_id: nsn.itemsize_id}
-                        )
-                    );
-                };
-            } else {
-                if (Number(req.body.currentDefault) === Number(nsn.nsn_id)) {
-                    actions.push(
-                        fn.update(
-                            m.item_sizes,
-                            {nsn_id: null},
-                            {itemsize_id: nsn.itemsize_id}
-                        )
-                    );
-                };
-            };
+        let actions = [];
+        actions.push(
+            fn.update(
+                m.nsns,
+                req.body.nsn,
+                {nsn_id: req.params.id}
+            )
+        );
+        if (req.body.default && Number(req.body.currentDefault) !== Number(req.params.id)) {
             actions.push(
                 fn.update(
-                    m.nsns,
-                    req.body.nsn,
-                    {nsn_id: req.params.id}
+                    m.item_sizes,
+                    {nsn_id: req.params.id},
+                    {itemsize_id: req.body.itemsize_id}
                 )
-            )
-            Promise.all(actions)
-            .then(result => res.redirect('/stores/item_sizes/' + nsn.itemsize_id))
-            .catch(err => fn.error(err, '/stores/item_sizes/' + nsn.itemsize_id, req, res));
-        })
-        .catch(err => fn.error(err, 'back', req, res));
+            );
+        } else if (Number(req.body.currentDefault) === Number(req.params.id)) {
+            actions.push(
+                fn.update(
+                    m.item_sizes,
+                    {nsn_id: null},
+                    {itemsize_id: req.body.itemsize_id}
+                )
+            );
+        };
+        Promise.all(actions)
+        .then(result => res.redirect('/stores/item_sizes/' + req.body.itemsize_id))
+        .catch(err => fn.error(err, '/stores/item_sizes/' + req.body.itemsize_id, req, res));
     });
     // Delete
     app.delete('/stores/nsns/:id', isLoggedIn, allowed('nsns_delete'), (req, res) => {

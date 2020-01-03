@@ -4,9 +4,7 @@ module.exports = (passport, m) => {
         fn     = {};
         require('../db/functions')(fn, m);
 
-    passport.serializeUser((user, done) => {
-        done(null, user._login_id);
-    });
+    passport.serializeUser((user, done) => done(null, user._login_id));
 
     passport.deserializeUser((_login_id, done) => {
         fn.getOne(
@@ -31,9 +29,7 @@ module.exports = (passport, m) => {
             passwordField: '_password',
             passReqToCallback: true
         },(req, _login_id, _password, done) => {
-            var isValidPassword = (userpass, password) => {
-                    return bCrypt.compareSync(password, userpass);
-                };
+            var isValidPassword = (userpass, password) => {return bCrypt.compareSync(password, userpass)};
             fn.getOne(
                 m.users,
                 {_login_id: _login_id},
@@ -69,10 +65,7 @@ module.exports = (passport, m) => {
                         false, 
                         {message: 'Your account is disabled!'}
                     );
-                } else {
-                    var userInfo = user.get();
-                    return done(null, userInfo);
-                };
+                } else return done(null, user.get());
             })
             .catch(err => {
                 console.log(err);

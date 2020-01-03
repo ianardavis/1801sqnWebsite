@@ -110,6 +110,30 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_locations"
     },
+    'access_serials': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_items"
+    },
+    'serials_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_serials"
+    },
+    'serials_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_serials"
+    },
+    'serials_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_serials"
+    },
     'access_nsns': {
       type: DataTypes.INTEGER(4),
       allowNull: false,

@@ -16,7 +16,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //New Logic
     app.post('/stores/receipts', isLoggedIn, allowed('receipts_add'), (req, res) => {
         if (req.body.selected) {
-            var lines = []
+            let lines = []
             req.body.selected.forEach(line => lines.push(JSON.parse(line)));
             if (lines.length > 0) {
                 fn.createReceipt(
@@ -45,7 +45,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         as: 'lines',
                         include: [
                             {
-                                model: m.stock, include: [m.locations, fn.item_sizes(false, true)]
+                                model: m.stock, include: [
+                                    m.locations,
+                                    {model: m.item_sizes, include: fn.itemSize_inc()}
+                                ]
                             }
                         ]
                     },

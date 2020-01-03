@@ -22,7 +22,22 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-
+            <div class="container">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-50">Setting</th>
+                        <th class="w-50">Value</th>
+                    </thead>
+                    <tbody>
+                        <% settings.forEach(setting => { %>
+                            <tr>
+                                <td><%= setting._name %></td>
+                                <td><%= setting._value %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
             <ul class="nav nav-tabs" id="optionsTab" role="tablist">
@@ -75,7 +90,7 @@
                                 <% if (permissions.statuses_delete) { %><th></th><% } %>
                             </thead>
                             <tbody>
-                                <% classes.statuses.forEach((status) => { %>
+                                <% classes.statuses.forEach(status => { %>
                                     <tr>
                                         <td><a href="/stores/statuses/<%= status.status_id %>/edit?t=statuses"><%= status._status %></a></td>
                                         <% if (permissions.statuses_delete) { %>
@@ -99,7 +114,7 @@
                                 <% if (permissions.genders_delete) { %><th></th><% } %>
                             </thead>
                             <tbody>
-                                <% classes.genders.forEach((gender) => { %>
+                                <% classes.genders.forEach(gender => { %>
                                     <tr>
                                         <td><a href="/stores/genders/<%= gender.gender_id %>/edit?t=genders"><%= gender._gender %></a></td>
                                         <% if (permissions.genders_delete) { %>
@@ -269,7 +284,7 @@
                                 <% if (permissions.sizes_delete) { %><th></th><% } %>
                             </thead>
                             <tbody>
-                                <% sizes.forEach((size) => { %>
+                                <% sizes.forEach(size => { %>
                                     <tr>
                                         <td><a href="/stores/sizes/<%= size.size_id %>/edit"><%= size._text %></a></td>
                                         <% if (permissions.sizes_delete) { %>

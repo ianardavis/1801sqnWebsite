@@ -37,6 +37,18 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "null"
     },
+    '_issueable': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '1',
+      comment: "null"
+    },
+    '_has_serial': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "null"
+    },
     '_demand_page': {
       type: DataTypes.STRING(20),
       allowNull: true,

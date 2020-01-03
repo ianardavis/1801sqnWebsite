@@ -36,21 +36,19 @@
 		</li>
 	</ul>
 </nav>
-<section class="detailBox container-fluid pt-3">
+<section class="container pt-3">
 	<div class="row">
-		<div class="col-12 col-lg-3 mx-auto mb-3">
-			<div class="container bordered">
-                <h4><%= query.at %></h4>
-                <h5>Current Quantity: <%= stock._qty %></h5>
-                <form action="/stores/adjusts" method="POST" onsubmit="return confirm('Add adjustment?');">
-					<div class="">
-						<input type="hidden" name="adjust[_type]" value="<%= query.at %>" readonly>
-						<input type="hidden" name="adjust[stock_id]" value="<%= stock.stock_id %>" readonly>
-						<p><input type="number" name="adjust[_qty]" inputmode="numeric" maxlength="11" placeholder="Quantity" required></p>
-					</div>
-					<p><button class="btn btn-success">Save</button></p>
-				</form>
-            </div>
+		<div class="col-12 col-lg-3 mx-auto mb-3 bordered">
+            <h4><%= query.at %></h4>
+            <h5>Current Quantity: <%= stock._qty %></h5>
+            <form action="/stores/adjusts" method="POST" onsubmit="return confirm('Add adjustment?');">
+                <div class="">
+                    <input type="hidden" name="adjust[_type]" value="<%= query.at %>" readonly>
+                    <input type="hidden" name="adjust[stock_id]" value="<%= stock.stock_id %>" readonly>
+                    <p><input type="number" name="adjust[_qty]" inputmode="numeric" maxlength="11" placeholder="Quantity" required></p>
+                </div>
+                <p><button class="btn btn-success">Save</button></p>
+            </form>
 		</div>
     </div>
 </section>

@@ -14,7 +14,11 @@ module.exports = (app, m, allowed, fn, isLoggedIn) => {
         fn.getOne(
             m.item_sizes,
             {itemsize_id: req.query.itemsize_id},
-            fn.item_sizes()
+            {
+                include:    [{model: m.item_sizes, include: fn.itemSize_inc()}],
+                attributes: null,
+                nullOK:     false
+            }
         )
         .then(item_size => res.render('stores/locations/new', {item_size: item_size}))
         .catch(err => fn.error(err, '/stores/item_sizes', req, res));

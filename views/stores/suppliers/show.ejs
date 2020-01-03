@@ -24,6 +24,9 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <% if (permissions.suppliers_edit) { %>
                         <a class="dropdown-item" href="/stores/suppliers/<%= supplier.supplier_id %>/edit">Edit</a>
+                        <form action="/stores/suppliers/<%= supplier.supplier_id %>/default?_method=PUT" method="POST" onsubmit="return confirm('Make supplier the default?');">
+                            <button class="dropdown-item dropdown_button">Make Default</button>
+                        </form>
                         <div class="dropdown-divider"></div>
                     <% } %>
                     <% if (permissions.receipts_add) { %>
@@ -33,7 +36,7 @@
                     <% if (permissions.notes_add) { %>
                         <a class="dropdown-item" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">Add Note</a>
                         <div class="dropdown-divider"></div>
-                    <% } %>                    
+                    <% } %>
                     <% if (permissions.suppliers_delete === 1) { %>
                         <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete supplier?');">
                             <button class="dropdown-item dropdown_button">Delete Supplier</button>
@@ -100,25 +103,25 @@
                     <label class="col-form-label">RAF Stores?:</label>
                 </div>
                 <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="checkbox" id="_stores" value="1" <% if (supplier._stores) { %>checked<% } %> disabled>
+                    <input class="form-control form-control-sm" type="checkbox" id="_stores" value="1"<% if (supplier._stores) { %> checked<% } %> disabled>
                 </div>
             </div>
-            <div class="row">
+            <div class="form-group row">
                 <div class="col-sm-4">
-                    <label class="col-form-label">Is Default:</label>
+                    <label class="col-form-label" for="_stores">Create Demand File?:</label>
                 </div>
                 <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="checkbox" id="_default" value="1" <% if (supplier._default) { %>checked<% } %> disabled>
+                    <input class="form-control form-control-sm" id="_stores" name="supplier[_raise_demand]" value="1" type="checkbox"<% if (supplier._raise_demand) { %> checked <% } %> disabled>
                 </div>
             </div>
             <div class="row mb-1">
                 <% if (supplier.file) { %>
-                <div class="col-sm-4">
-                    <label class="col-form-label"><a class="a-label" href="/stores/files/<%= supplier.file_id %>/edit">Demand File:</a></label>
-                </div>
-                <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier.file._path %>" readonly>
-                </div>
+                    <div class="col-sm-4">
+                        <label class="col-form-label"><a class="a-label" href="/stores/files/<%= supplier.file_id %>/edit">Demand File:</a></label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input class="form-control form-control-sm" type="text" value="<%= supplier.file._path %>" readonly>
+                    </div>
                 <% }; %>
                 <% if (permissions.files_add) { %>
                     <div class="col-12">
@@ -154,9 +157,7 @@
     };
     function goToItemSize() {
         var item_size = document.querySelector('#itemsize_id');
-        if (item_size) {
-            window.location = '/stores/item_sizes/' + item_size.value;
-        };
+        if (item_size) window.location = '/stores/item_sizes/' + item_size.value;
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -1,22 +1,25 @@
 module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // Index
     app.get('/stores/issues', isLoggedIn, allowed('access_issues'), (req, res) => {
-        var query = {},
-            where = {};
+        let query = {}, where = {};
         query.ci = Number(req.query.ci) || 2;
         if (query.ci === 2) where._complete = 0;
         else if (query.ci === 3) where._complete = 1;
         fn.getAllWhere(
             m.issues, 
-            where, 
-            [
-                fn.users('_for'),
-                fn.users('_by'),
-                {
-                    model: m.issues_l,
-                    as: 'lines'
-                }
-            ]
+            where,
+            {
+                include: [
+                    fn.users('_for'),
+                    fn.users('_by'),
+                    {
+                        model: m.issues_l,
+                        as: 'lines'
+                    }
+                ],
+                nullOk: false,
+                attributes: null
+            }
         )
         .then(issues => {
             res.render('stores/issues/index', {
@@ -29,12 +32,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //New Logic
     app.post('/stores/issues', isLoggedIn, allowed('issues_add'), (req, res) => {
-        items = []
+        let items = []
         req.body.selected.forEach(line => {
-            var arr = {};
-            line.forEach(obj => {
-                arr = {...arr, ...JSON.parse(obj)}
-            });
+            let arr = {};
+            line.forEach(obj => arr = {...arr, ...JSON.parse(obj)});
             items.push(arr);
         });
         fn.createIssue(
@@ -97,7 +98,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id},
-            {include: fn.issuesInclude(true), attributes: null, nullOK: false}
+            {include: fn.issues_inc(true), attributes: null, nullOK: false}
         )
         .then(issue => {
             if (req.allowed || issue.issuedTo.user_id === req.user.user_id) {

@@ -28,7 +28,7 @@
                     Options
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <% if (permissions.issues_return) { %>
+                    <% if (permissions.returns_add) { %>
                         <button form='issues' class="dropdown-item dropdown_button">Return Selected Lines</button>
                     <% } %>
                     <% if (permissions.notes_add) { %>
@@ -91,9 +91,9 @@
         <% } %>
         <div class="col-12 mb-3 bordered">
             <h4>Lines</h4>
-            <% if (permissions.issues_return) { %><form id="issues" action="/stores/returns?src=/stores/issues/<%= issue.issue_id %>" method="POST" onsubmit="return confirm('Confirm return issued item?');"><% } %>
-                <% if (permissions.issues_return) { %><input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines"><% } %>
-                <% if (permissions.issues_return) { %><input type="hidden" name="from" value="<%= issue.issued_to %>"><% } %>
+            <% if (permissions.returns_add) { %><form id="issues" action="/stores/returns?src=/stores/issues/<%= issue.issue_id %>" method="POST" onsubmit="return confirm('Confirm return issued item?');"><% } %>
+                <% if (permissions.returns_add) { %><input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines"><% } %>
+                <% if (permissions.returns_add) { %><input type="hidden" name="from" value="<%= issue.issued_to %>"><% } %>
                 <table id="issueTable" class="table table-sm table-hover mx-auto w-100">
                     <thead class="thead-dark">
                         <th class="w-5" onclick="sortTable(0, 'issueTable')">Line</th>
@@ -118,7 +118,7 @@
                                     <td>
                                         <% if (line.returns_l) { %>
                                             <a href="/stores/stock/<%= line.returns_l.stock_id %>/edit"><%= line.returns_l.stock.location._location %></a>
-                                        <% } else if (permissions.issues_return) { %>
+                                        <% } else if (permissions.returns_add) { %>
                                             <select class="form-control form-control-sm" name="returnLines[]">
                                                 <option value="" selected></option>
                                                 <% if (line.item_size.stocks) { %>
@@ -135,7 +135,7 @@
                         <% }; %>
                     </tbody>
                 </table>
-            <% if (permissions.issues_return) { %></form><% } %>
+            <% if (permissions.returns_add) { %></form><% } %>
         </div>
     </div>
 </section>

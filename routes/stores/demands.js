@@ -3,24 +3,27 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //index
     app.get('/stores/demands', isLoggedIn, allowed('access_demands'), (req, res) => {
-        var query = {};
+        let query = {}, where = {};
         query.cd = Number(req.query.cd) || 2;
         query.su = Number(req.query.su) || 0;
-        var where = {};
         if (query.cd === 2) where._complete = 0
         else if (query.cd === 3)  where._complete = 1;
         if (query.su !== 0) where.supplier_id = query.su;
         fn.getAllWhere(
             m.demands,
             where,
-            [
-                fn.users(),
-                m.suppliers,
-                {
-                    model: m.demands_l,
-                    as: 'lines'
-                }
-            ]
+            {
+                include: [
+                    fn.users(),
+                    m.suppliers,
+                    {
+                        model: m.demands_l,
+                        as: 'lines'
+                    }
+                ],
+                nullOk: false,
+                attributes: null
+            }
         )
         .then(demands => {
             fn.getAllWhere(
@@ -41,44 +44,37 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //New Logic
     app.post('/stores/demands', isLoggedIn, allowed('demands_add'), (req, res) => {
-        var supplier_id = req.body.supplier_id;
+        let supplier_id = req.body.supplier_id;
         fn.getUndemandedOrders(supplier_id)
         .then(orders => {
-            if (orders) {
-                fn.sortOrdersForDemand(
-                    orders
-                )
-                .then(sortResults => {
-                    if (sortResults.orders.length > 0) {
-                        fn.raiseDemand(
-                            supplier_id, 
-                            sortResults.orders, 
-                            sortResults.users
+            fn.sortOrdersForDemand(orders)
+            .then(sortResults => {
+                if (sortResults.orders.length > 0) {
+                    fn.raiseDemand(
+                        supplier_id, 
+                        sortResults.orders, 
+                        sortResults.users
+                    )
+                    .then(results => {
+                        fn.createDemand(
+                            supplier_id,
+                            results.items.success,
+                            req.user.user_id,
+                            results.file
                         )
-                        .then(results => {
-                            fn.createDemand(
-                                supplier_id,
-                                results.items.success,
-                                req.user.user_id,
-                                results.file
-                            )
-                            .then(demand_id => {
-                                req.flash('success', 'Demand raised, ID: ' + demand_id + ', orders updated');
-                                fn.downloadFile(results.file, res);
-                            })
-                            .catch(err => fn.error(err, '/stores/orders', req, res));
+                        .then(demand_id => {
+                            req.flash('success', 'Demand raised, ID: ' + demand_id + ', orders updated');
+                            fn.downloadFile(results.file, res);
                         })
                         .catch(err => fn.error(err, '/stores/orders', req, res));
-                    } else {
-                        req.flash('info', 'No orders that can be demanded');
-                        res.redirect('/stores/orders');
-                    };
-                })
-                .catch(err => fn.error(err, '/stores/orders', req, res));
-            } else {
-                req.flash('info', 'No undemanded orders');
-                res.redirect('/stores/orders');
-            };
+                    })
+                    .catch(err => fn.error(err, '/stores/orders', req, res));
+                } else {
+                    req.flash('info', 'No orders that can be demanded');
+                    res.redirect('/stores/orders');
+                };
+            })
+            .catch(err => fn.error(err, '/stores/orders', req, res));
         })
         .catch(err => fn.error(err, '/stores/orders', req, res));
     });
@@ -101,7 +97,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //action
     app.put('/stores/demands/:id', isLoggedIn, allowed('receipts_add'), (req, res) => {
-        var actions = [],
+        let actions = [],
             cancels = req.body.actions.filter(e => JSON.parse(e).action === 'cancel'),
             receipts = req.body.actions.filter(e => JSON.parse(e).action === 'receive');
         if (cancels.length > 0) actions.push(fn.cancelDemandLines(cancels));
@@ -126,17 +122,16 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     
     //Show
     app.get('/stores/demands/:id', isLoggedIn, allowed('access_demands'), (req, res) => {
-        var query = {};
-        query.sn = Number(req.query.sn) || 2;
-        var include = [
+        let include = [
             fn.users(),
             m.suppliers,
             {
                 model: m.demands_l,
                 as: 'lines',
-                include: [
-                    fn.item_sizes(true, true, false)
-                ]
+                include: [{
+                    model: m.item_sizes,
+                    include: fn.itemSizes_inc({stock: true})
+                }]
             }
         ];
         fn.getOne(
@@ -149,7 +144,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             .then(notes => {
                 res.render('stores/demands/show', {
                     demand: demand,
-                    query:  query,
+                    query:  {sn: Number(req.query.sn) || 2},
                     notes:  notes
                 });
             })

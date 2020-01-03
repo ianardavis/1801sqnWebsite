@@ -1,8 +1,7 @@
-const op = require('sequelize').Op;
 module.exports = (app, fn, isLoggedIn, m) => {
     //Display Items
     app.get('/stores/itemSearch', isLoggedIn, (req, res) => {
-        var callType    = req.query.c || 'issue',
+        let callType    = req.query.c || 'issue',
             supplier_id = Number(req.query.s) || -1,
 			include		= [];
         if (callType === 'receipt') {
@@ -18,22 +17,22 @@ module.exports = (app, fn, isLoggedIn, m) => {
         } else if (callType === 'issue') {
             include.push({
                 model: m.item_sizes,
+                where: {_issueable: 1},
                 include: [
                     {
                         model: m.stock,
                         include: [
                             {
                                 model: m.locations,
-                                where: {_location: {[op.not]: ''}}
+                                required: true
                             }
                         ],
                         required: true
                     },{
                         model: m.nsns,
-                        where: {_nsn: {[op.not]: ''}}
+                        required: true
                     }
-                ],
-                required: true
+                ]
             })
         };
         fn.getAll(
@@ -51,31 +50,36 @@ module.exports = (app, fn, isLoggedIn, m) => {
     });
     //Display Sizes
     app.post('/stores/itemSearch', isLoggedIn, (req, res) => {
-        var callType = req.body.callType || 'issue';
+        let callType = req.body.callType || 'issue';
         if (req.body.item) {
-            var item = JSON.parse(req.body.item),
+            let item = JSON.parse(req.body.item),
                 search = {item_id: item.item_id};
             if (callType === 'order') search._orderable = 1;
-            else if (callType === 'receipt') search.supplier_id = req.body.supplier_id;
+            else if (callType === 'receipt') search.supplier_id = req.body.supplier_id
+            else if (callType === 'issue')   search._issueable = 1;
             fn.getAllWhere(
                 m.item_sizes,
                 search,
-                [
-                    m.sizes,
-                    {
-                        model: m.stock,
-                        include: [
-                            {
-                                model: m.locations,
-                                where: {_location: {[op.not]: ''}}
-                            }
-                        ],
-                        required: true
-                    },{
-                        model: m.nsns,
-                        where: {_nsn: {[op.not]: ''}}
-                    }
-                ]
+                {
+                    include: [
+                        m.sizes,
+                        {
+                            model: m.stock,
+                            include: [
+                                {
+                                    model: m.locations,
+                                    required: true
+                                }
+                            ],
+                            required: true
+                        },{
+                            model: m.nsns,
+                            required: true
+                        }
+                    ],
+                    nullOk: false,
+                    attributes: null
+                }
             )
             .then(item_sizes => {
                 res.render('stores/itemSearch/sizes', {
@@ -95,22 +99,18 @@ module.exports = (app, fn, isLoggedIn, m) => {
 
     //Display Size
     app.post('/stores/itemSearch/size', isLoggedIn, (req, res) => {
-        var callType = req.body.callType || 'issue';
+        let callType = req.body.callType || 'issue';
         if (req.body.item_size) {
             fn.getOne(
                 m.item_sizes,
-                {itemsize_id: req.body.item_size},
                 {
-                    include: fn.itemSizeInclude(
-                        {include: true},
-                        {include: true},
-                        {include: false},
-                        {include: false},
-                        {include: false}
-                    ),
-                attributes: null,
-                nullOK: false
-            }                
+                    itemsize_id: req.body.item_size,
+                    _issueable: 1
+                },{
+                    include: fn.itemSize_inc({nsns: true, stock: true, serials: true}),
+                    attributes: null,
+                    nullOK: false
+                }                
             )
             .then(item_size => {
                 res.render('stores/itemSearch/details', {

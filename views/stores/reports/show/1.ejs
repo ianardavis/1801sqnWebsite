@@ -1,0 +1,39 @@
+<% include ../../../partials/head/full %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/reports">Reports</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class="mb-2">
+    <div class="container">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+                <th class="w-40">Item</th>
+                <th class="w-40">Size</th>
+                <th class="w-10">Location</th>
+                <th class="w-10">Qty</th>
+            </thead>
+            <tbody>
+                <% if (stock) { %>
+                    <% stock.forEach(item => { %>
+                        <tr>
+                            <td><a href="/stores/items/<%= item.item_size.item_id %>"><%= item.item_size.item._description %></a></td>
+                            <td><a href="/stores/item_sizes/<%= item.itemsize_id %>"><%= item.item_size.size._text %></a></td>
+                            <td><a href="/stores/stock/<%= item.stock_id %>/edit"><%= item.location._location %></a></td>
+                            <td><a href="/stores/adjusts/new?si=<%= item.stock_id %>&at=Count"><%= item._qty %></a></td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</section>
+<% include ../../../partials/foot/full %>
+<% include ../../../partials/foot/htmlClose %>

@@ -44,7 +44,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.delete('/stores/options/types',      isLoggedIn, allowed('types_delete'),      (req, res) => checkDelete('types',      'Type',     req, res));
     app.delete('/stores/options/subtypes',   isLoggedIn, allowed('subtypes_delete'),   (req, res) => checkDelete('subtypes',   'Sub type', req, res));
     function checkDelete (table, table_s, req, res) {
-        var check_table;
+        let check_table;
             if (table === 'categories')  check_table = m.groups
             else if (table === 'groups') check_table = m.types
             else if (table === 'types')  check_table = m.subtypes;

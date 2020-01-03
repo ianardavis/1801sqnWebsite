@@ -18,8 +18,7 @@
                 <div class="col-12 bordered mb-3">
                     <h5>NSNs</h5>
                     <input class="form-control" type="text" id="nsnSearch" onkeyup="searchTable('nsns', 'nsnSearch')" placeholder="Search for NSNs..">
-                    <select class='form-control w-100' id="nsns" type="text" size="5">
-                        <option value=""></option>
+                    <select class='form-control w-100' id="nsns" type="text" size="2">
                         <% item_size.nsns.forEach(nsn => { %>
                             <option value="<%= nsn.nsn_id %>"><%= nsn._nsn %></option>
                         <% }); %>
@@ -30,8 +29,7 @@
                 <div class="col-12 bordered mb-3">
                 <h5>Issue From Location</h5>
                 <input class="form-control" type="text" id="stockSearch" onkeyup="searchTable('stocks', 'stockSearch')" placeholder="Search for stock..">
-                <select class='form-control w-100' id="stocks" type="text" size="5">
-                    <option value=""></option>
+                <select class='form-control w-100' id="stocks" type="text" size="2">
                     <% item_size.stocks.forEach(stock => { %>
                         <option value='{"id":<%= stock.stock_id %>,"qty":<%= stock._qty %>}'><%= stock.location._location %>, Qty: <%= stock._qty %></option>
                     <% }); %>
@@ -90,7 +88,6 @@ function addSize() {
             selected._description = '<%= item_size.item._description %>';
             selected._size_text   = '<%= item_size.size._text %>';
 
-            // window.opener.addSize(selected);
             <% if (callType === 'issue') { %>
             var _nsns = [],
                 _nsn_list = <%- JSON.stringify(item_size.nsns) %>;

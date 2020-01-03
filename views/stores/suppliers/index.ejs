@@ -26,12 +26,14 @@
 	<div class="col-12 col-md-6 mx-auto">
 		<table class="table table-sm table-hover mx-auto w-100">
 			<thead class="thead-dark">
-				<th class="w-40">Supplier Name</th>
+				<th class="w-90">Supplier Name</th>
+				<th class="w-10">Default</th class="w-90">
 			</thead>
 			<tbody>
-				<% suppliers.forEach((supplier) => { %>
+				<% suppliers.forEach(supplier => { %>
 					<tr>
 						<td><a href="/stores/suppliers/<%= supplier.supplier_id %>"> <%= supplier._name %></a></td>
+						<td><% if (Number(supplier.supplier_id) === Number(_default)) { %><a href="/stores/suppliers/<%= supplier.supplier_id %>"><i class="fas fa-check"></i></a><% } %></td>
 					</tr>
 				<% }) %>
 			</tbody>

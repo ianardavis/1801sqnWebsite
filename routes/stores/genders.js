@@ -21,14 +21,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {gender_id: req.params.id}
         )
         .then(gender => {
-            var query = {};
-            query.sn = req.query.sn || 2;
             fn.getNotes('genders', req.params.id, req)
             .then(notes => {
                 res.render('stores/genders/edit', {
-                    gender:  gender,
-                    query: query,
-                    notes: notes
+                    gender: gender,
+                    query:  {sn: req.query.sn || 2},
+                    notes:  notes
                 });
             });
         })

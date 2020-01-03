@@ -56,12 +56,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    '_default': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "null"
-    },
     '_raise_demand': {
       type: DataTypes.INTEGER(4),
       allowNull: false,

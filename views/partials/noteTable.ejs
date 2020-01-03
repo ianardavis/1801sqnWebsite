@@ -13,19 +13,23 @@
             <th onclick="sortTable(0, 'notesTable')" style="width:25%">Date</th>
             <th onclick="sortTable(1, 'notesTable')" style="width:10%">System</th>
             <th onclick="sortTable(2, 'notesTable')" style="width:65%">Note</th>
-            <% if (permissions.notes_delete === 1) { %>
-                <th></th>
-            <% } %>
+            <% if (permissions.notes_delete === 1) { %><th></th><% } %>
         </thead>
         <tbody>
             <% if (notes) { %>
-                <% notes.forEach((note) => { %>
+                <% notes.forEach(note => { %>
                     <tr>
                         <td data-sort="<%= note._date.getTime() %>"><a href="/stores/notes/<%= note.note_id %>"><%= note._date.toDateString() %></a></td>
                         <td><input class="form-control form-control-sm" type="checkbox"<% if (note._system) { %> checked <% } %> disabled></td>
                         <td><a href="/stores/notes/<%= note.note_id %>"><%= note._note %></a></td>
                         <% if (permissions.notes_delete === 1) { %>
-                            <td><form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete note?');"><button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button></form></td>
+                            <td>
+                                <form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete note?');">
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
                         <% } %>
                     </tr>
                 <% }) %>

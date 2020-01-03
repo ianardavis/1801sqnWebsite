@@ -1,7 +1,7 @@
 module.exports = (app, allowed, fn, isLoggedIn) => {
     // New Logic
     app.post('/stores/returns', isLoggedIn, allowed('returns_add'), (req, res) => {
-        var returnLines = req.body.returnLines.filter(line => (line !== '' && typeof(line) === 'string'));
+        let returnLines = req.body.returnLines.filter(line => (line !== '' && typeof(line) === 'string'));
         if (returnLines.length > 0) {
             if (req.body.returnLines) {
                 fn.createReturn(

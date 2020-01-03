@@ -84,8 +84,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //Index
     app.get('/stores/requests', isLoggedIn, allowed('access_requests', false), (req, res) => {
-        var query = {},
-            where = {};
+        let query = {}, where = {};
         query.cr = Number(req.query.cr) || 2;
         if (query.cr === 2) where._complete = 0;
         else if (query.cr === 3) where._complete = 1;
@@ -93,13 +92,14 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getAllWhere(
             m.requests,
             where,
-            [
-                {
-                    model: m.requests_l,
-                    as: 'lines'
-                },
-                fn.users('_for')
-            ]
+            {
+                include: [
+                    {model: m.requests_l, as: 'lines'},
+                    fn.users('_for')
+                ],
+                nullOk: false,
+                attributes: null
+            }
         )
         .then(requests => {
             res.render('stores/requests/index',{
@@ -112,8 +112,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //Show
     app.get('/stores/requests/:id', isLoggedIn, allowed('requests_edit', false), (req, res) => {
-        var query = {},
-            where = {};
+        let query = {}, where = {};
         query.sn = Number(req.query.sn) || 2;
         if (query.cr === 2) {
             where._status = 'Pending'
@@ -131,7 +130,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             where: where,
                             as: 'lines',
                             include: [
-                                fn.item_sizes(true, true, true),
+                                {model: m.item_sizes, include: fn.itemSize_inc({stock: true, nsns: true})},
                                 fn.users()
                             ]
                         },
@@ -167,14 +166,15 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 fn.getAllWhere(
                     m.requests_l,
                     where,
-                    [
-                        {
-                            model: m.requests,
-                            where: {requested_for: req.params.id}
-                        },
-                        fn.item_sizes(true, true, true),
-                        fn.users()
-                    ]
+                    {
+                        include: [
+                            {model: m.requests, where: {requested_for: req.params.id}},
+                            {model: m.item_sizes, include: fn.itemSize_inc({stock: true, nsns: true})},
+                            fn.users()
+                        ],
+                        nullOk: false,
+                        attributes: null
+                    }
                 )
                 .then(requests => {
                     fn.getOne(

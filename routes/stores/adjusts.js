@@ -6,13 +6,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 fn.getOne(
                     m.stock,
                     {stock_id: req.query.si},
-                    {include: fn.item_sizes(false, true), attributes: null, nullOK: false}
+                    {include: [{model: m.item_sizes, include: fn.itemSize_inc()}], attributes: null, nullOK: false}
                 )
                 .then(stock => {
                     if (stock) {
                         res.render('stores/adjusts/new', {
                             stock: stock,
-                            query:    req.query
+                            query: req.query
                         }); 
                     } else {
                         req.flash('danger', 'Stock record not found');
@@ -31,7 +31,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
     //New Logic
     app.post('/stores/adjusts', isLoggedIn, allowed('adjusts_add'), (req, res) => {
-        var adjust = req.body.adjust;
+        let adjust = req.body.adjust;
         if (adjust) {
             adjust._date = Date.now();
             adjust.user_id = req.user.user_id;
@@ -46,7 +46,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     adjust
                 )
                 .then(newAdjust => {
-                    if (adjust._type === 'Count') {
+                    if (String(adjust._type).toLowerCase() === 'count') {
                         fn.update(
                             m.stock,
                             {_qty: newAdjust._qty},
@@ -60,7 +60,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             req.flash('danger', err.message);
                             res.redirect('/stores/stock/' + newAdjust.stock_id + '/edit');
                         });
-                    } else if (adjust._type === 'Scrap'){
+                    } else if (String(adjust._type).toLowerCase() === 'scrap'){
                         fn.subtractStock(
                             newAdjust.stock_id,
                             newAdjust._qty
@@ -70,6 +70,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             res.redirect('/stores/stock/' + newAdjust.stock_id + '/edit');
                         })
                         .catch(err => fn.error(err, '/stores/stock/' + newAdjust.stock_id + '/edit', req, res));
+                    } else {
+                        res.redirect('back');
                     };
                 })
                 .catch(err => fn.error(err, '/stores', req, res));

@@ -9,13 +9,13 @@
                 <a class="nav-link stores_nav" href="/stores/items">Items</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item.item._description %></a>
+                <a class="nav-link stores_nav" href="/stores/items/<%= itemsize.item_id %>"><%= itemsize.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= item.itemsize_id %>">Size: <%= item.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Size: <%= itemsize.size._text %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/locations/new">Add Location</a>
+                <a class="nav-link stores_nav" href="/stores/serials/new">Add Serial</a>
             </li>
         </ul>
     </nav>
@@ -27,7 +27,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/item_sizes/<%= item.itemsize_id %>">Back to <%= item.item._description %>/Size: <%= item.size._text %></a>
+				<a class="dropdown-item" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Back to <%= itemsize.item._description %>/Size: <%= itemsize.size._text %></a>
 			</div>
 		</li>
 	</ul>
@@ -35,19 +35,11 @@
 <section class="container pt-3">
 	<div class="row">
 		<div class="col-12 col-lg-3 mx-auto mb-3 bordered">
-			<h4>Location</h4>
-			<form action="/stores/stock" method="POST" onsubmit="return confirm('Confirm add stock record?');">
-				<div class="">
-					<input type="hidden" name="stock[itemsize_id]" value="<%= item.itemsize_id %>" readonly>
-					<p><input class="form-control" type="text" name="location" maxlength="10" placeholder="Location" required></p>
-				</div>
-				<% if (permissions.item_adjust) { %>
-					<h4>Quantity</h4>
-					<div class="">
-						<p><input type="text" name="stock[_qty]" maxlength="11" placeholder="Quantity" value="0"></p>
-					</div>
-				<% } %>
-				<p><button class="btn btn-success">Save</button></p>
+			<h4>Serial</h4>
+			<form action="/stores/serials" method="POST" onsubmit="return confirm('Add Serial?');">
+				<input type="hidden" name="serial[itemsize_id]" value="<%= itemsize.itemsize_id %>" readonly>
+				<input class="form-control" type="text" inputmode="numeric" name="serial[_serial]" maxlength="45" placeholder="Serial #" required>
+				<button class="btn btn-success">Save</button>
 			</form>
 		</div>
     </div>

@@ -3,7 +3,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.post('/stores/stock', isLoggedIn, allowed('stock_add'), (req, res) => {
         fn.getOne(
             m.locations,
-            {_location: req.body.location._location},
+            {_location: req.body.location},
             {include: [], attributes: null, nullOK: true}
         )
         .then(location => {
@@ -11,10 +11,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 req.body.stock.location_id = location.location_id;
                 createStock(req.body.stock, req, res);
             } else {
-                fn.create(
-                    m.locations,
-                    {_location: req.body.location._location}
-                )
+                fn.create(m.locations, {_location: req.body.location})
                 .then(location => {
                     req.body.stock.location_id = location.location_id;
                     createStock(req.body.stock, req, res);
@@ -25,10 +22,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
     function createStock(stock, req, res) {
-        fn.create(
-            m.stock,
-            stock
-        )
+        fn.create(m.stock,stock)
         .then(stock => res.redirect('/stores/item_sizes/' + stock.itemsize_id))
         .catch(err => fn.error(err, '/stores/items', req, res));;
     };
@@ -39,17 +33,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             m.item_sizes,
             {itemsize_id: req.query.itemsize_id},
             {
-                include: fn.itemSizeInclude(
-                    {include: false},
-                    {include: false},
-                    {include: false},
-                    {include: false},
-                    {include: false}
-                ),
+                include: fn.itemSize_inc(),
                 attributes: null,
                 nullOK: false
             }
-            
         )
         .then(item => res.render('stores/stock/new', {item: item}))
         .catch(err => fn.error(err, '/stores/items', req, res));

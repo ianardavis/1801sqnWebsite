@@ -18,12 +18,6 @@ fs
         db[model.name] = model;
     });
  
-Object.keys(db).forEach(function(modelName) {
-    if ("associate" in db[modelName]) {
-        db[modelName].associate(db);
-    }
-});
- 
 db.users.hasOne(db.ranks,            {foreignKey: 'rank_id',       sourceKey: 'rank_id',         constraints: false});
 db.users.hasOne(db.statuses,         {foreignKey: 'status_id',     sourceKey: 'status_id',       constraints: false});
 db.users.hasOne(db.permissions,      {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
@@ -47,6 +41,7 @@ db.item_sizes.hasMany(db.orders_l,   {foreignKey: 'itemsize_id',   sourceKey: 'i
 db.item_sizes.hasMany(db.demands_l,  {foreignKey: 'itemsize_id',   sourceKey: 'itemsize_id'});
 db.item_sizes.hasMany(db.issues_l,   {foreignKey: 'itemsize_id',   sourceKey: 'itemsize_id'});
 db.item_sizes.hasMany(db.stock,      {foreignKey: 'itemsize_id',   targetKey: 'itemsize_id'});
+db.item_sizes.hasMany(db.serials,    {foreignKey: 'itemsize_id',   targetKey: 'itemsize_id'});
 db.stock.belongsTo(db.item_sizes,    {foreignKey: 'itemsize_id',   targetKey: 'itemsize_id'});
 db.stock.hasOne(db.locations,        {foreignKey: 'location_id',   sourceKey: 'location_id',     constraints: false});
 db.locations.belongsTo(db.stock,     {foreignKey: 'location_id',   targetKey: 'location_id'});
@@ -64,6 +59,7 @@ db.issues_l.hasOne(db.item_sizes,    {foreignKey: 'itemsize_id',   sourceKey: 'i
 db.issues_l.hasOne(db.nsns,          {foreignKey: 'nsn_id',        sourceKey: 'nsn_id',          constraints: false});
 db.issues_l.hasOne(db.stock,         {foreignKey: 'stock_id',      sourceKey: 'stock_id',        constraints: false});
 db.issues_l.hasOne(db.returns_l,     {foreignKey: 'line_id',       sourceKey: 'return_line_id',  constraints: false});
+db.issues_l.hasOne(db.serials,       {foreignKey: 'serial_id',     sourceKey: 'serial_id',       constraints: false});
 db.issues_l.belongsTo(db.issues,     {foreignKey: 'issue_id',      targetKey: 'issue_id'})
 
 db.returns.hasOne(db.users,          {foreignKey: 'user_id',       sourceKey: 'from',            constraints: false, as: '_from'});
@@ -110,6 +106,9 @@ db.demands_l.belongsTo(db.demands,   {foreignKey: 'demand_id',     targetKey: 'd
 db.groups.belongsTo(db.categories,   {foreignKey: 'category_id',   targetKey: 'category_id'});
 db.types.belongsTo(db.groups,        {foreignKey: 'group_id',      targetKey: 'group_id'});
 db.subtypes.belongsTo(db.types,      {foreignKey: 'type_id',       targetKey: 'type_id'});
+
+db.serials.belongsTo(db.item_sizes,  {foreignKey: 'itemsize_id',   targetKey: 'itemsize_id'});
+db.serials.hasOne(db.issues_l,       {foreignKey: 'line_id',       sourceKey: 'issue_line_id',   constraints: false});
 
 db.sequelize = seq;
 db.Sequelize = Seq;

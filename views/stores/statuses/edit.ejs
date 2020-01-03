@@ -33,19 +33,15 @@
 		</li>
 	</ul>
 </nav>
-<section class="detailBox container-fluid pt-3">
+<section class="container pt-3">
 	<div class="row">
-		<div class="col-12 col-md-3 mx-auto">
-			<div class="container bordered">
-				<h4>status</h4>
-				<div class="details">
-					<form action="/stores/statuses/<%= status.status_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit status?');">
-						<input type="hidden" name="status_id" value="<%= status.status_id %>" readonly>
-						<p><input class="form-control" type="text" name="status[_status]" maxlength="10" value="<%= status._status %>" required></p>
-						<p><button class="btn btn-success">Save</button></p>
-					</form>
-                </div>
-			</div>
+		<div class="col-12 col-md-3 mx-auto bordered">
+			<h4>status</h4>
+			<form action="/stores/statuses/<%= status.status_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit status?');">
+				<input type="hidden" name="status_id" value="<%= status.status_id %>" readonly>
+				<p><input class="form-control" type="text" name="status[_status]" maxlength="10" value="<%= status._status %>" required></p>
+				<p><button class="btn btn-success">Save</button></p>
+			</form>
 		</div>
 		<div class="col-12 col-md-9 mx-auto bordered">
 			<% include ../../partials/noteTable %>

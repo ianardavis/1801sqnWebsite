@@ -18,8 +18,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     
     // Index
     app.get('/stores/items', isLoggedIn, allowed('access_items'), (req, res) => {
-        var query = {},
-            where = {};
+        let query = {}, where = {};
         query.cat = Number(req.query.cat) || -1;
         query.grp = Number(req.query.grp) || -1;
         query.typ = Number(req.query.typ) || -1;
@@ -116,13 +115,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     // Show
     app.get('/stores/items/:id', isLoggedIn, allowed('access_items'), (req, res) => {
-        var include = [
+        let include = [
             m.genders, 
             m.categories, 
             m.groups, 
             m.types, 
             m.subtypes,
-            fn.item_sizes(true, false, false)
+            {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
         ];
         fn.getOne(
             m.items,

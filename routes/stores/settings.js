@@ -11,15 +11,20 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         ]
     };
     app.get('/stores/settings', isLoggedIn, allowed('access_settings'), (req, res) => {
-        fn.getOptions(options(), req, classes => {
-            fn.getAll(m.sizes)
-            .then(sizes => {
-                res.render('stores/settings/show',{
-                    classes: classes,
-                    sizes:   sizes
-                });
-            })
-            .catch(err => fn.error(err, '/stores', req, res));
-        });
+        fn.getAll(m.settings)
+        .then(settings => {
+            fn.getOptions(options(), req, classes => {
+                fn.getAll(m.sizes)
+                .then(sizes => {
+                    res.render('stores/settings/show', {
+                        settings: settings,
+                        classes:  classes,
+                        sizes:    sizes
+                    });
+                })
+                .catch(err => fn.error(err, '/stores', req, res));
+            });
+        })
+        .catch(err => fn.error(err, '/stores', req, res));
     });
 };

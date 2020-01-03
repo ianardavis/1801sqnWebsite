@@ -28,16 +28,12 @@
 </nav>
 <section class="container pt-3">
 	<div class="row">
-		<div class="col-12 col-lg-3 mx-auto mb-3">
-			<div class="container bordered">
-				<h4>Size</h4>
-				<div class="details">
-					<form action="/stores/sizes" method="POST" onsubmit="return confirm('Add size?');">
-						<p><input class="form-control" type="text" name="size[_text]" maxlength="15" placeholder="Size" required></p>
-						<p><button class="btn btn-success">Save</button></p>
-					</form>
-                </div>
-			</div>
+		<div class="col-12 col-lg-3 mx-auto mb-3 bordered">
+			<h4>Size</h4>
+			<form action="/stores/sizes" method="POST" onsubmit="return confirm('Add size?');">
+				<p><input class="form-control" type="text" name="size[_text]" maxlength="15" placeholder="Size" required></p>
+				<p><button class="btn btn-success">Save</button></p>
+			</form>
 		</div>
     </div>
 </section>

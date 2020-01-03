@@ -17,14 +17,14 @@ function addSize(selected) {
         input.type = 'hidden';
         input.name = 'selected[]';
         input.value = JSON.stringify({
-            qty:      selected._qty,
+            qty:      selected.qty,
             stock_id: selected.stock_id
         });
 
         var newSpan = document.createElement('span');
         newSpan.classList.add('form-control');
         newSpan.classList.add('col-10');
-        newSpan.innerText = selected._description + ' - Size: ' + selected._size_text + ' - Qty: ' + selected._qty;
+        newSpan.innerText = selected._description + ' - Size: ' + selected._size_text + ' - Qty: ' + selected.qty;
         
         var delBtn = document.createElement('a');
         delBtn.href='javascript:removeSize("' + selected.stock_id + '")';
