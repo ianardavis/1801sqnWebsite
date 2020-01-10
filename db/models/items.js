@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true
     },
     '_description': {
-      type: DataTypes.STRING(30),
+      type: DataTypes.STRING(45),
       allowNull: false,
       comment: "null"
     },
