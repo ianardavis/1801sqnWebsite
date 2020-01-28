@@ -17,106 +17,138 @@
         </ul>
     </nav>
 </section>
-<section class="container p-5">
-    <div class="form-group row bordered">
-        <div class="col-5" >
-            <label class="col-form-label">Add Size to:</label>
-        </div> 
-        <div class="col-7">
-            <input class="form-control" type="text" value="<%= item._description %>" readonly>
-        </div>
-    </div>
-   <div class="container-fluid bordered p-3">
-        <form action="/stores/item_sizes" method="POST" onsubmit="return confirm('Add selected size(s) ?');">
-            <input type="hidden" name="details[item_id]", value="<%= item.item_id %>" readonly>
-            <div class="form-group row">
-                <div class="col-5">
-                    <label class="col-form-label">Issueable:</label>
-                </div>
-                <div class="col-7">
-                    <input class="form-control" id="_issueable" type="checkbox" name="details[_issueable]" value="1" checked>
+<section class="container">
+    <form action="/stores/item_sizes" method="POST" onsubmit="return confirm('Add selected size(s) ?');">
+        <input type="hidden" name="details[item_id]", value="<%= item.item_id %>" readonly>
+        <div class="row">
+            <div class="col-12 bordered mb-1">
+                <div class="row">
+                    <div class="col-5" >
+                        <label class="col-form-label">Add Size to:</label>
+                    </div> 
+                    <div class="col-7">
+                        <input class="form-control" type="text" value="<%= item._description %>" readonly>
+                    </div>
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-5">
-                    <label class="col-form-label">Orderable:</label>
+            <div class="col-12 col-md-9 bordered mb-1">
+                <div class="row p-3">
+                    <button class="btn btn-success col-12" type="submit">Save</button>
+                    <a href="/stores/items/<%= item.item_id %>">Cancel</a>
                 </div>
-                <div class="col-7">
-                    <input class="form-control" id="_orderable" type="checkbox" name="details[_orderable]" value="1">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-5">
+                            <label class="col-form-label">Issueable:</label>
+                        </div>
+                        <div class="col-7">
+                            <input class="form-control" type="checkbox" name="details[_issueable]" value="1" checked>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <label class="col-form-label">Orderable:</label>
+                        </div>
+                        <div class="col-7">
+                            <input class="form-control" type="checkbox" name="details[_orderable]" value="1">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <label class="col-form-label">Has Serial #:</label>
+                        </div>
+                        <div class="col-7">
+                            <input class="form-control" type="checkbox" name="details[_has_serial]" value="1">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5" >
+                            <label class="col-form-label">Supplier:</label>
+                        </div> 
+                        <div class="col-7">
+                            <select class="form-control" name="details[supplier_id]" type="text">
+                                <% suppliers.forEach(supplier => { %>
+                                    <option value="<%= supplier.supplier_id %>"<% if (supplier._default) { %> selected <% } %>><%= supplier._name %></option>         
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5" >
+                            <label class="col-form-label">Demand Page:</label>
+                        </div> 
+                        <div class="col-7">
+                            <input class="form-control" type="text" name="details[_demand_page]" maxlength="20" placeholder="Demand Page">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5" >
+                            <label class="col-form-label">Cell:</label>
+                        </div> 
+                        <div class="col-7">
+                            <input class="form-control" type="text" name="details[_demand_cell]" maxlength="3" placeholder="Cell">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5" >
+                            <label class="col-form-label">Ordering Details:</label>
+                        </div> 
+                        <div class="col-7">
+                            <textarea class="form-control" name="details[_ordering_details]" rows="5" maxlength="1000"></textarea>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-5">
-                    <label class="col-form-label">Has Serial #:</label>
-                </div>
-                <div class="col-7">
-                    <input class="form-control" id="_has_serial" type="checkbox" name="details[_has_serial]" value="1">
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Supplier:</label>
-                </div> 
-                <div class="col-7">
-                    <select class="form-control" name="details[supplier_id]" id="supplier_id" type="text">
-                        <% suppliers.forEach(supplier => { %>
-                            <option value="<%= supplier.supplier_id %>"<% if (supplier._default) { %> selected <% } %>><%= supplier._name %></option>         
-                        <% }) %>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Demand Page:</label>
-                </div> 
-                <div class="col-7">
-                    <input class="form-control" type="text" name="details[_demand_page]" maxlength="20" placeholder="Demand Page">
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Cell:</label>
-                </div> 
-                <div class="col-7">
-                    <input class="form-control" type="text" name="details[_demand_cell]" maxlength="3" placeholder="Cell">
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-5" >
-                    <label class="col-form-label">Ordering Details:</label>
-                </div> 
-                <div class="col-7">
-                    <textarea name="details[_ordering_details]" cols="30" rows="10" maxlength="1000"></textarea>
-                </div>
-            </div>
-            <div class="form-group row p-3">
-                <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
-                <a href="/stores/items/<%= item.item_id %>">Cancel</a>
-            </div>
-            <div>
-                <input class="form-control" type="text" id="sizeSearch" onkeyup="searchTable('sizeTable', 'sizeSearch')" placeholder="Search for sizes..">
+            <div class="col-12 col-md-3 bordered mb-1">
+                <input class="form-control" type="text" id="size" placeholder="Enter a new size...">
+                <a class="btn btn-sm btn-primary w-100 mb-1" href="javascript:addSize()">Add Size</a>
                 <table id="sizeTable" class="w-100">
                     <thead>
-                        <th class="w-80">Size</th>
-                        <th class="w-20">Select</th>
+                        <th class="w-100">Size</th>
+                        <th><i class="fas fa-trash-alt"></i></th>
                     </thead>
-                    <tbody>
-                        <% sizes.forEach(size => { %>
-                            <tr style="display: none;" >
-                                <td>
-                                    <label class="col-form-label" for="<%= size.size_id %>"><%= size._text %></label>
-                                </td>
-                                <td>
-                                    <input class="form-control" id="<%= size.size_id %>" type="checkbox" name="sizes[]" value="<%= size.size_id %>">
-                                </td>
-                                </tr>
-                        <% }) %>
+                    <tbody id="sizes">
                     </tbody>
                 </table>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/tableSearch.js"></script>
+<script src="/js/removeID.js"></script>
+<script>
+    function addSize() {
+        let size  = document.querySelector('#size'),
+            sizes = document.querySelector('#sizes');
+        if (size.value !== '') {
+            if (!document.querySelector('#size' + size.value)) {
+                let tr      = document.createElement('tr'),
+                    del_td  = document.createElement('td'),
+                    del_btn = document.createElement('a'),
+                    size_td = document.createElement('td'),
+                    size_input = document.createElement('input');
+                tr.id = 'size' + size.value;
+
+                size_input.value = size.value;
+                size_input.classList.add('form-control');
+                size_input.classList.add('form-control-sm');
+                size_input.name = 'sizes[]';
+                size_td.appendChild(size_input);
+
+                del_btn.href='javascript:removeID(size' + size.value + ')';
+                del_btn.classList.add('btn');
+                del_btn.classList.add('btn-sm');
+                del_btn.classList.add('btn-danger');
+                del_btn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                del_td.appendChild(del_btn);
+
+                tr.appendChild(size_td);
+                tr.appendChild(del_td);
+                sizes.appendChild(tr);
+                size.value = "";
+            };
+        };
+    };
+</script>
 <% include ../../partials/foot/htmlClose %>

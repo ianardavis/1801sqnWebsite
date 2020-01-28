@@ -1,0 +1,1 @@
+function removeID(id) {id.parentNode.removeChild(id)};

@@ -22,6 +22,33 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             )
             .then(issues => res.render('stores/reports/show/2', {issues: issues}))
             .catch(err => fn.error(err, '/stores/reports', req, res));
+        } else if (Number(req.params.id) === 3) {
+            fn.getAll(
+                m.items,
+                [{
+                    model: m.item_sizes,
+                    where: {_orderable: 1},
+                    include: [
+                        m.stock,
+                        {
+                            model: m.suppliers,
+                            where: {supplier_id: 1}
+                        },{
+                            model: m.orders_l,
+                            where: {demand_line_id: null},
+                            required: false
+                        },{
+                            model: m.requests_l,
+                            where: {_status: 'Pending'},
+                            required: false
+                        }
+                    ]
+                }]
+            )
+            .then(items => {
+                res.render('stores/reports/show/3', {items: items})
+            })
+            .catch(err => fn.error(err, '/stores/reports', req, res));
         };
     });
 };

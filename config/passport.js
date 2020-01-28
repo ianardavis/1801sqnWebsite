@@ -2,7 +2,7 @@ module.exports = (passport, m) => {
     var bCrypt = require('bcrypt'),
         local  = require('passport-local').Strategy,
         fn     = {};
-        require('../db/functions')(fn, m);
+        require('../functions')(fn, m);
 
     passport.serializeUser((user, done) => done(null, user._login_id));
 

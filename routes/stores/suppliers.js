@@ -4,7 +4,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/suppliers', isLoggedIn, allowed('access_suppliers'), (req, res) => {
         fn.getAllWhere(
             m.suppliers,
-            {supplier_id: {[op.not]: 3}}
+            {supplier_id: {[op.not]: 3}},
+            {include: [m.item_sizes], nullOk: false, attributes: null}
         )
         .then(suppliers => {
             fn.getSetting('default_supplier')
@@ -92,7 +93,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.suppliers,
             {supplier_id: req.params.id},
-            {include: [m.files, m.inventories, {model: m.item_sizes, include: [m.items, m.sizes]}], attributes: null, nullOK: false}
+            {include: [m.files, m.inventories, {model: m.item_sizes, include: [m.items]}], attributes: null, nullOK: false}
         )
         .then(supplier => {
             fn.getNotes('suppliers', req.params.id, req)

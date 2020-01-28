@@ -32,12 +32,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //New Logic
     app.post('/stores/issues', isLoggedIn, allowed('issues_add'), (req, res) => {
-        let items = []
-        req.body.selected.forEach(line => {
-            let arr = {};
-            line.forEach(obj => arr = {...arr, ...JSON.parse(obj)});
-            items.push(arr);
-        });
+        let items = [];
+        for (let [key, line] of Object.entries(req.body.selected)) {
+            items.push(line);
+        };
         fn.createIssue(
             req.body.issue,
             items,

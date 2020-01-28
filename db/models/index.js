@@ -33,7 +33,6 @@ db.items.hasOne (db.subtypes,        {foreignKey: 'subtype_id',    sourceKey: 's
 db.items.hasMany(db.item_sizes,      {foreignKey: 'item_id',       targetKey: 'item_id'});
 
 db.item_sizes.hasOne (db.suppliers,  {foreignKey: 'supplier_id',   sourceKey: 'supplier_id',     constraints: false});
-db.item_sizes.hasOne (db.sizes,      {foreignKey: 'size_id',       sourceKey: 'size_id',         constraints: false});
 db.item_sizes.hasMany(db.nsns,       {foreignKey: 'itemsize_id',   targetKey: 'itemsize_id'});
 db.item_sizes.belongsTo(db.items,    {foreignKey: 'item_id',       targetKey: 'item_id'});
 db.item_sizes.hasMany(db.requests_l, {foreignKey: 'itemsize_id',   sourceKey: 'itemsize_id'});

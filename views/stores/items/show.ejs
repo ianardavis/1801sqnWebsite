@@ -102,15 +102,15 @@
                 Sizes
             </h4>
             <div style="overflow-x:auto;">
-                <table id="sizeTable" class="table table-sm table-hover w-100">
+                <table class="table table-sm table-hover w-100">
                     <thead class="thead-dark">
                         <th class="w-40" onclick="sortTable(0, 'sizeTable')"><%= item._size_text %></th>
                         <th class="w-40" onclick="sortTable(1, 'sizeTable')">Stock</th>
                     </thead>
-                    <tbody>
+                    <tbody id="sizeTable">
                         <% item.item_sizes.forEach(item_size => { %>
                             <tr>
-                                <td><a href="/stores/item_sizes/<%= item_size.itemsize_id %>"><%= item_size.size._text %></a></td>
+                                <td><a href="/stores/item_sizes/<%= item_size.itemsize_id %>"><%= item_size._size %></a></td>
                                 <td><a href="/stores/item_sizes/<%= item_size.itemsize_id %>"><%= item_size.locationStock %></a></td>
                             </tr>
                         <% }) %>

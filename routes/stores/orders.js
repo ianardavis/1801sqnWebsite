@@ -94,14 +94,14 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                                     m.item_sizes,
                                     {itemsize_id: line.itemsize_id},
                                     {
-                                        include: [m.sizes, m.nsns, m.items, {model: m.stock, include: [m.locations]}],
+                                        include: [m.nsns, m.items, {model: m.stock, include: [m.locations]}],
                                         attributes: null,
                                         nullOK: false
                                     }
                                 )
                             )
                         });
-                        Promise.all(actions)
+                        Promise.allSettled(actions)
                         .then(item_sizes => {
                             fn.getOne(m.users, {user_id: issued_to}, {include: [m.ranks], attributes: null, nullOK: false})
                             .then(user => {
@@ -123,7 +123,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 } else req.flash('info', 'No unissued lines selected');
             };
             if (actions.length > 0 && req.body.action !== 'issue') {
-                Promise.all(actions)
+                Promise.allSettled(actions)
                 .then(results => {
                     req.flash('success', 'Lines actioned')
                     res.redirect('/stores/orders/' + req.params.id)

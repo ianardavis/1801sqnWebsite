@@ -12,7 +12,7 @@
                 <a class="btn btn-primary w-100" href="/stores/itemSearch/item/<%= item_size.item_id %>?d=<%= item_size.item._description %>&c=<%= callType %>&s=<%= supplier_id %>">Back</a>
             </div>
         </div>
-        <h4>Select<% if (callType === 'issue') { %> NSN, Location and<% } %> Qty for <%= item_size.item._description %>, Size: <%= item_size.size._text %></h4>
+        <h4>Select<% if (callType === 'issue') { %> NSN, Location and<% } %> Qty for <%= item_size.item._description %>, Size: <%= item_size._size %></h4>
         <div class="row">
             <% if (callType === 'issue') { %>
                 <div class="col-12 bordered mb-3">
@@ -86,7 +86,7 @@ function addSize() {
             selected.itemsize_id  = <%= item_size.itemsize_id %>;
             selected.qty          = qty;
             selected._description = '<%= item_size.item._description %>';
-            selected._size_text   = '<%= item_size.size._text %>';
+            selected._size_text   = '<%= item_size._size %>';
 
             <% if (callType === 'issue') { %>
             var _nsns = [],

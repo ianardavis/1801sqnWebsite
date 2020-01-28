@@ -138,7 +138,7 @@
             <select id="itemsize_id" class="form-control form-control-sm" size="24" ondblclick=goToItemSize()>
                 <% if (supplier.item_sizes) { %>
                     <% supplier.item_sizes.forEach(item_size => { %>
-                        <option value="<%= item_size.itemsize_id %>"><%= item_size.item._description %>, size: <%= item_size.size._text %></option>
+                        <option value="<%= item_size.itemsize_id %>"><%= item_size.item._description %>, size: <%= item_size._size %></option>
                     <% }); %>
                 <% }; %>
             </select>

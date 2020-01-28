@@ -12,33 +12,35 @@
 	</nav>
 </section>
 <% if (permissions.suppliers_add) { %>
-<section>
-	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item">
-				<a class="nav-link" href="/stores/suppliers/new">New Supplier</a>
-			</li>
-		</ul>
-	</nav>
-</section>
+	<section>
+		<nav class="navbar navbar-expand navbar-dark bg-dark stores">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="/stores/suppliers/new">New Supplier</a>
+				</li>
+			</ul>
+		</nav>
+	</section>
 <% } %>
-<div class="container mt-3 pt-3 mx-auto row">
-	<div class="col-12 col-md-6 mx-auto">
-		<table class="table table-sm table-hover mx-auto w-100">
-			<thead class="thead-dark">
-				<th class="w-90">Supplier Name</th>
-				<th class="w-10">Default</th class="w-90">
-			</thead>
-			<tbody>
-				<% suppliers.forEach(supplier => { %>
-					<tr>
-						<td><a href="/stores/suppliers/<%= supplier.supplier_id %>"> <%= supplier._name %></a></td>
-						<td><% if (Number(supplier.supplier_id) === Number(_default)) { %><a href="/stores/suppliers/<%= supplier.supplier_id %>"><i class="fas fa-check"></i></a><% } %></td>
-					</tr>
-				<% }) %>
-			</tbody>
-		</table>
-	</div>
+<div class="container row m-auto p-0 menu">
+	<% suppliers.forEach(supplier => { %>
+		<div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+			<div class="card m-3 text-left">
+				<div class="card-header">
+					<a class="float-right btn btn-sm btn-primary" href="/stores/suppliers/<%= supplier.supplier_id %>">
+						<i class="fas fa-search"></i>
+					</a>
+					<h3><%= supplier._name %></h3>
+					<% if (Number(supplier.supplier_id) === Number(_default)) { %>
+						<p class="card-subtitle text-muted">Default</p>
+					<% } %>
+				</div>
+				<div class="card-body">
+					<p>Items: <%= supplier.item_sizes.length %></p>
+				</div>
+			</div>
+		</div>
+	<% }) %>
 </div>
 <% include ../../partials/foot/full %>
 <% include ../../partials/foot/htmlClose %>

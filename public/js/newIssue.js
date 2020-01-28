@@ -24,35 +24,39 @@ function TodaysDate(addYears = 0) {
 
 function addSize(selected, nsns = null, stocks = null) {
     let selectedList = document.querySelector('#selectedItems'),
-        newItem = document.createElement('p'),
-        existingID = document.getElementById('id-' + selected.itemsize_id);
+        newItem      = document.createElement('p'),
+        existingID   = document.getElementById('id-' + selected.itemsize_id);
     if (typeof(existingID) === 'undefined' || existingID !== null) alert('Size already added!');
     else {
         addClasses(newItem, ['row','container','mx-auto','bordered']);
         newItem.id = 'id-' + selected.itemsize_id;
         
-        let input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'selected[' + selected.itemsize_id + ']';
-        input.value = JSON.stringify(selected);
+        let itemsize_id   = document.createElement('input');
+        itemsize_id.type  = 'hidden';
+        itemsize_id.name  = 'selected[' + selected.itemsize_id + '][itemsize_id]';
+        itemsize_id.value = selected.itemsize_id;
+        let qty   = document.createElement('input');
+        qty.type  = 'hidden';
+        qty.name  = 'selected[' + selected.itemsize_id + '][qty]';
+        qty.value = selected.qty;
 
         newSpan = document.createElement('span');
         addClasses(newSpan, ['col-10']);
         newSpan.innerText = selected._description + ' | Size: ' + selected._size_text + ' | Qty: ' + selected.qty;
         if (nsns) {
             let newNSNs = document.createElement('select');
-            newNSNs.name = 'selected[' + selected.itemsize_id + ']';
+            newNSNs.name = 'selected[' + selected.itemsize_id + '][nsn_id]';
             addClasses(newNSNs, ['form-control','form-control-sm']);
-            nsns.forEach(nsn => newNSNs.appendChild(newOption('{"nsn_id":' + nsn.nsn_id + '}', nsn._nsn)));
-            if (selected.nsn_id) newNSNs.value = '{"nsn_id":' + selected.nsn_id + '}';
+            nsns.forEach(nsn => newNSNs.appendChild(newOption(nsn.nsn_id, nsn._nsn)));
+            if (selected.nsn_id) newNSNs.value = selected.nsn_id;
             newSpan.appendChild(newNSNs);
         };
         if (stocks) {
             let newStocks = document.createElement('select');
-            newStocks.name = 'selected[' + selected.itemsize_id + ']';
+            newStocks.name = 'selected[' + selected.itemsize_id + '][stock_id]';
             addClasses(newStocks, ['form-control','form-control-sm']);
-            stocks.forEach(stock => newStocks.appendChild(newOption('{"stock_id":' + stock.stock_id + '}', stock._location)));
-            if (selected.stock_id) newStocks.value = '{"stock_id":' + selected.stock_id + '}';
+            stocks.forEach(stock => newStocks.appendChild(newOption(stock.stock_id, stock._location)));
+            if (selected.stock_id) newStocks.value = selected.stock_id;
             newSpan.appendChild(newStocks);
         };
 
@@ -62,7 +66,8 @@ function addSize(selected, nsns = null, stocks = null) {
         delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
         addClasses(delBtn, ['col-2','my-auto']);
         
-        newItem.appendChild(input);
+        newItem.appendChild(qty);
+        newItem.appendChild(itemsize_id);
         newItem.appendChild(newSpan);
         newItem.appendChild(delBtn);
 

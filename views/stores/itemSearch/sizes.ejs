@@ -16,7 +16,7 @@
             <select class='form-control w-100' name="item_size" id="sizesTable" type="text" size="15">
                 <option value=""></option>
                 <% item_sizes.forEach(item_size => { %>
-                    <option value="<%= item_size.itemsize_id %>"><%= item_size.size._text %></option>
+                    <option value="<%= item_size.itemsize_id %>"><%= item_size._size %></option>
                 <% }); %>
             </select>
             <button class="btn btn-success w-100">Select</button>

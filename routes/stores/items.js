@@ -15,7 +15,6 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         if (item.gender_id === '')  item.gender_id  = null;
         return item;
     };
-    
     // Index
     app.get('/stores/items', isLoggedIn, allowed('access_items'), (req, res) => {
         let query = {}, where = {};
@@ -29,7 +28,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         if (query.typ !== -1) where.type_id     = query.typ;
         if (query.sub !== -1) where.subtype_id  = query.sub;
         if (query.gen !== -1) where.gender_id   = query.gen;
-        fn.getOptions(itemOptions(), req, classes => {
+        fn.getOptions(itemOptions(), req)
+        .then(classes => {
             fn.getAllWhere(
                 m.items,
                 where
@@ -57,7 +57,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     // New Form
-    app.get('/stores/items/new', isLoggedIn, allowed('items_add'), (req, res) => fn.getOptions(itemOptions(), req, classes => res.render('stores/items/new', {classes: classes})));
+    app.get('/stores/items/new', isLoggedIn, allowed('items_add'), (req, res) => {
+        fn.getOptions(itemOptions(), req)
+        .then(classes => res.render('stores/items/new', {classes: classes}))
+    });
     
     // Edit
     app.get('/stores/items/:id/edit', isLoggedIn, allowed('items_edit'), (req, res) => {

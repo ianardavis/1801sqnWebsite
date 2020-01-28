@@ -6,15 +6,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .then(item => {
             fn.getAll(m.suppliers)
             .then(suppliers => {
-                fn.getAll(m.sizes)
-                .then(sizes => {
-                    res.render('stores/item_sizes/new', {
-                        item:      item,
-                        sizes:     sizes,
-                        suppliers: suppliers
-                    });
-                })
-                .catch(err => fn.error(err, '/stores/items', req, res));
+                res.render('stores/item_sizes/new', {
+                    item:      item,
+                    suppliers: suppliers
+                });
             })
             .catch(err => fn.error(err, '/stores/items', req, res));
         })
@@ -25,17 +20,18 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.post('/stores/item_sizes', isLoggedIn, allowed('item_sizes_add'), (req, res) => {
         if (req.body.sizes) {
             let lines = [];
-            req.body.sizes.forEach(size_id => {
-                if (size_id) lines.push(fn.addSize(size_id, req.body.details));
+            req.body.sizes.forEach(size => {
+                if (size !== '') lines.push(fn.addSize(size, req.body.details));
             });
             if (lines.length > 0) {
-                Promise.all(lines)
+                Promise.allSettled(lines)
                 .then(results => {
+                    console.log(results);
                     results.forEach(result => {
-                        if (result.result) req.flash('success', 'Size added: ' + result.itemsize.itemsize_id);
+                        if (result.value.result) req.flash('success', 'Size added: ' + result.value.size);
                         else {
-                            req.flash('danger', 'Error adding a size');
-                            console.log(err);
+                            req.flash('danger', result.value.size + ' not added: ' + result.value.error);
+                            console.log(result.value.error);
                         };
                     });
                     res.redirect('/stores/items/' + req.body.details.item_id);

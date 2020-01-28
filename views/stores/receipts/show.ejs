@@ -82,7 +82,7 @@
 							<tr>
 								<td><a href="#"><% if (line.stock) { %><%= line.stock.location._location %><% } %></a></td>
 								<td><a href="/stores/items<% if (line.stock) { %>/<%= line.stock.item_size.item_id %><% } %>"><% if (line.stock) { %><%= line.stock.item_size.item._description %><% } %></a></td>
-								<td><a href="/stores<% if (line.stock) { %>/item_sizes/<%= line.stock.itemsize_id %><% } %>"><% if (line.stock) { %><%= line.stock.item_size.size._text %><% } %></a></td>
+								<td><a href="/stores<% if (line.stock) { %>/item_sizes/<%= line.stock.itemsize_id %><% } %>"><% if (line.stock) { %><%= line.stock.item_size._size %><% } %></a></td>
 								<td><a href="#"><%= line._qty %></a></td>
 							</tr>
 						<% }) %>

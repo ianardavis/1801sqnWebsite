@@ -49,7 +49,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {stock_id: req.params.id},
             {
                 include: [
-                    {model: m.item_sizes, include: [m.items, m.sizes]},
+                    {model: m.item_sizes, include: [m.items]},
                     m.locations
                 ],
                 attributes: null,

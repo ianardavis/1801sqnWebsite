@@ -169,7 +169,7 @@
                             <tr>
                                 <td data-sort="<%= request.request._date.getTime() %>"><a href='/stores/requests/<%= request.request_id %>?sb=request'><%= request.request._date.toDateString() %></a></td>
                                 <td><a href='/stores/requests/<%= request.request_id %>?sb=request'><%= request.item_size.item._description %></a></td>
-                                <td><a href='/stores/requests/<%= request.request_id %>?sb=request'><%= request.item_size.size._text %></a></td>
+                                <td><a href='/stores/requests/<%= request.request_id %>?sb=request'><%= request.item_size._size %></a></td>
                                 <td><a href='/stores/requests/<%= request.request_id %>?sb=request'><%= request._qty %></a></td>
                                 <td><a href='/stores/requests/<%= request.request_id %>?sb=request'><%= request._status %></a></td>
                             </tr>
@@ -206,7 +206,7 @@
                             <tr>
                                 <td data-sort="<%= order.order._date.getTime() %>"><a href='/stores/orders/<%= order.order_id %>'><%= order.order._date.toDateString() %></a></td>
                                 <td><a href='/stores/orders/<%= order.order_id %>'><%= order.item_size.item._description %></a></td>
-                                <td><a href='/stores/orders/<%= order.order_id %>'><%= order.item_size.size._text %></a></td>
+                                <td><a href='/stores/orders/<%= order.order_id %>'><%= order.item_size._size %></a></td>
                                 <td><a href='/stores/orders/<%= order.order_id %>'><%= order._qty %></a></td>
                                 <td><input class="form-control form-control-sm" type="checkbox" <% if (order.demand_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Demanded"></td>
                                 <td><input class="form-control form-control-sm" type="checkbox" <% if (order.receipt_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Received"></td>
@@ -246,7 +246,7 @@
                                 <tr>
                                     <td data-sort="<%= issue.issue._date_due.getTime() %>"><a href='/stores/issues/<%= issue.issue_id %>'><%= issue.issue._date_due.toDateString() %></a></td>
                                     <td><a href='/stores/items/<%= issue.item_size.item_id %>'><%= issue.item_size.item._description %></a></td>
-                                    <td><a href='/stores/item_sizes/<%= issue.itemsize_id %>'><%= issue.item_size.size._text %></a></td>
+                                    <td><a href='/stores/item_sizes/<%= issue.itemsize_id %>'><%= issue.item_size._size %></a></td>
                                     <td><a href='#'><%= issue._qty %></a></td>
                                     <td>
                                         <% if (issue.return) { %>

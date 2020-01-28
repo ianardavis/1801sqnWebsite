@@ -13,10 +13,26 @@
 </section>
 <section class="mb-2">
     <div class="container">
-        <ul class="list-group">
-            <li class="list-group-item"><a href="/stores/reports/1">Negative Stock</a></li>
-            <li class="list-group-item"><a href="/stores/reports/2">Issues Due Back</a></li>
-        </ul>
+        <% let cards = [] %>
+        <% cards.push({href: '/stores/reports/1', title: 'Negative Stock',  image: 'search-minus'}) %>
+        <% cards.push({href: '/stores/reports/2', title: 'Issues Due Back', image: 'calendar-check'}) %>
+        <% cards.push({href: '/stores/reports/3', title: 'Orderable Stock', image: 'tshirt'}) %>
+        <div class="row container m-auto p-0 menu">
+            <% cards.forEach(card => { %>
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                    <div class="card m-3">
+                        <a href="<%= card.href %>">
+                            <div class="card-header">
+                                <h3><%= card.title %></h3>
+                            </div>
+                            <div class="card-body">
+                                <i class="fas fa-<%= card.image %> fa-5x"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
     </div>
 </section>
 <% include ../../partials/foot/full %>

@@ -40,7 +40,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.nsns,
             {nsn_id: req.params.id},
-            {include: [{model: m.item_sizes, include: [m.items, m.sizes]}], attributes: null, nullOK: false}
+            {include: [{model: m.item_sizes, include: [m.items]}], attributes: null, nullOK: false}
         )
         .then(nsn => {
             fn.getNotes('nsns', req.params.id, req)
@@ -81,7 +81,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 )
             );
         };
-        Promise.all(actions)
+        Promise.allSettled(actions)
         .then(result => res.redirect('/stores/item_sizes/' + req.body.itemsize_id))
         .catch(err => fn.error(err, '/stores/item_sizes/' + req.body.itemsize_id, req, res));
     });

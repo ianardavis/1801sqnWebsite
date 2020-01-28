@@ -29,7 +29,7 @@
                     <% stock.forEach(item => { %>
                         <tr>
                             <td><a href="/stores/items/<%= item.item_size.item_id %>"><%= item.item_size.item._description %></a></td>
-                            <td><a href="/stores/item_sizes/<%= item.itemsize_id %>"><%= item.item_size.size._text %></a></td>
+                            <td><a href="/stores/item_sizes/<%= item.itemsize_id %>"><%= item.item_size._size %></a></td>
                             <td><a href="/stores/stock/<%= item.stock_id %>/edit"><%= item.location._location %></a></td>
                             <td><a href="/stores/adjusts/new?si=<%= item.stock_id %>&at=Count"><%= item._qty %></a></td>
                         </tr>

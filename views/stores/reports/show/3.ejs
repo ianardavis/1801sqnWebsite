@@ -1,0 +1,53 @@
+<% include ../../../partials/head/full %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">Stores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/reports">Reports</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/reports/2">Orderable Stock</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class="mb-2">
+    <div class="container">
+        <h4>Orderable Stock</h4>
+            <div class="row">
+                <% items.forEach(item => { %>
+                    <div class="col-12">
+                        <h5><a href="/stores/items/<%= item.item_id %>"><%= item._description %></a></h5>
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-40" onclick="sortTable(0, 'table<%= item.item_id %>')">Size</th>
+                                <th class="w-10" onclick="sortTable(1, 'table<%= item.item_id %>')">Stock</th>
+                                <th class="w-10" onclick="sortTable(2, 'table<%= item.item_id %>')">Requested</th>
+                                <th class="w-10" onclick="sortTable(3, 'table<%= item.item_id %>')">Ordered</th>
+                                <th class="w-30">Qty to Order</th>
+                            </thead>
+                            <tbody id="table<%= item.item_id %>">
+                                <% if (item.item_sizes) { %>
+                                    <% item.item_sizes.forEach(size => { %>
+                                        <tr>
+                                            <td><a href="/stores/item_sizes/<%= size.itemsize_id %>"><%= size._size %></a></td>
+                                            <td><a href="/stores/item_sizes/<%= size.itemsize_id %>"><%= size.itemsize_id %></a></td>
+                                            <td><a href="/stores/item_sizes/<%= size.itemsize_id %>"><%= size.itemsize_id %></a></td>
+                                            <td><a href="/stores/item_sizes/<%= size.itemsize_id %>"><%= size.itemsize_id %></a></td>
+                                            <td><a href="/stores/item_sizes/<%= size.itemsize_id %>"><%= size.itemsize_id %></a></td>
+                                        </tr>
+                                    <% }) %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% }) %>
+            </div>
+    </div>
+</section>
+<% include ../../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
+<% include ../../../partials/foot/htmlClose %>

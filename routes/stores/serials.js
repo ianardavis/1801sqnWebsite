@@ -32,7 +32,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.serials,
             {serial_id: req.params.id},
-            {include: [{model: m.item_sizes, include: [m.items, m.sizes]}], attributes: null, nullOK: false}
+            {include: [{model: m.item_sizes, include: [m.items]}], attributes: null, nullOK: false}
         )
         .then(serial => {
             fn.getNotes('serials', req.params.id, req)

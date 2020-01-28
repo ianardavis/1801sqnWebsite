@@ -103,9 +103,15 @@ ul, #treeUL {
 .caret-down::before {
 	transform: rotate(90deg);
 }
-.menu .card a {
+.menu .card .card-header {
 	color: #31639e;
 	background-color: #B9CBE2;
+}
+.cardRed {
+	background-color: #ffb7b7;
+}
+.cardGreen {
+	background-color: #bdffa3;
 }
 /*menu colour #1c3a5c*/
 /*back colour #31639e*/

@@ -12,7 +12,7 @@
                 <a class="nav-link stores_nav" href="/stores/items/<%= itemsize.item_id %>"><%= itemsize.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Size: <%= itemsize.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Size: <%= itemsize._size %></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/nsns/new">Add NSN</a>
@@ -27,7 +27,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Back to <%= itemsize.item._description %>/Size: <%= itemsize.size._text %></a>
+				<a class="dropdown-item" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Back to <%= itemsize.item._description %>/Size: <%= itemsize._size %></a>
 			</div>
 		</li>
 	</ul>

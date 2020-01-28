@@ -12,7 +12,7 @@
                 <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item.item._description %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= item.itemsize_id %>">Size: <%= item.size._text %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= item.itemsize_id %>">Size: <%= item._size %></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/locations/new">Add Location</a>
@@ -27,7 +27,7 @@
 				Options
 			</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/item_sizes/<%= item.itemsize_id %>">Back to <%= item.item._description %>/Size: <%= item.size._text %></a>
+				<a class="dropdown-item" href="/stores/item_sizes/<%= item.itemsize_id %>">Back to <%= item.item._description %>/Size: <%= item._size %></a>
 			</div>
 		</li>
 	</ul>

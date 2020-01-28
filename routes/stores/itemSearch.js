@@ -34,6 +34,11 @@ module.exports = (app, fn, isLoggedIn, m) => {
                     }
                 ]
             })
+        } else if (callType === 'request') {
+            include.push({
+                model: m.item_sizes,
+                where: {_issueable: 1}
+            })
         };
         fn.getAll(
             m.items,
@@ -52,31 +57,47 @@ module.exports = (app, fn, isLoggedIn, m) => {
     app.post('/stores/itemSearch', isLoggedIn, (req, res) => {
         let callType = req.body.callType || 'issue';
         if (req.body.item) {
-            let item = JSON.parse(req.body.item),
-                search = {item_id: item.item_id};
-            if (callType === 'order') search._orderable = 1;
-            else if (callType === 'receipt') search.supplier_id = req.body.supplier_id
-            else if (callType === 'issue')   search._issueable = 1;
+            let item    = JSON.parse(req.body.item),
+                search  = {item_id: item.item_id},
+                include = [];
+            if (callType === 'order') {
+                search._orderable = 1;
+            } else if (callType === 'receipt') {
+                search.supplier_id = req.body.supplier_id;
+                include.push({
+                    model: m.stock,
+                    include: [
+                        {
+                            model: m.locations,
+                            required: true
+                        }
+                    ],
+                    required: true
+                })
+            } else if (callType === 'issue') {
+                search._issueable = 1;
+                include.push({
+                    model: m.stock,
+                    include: [
+                        {
+                            model: m.locations,
+                            required: true
+                        }
+                    ],
+                    required: true
+                })
+                include.push({
+                    model: m.nsns,
+                    required: true
+                })
+            } else if (callType === 'request') {
+                search._issueable = 1;
+            };
             fn.getAllWhere(
                 m.item_sizes,
                 search,
                 {
-                    include: [
-                        m.sizes,
-                        {
-                            model: m.stock,
-                            include: [
-                                {
-                                    model: m.locations,
-                                    required: true
-                                }
-                            ],
-                            required: true
-                        },{
-                            model: m.nsns,
-                            required: true
-                        }
-                    ],
+                    include: include,
                     nullOk: false,
                     attributes: null
                 }

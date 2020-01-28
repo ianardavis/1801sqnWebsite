@@ -141,7 +141,7 @@
 								<% request.lines.forEach(line => { %>
 									<tr>
 										<td><a href="/stores/items/<%= line.item_size.item_id %>"><%= line.item_size.item._description %></a></td>
-										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size.size._text %></a></td>
+										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size._size %></a></td>
 										<td><a href="#"><%= line._qty %></a></td>
 										<td>
 										<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== request._for.user_id) { %>
@@ -208,7 +208,7 @@
 									<tr>
 										<td><a href="/stores/requests/<%= line.request_id %>?sb=request"><%= line.request_id %></a></td>
 										<td><a href="/stores/items/<%= line.item_size.item_id %>"><%= line.item_size.item._description %></a></td>
-										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size.size._text %></a></td>
+										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size._size %></a></td>
 										<td><a href="#"><%= line._qty %></a></td>
 										<td>
 										<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== f_user.user_id) { %>

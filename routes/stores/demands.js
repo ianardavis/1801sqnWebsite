@@ -103,7 +103,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         if (cancels.length > 0) actions.push(fn.cancelDemandLines(cancels));
         if (receipts.length > 0) actions.push(fn.receiveDemandLines(receipts, req.user.user_id));
         if (actions.length > 0) {
-            Promise.all(
+            Promise.allSettled(
                 actions
             )
             .then(results => {

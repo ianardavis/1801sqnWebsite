@@ -2,7 +2,7 @@ const fn = {},
       mw = {};
 module.exports = (app, m) => {
     var al = require('../../config/allowed.js');
-    require("../../db/functions")(fn, m);
+    require("../../functions")(fn, m);
     require('../../config/middleware')(mw, fn.getPermissions);
     require('./adjusts')    (app, al, fn, mw.isLoggedIn, m);
     require('./demands')    (app, al, fn, mw.isLoggedIn, m);
@@ -24,7 +24,6 @@ module.exports = (app, m) => {
     require('./returns')    (app, al, fn, mw.isLoggedIn);
     require('./serials')    (app, al, fn, mw.isLoggedIn, m);
     require('./settings')   (app, al, fn, mw.isLoggedIn, m);
-    require('./sizes')      (app, al, fn, mw.isLoggedIn, m);
     require('./statuses')   (app, al, fn, mw.isLoggedIn, m);
     require('./stock')      (app, al, fn, mw.isLoggedIn, m);
     require('./suppliers')  (app, al, fn, mw.isLoggedIn, m);
