@@ -16,22 +16,37 @@
 </section>
 <section class="mb-2">
     <div class="container">
-        <h4>Negative Stock</h4>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
-                <th class="w-40">Item</th>
-                <th class="w-40">Size</th>
-                <th class="w-10">Location</th>
-                <th class="w-10">Qty</th>
+                <th class="w-40" onclick="sortTable(0, 'tableItems')">Item</th>
+                <th class="w-40" onclick="sortTable(1, 'tableItems')">Size</th>
+                <th class="w-10" onclick="sortTable(2, 'tableItems')">Location</th>
+                <th class="w-10" onclick="sortTable(3, 'tableItems')">Qty</th>
+                <th><i class="fas fa-pencil-alt"></i></th>
             </thead>
-            <tbody>
+            <tbody id="tableItems">
                 <% if (stock) { %>
                     <% stock.forEach(item => { %>
                         <tr>
-                            <td><a href="/stores/items/<%= item.item_size.item_id %>"><%= item.item_size.item._description %></a></td>
-                            <td><a href="/stores/item_sizes/<%= item.itemsize_id %>"><%= item.item_size._size %></a></td>
-                            <td><a href="/stores/stock/<%= item.stock_id %>/edit"><%= item.location._location %></a></td>
-                            <td><a href="/stores/adjusts/new?si=<%= item.stock_id %>&at=Count"><%= item._qty %></a></td>
+                            <td>
+                                <a class="float-right" href="/stores/items/<%= item.item_size.item_id %>"><i class="fas fa-search"></i></a>
+                                <a href="#"><%= item.item_size.item._description %></a>
+                            </td>
+                            <td>
+                                <a class="float-right" href="/stores/item_sizes/<%= item.itemsize_id %>"><i class="fas fa-search"></i></a>
+                                <a href="#"><%= item.item_size._size %></a>
+                            </td>
+                            <td>
+                                <a class="float-right" href="/stores/stock/<%= item.stock_id %>/edit"><i class="fas fa-search"></i></a>
+                                <a href="#"><%= item.location._location %></a>
+                            </td>
+                            <td>
+                                <a href="#"><%= item._qty %></a></td>
+                            <td>
+                                <a class="btn btn-sm btn-primary" href="/stores/adjusts/new?si=<%= item.stock_id %>&at=Count">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                            </td>
                         </tr>
                     <% }) %>
                 <% } %>
@@ -40,4 +55,5 @@
     </div>
 </section>
 <% include ../../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
 <% include ../../../partials/foot/htmlClose %>

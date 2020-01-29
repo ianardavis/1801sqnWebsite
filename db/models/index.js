@@ -43,7 +43,7 @@ db.item_sizes.hasMany(db.stock,      {foreignKey: 'itemsize_id',   targetKey: 'i
 db.item_sizes.hasMany(db.serials,    {foreignKey: 'itemsize_id',   targetKey: 'itemsize_id'});
 db.stock.belongsTo(db.item_sizes,    {foreignKey: 'itemsize_id',   targetKey: 'itemsize_id'});
 db.stock.hasOne(db.locations,        {foreignKey: 'location_id',   sourceKey: 'location_id',     constraints: false});
-db.locations.belongsTo(db.stock,     {foreignKey: 'location_id',   targetKey: 'location_id'});
+db.locations.hasMany(db.stock,       {foreignKey: 'location_id',   targetKey: 'location_id'});
 db.nsns.belongsTo(db.item_sizes,     {foreignKey: 'itemsize_id',   targetKey: 'itemsize_id'});
 
 db.suppliers.hasMany(db.item_sizes,  {foreignKey: 'supplier_id',   sourceKey: 'supplier_id'});

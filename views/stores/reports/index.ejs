@@ -14,14 +14,16 @@
 <section class="mb-2">
     <div class="container">
         <% let cards = [] %>
-        <% cards.push({href: '/stores/reports/1', title: 'Negative Stock',  image: 'search-minus'}) %>
-        <% cards.push({href: '/stores/reports/2', title: 'Issues Due Back', image: 'calendar-check'}) %>
-        <% cards.push({href: '/stores/reports/3', title: 'Orderable Stock', image: 'tshirt'}) %>
+        <% cards.push({id: '1', title: 'Negative Stock',      image: 'search-minus'}) %>
+        <% cards.push({id: '2', title: 'Issues Due Back',     image: 'calendar-check'}) %>
+        <% cards.push({id: '3', title: 'Orderable Stock',     image: 'tshirt'}) %>
+        <% cards.push({id: '4', title: 'Stock - By Item',     image: 'tshirt'}) %>
+        <% cards.push({id: '5', title: 'Stock - By Location', image: 'tshirt'}) %>
         <div class="row container m-auto p-0 menu">
             <% cards.forEach(card => { %>
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                     <div class="card m-3">
-                        <a href="<%= card.href %>">
+                        <a href="/stores/reports/<%= card.id %>">
                             <div class="card-header">
                                 <h3><%= card.title %></h3>
                             </div>

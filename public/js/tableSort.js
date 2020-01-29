@@ -6,7 +6,7 @@ function sortTable(n, tableName) {
     while (switching) {
       switching = false;
       rows = table.rows;
-      for (i = 1; i < (rows.length - 1); i++) {
+      for (i = 0; i < (rows.length - 1); i++) {
         shouldSwitch = false;
         x = rows[i].getElementsByTagName("td")[n].dataset.sort || rows[i].getElementsByTagName("td")[n].innerText.toLowerCase();
         y = rows[i + 1].getElementsByTagName("td")[n].dataset.sort ||rows[i + 1].getElementsByTagName("td")[n].innerText.toLowerCase();

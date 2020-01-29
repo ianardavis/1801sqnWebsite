@@ -16,24 +16,33 @@
 </section>
 <section class="mb-2">
     <div class="container">
-        <h4>Issues Due Back</h4>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
-                <th class="w-10">ID</th>
-                <th class="w-20">To</th>
-                <th class="w-30">Date Issued</th>
-                <th class="w-30">Date Due</th>
-                <th class="w-10">Lines</th>
+                <th class="w-10" onclick="sortTable(0, 'tableIssues')">ID</th>
+                <th class="w-20" onclick="sortTable(1, 'tableIssues')">To</th>
+                <th class="w-30" onclick="sortTable(2, 'tableIssues')">Date Issued</th>
+                <th class="w-30" onclick="sortTable(3, 'tableIssues')">Date Due</th>
+                <th class="w-10" onclick="sortTable(4, 'tableIssues')">Lines</th>
             </thead>
-            <tbody>
+            <tbody id="tableIssues">
                 <% if (issues) { %>
                     <% issues.forEach(issue => { %>
                         <tr>
-                            <td><a href="/stores/issues/<%= issue.issue_id %>"><%= issue.issue_id %></a></td>
-                            <td><a href="/stores/users/<%= issue.issued_to %>"><%= issue._for.rank._rank %> <%= issue._for._name %>, <%= issue._for._ini %></a></td>
-                            <td><a href="/stores/issues/<%= issue.issue_id %>"><%= issue._date.toDateString() %></a></td>
-                            <td><a href="/stores/issues/<%= issue.issue_id %>"><%= issue._date_due.toDateString() %></a></td>
-                            <td><a href="/stores/issues/<%= issue.issue_id %>"><%= issue.lines.length %></a></td>
+                            <td>
+                                <a class="float-right" href="/stores/issues/<%= issue.issue_id %>"><i class="fas fa-search"></i></a>
+                                <a href="#"><%= issue.issue_id %></a>
+                            </td>
+                            <td>
+                                <a class="float-right" href="/stores/users/<%= issue.issued_to %>"><i class="fas fa-search"></i></a>
+                                <a href="#"><%= issue._for.rank._rank %> <%= issue._for._name %>, <%= issue._for._ini %></a>
+                            </td>
+                            <td data-sort="<%= issue._date.getTime() %>">
+                                <a href="#"><%= issue._date.toDateString() %></a>
+                            </td>
+                            <td data-sort="<%= issue._date_due.getTime() %>">
+                                <a href="#"><%= issue._date_due.toDateString() %></a>
+                            </td>
+                            <td><a href="#"><%= issue.lines.length %></a></td>
                         </tr>
                     <% }) %>
                 <% } %>
@@ -42,4 +51,5 @@
     </div>
 </section>
 <% include ../../../partials/foot/full %>
+<script src="/js/tableSort.js"></script>
 <% include ../../../partials/foot/htmlClose %>

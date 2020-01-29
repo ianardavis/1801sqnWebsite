@@ -9,36 +9,14 @@
                 <a class="nav-link stores_nav" href="/stores/reports">Reports</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/reports/3">Orderable Stock</a>
+                <a class="nav-link stores_nav" href="/stores/reports/4">Stock - By Item</a>
             </li>
         </ul>
     </nav>
 </section>
-<section class="container mb-2">
-    <div class="row">
-        <div class="col-12 col-md-6">
-            <div class="row">
-                <div class="col-6">
-                    <label class="col-form-label">Supplier</label>
-                </div>
-                <div class="col-6">
-                    <select class="form-control" id="supplier_id" onchange="javascript:filterSelects()">
-                        <% suppliers.forEach(supplier => { %>
-                            <option value="<%= supplier.supplier_id %>" <% if (Number(supplier_id) === supplier.supplier_id) { %> selected<% } %>>
-                                <%= supplier._name %>
-                            </option>
-                        <% }) %>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <button form="orders" class="btn btn-success w-100">Order Selected Items</button>
-        </div>
-    </div>
-    <form id="orders" action="/stores/reports/3" method="POST" onsubmit="return confirm('Order selected items?');">
+<section class="mb-2">
+    <div class="container">
         <div class="row">
-            <input type="hidden" name="ordered_for" value="-1">
             <% items.forEach(item => { %>
                 <div class="col-12">
                     <a class="my-3" data-toggle="collapse" href="#collapse<%= item.item_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= item.item_id %>">
@@ -54,7 +32,6 @@
                                 <th class="w-10" onclick="sortTable(1, 'table<%= item.item_id %>')">Stock</th>
                                 <th class="w-10" onclick="sortTable(2, 'table<%= item.item_id %>')">Requested</th>
                                 <th class="w-10" onclick="sortTable(3, 'table<%= item.item_id %>')">Ordered</th>
-                                <th class="w-30">Qty to Order</th>
                             </thead>
                             <tbody id="table<%= item.item_id %>">
                                 <% if (item.item_sizes) { %>
@@ -89,9 +66,6 @@
                                             <td>
                                                 <a href="#"><%= _orders %></a>
                                             </td>
-                                            <td>
-                                                <input class="form-control form-control-sm" type="number" name="selected[<%= size.itemsize_id %>]" value="0">
-                                            </td>
                                         </tr>
                                     <% }) %>
                                 <% } %>
@@ -101,17 +75,13 @@
                 </div>
             <% }) %>
         </div>
-    </form>
+    </div>
 </section>
 <% include ../../../partials/foot/full %>
 <script src="/js/tableSort.js"></script>
-<script src="/js/filters.js"></script>
 <script>
-    function filterSelects() {
-        filter(['supplier_id'],"/stores/reports/3");
-    };
     <% items.forEach(item => { %>
         sortTable(0, 'table<%= item.item_id %>')
-    <% }) %>   
+    <% }) %>  
 </script>
 <% include ../../../partials/foot/htmlClose %>
