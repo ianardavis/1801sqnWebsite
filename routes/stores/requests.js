@@ -32,9 +32,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.post('/stores/requests', isLoggedIn, allowed('requests_add', false), (req, res) => {
         if (req.allowed || Number(req.body.requested_for) === req.user.user_id) {
             if (req.body.selected) {
+                let items = [];
+                for (let [key, line] of Object.entries(req.body.selected)) {
+                    items.push(line);
+                };
                 fn.createRequest(
                     req.body.requested_for,
-                    req.body.selected,
+                    items,
                     req.user.user_id
                 )
                 .then(request_id => {

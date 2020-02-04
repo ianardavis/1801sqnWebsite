@@ -1,53 +1,55 @@
 <!-- USER ITEM PAGE -->
 <% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>
+                    Stores
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items'>
+                    Items
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= stock.item_size.item.item_id %>"><%= stock.item_size.item._description %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items/<%= stock.item_size.item.item_id %>'>
+                    <%= stock.item_size.item._description %>
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= stock.itemsize_id %>">Size: <%= stock.item_size._size %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= stock.itemsize_id %>'>
+                    Size: <%= stock.item_size._size %>
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/stock/<%= stock.stock_id %>">Stock: <%= stock.location_id %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/stock/<%= stock.stock_id %>'>
+                    Location: <%= stock.location._location %>
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/adjusts/new?si=<%= stock.itemsize_id %>&at=<%= query.at %>"><%= query.at %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/adjusts/new?stock_id=<%= stock.itemsize_id %>&adjustType=<%= query.adjustType %>'>
+                    <%= query.adjustType %>
+                </a>
             </li>
         </ul>
     </nav>
 </section>
-<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/stock/<%= stock.stock_id %>">Back to <%= stock.location_id %></a>
-			</div>
-		</li>
-	</ul>
-</nav>
-<section class="container pt-3">
-	<div class="row">
-		<div class="col-12 col-lg-3 mx-auto mb-3 bordered">
-            <h4><%= query.at %></h4>
+<section class='container'>
+	<div class='row'>
+		<div class='col-12 col-lg-3 mx-auto mb-3 bordered'>
+            <h4><%= query.adjustType %></h4>
             <h5>Current Quantity: <%= stock._qty %></h5>
-            <form action="/stores/adjusts" method="POST" onsubmit="return confirm('Add adjustment?');">
-                <div class="">
-                    <input type="hidden" name="adjust[_type]" value="<%= query.at %>" readonly>
-                    <input type="hidden" name="adjust[stock_id]" value="<%= stock.stock_id %>" readonly>
-                    <p><input type="number" name="adjust[_qty]" inputmode="numeric" maxlength="11" placeholder="Quantity" required></p>
+            <form action='/stores/adjusts' method='POST'>
+                <div class='mb-2'>
+                    <input type='hidden' name='adjust[_type]' value='<%= query.adjustType %>'>
+                    <input type='hidden' name='adjust[stock_id]' value='<%= stock.stock_id %>'>
+                    <input type='number' name='adjust[_qty]' inputmode='numeric' maxlength='11' placeholder='Quantity' required>
                 </div>
-                <p><button class="btn btn-success">Save</button></p>
+                <div class='mb-2'>
+                    <input type='submit' class='btn btn-success w-100 confirm' value='Save'>
+                </div>
             </form>
 		</div>
     </div>

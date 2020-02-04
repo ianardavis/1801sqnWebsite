@@ -1,118 +1,118 @@
 <% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>Stores</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers">Files</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/suppliers'>Files</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers">New</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/suppliers'>New</a>
             </li>
         </ul>
     </nav>
 </section>
-<section class="row">
-    <div class="col-md-9 col-xl-6 container bordered p-3">
-        <form action="/stores/files/<%= file.file_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit file properties ?');">
+<section class='row'>
+    <div class='col-md-9 col-xl-6 container bordered p-3'>
+        <form action='/stores/files/<%= file.file_id %>?_method=PUT' method='POST'>
             <h4>File:</h4>
-            <input class="form-control" type="text" value="<%= file._path %>" readonly>
+            <input class='form-control' type='text' value='<%= file._path %>' readonly>
             <h4>Cells</h4>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_code">Inventory Code/Account:</label>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_code'>Inventory Code/Account #:</label>
                 </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_code" name="file[_code]" type="text" value="<%= file._code %>" maxlength="4">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_rank">Holder Rank:</label>
-                </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_rank" name="file[_rank]" type="text" value="<%= file._rank %>" maxlength="4">
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_code' name='file[_code]' type='text' value='<%= file._code %>' maxlength='20'>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_name">Holder Name:</label>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_rank'>Holder Rank:</label>
                 </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_name" name="file[_name]" type="text" value="<%= file._name %>" maxlength="4">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_sqn">Squadron:</label>
-                </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_sqn" name="file[_sqn]" type="text" value="<%= file._sqn %>" maxlength="4">
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_rank' name='file[_rank]' type='text' value='<%= file._rank %>' maxlength='4'>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_cover_sheet">Cover Sheet:</label>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_name'>Holder Name:</label>
                 </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_cover_sheet" name="file[_cover_sheet]" type="text" value="<%= file._cover_sheet %>" maxlength="20">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_items_sheet">Items Sheet:</label>
-                </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_items_sheet" name="file[_items_sheet]" type="text" value="<%= file._items_sheet %>" maxlength="20">
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_name' name='file[_name]' type='text' value='<%= file._name %>' maxlength='4'>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_rank_column">Cover Sheet Rank Column:</label>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_sqn'>Squadron:</label>
                 </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_rank_column" name="file[_rank_column]" type="text" value="<%= file._rank_column %>" maxlength="2">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_name_column">Cover Sheet Name Column:</label>
-                </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_name_column" name="file[_name_column]" type="text" value="<%= file._name_column %>" maxlength="2">
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_sqn' name='file[_sqn]' type='text' value='<%= file._sqn %>' maxlength='4'>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_request_start">Cover Sheet Start Row:</label>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_cover_sheet'>Cover Sheet:</label>
                 </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_request_start" name="file[_request_start]" type="text" value="<%= file._request_start %>" maxlength="2">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_request_end">Cover Sheet End Row:</label>
-                </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_request_end" name="file[_request_end]" type="text" value="<%= file._request_end %>" maxlength="2">
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_cover_sheet' name='file[_cover_sheet]' type='text' value='<%= file._cover_sheet %>' maxlength='20'>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <label class="col-form-label" for="_date">Date:</label>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_items_sheet'>Items Sheet:</label>
                 </div>
-                <div class="col-sm-6">
-                    <input class="form-control" id="_date" name="file[_date]" type="text" value="<%= file._date %>" maxlength="4">
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_items_sheet' name='file[_items_sheet]' type='text' value='<%= file._items_sheet %>' maxlength='20'>
                 </div>
             </div>
-            <div class="row mx-3 mt-3">
-                <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_rank_column'>Cover Sheet Rank Column:</label>
+                </div>
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_rank_column' name='file[_rank_column]' type='text' value='<%= file._rank_column %>' maxlength='2'>
+                </div>
             </div>
-            <div class="row mx-3">
-                <a href="/stores/suppliers">Cancel</a>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_name_column'>Cover Sheet Name Column:</label>
+                </div>
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_name_column' name='file[_name_column]' type='text' value='<%= file._name_column %>' maxlength='2'>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_request_start'>Cover Sheet Start Row:</label>
+                </div>
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_request_start' name='file[_request_start]' type='text' value='<%= file._request_start %>' maxlength='2'>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_request_end'>Cover Sheet End Row:</label>
+                </div>
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_request_end' name='file[_request_end]' type='text' value='<%= file._request_end %>' maxlength='2'>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-sm-6'>
+                    <label class='col-form-label' for='_date'>Date:</label>
+                </div>
+                <div class='col-sm-6'>
+                    <input class='form-control' id='_date' name='file[_date]' type='text' value='<%= file._date %>' maxlength='4'>
+                </div>
+            </div>
+            <div class='row mx-3 mt-3'>
+                <button class='btn btn-success btn-lg col-12 w-100 confirm' type='submit'>Save</button>
+            </div>
+            <div class='row mx-3'>
+                <a href='/stores/suppliers'>Cancel</a>
             </div>
         </form>
     </div>

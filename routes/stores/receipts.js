@@ -16,12 +16,14 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //New Logic
     app.post('/stores/receipts', isLoggedIn, allowed('receipts_add'), (req, res) => {
         if (req.body.selected) {
-            let lines = []
-            req.body.selected.forEach(line => lines.push(JSON.parse(line)));
-            if (lines.length > 0) {
+            let items = [];
+            for (let [key, line] of Object.entries(req.body.selected)) {
+                items.push(line);
+            };
+            if (items.length > 0) {
                 fn.createReceipt(
                     req.body.supplier_id,
-                    lines,
+                    items,
                     req.user.user_id
                 )
                 .then(result => res.redirect('/stores/receipts/' + result))

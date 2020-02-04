@@ -175,7 +175,7 @@ module.exports = (fn, m) => {
             required: false,
             include: [{
                 model: m.issues,
-                include: [fn.users('_for')]
+                include: [fn.users('_to')]
             }]
         });
         if (options.orders) include.push({
@@ -214,7 +214,7 @@ module.exports = (fn, m) => {
         return include;
     };
     fn.issues_inc = includeLines => {
-        let include = [fn.users('_for'), fn.users('_by')];
+        let include = [fn.users('_to'), fn.users('_by')];
         if (includeLines) {
             include.push({
                 model: m.issues_l,
@@ -223,7 +223,7 @@ module.exports = (fn, m) => {
                     m.nsns,
                     fn.stock('stock'),
                     {model: m.item_sizes, include: fn.itemSize_inc({stock: true})},
-                    {model: m.returns_l, include: [fn.stock('stock'), {model: m.returns, include: [fn.users('_from'), fn.users('_to')]}]}
+                    {model: m.returns_l, include: [fn.stock('stock'), {model: m.returns, include: [fn.users('_from'), fn.users('_by')]}]}
                 ]
             });
         };
@@ -800,7 +800,7 @@ module.exports = (fn, m) => {
                 doc
                 .text(line.nsn._nsn, 28, lineHeight)
                 .text(line.item_size.item._description, 123.81, lineHeight)
-                .text(line.item_size.size._text, 276.31, lineHeight)
+                .text(line.item_size._size, 276.31, lineHeight)
                 .text(line._qty, 373.56, lineHeight)
                 .moveTo(28, lineHeight + 15).lineTo(567.28, lineHeight + 15).stroke();
                 lineHeight += 20;
@@ -827,7 +827,6 @@ module.exports = (fn, m) => {
         const range = doc.bufferedPageRange();
         doc.fontSize(15);
         for (i = range.start, end = range.start + range.count, range.start <= end; i < end; i++) {
-            console.log(i);
             doc.switchToPage(i);
             doc
             .text(`Page ${i + 1} of ${range.count}`, 28, 803.89)
@@ -844,9 +843,8 @@ module.exports = (fn, m) => {
             let actions = [];
             lines.forEach(line => {
                 if (line) {
-                    line = JSON.parse(line);
-                    let line = new cn.RequestLine(request.request_id, line);
-                    actions.push(fn.create(m.requests_l, line));
+                    let newline = new cn.RequestLine(request.request_id, line);
+                    actions.push(fn.create(m.requests_l, newline));
                 };
             });
             if (actions.length > 0) {

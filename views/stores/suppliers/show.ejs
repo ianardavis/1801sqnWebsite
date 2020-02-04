@@ -149,11 +149,9 @@
     </div>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/tableSort.js"></script>
-<script src="/js/filters.js"></script>
 <script>
     function filterSelects() {
-        filter(['sn'],"/stores/suppliers/<%= supplier.supplier_id %>");
+        filter(['system'],"/stores/suppliers/<%= supplier.supplier_id %>");
     };
     function goToItemSize() {
         var item_size = document.querySelector('#itemsize_id');

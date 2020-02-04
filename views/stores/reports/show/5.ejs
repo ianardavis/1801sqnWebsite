@@ -42,7 +42,7 @@
                                                 <a class="float-right" href="/stores/item_sizes/<%= _stock.itemsize_id %>"><i class="fas fa-search"></i></a>
                                                 <a href="#"><%= _stock.item_size._size %></a>
                                             </td>
-                                            <td <% if (_stock._qty === 0) { %> class="cardRed"<% } %>>
+                                            <td <% if (_stock._qty >= 0) { %> class="cardRed"<% } %>>
                                                 <a href="#"><%= _stock._qty %></a>
                                             </td>
                                         </tr>
@@ -57,7 +57,6 @@
     </div>
 </section>
 <% include ../../../partials/foot/full %>
-<script src="/js/tableSort.js"></script>
 <script>
     <% locations.forEach(location => { %>
         sortTable(1, 'table<%= location.location_id %>')

@@ -1,114 +1,114 @@
 <% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>Stores</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items'>Items</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item._description %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items/<%= item.item_id %>'><%= item._description %></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/new">Add Size</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/item_sizes/new'>Add Size</a>
             </li>
         </ul>
     </nav>
 </section>
-<section class="container">
-    <form action="/stores/item_sizes" method="POST" onsubmit="return confirm('Add selected size(s) ?');">
-        <input type="hidden" name="details[item_id]", value="<%= item.item_id %>" readonly>
-        <div class="row">
-            <div class="col-12 bordered mb-1">
-                <div class="row">
-                    <div class="col-5" >
-                        <label class="col-form-label">Add Size to:</label>
+<section class='container'>
+    <form action='/stores/item_sizes' method='POST'>
+        <input type='hidden' name='details[item_id]', value='<%= item.item_id %>' readonly>
+        <div class='row'>
+            <div class='col-12 bordered mb-1'>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Add Size to:</label>
                     </div> 
-                    <div class="col-7">
-                        <input class="form-control" type="text" value="<%= item._description %>" readonly>
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<%= item._description %>' readonly>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-9 bordered mb-1">
-                <div class="row p-3">
-                    <button class="btn btn-success col-12" type="submit">Save</button>
-                    <a href="/stores/items/<%= item.item_id %>">Cancel</a>
+            <div class='col-12 col-md-9 bordered mb-1'>
+                <div class='row p-3'>
+                    <input class='btn btn-success col-12 confirm' type='submit' value='Save'>
+                    <a href='/stores/items/<%= item.item_id %>'>Cancel</a>
                 </div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-5">
-                            <label class="col-form-label">Issueable:</label>
+                <div class='form-group'>
+                    <div class='row'>
+                        <div class='col-5'>
+                            <label class='col-form-label'>Issueable:</label>
                         </div>
-                        <div class="col-7">
-                            <input class="form-control" type="checkbox" name="details[_issueable]" value="1" checked>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5">
-                            <label class="col-form-label">Orderable:</label>
-                        </div>
-                        <div class="col-7">
-                            <input class="form-control" type="checkbox" name="details[_orderable]" value="1">
+                        <div class='col-7'>
+                            <input class='form-control' type='checkbox' name='details[_issueable]' value='1' checked>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-5">
-                            <label class="col-form-label">Has Serial #:</label>
+                    <div class='row'>
+                        <div class='col-5'>
+                            <label class='col-form-label'>Orderable:</label>
                         </div>
-                        <div class="col-7">
-                            <input class="form-control" type="checkbox" name="details[_has_serial]" value="1">
+                        <div class='col-7'>
+                            <input class='form-control' type='checkbox' name='details[_orderable]' value='1'>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Supplier:</label>
+                    <div class='row'>
+                        <div class='col-5'>
+                            <label class='col-form-label'>Has Serial #:</label>
+                        </div>
+                        <div class='col-7'>
+                            <input class='form-control' type='checkbox' name='details[_has_serial]' value='1'>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-5' >
+                            <label class='col-form-label'>Supplier:</label>
                         </div> 
-                        <div class="col-7">
-                            <select class="form-control" name="details[supplier_id]" type="text">
+                        <div class='col-7'>
+                            <select class='form-control' name='details[supplier_id]' type='text'>
                                 <% suppliers.forEach(supplier => { %>
-                                    <option value="<%= supplier.supplier_id %>"<% if (supplier._default) { %> selected <% } %>><%= supplier._name %></option>         
+                                    <option value='<%= supplier.supplier_id %>'<% if (supplier._default) { %> selected <% } %>><%= supplier._name %></option>         
                                 <% }) %>
                             </select>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Demand Page:</label>
+                    <div class='row'>
+                        <div class='col-5' >
+                            <label class='col-form-label'>Demand Page:</label>
                         </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" name="details[_demand_page]" maxlength="20" placeholder="Demand Page">
+                        <div class='col-7'>
+                            <input class='form-control' type='text' name='details[_demand_page]' maxlength='20' placeholder='Demand Page'>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Cell:</label>
+                    <div class='row'>
+                        <div class='col-5' >
+                            <label class='col-form-label'>Cell:</label>
                         </div> 
-                        <div class="col-7">
-                            <input class="form-control" type="text" name="details[_demand_cell]" maxlength="3" placeholder="Cell">
+                        <div class='col-7'>
+                            <input class='form-control' type='text' name='details[_demand_cell]' maxlength='3' placeholder='Cell'>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-5" >
-                            <label class="col-form-label">Ordering Details:</label>
+                    <div class='row'>
+                        <div class='col-5' >
+                            <label class='col-form-label'>Ordering Details:</label>
                         </div> 
-                        <div class="col-7">
-                            <textarea class="form-control" name="details[_ordering_details]" rows="5" maxlength="1000"></textarea>
+                        <div class='col-7'>
+                            <textarea class='form-control' name='details[_ordering_details]' rows='5' maxlength='1000'></textarea>
                         </div>
                     </div>
                     
                 </div>
             </div>
-            <div class="col-12 col-md-3 bordered mb-1">
-                <input class="form-control" type="text" id="size" placeholder="Enter a new size...">
-                <a class="btn btn-sm btn-primary w-100 mb-1" href="javascript:addSize()">Add Size</a>
-                <table id="sizeTable" class="w-100">
+            <div class='col-12 col-md-3 bordered mb-1'>
+                <input class='form-control' type='text' id='size' placeholder='Enter a new size...'>
+                <a class='btn btn-sm btn-primary w-100 mb-1' href='javascript:addSize()'>Add Size</a>
+                <table id='sizeTable' class='w-100'>
                     <thead>
-                        <th class="w-100">Size</th>
-                        <th><i class="fas fa-trash-alt"></i></th>
+                        <th class='w-100'>Size</th>
+                        <th><i class='fas fa-trash-alt'></i></th>
                     </thead>
-                    <tbody id="sizes">
+                    <tbody id='sizes'>
                     </tbody>
                 </table>
             </div>
@@ -116,7 +116,7 @@
     </form>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/removeID.js"></script>
+<script src='/js/removeID.js'></script>
 <script>
     function addSize() {
         let size  = document.querySelector('#size'),
@@ -146,7 +146,7 @@
                 tr.appendChild(size_td);
                 tr.appendChild(del_td);
                 sizes.appendChild(tr);
-                size.value = "";
+                size.value = '';
             };
         };
     };

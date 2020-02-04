@@ -36,7 +36,7 @@
 					Options
 				</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<% if (permissions.requests_approve && permissions.orders_add) { %>
+					<% if (permissions.requests_edit && permissions.orders_add) { %>
 						<button form='requestForm' class="dropdown-item dropdown_button">Action Selected Requests</button>
 					<% }; %>
 					<% if (sortBy === 'request') { %>	
@@ -109,7 +109,7 @@
 		<% }; %>
 		<div class="col-12 mb-3 bordered">
 			<h4>Lines</h4>
-			<% if (permissions.requests_approve) { %>
+			<% if (permissions.requests_edit) { %>
 				<form id="requestForm" action="/stores/requests/<% if (sortBy === 'request') { %><%= request.request_id %><% } else if (sortBy === 'user') { %><%= f_user.user_id %><% } %>/approval?_method=PUT" method="POST" onsubmit="return confirm('Confirm change of status?');">
 				<button class="btn btn-success w-100 mb-3">Action Selected Requests</button>
 				<input type="hidden" name="requested_for" value="<% if (sortBy === 'request') { %><%= request.requested_for %><% } else if (sortBy === 'user') { %><%= f_user.user_id %><% } %>">
@@ -121,8 +121,8 @@
 							<th class="w-10" onclick="sortTable(1, 'requestTable')">Size</th>
 							<th class="w-5"  onclick="sortTable(2, 'requestTable')">Qty</th>
 							<th class="w-10" onclick="sortTable(3, 'requestTable')">Status</th>
-							<th class="w-10" onclick="sortTable(4, 'requestTable')"><% if (permissions.requests_approve) { %>Action/<% } %>Date Approved</th>
-							<th class="w-10" onclick="sortTable(5, 'requestTable')"><% if (permissions.requests_approve) { %>NSN/<% } %>Approved By</th>
+							<th class="w-10" onclick="sortTable(4, 'requestTable')"><% if (permissions.requests_edit) { %>Action/<% } %>Date Approved</th>
+							<th class="w-10" onclick="sortTable(5, 'requestTable')"><% if (permissions.requests_edit) { %>NSN/<% } %>Approved By</th>
 							<th class="w-10" onclick="sortTable(6, 'requestTable')"></th>
 						<% } else if (sortBy === 'user') { %>
 							<th class="w-15" onclick="sortTable(0, 'requestTable')">Request ID</th>
@@ -130,8 +130,8 @@
 							<th class="w-10" onclick="sortTable(2, 'requestTable')">Size</th>
 							<th class="w-5"  onclick="sortTable(3, 'requestTable')">Qty</th>
 							<th class="w-10" onclick="sortTable(4, 'requestTable')">Status</th>
-							<th class="w-10" onclick="sortTable(5, 'requestTable')"><% if (permissions.requests_approve) { %>Action/<% } %>Date Approved</th>
-							<th class="w-10" onclick="sortTable(6, 'requestTable')"><% if (permissions.requests_approve) { %>NSN/<% } %>Approved By</th>
+							<th class="w-10" onclick="sortTable(5, 'requestTable')"><% if (permissions.requests_edit) { %>Action/<% } %>Date Approved</th>
+							<th class="w-10" onclick="sortTable(6, 'requestTable')"><% if (permissions.requests_edit) { %>NSN/<% } %>Approved By</th>
 							<th class="w-10" onclick="sortTable(7, 'requestTable')"></th>
 						<% }; %>
 					</thead>
@@ -144,7 +144,7 @@
 										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size._size %></a></td>
 										<td><a href="#"><%= line._qty %></a></td>
 										<td>
-										<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== request._for.user_id) { %>
+										<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== request._for.user_id) { %>
 											<select id='status<%= line.line_id %>' class='form-control form-control-sm' name='declines[]' onchange='checkAction( <%= line.line_id %>)'>
 												<option value="pending" selected>Pending</option>
 												<option value="approved">Approved</option>
@@ -155,7 +155,7 @@
 										<% }; %>
 										</td>
 										<td>
-											<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== request._for.user_id) { %>
+											<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== request._for.user_id) { %>
 												<select id="action<%= line.line_id %>" style="display:none;" class="form-control form-control-sm" name="approves[]" onchange='checkNSNs( <%= line.line_id %>)'>
 													<option value="" selected></option>
 													<% if (line.item_size.stocks) { %>
@@ -176,7 +176,7 @@
 											<% } %>
 										</td>
 										<td>
-											<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== request._for.user_id) { %>
+											<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== request._for.user_id) { %>
 												<select id="nsns<%= line.line_id %>" name="nsns[line<%= line.line_id %>]" class="form-control form-control-sm" style="display:none;">
 													<% if (line.item_size.nsns) { %>
 														<% line.item_size.nsns.forEach(nsn => { %>
@@ -211,7 +211,7 @@
 										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size._size %></a></td>
 										<td><a href="#"><%= line._qty %></a></td>
 										<td>
-										<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== f_user.user_id) { %>
+										<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== f_user.user_id) { %>
 											<select id='status<%= line.line_id %>' class='form-control form-control-sm' name='declines[]' onchange='checkAction(<%= line.line_id %>)'>
 												<option value="pending" selected>Pending</option>
 												<option value="approved">Approved</option>
@@ -222,7 +222,7 @@
 										<% }; %>
 										</td>
 										<td>
-											<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== f_user.user_id) { %>
+											<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== f_user.user_id) { %>
 												<select id="action<%= line.line_id %>" style="display:none;" class="form-control form-control-sm" name="approves[]" onchange='checkNSNs( <%= line.line_id %>)'>
 													<option value="" selected></option>
 													<% if (line.item_size.stocks) { %>
@@ -243,7 +243,7 @@
 											<% } %>
 										</td>
 										<td>
-											<% if (line._status === 'Pending' && permissions.requests_approve && user.user_id !== f_user.user_id) { %>
+											<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== f_user.user_id) { %>
 												<select id="nsns<%= line.line_id %>" name="nsns[line<%= line.line_id %>]" class="form-control form-control-sm" style="display:none;">
 													<% if (line.item_size.nsns) { %>
 														<% line.item_size.nsns.forEach(nsn => { %>
@@ -272,16 +272,14 @@
 						<% }; %>
 					</tbody>
 				</table>
-				<% if (permissions.requests_approve) { %></form><% } %>
+				<% if (permissions.requests_edit) { %></form><% } %>
 		</div>
 	</div>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/filters.js"></script>
-<script src="/js/tableSort.js"></script>
 <script>
     function filterSelects() {
-        filter(['sn', 'sb'],"/stores/requests/<%= sortID %>?sb=<%= sortBy %>");
+        filter(['system', 'sb'],"/stores/requests/<%= sortID %>?sb=<%= sortBy %>");
     };
 	function checkAction(line) {
 		var status = document.querySelector('#status' + line),

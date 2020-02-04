@@ -49,11 +49,9 @@
 	</div>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/tableSort.js"></script>
-<script src="/js/filters.js"></script>
 <script>
     function filterSelects() {
-        filter(['sn'],"/stores/statuses/<%= status.status_id %>/edit");
+        filter(['system'],"/stores/statuses/<%= status.status_id %>/edit");
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -26,14 +26,14 @@
 	<div class="container">
 		<form id="orderForm" action="/stores/orders" method="POST" onsubmit="return confirm('Add order?');">
 			<input type="hidden" name="ordered_for" value="<%= user.user_id %>">
+            <div>
+                <input class="btn btn-success mb-2" type="submit" value="Order Selected Items">
+            </div>
 			<div class="row mx-auto">
 				<div class="col-12 col-md-6 bordered mx-auto mb-3">
 					<h5>Selected Items</h5>
-					<p class="btn btn-primary mb-3 w-100" onclick=openAddWindow()>Add Item</p>
+					<p class="btn btn-primary mb-3 w-100" onclick='openAddItem("order")'>Add Item</p>
 					<div id="selectedItems">
-					</div>
-					<div>
-						<input class="btn btn-primary mt-3" type="submit" value="Order Selected Items">
 					</div>
 				</div>
 			</div>
@@ -41,5 +41,8 @@
 	</div>
 </section>
 <% include ../../partials/foot/full %>
+<script src="/js/removeID.js"></script>
+<script src='/js/openAddItem.js'></script>
+<script src='/js/newItemCard.js'></script>
 <script src="/js/newOrder.js"></script>
 <% include ../../partials/foot/htmlClose %>

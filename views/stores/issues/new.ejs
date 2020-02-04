@@ -1,57 +1,59 @@
 <% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>Stores</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users">Users</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/users'>Users</a>
 			</li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users/<%= user.user_id %>"><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/users/<%= user.user_id %>'><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/issues/new?user=<%= user.user_id %>">New Issue</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/issues/new?user=<%= user.user_id %>'>New Issue</a>
             </li>
         </ul>
     </nav>
 </section>
-<section>
-	<div class="container">
-		<form id="issueForm" action="/stores/issues" method="POST" onsubmit="return confirm('Add issue?');">
-			<input type="hidden" name="issue[issued_to]" value="<%= user.user_id %>">
-			<div class="row">
-				<div class="col-12 col-md-6 bordered mb-3">
-					<h5>Selected Items</h5>
-					<p class="btn btn-primary mb-3 w-100" onclick=openAddWindow()>Add Item</p>
-					<div id="selectedItems">
+<section class='container'>
+	<form id='issueForm' action='/stores/issues' method='POST'>
+		<input type='hidden' name='issue[issued_to]' value='<%= user.user_id %>'>
+		<div class='row'>
+			<input class='btn btn-success mb-2 confirm' type='submit' value='Issue Selected Items'>
+		</div>
+		<div class='row'>
+			<div class='col-12 bordered mb-3'>
+				<h5>Dates</h5>
+				<div class='row'>
+					<div class='col-6'>
+						<label>Issued</label>
+						<input class='form-control' id='issueDate' type='date' name='issue[_date]' required>
+					</div>
+					<div class='col-6'>
+						<label>Due Back</label>
+						<input class='form-control' id='dueDate' type='date' name='issue[_date_due]' required>
 					</div>
 				</div>
-				<div class="col-12 col-md-6 bordered mb-3">
-					<h5>Issue Dates</h5>
-					<label>Date Issued</label>
-					<input class="form-control" id="issueDate" type="date" name="issue[_date]" required>
-					<label>Date Due Back</label>
-					<input class="form-control" id="dueDate" type="date" name="issue[_date_due]" required>
+			</div>
+			<div class='col-12 bordered mb-3'>
+				<a href='javascript:openAddItem("issue")' class='btn btn-primary mb-3 float-left'><i class='fas fa-plus'></i></a>
+				<h5>Selected Items</h5>
+				<div class='row menu' id='selectedItems'>
 				</div>
 			</div>
-		</form>
-		<div>
-			<input type="submit" form="issueForm" class="btn btn-primary mt-3" value="Issue Selected Items">
 		</div>
-	</div>
+	</form>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/newIssue.js"></script>
+<script src='/js/removeID.js'></script>
+<script src='/js/openAddItem.js'></script>
+<script src='/js/newItemCard.js'></script>
+<script src='/js/newIssue.js'></script>
 <script>
 	<% if (typeof(items) !== 'undefined' && items.length > 0) { %>
-		<%- JSON.stringify(items) %>.forEach(item => {
-			let nsns = item.nsns, stocks = item.stocks;
-			delete item.nsns;
-			delete item.stocks;
-			addSize(item, nsns, stocks);
-		});
+		<%- JSON.stringify(items) %>.forEach(item => addSize(item));
 	<% }; %>
 </script>
 <% include ../../partials/foot/htmlClose %>

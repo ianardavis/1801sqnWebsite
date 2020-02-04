@@ -69,7 +69,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {item_id: req.params.id}
         )
         .then(item => {
-            fn.getOptions(itemOptions(), req, classes => {
+            fn.getOptions(itemOptions(), req)
+            .then(classes => {
                 res.render('stores/items/edit', {
                     item:    item, 
                     classes: classes

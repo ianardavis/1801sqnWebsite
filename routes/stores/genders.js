@@ -11,9 +11,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/settings', req, res));
     });
-
     // New Form
     app.get('/stores/genders/new', isLoggedIn, allowed('genders_add'), (req, res) => res.render('stores/genders/new'));
+    
     // Edit
     app.get('/stores/genders/:id/edit', isLoggedIn, allowed('genders_edit'), (req, res) => {
         fn.getOne(
@@ -32,7 +32,6 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/settings', req, res));
     });
-
     // Put
     app.put('/stores/genders/:id', isLoggedIn, allowed('genders_edit'), (req, res) => {
         fn.update(

@@ -70,6 +70,9 @@
 </section>
 <% include ../../partials/foot/full %>
 <script>
+    // for (let [key, value] of Object.entries(<%= permissions %>)) {
+    //         console.log(key, value);
+    //     };
     insertPermission('account_enabled');
 
     var toggler = document.getElementsByClassName("caret"),
@@ -150,9 +153,10 @@
     };
 
     function setAll(as) {
-        [<%= permissions._options.attributes %>].forEach(permission => {
-            permission.checked = as;
-        });
+        
+        // [<%= permissions.attributes %>].forEach(permission => {
+        //     permission.checked = as;
+        // });
     };
     function p_disabled() {
         setAll(false);

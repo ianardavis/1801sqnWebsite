@@ -50,12 +50,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {
                 include: [
                     {model: m.item_sizes, include: [m.items]},
+                    {model: m.adjusts,    include: [fn.users()]},
+                    {model: m.receipts_l, include: [{model: m.receipts, include: [fn.users()]}]},
+                    {model: m.issues_l,   include: [{model: m.issues,   include: [fn.users('_to')]}]},
+                    {model: m.returns_l,  include: [{model: m.returns,  include: [fn.users('_from')]}]},
                     m.locations
-                ],
-                attributes: null,
-                nullOK: false
+                ]
             }
-            
         )
         .then(stock => {
             fn.getNotes('stock', req.params.id, req)

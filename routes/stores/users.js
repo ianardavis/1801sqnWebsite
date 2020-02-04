@@ -56,7 +56,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     // New Form
-    app.get('/stores/users/new', isLoggedIn, allowed('users_add'), (req, res) => fn.getOptions(options(), req, classes => res.render('stores/users/new', {classes: classes})));
+    app.get('/stores/users/new', isLoggedIn, allowed('users_add'), (req, res) => {
+        fn.getOptions(options(), req)
+        .then(classes => res.render('stores/users/new', {classes: classes}))
+    });
 
     // Edit password
     app.get('/stores/password', isLoggedIn, allowed('users_password', false), (req, res) => {

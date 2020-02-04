@@ -530,24 +530,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "settings_edit"
     },
-    'sizes_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'sizes_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'sizes_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,

@@ -55,11 +55,9 @@
 	</div>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/tableSort.js"></script>
-<script src="/js/filters.js"></script>
 <script>
     function filterSelects() {
-        filter(['sn'],"/stores/nsns/<%= nsn.nsn_id %>/edit");
+        filter(['system'],"/stores/nsns/<%= nsn.nsn_id %>/edit");
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

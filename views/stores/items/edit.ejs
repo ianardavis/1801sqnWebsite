@@ -1,111 +1,114 @@
 <% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>Stores</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items'>Items</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item._description %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items/<%= item.item_id %>'><%= item._description %></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>/edit">Edit</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items/<%= item.item_id %>/edit'>Edit</a>
             </li>
         </ul>
     </nav>
 </section>
-<section class="container p-5 bordered">
-    <form action="/stores/items/<%= item.item_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit item?');">
-        <input type="hidden" name="failRedirect", value="/stores/items/<%= item.item_id %>" readonly>
-        <div class="form-group row">
-            <div class="col-5" >
-                <label class="col-form-label">Description:</label>
-            </div>                        
-            <div class="col-7">
-                <input class="form-control" type="text" name="item[_description]" value="<%= item._description %>" maxlength="45">
+<section class='container bordered'>
+    <form action='/stores/items/<%= item.item_id %>?_method=PUT' method='POST'>
+        <div class='form-group'>
+            <div class='row'>
+                <div class='col-12'>
+                    <input class='btn btn-success btn-lg col-12 confirm' type='submit' value='Save'>
+                    <a class='float-left' href='/stores/items/<%= item.item_id %>'>Cancel</a>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-5" >
-                <label class="col-form-label">Category:</label>
-            </div> 
-            <div class="col-7">
-                <select class="form-control" name="item[category_id]" id="category_id" type="text" onchange=setGroup()>
-                    <% classes.categories.forEach(category => { %>
-                        <option value="<%= category.category_id %>"<% if (category.category_id === item.category_id) { %> selected <% } %>><%= category._category %></option>
-                    <% }) %>
-                </select>
+            <div class='row'>
+                <div class='col-5' >
+                    <label class='col-form-label'>Description:</label>
+                </div>                        
+                <div class='col-7'>
+                    <input class='form-control' type='text' name='item[_description]' value='<%= item._description %>' maxlength='45'>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-5" >
-                <label class="col-form-label">Group:</label>
-            </div> 
-            <div class="col-7">
-                <select class="form-control" name="item[group_id]" id="group_id" type="text" onchange=setType()>
-                    <option value='' data-tag='<blank>'></option> 
-                    <% classes.groups.forEach(group => { %>
-                        <option value="<%= group.group_id %>" data-tag='<%= group.category_id %>'<% if (group.group_id === item.group_id) { %> selected <% } %>><%= group._group %></option>
-                    <% }) %>
-                </select>
+            <div class='row'>
+                <div class='col-5' >
+                    <label class='col-form-label'>Category:</label>
+                </div> 
+                <div class='col-7'>
+                    <select class='form-control' name='item[category_id]' id='category_id' type='text' onchange=setGroup()>
+                        <% classes.categories.forEach(category => { %>
+                            <option value='<%= category.category_id %>'<% if (category.category_id === item.category_id) { %> selected <% } %>><%= category._category %></option>
+                        <% }) %>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-5" >
-                <label class="col-form-label">Type:</label>
-            </div> 
-            <div class="col-7">
-                <select class="form-control" name="item[type_id]" id="type_id" type="text" onchange=setSubtype()>
-                    <option value='' data-tag='<blank>'></option> 
-                    <% classes.types.forEach(type => { %>
-                        <option value="<%= type.type_id %>" data-tag='<%= type.group_id %>'<% if (type.type_id === item.type_id) { %> selected <% } %>><%= type._type %></option>
-                    <% }) %>
-                </select>
+            <div class='row'>
+                <div class='col-5' >
+                    <label class='col-form-label'>Group:</label>
+                </div> 
+                <div class='col-7'>
+                    <select class='form-control' name='item[group_id]' id='group_id' type='text' onchange=setType()>
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.groups.forEach(group => { %>
+                            <option value='<%= group.group_id %>' data-tag='<%= group.category_id %>'<% if (group.group_id === item.group_id) { %> selected <% } %>><%= group._group %></option>
+                        <% }) %>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-5" >
-                <label class="col-form-label">Sub Type:</label>
-            </div> 
-            <div class="col-7">
-                <select class="form-control" name="item[subtype_id]" id="subtype_id" type="text">
-                    <option value='' data-tag='<blank>'></option> 
-                    <% classes.subtypes.forEach(subtype => { %>
-                        <option value="<%= subtype.subtype_id %>" data-tag='<%= subtype.type_id %>'<% if (subtype.subtype_id === item.subtype_id) { %> selected <% } %>><%= subtype._subtype %></option>         
-                    <% }) %>
-                </select>
+            <div class='row'>
+                <div class='col-5' >
+                    <label class='col-form-label'>Type:</label>
+                </div> 
+                <div class='col-7'>
+                    <select class='form-control' name='item[type_id]' id='type_id' type='text' onchange=setSubtype()>
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.types.forEach(type => { %>
+                            <option value='<%= type.type_id %>' data-tag='<%= type.group_id %>'<% if (type.type_id === item.type_id) { %> selected <% } %>><%= type._type %></option>
+                        <% }) %>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-5" >
-                <label class="col-form-label">Gender:</label>
-            </div> 
-            <div class="col-7">
-                <select class="form-control" name="item[gender_id]" id="gender_id" type="text">
-                    <option value='' data-tag='<blank>'></option> 
-                    <% classes.genders.forEach(gender => { %>
-                        <option value="<%= gender.gender_id %>"<% if (gender.gender_id === item.gender_id) { %> selected <% } %>><%= gender._gender %></option>         
-                    <% }) %>
-                </select>
+            <div class='row'>
+                <div class='col-5' >
+                    <label class='col-form-label'>Sub Type:</label>
+                </div> 
+                <div class='col-7'>
+                    <select class='form-control' name='item[subtype_id]' id='subtype_id' type='text'>
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.subtypes.forEach(subtype => { %>
+                            <option value='<%= subtype.subtype_id %>' data-tag='<%= subtype.type_id %>'<% if (subtype.subtype_id === item.subtype_id) { %> selected <% } %>><%= subtype._subtype %></option>         
+                        <% }) %>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-5" >
-                <label class="col-form-label">Size Text:</label>
-            </div>                        
-            <div class="col-7">
-                <input class="form-control" type="text" name="item[_size_text]" value="<%= item._size_text %>" maxlength="45">
+            <div class='row'>
+                <div class='col-5' >
+                    <label class='col-form-label'>Gender:</label>
+                </div> 
+                <div class='col-7'>
+                    <select class='form-control' name='item[gender_id]' id='gender_id' type='text'>
+                        <option value='' data-tag='<blank>'></option> 
+                        <% classes.genders.forEach(gender => { %>
+                            <option value='<%= gender.gender_id %>'<% if (gender.gender_id === item.gender_id) { %> selected <% } %>><%= gender._gender %></option>         
+                        <% }) %>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-group row p-3">
-            <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
-            <a href="/stores/items/<%= item.item_id %>">Cancel</a>
+            <div class='row'>
+                <div class='col-5' >
+                    <label class='col-form-label'>Size Text:</label>
+                </div>                        
+                <div class='col-7'>
+                    <input class='form-control' type='text' name='item[_size_text]' value='<%= item._size_text %>' maxlength='45'>
+                </div>
+            </div>
         </div>
     </form>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/itemClasses.js"></script>
+<script src='/js/itemClasses.js'></script>
 <% include ../../partials/foot/htmlClose %>

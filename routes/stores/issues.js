@@ -1,16 +1,15 @@
 module.exports = (app, allowed, fn, isLoggedIn, m) => {
     // Index
     app.get('/stores/issues', isLoggedIn, allowed('access_issues'), (req, res) => {
-        let query = {}, where = {};
-        query.ci = Number(req.query.ci) || 2;
-        if (query.ci === 2) where._complete = 0;
-        else if (query.ci === 3) where._complete = 1;
+        let where = {};
+        if (Number(req.query.closed) === 2)      where._complete = 0;
+        else if (Number(req.query.closed) === 3) where._complete = 1;
         fn.getAllWhere(
             m.issues, 
             where,
             {
                 include: [
-                    fn.users('_for'),
+                    fn.users('_to'), 
                     fn.users('_by'),
                     {
                         model: m.issues_l,
@@ -23,7 +22,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         )
         .then(issues => {
             res.render('stores/issues/index', {
-                query:  query,
+                query:  {closed: Number(req.query.closed) || 2},
                 issues: issues
             });
         })
@@ -32,20 +31,22 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //New Logic
     app.post('/stores/issues', isLoggedIn, allowed('issues_add'), (req, res) => {
-        let items = [];
-        for (let [key, line] of Object.entries(req.body.selected)) {
-            items.push(line);
-        };
-        fn.createIssue(
-            req.body.issue,
-            items,
-            req.user.user_id
-        )
-        .then(issue_id => {
-            req.flash('success', 'Items issued, ID: ' + issue_id);
-            res.redirect('/stores/users/' + req.body.issue.issued_to);
-        })
-        .catch(err => fn.error(err, '/stores/users/' + req.body.issue.issued_to, req, res));
+        if (req.body.selected) {
+            let items = [];
+            for (let [key, line] of Object.entries(req.body.selected)) {
+                items.push(line);
+            };
+            fn.createIssue(
+                req.body.issue,
+                items,
+                req.user.user_id
+            )
+            .then(issue_id => {
+                req.flash('success', 'Items issued, ID: ' + issue_id);
+                res.redirect('/stores/users/' + req.body.issue.issued_to);
+            })
+            .catch(err => fn.error(err, '/stores/users/' + req.body.issue.issued_to, req, res));
+        } else redirect(new Error('No items selected'), req, res);
     });
 
     //new form
@@ -96,7 +97,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id},
-            {include: fn.issues_inc(true), attributes: null, nullOK: false}
+            {include: fn.issues_inc(true)}
         )
         .then(issue => {
             if (req.allowed || issue.issuedTo.user_id === req.user.user_id) {

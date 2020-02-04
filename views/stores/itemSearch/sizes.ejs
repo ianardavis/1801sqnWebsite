@@ -1,25 +1,22 @@
 <% include ../../partials/head/head %>
 <body>
 <% include ../../partials/head/flash %>
-<section id="body">
-<div class="row container mx-auto">
-    <div class="col-12 mb-3">
-        <a class="btn btn-primary w-100" href="/stores/itemSearch?c=<%= callType %>&s=<%= supplier_id %>">Back</a>
-    </div>
-    <div class="col-12 col-md-6 bordered mb-3 mx-auto">
-        <h5>Sizes for <%= description %></h5>
-        <input class="form-control" type="text" id="sizeSearch" onkeyup="searchTable('sizesTable', 'sizeSearch')" placeholder="Search forsizes..">
-        <form action="/stores/itemSearch/size" method="POST">
-            <input type="hidden" name="item_id" value="<%= item_id %>">
-            <input type="hidden" name="callType" value="<%= callType %>">
-            <input type="hidden" name="supplier_id" value="<%= supplier_id %>">
-            <select class='form-control w-100' name="item_size" id="sizesTable" type="text" size="15">
-                <option value=""></option>
+<section id='body'>
+<div class='row container mx-auto'>
+    <div class='col-12 col-md-6 bordered mb-2 mx-auto'>
+        <h4><%= description %></h4>
+        <input class='form-control' type='text' id='sizeSearch' onkeyup='searchTable("sizesTable", "sizeSearch")' placeholder='Search for sizes...'>
+        <form action='/stores/itemSearch/size' method='POST'>
+            <input type='hidden' name='item_id' value='<%= item_id %>'>
+            <input type='hidden' name='callType' value='<%= callType %>'>
+            <input type='hidden' name='supplier_id' value='<%= supplier_id %>'>
+            <select class='form-control w-100' name='item_size' id='sizesTable' type='text' size='15'>
+                <option value=''></option>
                 <% item_sizes.forEach(item_size => { %>
-                    <option value="<%= item_size.itemsize_id %>"><%= item_size._size %></option>
+                    <option value='<%= item_size.itemsize_id %>'><%= item_size._size %></option>
                 <% }); %>
             </select>
-            <button class="btn btn-success w-100">Select</button>
+            <button class='btn btn-success w-100'>Select</button>
         </form>
         <% if (callType === 'issue') { %>
             <div>
@@ -28,10 +25,13 @@
             </div>
         <% }; %>
     </div>
-    <div class="col-12">
-        <a class="btn btn-danger w-100" href="javascript:close()">Finished Adding Items</a>
+    <div class='col-12 mb-2'>
+        <a class='btn btn-primary w-100' href='/stores/itemSearch?c=<%= callType %>&s=<%= supplier_id %>'>Back</a>
+    </div>
+    <div class='col-12 mb-2'>
+        <a class='btn btn-danger w-100' href='javascript:close()'>Finished Adding Items</a>
     </div>
 </div>
 <% include ../../partials/foot/js %>
-<script src="/js/selectSearch.js"></script>
+<script src='/js/selectSearch.js'></script>
 <% include ../../partials/foot/htmlClose %>

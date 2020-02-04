@@ -30,7 +30,7 @@
 					<a class="float-right btn btn-sm btn-primary" href="/stores/suppliers/<%= supplier.supplier_id %>">
 						<i class="fas fa-search"></i>
 					</a>
-					<h3><%= supplier._name %></h3>
+					<h3 class="card-title"><%= supplier._name %></h3>
 					<% if (Number(supplier.supplier_id) === Number(_default)) { %>
 						<p class="card-subtitle text-muted">Default</p>
 					<% } %>

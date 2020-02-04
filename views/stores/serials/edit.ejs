@@ -52,11 +52,9 @@
 	</div>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/tableSort.js"></script>
-<script src="/js/filters.js"></script>
 <script>
     function filterSelects() {
-        filter(['sn'],"/stores/serials/<%= serial.serial_id %>/edit");
+        filter(['system'],"/stores/serials/<%= serial.serial_id %>/edit");
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

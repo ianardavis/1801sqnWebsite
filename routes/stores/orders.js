@@ -28,9 +28,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //New Logic
     app.post('/stores/orders', isLoggedIn, allowed('orders_add'), (req, res) => {
         if (req.body.selected) {
+            let items = [];
+            for (let [key, line] of Object.entries(req.body.selected)) {
+                items.push(line);
+            };
             fn.createOrder(
                 req.body.ordered_for,
-                req.body.selected,
+                items,
                 req.user.user_id
             )
             .then(order_id => {

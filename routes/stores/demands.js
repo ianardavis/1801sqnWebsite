@@ -4,11 +4,11 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //index
     app.get('/stores/demands', isLoggedIn, allowed('access_demands'), (req, res) => {
         let query = {}, where = {};
-        query.cd = Number(req.query.cd) || 2;
-        query.su = Number(req.query.su) || 0;
-        if (query.cd === 2) where._complete = 0
-        else if (query.cd === 3)  where._complete = 1;
-        if (query.su !== 0) where.supplier_id = query.su;
+        query.complete    = Number(req.query.complete)    || 2;
+        query.supplier_id = Number(req.query.supplier_id) || 0;
+        if (query.complete === 2)      where._complete   = 0
+        else if (query.complete === 3) where._complete   = 1;
+        if (query.supplier_id !== 0)   where.supplier_id = query.supplier_id;
         fn.getAllWhere(
             m.demands,
             where,
@@ -20,9 +20,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         model: m.demands_l,
                         as: 'lines'
                     }
-                ],
-                nullOk: false,
-                attributes: null
+                ]
             }
         )
         .then(demands => {
@@ -103,11 +101,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         if (cancels.length > 0) actions.push(fn.cancelDemandLines(cancels));
         if (receipts.length > 0) actions.push(fn.receiveDemandLines(receipts, req.user.user_id));
         if (actions.length > 0) {
-            Promise.allSettled(
-                actions
-            )
+            Promise.allSettled(actions)
             .then(results => {
-                results.forEach(result =>{
+                results.forEach(result => {
                     if (result.demandCLosed && result.demandClosed === true) req.flash('info', 'Demand closed')
                 });
                 req.flash('success', 'Lines actioned')
@@ -130,21 +126,21 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 as: 'lines',
                 include: [{
                     model: m.item_sizes,
-                    include: fn.itemSizes_inc({stock: true})
+                    include: fn.itemSize_inc({stock: true})
                 }]
             }
         ];
         fn.getOne(
             m.demands,
             {demand_id: req.params.id},
-            {include: include, attributes: null, nullOK: false}
+            {include: include}
         )
         .then(demand => {
             fn.getNotes('demands', req.params.id, req)
             .then(notes => {
                 res.render('stores/demands/show', {
                     demand: demand,
-                    query:  {sn: Number(req.query.sn) || 2},
+                    query:  {system: Number(req.query.system) || 2, received: Number(req.query.received) || 2},
                     notes:  notes
                 });
             })

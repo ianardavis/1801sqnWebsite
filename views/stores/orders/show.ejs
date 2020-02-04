@@ -188,9 +188,7 @@
 	</div>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/filters.js"></script>
-<script src="/js/tableSort.js"></script>
 <script>
-    function filterSelects() {filter(['sn', 'dl', 'rl', 'il'], "/stores/orders/<%= order.order_id %>")};
+    function filterSelects() {filter(['system', 'dl', 'rl', 'il'], "/stores/orders/<%= order.order_id %>")};
 </script>
 <% include ../../partials/foot/htmlClose %>

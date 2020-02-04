@@ -57,7 +57,7 @@
                                                 <a class="float-right" href="/stores/item_sizes/<%= size.itemsize_id %>"><i class="fas fa-search"></i></a>
                                                 <a href="#"><%= size._size %></a>
                                             </td>
-                                            <td <% if (_stock === 0) { %> class="cardRed"<% } %>>
+                                            <td <% if (_stock <= 0) { %> class="cardRed"<% } %>>
                                                 <a href="#"><%= _stock %></a>
                                             </td>
                                             <td>
@@ -78,7 +78,6 @@
     </div>
 </section>
 <% include ../../../partials/foot/full %>
-<script src="/js/tableSort.js"></script>
 <script>
     <% items.forEach(item => { %>
         sortTable(0, 'table<%= item.item_id %>')

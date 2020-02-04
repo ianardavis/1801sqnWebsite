@@ -1,109 +1,103 @@
 <% include ../../partials/head/head %>
 <body>
 <% include ../../partials/head/flash %>
-<section id="body">
-<div class="row container mx-auto">
-    <div class="col-12 col-md-6 mx-auto">
-        <div class="row mb-3">
-            <div class="col-6">
-                <a class="btn btn-primary w-100" href="/stores/itemSearch?c=<%= callType %>&s=<%= supplier_id %>">New Search</a>
-            </div>
-            <div class="col-6">
-                <a class="btn btn-primary w-100" href="/stores/itemSearch/item/<%= item_size.item_id %>?d=<%= item_size.item._description %>&c=<%= callType %>&s=<%= supplier_id %>">Back</a>
-            </div>
-        </div>
-        <h4>Select<% if (callType === 'issue') { %> NSN, Location and<% } %> Qty for <%= item_size.item._description %>, Size: <%= item_size._size %></h4>
-        <div class="row">
+<section id='body'>
+<div class='row container mx-auto'>
+    <div class='col-12 col-md-6'>
+        <h4><%= item_size.item._description %></h4>
+        <h5>Size: <%= item_size._size %></h5>
+        <div class='row'>
             <% if (callType === 'issue') { %>
-                <div class="col-12 bordered mb-3">
-                    <h5>NSNs</h5>
-                    <input class="form-control" type="text" id="nsnSearch" onkeyup="searchTable('nsns', 'nsnSearch')" placeholder="Search for NSNs..">
-                    <select class='form-control w-100' id="nsns" type="text" size="2">
+                <div class='col-12 bordered mb-2'>
+                    <h6>Select NSN</h6>
+                    <input class='form-control' type='text' id='nsnSearch' onkeyup='searchTable("nsns", "nsnSearch")' placeholder='Search for NSNs...'>
+                    <select class='form-control w-100' id='nsns' type='text' size='2'>
                         <% item_size.nsns.forEach(nsn => { %>
-                            <option value="<%= nsn.nsn_id %>"><%= nsn._nsn %></option>
+                            <option value='<%= nsn.nsn_id %>'><%= nsn._nsn %></option>
                         <% }); %>
                     </select>
                 </div>
             <% } %>
             <% if (callType === 'issue' || callType === 'receipt') { %>
-                <div class="col-12 bordered mb-3">
-                <h5>Issue From Location</h5>
-                <input class="form-control" type="text" id="stockSearch" onkeyup="searchTable('stocks', 'stockSearch')" placeholder="Search for stock..">
-                <select class='form-control w-100' id="stocks" type="text" size="2">
+                <div class='col-12 bordered mb-2'>
+                <h6>Issue From Location</h6>
+                <input class='form-control' type='text' id='stockSearch' onkeyup='searchTable("stocks", "stockSearch")' placeholder='Search for stock...'>
+                <select class='form-control w-100' id='stocks' type='text' size='2'>
                     <% item_size.stocks.forEach(stock => { %>
                         <option value='{"id":<%= stock.stock_id %>,"qty":<%= stock._qty %>}'><%= stock.location._location %>, Qty: <%= stock._qty %></option>
                     <% }); %>
                 </select>
             </div>
             <% } %>
-            <div class="col-12 bordered mb-3">
-                <div class="row mx-auto">
-                    <div class="col-4 col-md-2">
-                        <label class="col-form-label" for="qty">Qty</label>
+            <div class='col-12 bordered mb-2'>
+                <div class='row'>
+                    <div class='col-4 col-md-2'>
+                        <label class='col-form-label' for='qty'>Qty</label>
                     </div>
-                    <div class="col-8 col-md-4">
-                        <input class="form-control mt-1 mr-3" type="number" id="qty" value="1">
+                    <div class='col-8 col-md-4'>
+                        <input class='form-control' type='number' input='numeric' id='qty' value='1'>
                     </div>
-                    <div class="col-md-6">
-                        <button class="btn btn-success w-100" onclick="javascript:addSize()">Add Size</button>
+                    <div class='col-md-6'>
+                        <button class='btn btn-success w-100' onclick='javascript:addSize()'>Add Size</button>
                     </div>
                 </div>
             </div>
             <div class="col-12">
-                <a class="btn btn-danger w-100" href="javascript:close()">Finished Adding Items</a>
+                <div class='row'>
+                    <div class='col-6 mb-2'>
+                        <a class='btn btn-primary w-100' href='/stores/itemSearch?c=<%= callType %>&s=<%= supplier_id %>'>New Search</a>
+                    </div>
+                    <div class='col-6 mb-2'>
+                        <a class='btn btn-primary w-100' href='/stores/itemSearch/item/<%= item_size.item_id %>?d=<%= item_size.item._description %>&c=<%= callType %>&s=<%= supplier_id %>'>Back</a>
+                    </div>
+                    <div class='col-12'>
+                        <a class='btn btn-danger w-100' href='javascript:close()'>Finished Adding Items</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <% include ../../partials/foot/js %>
-<script src="/js/selectSearch.js"></script>
+<script src='/js/selectSearch.js'></script>
 <script>
 function addSize() {
-    var qty    = Number(document.querySelector('#qty').value) || 0,
+    let qty    = Number(document.querySelector('#qty').value) || 0,
         nsns   = document.querySelector('#nsns'),
-        stocks = document.querySelector('#stocks');
-    if (('<%= callType %>' === 'issue'   && (stocks.selectedIndex === -1 ||
+        stocks = document.querySelector('#stocks'),
+        callType = '<%= callType %>';
+    if ((callType === 'issue'   && (stocks.selectedIndex === -1 ||
                                              nsns.selectedIndex === -1 ||
                                              qty === 0)) || 
-        ('<%= callType %>' === 'receipt' && (stocks.selectedIndex === -1 ||
+        (callType === 'receipt' && (stocks.selectedIndex === -1 ||
                                              qty === 0)) || 
-        ('<%= callType %>' === 'order'   &&  qty === 0) || 
-        ('<%= callType %>' === 'request' &&  qty === 0)) {
+        (callType === 'order'   &&  qty === 0) || 
+        (callType === 'request' &&  qty === 0)) {
         alert('Select all fields');
     } else {
         if (window.opener.addSize) {
-            var selected = {}
-            <% if (callType === 'issue' || callType === 'receipt') { %>
-            var itemStock     = JSON.parse(stocks.value);
-            selected.stock_id = itemStock.id;
-            <% if (callType === 'issue') { %>
-            selected.nsn_id = Number(nsns.value);
-            selected.stock_qty = itemStock.qty - qty;
-            <% } else if (callType === 'receipt') { %>
-            selected.stock_qty = itemStock.qty + qty;
-            <% }; %>
-            <% }; %>
-            selected.itemsize_id  = <%= item_size.itemsize_id %>;
-            selected.qty          = qty;
-            selected._description = '<%= item_size.item._description %>';
-            selected._size_text   = '<%= item_size._size %>';
+            let selected = {}
+            if (callType === 'issue' || callType === 'receipt') {
+                selected.stock_id = JSON.parse(stocks.value).id;
+                if (callType === 'issue') {
+                    selected.nsn_id    = Number(nsns.value);
+                    selected.nsns = [];
+                    <%- JSON.stringify(item_size.nsns) %>.forEach(nsn => {
+                        selected.nsns.push({nsn_id: nsn.nsn_id, _nsn: nsn._nsn});
+                    });
+                    selected.stocks = [];
+                    <%- JSON.stringify(item_size.stocks) %>.forEach(stock => {
+                        selected.stocks.push({stock_id: stock.stock_id, _location: stock.location._location});
+                    });
+                };
+            };
+            selected.itemsize_id = <%= item_size.itemsize_id %>;
+            selected.qty         = qty;
+            selected.description = '<%= item_size.item._description %>';
+            selected.size        = '<%= item_size._size %>';
 
-            <% if (callType === 'issue') { %>
-            var _nsns = [],
-                _nsn_list = <%- JSON.stringify(item_size.nsns) %>;
-            _nsn_list.forEach(nsn => {
-                _nsns.push({nsn_id: nsn.nsn_id, _nsn: nsn._nsn});
-            });
-            var _stocks = [],
-                _stock_list = <%- JSON.stringify(item_size.stocks) %>;
-                _stock_list.forEach(stock => {
-                _stocks.push({stock_id: stock.stock_id, _location: stock.location._location});
-            });
-            <% } %>
-            window.opener.addSize(selected<% if (callType === 'issue') { %>, _nsns, _stocks<% } %>);
-        } else {
-            alert('unable to find target window!\nClose this window and try again');
-        };
+            window.opener.addSize(selected);
+        } else alert('unable to find target window!\nClose this window and try again');
     };
 };
 </script>
