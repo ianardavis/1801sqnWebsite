@@ -20,7 +20,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         user_id: {[op.not]: 1},
                         status_id: query
                     },
-                    {include: [m.ranks], nullOk: false, attributes: null}
+                    {include: [m.ranks]}
                 )
                 .then(users => {
                     res.render('stores/users/index', {
@@ -67,7 +67,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.getOne(
                 m.users,
                 {user_id: req.query.user},
-                {include: [m.ranks], attributes: null, nullOK: false}
+                {include: [m.ranks]}
             )
             .then(user => res.render('stores/users/password', {user: user}))
             .catch(err => fn.error(err, '/stores/users/' + req.query.user, req, res));
@@ -97,11 +97,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     // Edit
     app.get('/stores/users/:id/edit', isLoggedIn, allowed('users_edit'), (req, res) => {
-        fn.getOptions(options(), req, classes => {
+        fn.getOptions(options(), req)
+        .then(classes => {
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
-                {include: [m.ranks], attributes: null, nullOK: false}
+                {include: [m.ranks]}
             )
             .then(user => {
                 res.render('stores/users/edit', {
@@ -115,12 +116,17 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     // Put
     app.put('/stores/users/:id', isLoggedIn, allowed('users_edit'), (req, res) => {
+        if (!req.body.user)        req.body.user = {};
+        if (!req.body.user._reset) req.body.user._reset = 0;
         fn.update(
             m.users,
             req.body.user,
             {user_id: req.params.id}
         )
-        .then(result => res.redirect('/stores/users/' + req.params.id))
+        .then(result => {
+            req.flash('success', 'User updated');
+            res.redirect('/stores/users/' + req.params.id);
+        })
         .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
     });
 
@@ -154,27 +160,26 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/users/:id', isLoggedIn, allowed('access_users', false), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             let where = {}, query = {};
-            query.io = Number(req.query.io) || 2,
-            query.cl = Number(req.query.cl) || 2,
-            query.cr = Number(req.query.cr) || 2,
-            query.ri = Number(req.query.ri) || 2;
-            query.sn = Number(req.query.sn) || 2;
+            query.issued =   Number(req.query.issued)   || 2;
+            query.closed =   Number(req.query.closed)   || 2;
+            query.returned = Number(req.query.returned) || 2;
+            query.system =   Number(req.query.system)   || 2;
             where.requests = {};
-            where.orders = {};
-            where.issues = {};
-            if (query.io === 2) where.orders.issue_line_id = null;
-            else if (query.io === 3) where.orders.issue_line_id = {[op.not]: null};
+            where.orders =   {};
+            where.issues =   {};
+            if (query.issued === 2)        where.orders.issue_line_id  = null;
+            else if (query.issued === 3)   where.orders.issue_line_id  = {[op.not]: null};
 
-            if (query.cr === 2) where.requests._status = 'Pending';
-            else if (query.cr === 3) where.requests._status = {[op.not]: 'Pending'};
+            if (query.closed === 2)        where.requests._status      = 'Pending';
+            else if (query.closed === 3)   where.requests._status      = {[op.not]: 'Pending'};
 
-            if (query.ri === 2) where.issues.return_line_id = null;
-            else if (query.ri === 3) where.issues.return_line_id = {[op.not]: null};
+            if (query.returned === 2)      where.issues.return_line_id = null;
+            else if (query.returned === 3) where.issues.return_line_id = {[op.not]: null};
 
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
-                {include: fn.user_inc({statuses: true, permissions: true}), attributes: null, nullOK: false}
+                {include: fn.user_inc({statuses: true, permissions: true})}
             )
             .then(user => {
                 fn.getAllWhere(
@@ -184,9 +189,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         include: [
                             {model: m.requests, where: {requested_for: user.user_id}},
                             {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
-                        ],
-                        nullOk: false,
-                        attributes: null
+                        ]
                     }
                 )
                 .then(requests => {
@@ -197,9 +200,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             include: [
                                 {model: m.orders, where: {ordered_for: user.user_id}},
                                 {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
-                            ],
-                            nullOk: false,
-                            attributes: null
+                            ]
                         }
                     )
                     .then(orders => {
@@ -210,9 +211,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                                 include: [
                                     {model: m.issues, where: {issued_to: user.user_id}},
                                     {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
-                                ],
-                                nullOk: false,
-                                attributes: null
+                                ]
                             }
                         )
                         .then(issues => {

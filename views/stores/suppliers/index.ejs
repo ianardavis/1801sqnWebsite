@@ -8,20 +8,14 @@
 			<li class="nav-item">
 				<a class="nav-link stores_nav" href="/stores/suppliers">Suppliers</a>
 			</li>
+			<% if (permissions.suppliers_add) { %>
+				<li class="nav-item">
+					<a class="nav-link stores_nav cardGreen" href="/stores/suppliers/new"><i class='fas fa-plus'></i></a>
+				</li>
+			<% } %>
 		</ul>
 	</nav>
 </section>
-<% if (permissions.suppliers_add) { %>
-	<section>
-		<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-			<ul class="navbar-nav mr-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="/stores/suppliers/new">New Supplier</a>
-				</li>
-			</ul>
-		</nav>
-	</section>
-<% } %>
 <div class="container row m-auto p-0 menu">
 	<% suppliers.forEach(supplier => { %>
 		<div class="col-12 col-sm-6 col-lg-4 col-xl-3">

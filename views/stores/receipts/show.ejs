@@ -14,34 +14,16 @@
 		</ul>
 	</nav>
 </section>
-<section>
-	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Options
-				</a>
-				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<% if (permissions.notes_add) { %>
-						<a class="dropdown-item" href="/stores/notes/new?table=receipt&id=<%= receipt.receipt_id %>">Add Note</a>
-						<div class="dropdown-divider"></div>
-					<% } %>
-					<% if (permissions.receipts_delete) { %>
-						<div class="col-12 mb-3">
-							<form action="/stores/receipts/<%= receipt.receipt_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete receipt?');">
-								<button class="dropdown-item dropdown_button">Delete Receipt</button>
-							</form>
-						</div>
-					<% } %>
-					<a class="dropdown-item" href="/stores/reeipts">Back to Receipts</a>
-				</div>
-			</li>
-		</ul>
-	</nav>
-</section>
-<section class="container pt-3">
+<section class="container">
 	<div class="row">
-		<div class="col-12 col-lg-6 col-xl-4 mb-3 bordered">
+		<div class="col-12 col-lg-4 bordered mb-2">
+			<% if (permissions.receipts_delete) { %>
+				<div class="col-12 mb-3">
+					<form action="/stores/receipts/<%= receipt.receipt_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete receipt?');">
+						<button class="float-left btn btn-danger"><i class='fas fa-trash-alt'></i></button>
+					</form>
+				</div>
+			<% } %>
 			<h4>Receipt Details</h4>
 			<div class="row">
 				<div class="col-sm-4">
@@ -68,22 +50,45 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-12 bordered">
+		<div class="col-12 col-lg-8 bordered mb-2">
 			<table id="receiptTable" class="table table-sm table-hover mx-auto w-100">
 				<thead class="thead-dark">
-					<th class="w-20" onclick="sortTable(0, 'receiptTable')">Location</th>
+					<th class="w-15" onclick="sortTable(0, 'receiptTable')">Location</th>
 					<th class="w-30" onclick="sortTable(1, 'receiptTable')">Item</th>
 					<th class="w-30" onclick="sortTable(2, 'receiptTable')">Size</th>
-					<th class="w-20" onclick="sortTable(3, 'receiptTable')">Quantity</th>
+					<th class="w-10" onclick="sortTable(3, 'receiptTable')">Quantity</th>
 				</thead>
 				<tbody>
 					<% if (receipt.lines) { %>
 						<% receipt.lines.forEach(line => { %>
 							<tr>
-								<td><a href="#"><% if (line.stock) { %><%= line.stock.location._location %><% } %></a></td>
-								<td><a href="/stores/items<% if (line.stock) { %>/<%= line.stock.item_size.item_id %><% } %>"><% if (line.stock) { %><%= line.stock.item_size.item._description %><% } %></a></td>
-								<td><a href="/stores<% if (line.stock) { %>/item_sizes/<%= line.stock.itemsize_id %><% } %>"><% if (line.stock) { %><%= line.stock.item_size._size %><% } %></a></td>
-								<td><a href="#"><%= line._qty %></a></td>
+								<td>
+									<a class='float-right btn btn-sm btn-primary' href="/stores/stock<% if (line.stock) { %>/<%= line.stock_id %><% } %>">
+										<i class='fas fa-search'></i>
+									</a>
+									<% if (line.stock) { %>
+										<%= line.stock.location._location %>
+									<% } %>
+								</td>
+								<td>
+									<a class='float-right btn btn-sm btn-primary' href="/stores/items<% if (line.stock) { %>/<%= line.stock.item_size.item_id %><% } %>">
+										<i class='fas fa-search'></i>
+									</a>
+									<% if (line.stock) { %>
+										<%= line.stock.item_size.item._description %>
+									<% } %>
+								</td>
+								<td>
+									<a class='float-right btn btn-sm btn-primary' href="/stores<% if (line.stock) { %>/item_sizes/<%= line.stock.itemsize_id %><% } %>">
+										<i class='fas fa-search'></i>
+									</a>
+									<% if (line.stock) { %>
+										<%= line.stock.item_size._size %>
+									<% } %>
+								</td>
+								<td>
+									<%= line._qty %>
+								</td>
 							</tr>
 						<% }) %>
 					<% } %>
@@ -91,7 +96,12 @@
 			</table>
 		</div>
 		<% if (permissions.access_notes) { %> 
-			<div class="col-12 col-lg-6 col-xl-12 mb-3 bordered">
+			<div class="col-12 mb-3 bordered">
+				<% if (permissions.notes_add) { %>
+					<a class="float-left btn btn-success" href="/stores/notes/new?table=receipt&id=<%= receipt.receipt_id %>">
+						<i class='fas fa-plus'></i>
+					</a>
+				<% } %>
 				<% include ../../partials/noteTable %>
 			</div>
 		<% } %>

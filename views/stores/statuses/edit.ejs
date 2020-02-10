@@ -9,7 +9,10 @@
 				<a class="nav-link stores_nav" href="/stores/settings">Settings</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/settings">Status: <%= status._status %></a>
+				<a class="nav-link stores_nav" href="/stores/settings">Statuses</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/settings"><%= status._status %></a>
 			</li>
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/statuses/<%= status.status_id %>">Edit</a>
@@ -17,33 +20,22 @@
         </ul>
     </nav>
 </section>
-<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<% if (permissions.notes_add) { %>
-					<a class="dropdown-item" href="/stores/notes/new?table=statuses&id=<%= status.status_id %>">Add Note</a>
-					<div class="dropdown-divider"></div>
-				<% } %>
-				<a class="dropdown-item" href="/stores/settings">Back to Settings</a>
-			</div>
-		</li>
-	</ul>
-</nav>
-<section class="container pt-3">
+<section class="container">
 	<div class="row">
 		<div class="col-12 col-md-3 mx-auto bordered">
-			<h4>status</h4>
-			<form action="/stores/statuses/<%= status.status_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit status?');">
+			<h4>Status</h4>
+			<form action="/stores/statuses/<%= status.status_id %>?_method=PUT" method="POST">
 				<input type="hidden" name="status_id" value="<%= status.status_id %>" readonly>
-				<p><input class="form-control" type="text" name="status[_status]" maxlength="10" value="<%= status._status %>" required></p>
-				<p><button class="btn btn-success">Save</button></p>
+				<input class="form-control" type="text" name="status[_status]" maxlength="10" value="<%= status._status %>" required>
+				<input class="btn btn-success w-100 confirm" type="submit" value='Save'>
 			</form>
 		</div>
 		<div class="col-12 col-md-9 mx-auto bordered">
+			<% if (permissions.notes_add) { %>
+				<a class="float-left btn btn-success" href="/stores/notes/new?table=statuses&id=<%= status.status_id %>">
+					<i class='fas fa-plus'></i>
+				</a>
+			<% } %>
 			<% include ../../partials/noteTable %>
 		</div>
 	</div>

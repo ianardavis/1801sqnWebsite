@@ -19,16 +19,16 @@
 </section>
 <section>
 	<div class="container">
-		<form id="requestForm" action="/stores/requests" method="POST" onsubmit="return confirm('Confirm new request?');">
+		<form id="requestForm" action="/stores/requests" method="POST">
 			<input type="hidden" name="requested_for" value="<%= user.user_id %>">
             <div>
-                <input class="btn btn-success mb-2" type="submit" value="Request Selected Items">
+                <input class="btn btn-success mb-2 confirm" type="submit" value="Request Selected Items">
             </div>
-			<div class="row mx-auto">
-				<div class="col-12 col-md-6 bordered mx-auto mb-3">
+			<div class="row">
+				<div class="col-12 bordered mb-3">
+                    <a class='float-left btn btn-success' href='javascript:openAddItem("request")'><i class='fas fa-plus'></i></a>
 					<h5>Selected Items</h5>
-					<p class="btn btn-primary mb-3 w-100" onclick='openAddItem("request")'>Add Item</p>
-					<div id="selectedItems">
+                    <div id="selectedItems" class='menu row'>
 					</div>
 				</div>
 			</div>
@@ -37,7 +37,7 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/removeID.js"></script>
-<script src='/js/openAddItem.js'></script>
-<script src='/js/newItemCard.js'></script>
-<script src="/js/newRequest.js"></script>
+<script src='/js/newForm/openAddItem.js'></script>
+<script src='/js/newForm/newItemCard.js'></script>
+<script src='/js/newForm/addNewItemSize.js'></script>
 <% include ../../partials/foot/htmlClose %>

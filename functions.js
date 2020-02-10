@@ -114,14 +114,14 @@ module.exports = (fn, m) => {
     });
     fn.singularise = str => {
         let string = se.Utils.singularize(str);
-        string = string.substring(0, 1).toUpperCase() + string.substring(1, string.length);
-        return string;
+        return fn.capitalise(string);
     };
     fn.error = (err, redirect, req, res) => {
         console.log(err);
         req.flash('danger', err.message);
         res.redirect(redirect);
     };
+    fn.capitalise = str => {return str.substring(0, 1).toUpperCase() + str.substring(1, str.length)};
 
     fn.summer = items => {
         if (items == null) return 0;
@@ -159,7 +159,7 @@ module.exports = (fn, m) => {
         if (options.supplier) include.push(m.suppliers);
         if (options.nsns)     include.push(m.nsns);
         if (options.serials)  include.push(m.serials);
-        if (options.stock)    include.push(fn.stock());
+        if (options.stock)    include.push(fn.stock({receipts: options.receipts}));
         if (options.requests) include.push({
             model: m.requests_l,
             where: options.requests,
@@ -193,6 +193,12 @@ module.exports = (fn, m) => {
         let include = [m.ranks];
         if (options.statuses) include.push(m.statuses);
         if (options.permissions) include.push(m.permissions);
+        if (options.requests) {
+            include.push({
+                model: m.requests,
+                include: [{model: m.requests_l, as: 'lines'}]
+            });
+        };
         if (options.orders) {
             include.push({
                 model: m.orders,
@@ -205,12 +211,6 @@ module.exports = (fn, m) => {
                 include: [{model: m.issues_l, as: 'lines'}]
             });
         };
-        if (options.requests) {
-            include.push({
-                model: m.requests,
-                include: [{model: m.requests_l, as: 'lines'}]
-            });
-        };
         return include;
     };
     fn.issues_inc = includeLines => {
@@ -221,9 +221,9 @@ module.exports = (fn, m) => {
                 as: 'lines',
                 include: [
                     m.nsns,
-                    fn.stock('stock'),
+                    fn.stock({as: 'stock'}),
                     {model: m.item_sizes, include: fn.itemSize_inc({stock: true})},
-                    {model: m.returns_l, include: [fn.stock('stock'), {model: m.returns, include: [fn.users('_from'), fn.users('_by')]}]}
+                    {model: m.returns_l, include: [fn.stock({as: 'stock'}), {model: m.returns, include: [fn.users('_from'), fn.users('_by')]}]}
                 ]
             });
         };
@@ -236,14 +236,16 @@ module.exports = (fn, m) => {
             include: [m.ranks]
         };
     };
-    fn.stock = (as = 'stocks') => {
+    fn.stock = (options = {}) => {
+        let include = [
+            m.locations,
+            {model: m.item_sizes, include: [m.items]}
+        ];
+        if (options.receipts) include.push({model: m.receipts_l, include: [m.receipts]})
         return {
             model: m.stock,
-            as: as,
-            include: [
-                m.locations,
-                {model: m.item_sizes, include: [m.items]}
-            ]
+            as: options.as || 'stocks',
+            include: include
         };
     };
 
@@ -312,10 +314,10 @@ module.exports = (fn, m) => {
 
     fn.getNotes = (table, id, req) => new Promise(resolve => {
         let whereObj = {_table: table, _id: id}, 
-            sn = Number(req.query.sn) || 2;
-        if (sn === 2) whereObj._system = false
-        else if (sn === 3)  whereObj._system = true;
-        fn.getAllWhere(m.notes, whereObj, {include: [], nullOk: true, attributes: null})
+            system = Number(req.query.system) || 2;
+        if (system === 2) whereObj._system = false
+        else if (system === 3)  whereObj._system = true;
+        fn.getAllWhere(m.notes, whereObj, {nullOk: true})
         .then(notes => resolve(notes))
         .catch(err => {
             req.flash('danger', 'Error searching notes');

@@ -20,23 +20,6 @@
         </ul>
     </nav>
 </section>
-<section class='mb-2'>
-	<nav class='navbar navbar-expand navbar-dark bg-dark stores'>
-		<ul class='navbar-nav mr-auto'>
-			<li class='nav-item dropdown'>
-				<a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-					Options
-				</a>
-				<div class='dropdown-menu' aria-labelledby='navbarDropdown'>
-					<% if (permissions.notes_add) { %>
-						<a class='dropdown-item' href='/stores/notes/new?table=genders&id=<%= gender.gender_id %>'>Add Note</a>
-						<div class='dropdown-divider'></div>
-					<% } %>
-				</div>
-			</li>
-		</ul>
-	</nav>
-</section>
 <section class='container'>
 	<div class='row'>
 		<div class='col-12 col-md-3 mx-auto bordered'>
@@ -49,6 +32,11 @@
 			</form>
 		</div>
 		<div class='col-12 col-md-9 mx-auto bordered'>
+			<% if (permissions.notes_add) { %>
+				<a class='float-left btn btn-success' href='/stores/notes/new?table=genders&id=<%= gender.gender_id %>'>
+					<i class='fas fa-plus'></i>
+				</a>
+			<% } %>
 			<% include ../../partials/noteTable %>
 		</div>
 	</div>

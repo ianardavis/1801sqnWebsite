@@ -4,7 +4,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.locations,
             {_location: req.body.location},
-            {include: [], attributes: null, nullOK: true}
+            {nullOK: true}
         )
         .then(location => {
             if (location) {
@@ -32,11 +32,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.item_sizes,
             {itemsize_id: req.query.itemsize_id},
-            {
-                include: fn.itemSize_inc(),
-                attributes: null,
-                nullOK: false
-            }
+            {include: fn.itemSize_inc()}
         )
         .then(item => res.render('stores/stock/new', {item: item}))
         .catch(err => fn.error(err, '/stores/items', req, res));
@@ -78,7 +74,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             req.body.stock,
             {stock_id: req.params.id}
         )
-        .then(result => res.redirect('back'))
+        .then(result => {
+            req.flash('success', 'Stock updated');
+            res.redirect('back')
+        })
         .catch(err => fn.error(err, 'back', req, res));
     });
 

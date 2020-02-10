@@ -3,43 +3,41 @@
     <nav class="navbar navbar-expand navbar-light bg-nav">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
+                <a class="nav-link stores_nav" href="/stores">
+                    Stores
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+                <a class="nav-link stores_nav" href="/stores/items">
+                    Items
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= itemsize.item_id %>"><%= itemsize.item._description %></a>
+                <a class="nav-link stores_nav" href="/stores/items/<%= itemsize.item_id %>">
+                    <%= itemsize.item._description %>
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Size: <%= itemsize._size %></a>
+                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">
+                    Size: <%= itemsize._size %>
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/serials/new">Add Serial</a>
+                <a class="nav-link stores_nav" href="/stores/serials/new">
+                    Add Serial
+                </a>
             </li>
         </ul>
     </nav>
 </section>
-<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Back to <%= itemsize.item._description %>/Size: <%= itemsize._size %></a>
-			</div>
-		</li>
-	</ul>
-</nav>
-<section class="container pt-3">
+<section class="container">
 	<div class="row">
 		<div class="col-12 col-lg-3 mx-auto mb-3 bordered">
 			<h4>Serial</h4>
-			<form action="/stores/serials" method="POST" onsubmit="return confirm('Add Serial?');">
+			<form action="/stores/serials" method="POST">
 				<input type="hidden" name="serial[itemsize_id]" value="<%= itemsize.itemsize_id %>" readonly>
-				<input class="form-control" type="text" inputmode="numeric" name="serial[_serial]" maxlength="45" placeholder="Serial #" required>
-				<button class="btn btn-success">Save</button>
+				<input class="form-control" type="text" name="serial[_serial]" maxlength="45" placeholder="Serial #" required>
+                <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
 			</form>
 		</div>
     </div>

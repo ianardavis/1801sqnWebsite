@@ -23,7 +23,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             .then(notes => {
                 res.render('stores/ranks/edit', {
                     rank:  rank,
-                    query: {sn: req.query.sn || 2},
+                    query: {system: req.query.system || 2},
                     notes: notes
                 });
             });

@@ -12,22 +12,39 @@
 	</nav>
 </section>
 <section>
-	<div class="container mt-3 pt-3">
-		<table id="orderTable" class="table table-sm table-hover mx-auto w-100">
+	<div class="container">
+		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class="w-15" onclick="sortTable(0, 'orderTable')">Supplier</th>
-				<th class="w-15" onclick="sortTable(1, 'orderTable')">Receipt Date</th>
-				<th class="w-15" onclick="sortTable(2, 'orderTable')">Lines</th>
-				<th class="w-15" onclick="sortTable(3, 'orderTable')">Received By</th>
+				<th class="w-25" onclick="sortTable(0, 'orderTable')">Supplier</th>
+				<th class="w-25" onclick="sortTable(1, 'orderTable')">Receipt Date</th>
+				<th class="w-25" onclick="sortTable(2, 'orderTable')">Lines</th>
+				<th class="w-25" onclick="sortTable(3, 'orderTable')">Received By</th>
+				<th><i class='fas fa-search'></i></th>
 			</thead>
-			<tbody>
+			<tbody id="orderTable">
 				<% if (receipts) { %>
 					<% receipts.forEach(receipt => { %>
 						<tr>
-							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.supplier._name %></a></td>
-							<td data-sort="<%= receipt._date.getTime() %>"><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt._date.toDateString() %></a></td>
-							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.lines.length %></a></td>
-							<td><a href="/stores/receipts/<%= receipt.receipt_id %>"> <%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %></a></td>
+							<td>
+								<a class='float-right btn btn-sm btn-primary' href="/stores/suppliers/<%= receipt.supplier_id %>">
+									<i class='fas fa-search'></i>
+								</a>
+								<%= receipt.supplier._name %>
+							</td>
+							<td>
+								<%= receipt._date.toDateString() %>
+							</td>
+							<td>
+								<%= receipt.lines.length %>
+							</td>
+							<td>
+								<%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
+							</td>
+							<td>
+								<a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
+									<i class='fas fa-search'></i>
+								</a>
+							</td>
 						</tr>
 					<% }) %>
 				<% } %>
@@ -40,5 +57,5 @@
     function filterSelects() {
         filter(['co'], "/stores/receipts");
     };
-</script> -->
+</script>
 <% include ../../partials/foot/htmlClose %>

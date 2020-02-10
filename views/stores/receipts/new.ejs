@@ -20,16 +20,18 @@
 <section>
 	<div class="container">
 		<h4>Receive Stock From <%= supplier._name %></h4>
-		<form id="receiptForm" action="/stores/receipts" method="POST" onsubmit="return confirm('Add receipt?');">
+		<form id="receiptForm" action="/stores/receipts" method="POST">
 			<input type="hidden" name="supplier_id" value="<%= supplier.supplier_id %>">
             <div>
-                <input class="btn btn-success mb-2" type="submit" value="Receive Selected Items">
+                <input class="btn btn-success mb-2 confirm" type="submit" value="Receive Selected Items">
             </div>
 			<div class="row mx-auto">
-				<div class="col-12 col-md-6 bordered mx-auto mb-3">
+				<div class="col-12 bordered">
+                    <a class='float-left btn btn-success' href='javascript:openAddItem("receipt&s=<%= supplier.supplier_id %>")'>
+                        <i class='fas fa-plus'></i>
+                    </a>
 					<h5>Selected Items</h5>
-					<p class="btn btn-primary mb-3 w-100" onclick='openAddItem("receipt")'>Add Item</p>
-					<div id="selectedItems">
+                    <div id="selectedItems" class=' menu row'>
 					</div>
 				</div>
 			</div>
@@ -38,7 +40,7 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/removeID.js"></script>
-<script src='/js/openAddItem.js'></script>
-<script src='/js/newItemCard.js'></script>
-<script src="/js/newReceipt.js"></script>
+<script src='/js/newForm/openAddItem.js'></script>
+<script src='/js/newForm/newItemCard.js'></script>
+<script src="/js/newForm/addNewStock.js"></script>
 <% include ../../partials/foot/htmlClose %>

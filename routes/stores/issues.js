@@ -106,7 +106,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     res.render('stores/issues/show', {
                         issue: issue,
                         notes: notes,
-                        query: {sn: Number(req.query.sn) || 2}
+                        query: {system: Number(req.query.system) || 2}
                     })
                 });
             } else {

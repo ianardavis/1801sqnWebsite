@@ -17,11 +17,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.item_sizes,
             {itemsize_id: req.query.itemsize_id},
-            {
-                include: fn.itemSize_inc(),
-                attributes: null,
-                nullOK: false
-            }
+            {include: fn.itemSize_inc()}
         )
         .then(itemsize => res.render('stores/serials/new', {itemsize: itemsize}))
         .catch(err => fn.error(err, '/stores/item_sizes/' + req.query.itemsize_id, req, res));
@@ -32,7 +28,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.serials,
             {serial_id: req.params.id},
-            {include: [{model: m.item_sizes, include: [m.items]}], attributes: null, nullOK: false}
+            {include: [{model: m.item_sizes, include: [m.items]}]}
         )
         .then(serial => {
             fn.getNotes('serials', req.params.id, req)
@@ -40,7 +36,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 res.render('stores/serials/edit', {
                     serial: serial,
                     notes:  notes,
-                    query:  {sn: req.query.sn || 2}
+                    query:  {system: req.query.system || 2}
                 });
             });
         })
@@ -53,7 +49,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             req.body.serial,
             {serial_id: req.params.id}
         )
-        .then(result => res.redirect('/stores/item_sizes/' + serial.itemsize_id))
+        .then(result => {
+            req.flash('success', 'Serial updated');
+            res.redirect('/stores/item_sizes/' + serial.itemsize_id);
+        })
         .catch(err => fn.error(err, '/stores/item_sizes/' + serial.itemsize_id, req, res));
     });
     // Delete

@@ -6,7 +6,6 @@ function NewItemCard (item) {
         _title      = document.createElement('h5'),
         _subtitle   = document.createElement('p'),
         _delete     = document.createElement('a'),
-        itemsize_id = document.createElement('input'),
         qty         = document.createElement('input');
 
     _div.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
@@ -14,10 +13,20 @@ function NewItemCard (item) {
     
     _card.classList.add('card', 'cardDarkText', 'm-3', 'text-left');
 
-    itemsize_id.type  = 'hidden';
-    itemsize_id.name  = 'selected[' + item.itemsize_id + '][itemsize_id]';
-    itemsize_id.value = item.itemsize_id;
-    _card.appendChild(itemsize_id);
+    if (item.itemsize_id) {
+        let itemsize_id = document.createElement('input');
+        itemsize_id.type  = 'hidden';
+        itemsize_id.name  = 'selected[' + item.itemsize_id + '][itemsize_id]';
+        itemsize_id.value = item.itemsize_id;
+        _card.appendChild(itemsize_id);
+    };
+    if (item.stock_id) {
+        let stock_id = document.createElement('input');
+        stock_id.type  = 'hidden';
+        stock_id.name  = 'selected[' + item.stock_id + '][stock_id]';
+        stock_id.value = item.stock_id;
+        _card.appendChild(stock_id);
+    };
     
     _header.classList.add('card-header');
 

@@ -5,7 +5,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getAllWhere(
             m.suppliers,
             {supplier_id: {[op.not]: 3}},
-            {include: [m.item_sizes], nullOk: false, attributes: null}
+            {include: [m.item_sizes]}
         )
         .then(suppliers => {
             fn.getSetting('default_supplier')
@@ -44,9 +44,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     // Edit
     app.get('/stores/suppliers/:id/edit', isLoggedIn, allowed('suppliers_edit'), (req, res) => {
-        fn.getOne(m.suppliers, {supplier_id: req.params.id})
-        .then(supplier => res.render('stores/suppliers/edit', {supplier: supplier, _default: defaultSupplier}))
-        .catch(err => fn.error(err, '/stores/suppliers/' + req.params.id, req, res));
+        fn.getSetting('default_supplier')
+        .then(defaultSupplier => {
+            fn.getOne(m.suppliers, {supplier_id: req.params.id})
+            .then(supplier => res.render('stores/suppliers/edit', {supplier: supplier, _default: defaultSupplier}))
+            .catch(err => fn.error(err, '/stores/suppliers/' + req.params.id, req, res));
+        });
     });
 
     // Put
@@ -93,7 +96,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.suppliers,
             {supplier_id: req.params.id},
-            {include: [m.files, m.inventories, {model: m.item_sizes, include: [m.items]}], attributes: null, nullOK: false}
+            {include: [
+                m.files,
+                m.inventories,
+                {model: m.item_sizes, include: [m.items]},
+                {model: m.receipts,   include: [fn.users(), {model: m.receipts_l, as: 'lines'}]}
+            ]}
         )
         .then(supplier => {
             fn.getNotes('suppliers', req.params.id, req)

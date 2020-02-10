@@ -15,72 +15,85 @@
     </nav>
 </section>
 <section class="row">
-    <div class="col-md-9 col-xl-6 container bordered p-5">
-        <form action="/stores/users" method="POST" onsubmit="return confirm('Confirm add user?');">
-            <input type="hidden" name="failRedirect", value="/stores/users" readonly>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label" for="_bader">Bader #:</label>
-                <div class="col-sm-10">
-                    <input class="form-control" id="_bader" name="user[_bader]" type="text" placeholder="Bader or Service #" maxlength="20" required>
+    <div class="col-md-9 col-xl-6 container bordered">
+        <form action="/stores/users" method="POST">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label class="col-form-label" for="_bader">Bader #:</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="_bader" name="user[_bader]" type="text" placeholder="Bader or Service #" maxlength="20" required>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Rank:</label>
-                <div class="col-sm-10">
-                    <select class="form-control" name="user[rank_id]" type="text">
-                        <% classes.ranks.forEach(rank => { %>
-                            <option value="<%= rank.rank_id %>"><%= rank._rank %></option>         
-                        <% }) %>
-                    </select>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label class="col-form-label">Rank:</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select class="form-control" name="user[rank_id]" type="text">
+                            <% classes.ranks.forEach(rank => { %>
+                                <option value="<%= rank.rank_id %>"><%= rank._rank %></option>         
+                            <% }) %>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Name:</label>
-                <div class="col-sm-10">
-                    <input class="form-control" id="_name" name="user[_name]" type="text" placeholder="Surname" maxlength="50" required>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label class="col-form-label">Name:</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="_name" name="user[_name]" type="text" placeholder="Surname" maxlength="50" required>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Initials:</label>
-                <div class="col-sm-10">
-                    <input class="form-control" id="_ini" name="user[_ini]" type="text" placeholder="Initials" maxlength="5">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label class="col-form-label">Initials:</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="_ini" name="user[_ini]" type="text" placeholder="Initials" maxlength="5">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Status:</label>
-                <div class="col-sm-10">
-                    <select class="form-control" name="user[status_id]" type="text" >
-                        <% classes.statuses.forEach((status) => { %>
-                            <% if (status.status_id !== 4) { %>
-                                <option value="<%= status.status_id %>"><%= status._status %></option>
-                            <% } %>
-                        <% }) %>
-                    </select>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label class="col-form-label">Status:</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select class="form-control" name="user[status_id]" type="text" >
+                            <% classes.statuses.forEach((status) => { %>
+                                <% if (status.status_id !== 4) { %>
+                                    <option value="<%= status.status_id %>"><%= status._status %></option>
+                                <% } %>
+                            <% }) %>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label" for="_login_id">Login ID:</label>
-                <div class="col-sm-10">
-                    <input class="form-control" id="_login_id" name="user[_login_id]" type="text" maxlength="30" required>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label class="col-form-label" for="_login_id">Login ID:</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="_login_id" name="user[_login_id]" type="text" maxlength="30" required>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Password:</label>
-                <div class="col-sm-10">
-                    <input class="form-control" id="_password" name="_password" type="password" password minlength="8" required>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label class="col-form-label">Password:</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="_password" name="_password" type="password" password minlength="8" required>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Confirm Password:</label>
-                <div class="col-sm-10">
-                    <input class="form-control" id="_confirm" type="password" password minlength="8" required>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label class="col-form-label">Confirm Password:</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="_confirm" type="password" password minlength="8" required>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit" disabled>Save</button>
-            </div>
-            <div class="form-group row">
-                <a href="/stores/users">Cancel</a>
+                <input class="btn btn-primary w-100 confirm" id='_submit' type="submit" value='Save'>
+                <a class='float-left' href="/stores/users">Cancel</a>
             </div>
         </form>
     </div>

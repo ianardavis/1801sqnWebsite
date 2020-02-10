@@ -1,46 +1,54 @@
 <% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>
+                    Stores
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items">Items</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items'>
+                    Items
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= itemsize.item_id %>"><%= itemsize.item._description %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items/<%= itemsize.item_id %>'>
+                    <%= itemsize.item._description %>
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Size: <%= itemsize._size %></a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= itemsize.itemsize_id %>'>
+                    Size: <%= itemsize._size %>
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/nsns/new">Add NSN</a>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/nsns/new'>
+                    Add NSN
+                </a>
             </li>
         </ul>
     </nav>
 </section>
-<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/item_sizes/<%= itemsize.itemsize_id %>">Back to <%= itemsize.item._description %>/Size: <%= itemsize._size %></a>
-			</div>
-		</li>
-	</ul>
-</nav>
-<section class="container pt-3">
-	<div class="row">
-		<div class="col-12 col-lg-3 mx-auto mb-3 bordered">
-			<h4>NSN</h4>
-			<form action="/stores/nsns" method="POST" onsubmit="return confirm('Add NSN?');">
-				<input type="hidden" name="nsn[itemsize_id]" value="<%= itemsize.itemsize_id %>" readonly>
-				<p><input class="form-control" type="text" inputmode="numeric" name="nsn[_nsn]" maxlength="20" placeholder="NSN" required></p>
-				<p><input class="form-control" type="checkbox" name="default" value="1"></p>
-				<p><button class="btn btn-success">Save</button></p>
+<section class='container pt-3'>
+	<div class='row'>
+		<div class='col-12 col-lg-4 mx-auto bordered'>
+			<form action='/stores/nsns' method='POST'>
+				<input type='hidden' name='nsn[itemsize_id]' value='<%= itemsize.itemsize_id %>'>
+                <div class='row'>
+                    <div class='col-12'>
+                        <input class='form-control' type='text' inputmode='numeric' name='nsn[_nsn]' maxlength='20' placeholder='NSN' required>
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-4'>
+                        <label class='col-form-label'>Make Default:</label>
+                    </div>
+                    <div class='col-8'>
+                        <input class='form-control' type='checkbox' name='default' value='1'>
+                    </div>
+                </div>
+                <input class='btn btn-success confirm w-100' type='submit' value='Save'>
 			</form>
 		</div>
     </div>

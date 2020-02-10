@@ -8,53 +8,69 @@
 			<li class="nav-item">
 				<a class="nav-link stores_nav" href="/stores/users">Users</a>
 			</li>
+			<% if (permissions.users_add) { %>
+				<li class="nav-item">
+					<a class="nav-link stores_nav cardGreen" href="/stores/users/new"><i class='fas fa-plus'></i></a>
+				</li>
+			<% } %>
 		</ul>
 	</nav>
 </section>
-<% if (permissions.users_add) { %>
 <section>
-	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item">
-				<a class="nav-link" href="/stores/users/new">New User</a>
-			</li>
-		</ul>
-	</nav>
-</section>
-<% } %>
-<div class="container mt-3 pt-3">
-	<div class="row mx-1">
-		<label class="col-md-3 col-form-label" for="_system">Showing:</label>
-		<select class="col-md-9 form-control" id="_system" type="text" onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
-			<% statuses.forEach((stat) => { %>
-				<% if (stat.status_id !== 4) { %>
-					<% if (stat.status_id === Number(status)) { %>
-						<option value="<%= stat.status_id %>" selected><%= stat._status %></option>
-					<% } else { %>
-						<option value="<%= stat.status_id %>"><%= stat._status %></option>
-					<% } %>
-				<% } %>
-			<% }) %>
-		</select>
+	<div class="container">
+		<div class="row">
+			<div class="col-12 col-md-3">
+				<label class="col-md-3 col-form-label" for="_system">Showing:</label>
+			</div>
+			<div class="col-12 col-md-9">
+				<select class="form-control" id="_system" type="text" onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
+					<% statuses.forEach((stat) => { %>
+						<% if (stat.status_id !== 4) { %>
+							<% if (stat.status_id === Number(status)) { %>
+								<option value="<%= stat.status_id %>" selected><%= stat._status %></option>
+							<% } else { %>
+								<option value="<%= stat.status_id %>"><%= stat._status %></option>
+							<% } %>
+						<% } %>
+					<% }) %>
+				</select>
+			</div>
+			<div class="col-12">
+				<table class="table table-sm table-hover">
+					<thead class="thead-dark">
+						<th class="w-40" onclick="sortTable(0, 'userTable')">Bader/Service #</th>
+						<th class="w-10" onclick="sortTable(1, 'userTable')">Rank</th>
+						<th class="w-40" onclick="sortTable(2, 'userTable')">Surname</th>
+						<th class="w-10" onclick="sortTable(3, 'userTable')">Initials</th>
+						<th><i class='fas fa-search'></i></th>
+					</thead>
+					<tbody id="userTable">
+						<% users.forEach(user => { %>
+							<tr>
+								<td>
+									<%= user._bader %>
+								</td>
+								<td>
+									<%= user.rank._rank %>
+								</td>
+								<td>
+									<%= user._name %>
+								</td>
+								<td>
+									<%= user._ini %>
+								</td>
+								<td>
+									<a class='btn btn-sm btn-primary' href="/stores/users/<%=user.user_id%>">
+										<i class='fas fa-search'></i>
+									</a>
+								</td>
+							</tr>
+						<% }) %>
+					</tbody>
+				</table>
+			</div>
+		</div>
 	</div>
-	<table id="userTable" class="table table-sm table-hover mx-auto">
-		<thead class="thead-dark">
-			<th class="w-40" onclick="sortTable(0, 'userTable')">Bader/Service #</th>
-			<th class="w-10" onclick="sortTable(1, 'userTable')">Rank</th>
-			<th class="w-40" onclick="sortTable(2, 'userTable')">Surname</th>
-			<th class="w-10" onclick="sortTable(3, 'userTable')">Initials</th>
-		</thead>
-		<tbody>
-			<% users.forEach((user) => { %>
-				<tr>
-					<td><a href="/stores/users/<%=user.user_id%>"> <%= user._bader %></a></td>
-					<td><a href="/stores/users/<%=user.user_id%>"> <%= user.rank._rank %></a></td>
-					<td><a href="/stores/users/<%=user.user_id%>"> <%= user._name %></a></td>
-					<td><a href="/stores/users/<%=user.user_id%>"> <%= user._ini %></a></td>
-				</tr>
-			<% }) %>
-		</tbody>
-	</table>
-</div>
+</section>
 <% include ../../partials/foot/full %>
 <% include ../../partials/foot/htmlClose %>

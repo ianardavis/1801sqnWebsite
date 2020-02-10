@@ -53,6 +53,7 @@ db.stock.hasMany(db.returns_l,       {foreignKey: 'stock_id',      sourceKey: 's
 db.adjusts.hasOne(db.users,          {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
 
 db.suppliers.hasMany(db.item_sizes,  {foreignKey: 'supplier_id',   sourceKey: 'supplier_id'});
+db.suppliers.hasMany(db.receipts,    {foreignKey: 'supplier_id',   sourceKey: 'supplier_id'});
 db.suppliers.hasOne(db.inventories,  {foreignKey: 'inventory_id',  sourceKey: 'inventory_id',    constraints: false});
 db.suppliers.hasOne(db.files,        {foreignKey: 'file_id',       sourceKey: 'file_id',         constraints: false});
 

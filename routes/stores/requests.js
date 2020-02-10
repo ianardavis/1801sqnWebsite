@@ -8,7 +8,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 fn.getOne(
                     m.users,
                     {user_id: req.query.user},
-                    {include: [m.ranks], attributes: null, nullOK: false}
+                    {include: [m.ranks]}
                 )
                 .then(user => {
                     if (user.status_id === 1) res.render('stores/requests/new', {user: user}); 
@@ -60,7 +60,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.delete('/stores/requests/:id', isLoggedIn, allowed('requests_delete'), (req, res) => {
         if (req.query.user) {
             fn.delete(
-                'requests_l',
+                'requests',
                 {request_id: req.params.id},
                 {hasLines: true}
             )
@@ -88,11 +88,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //Index
     app.get('/stores/requests', isLoggedIn, allowed('access_requests', false), (req, res) => {
-        let query = {}, where = {};
-        query.cr = Number(req.query.cr) || 2;
-        if (query.cr === 2) where._complete = 0;
-        else if (query.cr === 3) where._complete = 1;
-        if (req.allowed === false) where.requested_for = req.user.user_id
+        let where = {};
+        if (Number(req.query.complete) === 2)      where._complete = 0;
+        else if (Number(req.query.complete) === 3) where._complete = 1;
+        if (req.allowed === false) where.requested_for = req.user.user_id;
         fn.getAllWhere(
             m.requests,
             where,
@@ -100,15 +99,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 include: [
                     {model: m.requests_l, as: 'lines'},
                     fn.users('_for')
-                ],
-                nullOk: false,
-                attributes: null
+                ]
             }
         )
         .then(requests => {
             res.render('stores/requests/index',{
                 requests: requests,
-                query:    query
+                query:    req.query
             });
         })
         .catch(err => fn.error(err, '/stores', req, res));
@@ -116,97 +113,41 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //Show
     app.get('/stores/requests/:id', isLoggedIn, allowed('requests_edit', false), (req, res) => {
-        let query = {}, where = {};
-        query.sn = Number(req.query.sn) || 2;
-        if (query.cr === 2) {
-            where._status = 'Pending'
-        } else if (query.cr === 3) {
-            where._status = {[op.not]: 'Pending'}
-        };
-        if (req.query.sb === 'request') {
-            fn.getOne(
-                m.requests,
-                {request_id: req.params.id},
-                {
-                    include: [
-                        {
-                            model: m.requests_l,
-                            where: where,
-                            as: 'lines',
-                            include: [
-                                {model: m.item_sizes, include: fn.itemSize_inc({stock: true, nsns: true})},
-                                fn.users()
-                            ]
-                        },
-                        fn.users('_for'),
-                        fn.users('_by')
-                    ],
-                    attributes: null,
-                    nullOK: false
-                }
-            )
-            .then(request => {
-                if (req.allowed || request._for.user_id === req.user.user_id) {
-                    fn.getNotes('requests', req.params.id, req)
-                    .then(notes => {
-                        res.render('stores/requests/show', 
-                            {
-                                sortBy:  'request',
-                                sortID:  request.request_id,
-                                request: request,
-                                notes:   notes,
-                                query:   query
-                            }
-                        );
-                    });
-                } else {
-                    req.flash('danger', 'Permission Denied!')
-                    res.redirect('/stores/requests');
-                };
-            })
-            .catch(err => fn.error(err, '/stores/requests', req, res));
-        } else if (req.query.sb === 'user') {
-            if (req.allowed || req.params.id === req.user.user_id) {
-                fn.getAllWhere(
-                    m.requests_l,
-                    where,
+        fn.getOne(
+            m.requests,
+            {request_id: req.params.id},
+            {
+                include: [
                     {
+                        model: m.requests_l,
+                        as: 'lines',
                         include: [
-                            {model: m.requests, where: {requested_for: req.params.id}},
                             {model: m.item_sizes, include: fn.itemSize_inc({stock: true, nsns: true})},
                             fn.users()
-                        ],
-                        nullOk: false,
-                        attributes: null
-                    }
-                )
-                .then(requests => {
-                    fn.getOne(
-                        m.users,
-                        {user_id: req.params.id},
-                        {include: [m.ranks], attributes: null, nullOK: false}
-                    )
-                    .then(user => {
-                        res.render('stores/requests/show',
-                            {
-                                sortBy:   'user',
-                                sortID:   user.user_id,
-                                f_user:   user,
-                                requests: requests,
-                                query:    query
-                            }
-                        );
-                    })
-                    .catch(err => fn.error(err, '/stores/requests', req, res));
-                })
-                .catch(err => fn.error(err, '/stores/requests', req, res));
+                        ]
+                    },
+                    fn.users('_for'),
+                    fn.users('_by')
+                ]
+            }
+        )
+        .then(request => {
+            if (req.allowed || request._for.user_id === req.user.user_id) {
+                fn.getNotes('requests', req.params.id, req)
+                .then(notes => {
+                    res.render('stores/requests/show', 
+                        {
+                            request: request,
+                            notes:   notes,
+                            query:   req.query
+                        }
+                    );
+                });
             } else {
                 req.flash('danger', 'Permission Denied!')
                 res.redirect('/stores/requests');
             };
-        } else {
-            req.flash('danger', 'No display criteria specified');
-            res.redirect('/stores/requests');
-        };
+        })
+        .catch(err => fn.error(err, '/stores/requests', req, res));
     });
 };

@@ -38,7 +38,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             req.body.status,
             {status_id: req.params.id}
         )
-        .then(result => res.redirect('/stores/settings'))
+        .then(result => {
+            req.flash('success', 'Status updated');
+            res.redirect('/stores/settings');
+        })
         .catch(err => fn.error(err, '/stores/settings', req, res));
     });
 

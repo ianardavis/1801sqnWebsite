@@ -3,39 +3,19 @@
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>Stores</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items'>Items</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items/<%= item.item_id %>'><%= item._description %></a>
-            </li>
-        </ul>
-    </nav>
-</section>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-dark bg-dark stores'>
-        <ul class='navbar-nav mr-auto'>
-            <li class='nav-item dropdown'>
-                <a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-                    Options
+                <a class='nav-link stores_nav' href='/stores'>
+                    Stores
                 </a>
-                <div class='dropdown-menu' aria-labelledby='navbarDropdown'>
-                    <% if (permissions.items_edit) { %>
-                        <a class='dropdown-item' href='/stores/items/<%= item.item_id %>/edit'>Edit</a>
-                        <div class='dropdown-divider'></div>
-                    <% } %>
-                    <% if (permissions.notes_add) { %>
-                        <a class='dropdown-item' href='/stores/notes/new?table=items&id=<%= item.item_id %>'>Add Note</a>
-                        <div class='dropdown-divider'></div>
-                    <% } %>
-                    <% if (permissions.items_delete) { %>
-                        <form action='/stores/items/<%= item.item_id %>?_method=DELETE' method='POST'>
-                            <input class='dropdown-item dropdown_button' type='submit' value='Delete Item'>
-                        </form>
-                    <% } %>
-                </div>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items'>
+                    Items
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/items/<%= item.item_id %>'>
+                    <%= item._description %>
+                </a>
             </li>
         </ul>
     </nav>
@@ -43,75 +23,97 @@
 <section class='container'>
 	<div class='row'>
 		<div class='col-12 col-md-6 col-lg-7 mb-2 container bordered'>
-            <h4>Details</h4>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Description:</label>
-                </div>                        
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<%= item._description %>' readonly>
+            <% if (permissions.items_edit) { %>
+                <a class='float-left btn btn-success mr-1' href='/stores/items/<%= item.item_id %>/edit'><i class='fas fa-pencil-alt'></i></a>
+            <% } %>
+            <% if (permissions.items_delete) { %>
+                <form action='/stores/items/<%= item.item_id %>?_method=DELETE' method='POST'>
+                    <button class='float-left btn btn-danger confirm'>
+                        <i class='fas fa-trash-alt'></i>
+                    </button>
+                </form>
+            <% } %>
+            <h4 class='mb-3'>Details</h4>
+            <div class="form-group">
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Description:</label>
+                    </div>                        
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<%= item._description %>' readonly>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Category:</label>
-                </div> 
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<% if(item.category) { %><%= item.category._category %><% } %>' readonly>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Category:</label>
+                    </div> 
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<% if(item.category) { %><%= item.category._category %><% } %>' readonly>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Group:</label>
-                </div> 
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<% if(item.group) { %><%= item.group._group %><% } %>' readonly>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Group:</label>
+                    </div> 
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<% if(item.group) { %><%= item.group._group %><% } %>' readonly>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Type:</label>
-                </div> 
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<% if(item.type) { %><%= item.type._type %><% } %>' readonly>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Type:</label>
+                    </div> 
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<% if(item.type) { %><%= item.type._type %><% } %>' readonly>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Sub Type:</label>
-                </div> 
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<% if(item.subtype) { %><%= item.subtype._subtype %><% } %>' readonly>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Sub Type:</label>
+                    </div> 
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<% if(item.subtype) { %><%= item.subtype._subtype %><% } %>' readonly>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Gender:</label>
-                </div> 
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<% if(item.gender) { %><%= item.gender._gender %><% } %>' readonly>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Gender:</label>
+                    </div> 
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<% if(item.gender) { %><%= item.gender._gender %><% } %>' readonly>
+                    </div>
                 </div>
             </div>
 		</div>
 		<div class='col-12 col-md-6 col-lg-5 mb-2 container bordered'>
-			<h4>
                 <% if (permissions.item_sizes_add) { %>
-                    <a class='float-left' href='/stores/item_sizes/new?item_id=<%= item.item_id %>'>
-                        <i class='fas fa-plus-circle'></i>
+                    <a class='float-left btn btn-success mb-1' href='/stores/item_sizes/new?item_id=<%= item.item_id %>'>
+                        <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
+			<h4>
                 Sizes
             </h4>
             <table class='table table-sm table-hover w-100'>
                 <thead class='thead-dark'>
-                    <th class='w-40' onclick='sortTable(0, "sizeTable")'><%= item._size_text %></th>
-                    <th class='w-40' onclick='sortTable(1, "sizeTable")'>Stock</th>
+                    <th class='w-50' onclick='sortTable(0, "sizeTable")'><%= item._size_text %></th>
+                    <th class='w-50' onclick='sortTable(1, "sizeTable")'>Stock</th>
+                    <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='sizeTable'>
                     <% item.item_sizes.forEach(item_size => { %>
                         <tr>
-                            <td><a href='/stores/item_sizes/<%= item_size.itemsize_id %>'><%= item_size._size %></a></td>
-                            <td><a href='/stores/item_sizes/<%= item_size.itemsize_id %>'><%= item_size.locationStock %></a></td>
+                            <td>
+                                <%= item_size._size %>
+                            </td>
+                            <td>
+                                <%= item_size.locationStock %>
+                            </td>
+                            <td>
+                                <a class='btn btn-sm btn-primary' href='/stores/item_sizes/<%= item_size.itemsize_id %>'>
+                                    <i class='fas fa-search'></i>
+                                </a>
+                            </td>
                         </tr>
                     <% }) %>
                 </tbody>
@@ -119,6 +121,9 @@
         </div>
         <% if (permissions.access_notes) {%>
         <div class='col-12 bordered'>
+            <% if (permissions.notes_add) { %>
+                <a class='float-left btn btn-success' href='/stores/notes/new?table=items&id=<%= item.item_id %>'><i class='fas fa-plus'></i></a>
+            <% } %>
             <% include ../../partials/noteTable %>
         </div>
         <% } %>

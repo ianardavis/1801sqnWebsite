@@ -1,28 +1,59 @@
 <% include ../../partials/head/full %>
-<section class="container page_title">
-    <a href="/stores"><h2>Stores Management</h2></a>
-    <h3>Edit Note For:</h3>
-    <h4><%= note._table %></h4>
-    <h5><%= note._id %></h5>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+			<li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>
+                    Stores
+                </a>
+			</li>
+			<li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>
+                    Notes
+                </a>
+			</li>
+			<li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/notes/<%= note.note_id %>'>
+                    <%= note.note_id %>
+                </a>
+			</li>
+			<li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/notes/<%= note.note_id %>'>
+                    Edit
+                </a>
+			</li>
+        </ul>
+    </nav>
 </section>
-<section class="container p-5">
-    <div class="row">
-        <div class="col-12 col-lg-6 mx-auto">
-            <form action="/stores/notes/<%= note.note_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit note?');">
-                <input type="hidden" name="failRedirect",       value="/stores/<%= note._table %>/<%= note._id %>" readonly>
-                <input type="hidden" name="note[_table]"   value="<%= note._table %>" readonly>
-                <input type="hidden" name="note[_id]"      value="<%= note._id %>" readonly>
-                <input type="hidden" name="note[_system]"       value="<%= note._system %>" readonly>
-                <div class="form-group row">
-                    <div class="col-12">
-                        <textarea class="w-100" name="note[_note]" rows="10" maxlength="1000" required><%= note._note %></textarea>
+<section class='container'>
+    <div class='row'>
+        <div class='col-12 col-lg-6 bordered mx-auto'>
+            <div class='row mb-3'>
+                <div class='col-12'>
+                    <h3>Edit Note <%= note.note_id %> For Record:</h3>
+                    <div class='row'>
+                        <div class='col-6'>
+                            <input class='form-control' type='text' value='<%= note._table %>' readonly>
+                        </div>
+                        <div class='col-6'>
+                            <input class='form-control' type='text' value='<%= note._id %>' readonly>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <button class="btn btn-primary btn-lg col-12" type="submit" id="_submit">Save</button>
+            </div>
+            <form action='/stores/notes/<%= note.note_id %>?_method=PUT' method='POST'>
+                <input type='hidden' name='_table' value='<%= note._table %>'>
+                <input type='hidden' name='_id'    value='<%= note._id %>'>
+                <div class='row'>
+                    <div class='col-12'>
+                        <textarea class='form-control' name='note[_note]' rows='10' maxlength='1000' required><%= note._note %></textarea>
+                    </div>
                 </div>
-                <div class="form-group row">
-                    <a href="/stores/notes/<%= note.note_id %>">Cancel</a>
+                <div class='row'>
+                    <div class='col-12'>
+                        <input class='btn btn-success confirm' type='submit' value='Save'>
+                        <a class='float-left' href='/stores/notes/<%= note.note_id %>'>Cancel</a>
+                    </div>
                 </div>
             </form>
         </div>

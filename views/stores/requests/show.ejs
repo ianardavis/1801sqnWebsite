@@ -3,283 +3,184 @@
 	<nav class="navbar navbar-expand navbar-light bg-nav">
 		<ul class="navbar-nav mr-auto">
 			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores">Stores</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/users">Users</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/users/<% if (sortBy === 'request') { %><%= request.requested_for %><% } else if (sortBy === 'user') { %><%= f_user.user_id %><% } %>">
-					<% if (sortBy === 'request') { %>
-						<%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %>
-					<% } else if (sortBy === 'user') { %>
-						<%= f_user.rank._rank %> <%= f_user._name %>, <%= f_user._ini %>
-					<% } %>
+				<a class="nav-link stores_nav" href="/stores">
+					Stores
 				</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/requests<% if (sortBy === 'user') { %>/<%= f_user.user_id %><% } %>">Requests</a>
-			</li>
-			<% if (sortBy === 'request') { %>	
-				<li class="nav-item">
-					<a class="nav-link stores_nav" href="/stores/requests/<%= request.request_id %>"><%= request.request_id %></a>
-				</li>
-			<% }; %>
-		</ul>
-	</nav>
-</section>
-<section>
-	<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Options
+				<a class="nav-link stores_nav" href="/stores/requests">
+					Requests
 				</a>
-				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<% if (permissions.requests_edit && permissions.orders_add) { %>
-						<button form='requestForm' class="dropdown-item dropdown_button">Action Selected Requests</button>
-					<% }; %>
-					<% if (sortBy === 'request') { %>	
-						<% if (permissions.notes_add) { %>
-							<a class="dropdown-item" href="/stores/notes/new?table=requests&id=<%= request.request_id %>">Add Note</a>
-							<div class="dropdown-divider"></div>
-						<% }; %>
-						<% if (permissions.requests_delete) { %>
-							<form action="/stores/requests/<%= request.request_id %>?_method=DELETE&user=<%= request.requested_for %>" method="POST" onsubmit="return confirm('Confirm delete request?');">
-								<button class="dropdown-item dropdown_button">Delete Request</button>
-							</form>
-						<% }; %>
-					<% }; %>
-					<a class="dropdown-item" href="/stores/requests">Back to Requests</a>
-				</div>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link stores_nav" href="/stores/requests/<%= request.request_id %>">
+					<%= request.request_id %>
+				</a>
 			</li>
 		</ul>
 	</nav>
 </section>
-<section class="container pt-3">
-	<h3>
-		<% if (sortBy === 'request') { %>
-			Request ID: <%= request.request_id %>
-		<% } else if (sortBy === 'user') { %>
-			Requests for user: <%= f_user.rank._rank %> <%= f_user._name %>, <%= f_user._ini %>
-		<% }; %>
-	</h3>
+<section class="container">
 	<div class="row">
-		<% if (sortBy === 'request') { %>
-			<div class="col-12 col-lg-6 mb-3 bordered">
-				<h4>Details</h4>
-				<div class="row">
-					<div class="col-sm-4">
-						<p class="col-form-label">For:</p>
-					</div>
-					<div class="col-sm-8">
-						<p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
-					</div>
+		<div class="col-12 col-lg-6 mb-3 bordered">
+			<% if (permissions.requests_delete) { %>
+				<form action="/stores/requests/<%= request.request_id %>?_method=DELETE&user=<%= request.requested_for %>" method="POST">
+					<button class="float-left btn btn-danger confirm">
+						<i class='fas fa-trash-alt'></i>
+					</button>
+				</form>
+			<% }; %>
+			<h4 class='mb-3'>Details</h4>
+			<div class="row">
+				<div class="col-sm-4">
+					<p class="col-form-label">For:</p>
 				</div>
-				<div class="row">
-					<div class="col-sm-4">
-						<p class="col-form-label">By:</p>
-					</div>
-					<div class="col-sm-8">
-						<p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
-					</div>
+				<div class="col-sm-7">
+					<p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
 				</div>
-				<div class="row">
-					<div class="col-sm-4">
-						<p class="col-form-label">Date:</p>
-					</div>
-					<div class="col-sm-8">
-						<p class="form-control"><%= request._date.toDateString() %></p>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-sm-4">
-						<p class="col-form-label">Complete:</p>
-					</div>
-					<div class="col-sm-8">
-						<input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled>
-					</div>
+				<div class="col-sm-1">
+					<a class='float-right btn btn-primary' href="/users/<%= request._for.user_id %>"><i class='fas fa-search'></i></a>
 				</div>
 			</div>
-			<% if (permissions.access_notes) { %> 
-				<div class="col-12 col-lg-6 mb-3 bordered">
-					<% include ../../partials/noteTable %>
+			<div class="row">
+				<div class="col-sm-4">
+					<p class="col-form-label">By:</p>
 				</div>
-			<% }; %>
+				<div class="col-sm-7">
+					<p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
+				</div>
+				<div class="col-sm-1">
+					<a class='float-right btn btn-primary' href="/users/<%= request._by.user_id %>"><i class='fas fa-search'></i></a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-4">
+					<p class="col-form-label">Date:</p>
+				</div>
+				<div class="col-sm-8">
+					<p class="form-control"><%= request._date.toDateString() %></p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-4">
+					<p class="col-form-label">Complete:</p>
+				</div>
+				<div class="col-sm-8">
+					<input class="form-control" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled>
+				</div>
+			</div>
+		</div>
+		<% if (permissions.access_notes) { %> 
+			<div class="col-12 col-lg-6 mb-3 bordered">
+				<% if (permissions.notes_add) { %>
+					<a class="float-left btn btn-success" href="/stores/notes/new?table=requests&id=<%= request.request_id %>">
+						<i class='fas fa-plus'></i>
+					</a>
+				<% }; %>
+				<% include ../../partials/noteTable %>
+			</div>
 		<% }; %>
-		<div class="col-12 mb-3 bordered">
+		<div class="col-12 bordered">
 			<h4>Lines</h4>
 			<% if (permissions.requests_edit) { %>
-				<form id="requestForm" action="/stores/requests/<% if (sortBy === 'request') { %><%= request.request_id %><% } else if (sortBy === 'user') { %><%= f_user.user_id %><% } %>/approval?_method=PUT" method="POST" onsubmit="return confirm('Confirm change of status?');">
-				<button class="btn btn-success w-100 mb-3">Action Selected Requests</button>
-				<input type="hidden" name="requested_for" value="<% if (sortBy === 'request') { %><%= request.requested_for %><% } else if (sortBy === 'user') { %><%= f_user.user_id %><% } %>">
+				<form id="requestForm" action="/stores/requests/<%= request.request_id %>/approval?_method=PUT" method="POST">
+					<input type="hidden" name="requested_for" value="<%= request.requested_for %>">
+					<input class="btn btn-success w-100 mb-1 confirm" type="submit" value='Action Selected Requests'>
 			<% } %>
-				<table id="requestTable" class="table table-sm table-hover mx-auto w-100">
+				<table class="table table-sm table-hover mx-auto w-100">
 					<thead class="thead-dark">
-						<% if (sortBy === 'request') { %>
-							<th class="w-15" onclick="sortTable(0, 'requestTable')">Item</th>
-							<th class="w-10" onclick="sortTable(1, 'requestTable')">Size</th>
-							<th class="w-5"  onclick="sortTable(2, 'requestTable')">Qty</th>
-							<th class="w-10" onclick="sortTable(3, 'requestTable')">Status</th>
-							<th class="w-10" onclick="sortTable(4, 'requestTable')"><% if (permissions.requests_edit) { %>Action/<% } %>Date Approved</th>
-							<th class="w-10" onclick="sortTable(5, 'requestTable')"><% if (permissions.requests_edit) { %>NSN/<% } %>Approved By</th>
-							<th class="w-10" onclick="sortTable(6, 'requestTable')"></th>
-						<% } else if (sortBy === 'user') { %>
-							<th class="w-15" onclick="sortTable(0, 'requestTable')">Request ID</th>
-							<th class="w-15" onclick="sortTable(1, 'requestTable')">Item</th>
-							<th class="w-10" onclick="sortTable(2, 'requestTable')">Size</th>
-							<th class="w-5"  onclick="sortTable(3, 'requestTable')">Qty</th>
-							<th class="w-10" onclick="sortTable(4, 'requestTable')">Status</th>
-							<th class="w-10" onclick="sortTable(5, 'requestTable')"><% if (permissions.requests_edit) { %>Action/<% } %>Date Approved</th>
-							<th class="w-10" onclick="sortTable(6, 'requestTable')"><% if (permissions.requests_edit) { %>NSN/<% } %>Approved By</th>
-							<th class="w-10" onclick="sortTable(7, 'requestTable')"></th>
-						<% }; %>
+						<th class="w-15" onclick="sortTable(0, 'requestTable')">Item</th>
+						<th class="w-10" onclick="sortTable(1, 'requestTable')">Size</th>
+						<th class="w-5"  onclick="sortTable(2, 'requestTable')">Qty</th>
+						<th class="w-10" onclick="sortTable(3, 'requestTable')">Status</th>
+						<th class="w-10" onclick="sortTable(4, 'requestTable')"><% if (permissions.requests_edit) { %>Action/<% } %>Date Approved</th>
+						<th class="w-10" onclick="sortTable(5, 'requestTable')"><% if (permissions.requests_edit) { %>NSN/<% } %>Approved By</th>
+						<th class="w-10" onclick="sortTable(6, 'requestTable')"></th>
 					</thead>
-					<tbody>
-						<% if (sortBy === 'request') { %>
-							<% if (request.lines) { %>
-								<% request.lines.forEach(line => { %>
-									<tr>
-										<td><a href="/stores/items/<%= line.item_size.item_id %>"><%= line.item_size.item._description %></a></td>
-										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size._size %></a></td>
-										<td><a href="#"><%= line._qty %></a></td>
-										<td>
+					<tbody id="requestTable">
+						<% if (request.lines) { %>
+							<% request.lines.forEach(line => { %>
+								<tr>
+									<td>
+										<a class='float-right btn btn-sm btn-primary' href="/stores/items/<%= line.item_size.item_id %>">
+											<i class='fas fa-search'></i>
+										</a>
+										<%= line.item_size.item._description %>
+									</td>
+									<td>
+										<a class='float-right btn btn-sm btn-primary' href="/stores/item_sizes/<%= line.itemsize_id %>">
+											<i class='fas fa-search'></i>
+										</a class='float-right btn btn-sm btn-primary'>
+										<%= line.item_size._size %>
+									</td>
+									<td>
+										<%= line._qty %>
+									</td>
+									<td>
+									<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== request._for.user_id) { %>
+										<select id='status<%= line.line_id %>' class='form-control form-control-sm' name='declines[]' onchange='checkAction( <%= line.line_id %>)'>
+											<option value="pending" selected>Pending</option>
+											<option value="approved">Approved</option>
+											<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Declined"}'>Declined</option>
+										</select>
+									<% } else { %>
+										<%= line._status %>
+									<% }; %>
+									</td>
+									<td>
 										<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== request._for.user_id) { %>
-											<select id='status<%= line.line_id %>' class='form-control form-control-sm' name='declines[]' onchange='checkAction( <%= line.line_id %>)'>
-												<option value="pending" selected>Pending</option>
-												<option value="approved">Approved</option>
-												<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Declined"}'>Declined</option>
+											<select id="action<%= line.line_id %>" style="display:none;" class="form-control form-control-sm" name="approves[]" onchange='checkNSNs(<%= line.line_id %>)'>
+												<option value="" selected></option>
+												<% if (line.item_size.stocks) { %>
+													<% line.item_size.stocks.forEach(stock => { %>
+														<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>, "stock_id": <%= stock.stock_id %>}'>
+															Issue from: <%= stock.location._location %>
+														</option>
+													<% }); %>
+												<% }; %>
+												<% if (line.item_size._orderable) { %>
+													<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Order", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>}'>Order</option>
+												<% }; %>
 											</select>
-										<% } else { %>
-											<a href="#"><%= line._status %></a>
-										<% }; %>
-										</td>
-										<td>
-											<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== request._for.user_id) { %>
-												<select id="action<%= line.line_id %>" style="display:none;" class="form-control form-control-sm" name="approves[]" onchange='checkNSNs( <%= line.line_id %>)'>
-													<option value="" selected></option>
-													<% if (line.item_size.stocks) { %>
-														<% line.item_size.stocks.forEach(stock => { %>
-															<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>, "stock_id": <%= stock.stock_id %>}'>
-																Issue from: <%= stock.location._location %>
-															</option>
-														<% }); %>
-													<% }; %>
-													<% if (line.item_size._orderable) { %>
-														<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Order", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>}'>Order</option>
-													<% }; %>
-												</select>
-											<% } else if (line._date) { %>
-												<a href="#">
-													<%= line._date.toDateString() %>
-												</a>
-											<% } %>
-										</td>
-										<td>
-											<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== request._for.user_id) { %>
-												<select id="nsns<%= line.line_id %>" name="nsns[line<%= line.line_id %>]" class="form-control form-control-sm" style="display:none;">
-													<% if (line.item_size.nsns) { %>
-														<% line.item_size.nsns.forEach(nsn => { %>
-															<option value='<%= nsn.nsn_id %>'<% if (nsn._default) { %> selected <% } %>>
-																<% if (nsn._default) { %>*<% } %><%= nsn._nsn %><% if (nsn._default) { %>*<% } %>
-															</option>
-														<% }); %>
-													<% }; %>
-												</select>
-											<% } else if (line.user) { %>
-												<a href="#">
-													<%= line.user.rank._rank %> <%= line.user._name %>, <%= line.user._ini %>
-												</a>
-											<% } %>
-										</td>
-										<td>
-											<% if (line._id && line._id !== '') { %>
-												<a href="/stores/<% if (line._action === 'Issue') { %>issues<% } else if (line._action === 'Order') { %>orders<% } %>/<%= line._id %>">
-													<%= line._action %>: <%= line._id %>
-												</a>
-											<% } %>
-										</td>
-									</tr>
-								<% }); %>
-							<% }; %>
-						<% } else if (sortBy === 'user') { %>
-							<% if (requests) { %>
-								<% requests.forEach(line => { %>
-									<tr>
-										<td><a href="/stores/requests/<%= line.request_id %>?sb=request"><%= line.request_id %></a></td>
-										<td><a href="/stores/items/<%= line.item_size.item_id %>"><%= line.item_size.item._description %></a></td>
-										<td><a href="/stores/item_sizes/<%= line.itemsize_id %>"><%= line.item_size._size %></a></td>
-										<td><a href="#"><%= line._qty %></a></td>
-										<td>
-										<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== f_user.user_id) { %>
-											<select id='status<%= line.line_id %>' class='form-control form-control-sm' name='declines[]' onchange='checkAction(<%= line.line_id %>)'>
-												<option value="pending" selected>Pending</option>
-												<option value="approved">Approved</option>
-												<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Declined"}'>Declined</option>
+										<% } else if (line._date) { %>
+											<%= line._date.toDateString() %>
+										<% } %>
+									</td>
+									<td>
+										<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== request._for.user_id) { %>
+											<select id="nsns<%= line.line_id %>" name="nsns[line<%= line.line_id %>]" class="form-control form-control-sm" style="display:none;">
+												<% if (line.item_size.nsns) { %>
+													<% line.item_size.nsns.forEach(nsn => { %>
+														<option value='<%= nsn.nsn_id %>'<% if (nsn._default) { %> selected <% } %>>
+															<% if (nsn._default) { %>*<% } %><%= nsn._nsn %><% if (nsn._default) { %>*<% } %>
+														</option>
+													<% }); %>
+												<% }; %>
 											</select>
-										<% } else { %>
-											<a href="#"><%= line._status %></a>
-										<% }; %>
-										</td>
-										<td>
-											<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== f_user.user_id) { %>
-												<select id="action<%= line.line_id %>" style="display:none;" class="form-control form-control-sm" name="approves[]" onchange='checkNSNs( <%= line.line_id %>)'>
-													<option value="" selected></option>
-													<% if (line.item_size.stocks) { %>
-														<% line.item_size.stocks.forEach(stock => { %>
-															<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>, "stock_id": <%= stock.stock_id %>}'>
-																Issue from: <%= stock.location._location %>
-															</option>
-														<% }); %>
-													<% }; %>
-													<% if (line.item_size._orderable) { %>
-														<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= line.request_id %>, "_status": "Approved", "_action": "Order", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>}'>Order</option>
-													<% }; %>
-												</select>
-											<% } else if (line._date) { %>
-												<a href="#">
-													<%= line._date.toDateString() %>
-												</a>
-											<% } %>
-										</td>
-										<td>
-											<% if (line._status === 'Pending' && permissions.requests_edit && user.user_id !== f_user.user_id) { %>
-												<select id="nsns<%= line.line_id %>" name="nsns[line<%= line.line_id %>]" class="form-control form-control-sm" style="display:none;">
-													<% if (line.item_size.nsns) { %>
-														<% line.item_size.nsns.forEach(nsn => { %>
-															<option value='<%= nsn.nsn_id %>'<% if (nsn._default) { %> selected <% } %>>
-																<% if (nsn._default) { %>*<% } %><%= nsn._nsn %><% if (nsn._default) { %>*<% } %>
-															</option>
-														<% }); %>
-													<% }; %>
-												</select>
-											<% } else if (line.user) { %>
-												<a href="#">
-													<%= line.user.rank._rank %> <%= line.user._name %>, <%= line.user._ini %>
-												</a>
-											<% } %>
-										</td>
-										<td>
-											<% if (line._id && line._id !== '') { %>
-												<a href="/stores/<% if (line._action === 'Issue') { %>issues<% } else if (line._action === 'Order') { %>orders<% } %>/<%= line._id %>">
-													<%= line._action %>: <%= line._id %>
-												</a>
-											<% } %>
-										</td>
-									</tr>
-								<% }); %>
-							<% }; %>
+										<% } else if (line.user) { %>
+											<%= line.user.rank._rank %> <%= line.user._name %>, <%= line.user._ini %>
+										<% } %>
+									</td>
+									<td>
+										<% if (line._id && line._id !== '') { %>
+											<a href="/stores/<% if (line._action === 'Issue') { %>issues<% } else if (line._action === 'Order') { %>orders<% } %>/<%= line._id %>">
+												<%= line._action %>: <%= line._id %>
+											</a>
+										<% } %>
+									</td>
+								</tr>
+							<% }); %>
 						<% }; %>
 					</tbody>
 				</table>
-				<% if (permissions.requests_edit) { %></form><% } %>
+			<% if (permissions.requests_edit) { %></form><% } %>
 		</div>
 	</div>
 </section>
 <% include ../../partials/foot/full %>
 <script>
     function filterSelects() {
-        filter(['system', 'sb'],"/stores/requests/<%= sortID %>?sb=<%= sortBy %>");
+        filter(['system'],"/stores/requests/<%= request.request_id %>");
     };
 	function checkAction(line) {
 		var status = document.querySelector('#status' + line),

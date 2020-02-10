@@ -8,20 +8,14 @@
             <li class='nav-item'>
                 <a class='nav-link stores_nav' href='/stores/items'>Items</a>
             </li>
+			<% if (permissions.items_add) { %>
+				<li class='nav-item'>
+					<a class='nav-link stores_nav cardGreen' href='/stores/items/new'><i class='fas fa-plus'></i></a>
+				</li>
+			<% } %>
         </ul>
     </nav>
 </section>
-<% if (permissions.items_add) { %>
-	<section class='mb-2'>
-		<nav class='navbar navbar-expand navbar-dark bg-dark stores'>
-			<ul class='navbar-nav mr-auto'>
-				<li class='nav-item'>
-					<a class='nav-link' href='/stores/items/new'>New Item</a>
-				</li>
-			</ul>
-		</nav>
-	</section>
-<% } %>
 <section class='container'>
 	<div class='mx-auto row'>
 		<div class='col-12 col-md-6 mx-auto'>

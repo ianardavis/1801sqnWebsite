@@ -1,10 +1,10 @@
 module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //New Form
     app.get('/stores/receipts/new', isLoggedIn, allowed('receipts_add'), (req, res) => {
-        if (req.query.s && req.query.s !== '') {
+        if (req.query.supplier_id && req.query.supplier_id !== '') {
             fn.getOne(
                 m.suppliers,
-                {supplier_id: req.query.s}
+                {supplier_id: req.query.supplier_id}
             )
             .then(supplier => res.render('stores/receipts/new',{supplier: supplier}))
             .catch(err => fn.error(err, 'back', req, res));

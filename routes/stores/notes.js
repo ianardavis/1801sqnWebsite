@@ -3,8 +3,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/notes/new', isLoggedIn, allowed('notes_add'), (req, res) => {
         res.render('stores/notes/new', {
             link: {
-                table:  req.query.table,
-                id:     req.query.id
+                table: req.query.table,
+                id:    req.query.id
             }
         });
     });
@@ -15,7 +15,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             m.notes,
             req.body.note
         )
-        .then(note => res.redirect('/stores/' + note._table + '/' + note._id))
+        .then(note => {
+            req.flash('success', 'Note added')
+            res.redirect('/stores/' + note._table + '/' + note._id);
+        })
         .catch(err => fn.error(err, 'back', req, res));
     });
 
@@ -28,7 +31,31 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .then(note => res.render('stores/notes/edit', {note: note}))
         .catch(err => fn.error(err, 'back', req, res));
     });
+    // Put
+    app.put('/stores/notes/:id', isLoggedIn, allowed('notes_edit'), (req, res) => {
+        fn.update(
+            m.notes,
+            req.body.note,
+            {note_id: req.params.id}
+        )
+        .then(result => {
+            req.flash('success', 'Note updated');
+            res.redirect('/stores/' + req.body._table + '/' + req.body._id);
+        })
+        .catch(err => fn.error(err, '/stores/' + req.body._table + '/' + req.body._id, req, res));
+    });
     
+    //Show
+    app.get('/stores/notes/:id', isLoggedIn, allowed('access_notes'), (req, res) => {
+        fn.getOne(
+            m.notes,
+            {note_id: req.params.id},
+            {include: [fn.users()]}
+        )
+        .then(note => res.render('stores/notes/show', {note: note}))
+        .catch(err => fn.error(err, 'back', req, res));
+    });
+
     //Delete
     app.delete('/stores/notes/:id', isLoggedIn, allowed('notes_delete'), (req, res) => {
         fn.delete(
@@ -40,21 +67,5 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             res.redirect('back')
         })
         .catch(err =>fn.error(err, 'back', req, res));
-    });
-
-    //Show
-    app.get('/stores/notes/:id', isLoggedIn, allowed('access_notes'), (req, res) => {
-        fn.getOne(
-            m.notes,
-            {note_id: req.params.id},
-            {include: [{model: m.users, include: [m.ranks]}], attributes: null, nullOK: false}
-        )
-        .then(note => {
-            res.render('stores/notes/show', {
-                note: note,
-                user: user
-            });
-        })
-        .catch(err => fn.error(err, 'back', req, res));
     });
 };

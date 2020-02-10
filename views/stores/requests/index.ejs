@@ -12,52 +12,50 @@
 	</nav>
 </section>
 <section>
-	<nav class='navbar navbar-expand navbar-dark bg-dark stores'>
-		<ul class='navbar-nav mr-auto'>
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Options
-				</a>
-				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<a class="dropdown-item" href="/stores">Back to Stores</a>
-				</div>
-			</li>
-		</ul>
-	</nav>
-</section>
-<section>
-	<div class="container mt-3 pt-3">
+	<div class="container">
 		<form id="requests" action="/stores/requests/approve" method="POST" onsubmit="return confirm('Confirm approval/rejection?');">
-			<div class="container mt-3 pt-3">
+			<div class="container">
 				<div>
 					<div class="row">
-						<label class="col-3 col-form-label text-right" for="cr">Completed Requests:</label>
-						<select id="cr" class='form-control col-9' type="text" onchange=filterSelects()>
-							<option value="1" <% if (query.cr === 1) { %>selected<% } %> >Include</option>
-							<option value="2" <% if (query.cr === 2) { %>selected<% } %> >Exclude</option>
-							<option value="3" <% if (query.cr === 3) { %>selected<% } %> >Only</option>
+						<label class="col-3 col-form-label text-right" for="complete">Completed Requests:</label>
+						<select id="complete" class='form-control col-9' type="text" onchange=filterSelects()>
+							<option value="1" <% if (Number(query.complete) === 1) { %>selected<% } %> >Include</option>
+							<option value="2" <% if (Number(query.complete) === 2) { %>selected<% } %> >Exclude</option>
+							<option value="3" <% if (Number(query.complete) === 3) { %>selected<% } %> >Only</option>
 						</select>
 					</div>
 				</div>
 			</div>
 			<div>
-				<table id="requestTable" class="table table-sm table-hover mx-auto w-100">
+				<table class="table table-sm table-hover mx-auto w-100">
 					<thead class="thead-dark">
-						<th class="w-10" onclick="sortTable(0, 'requestTable')">Request ID</th>
-						<th class="w-40" onclick="sortTable(1, 'requestTable')">For</th>
-						<th class="w-30" onclick="sortTable(2, 'requestTable')">Date</th>
-						<th class="w-10" onclick="sortTable(3, 'requestTable')">Lines</th>
+						<th class="w-40" onclick="sortTable(0, 'requestTable')">For</th>
+						<th class="w-40" onclick="sortTable(1, 'requestTable')">Date</th>
+						<th class="w-10" onclick="sortTable(2, 'requestTable')">Lines</th>
 						<th class="w-10">Complete</th>
+						<th><i class='fas fa-search'></i></th>
 					</thead>
-					<tbody>
+					<tbody id="requestTable">
 						<% if (requests) { %>
-							<% requests.forEach((request) => { %>
+							<% requests.forEach(request => { %>
 								<tr>
-									<td><a href="/stores/requests/<%= request.request_id %>?sb=request"><%= request.request_id %></a></td>
-									<td><a href="/stores/requests/<%= request.requested_for %>?sb=user"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></a></td>
-									<td data-sort="<%= request._date.getTime() %>"><a href="/stores/requests/<%= request.request_id %>?sb=request"><%= request._date.toDateString() %></a></td>
-									<td><a href="/stores/requests/<%= request.request_id %>?sb=request"><%= request.lines.length %></a></td>
-									<td><input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled></td>
+									<td>
+										<%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %>
+									</td>
+									<td data-sort="<%= request._date.getTime() %>">
+										<%= request._date.toDateString() %>
+									</td>
+									<td>
+										<%= request.lines.length %>
+									</td>
+									<td>
+										<input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled>
+									</td>
+									<td>
+										<a class='btn btn-sm btn-primary' href="/stores/requests/<%= request.request_id %>">
+											<i class='fas fa-search'></i>
+										</a>
+									</td>
 								</tr>
 							<% }); %>
 						<% }; %>
@@ -70,7 +68,7 @@
 <% include ../../partials/foot/full %>
 <script>
 	function filterSelects() {
-        filter(['cr'], "/stores/requests");
+        filter(['complete'], "/stores/requests");
 	};
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -134,6 +134,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     nsns:     true,
                     stock:    true,
                     serials:  true,
+                    receipts: true,
                     issues:   {return_line_id: null},
                     orders:   {receipt_line_id: null},
                     requests: {_status: 'Pending'}
@@ -155,7 +156,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     item_size:  item_size,
                     notes: notes,
                     stock: stock,
-                    query: {sn: req.query.sn || 2}
+                    query: {system: req.query.system || 2}
                 });
             });
         })

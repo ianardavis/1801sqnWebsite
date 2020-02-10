@@ -38,6 +38,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 req.user.user_id
             )
             .then(order_id => {
+                req.flash('success', 'Order created: ' + order_id);
                 if (Number(req.body.ordered_for) === -1) res.redirect('/stores/orders/' + order_id)
                 else res.redirect('/stores/users/' + req.body.ordered_for);
             })
@@ -158,10 +159,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //Index
     app.get('/stores/orders', isLoggedIn, allowed('access_orders'), (req, res) => {
-        let query = {}, where = {};
-        query.co = Number(req.query.co) || 2;
-        if (query.co === 2) where._complete = 0
-        else if (query.co === 3) where._complete = 1;
+        let where = {};
+        if (Number(req.query.complete) === 2)      where._complete = 0
+        else if (Number(req.query.complete) === 3) where._complete = 1;
         fn.getAllWhere(
             m.orders,
             where,
@@ -170,9 +170,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     fn.users('_for'),
                     fn.users('_by'),
                     {model: m.orders_l, as: 'lines'}
-                ],
-                nullOk: false,
-                attributes: null
+                ]
             }
         )
         .then(orders => {
@@ -183,7 +181,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             .then(suppliers => {
                 res.render('stores/orders/index',{
                     orders:    orders,
-                    query:     query,
+                    query:     req.query,
                     suppliers: suppliers
                 });
             })
@@ -196,20 +194,20 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/orders/:id', isLoggedIn, allowed('access_orders'), (req, res) => {
         let query = {},
             where = {};
-        query.ul = Number(req.query.ul) || 1,
-        query.dl = Number(req.query.dl) || 1,
-        query.rl = Number(req.query.rl) || 1,
-        query.il = Number(req.query.il) || 2;
-        query.sn = Number(req.query.sn) || 2;
+        query.ul = Number(req.query.ul) || 1;
+        query.demanded = Number(req.query.demanded) || 1;
+        query.received = Number(req.query.received) || 1;
+        query.issued   = Number(req.query.issued)   || 2;
+        query.system   = Number(req.query.sn)       || 2;
 
-        if (query.dl === 2) where.demand_line_id = {[op.is]: null}
-        else if (query.dl === 3) where.demand_line_id = {[op.not]: null};
+        if (query.demanded === 2)      where.demand_line_id  = {[op.is]: null}
+        else if (query.demanded === 3) where.demand_line_id  = {[op.not]: null};
 
-        if (query.rl === 2) where.receipt_line_id = {[op.is]: null}
-        else if (query.rl === 3) where.receipt_line_id = {[op.not]: null};
+        if (query.received === 2)      where.receipt_line_id = {[op.is]: null}
+        else if (query.received === 3) where.receipt_line_id = {[op.not]: null};
 
-        if (query.il === 2) where.issue_line_id = {[op.is]: null}
-        else if (query.il === 3) where.issue_line_id = {[op.not]: null};
+        if (query.issued === 2)        where.issue_line_id   = {[op.is]: null}
+        else if (query.issued === 3)   where.issue_line_id   = {[op.not]: null};
 
         fn.getOne(
             m.orders,
@@ -229,9 +227,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 },
                 fn.users('_for'),
                 fn.users('_by')
-            ],
-            attributes: null,
-            nullOK: false}
+            ]}
         )
         .then(order => {
             if (req.allowed || order.orderedFor.user_id === req.user.user_id) {

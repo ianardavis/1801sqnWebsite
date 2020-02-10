@@ -3,319 +3,391 @@
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>Stores</a>
+                <a class='nav-link stores_nav' href='/stores'>
+                    Stores
+                </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items'>Items</a>
+                <a class='nav-link stores_nav' href='/stores/items'>
+                    Items
+                </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items/<%= item_size.item_id %>'><%= item_size.item._description %></a>
+                <a class='nav-link stores_nav' href='/stores/items/<%= item_size.item_id %>'>
+                    <%= item_size.item._description %>
+                </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.itemsize_id %>'>Size: <%= item_size._size %></a>
+                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.itemsize_id %>'>
+                    Size: <%= item_size._size %>
+                </a>
             </li>
         </ul>
     </nav>
 </section>
-<nav class='navbar navbar-expand navbar-dark bg-dark stores'>
-	<ul class='navbar-nav mr-auto'>
-		<li class='nav-item dropdown'>
-			<a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-				Options
-			</a>
-			<div class='dropdown-menu' aria-labelledby='navbarDropdown'>
-                <% if (permissions.item_sizes_edit) { %> 
-                    <a class='dropdown-item' href='/stores/item_sizes/<%= item_size.itemsize_id %>/edit'>Edit</a>
-                    <div class='dropdown-divider'></div>
-				<% } %>
-                <% if (permissions.nsns_add) { %> 
-                    <a class='dropdown-item' href='/stores/nsns/new?itemsize_id=<%= item_size.itemsize_id %>'>Add NSN</a>
-                <% } %>
-                <% if (permissions.locations_add) { %> 
-                    <a class='dropdown-item' href='/stores/locations/new?itemsize_id=<%= item_size.itemsize_id %>'>Add Location</a>
-                <% } %>
-                <% if (permissions.notes_add) { %> 
-                    <a class='dropdown-item' href='/stores/notes/new?table=item_sizes&id=<%= item_size.itemsize_id %>'>Add Note</a>
-                <% } %>
-                <div class='dropdown-divider'></div>
-				<% if (permissions.receipts_add) { %> 
-                    <a class='dropdown-item' href='/stores/adjusts/new?itemsize_id=<%= item_size.itemsize_id %>'>Receive</a>
-                <% } %>
-				<% if (permissions.orders_add) { %> 
-                    <a class='dropdown-item' href='/stores/orders/new?user=-1'>Order</a>
-                <% } %>
-                <% if (permissions.item_size_delete) { %>
-                    <div class='dropdown-divider'></div>
-                    <form action='/stores/item_sizes/<%= item_size.itemsize_id %>?_method=DELETE&item_id=<%= item_size.item_id %>' method='POST'>
-                        <input class='dropdown-item dropdown_button confirm' type='submit' value='Delete Item'>
-                    </form>
-                <% } %>
-                <div class='dropdown-divider'></div>
-				<a class='dropdown-item' href='/stores/items/<%= item_size.item_id %>'>Back to <%= item_size.item._description %></a>
-            </div>
-		</li>
-	</ul>
-</nav>
-<section class='container pt-3'>
+<section class='container'>
 	<div class='row'>
-		<div class='col-12 col-lg-3 mb-3 container bordered'>
-            <h4>Details</h4>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Issueable:</label>
-                </div>   
-                <div class='col-7'>
-                    <input id='_issueable' class='form-control' type='checkbox'<% if (item_size._issueable) { %> checked<% } %> disabled>
+		<div class='col-12 col-lg-4 mb-2 container bordered'>
+            <% if (permissions.item_sizes_edit) { %> 
+                <a class='float-left btn btn-success mr-1' href='/stores/item_sizes/<%= item_size.itemsize_id %>/edit'>
+                    <i class='fas fa-pencil-alt'></i>
+                </a>
+            <% } %>
+            <% if (permissions.item_sizes_delete) { %>
+                <form action='/stores/item_sizes/<%= item_size.itemsize_id %>?_method=DELETE' method='POST'>
+                    <button class='float-left btn btn-danger confirm'>
+                        <i class='fas fa-trash-alt'></i>
+                    </button>
+                </form>
+            <% } %>
+            <h4 class='mb-3'>Details</h4>
+            <div class="form-group">
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Issueable:</label>
+                    </div>   
+                    <div class='col-7'>
+                        <input id='_issueable' class='form-control' type='checkbox'<% if (item_size._issueable) { %> checked<% } %> disabled>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Orderable:</label>
-                </div>   
-                <div class='col-7'>
-                    <input id='_orderable' class='form-control' type='checkbox'<% if (item_size._orderable) { %> checked<% } %> disabled>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Orderable:</label>
+                    </div>   
+                    <div class='col-7'>
+                        <input id='_orderable' class='form-control' type='checkbox'<% if (item_size._orderable) { %> checked<% } %> disabled>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Has Serial #:</label>
-                </div>   
-                <div class='col-7'>
-                    <input id='_has_serial' class='form-control' type='checkbox'<% if (item_size._has_serial) { %> checked<% } %> disabled>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Has Serial #:</label>
+                    </div>   
+                    <div class='col-7'>
+                        <input id='_has_serial' class='form-control' type='checkbox'<% if (item_size._has_serial) { %> checked<% } %> disabled>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Supplier:</label>
+                <div class='row'>
+                    <div class='col-5' >
+                        <% if (item_size.supplier) { %><a class='float-right btn btn-primary' href='/stores/suppliers/<%= item_size.supplier_id %>'><i class='fas fa-search'></i></a><% } %>
+                        <label class='col-form-label'>Supplier:</label>
+                    </div>
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<% if (item_size.supplier) { %><%= item_size.supplier._name %><% } %>' readonly>
+                    </div>
                 </div>
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<% if (item_size.supplier) { %><%= item_size.supplier._name %><% } %>' readonly>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Demand Page:</label>
+                    </div>   
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<%= item_size._demand_page %>' readonly>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Demand Page:</label>
-                </div>   
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<%= item_size._demand_page %>' readonly>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Cell:</label>
+                    </div>
+                    <div class='col-7'>
+                        <input class='form-control' type='text' value='<%= item_size._demand_cell %>' readonly>
+                    </div>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Cell:</label>
-                </div>
-                <div class='col-7'>
-                    <input class='form-control' type='text' value='<%= item_size._demand_cell %>' readonly>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-12'>
-                    <textarea class='w-100' maxlength='1000' readonly><%= item_size._ordering_details %></textarea>
+                <div class='row'>
+                    <div class='col-12'>
+                        <textarea class='form-control' maxlength='1000' readonly><%= item_size._ordering_details %></textarea>
+                    </div>
                 </div>
             </div>
 		</div>
         <% if (permissions.access_nsns) {%>
-            <div class='col-12 col-lg-3 mb-3 bordered'>
-                <h4>
-                    <% if (permissions.nsns_add) { %> 
-                        <a href='/stores/nsns/new?itemsize_id=<%= item_size.itemsize_id %>'>
-                            <i class='fas fa-plus-circle'></i>
-                        </a> 
-                    <% } %>
-                    NSNs
-                </h4>
-                <div style='overflow-x:auto;'>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th class='w-80' onclick='sortTable(0, "nsnTable")' >NSN</th>
-                            <th class='w-20'>default</th>
-                            <% if (permissions.nsns_delete === 1) { %>
-                                <th></th>
-                            <% } %>
-                        </thead>
-                        <tbody id='nsnTable'>
-                            <% if (item_size.nsns) { %>
-                                <% item_size.nsns.forEach(nsn => { %>
-                                    <tr>
-                                        <td><a href='/stores/nsns/<%= nsn.nsn_id %>/edit'><%= nsn._nsn %></a></td>
-                                        <td><% if (item_size.nsn_id === nsn.nsn_id) { %> <i class='fas fa-check'></i> <% } %></td>
-                                        <td>
-                                            <% if (permissions.nsns_delete === 1) { %>
-                                                <form action='/stores/nsns/<%= nsn.nsn_id %>?_method=DELETE' method='POST'>
-                                                    <button class='btn btn-sm btn-danger confirm'>
-                                                        <i class='fas fa-trash-alt'></i>
-                                                    </button>
-                                                </form>
-                                            <% } %>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
+            <div class='col-12 col-lg-4 mb-2 bordered'>
+                <% if (permissions.nsns_add) { %> 
+                    <a class='float-left btn btn-success mb-1' href='/stores/nsns/new?itemsize_id=<%= item_size.itemsize_id %>'>
+                        <i class='fas fa-plus'></i>
+                    </a> 
+                <% } %>
+                <h4>NSNs</h4>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-80' onclick='sortTable(0, "nsnTable")' >NSN</th>
+                        <th class='w-20'>default</th>
+                        <th><i class='fas fa-pencil-alt'></i></th>
+                        <% if (permissions.nsns_delete === 1) { %>
+                            <th><i class='fas fa-trash-alt'></i></th>
+                        <% } %>
+                    </thead>
+                    <tbody id='nsnTable'>
+                        <% if (item_size.nsns) { %>
+                            <% item_size.nsns.forEach(nsn => { %>
+                                <tr>
+                                    <td>
+                                        <%= nsn._nsn %>
+                                    </td>
+                                    <td>
+                                        <% if (item_size.nsn_id === nsn.nsn_id) { %>
+                                            <i class='fas fa-check'></i>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-primary" href="/stores/nsns/<%= nsn.nsn_id %>/edit">
+                                            <i class='fas fa-pencil-alt'></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <% if (permissions.nsns_delete === 1) { %>
+                                            <form action='/stores/nsns/<%= nsn.nsn_id %>?_method=DELETE' method='POST'>
+                                                <button class='btn btn-sm btn-danger confirm'>
+                                                    <i class='fas fa-trash-alt'></i>
+                                                </button>
+                                            </form>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
             </div>
-        <% } %><% if (item_size._issue_serial && permissions.access_serials) {%>
-            <div class='col-12 col-lg-3 mb-3 bordered'>
-                <h4>
-                    <% if (permissions.serials_add) { %> 
-                        <a href='/stores/serials/new?itemsize_id=<%= item_size.itemsize_id %>'>
-                            <i class='fas fa-plus-circle'></i>
-                        </a> 
-                    <% } %>
-                    Serial #
-                </h4>
-                <div style='overflow-x:auto;'>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th class='w-80' onclick='sortTable(0, "serialTable")' >Serial #</th>
-                            <% if (permissions.serials_delete === 1) { %>
-                                <th></th>
-                            <% } %>
-                        </thead>
-                        <tbody id='serialTable'>
-                            <% if (item_size.serials) { %>
-                                <% item_size.serials.forEach(serial => { %>
-                                    <tr>
-                                        <td><a href='/stores/serials/<%= serial.serial_id %>/edit'><%= serial._serial %></a></td>
-                                        <td>
-                                            <% if (permissions.serials_delete === 1) { %>
-                                                <form action='/stores/serials/<%= serial.serial_id %>?_method=DELETE' method='POST'>
-                                                    <button class='btn btn-sm btn-danger confirm'>
-                                                        <i class='fas fa-trash-alt'></i>
-                                                    </button>
-                                                </form>
-                                            <% } %>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
+        <% } %>
+        <% if (item_size._has_serial && permissions.access_serials) {%>
+            <div class='col-12 col-lg-4 mb-2 bordered'>
+                <% if (permissions.serials_add) { %> 
+                    <a class='float-left btn btn-success mb-1' href='/stores/serials/new?itemsize_id=<%= item_size.itemsize_id %>'>
+                        <i class='fas fa-plus'></i>
+                    </a> 
+                <% } %>
+                <h4>Serial #</h4>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-80' onclick='sortTable(0, "serialTable")' >Serial #</th>
+                        <th><i class='fas fa-pencil-alt'></i></th>
+                        <% if (permissions.serials_delete === 1) { %>
+                            <th><i class='fas fa-trash-alt'></i></th>
+                        <% } %>
+                    </thead>
+                    <tbody id='serialTable'>
+                        <% if (item_size.serials) { %>
+                            <% item_size.serials.forEach(serial => { %>
+                                <tr>
+                                    <td>
+                                        <%= serial._serial %>
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-sm btn-primary' href='/stores/serials/<%= serial.serial_id %>/edit'>
+                                            <i class='fas fa-pencil-alt'></i>
+                                    </td>
+                                    <td>
+                                        <% if (permissions.serials_delete === 1) { %>
+                                            <form action='/stores/serials/<%= serial.serial_id %>?_method=DELETE' method='POST'>
+                                                <button class='btn btn-sm btn-danger confirm'>
+                                                    <i class='fas fa-trash-alt'></i>
+                                                </button>
+                                            </form>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
             </div>
         <% } %>
         <% if (permissions.access_stock) {%>
-            <div class='col-12 col-lg-3 mb-3 bordered'>
-                <h4>
-                    <% if (permissions.stock_add) { %>
-                        <a href='/stores/stock/new?itemsize_id=<%= item_size.itemsize_id %>'>
-                            <i class='fas fa-plus-circle'></i>
-                        </a>
-                    <% } %>
-                    Stock: <%= stock._stock %>
-                </h4>
-                <div style='overflow-x:auto;'>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "stockTable")' class='w-80'>Location</th>
-                            <th onclick='sortTable(1, "stockTable")' class='w-20'>Qty</th>
-                            <% if (permissions.stock_delete === 1) { %>
-                            <th></th>
-                            <% } %>
-                        </thead>
-                        <tbody id='stockTable'>
-                            <% if (item_size.stocks) { %>
-                                <% item_size.stocks.forEach(stock => { %>
-                            <tr>
-                                <td><a href='/stores/stock/<%= stock.stock_id %>/edit'><%= stock.location._location %></a></td>
-                                <td><a href='/stores/stock/<%= stock.stock_id %>/edit'><%= stock._qty %></a></td>
-                                <% if (permissions.stock_delete === 1) { %>
-                                <td>
-                                    <form action='/stores/stock/<%= stock.stock_id %>?_method=DELETE' method='POST'>
-                                        <button class='btn btn-sm btn-danger confirm'>
-                                            <i class='fas fa-trash-alt'></i>
-                                        </button>
-                                    </form>
-                                </td>
-                                <% } %>
-                            </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        <% } %>
-        <% if (item_size._issueable && permissions.access_issues) {%>
-            <div class='col-12 col-lg-3 mb-3 bordered'>
-                <h4>Issued: <%= stock._issued %></h4>
-                <div style='overflow-x:auto;'>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "issueTable")' class='w-80'>To</th>
-                            <th onclick='sortTable(1, "issueTable")' class='w-20'>Qty</th>
-                        </thead>
-                        <tbody id='issueTable'>
-                            <% if (item_size.issues_ls) { %>
-                                <% item_size.issues_ls.forEach(issue => { %>
-                                    <tr>
-                                        <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue.issue._to.rank._rank %> <%= issue.issue._to._name %>, <%= issue.issue._to._ini %></a></td>
-                                        <td><a href='/stores/issues/<%= issue.issue_id %>'><%= issue._qty %></a></td>
-                                    </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
+            <div class='col-12 col-lg-4 mb-2 bordered'>
+                <% if (permissions.stock_add) { %>
+                    <a class='float-left btn btn-success mb-1' href='/stores/stock/new?itemsize_id=<%= item_size.itemsize_id %>'>
+                        <i class='fas fa-plus'></i>
+                    </a>
+                <% } %>
+                <h4>Stock: <%= stock._stock %></h4>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "stockTable")' class='w-80'>Location</th>
+                        <th onclick='sortTable(1, "stockTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-pencil-alt'></i></th>
+                        <% if (permissions.stock_delete === 1) { %>
+                            <th><i class='fas fa-trash-alt'></i></th>
+                        <% } %>
+                    </thead>
+                    <tbody id='stockTable'>
+                        <% if (item_size.stocks) { %>
+                            <% item_size.stocks.forEach(stock => { %>
+                                <tr>
+                                    <td>
+                                        <%= stock.location._location %>
+                                    </td>
+                                    <td>
+                                        <%= stock._qty %>
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-sm btn-primary' href='/stores/stock/<%= stock.stock_id %>/edit'>
+                                            <i class='fas fa-pencil-alt'></i>
+                                        </a>
+                                    </td>
+                                    <% if (permissions.stock_delete === 1) { %>
+                                        <td>
+                                            <form action='/stores/stock/<%= stock.stock_id %>?_method=DELETE' method='POST'>
+                                                <button class='btn btn-sm btn-danger confirm'>
+                                                    <i class='fas fa-trash-alt'></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    <% } %>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
             </div>
         <% } %>
         <% if (item_size._issueable && permissions.access_requests) {%>
-            <div class='col-12 col-lg-3 mb-3 bordered'>
+            <div class='col-12 col-lg-4 mb-2 bordered'>
                 <h4>Requested: <%= stock._requested %></h4>
-                <div style='overflow-x:auto;'>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "requestTable")' class='w-80'>For</th>
-                            <th onclick='sortTable(1, "requestTable")' class='w-20'>Qty</th>
-                        </thead>
-                        <tbody id='requestTable'>
-                            <% if (item_size.requests_ls) { %>
-                                <% item_size.requests_ls.forEach(request => { %>
-                                    <tr>
-                                        <td><a href='/stores/requests/<%= request.request_id %>'><%= request.request._for.rank._rank %> <%= request.request._for._name %>, <%= request.request._for._ini %></a></td>
-                                        <td><a href='/stores/requests/<%= request.request_id %>'><%= request._qty %></a></td>
-                                    </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "requestTable")' class='w-80'>For</th>
+                        <th onclick='sortTable(1, "requestTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='requestTable'>
+                        <% if (item_size.requests_ls) { %>
+                            <% item_size.requests_ls.forEach(request => { %>
+                                <tr>
+                                    <td>
+                                        <%= request.request._for.rank._rank %> <%= request.request._for._name %>, <%= request.request._for._ini %>
+                                    </td>
+                                    <td>
+                                        <%= request._qty %>
+                                    </td>
+                                    <td>
+                                        <a href='/stores/requests/<%= request.request_id %>'>
+                                            <i class='fas fa-search'></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
             </div>
         <% } %>
         <% if (item_size._orderable && permissions.access_orders) {%>
-            <div class='col-12 col-lg-3 mb-3 bordered'>
+            <div class='col-12 col-lg-4 mb-2 bordered'>
+                <% if (permissions.orders_add) { %> 
+                    <a class='float-left btn btn-success mb-1' href='/stores/orders/new?user=-1'><i class='fas fa-plus'></i></a>
+                <% } %>
                 <h4>Ordered: <%= stock._ordered %></h4>
-                <div style='overflow-x:auto;'>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "orderTable")' class='w-80'>For</th>
-                            <th onclick='sortTable(1, "orderTable")' class='w-20'>Qty</th>
-                        </thead>
-                        <tbody id='orderTable'>
-                            <% if (item_size.orders_ls) { %>
-                                <% item_size.orders_ls.forEach(order => { %>
-                                    <tr>
-                                        <td>
-                                            <% if (order.order.ordered_for === -1) { %>
-                                                <a href='/stores/orders/<%= order.order_id %>'>Backing Stock</a>
-                                            <% } else { %>
-                                                <a href='/stores/orders/<%= order.order_id %>'>
-                                                    <%= order.order._for.rank._rank %> <%= order.order._for._name %>, <%= order.order._for._ini %>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "orderTable")' class='w-80'>For</th>
+                        <th onclick='sortTable(1, "orderTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='orderTable'>
+                        <% if (item_size.orders_ls) { %>
+                            <% item_size.orders_ls.forEach(order => { %>
+                                <tr>
+                                    <td>
+                                        <% if (order.order.ordered_for === -1) { %>
+                                            Backing Stock
+                                        <% } else { %>
+                                            <%= order.order._for.rank._rank %> <%= order.order._for._name %>, <%= order.order._for._ini %>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <%= order._qty %>
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-sm btn-primary' href='/stores/orders/<%= order.order_id %>'>
+                                            <i class='fas fa-search'></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (permissions.access_receipts) {%>
+            <div class='col-12 col-lg-4 mb-2 bordered'>
+                <% if (permissions.receipts_add) { %> 
+                    <a class='float-left btn btn-success mb-1' href='/stores/receipts/new?supplier_id=<%= item_size.supplier_id %>'><i class='fas fa-plus'></i></a>
+                <% } %>
+                <h4>Receipts</h4>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "receiptTable")' class='w-80'>Date</th>
+                        <th onclick='sortTable(1, "receiptTable")' class='w-20'>Location</th>
+                        <th onclick='sortTable(2, "receiptTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='receiptTable'>
+                        <% if (item_size.stocks) { %>
+                            <% item_size.stocks.forEach(stock => { %>
+                                <% if (stock.receipts_ls) { %>
+                                    <% stock.receipts_ls.forEach(receipt => { %>
+                                        <tr>
+                                            <td>
+                                                <%= receipt.receipt._date.toDateString() %>
+                                            </td>
+                                            <td>
+                                                <%= stock.location._location %>
+                                            </td>
+                                            <td>
+                                                <%= receipt._qty %>
+                                            </td>
+                                            <td>
+                                                <a class='btn btn-sm btn-primary' href='/stores/receipts/<%= receipt.receipt_id %>'>
+                                                    <i class='fas fa-search'></i>
                                                 </a>
-                                            <% } %>
-                                        </td>
-                                        <td><a href='/stores/orders/<%= order.order_id %>'><%= order._qty %></a></td>
-                                    </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } %>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (item_size._issueable && permissions.access_issues) {%>
+            <div class='col-12 col-lg-4 mb-2 bordered'>
+                <h4>Issued: <%= stock._issued %></h4>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "issueTable")' class='w-80'>To</th>
+                        <th onclick='sortTable(1, "issueTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='issueTable'>
+                        <% if (item_size.issues_ls) { %>
+                            <% item_size.issues_ls.forEach(issue => { %>
+                                <tr>
+                                    <td>
+                                        <%= issue.issue._to.rank._rank %> <%= issue.issue._to._name %>, <%= issue.issue._to._ini %>
+                                    </td>
+                                    <td>
+                                        <%= issue._qty %>
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-sm btn-primary' href='/stores/issues/<%= issue.issue_id %>'>
+                                            <i class='fas fa-search'></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
             </div>
         <% } %>
         <% if (permissions.access_notes) {%>
-            <div class='col-12 col-lg-6 bordered'>
+            <div class='col-8 mb-2 bordered'>
+                <% if (permissions.notes_add) { %> 
+                    <a class='float-left btn btn-success' href='/stores/notes/new?table=item_sizes&id=<%= item_size.itemsize_id %>'>
+                        <i class='fas fa-plus'></i>
+                    </a>
+                <% } %>
                 <% include ../../partials/noteTable %>
             </div>
         <% } %>

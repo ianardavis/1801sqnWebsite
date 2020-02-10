@@ -96,7 +96,7 @@ function addSize() {
             selected.description = '<%= item_size.item._description %>';
             selected.size        = '<%= item_size._size %>';
 
-            window.opener.addSize(selected);
+            alert(window.opener.addSize(selected))
         } else alert('unable to find target window!\nClose this window and try again');
     };
 };

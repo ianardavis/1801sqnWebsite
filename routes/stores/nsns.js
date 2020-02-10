@@ -26,9 +26,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             m.item_sizes,
             {itemsize_id: req.query.itemsize_id},
             {
-                include: fn.itemSize_inc(),
-                attributes: null,
-                nullOK: false
+                include: fn.itemSize_inc()
             }
         )
         .then(itemsize => res.render('stores/nsns/new', {itemsize: itemsize}))
@@ -40,7 +38,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.nsns,
             {nsn_id: req.params.id},
-            {include: [{model: m.item_sizes, include: [m.items]}], attributes: null, nullOK: false}
+            {include: [{model: m.item_sizes, include: [m.items]}]}
         )
         .then(nsn => {
             fn.getNotes('nsns', req.params.id, req)
@@ -48,7 +46,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 res.render('stores/nsns/edit', {
                     nsn:   nsn,
                     notes: notes,
-                    query: {sn: req.query.sn || 2}
+                    query: {system: req.query.system || 2}
                 });
             });
         })

@@ -16,34 +16,22 @@
 		</ul>
 	</nav>
 </section>
-<section class="mb-2">
-	<nav class='navbar navbar-expand navbar-dark bg-dark stores'>
-		<ul class='navbar-nav mr-auto'>
-			<li class='nav-item dropdown'>
-				<a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-					Options
-				</a>
-				<div class='dropdown-menu' aria-labelledby='navbarDropdown'>
-					<% if (permissions.notes_add) { %>
-						<a class='dropdown-item' href='/stores/notes/new?table=demands&id=<%= demand.demand_id %>'>Add Note</a>
-					<% } %>
-					<% if (demand._filename) { %>
-					<a class='dropdown-item' href='/stores/demands/<%= demand.demand_id %>/download'>Download Demand File</a>
-					<% } %>
-					<% if (permissions.demands_delete) { %>
-						<form action='/stores/demands/<%= demand.demand_id %>?_method=DELETE' method='POST'>
-							<button class='dropdown-item dropdown_button confirm'>Delete Demand</button>
-						</form>
-					<% }; %>
-				</div>
-			</li>
-		</ul>
-	</nav>
-</section>
 <section class='container'>
 	<div class='row'>
-		<div class='col-12 col-lg-6 col-xl-4 mb-3 bordered'>
-			<h4>Details</h4>
+		<div class='col-12 col-lg-6 col-xl-5 mb-3 bordered'>
+			<% if (demand._filename) { %>
+				<a class='float-left btn btn-primary mr-1' href='/stores/demands/<%= demand.demand_id %>/download'>
+					<i class='fas fa-file-download'></i>
+				</a>
+			<% } %>
+			<% if (permissions.demands_delete) { %>
+				<form action='/stores/demands/<%= demand.demand_id %>?_method=DELETE' method='POST'>
+					<button class='float-left btn btn-danger confirm'>
+						<i class='fas fa-trash-alt'></i>
+					</button>
+				</form>
+			<% }; %>
+			<h4 class='mb-3'>Details</h4>
 			<div class='row'>
 				<div class='col-sm-4'>
 					<label class='col-form-label'>Supplier:</label>
@@ -52,7 +40,7 @@
 					<input class='form-control' type='text' value='<%= demand.supplier._name %>' readonly>
 				</div>
 				<div class='col-sm-2'>
-					<a href='/stores/suppliers/<%= demand.supplier_id %>'><i class='fas fa-search'></i></a>
+					<a class="float-right btn btn-primary" href='/stores/suppliers/<%= demand.supplier_id %>'><i class='fas fa-search'></i></a class="btn btn-primary">
 				</div>
 			</div>
 			<div class='row'>
@@ -63,7 +51,7 @@
 						<input class='form-control' type='text' value='<%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %>' readonly>
 				</div>
 				<div class='col-sm-2'>
-					<a href='/stores/users/<%= demand.user_id %>'><i class='fas fa-search'></i></a>
+					<a class="float-right btn btn-primary" href='/stores/users/<%= demand.user_id %>'><i class='fas fa-search'></i></a>
 				</div>
 			</div>
 			<div class='row'>
@@ -84,7 +72,12 @@
 			</div>
 		</div>
 		<% if (permissions.access_notes) { %> 
-			<div class='col-12 col-lg-6 col-xl-8 mb-3 bordered'>
+			<div class='col-12 col-lg-6 col-xl-7 mb-3 bordered'>
+				<% if (permissions.notes_add) { %>
+					<a class='float-left btn btn-success' href='/stores/notes/new?table=demands&id=<%= demand.demand_id %>'>
+						<i class='fas fa-plus'></i>
+					</a>
+				<% } %>
 				<% include ../../partials/noteTable %>
 			</div>
 		<% } %>
@@ -115,19 +108,19 @@
 							<% demand.lines.forEach(line => { %>
 								<tr>
 									<td>
-										<a href='#'><%= line.item_size.item._description %></a>
-										<a class='float-right' href='/stores/items/<%= line.item_size.item_id %>'><i class='fas fa-search'></i></a>
+										<a class='float-right btn btn-sm btn-primary' href='/stores/items/<%= line.item_size.item_id %>'><i class='fas fa-search'></i></a>
+										<%= line.item_size.item._description %>
 									</td>
 									<td>
-										<a href='#'><%= line.item_size._size %></a>
-										<a class='float-right' href='/stores/item_sizes/<%= line.item_size.itemsize_id %>'><i class='fas fa-search'></i></a>
+										<a class='float-right btn btn-sm btn-primary' href='/stores/item_sizes/<%= line.item_size.itemsize_id %>'><i class='fas fa-search'></i></a>
+										<%= line.item_size._size %>
 									</td>
 									<td>
-										<a href='#'><%= line._qty %></a>
+										<%= line._qty %>
 									</td>
 									<td>
 										<% if (line._status === 'Cancelled' || line._status === 'Received') { %>
-											<a href='#'><%= line._status %></a>
+											<%= line._status %>
 										<% } else { %>
 											<select id='action<%= line.line_id %>' type='select' class='form-control form-control-sm' name='actions[]'>
 												<option value='{"action":null}'></option>
