@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '1',
-      comment: null
+      comment: "null"
     },
     'access_items': {
       type: DataTypes.INTEGER(4),
@@ -26,13 +26,13 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_items"
     },
-    'items_edit': {
+    'items_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_items"
     },
-    'items_delete': {
+    'items_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -210,7 +210,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "access_orders"
+      comment: "account_enabled"
     },
     'demands_add': {
       type: DataTypes.INTEGER(4),
@@ -228,7 +228,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "account_enabled"
+      comment: "access_suppliers"
     },
     'receipts_add': {
       type: DataTypes.INTEGER(4),
@@ -296,13 +296,13 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_users"
     },
-    'users_permissions': {
+    'users_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_users"
     },
-    'users_delete': {
+    'users_permissions': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -362,6 +362,150 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_suppliers"
     },
+    'access_reports': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
+    'access_settings': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
+    'settings_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'ranks_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'ranks_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'ranks_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'statuses_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'statuses_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'statuses_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'genders_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'genders_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'genders_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'categories_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'categories_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'categories_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'groups_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'groups_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'groups_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'types_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'types_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'types_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'subtypes_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'subtypes_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
+    'subtypes_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_settings"
+    },
     'access_files': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
@@ -386,149 +530,17 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_files"
     },
-    'access_reports': {
+    'access_canteen': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'access_settings': {
+    'canteen_supervisor': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "account_enabled"
-    },
-    'settings_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "access_settings"
-    },
-    'ranks_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'ranks_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'ranks_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'statuses_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'statuses_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'statuses_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'genders_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'genders_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'genders_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'categories_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'categories_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'categories_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'groups_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'groups_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'groups_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'types_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'types_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'types_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'subtypes_add': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'subtypes_edit': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
-    },
-    'subtypes_delete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "settings_edit"
+      comment: "access_canteen"
     },
     'createdAt': {
       type: DataTypes.DATE,

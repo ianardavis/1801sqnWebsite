@@ -88,16 +88,17 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     //Index
     app.get('/stores/requests', isLoggedIn, allowed('access_requests', false), (req, res) => {
-        let where = {};
-        if (Number(req.query.complete) === 2)      where._complete = 0;
-        else if (Number(req.query.complete) === 3) where._complete = 1;
+        let where = {}, query = {};
+        query.complete = Number(req.query.complete) || 2
+        if (query.complete === 2)      where._complete = 0;
+        else if (query.complete === 3) where._complete = 1;
         if (req.allowed === false) where.requested_for = req.user.user_id;
         fn.getAllWhere(
             m.requests,
             where,
             {
                 include: [
-                    {model: m.requests_l, as: 'lines'},
+                    {model: m.request_lines, as: 'lines'},
                     fn.users('_for')
                 ]
             }
@@ -105,7 +106,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .then(requests => {
             res.render('stores/requests/index',{
                 requests: requests,
-                query:    req.query
+                query:    query
             });
         })
         .catch(err => fn.error(err, '/stores', req, res));
@@ -119,7 +120,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {
                 include: [
                     {
-                        model: m.requests_l,
+                        model: m.request_lines,
                         as: 'lines',
                         include: [
                             {model: m.item_sizes, include: fn.itemSize_inc({stock: true, nsns: true})},

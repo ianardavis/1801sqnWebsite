@@ -13,9 +13,15 @@ module.exports = function(sequelize, DataTypes) {
     '_path': {
       type: DataTypes.STRING(255),
       allowNull: false,
-      comment: "null"
+      comment: "null",
+      unique: true
     },
     '_code': {
+      type: DataTypes.STRING(4),
+      allowNull: true,
+      comment: "null"
+    },
+    '_rank': {
       type: DataTypes.STRING(4),
       allowNull: true,
       comment: "null"
@@ -26,11 +32,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_sqn': {
-      type: DataTypes.STRING(4),
-      allowNull: true,
-      comment: "null"
-    },
-    '_rank': {
       type: DataTypes.STRING(4),
       allowNull: true,
       comment: "null"
@@ -67,6 +68,16 @@ module.exports = function(sequelize, DataTypes) {
     },
     '_items_sheet': {
       type: DataTypes.STRING(20),
+      allowNull: true,
+      comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
     }

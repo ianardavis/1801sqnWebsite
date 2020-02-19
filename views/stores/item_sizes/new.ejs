@@ -58,7 +58,15 @@
                             <label class='col-form-label'>Has Serial #:</label>
                         </div>
                         <div class='col-7'>
-                            <input class='form-control' type='checkbox' name='details[_has_serial]' value='1'>
+                            <input class='form-control' type='checkbox' name='details[_serials]' value='1'>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-5'>
+                            <label class='col-form-label'>Has NSNs:</label>
+                        </div>
+                        <div class='col-7'>
+                            <input class='form-control' type='checkbox' name='details[_nsns]' value='1'>
                         </div>
                     </div>
                     <div class='row'>
@@ -120,15 +128,16 @@
 <script>
     function addSize() {
         let size  = document.querySelector('#size'),
-            sizes = document.querySelector('#sizes');
+            sizes = document.querySelector('#sizes'),
+            size_text = size.value.replace(/ /g, '_').replace(/./g, '_').replace(/\//g, '_').replace(/\\/g, '_');
         if (size.value !== '') {
-            if (!document.querySelector('#size' + size.value)) {
+            if (!document.querySelector('#size' + size_text)) {
                 let tr      = document.createElement('tr'),
                     del_td  = document.createElement('td'),
                     del_btn = document.createElement('a'),
                     size_td = document.createElement('td'),
                     size_input = document.createElement('input');
-                tr.id = 'size' + size.value;
+                tr.id = 'size' + size_text;
 
                 size_input.value = size.value;
                 size_input.classList.add('form-control');

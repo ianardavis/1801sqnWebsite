@@ -47,11 +47,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/item_sizes/:id/edit', isLoggedIn, allowed('item_sizes_edit'), (req, res) => {
         fn.getOne(
             m.item_sizes,
-            {itemsize_id: req.params.id},
+            {item_size_id: req.params.id},
             {
-                include: fn.itemSize_inc({supplier: true}),
-                attributes: null,
-                nullOK: false
+                include: fn.itemSize_inc({supplier: true})
             }
         )
         .then(item_size => {
@@ -69,14 +67,14 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     
     // Put
     app.put('/stores/item_sizes/:id', isLoggedIn, allowed('item_sizes_edit'), (req, res) => {
-        ['_issueable', '_orderable', '_issue_serial'].forEach(checkbox => {
+        ['_issueable', '_orderable', '_serials', '_nsns'].forEach(checkbox => {
             if (typeof(req.body.item_size[checkbox]) === 'undefined') req.body.item_size[checkbox] = 0
             else req.body.item_size[checkbox] = 1;
         });        
         fn.update(
             m.item_sizes,
             req.body.item_size,
-            {itemsize_id: req.params.id}
+            {item_size_id: req.params.id}
         )
         .then(result => res.redirect('/stores/item_sizes/' + req.params.id))
         .catch(err => fn.error(err, '/stores/item_sizes/' + req.params.id, req, res));
@@ -87,8 +85,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         if (req.query.item_id) {
             fn.getOne(
                 m.stock,
-                {itemsize_id: req.params.id},
-                {include: [], attributes: null, nullOK: true}
+                {item_size_id: req.params.id},
+                {nullOK: true}
             )
             .then(stock => {
                 if (stock) {
@@ -97,8 +95,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 } else {
                     fn.getOne(
                         m.nsns,
-                        {itemsize_id: req.params.id},
-                        {include: [], attributes: null, nullOK: true}
+                        {item_size_id: req.params.id},
+                        {nullOK: true}
                     )
                     .then(nsn => {
                         if (nsn) {
@@ -107,7 +105,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         } else {
                             fn.delete(
                                 'item_sizes',
-                                {itemsize_id: req.params.id}
+                                {item_size_id: req.params.id}
                             )
                             .then(result => {
                                 req.flash('success', 'Item size deleted');
@@ -127,7 +125,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/item_sizes/:id', isLoggedIn, allowed('access_items'), (req, res) => {
         fn.getOne(
             m.item_sizes,
-            {itemsize_id: req.params.id},
+            {item_size_id: req.params.id},
             {
                 include: fn.itemSize_inc({
                     supplier: true,
@@ -138,20 +136,17 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     issues:   {return_line_id: null},
                     orders:   {receipt_line_id: null},
                     requests: {_status: 'Pending'}
-                }),
-                attributes: null,
-                nullOK: false
+                })
             }
-            
         )
         .then(item_size => {
             fn.getNotes('item_sizes', req.params.id, req)
             .then(notes =>{
                 let stock = {};
                 stock._stock     = fn.summer(item_size.stocks) || 0;
-                stock._ordered   = fn.summer(item_size.orders_ls) || 0;
-                stock._issued    = fn.summer(item_size.issues_ls) || 0;
-                stock._requested = fn.summer(item_size.requests_ls) || 0;
+                stock._ordered   = fn.summer(item_size.order_lines) || 0;
+                stock._issued    = fn.summer(item_size.issue_lines) || 0;
+                stock._requested = fn.summer(item_size.request_lines) || 0;
                 res.render('stores/item_sizes/show', {
                     item_size:  item_size,
                     notes: notes,

@@ -144,47 +144,47 @@
 							<% order.lines.forEach(line => { %>
 								<tr>
 									<td>
-										<input class='form-control form-control-sm' type='checkbox' name='lines[]' value='{"line_id":<%= line.line_id %>,"itemsize_id":<%= line.itemsize_id %>,"qty":<%= line._qty %>,"supplier_id":<%= line.item_size.supplier_id %>,"_for":<%= order.ordered_for %><% if (line.demands_l) { %>,"demand_line_id":<%= line.demand_line_id %><% } %><% if (line.receipts_l) { %>,"receipt_line_id":<%= line.receipt_line_id %><% } %><% if (line.issues_l) { %>,"issue_line_id":<%= line.issue_line_id %><% } %>}'></td>
+										<input class='form-control form-control-sm' type='checkbox' name='lines[]' value='{"line_id":<%= line.line_id %>,"item_size_id":<%= line.item_size_id %>,"qty":<%= line._qty %>,"supplier_id":<%= line.item_size.supplier_id %>,"_for":<%= order.ordered_for %><% if (line.demand_lines) { %>,"demand_line_id":<%= line.demand_line_id %><% } %><% if (line.receipt_lines) { %>,"receipt_line_id":<%= line.receipt_line_id %><% } %><% if (line.issue_lines) { %>,"issue_line_id":<%= line.issue_line_id %><% } %>}'></td>
 									<td>
 										<a class='float-right' href='/stores/items/<%= line.item_size.item_id %>'><i class='fas fa-search'></i></a>
 										<%= line.item_size.item._description %>
 									</td>
 									<td>
-										<a class='float-right' href='/stores/item_sizes/<%= line.itemsize_id %>'><i class='fas fa-search'></i></a>
+										<a class='float-right' href='/stores/item_sizes/<%= line.item_size_id %>'><i class='fas fa-search'></i></a>
 										<%= line.item_size._size %>
 									</td>
 									<td>
 										<%= line._qty %>
 									</td>
 									<td>
-										<% if (line.demands_l) { %>
-											<a class='float-right' href='/stores/demands/<%= line.demands_l.demand_id %>'>
+										<% if (line.demand_lines) { %>
+											<a class='float-right' href='/stores/demands/<%= line.demand_lines.demand_id %>'>
 												<i class='fas fa-search'></i>
 											</a>
-											<%= line.demands_l.demand._date.toDateString() %>
+											<%= line.demand_lines.demand._date.toDateString() %>
 										<% }; %>
 									</td>
 									<td>
-										<% if (line.receipts_l) { %>
-											<a class='float-right' href='/stores/receipts/<%= line.receipts_l.receipt_id %>'>
+										<% if (line.receipt_lines) { %>
+											<a class='float-right' href='/stores/receipts/<%= line.receipt_lines.receipt_id %>'>
 												<i class='fas fa-search'></i>
 											</a>
-											<%= line.receipts_l.receipt._date.toDateString() %>
+											<%= line.receipt_lines.receipt._date.toDateString() %>
 										<% }; %>
 									</td>
 									<td>
 										<% if (Number(order.ordered_for) === -1) { %>
 											N/A
 										<% } else { %>
-											<% if (line.issues_l) { %>
-												<a class='float-right' href='/stores/issues/<%= line.issues_l.issue_id %>'><i class='fas fa-search'></i></a>
-												<%= line.issues_l.issue._date.toDateString() %>
+											<% if (line.issue_lines) { %>
+												<a class='float-right' href='/stores/issues/<%= line.issue_lines.issue_id %>'><i class='fas fa-search'></i></a>
+												<%= line.issue_lines.issue._date.toDateString() %>
 											<% }; %>
 										<% }; %>
 									</td>
 									<% if (permissions.orders_delete) { %>
 										<th>
-											<form action='/stores/orders_l/<%= line.line_id %>?_method=DELETE' method='POST'>
+											<form action='/stores/order_lines/<%= line.line_id %>?_method=DELETE' method='POST'>
 												<button class='btn btn-sm btn-danger confirm'><i class='fas fa-trash-alt'></i></button>
 											</form>
 										</th>

@@ -18,7 +18,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     _date_due: {[op.lte]: Date.now()},
                     _complete: 0
                 },
-                {include: [{model: m.issues_l, as: 'lines'}, fn.users('_for')], nullOk: true}
+                {
+                    include: [
+                        {model: m.issue_lines, as: 'lines'},
+                        fn.users('_to')
+                    ],
+                    nullOk: true
+                }
             )
             .then(issues => res.render('stores/reports/show/2', {issues: issues}))
             .catch(err => fn.error(err, '/stores/reports', req, res));
@@ -34,11 +40,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             model: m.suppliers,
                             where: {supplier_id: Number(req.query.supplier_id) || 1}
                         },{
-                            model: m.orders_l,
+                            model: m.order_lines,
+                            as: 'orders',
                             where: {demand_line_id: null},
                             required: false
                         },{
-                            model: m.requests_l,
+                            model: m.request_lines,
+                            as: 'requests',
                             where: {_status: 'Pending'},
                             required: false
                         }
@@ -81,7 +89,22 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     }]
                 }]
             )
-            .then(locations => res.render('stores/reports/show/5', {locations: locations}))
+            .then(locations => {
+                locations.sort(function(a, b) {
+                    var locationA = a._location.toUpperCase(); // ignore upper and lowercase
+                    var locationB = b._location.toUpperCase(); // ignore upper and lowercase
+                    if (locationA < locationB) {
+                      return -1;
+                    }
+                    if (locationA > locationB) {
+                      return 1;
+                    }
+                  
+                    // names must be equal
+                    return 0;
+                  });
+                res.render('stores/reports/show/5', {locations: locations})
+            })
             .catch(err => fn.error(err, '/stores/reports', req, res));
         } else {
             req.flash('danger', 'Invalid report');
@@ -92,7 +115,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.post('/stores/reports/3', isLoggedIn, allowed('access_reports'), (req, res) => {
         let selected = []
         for (let [key, line] of Object.entries(req.body.selected)) {
-            if (Number(line) > 0) selected.push({itemsize_id: key, qty: line});
+            if (Number(line) > 0) selected.push({item_size_id: key, qty: line});
         };
         if (selected.length > 0) {
             fn.createOrder(
@@ -109,5 +132,31 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             req.flash('info', 'No items selected');
             res.redirect('/stores/reports/3');
         };
+    });
+
+    app.post('/stores/reports/5', isLoggedIn, allowed('access_reports'), (req, res) => {
+        let actions = [];
+        for (let [key, value] of Object.entries(req.body.corrections)) {
+            if (value) {
+                let stock_id = Number(String(key).replace('stock_id_', ''));
+                actions.push(
+                    fn.adjustStock(
+                        'Count',
+                        stock_id,
+                        Number(value),
+                        req.user.user_id
+                    )
+                );
+            };
+        };
+        Promise.allSettled(actions)
+        .then(results => {
+            req.flash('success', 'Counts actioned');
+            res.redirect('/stores/reports/5');
+        })
+        .catch(err => {
+            req.flash('danger', 'Error actioning some lines, check and try again');
+            res.redirect('/stores/reports/5');
+        });
     });
 };

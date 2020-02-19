@@ -183,7 +183,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             )
             .then(user => {
                 fn.getAllWhere(
-                    m.requests_l,
+                    m.request_lines,
                     where.requests,
                     {
                         include: [
@@ -194,7 +194,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 )
                 .then(requests => {
                     fn.getAllWhere(
-                        m.orders_l,
+                        m.order_lines,
                         where.orders,
                         {
                             include: [
@@ -205,7 +205,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     )
                     .then(orders => {
                         fn.getAllWhere(
-                            m.issues_l,
+                            m.issue_lines,
                             where.issues,
                             {
                                 include: [

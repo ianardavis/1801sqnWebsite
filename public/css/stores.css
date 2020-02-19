@@ -109,6 +109,10 @@ ul, #treeUL {
 }
 .cardRed {
 	background-color: #ffb7b7;
+	color: #131c43;
+}
+.cardRed a{
+	color: #131c43;
 }
 .card a{
 	color: #131c43;

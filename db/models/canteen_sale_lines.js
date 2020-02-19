@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('demands_l', {
-    'line_id': {
+  return sequelize.define('canteen_sale_lines', {
+    'sale_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,14 +10,20 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'demand_id': {
+    'sale_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'itemsize_id': {
+    'item_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
+      comment: "null"
+    },
+    '_price': {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      defaultValue: '0.50',
       comment: "null"
     },
     '_qty': {
@@ -25,23 +31,19 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_status': {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-      comment: "null",
-      defaultValue: 'Pending',
-    },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {
-    tableName: 'demands_l'
+    tableName: 'canteen_sale_lines'
   });
 };

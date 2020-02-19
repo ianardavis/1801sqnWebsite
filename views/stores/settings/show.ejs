@@ -13,11 +13,11 @@
 </section>
 <section>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item active">
+        <li class="nav-item">
             <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="settings" aria-selected="true">Settings</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="options-tab" data-toggle="tab" href="#options" role="tab" aria-controls="options" aria-selected="true">Options</a>
+            <a class="nav-link active" id="options-tab" data-toggle="tab" href="#options" role="tab" aria-controls="options" aria-selected="true">Options</a>
         </li>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -39,92 +39,158 @@
                 </table>
             </div>
         </div>
-        <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
+        <div class="tab-pane fade active show" id="options" role="tabpanel" aria-labelledby="options-tab">
             <ul class="nav nav-tabs" id="optionsTab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" id="ranks-tab" data-toggle="tab" href="#ranks" role="tab" aria-controls="ranks" aria-selected="true">Ranks<% if (permissions.ranks_add) { %><a href="/stores/ranks/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                    <a class="nav-link" id="ranks-tab" data-toggle="tab" href="#ranks" role="tab" aria-controls="ranks" aria-selected="true">Ranks</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="statuses-tab" data-toggle="tab" href="#statuses" role="tab" aria-controls="statuses" aria-selected="true">Statuses<% if (permissions.statuses_add) { %><a href="/stores/statuses/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                    <a class="nav-link" id="statuses-tab" data-toggle="tab" href="#statuses" role="tab" aria-controls="statuses" aria-selected="true">Statuses</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="genders-tab" data-toggle="tab" href="#genders" role="tab" aria-controls="genders" aria-selected="true">Genders<% if (permissions.genders_add) { %><a href="/stores/genders/new"><i class="fas fa-plus-circle"></i></a> <% } %></a>
+                    <a class="nav-link" id="genders-tab" data-toggle="tab" href="#genders" role="tab" aria-controls="genders" aria-selected="true">Genders</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="item-classes-tab" data-toggle="tab" href="#item-classes" role="tab" aria-controls="item-classes" aria-selected="true">Item Classes</a>
                 </li>
             </ul>
             <div class="tab-content pt-3" id="myTabContent">
-                <div class="tab-pane fade show active" id="ranks" role="tabpanel" aria-labelledby="rank-tab">
+                <div class="tab-pane fade" id="ranks" role="tabpanel" aria-labelledby="rank-tab">
                     <div class="container">
-                        <table class="table table-sm table-hover">
-                            <thead class="thead-dark">
-                                <th class="w-100">Rank</th>
-                                <% if (permissions.ranks_delete) { %><th></th><% } %>
-                            </thead>
-                            <tbody>
-                                <% classes.ranks.forEach((rank) => { %>
-                                    <tr>
-                                        <td><a href="/stores/ranks/<%= rank.rank_id %>/edit"><%= rank._rank %></a></td>
-                                        <% if (permissions.ranks_delete) { %>
-                                            <td>
-                                                <form action="/stores/ranks/<%= rank.rank_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete rank?');">
-                                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                </form>
-                                            </td>
-                                        <% } %>
-                                    </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
+                        <div class="row">
+                            <div class="col-12 col-sm-6 mx-auto">
+                                <div class="mb-2">
+                                    <form action='/stores/settings/ranks' method='POST'>
+                                        <input class='form-control' type='text' name='ranks[_rank]' maxlength='10' placeholder='Rank' required>
+                                        <button class="btn btn-sm btn-success w-100 confirm">Add Rank</button>
+                                    </form>
+                                </div>
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-dark">
+                                        <th class="w-100">Rank</th>
+                                        <% if (permissions.ranks_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.ranks_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                    </thead>
+                                    <tbody>
+                                        <% classes.ranks.forEach(rank => { %>
+                                            <tr>
+                                                <% if (permissions.ranks_edit) { %>
+                                                    <form action='/stores/settings/ranks/<%= rank.rank_id %>?_method=PUT' method='POST'>
+                                                        <td>
+                                                            <input class='form-control' type='text' name='ranks[_rank]' maxlength='10' value='<%= rank._rank %>' required>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                        </td>
+                                                    </form>
+                                                <% } else { %>
+                                                    <td><%= rank._rank %></td>
+                                                <% } %>
+                                                <% if (permissions.ranks_delete) { %>
+                                                    <td>
+                                                        <form action="/stores/settings/ranks/<%= rank.rank_id %>?_method=DELETE" method="POST">
+                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                        </form>
+                                                    </td>
+                                                <% } %>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="statuses" role="tabpanel" aria-labelledby="statuses-tab">
                     <div class="container">
-                        <table class="table table-sm table-hover">
-                            <thead class="thead-dark">
-                                <th class="w-100">Status</th>
-                                <% if (permissions.statuses_delete) { %><th></th><% } %>
-                            </thead>
-                            <tbody>
-                                <% classes.statuses.forEach(status => { %>
-                                    <tr>
-                                        <td><a href="/stores/statuses/<%= status.status_id %>/edit?t=statuses"><%= status._status %></a></td>
-                                        <% if (permissions.statuses_delete) { %>
-                                            <td>
-                                                <form action="/stores/statuses/<%= status.status_id %>?_method=DELETE&table=statuses" method="POST" onsubmit="return confirm('Confirm delete status?');">
-                                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                </form>
-                                            </td>
-                                        <% } %>
-                                    </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
+                        <div class="row">
+                            <div class="col-12 col-sm-6 mx-auto">
+                                <div class="mb-2">
+                                    <form action='/stores/settings/statuses' method='POST'>
+                                        <input class='form-control' type='text' name='statuses[_status]' maxlength='10' placeholder='Status' required>
+                                        <button class="btn btn-sm btn-success w-100 confirm">Add Status</button>
+                                    </form>
+                                </div>
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-dark">
+                                        <th class="w-100">Rank</th>
+                                        <% if (permissions.statuses_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.statuses_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                    </thead>
+                                    <tbody>
+                                        <% classes.statuses.forEach(status => { %>
+                                            <tr>
+                                                <% if (permissions.statuses_edit) { %>
+                                                    <form action='/stores/settings/statuses/<%= status.status_id %>?_method=PUT' method='POST'>
+                                                        <td>
+                                                            <input class='form-control' type='text' name='statuses[_status]' maxlength='10' value='<%= status._status %>' required>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                        </td>
+                                                    </form>
+                                                <% } else { %>
+                                                    <td><%= status._status %></td>
+                                                <% } %>
+                                                <% if (permissions.statuses_delete) { %>
+                                                    <td>
+                                                        <form action="/stores/settings/statuses/<%= status.status_id %>?_method=DELETE" method="POST">
+                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                        </form>
+                                                    </td>
+                                                <% } %>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
                     <div class="container">
-                        <table class="table table-sm table-hover">
-                            <thead class="thead-dark">
-                                <th class="w-100">Gender</th>
-                                <% if (permissions.genders_delete) { %><th></th><% } %>
-                            </thead>
-                            <tbody>
-                                <% classes.genders.forEach(gender => { %>
-                                    <tr>
-                                        <td><a href="/stores/genders/<%= gender.gender_id %>/edit?t=genders"><%= gender._gender %></a></td>
-                                        <% if (permissions.genders_delete) { %>
-                                            <td>
-                                                <form action="/stores/genders/<%= gender.gender_id %>?_method=DELETE&table=genders" method="POST" onsubmit="return confirm('Confirm delete gender?');">
-                                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                </form>
-                                            </td>
-                                        <% } %>
-                                    </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
+                        <div class="row">
+                            <div class="col-12 col-sm-6 mx-auto">
+                                <div class="mb-2">
+                                    <form action='/stores/settings/genders' method='POST'>
+                                        <input class='form-control' type='text' name='genders[_gender]' maxlength='10' placeholder='Status' required>
+                                        <button class="btn btn-sm btn-success w-100 confirm">Add Status</button>
+                                    </form>
+                                </div>
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-dark">
+                                        <th class="w-100">Rank</th>
+                                        <% if (permissions.genders_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.genders_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                    </thead>
+                                    <tbody>
+                                        <% classes.genders.forEach(gender => { %>
+                                            <tr>
+                                                <% if (permissions.genders_edit) { %>
+                                                    <form action='/stores/settings/genders/<%= gender.gender_id %>?_method=PUT' method='POST'>
+                                                        <td>
+                                                            <input class='form-control' type='text' name='genders[_gender]' maxlength='10' value='<%= gender._gender %>' required>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                        </td>
+                                                    </form>
+                                                <% } else { %>
+                                                    <td><%= gender._gender %></td>
+                                                <% } %>
+                                                <% if (permissions.genders_delete) { %>
+                                                    <td>
+                                                        <form action="/stores/settings/genders/<%= gender.gender_id %>?_method=DELETE" method="POST">
+                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                        </form>
+                                                    </td>
+                                                <% } %>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="item-classes" role="tabpanel" aria-labelledby="item-classes-tab">
@@ -279,4 +345,15 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/settings.js"></script>
+<script>
+    showTab('<%= showtab %>');
+
+    function showTab(_tab) {
+        let tabHead = document.querySelector('#' + _tab + '-tab'),
+            tabBody = document.querySelector('#' + _tab);
+        tabHead.classList.add('active');
+        tabBody.classList.add('active', 'show');
+
+    };
+</script>
 <% include ../../partials/foot/htmlClose %>

@@ -23,7 +23,7 @@ cn.IssueLine = function (issue_id, item, line) {
     this.issue_id    = issue_id;
     this._line       = line;
     this.nsn_id      = item.nsn_id;
-    this.itemsize_id = item.itemsize_id;
+    this.item_size_id = item.item_size_id;
     this._qty        = item.qty;
     this.stock_id    = item.stock_id;
 };
@@ -58,7 +58,7 @@ cn.Order = function (ordered_for, ordered_by) {
 };
 cn.OrderLine = function (order_id, item) {
     this.order_id    = order_id;
-    this.itemsize_id = item.itemsize_id;
+    this.item_size_id = item.item_size_id;
     this._qty        = item.qty;
 };;
 
@@ -69,7 +69,7 @@ cn.Request = function (requested_by, requested_for) {
 };
 cn.RequestLine = function (request_id, item) {
     this.request_id  = request_id;
-    this.itemsize_id = item.itemsize_id;
+    this.item_size_id = item.item_size_id;
     this._qty        = item.qty;
 };
 cn.RequestStatus = function (line, user_id) {
@@ -95,9 +95,9 @@ cn.Demand = function (supplier_id, user_id) {
     this._complete   = 0;
     this.user_id     = user_id;
 };
-cn.DemandLine = function (demand_id, itemsize_id, qty) {
+cn.DemandLine = function (demand_id, item_size_id, qty) {
     this.demand_id   = demand_id;
-    this.itemsize_id = itemsize_id;
+    this.item_size_id = item_size_id;
     this._qty        = qty;
 };
 

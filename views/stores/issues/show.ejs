@@ -38,16 +38,22 @@
                 <div class='col-sm-4'>
                     <label class='col-form-label'>To:</label>
                 </div>
-                <div class='col-sm-8'>
+                <div class='col-10 col-sm-6'>
                     <input class='form-control' type='text' value='<%= issue._to.rank._rank %> <%= issue._to._name %>, <%= issue._to._ini %>' readonly>
+                </div>
+                <div class="col-2">
+                    <a class='btn btn-primary float-right' href="/stores/users/<%= issue.issued_to %>"><i class='fas fa-search'></i></a>
                 </div>
             </div>
             <div class='row'>
                 <div class='col-sm-4'>
                     <label class='col-form-label'>By:</label>
                 </div>
-                <div class='col-sm-8'>
+                <div class='col-10 col-sm-6'>
                     <input class='form-control' type='text' value='<%= issue._by.rank._rank %> <%= issue._by._name %>, <%= issue._by._ini %>' readonly>
+                </div>
+                <div class="col-2">
+                    <a class='btn btn-primary float-right' href="/stores/users/<%= issue.user_id %>"><i class='fas fa-search'></i></a>
                 </div>
             </div>
             <div class='row'>
@@ -111,20 +117,24 @@
                                     <%= line.item_size.item._description %>
                                 </td>
                                 <td>
-                                    <a class='float-right btn btn-sm btn-primary' href='/stores/item_sizes/<%= line.itemsize_id %>'><i class='fas fa-search'></i></a>
+                                    <a class='float-right btn btn-sm btn-primary' href='/stores/item_sizes/<%= line.item_size_id %>'><i class='fas fa-search'></i></a>
                                     <%= line.item_size._size %>
                                 </td>
                                 <td>
                                     <%= line._qty %>
                                 </td>
                                 <td>
-                                    <a class='float-right btn btn-sm btn-primary' href='/stores/stock/<%= line.stock_id %>/edit'><i class='fas fa-search'></i></a>
-                                    <%= line.stock.location._location %>
+                                    <% if (line.stock) { %>
+                                        <a class='float-right btn btn-sm btn-primary' href='/stores/stock/<%= line.stock_id %>/edit'><i class='fas fa-search'></i></a>
+                                        <%= line.stock.location._location %>
+                                    <% } else { %>
+                                        ?
+                                    <% } %>
                                 </td>
                                 <td>
-                                    <% if (line.returns_l) { %>
-                                        <a class='float-right btn btn-sm btn-primary' href='/stores/stock/<%= line.returns_l.stock_id %>/edit'><i class='fas fa-search'></i></a>
-                                        <%= line.returns_l.stock.location._location %>
+                                    <% if (line.return_line) { %>
+                                        <a class='float-right btn btn-sm btn-primary' href='/stores/stock/<%= line.return_line.stock_id %>/edit'><i class='fas fa-search'></i></a>
+                                        <%= line.return_line.stock.location._location %>
                                     <% } else if (permissions.returns_add) { %>
                                         <select class='form-control form-control-sm' name='returnLines[]'>
                                             <option value='' selected></option>
@@ -137,8 +147,8 @@
                                     <% }; %>
                                 </td>
                                 <td>
-                                    <% if (line.returns_l) { %>
-                                        <%= line.returns_l.return._date.toDateString() %>
+                                    <% if (line.return_line) { %>
+                                        <%= line.return_line.return._date.toDateString() %>
                                     <% }; %>
                                 </td>
                             </tr>

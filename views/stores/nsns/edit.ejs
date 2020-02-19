@@ -18,7 +18,7 @@
 				</a>
             </li>
             <li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/item_sizes/<%= nsn.itemsize_id %>'>
+				<a class='nav-link stores_nav' href='/stores/item_sizes/<%= nsn.item_size_id %>'>
 					Size: <%= nsn.item_size._size %>
 				</a>
             </li>
@@ -36,7 +36,7 @@
 			<h4>NSN</h4>
 			<form action='/stores/nsns/<%= nsn.nsn_id %>?_method=PUT' method='POST''>
 				<input type='hidden' name='nsn[nsn_id]' value='<%= nsn.nsn_id %>' readonly>
-				<input type='hidden' name='itemsize_id' value='<%= nsn.itemsize_id %>' readonly>
+				<input type='hidden' name='item_size_id' value='<%= nsn.item_size_id %>' readonly>
 				<input type='hidden' name='currentDefault' value='<%= nsn.item_size.nsn_id %>' readonly>
 
 				<div class='row'>

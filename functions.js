@@ -1,5 +1,5 @@
 const op = require('sequelize').Op,
-      cn = require('./db/constructors'), 
+      cn = require(process.env.ROOT + '/db/constructors'), 
       se = require("sequelize"),
       fs = require('fs'),
       ex = require('exceljs'),
@@ -43,7 +43,7 @@ module.exports = (fn, m) => {
         .then(result => {
             if (result) resolve(result);
             else if (options.nullOK) resolve(null)
-            else reject(new Error(fn.singularise(table.tableName) + ' not found'));
+            else reject(new Error(fn.singularise(table.tableName, true) + ' not found'));
         })
         .catch(err => reject(err));
     });
@@ -70,7 +70,8 @@ module.exports = (fn, m) => {
         m[table].destroy({where: where})
         .then(result => {
             if (options.hasLines) {
-                m[table + '_l'].destroy({where: where})
+                let line_table = table.substring(0, table.length - 1) + '_lines'
+                m[line_table].destroy({where: where})
                 .then(result_l => {
                     if (!result && !result_l)     resolve({success: 'danger',  message: 'No ' + table + ' or lines deleted'})
                     else if (!result && result_l) resolve({success: 'danger',  message: 'No ' + table + ' deleted, lines deleted'})
@@ -83,13 +84,13 @@ module.exports = (fn, m) => {
         })
         .catch(err => reject(err));
     });
-    fn.getSetting = setting => new Promise((resolve, reject) => {
+    fn.getSetting = (options = {}) => new Promise((resolve, reject) => {
         m.settings.findOrCreate({
-            where: {_name: setting},
-            defaults: {_value: ''}
+            where: {_name: options.setting},
+            defaults: {_value: options.default || ''}
         })
         .then(([f_setting, created]) => {
-            if (created) console.log('Setting created on find: ' + setting);
+            if (created) console.log('Setting created on find: ' + options.setting);
             resolve(f_setting._value);
         })
         .catch(err => {
@@ -104,17 +105,16 @@ module.exports = (fn, m) => {
             {_name: setting},
             true
         )
-        .then(result => {
-            resolve(result);
-        })
+        .then(result => resolve(result))
         .catch(err => {
             console.log(err);
             reject(false);
         });
     });
-    fn.singularise = str => {
+    fn.singularise = (str, capitalise = false) => {
         let string = se.Utils.singularize(str);
-        return fn.capitalise(string);
+        if (capitalise) string = fn.capitalise(string)
+        return string;
     };
     fn.error = (err, redirect, req, res) => {
         console.log(err);
@@ -158,10 +158,20 @@ module.exports = (fn, m) => {
         let include = [m.items];
         if (options.supplier) include.push(m.suppliers);
         if (options.nsns)     include.push(m.nsns);
-        if (options.serials)  include.push(m.serials);
         if (options.stock)    include.push(fn.stock({receipts: options.receipts}));
+        if (options.serials)  {
+            if (options.serials.issued === false) { 
+                include.push(m.serials);
+            } else {
+                include.push({
+                    model: m.serials,
+                    where: {issue_line_id: -1}
+                })
+            }
+        }
         if (options.requests) include.push({
-            model: m.requests_l,
+            model: m.request_lines,
+            as: 'requests',
             where: options.requests,
             required: false,
             include: [{
@@ -170,7 +180,8 @@ module.exports = (fn, m) => {
             }]
         });
         if (options.issues) include.push({
-            model: m.issues_l,
+            model: m.issue_lines,
+            as: 'issues',
             where: options.issues,
             required: false,
             include: [{
@@ -178,8 +189,16 @@ module.exports = (fn, m) => {
                 include: [fn.users('_to')]
             }]
         });
+        if (options.demands) include.push({
+            model: m.demand_lines,
+            as: 'demands',
+            where: options.demands,
+            required: false,
+            include: [m.demands]
+        });
         if (options.orders) include.push({
-            model: m.orders_l,
+            model: m.order_lines,
+            as: 'orders',
             where: options.orders,
             required: false,
             include: [{
@@ -196,34 +215,52 @@ module.exports = (fn, m) => {
         if (options.requests) {
             include.push({
                 model: m.requests,
-                include: [{model: m.requests_l, as: 'lines'}]
+                include: [{model: m.request_lines, as: 'lines'}]
             });
         };
         if (options.orders) {
             include.push({
                 model: m.orders,
-                include: [{model: m.orders_l, as: 'lines'}]
+                include: [{model: m.order_lines, as: 'lines'}]
             });
         };
         if (options.issues) {
             include.push({
                 model: m.issues,
-                include: [{model: m.issues_l, as: 'lines'}]
+                include: [{model: m.issue_lines, as: 'lines'}]
             });
         };
         return include;
     };
     fn.issues_inc = includeLines => {
-        let include = [fn.users('_to'), fn.users('_by')];
+        let include = [
+            fn.users('_to'),
+            fn.users('_by')
+        ];
         if (includeLines) {
             include.push({
-                model: m.issues_l,
+                model: m.issue_lines,
                 as: 'lines',
                 include: [
                     m.nsns,
                     fn.stock({as: 'stock'}),
-                    {model: m.item_sizes, include: fn.itemSize_inc({stock: true})},
-                    {model: m.returns_l, include: [fn.stock({as: 'stock'}), {model: m.returns, include: [fn.users('_from'), fn.users('_by')]}]}
+                    {
+                        model: m.item_sizes,
+                        include: fn.itemSize_inc({stock: true})
+                    },
+                    {
+                        model: m.return_lines,
+                        include: [
+                            fn.stock({as: 'stock'}),
+                            {
+                                model: m.returns,
+                                include: [
+                                    fn.users('_from'),
+                                    fn.users('_by')
+                                ]
+                            }
+                        ]
+                    }
                 ]
             });
         };
@@ -241,7 +278,7 @@ module.exports = (fn, m) => {
             m.locations,
             {model: m.item_sizes, include: [m.items]}
         ];
-        if (options.receipts) include.push({model: m.receipts_l, include: [m.receipts]})
+        if (options.receipts) include.push({model: m.receipt_lines, include: [m.receipts]})
         return {
             model: m.stock,
             as: options.as || 'stocks',
@@ -381,7 +418,7 @@ module.exports = (fn, m) => {
                     checks.push(
                         fn.closeIfNoLines(
                             m.requests,
-                            m.requests_l,
+                            m.request_lines,
                             {request_id: Number(request_id)},
                             { _status: 'Pending'}
                         )
@@ -396,7 +433,7 @@ module.exports = (fn, m) => {
     });
     fn.updateRequestStatus = (line_id, newStatus, user_id) => new Promise((resolve, reject) => {
         fn.update(
-            m.requests_l,
+            m.request_lines,
             new cn.RequestStatus(newStatus, user_id),
             {line_id: line_id},
             true
@@ -427,7 +464,7 @@ module.exports = (fn, m) => {
 
     fn.getUndemandedOrders = supplier_id => new Promise((resolve, reject) => {
         fn.getAllWhere(
-            m.orders_l,
+            m.order_lines,
             {demand_line_id: null},
             {
                 include: [
@@ -451,11 +488,11 @@ module.exports = (fn, m) => {
                 if (order.item_size._demand_page === null || order.item_size._demand_page === '') rejects.push({ line_id: order.line_id, reason: 'page' });
                 else if (order.item_size._demand_cell === null || order.item_size._demand_cell === '') rejects.push({ line_id: order.line_id, reason: 'cell' });
                 else {
-                    let existing = orders.findIndex(e => e.itemsize_id === order.itemsize_id);
+                    let existing = orders.findIndex(e => e.item_size_id === order.item_size_id);
                     if (existing === -1) 
                         orders.push({
                             line_ids: [order.line_id],
-                            itemsize_id: order.itemsize_id,
+                            item_size_id: order.item_size_id,
                             page: order.item_size._demand_page,
                             cell: order.item_size._demand_cell,
                             qty: order._qty
@@ -530,7 +567,7 @@ module.exports = (fn, m) => {
                     cell.value = order.qty;
                     success.push({
                         lines: order.lines,
-                        itemsize_id: order.itemsize_id,
+                        item_size_id: order.item_size_id,
                         qty: order.qty
                     });
                 } catch (err) {
@@ -587,7 +624,7 @@ module.exports = (fn, m) => {
 
     fn.updateOrderLine = (demand_line_id, order_line_id) => new Promise((resolve, reject) => {
         fn.update(
-            m.orders_l,
+            m.order_lines,
             {demand_line_id: demand_line_id},
             {line_id: order_line_id}
         )
@@ -599,13 +636,13 @@ module.exports = (fn, m) => {
         lines.forEach(line => {
             let line_id = Number(JSON.parse(line).line_id);
             fn.update(
-                m.demands_l,
+                m.demand_lines,
                 {_status: 'Cancelled'},
                 {line_id: line_id}
             )
             .then(result1 => {
                 fn.update(
-                    m.orders_l,
+                    m.order_lines,
                     {demand_line_id: null},
                     {demand_line_id: line_id}
                 )
@@ -617,22 +654,22 @@ module.exports = (fn, m) => {
     });
     fn.processDemandLine = line => new Promise((resolve, reject) => {
         fn.getOne(
-            m.demands_l,
+            m.demand_lines,
             { line_id: line.line_id },
             {include: [m.demands], attributes: null, nullOK: false}
         )
-        .then(demands_l => {
-            if (supplier_id === null) supplier_id = demands_l.demand.supplier_id;
-            else if (supplier_id !== demands_l.demand.supplier_id) reject(new Error('Demand contains lines from different suppliers'));
-            if (demand_id === null) demand_id = demands_l.demand_id;
-            else if (demand_id !== demands_l.demand_id) reject(new Error('Demand contains lines from different demands'));
+        .then(demand_lines => {
+            if (supplier_id === null) supplier_id = demand_lines.demand.supplier_id;
+            else if (supplier_id !== demand_lines.demand.supplier_id) reject(new Error('Demand contains lines from different suppliers'));
+            if (demand_id === null) demand_id = demand_lines.demand_id;
+            else if (demand_id !== demand_lines.demand_id) reject(new Error('Demand contains lines from different demands'));
             fn.getAllWhere(
-                m.orders_l,
+                m.order_lines,
                 {demand_line_id: line.line_id},
                 {include: [], nullOk: true, attributes: ['line_id']}
             )
             .then(order_line_ids => {
-                let result = { stock_id: line.stock_id, qty: demands_l._qty, demandLine: line.line_id };
+                let result = { stock_id: line.stock_id, qty: demand_lines._qty, demandLine: line.line_id };
                 if (order_line_ids) result.orderLines = order_line_ids;
                 resolve(result);
             })
@@ -659,14 +696,14 @@ module.exports = (fn, m) => {
                 .then(receipt_id => {
                     fn.closeIfNoLines(
                         m.demands,
-                        m.demands_l,
+                        m.demand_lines,
                         {demand_id: demand_id},
                         {_status: 'Pending'}
                     )
                     .then(result => {
                         if (result[0] === 1) demandClosed = true;
                         fn.getAllWhere(
-                            m.orders_l,
+                            m.order_lines,
                             {
                                 demand_line_id: {[op.not]: null},
                                 issue_line_id: null,
@@ -679,10 +716,10 @@ module.exports = (fn, m) => {
                                 attributes: null
                             }
                         )
-                        .then(orders_l => {
+                        .then(order_lines => {
                             let orderActions = [], orders = [];
-                            orders_l.forEach(line => {
-                                orderActions.push(fn.update(m.orders_l, { issue_line_id: -1 }, { line_id: line.line_id }));
+                            order_lines.forEach(line => {
+                                orderActions.push(fn.update(m.order_lines, { issue_line_id: -1 }, { line_id: line.line_id }));
                                 if (!orders.includes(line.order.order_id)) orders.push(line.order.order_id);
                             });
                             Promise.allSettled(orderActions)
@@ -690,7 +727,7 @@ module.exports = (fn, m) => {
                                 orders.forEach(order_id => {
                                     fn.closeIfNoLines(
                                         m.orders,
-                                        m.orders_l,
+                                        m.order_lines,
                                         {order_id: order_id},
                                         {issue_line_id: null}
                                     )
@@ -838,6 +875,50 @@ module.exports = (fn, m) => {
         }
     };
 
+    fn.adjustStock = (_type, stock_id, qty, user_id) => new Promise((resolve, reject) => {
+        if (String(_type).toLowerCase() === 'count' || String(_type).toLowerCase() === 'scrap') {
+            let adjust = {};
+            adjust.stock_id = stock_id;
+            adjust._type = _type;
+            adjust._qty = qty;
+            adjust._date = Date.now();
+            adjust.user_id = user_id;
+            fn.getOne(
+                m.stock,
+                {stock_id: stock_id}
+            )
+            .then(stock => {
+                adjust._qty_difference = qty - stock._qty;
+                fn.create(
+                    m.adjusts,
+                    adjust
+                )
+                .then(newAdjust => {
+                    if (String(adjust._type).toLowerCase() === 'count') {
+                        fn.update(
+                            m.stock,
+                            {_qty: newAdjust._qty},
+                            {stock_id: newAdjust.stock_id}
+                        )
+                        .then(result => resolve(newAdjust.adjust_id))
+                        .catch(err => reject(err));
+                    } else {
+                        fn.subtractStock(
+                            newAdjust.stock_id,
+                            newAdjust._qty
+                        )
+                        .then(result => resolve(newAdjust.adjust_id))
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        } else {
+            reject(new Error('Invalid adjustment type'));
+        };
+    });
+
     fn.createRequest = (requestFor, lines, user_id) => new Promise((resolve, reject) => {
         let newRequest = new cn.Request(user_id, requestFor);
         fn.create(m.requests, newRequest)
@@ -846,7 +927,7 @@ module.exports = (fn, m) => {
             lines.forEach(line => {
                 if (line) {
                     let newline = new cn.RequestLine(request.request_id, line);
-                    actions.push(fn.create(m.requests_l, newline));
+                    actions.push(fn.create(m.request_lines, newline));
                 };
             });
             if (actions.length > 0) {
@@ -873,7 +954,7 @@ module.exports = (fn, m) => {
             lines.forEach(line => {
                 if (typeof (line) !== 'object') line = JSON.parse(line);
                 if (line.request_line_id) actions.push(fn.createOrderLine(order.order_id, line, user_id));
-                else actions.push(fn.create(m.orders_l, new cn.OrderLine(order.order_id, line)));
+                else actions.push(fn.create(m.order_lines, new cn.OrderLine(order.order_id, line)));
                 order_line();
             });
             if (order_line() === 1) {
@@ -899,16 +980,16 @@ module.exports = (fn, m) => {
     });
     fn.createOrderLine = (order_id, line, user_id) => new Promise((resolve, reject) => {
         fn.create(
-            m.orders_l,
+            m.order_lines,
             new cn.OrderLine(order_id, line)
         )
-        .then(orders_l => {
+        .then(order_lines => {
             fn.updateRequestStatus(
                 line.request_line_id,
                 { _status: line._status, _action: line._action, _id: order_id},
                 user_id
             )
-            .then(result => resolve(orders_l.line_id))
+            .then(result => resolve(order_lines.line_id))
             .catch(err => reject(err));
         })
         .catch(err => reject(err));
@@ -935,23 +1016,23 @@ module.exports = (fn, m) => {
         .catch(err => reject(err));
     });
     fn.createDemandLine = (demand_id, line) => new Promise((resolve, reject) => {
-        let newDemandLine = new cn.DemandLine(demand_id, line.itemsize_id, line.qty);
+        let newDemandLine = new cn.DemandLine(demand_id, line.item_size_id, line.qty);
         fn.create(
-            m.demands_l,
+            m.demand_lines,
             newDemandLine
         )
-        .then(demands_l => {
+        .then(demand_lines => {
             if (line.line_ids) {
                 let order_updates = [];
                 line.line_ids.forEach(line_id => {
-                    order_updates.push(fn.update(m.orders_l, { demand_line_id: demands_l.line_id }, { line_id: line_id }));
+                    order_updates.push(fn.update(m.order_lines, { demand_line_id: demand_lines.line_id }, { line_id: line_id }));
                 });
                 if (order_updates.length > 0) {
                     Promise.allSettled(order_updates)
                     .then(results => resolve(results))
                     .catch(err => reject(err));
                 } else reject(new Error('No line IDs'));
-            } else resolve(demands_l.line_id);
+            } else resolve(demand_lines.line_id);
         })
         .catch(err => reject(err));
     });
@@ -983,22 +1064,22 @@ module.exports = (fn, m) => {
     fn.createReceiptLine = (receipt_id, line) => new Promise((resolve, reject) => {
         let newLine = new cn.ReceiptLine(line.stock_id, line.qty, receipt_id);
         fn.create(
-            m.receipts_l,
+            m.receipt_lines,
             newLine
         )
-        .then(receipts_l => {
+        .then(receipt_lines => {
             let actions = [];
-            if (line.demandLine) actions.push(fn.update(m.demands_l, { _status: 'Received' }, { line_id: line.demandLine }));
+            if (line.demandLine) actions.push(fn.update(m.demand_lines, { _status: 'Received' }, { line_id: line.demandLine }));
             if (line.orderLines) {
                 line.orderLines.forEach(line_id => {
-                    actions.push(fn.update(m.orders_l, { receipt_line_id: receipts_l.line_id }, { line_id: line_id }));
+                    actions.push(fn.update(m.order_lines, { receipt_line_id: receipt_lines.line_id }, { line_id: line_id }));
                 });
             };
             if (actions.length > 0) {
                 Promise.allSettled(actions)
-                .then(results => resolve(receipts_l.line_id))
+                .then(results => resolve(receipt_lines.line_id))
                 .catch(err => reject(err));
-            } else resolve(receipts_l.line_id);
+            } else resolve(receipt_lines.line_id);
         })
         .catch(err => reject(err));
     });
@@ -1038,10 +1119,10 @@ module.exports = (fn, m) => {
     });
     fn.createIssueLine = (issue_id, line, user_id, lineNum) => new Promise((resolve, reject) => {
         fn.create(
-            m.issues_l,
+            m.issue_lines,
             new cn.IssueLine(issue_id, line, lineNum)
         )
-        .then(issues_l => {
+        .then(issue_lines => {
             let actions = [];
             actions.push(fn.subtractStock(line.stock_id, line.qty));
             if (line.request_line_id) {
@@ -1056,17 +1137,17 @@ module.exports = (fn, m) => {
             if (line.order_line_id) {
                 actions.push(
                     fn.update(
-                        m.orders_l,
-                        {issue_line_id: issues_l.line_id},
+                        m.order_lines,
+                        {issue_line_id: issue_lines.line_id},
                         {line_id: line.order_line_id}
                     )
                 );
             };
             if (actions.length > 0) {
                 Promise.allSettled(actions)
-                .then(result => resolve(issues_l.line_id))
+                .then(result => resolve(issue_lines.line_id))
                 .catch(err => reject(err));
-            } else resolve(issues_l.line_id);
+            } else resolve(issue_lines.line_id);
             
         })
         .catch(err => reject(err));
@@ -1110,7 +1191,7 @@ module.exports = (fn, m) => {
                     .then(results => {
                         let checks = [];
                         issueIDs.forEach(issue_id => {
-                            checks.push(fn.closeIfNoLines(m.issues, m.issues_l, { issue_id: issue_id }, { return_line_id: null }));
+                            checks.push(fn.closeIfNoLines(m.issues, m.issue_lines, { issue_id: issue_id }, { return_line_id: null }));
                         });
                         Promise.allSettled(checks)
                         .then(results => resolve(_return.return_id))
@@ -1128,12 +1209,12 @@ module.exports = (fn, m) => {
     fn.createReturnLine = (return_id, line) => new Promise((resolve, reject) => {
         let newLine = new cn.ReturnLine(return_id, line);
         fn.create(
-            m.returns_l,
+            m.return_lines,
             newLine
         )
         .then(return_line => {
             let updateIssue = { return_line_id: return_line.line_id };
-            fn.update(m.issues_l, updateIssue, { line_id: line.line_id })
+            fn.update(m.issue_lines, updateIssue, { line_id: line.line_id })
             .then(result => resolve(result))
             .catch(err => {
                 console.log(err);
@@ -1144,5 +1225,36 @@ module.exports = (fn, m) => {
             console.log(err);
             reject(err);
         });
+    });
+
+    fn.createCanteenSaleLine = (sale_id, lines) => new Promise((resolve, reject) => {
+        let actions = [];
+        for (let [_sale, line] of Object.entries(lines)) {
+            fn.getOne(m.canteen_items, {item_id: line.item_id})
+            .then(item => {
+                actions.push(
+                    fn.create(
+                        m.canteen_sale_lines,
+                        {
+                            sale_id: sale_id,
+                            item_id: line.item_id,
+                            _qty: line.qty,
+                            _cost_each: item._value
+                        }
+                    )
+                );
+                actions.push(fn.subtractCanteenStock(line.item_id, line.qty))
+            })
+            .catch(err => reject(err));
+        };
+        Promise.allSettled(actions)
+        .then(results => resolve(true))
+        .catch(err => reject(err));
+    });
+    fn.subtractCanteenStock = (item_id, qty) => new Promise((resolve, reject) => {
+        m.canteen_items.findByPk(item_id)
+        .then(item => item.decrement('_stock', {by: qty}))
+        .then(item => resolve(item._qty))
+        .catch(err => reject(err));
     });
 };

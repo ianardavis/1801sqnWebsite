@@ -1,7 +1,13 @@
 module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //Edit
     app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('users_permissions'), (req, res) => {
-        if (Number(req.params.id) !== req.user.user_id && Number(req.params.id) !== 1) {
+        if (Number(req.params.id) === req.user.user_id) {
+            req.flash('danger', 'You can not edit your own permissions');
+            res.redirect('/stores/users/' + req.params.id);
+        } else if (Number(req.params.id) === 1) {
+            req.flash('danger', 'You can not edit the Admin user permissions');
+            res.redirect('/stores/users/' + req.params.id);
+        } else {
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
@@ -9,9 +15,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     include: [
                         m.ranks,
                         {model: m.permissions, attributes: {exclude: ['createdAt', 'updatedAt', 'user_id']}}
-                    ],
-                    attributes: null,
-                    nullOK: false
+                    ]
                 }
             )
             .then(user => {
@@ -19,7 +23,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 for (let attribute in m.permissions.rawAttributes) {
                     if (!m.permissions.rawAttributes.hasOwnProperty(attribute)) continue;
                     let obj = m.permissions.rawAttributes[attribute];
-                    if (obj.fieldName !== 'user_id' && obj.fieldName !== 'createdAt' && obj.fieldName !== 'updatedAt') attributes.push(JSON.stringify({name: obj.fieldName, parent: obj.comment}))
+                    if (obj.fieldName !== 'user_id' && obj.fieldName !== 'createdAt' && obj.fieldName !== 'updatedAt') {
+                        attributes.push(JSON.stringify({name: obj.fieldName, parent: obj.comment}))
+                    };
                 };
                 res.render('stores/permissions/edit', {
                     f_user:     user,
@@ -27,9 +33,6 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 });
             })
             .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
-        } else {
-            req.flash('danger', 'You can not edit your own or the Admin user permissions');
-            res.redirect('/stores/users/' + req.params.id);
         };
     });
 

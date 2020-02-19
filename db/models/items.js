@@ -23,7 +23,7 @@ module.exports = function(sequelize, DataTypes) {
     'category_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: '19',
+      defaultValue: '4',
       comment: "null"
     },
     'group_id': {
@@ -49,12 +49,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {

@@ -2,7 +2,7 @@ module.exports = (app, fn, isLoggedIn, m) => {
     //Display Items
     app.get('/stores/itemSearch', isLoggedIn, (req, res) => {
         let callType    = req.query.c || 'issue',
-            supplier_id = Number(req.query.s) || -1,
+            supplier_id = Number(req.query.supplier_id) || -1,
 			include		= [];
         if (callType === 'receipt') {
             include.push({
@@ -97,9 +97,7 @@ module.exports = (app, fn, isLoggedIn, m) => {
                 m.item_sizes,
                 search,
                 {
-                    include: include,
-                    nullOk: false,
-                    attributes: null
+                    include: include
                 }
             )
             .then(item_sizes => {
@@ -111,26 +109,29 @@ module.exports = (app, fn, isLoggedIn, m) => {
                     supplier_id: req.body.supplier_id
                 });
             })
-            .catch(err => fn.error(err, '/stores/itemSearch?c=' + callType, req, res));
+            .catch(err => fn.error(err, '/stores/itemSearch?callType=' + callType, req, res));
         } else {
             req.flash('danger', 'No Item Selected');
-            res.redirect('/stores/itemSearch?c=' + callType + '&s=' + req.body.supplier_id);
+            res.redirect('/stores/itemSearch?callType=' + callType + '&s=' + req.body.supplier_id);
         };
     });
 
     //Display Size
     app.post('/stores/itemSearch/size', isLoggedIn, (req, res) => {
-        let callType = req.body.callType || 'issue';
+        let callType = req.body.callType || 'issue',
+            include_options  = {nsns: true, stock: true, serials: false};
+        if (callType === 'issue') {
+            include_options.serials = {};
+            include_options.serials.issued = false;
+        };
         if (req.body.item_size) {
             fn.getOne(
                 m.item_sizes,
                 {
-                    itemsize_id: req.body.item_size,
+                    item_size_id: req.body.item_size,
                     _issueable: 1
                 },{
-                    include: fn.itemSize_inc({nsns: true, stock: true, serials: true}),
-                    attributes: null,
-                    nullOK: false
+                    include: fn.itemSize_inc(include_options)
                 }                
             )
             .then(item_size => {
@@ -140,10 +141,10 @@ module.exports = (app, fn, isLoggedIn, m) => {
                     supplier_id: req.body.supplier_id
                 });
             })
-            .catch(err => fn.error(err, '/stores/itemSearch?c=' + callType, req, res));
+            .catch(err => fn.error(err, '/stores/itemSearch?callType=' + callType, req, res));
         } else {
             req.flash('danger', 'No Size Selected')
-            res.redirect('/stores/itemSearch/item/' + req.body.item_id + '?c=' + callType + '&s=' + req.body.supplier_id);
+            res.redirect('/stores/itemSearch/item/' + req.body.item_id + '?callType=' + callType + '&supplier_id=' + req.body.supplier_id);
         };
     });
 };

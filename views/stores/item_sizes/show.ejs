@@ -18,7 +18,7 @@
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.itemsize_id %>'>
+                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.item_size_id %>'>
                     Size: <%= item_size._size %>
                 </a>
             </li>
@@ -29,12 +29,12 @@
 	<div class='row'>
 		<div class='col-12 col-lg-4 mb-2 container bordered'>
             <% if (permissions.item_sizes_edit) { %> 
-                <a class='float-left btn btn-success mr-1' href='/stores/item_sizes/<%= item_size.itemsize_id %>/edit'>
+                <a class='float-left btn btn-success mr-1' href='/stores/item_sizes/<%= item_size.item_size_id %>/edit'>
                     <i class='fas fa-pencil-alt'></i>
                 </a>
             <% } %>
             <% if (permissions.item_sizes_delete) { %>
-                <form action='/stores/item_sizes/<%= item_size.itemsize_id %>?_method=DELETE' method='POST'>
+                <form action='/stores/item_sizes/<%= item_size.item_size_id %>?_method=DELETE' method='POST'>
                     <button class='float-left btn btn-danger confirm'>
                         <i class='fas fa-trash-alt'></i>
                     </button>
@@ -63,7 +63,15 @@
                         <label class='col-form-label'>Has Serial #:</label>
                     </div>   
                     <div class='col-7'>
-                        <input id='_has_serial' class='form-control' type='checkbox'<% if (item_size._has_serial) { %> checked<% } %> disabled>
+                        <input id='_serials' class='form-control' type='checkbox'<% if (item_size._serials) { %> checked<% } %> disabled>
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-5' >
+                        <label class='col-form-label'>Has NSNs:</label>
+                    </div>   
+                    <div class='col-7'>
+                        <input id='_serials' class='form-control' type='checkbox'<% if (item_size._nsns) { %> checked<% } %> disabled>
                     </div>
                 </div>
                 <div class='row'>
@@ -101,7 +109,7 @@
         <% if (permissions.access_nsns) {%>
             <div class='col-12 col-lg-4 mb-2 bordered'>
                 <% if (permissions.nsns_add) { %> 
-                    <a class='float-left btn btn-success mb-1' href='/stores/nsns/new?itemsize_id=<%= item_size.itemsize_id %>'>
+                    <a class='float-left btn btn-success mb-1' href='/stores/nsns/new?item_size_id=<%= item_size.item_size_id %>'>
                         <i class='fas fa-plus'></i>
                     </a> 
                 <% } %>
@@ -148,10 +156,10 @@
                 </table>
             </div>
         <% } %>
-        <% if (item_size._has_serial && permissions.access_serials) {%>
+        <% if (item_size._serials && permissions.access_serials) {%>
             <div class='col-12 col-lg-4 mb-2 bordered'>
                 <% if (permissions.serials_add) { %> 
-                    <a class='float-left btn btn-success mb-1' href='/stores/serials/new?itemsize_id=<%= item_size.itemsize_id %>'>
+                    <a class='float-left btn btn-success mb-1' href='/stores/serials/new?item_size_id=<%= item_size.item_size_id %>'>
                         <i class='fas fa-plus'></i>
                     </a> 
                 <% } %>
@@ -194,7 +202,7 @@
         <% if (permissions.access_stock) {%>
             <div class='col-12 col-lg-4 mb-2 bordered'>
                 <% if (permissions.stock_add) { %>
-                    <a class='float-left btn btn-success mb-1' href='/stores/stock/new?itemsize_id=<%= item_size.itemsize_id %>'>
+                    <a class='float-left btn btn-success mb-1' href='/stores/stock/new?item_size_id=<%= item_size.item_size_id %>'>
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
@@ -249,8 +257,8 @@
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='requestTable'>
-                        <% if (item_size.requests_ls) { %>
-                            <% item_size.requests_ls.forEach(request => { %>
+                        <% if (item_size.request_lines) { %>
+                            <% item_size.request_lines.forEach(request => { %>
                                 <tr>
                                     <td>
                                         <%= request.request._for.rank._rank %> <%= request.request._for._name %>, <%= request.request._for._ini %>
@@ -259,7 +267,7 @@
                                         <%= request._qty %>
                                     </td>
                                     <td>
-                                        <a href='/stores/requests/<%= request.request_id %>'>
+                                        <a class='btn btn-sm btn-primary' href='/stores/requests/<%= request.request_id %>'>
                                             <i class='fas fa-search'></i>
                                         </a>
                                     </td>
@@ -283,8 +291,8 @@
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='orderTable'>
-                        <% if (item_size.orders_ls) { %>
-                            <% item_size.orders_ls.forEach(order => { %>
+                        <% if (item_size.order_lines) { %>
+                            <% item_size.order_lines.forEach(order => { %>
                                 <tr>
                                     <td>
                                         <% if (order.order.ordered_for === -1) { %>
@@ -324,8 +332,8 @@
                     <tbody id='receiptTable'>
                         <% if (item_size.stocks) { %>
                             <% item_size.stocks.forEach(stock => { %>
-                                <% if (stock.receipts_ls) { %>
-                                    <% stock.receipts_ls.forEach(receipt => { %>
+                                <% if (stock.receipt_lines) { %>
+                                    <% stock.receipt_lines.forEach(receipt => { %>
                                         <tr>
                                             <td>
                                                 <%= receipt.receipt._date.toDateString() %>
@@ -360,8 +368,8 @@
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='issueTable'>
-                        <% if (item_size.issues_ls) { %>
-                            <% item_size.issues_ls.forEach(issue => { %>
+                        <% if (item_size.issue_lines) { %>
+                            <% item_size.issue_lines.forEach(issue => { %>
                                 <tr>
                                     <td>
                                         <%= issue.issue._to.rank._rank %> <%= issue.issue._to._name %>, <%= issue.issue._to._ini %>
@@ -384,7 +392,7 @@
         <% if (permissions.access_notes) {%>
             <div class='col-8 mb-2 bordered'>
                 <% if (permissions.notes_add) { %> 
-                    <a class='float-left btn btn-success' href='/stores/notes/new?table=item_sizes&id=<%= item_size.itemsize_id %>'>
+                    <a class='float-left btn btn-success' href='/stores/notes/new?table=item_sizes&id=<%= item_size.item_size_id %>'>
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
@@ -396,7 +404,7 @@
 <% include ../../partials/foot/full %>
 <script>
     function filterSelects() {
-        filter(['system'],'/stores/item_sizes/<%= item_size.itemsize_id %>');
+        filter(['system'],'/stores/item_sizes/<%= item_size.item_size_id %>');
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

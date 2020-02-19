@@ -65,19 +65,19 @@
                                                 <% _stock += Number(stock._qty) %>
                                             <% }) %>
                                         <% } %>
-                                        <% if (size.requests_ls && size.requests_ls.length > 0) { %>
-                                            <% size.requests_ls.forEach(request => { %>
+                                        <% if (size.request_lines && size.request_lines.length > 0) { %>
+                                            <% size.request_lines.forEach(request => { %>
                                                 <% _requests += Number(request._qty) %>
                                             <% }) %>
                                         <% } %>
-                                        <% if (size.orders_ls && size.orders_ls.length > 0) { %>
-                                            <% size.orders_ls.forEach(order => { %>
+                                        <% if (size.order_lines && size.order_lines.length > 0) { %>
+                                            <% size.order_lines.forEach(order => { %>
                                                 <% _orders += Number(order._qty) %>
                                             <% }) %>
                                         <% } %>
                                         <tr>
                                             <td>
-                                                <a class="float-right" href="/stores/item_sizes/<%= size.itemsize_id %>"><i class="fas fa-search"></i></a>
+                                                <a class="float-right" href="/stores/item_sizes/<%= size.item_size_id %>"><i class="fas fa-search"></i></a>
                                                 <a href="#"><%= size._size %></a>
                                             </td>
                                             <td <% if (_stock === 0) { %> class="cardRed"<% } %>>
@@ -90,7 +90,7 @@
                                                 <a href="#"><%= _orders %></a>
                                             </td>
                                             <td>
-                                                <input class="form-control form-control-sm" type="number" name="selected[<%= size.itemsize_id %>]" value="0">
+                                                <input class="form-control form-control-sm" type="number" name="selected[<%= size.item_size_id %>]" value="0">
                                             </td>
                                         </tr>
                                     <% }) %>

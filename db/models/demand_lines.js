@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('saved_reports', {
-    'report_id': {
+  return sequelize.define('demand_lines', {
+    'line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,14 +10,25 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    '_name': {
-      type: DataTypes.STRING(20),
+    'demand_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_filename': {
-      type: DataTypes.STRING(1000),
+    'item_size_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
+      comment: "null"
+    },
+    '_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
+    '_status': {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      defaultValue: 'Pending',
       comment: "null"
     },
     'createdAt': {
@@ -31,6 +42,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'saved_reports'
+    tableName: 'demand_lines'
   });
 };

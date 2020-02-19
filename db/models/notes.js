@@ -31,25 +31,25 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "null"
     },
-    'user_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     '_date': {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {

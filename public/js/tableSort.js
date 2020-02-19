@@ -1,8 +1,7 @@
-function sortTable(n, tableName) {
+function sortTable(n, tableName, dir = 'asc') {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById(tableName);
     switching = true;
-    dir = "asc";
     while (switching) {
       switching = false;
       rows = table.rows;

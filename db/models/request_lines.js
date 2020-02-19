@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('requests_l', {
+  return sequelize.define('request_lines', {
     'line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'itemsize_id': {
+    'item_size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -28,8 +28,7 @@ module.exports = function(sequelize, DataTypes) {
     '_status': {
       type: DataTypes.STRING(15),
       allowNull: false,
-      comment: "null",
-      defaultValue: "Pending"
+      comment: "null"
     },
     '_action': {
       type: DataTypes.STRING(15),
@@ -53,15 +52,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {
-    tableName: 'requests_l'
+    tableName: 'request_lines'
   });
 };

@@ -37,7 +37,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
 let m = require('./db/models');
-require('./routes/stores/index')(app, m);
+require('./routes/stores')(app, m);
 require('./routes/site')(app, m);
 require('./config/passport.js')(passport, m);
 

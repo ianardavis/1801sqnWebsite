@@ -29,6 +29,16 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(45),
       allowNull: false,
       comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "null"
+    },
+    'updatedAt': {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "null"
     }
   }, {
     tableName: 'inventories'

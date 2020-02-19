@@ -130,7 +130,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.items,
             {item_id: req.params.id},
-            {include: include, attributes: null, nullOK: false}
+            {include: include}
         )
         .then(item => {
             item.item_sizes.forEach(item_size => item_size.locationStock = fn.summer(item_size.stocks));

@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('item_sizes', {
-    'itemsize_id': {
+    'item_size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -20,17 +20,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'supplier_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      defaultValue: '3',
-      comment: "null"
-    },
-    '_ordering_details': {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-      comment: "null"
-    },
     '_orderable': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
@@ -43,12 +32,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '1',
       comment: "null"
     },
-    '_has_serial': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "null"
-    },
     '_demand_page': {
       type: DataTypes.STRING(20),
       allowNull: true,
@@ -59,7 +42,29 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
+    '_ordering_details': {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+      comment: "null"
+    },
+    '_serials': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "null"
+    },
+    '_nsns': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '1',
+      comment: "null"
+    },
     'nsn_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'supplier_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"

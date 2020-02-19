@@ -2,7 +2,7 @@ module.exports = (passport, m) => {
     var bCrypt = require('bcrypt'),
         local  = require('passport-local').Strategy,
         fn     = {};
-        require('../functions')(fn, m);
+        require(process.env.ROOT + '/functions')(fn, m);
 
     passport.serializeUser((user, done) => done(null, user._login_id));
 
@@ -10,7 +10,7 @@ module.exports = (passport, m) => {
         fn.getOne(
             m.users,
             {_login_id: _login_id},
-            {include: [], attributes: ['_login_id', 'user_id', '_reset'], nullOK: false}
+            {attributes: ['_login_id', 'user_id', '_reset']}
         )
         .then(user => {
             done(null, user.get());
@@ -33,7 +33,7 @@ module.exports = (passport, m) => {
             fn.getOne(
                 m.users,
                 {_login_id: _login_id},
-                {include: [m.permissions], attributes: ['_login_id', 'user_id', '_reset', '_password'], nullOK: false}
+                {include: [m.permissions], attributes: ['_login_id', 'user_id', '_reset', '_password']}
             )
             .then(user => {
                 if (!user) {
@@ -45,7 +45,6 @@ module.exports = (passport, m) => {
                     );
                 } else if (!isValidPassword(user._password, _password)) {
                     req.flash('danger', 'Invalid username or password!');
-                    console.log(user, _login_id);
                     return done(
                         null, 
                         false, 

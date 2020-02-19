@@ -1,6 +1,6 @@
 function addSize(item) {
     let selectedList = document.querySelector('#selectedItems'),
-        existingID   = document.querySelector('#id-' + item.itemsize_id);
+        existingID   = document.querySelector('#id-' + item.item_size_id);
     if (typeof(existingID) === 'undefined' || existingID !== null) {
         return 'Item/Size already added!'
     } else {

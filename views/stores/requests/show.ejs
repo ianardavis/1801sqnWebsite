@@ -39,7 +39,7 @@
 					<p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
 				</div>
 				<div class="col-sm-1">
-					<a class='float-right btn btn-primary' href="/users/<%= request._for.user_id %>"><i class='fas fa-search'></i></a>
+					<a class='float-right btn btn-primary' href="/stores/users/<%= request._for.user_id %>"><i class='fas fa-search'></i></a>
 				</div>
 			</div>
 			<div class="row">
@@ -50,7 +50,7 @@
 					<p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
 				</div>
 				<div class="col-sm-1">
-					<a class='float-right btn btn-primary' href="/users/<%= request._by.user_id %>"><i class='fas fa-search'></i></a>
+					<a class='float-right btn btn-primary' href="/stores/users/<%= request._by.user_id %>"><i class='fas fa-search'></i></a>
 				</div>
 			</div>
 			<div class="row">
@@ -108,7 +108,7 @@
 										<%= line.item_size.item._description %>
 									</td>
 									<td>
-										<a class='float-right btn btn-sm btn-primary' href="/stores/item_sizes/<%= line.itemsize_id %>">
+										<a class='float-right btn btn-sm btn-primary' href="/stores/item_sizes/<%= line.item_size_id %>">
 											<i class='fas fa-search'></i>
 										</a class='float-right btn btn-sm btn-primary'>
 										<%= line.item_size._size %>
@@ -133,13 +133,13 @@
 												<option value="" selected></option>
 												<% if (line.item_size.stocks) { %>
 													<% line.item_size.stocks.forEach(stock => { %>
-														<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>, "stock_id": <%= stock.stock_id %>}'>
+														<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Issue", "qty": <%= line._qty %>, "item_size_id": <%= line.item_size_id %>, "stock_id": <%= stock.stock_id %>}'>
 															Issue from: <%= stock.location._location %>
 														</option>
 													<% }); %>
 												<% }; %>
 												<% if (line.item_size._orderable) { %>
-													<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Order", "qty": <%= line._qty %>, "itemsize_id": <%= line.itemsize_id %>}'>Order</option>
+													<option value='{"request_line_id": <%= line.line_id %>, "request_id": <%= request.request_id %>, "_status": "Approved", "_action": "Order", "qty": <%= line._qty %>, "item_size_id": <%= line.item_size_id %>}'>Order</option>
 												<% }; %>
 											</select>
 										<% } else if (line._date) { %>

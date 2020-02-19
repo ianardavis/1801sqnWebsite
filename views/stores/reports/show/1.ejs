@@ -29,19 +29,19 @@
                     <% stock.forEach(item => { %>
                         <tr>
                             <td>
-                                <a class="float-right" href="/stores/items/<%= item.item_size.item_id %>"><i class="fas fa-search"></i></a>
-                                <a href="#"><%= item.item_size.item._description %></a>
+                                <a class="btn btn-sm btn-primary float-right" href="/stores/items/<%= item.item_size.item_id %>"><i class="fas fa-search"></i></a>
+                                <%= item.item_size.item._description %>
                             </td>
                             <td>
-                                <a class="float-right" href="/stores/item_sizes/<%= item.itemsize_id %>"><i class="fas fa-search"></i></a>
-                                <a href="#"><%= item.item_size._size %></a>
+                                <a class="btn btn-sm btn-primary float-right" href="/stores/item_sizes/<%= item.item_size_id %>"><i class="fas fa-search"></i></a>
+                                <%= item.item_size._size %>
                             </td>
                             <td>
-                                <a class="float-right" href="/stores/stock/<%= item.stock_id %>/edit"><i class="fas fa-search"></i></a>
-                                <a href="#"><%= item.location._location %></a>
+                                <a class="btn btn-sm btn-primary float-right" href="/stores/stock/<%= item.stock_id %>/edit"><i class="fas fa-search"></i></a>
+                                <%= item.location._location %>
                             </td>
                             <td>
-                                <a href="#"><%= item._qty %></a></td>
+                                <%= item._qty %></a>
                             <td>
                                 <a class="btn btn-sm btn-primary" href="/stores/adjusts/new?stock_id=<%= item.stock_id %>&adjustType=Count">
                                     <i class="fas fa-pencil-alt"></i>

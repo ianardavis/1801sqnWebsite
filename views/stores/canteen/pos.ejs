@@ -1,0 +1,218 @@
+<% include ../../partials/head/head %>
+<body>
+<% include ../../partials/head/flash %>
+<section id='body'>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>
+                    Stores
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/canteen'>
+                    Canteen
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/canteen/pos'>
+                    Point of Sale
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/canteen/pos'>
+                    Sale: <%= sale_id %>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+	<div class='row'>
+		<div class="col-6 col-lg-8 bordered">
+            <div class="menu row">
+                <% items.forEach(item => { %>
+                    <% if (item.item_id !== 0 || permissions.canteen_supervisor) { %>
+                        <div class="col-6 col-xl-3">
+                            <div class="card">
+                                <form action="/stores/canteen/sale_lines" method='POST'>
+                                    <div class="card-header py-1">
+                                        <h3><%= item._name %></h3>
+                                        <p class="card-subtitle text-left text-muted">
+                                            <% if (item.item_id !== 0) { %>
+                                                £<%= item._price %>
+                                            <% } %>
+                                        </p>
+                                    </div>
+                                    <div class="card-body pt-1">
+                                        <input type="hidden" name='sale_line[sale_id]' value='<%= sale_id %>'>
+                                        <input type="hidden" name='sale_line[item_id]' value='<%= item.item_id %>'>
+                                        <p>
+                                            <% if (item.item_id !== 0) { %>
+                                                Qty: <input class='form-control' type="number" name='sale_line[_qty]' value='1' required>
+                                            <% } else { %>
+                                                <input type="hidden" name='sale_line[_qty]' value='1' required>
+                                                <input class='form-control' type="number" name='sale_line[_price]' value='' required>
+                                            <% } %>
+                                        </p>
+                                        <button class='btn btn-lg btn-success w-100'>Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }) %>
+            </div>
+        </div>
+        <div class="col-6 col-lg-4 bordered">
+            <div class="row mb-2">
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(7)">7</a>
+                </div>
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(8)">8</a>
+                </div>
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(9)">9</a>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(4)">4</a>
+                </div>
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(5)">5</a>
+                </div>
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(6)">6</a>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(1)">1</a>
+                </div>
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(2)">2</a>
+                </div>
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(3)">3</a>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-4">
+                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(0)">0</a>
+                </div>
+                <div class="col-4">
+                    <a class='btn btn-lg btn-warning w-100' href="javascript:backspace()"><i class='fas fa-backspace'></i></a>
+                </div>
+                <div class="col-4">
+                    <a class='btn btn-lg btn-danger w-100 confirm' href="javascript:cancelSale()">Cancel</a>
+                </div>
+            </div>
+            <form action="/stores/canteen/sales/<%= sale_id %>?_method=PUT" method="POST">
+                <button class='btn btn-lg btn-success w-100 confirm mb-2'>Pay</button>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <label class="col-form-label">Total (£)</label>
+                    </div>
+                    <div class="col-6">
+                        <input id="_total" class="form-control" type="text" name='sale[total]' readonly required>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <label class="col-form-label">Tendered (£)</label>
+                    </div>
+                    <div class="col-6">
+                        <input id="_tendered" class="form-control" type="number" step='0.01' name='sale[tendered]' required>
+                    </div>
+                </div>
+            </form>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-25" onclick="sortTable(0, 'selectedItems')">Item</th>
+                    <th class="w-25" onclick="sortTable(1, 'selectedItems')">£/Each</th>
+                    <th class="w-10" onclick="sortTable(2, 'selectedItems')">Qty</th>
+                    <th class="w-65" onclick="sortTable(3, 'selectedItems')">£/Total</th>
+                    <th><i class='fas fa-minus'></i></th>
+                    <th><i class='fas fa-plus'></i></th>
+                </thead>
+                <tbody id="selectedItems">
+                    <% let total = 0.0; %>
+                    <% sale_items.forEach(item => { %>
+                        <% total += Number(Number(item._price) * Number(item._qty)); %>
+                        <tr>
+                            <td>
+                                <%= item.item._name %>
+                            </td>
+                            <td>
+                                <%= item._price %>
+                            </td>
+                            <td>
+                                <%= item._qty %>
+                            </td>
+                            <td>
+                                <%= Number(item._price * item._qty).toFixed(2) %>
+                            </td>
+                            <td>
+                                <form action="/stores/canteen/sale_lines?_method=PUT" method='POST'>
+                                    <input type="hidden" name='sale_line[sale_line_id]' value='<%= item.sale_line_id %>'>
+                                    <input type="hidden" name='sale_line[_qty]' value='-1'>
+                                    <button class='btn btn-danger'><i class='fas fa-minus'></i></button>
+                                </form>
+                            </td>
+                            <td>
+                                <form action="/stores/canteen/sale_lines?_method=PUT" method='POST'>
+                                    <input type="hidden" name='sale_line[sale_line_id]' value='<%= item.sale_line_id %>'>
+                                    <input type="hidden" name='sale_line[_qty]' value='1'>
+                                    <button class='btn btn-success'><i class='fas fa-plus'></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<script>
+    let items = {}, selected = {},
+        _total = document.querySelector('#_total');
+    if (<%= total %> === 0.0) {
+        _total.value = '';
+    } else {
+        _total.value = Number(<%= total %>).toFixed(2);
+    };
+
+    function cancelSale() {
+        selected = {};
+        let tendered = document.querySelector('#_tendered');
+        tendered.value = '';
+        showSelected();
+    };
+    function numberBtn(num) {
+        let tendered = document.querySelector('#_tendered'),
+            amt = Number(String(tendered.value).replace('.', '').replace('£', ''));
+        if (amt === 0) {
+            amt = String(num);
+        } else {
+            amt += String(num);
+        };
+        set_tendered(amt);
+    };
+    function backspace() {
+        let tendered = document.querySelector('#_tendered'),
+            amt = Number(String(tendered.value).replace('.', ''));
+            amt = String(amt);
+        set_tendered(amt.substring(0, amt.length - 1))
+    };
+    function set_tendered(amt) {
+        amt = String(amt).padStart(3, '0');
+        amt = amt.substring(0, amt.length - 2) + "." + amt.substring(amt.length - 2);
+        let tendered = document.querySelector('#_tendered');
+        tendered.value = amt;
+    };
+</script>
+<% include ../../partials/foot/htmlClose %>

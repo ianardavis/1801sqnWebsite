@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'itemsize_id': {
+    'item_size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -28,12 +28,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {

@@ -52,7 +52,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 fn.getOne(
                     check_table,
                     JSON.parse(req.body.where),
-                    {include: [], attributes: null, nullOK: true}
+                    {nullOK: true}
                 )
                 .then(result => {
                     if (result) fn.error(new Error('Can not delete ' + table_s + ' whilst it has sub options'), '/stores/settings', req, res);

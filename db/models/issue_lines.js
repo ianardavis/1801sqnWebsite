@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('issues_l', {
+  return sequelize.define('issue_lines', {
     'line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -17,15 +17,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     '_line': {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
+      allowNull: false,
       comment: "null"
     },
-    'nsn_id': {
+    'item_size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'itemsize_id': {
+    'nsn_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -52,15 +52,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {
-    tableName: 'issues_l'
+    tableName: 'issue_lines'
   });
 };

@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'group_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
+      allowNull: false,
       comment: "null"
     },
     '_type': {
@@ -22,12 +22,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {

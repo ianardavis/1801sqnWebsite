@@ -23,7 +23,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
     function createStock(stock, req, res) {
         fn.create(m.stock,stock)
-        .then(stock => res.redirect('/stores/item_sizes/' + stock.itemsize_id))
+        .then(stock => res.redirect('/stores/item_sizes/' + stock.item_size_id))
         .catch(err => fn.error(err, '/stores/items', req, res));;
     };
 
@@ -31,7 +31,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/stock/new', isLoggedIn, allowed('stock_add'), (req, res) => {
         fn.getOne(
             m.item_sizes,
-            {itemsize_id: req.query.itemsize_id},
+            {item_size_id: req.query.item_size_id},
             {include: fn.itemSize_inc()}
         )
         .then(item => res.render('stores/stock/new', {item: item}))
@@ -47,9 +47,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 include: [
                     {model: m.item_sizes, include: [m.items]},
                     {model: m.adjusts,    include: [fn.users()]},
-                    {model: m.receipts_l, include: [{model: m.receipts, include: [fn.users()]}]},
-                    {model: m.issues_l,   include: [{model: m.issues,   include: [fn.users('_to')]}]},
-                    {model: m.returns_l,  include: [{model: m.returns,  include: [fn.users('_from')]}]},
+                    {model: m.receipt_lines, include: [{model: m.receipts, include: [fn.users()]}]},
+                    {model: m.issue_lines,   include: [{model: m.issues,   include: [fn.users('_to')]}]},
+                    {model: m.return_lines,  include: [{model: m.returns,  include: [fn.users('_from')]}]},
                     m.locations
                 ]
             }
@@ -69,17 +69,51 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     // Put
     app.put('/stores/stock/:id', isLoggedIn, allowed('stock_edit'), (req, res) => {
+        fn.getOne(
+            m.stock,
+            {stock_id: req.params.id}
+        )
+        .then(stock => {
+            fn.getOne(
+                m.locations,
+                {_location: req.body._location}
+            )
+            .then(location => {
+                if (location) {
+                    if (Number(location.location_id) !== Number(stock.location_id)) {
+                        updateStockLocation(stock.item_size_id, location.location_id, req, res)
+                    } else {
+                        req.flash('info', 'No changes')
+                        res.redirect('/stores/item_sizes/' + stock.item_size_id)
+                    };
+                } else {
+                    fn.create(
+                        m.locations,
+                        {_location: req.body._location}
+                    )
+                    .then(new_location => {
+                        updateStockLocation(stock.item_size_id, new_location.location_id, req, res)
+                    })
+                    .catch(err => fn.error(err, '/stores/item_sizes/' + stock.item_size_id, req, res));
+                };
+            })
+            .catch(err => fn.error(err, '/stores/item_sizes/' + stock.item_size_id, req, res));
+        })
+        .catch(err => fn.error(err, '/stores/items', req, res));
+        
+    });
+    function updateStockLocation(item_size_id, location_id, req, res) {
         fn.update(
             m.stock,
-            req.body.stock,
+            {location_id: location_id},
             {stock_id: req.params.id}
         )
         .then(result => {
             req.flash('success', 'Stock updated');
-            res.redirect('back')
+            res.redirect('/stores/item_sizes/' + item_size_id)
         })
-        .catch(err => fn.error(err, 'back', req, res));
-    });
+        .catch(err => fn.error(err, '/stores/item_sizes/' + item_size_id, req, res));
+    };
 
     // Delete
     app.delete('/stores/stock/:id', isLoggedIn, allowed('stock_delete'), (req, res) => {
@@ -95,12 +129,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 )
                 .then(result => {
                     if (result) req.flash('success', 'Stock deleted')
-                    res.redirect('/stores/item_sizes/' + stock.itemsize_id)
+                    res.redirect('/stores/item_sizes/' + stock.item_size_id)
                 })
                 .catch(err => fn.error(err, '/stores/items', req, res));
             } else {
                 req.flash('danger', 'Cannot delete stock!');
-                res.redirect('/stores/item_sizes/' + stock.itemsize_id);
+                res.redirect('/stores/item_sizes/' + stock.item_size_id);
             };
         })
         .catch(err => fn.error(err, '/stores/items', req, res));

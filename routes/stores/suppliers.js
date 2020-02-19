@@ -8,7 +8,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {include: [m.item_sizes]}
         )
         .then(suppliers => {
-            fn.getSetting('default_supplier')
+            fn.getSetting({setting: 'default_supplier', default: -1})
             .then(defaultSupplier => res.render('stores/suppliers/index', {suppliers: suppliers, _default: defaultSupplier}))
             .catch(err => fn.error(err, '/stores', req, res));
         })
@@ -44,7 +44,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     // Edit
     app.get('/stores/suppliers/:id/edit', isLoggedIn, allowed('suppliers_edit'), (req, res) => {
-        fn.getSetting('default_supplier')
+        fn.getSetting({setting: 'default_supplier', default: -1})
         .then(defaultSupplier => {
             fn.getOne(m.suppliers, {supplier_id: req.params.id})
             .then(supplier => res.render('stores/suppliers/edit', {supplier: supplier, _default: defaultSupplier}))
@@ -76,7 +76,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 {supplier_id: req.params.id}
             )
             .then(result => {
-                fn.getSetting('default_supplier')
+                fn.getSetting({setting: 'default_supplier', default: -1})
                 .then(defaultSupplier => {
                     if (Number(defaultSupplier) === Number(req.params.id)) {
                         setDefault('', req, res);
@@ -100,7 +100,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 m.files,
                 m.inventories,
                 {model: m.item_sizes, include: [m.items]},
-                {model: m.receipts,   include: [fn.users(), {model: m.receipts_l, as: 'lines'}]}
+                {model: m.receipts,   include: [fn.users(), {model: m.receipt_lines, as: 'lines'}]}
             ]}
         )
         .then(supplier => {

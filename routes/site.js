@@ -1,5 +1,5 @@
 const   passport = require('passport'),
-        mw       = require('../config/middleware');
+        mw       = require(process.env.ROOT + '/config/middleware');
 
 module.exports = (app, m) => {
     app.get("/", (req, res) => {

@@ -29,21 +29,13 @@ module.exports = function(sequelize, DataTypes) {
     'rank_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "null",
-      references: {
-        model: 'ranks',
-        key: 'rank_id'
-      }
+      comment: "null"
     },
     'status_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       defaultValue: '12',
-      comment: "null",
-      references: {
-        model: 'statuses',
-        key: 'status_id'
-      }
+      comment: "null"
     },
     '_login_id': {
       type: DataTypes.STRING(30),
@@ -74,12 +66,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {

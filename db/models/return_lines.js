@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('returns_l', {
+  return sequelize.define('return_lines', {
     'line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -27,15 +27,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {
-    tableName: 'returns_l'
+    tableName: 'return_lines'
   });
 };

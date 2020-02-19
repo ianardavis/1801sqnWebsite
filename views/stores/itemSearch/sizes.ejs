@@ -13,7 +13,7 @@
             <select class='form-control w-100' name='item_size' id='sizesTable' type='text' size='15'>
                 <option value=''></option>
                 <% item_sizes.forEach(item_size => { %>
-                    <option value='<%= item_size.itemsize_id %>'><%= item_size._size %></option>
+                    <option value='<%= item_size.item_size_id %>'><%= item_size._size %></option>
                 <% }); %>
             </select>
             <button class='btn btn-success w-100'>Select</button>
@@ -26,7 +26,7 @@
         <% }; %>
     </div>
     <div class='col-12 mb-2'>
-        <a class='btn btn-primary w-100' href='/stores/itemSearch?c=<%= callType %>&s=<%= supplier_id %>'>Back</a>
+        <a class='btn btn-primary w-100' href='/stores/itemSearch?callType=<%= callType %>&supplier_id=<%= supplier_id %>'>Back</a>
     </div>
     <div class='col-12 mb-2'>
         <a class='btn btn-danger w-100' href='javascript:close()'>Finished Adding Items</a>

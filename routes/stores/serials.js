@@ -7,20 +7,20 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         )
         .then(serial => {
             req.flash('success', 'Serial added')
-            res.redirect('/stores/item_sizes/' + serial.itemsize_id);
+            res.redirect('/stores/item_sizes/' + serial.item_size_id);
         })
-        .catch(err => fn.error(err, '/stores/item_sizes/' + req.body.serial.itemsize_id, req, res));
+        .catch(err => fn.error(err, '/stores/item_sizes/' + req.body.serial.item_size_id, req, res));
     });
 
     // New Form
     app.get('/stores/serials/new', isLoggedIn, allowed('serials_add'), (req, res) => {
         fn.getOne(
             m.item_sizes,
-            {itemsize_id: req.query.itemsize_id},
+            {item_size_id: req.query.item_size_id},
             {include: fn.itemSize_inc()}
         )
         .then(itemsize => res.render('stores/serials/new', {itemsize: itemsize}))
-        .catch(err => fn.error(err, '/stores/item_sizes/' + req.query.itemsize_id, req, res));
+        .catch(err => fn.error(err, '/stores/item_sizes/' + req.query.item_size_id, req, res));
     });
 
     // Edit
@@ -51,9 +51,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         )
         .then(result => {
             req.flash('success', 'Serial updated');
-            res.redirect('/stores/item_sizes/' + serial.itemsize_id);
+            res.redirect('/stores/item_sizes/' + serial.item_size_id);
         })
-        .catch(err => fn.error(err, '/stores/item_sizes/' + serial.itemsize_id, req, res));
+        .catch(err => fn.error(err, '/stores/item_sizes/' + serial.item_size_id, req, res));
     });
     // Delete
     app.delete('/stores/serials/:id', isLoggedIn, allowed('serials_delete'), (req, res) => {

@@ -18,31 +18,30 @@
     <div class="container">
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
-                <th class="w-10" onclick="sortTable(0, 'tableIssues')">ID</th>
-                <th class="w-20" onclick="sortTable(1, 'tableIssues')">To</th>
-                <th class="w-30" onclick="sortTable(2, 'tableIssues')">Date Issued</th>
-                <th class="w-30" onclick="sortTable(3, 'tableIssues')">Date Due</th>
-                <th class="w-10" onclick="sortTable(4, 'tableIssues')">Lines</th>
+                <th class="w-30" onclick="sortTable(0, 'tableIssues')">To</th>
+                <th class="w-30" onclick="sortTable(1, 'tableIssues')">Date Issued</th>
+                <th class="w-30" onclick="sortTable(2, 'tableIssues')">Date Due</th>
+                <th class="w-10" onclick="sortTable(3, 'tableIssues')">Lines</th>
+                <th><i class='fas fa-search'></i></th>
             </thead>
             <tbody id="tableIssues">
                 <% if (issues) { %>
                     <% issues.forEach(issue => { %>
                         <tr>
                             <td>
-                                <a class="float-right" href="/stores/issues/<%= issue.issue_id %>"><i class="fas fa-search"></i></a>
-                                <a href="#"><%= issue.issue_id %></a>
-                            </td>
-                            <td>
-                                <a class="float-right" href="/stores/users/<%= issue.issued_to %>"><i class="fas fa-search"></i></a>
-                                <a href="#"><%= issue._for.rank._rank %> <%= issue._for._name %>, <%= issue._for._ini %></a>
+                                <a class="btn btn-sm btn-primary float-right" href="/stores/users/<%= issue.issued_to %>"><i class="fas fa-search"></i></a>
+                                <%= issue._to.rank._rank %> <%= issue._to._name %>, <%= issue._to._ini %>
                             </td>
                             <td data-sort="<%= issue._date.getTime() %>">
-                                <a href="#"><%= issue._date.toDateString() %></a>
+                                <%= issue._date.toDateString() %>
                             </td>
                             <td data-sort="<%= issue._date_due.getTime() %>">
-                                <a href="#"><%= issue._date_due.toDateString() %></a>
+                                <%= issue._date_due.toDateString() %>
                             </td>
-                            <td><a href="#"><%= issue.lines.length %></a></td>
+                            <td><%= issue.lines.length %></td>
+                            <td>
+                                <a class="btn btn-sm btn-primary" href="/stores/issues/<%= issue.issue_id %>"><i class="fas fa-search"></i></a>
+                            </td>
                         </tr>
                     <% }) %>
                 <% } %>

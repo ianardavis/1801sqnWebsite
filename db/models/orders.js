@@ -24,8 +24,8 @@ module.exports = function(sequelize, DataTypes) {
     '_complete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
-      comment: "null",
-      defaultValue: '0'
+      defaultValue: '0',
+      comment: "null"
     },
     'user_id': {
       type: DataTypes.INTEGER(11),

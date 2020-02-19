@@ -17,7 +17,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     fn.users(),
                     m.suppliers,
                     {
-                        model: m.demands_l,
+                        model: m.demand_lines,
                         as: 'lines'
                     }
                 ]
@@ -122,7 +122,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.users(),
             m.suppliers,
             {
-                model: m.demands_l,
+                model: m.demand_lines,
                 as: 'lines',
                 include: [{
                     model: m.item_sizes,

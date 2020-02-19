@@ -16,44 +16,57 @@
 </section>
 <section class="mb-2">
     <div class="container">
-        <div class="row">
-            <% locations.forEach(location => { %>
+        <form action="/stores/reports/5" method="POST">
+            <div class="row">
                 <div class="col-12">
-                    <a class="my-3" data-toggle="collapse" href="#collapse<%= location.location_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= location.location_id %>">
-                        <h5 class="text-left"><%= location._location %></h5>
-                    </a>
-                    <div class="collapse mb-3" id="collapse<%= location.location_id %>">
-                        <a class="float-left" href="/stores/locations/<%= location.location_id %>"><i class="fas fa-search"></i></a>
-                        <table class="table table-sm table-hover">
-                            <thead class="thead-dark">
-                                <th class="w-40" onclick="sortTable(0, 'table<%= location.location_id %>')">Item</th>
-                                <th class="w-40" onclick="sortTable(1, 'table<%= location.location_id %>')">Size</th>
-                                <th class="w-10" onclick="sortTable(2, 'table<%= location.location_id %>')">Stock</th>
-                            </thead>
-                            <tbody id="table<%= location.location_id %>"> 
-                                <% if (location.stocks && location.stocks.length > 0) { %>
-                                    <% location.stocks.forEach(_stock => { %>
-                                        <tr>
-                                            <td>
-                                                <a class="float-right" href="/stores/items/<%= _stock.item_size.item.item_id %>"><i class="fas fa-search"></i></a>
-                                                <a href="#"><%= _stock.item_size.item._description %></a>
-                                            </td>
-                                            <td>
-                                                <a class="float-right" href="/stores/item_sizes/<%= _stock.itemsize_id %>"><i class="fas fa-search"></i></a>
-                                                <a href="#"><%= _stock.item_size._size %></a>
-                                            </td>
-                                            <td <% if (_stock._qty >= 0) { %> class="cardRed"<% } %>>
-                                                <a href="#"><%= _stock._qty %></a>
-                                            </td>
-                                        </tr>
-                                    <% }) %>
-                                <% } %>
-                            </tbody>
-                        </table>
-                    </div>
+                    <input class="btn btn-success w-100" type="submit" value="Update Stock">
                 </div>
-            <% }) %>
-        </div>
+                <% locations.forEach(location => { %>
+                    <div class="col-12">
+                        <a class="my-3" data-toggle="collapse" href="#collapse<%= location.location_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= location.location_id %>">
+                            <h5 class="text-left"><%= location._location %></h5>
+                        </a>
+                        <div class="collapse mb-3" id="collapse<%= location.location_id %>">
+                            <a class="float-left" href="/stores/locations/<%= location.location_id %>"><i class="fas fa-search"></i></a>
+                            <table class="table table-sm table-hover">
+                                <thead class="thead-dark">
+                                    <th class="w-40" onclick="sortTable(0, 'table<%= location.location_id %>')">Item</th>
+                                    <th class="w-40" onclick="sortTable(1, 'table<%= location.location_id %>')">Size</th>
+                                    <th class="w-10" onclick="sortTable(2, 'table<%= location.location_id %>')">Stock</th>
+                                    <th class="w-10">Stock if Different</th>
+                                </thead>
+                                <tbody id="table<%= location.location_id %>"> 
+                                    <% if (location.stocks && location.stocks.length > 0) { %>
+                                        <% location.stocks.forEach(_stock => { %>
+                                            <tr>
+                                                <td>
+                                                    <a class="btn btn-sm btn-primary float-right" href="/stores/items/<%= _stock.item_size.item.item_id %>">
+                                                        <i class="fas fa-search"></i>
+                                                    </a>
+                                                    <%= _stock.item_size.item._description %>
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-sm btn-primary float-right" href="/stores/item_sizes/<%= _stock.item_size_id %>">
+                                                        <i class="fas fa-search"></i>
+                                                    </a>
+                                                    <%= _stock.item_size._size %>
+                                                </td>
+                                                <td <% if (_stock._qty < 0) { %> class="cardRed"<% } %>>
+                                                    <%= _stock._qty %>
+                                                </td>
+                                                <td>
+                                                    <input class='form-control' type="number" name='corrections[stock_id_<%- _stock.stock_id %>]'>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </form>
     </div>
 </section>
 <% include ../../../partials/foot/full %>

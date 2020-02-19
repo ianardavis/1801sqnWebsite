@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('orders_l', {
-    'line_id': {
+  return sequelize.define('canteen_items', {
+    'item_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,47 +10,48 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'order_id': {
-      type: DataTypes.INTEGER(11),
+    '_name': {
+      type: DataTypes.STRING(45),
       allowNull: false,
       comment: "null"
     },
-    'itemsize_id': {
+    '_cost': {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      defaultValue: '0.00',
+      comment: "null"
+    },
+    '_price': {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      defaultValue: '0.00',
+      comment: "null"
+    },
+    '_stock': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
+      defaultValue: '0',
       comment: "null"
     },
-    '_qty': {
-      type: DataTypes.INTEGER(11),
+    '_current': {
+      type: DataTypes.INTEGER(4),
       allowNull: false,
-      comment: "null"
-    },
-    'demand_line_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'receipt_line_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'issue_line_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
+      defaultValue: '0',
       comment: "null"
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {
-    tableName: 'orders_l'
+    tableName: 'canteen_items'
   });
 };

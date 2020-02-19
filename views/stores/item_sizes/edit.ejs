@@ -12,21 +12,21 @@
                 <a class='nav-link stores_nav' href='/stores/items/<%= item_size.item_id %>'><%= item_size.item._description %></a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.itemsize_id %>'>Size: <%= item_size._size %></a>
+                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.item_size_id %>'>Size: <%= item_size._size %></a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.itemsize_id %>/edit'>Edit</a>
+                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.item_size_id %>/edit'>Edit</a>
             </li>
         </ul>
     </nav>
 </section>
 <section class='container bordered'>
-    <form action='/stores/item_sizes/<%= item_size.itemsize_id %>?_method=PUT' method='POST'>
+    <form action='/stores/item_sizes/<%= item_size.item_size_id %>?_method=PUT' method='POST'>
         <div class='form-group'>
             <div class='row'>
                 <div class='col-12'>
                     <input class="btn btn-success col-12 confirm" type="submit" value="Save">
-                    <a class='float-left' href='/stores/item_sizes/<%= item_size.itemsize_id %>'>Cancel</a>
+                    <a class='float-left' href='/stores/item_sizes/<%= item_size.item_size_id %>'>Cancel</a>
                 </div>
             </div>
             <div class='row'>
@@ -50,7 +50,15 @@
                     <label class='col-form-label'>Has Serial #:</label>
                 </div> 
                 <div class='col-7'>
-                    <input class='form-control' id='_has_serial' type='checkbox' name='item_size[_has_serial]' value='1' <% if (item_size._has_serial) { %> checked <% } %> onchange=orderableCheck()>
+                    <input class='form-control' id='_serials' type='checkbox' name='item_size[_serials]' value='1' <% if (item_size._serials) { %> checked <% } %> onchange=orderableCheck()>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-5' >
+                    <label class='col-form-label'>Has NSNs:</label>
+                </div> 
+                <div class='col-7'>
+                    <input class='form-control' id='_nsns' type='checkbox' name='item_size[_nsns]' value='1' <% if (item_size._nsns) { %> checked <% } %> onchange=orderableCheck()>
                 </div>
             </div>
             <div class='row'>

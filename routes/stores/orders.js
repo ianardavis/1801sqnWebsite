@@ -8,7 +8,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.getOne(
                 m.users,
                 {user_id: user},
-                {include: [m.ranks], attributes: null, nullOK: false}
+                {include: [m.ranks]}
             )
             .then(user => {
                 if (user !== req.user.user_id) {
@@ -91,17 +91,15 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         let items = [], issued_to = JSON.parse(lines[0])._for;
                         lines.forEach(line => {
                             line = JSON.parse(line);
-                            let _index = items.findIndex(e => e.itemsize_id === line.itemsize_id);
-                            if (_index === -1) items.push({itemsize_id: line.itemsize_id, qty: line.qty, order_line_id: line.line_id})
+                            let _index = items.findIndex(e => e.item_size_id === line.item_size_id);
+                            if (_index === -1) items.push({item_size_id: line.item_size_id, qty: line.qty, order_line_id: line.line_id})
                             else items[_index].qty += line.qty;
                             actions.push(
                                 fn.getOne(
                                     m.item_sizes,
-                                    {itemsize_id: line.itemsize_id},
+                                    {item_size_id: line.item_size_id},
                                     {
-                                        include: [m.nsns, m.items, {model: m.stock, include: [m.locations]}],
-                                        attributes: null,
-                                        nullOK: false
+                                        include: [m.nsns, m.items, {model: m.stock, include: [m.locations]}]
                                     }
                                 )
                             )
@@ -111,7 +109,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             fn.getOne(m.users, {user_id: issued_to}, {include: [m.ranks], attributes: null, nullOK: false})
                             .then(user => {
                                 items.forEach(item => {
-                                    let item_size = item_sizes.filter(e => e.itemsize_id === item.itemsize_id)[0];
+                                    let item_size = item_sizes.filter(e => e.item_size_id === item.item_size_id)[0];
                                     item._description = item_size.item._description;
                                     item._size_text   = item_size.size._text;
                                     item.nsns = [];
@@ -169,7 +167,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 include: [
                     fn.users('_for'),
                     fn.users('_by'),
-                    {model: m.orders_l, as: 'lines'}
+                    {model: m.order_lines, as: 'lines'}
                 ]
             }
         )
@@ -214,14 +212,14 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {order_id: req.params.id},
             {include: [
                 {
-                    model:    m.orders_l,
+                    model:    m.order_lines,
                     as:       'lines',
                     where:    where,
                     required: false,
                     include: [
-                        {model: m.demands_l, include:[m.demands]},
-                        {model: m.receipts_l, include:[m.receipts]},
-                        {model: m.issues_l, include:[m.issues]},
+                        {model: m.demand_lines, include:[m.demands]},
+                        {model: m.receipt_lines, include:[m.receipts]},
+                        {model: m.issue_lines, include:[m.issues]},
                         {model: m.item_sizes, include: fn.itemSize_inc()}
                     ]
                 },

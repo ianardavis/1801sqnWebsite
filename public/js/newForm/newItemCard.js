@@ -9,16 +9,16 @@ function NewItemCard (item) {
         qty         = document.createElement('input');
 
     _div.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
-    _div.id = 'id-' + item.itemsize_id;
+    _div.id = 'id-' + item.item_size_id;
     
     _card.classList.add('card', 'cardDarkText', 'm-3', 'text-left');
 
-    if (item.itemsize_id) {
-        let itemsize_id = document.createElement('input');
-        itemsize_id.type  = 'hidden';
-        itemsize_id.name  = 'selected[' + item.itemsize_id + '][itemsize_id]';
-        itemsize_id.value = item.itemsize_id;
-        _card.appendChild(itemsize_id);
+    if (item.item_size_id) {
+        let item_size_id = document.createElement('input');
+        item_size_id.type  = 'hidden';
+        item_size_id.name  = 'selected[' + item.item_size_id + '][item_size_id]';
+        item_size_id.value = item.item_size_id;
+        _card.appendChild(item_size_id);
     };
     if (item.stock_id) {
         let stock_id = document.createElement('input');
@@ -37,7 +37,7 @@ function NewItemCard (item) {
     _subtitle.innerText = 'Size: ' + item.size;
 
     _delete.classList.add('float-right', 'btn', 'btn-sm', 'btn-danger');
-    _delete.href = 'javascript:removeID("id-' + item.itemsize_id + '")';
+    _delete.href = 'javascript:removeID("id-' + item.item_size_id + '")';
     _delete.innerHTML = '<i class="fas fa-trash-alt"></i>';
     
     _header.appendChild(_delete);
@@ -46,15 +46,24 @@ function NewItemCard (item) {
     
     _body.classList.add('card-body');
     
-    qty.type = 'number';
-    qty.name = 'selected[' + item.itemsize_id + '][qty]';
-    qty.classList.add('form-control','form-control-sm');
-    qty.value = item.qty;
-    _body.appendChild(qty);
+    if (item.serials) { 
+        let newSerials = document.createElement('select');
+        newSerials.name = 'selected[' + item.item_size_id + '][serial_id]';
+        newSerials.classList.add('form-control','form-control-sm');
+        item.serials.forEach(serial => newSerials.appendChild(newOption(serial.serial_id, serial._serial)));
+        if (item.serial_id) newSerials.value = item.serial_id;
+        _body.appendChild(newSerials);
+    } else {
+        qty.type = 'number';
+        qty.name = 'selected[' + item.item_size_id + '][qty]';
+        qty.classList.add('form-control','form-control-sm');
+        qty.value = item.qty;
+        _body.appendChild(qty);
+    };
 
     if (item.nsns) {
         let newNSNs = document.createElement('select');
-        newNSNs.name = 'selected[' + item.itemsize_id + '][nsn_id]';
+        newNSNs.name = 'selected[' + item.item_size_id + '][nsn_id]';
         newNSNs.classList.add('form-control','form-control-sm');
         item.nsns.forEach(nsn => newNSNs.appendChild(newOption(nsn.nsn_id, nsn._nsn)));
         if (item.nsn_id) newNSNs.value = item.nsn_id;
@@ -62,7 +71,7 @@ function NewItemCard (item) {
     };
     if (item.stocks) {
         let newStocks = document.createElement('select');
-        newStocks.name = 'selected[' + item.itemsize_id + '][stock_id]';
+        newStocks.name = 'selected[' + item.item_size_id + '][stock_id]';
         newStocks.classList.add('form-control','form-control-sm');
         item.stocks.forEach(stock => newStocks.appendChild(newOption(stock.stock_id, stock._location)));
         if (item.stock_id) newStocks.value = item.stock_id;

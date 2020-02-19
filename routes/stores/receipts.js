@@ -43,7 +43,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {
                 include: [
                     {
-                        model: m.receipts_l,
+                        model: m.receipt_lines,
                         as: 'lines',
                         include: [
                             {
@@ -56,9 +56,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     },
                     fn.users(),
                     m.suppliers
-                ],
-                attributes: null,
-                nullOK: false}
+                ]
+            }
         )
         .then(receipt => {
             fn.getNotes('receipts', req.params.id, req)
@@ -81,7 +80,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 m.suppliers,
                 fn.users(),
                 {
-                    model: m.receipts_l,
+                    model: m.receipt_lines,
                     as: 'lines'
                 }
             ]

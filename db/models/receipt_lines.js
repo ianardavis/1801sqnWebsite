@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('stocktake_check', {
-    'check_id': {
+  return sequelize.define('receipt_lines', {
+    'line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,21 +10,19 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'itemsize_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null",
-      unique: true
-    },
-    '_qty': {
+    'receipt_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_confirmed': {
-      type: DataTypes.INTEGER(4),
+    'stock_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: '0',
+      comment: "null"
+    },
+    '_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     'createdAt': {
@@ -38,6 +36,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'stocktake_check'
+    tableName: 'receipt_lines'
   });
 };

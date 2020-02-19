@@ -45,15 +45,15 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
+    '_email': {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "null"
+    },
     '_stores': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
-      comment: "null"
-    },
-    '_email': {
-      type: DataTypes.STRING(255),
-      allowNull: true,
       comment: "null"
     },
     '_raise_demand': {
@@ -74,12 +74,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     }
   }, {

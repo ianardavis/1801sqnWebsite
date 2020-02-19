@@ -1,0 +1,172 @@
+<% include ../../../partials/head/full %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores'>
+                    Stores
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/canteen'>
+                    Canteen
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/canteen/sessions'>
+                    Sessions
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/stores/canteen/sessions/<%= session.session_id %>'>
+                    <%= session.session_id %>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-6">
+                    <label class='col-form-label'>Start</label>
+                </div>
+                <div class="col-6">
+                    <input class='form-control' type="text" value='<%= session._start.toLocaleString() %>' readonly>
+                </div>
+            </div>
+            <% if (session._end) { %>
+                <div class="row">
+                    <div class="col-6">
+                        <label class='col-form-label'>End</label>
+                    </div>
+                    <div class="col-6">
+                        <input class='form-control' type="text" value='<%= session._end.toLocaleString() %>' readonly>
+                    </div>
+                </div>
+            <% } %>
+            <div class="row">
+                <div class="col-6">
+                    <label class='col-form-label'>Opening Balance</label>
+                </div>
+                <div class="col-6">
+                    <input class='form-control' type="text" value='£<%= Number(session._opening_balance).toFixed(2) %>' readonly>
+                </div>
+            </div>
+            <% if (session._takings) { %>
+                <div class="row">
+                    <div class="col-6">
+                        <label class='col-form-label'>Takings</label>
+                    </div>
+                    <div class="col-6">
+                        <input class='form-control' type="text" value='£<%= Number(session._takings).toFixed(2) %>' readonly>
+                    </div>
+                </div>
+            <% } %>
+            <% if (session._closing_balance) { %>
+                <div class="row">
+                    <div class="col-6">
+                        <label class='col-form-label'>End</label>
+                    </div>
+                    <div class="col-6">
+                        <input class='form-control' type="text" value='£<%= Number(session._closing_balance).toFixed(2) %>' readonly>
+                    </div>
+                </div>
+            <% } %>
+            <div class="row">
+                <div class="col-6">
+                    <label class='col-form-label'>Opened By</label>
+                </div>
+                <div class="col-6">
+                    <input class='form-control' type="text" value='<%= session._opened_by.rank._rank %> <%= session._opened_by._name %>, <%= session._opened_by._ini %>' readonly>
+                </div>
+            </div>
+            <% if (session._closed_by) { %>
+                <div class="row">
+                    <div class="col-6">
+                        <label class='col-form-label'>Closed By</label>
+                    </div>
+                    <div class="col-6">
+                        <input class='form-control' type="text" value='<%= session._closed_by.rank._rank %> <%= session._closed_by._name %>, <%= session._closed_by._ini %>' readonly>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+        <div class="col-12">
+            <a class="my-3" data-toggle="collapse" href="#collapseSales" role="button" aria-expanded="false" aria-controls="collapseSales">
+                <h4>Sales (<%= session.sales.length %>)</h4>
+            </a>
+            <div class="collapse mb-3" id="collapseSales">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-30" onclick="sortTable(0, 'saleTable')">Time</th>
+                        <th class="w-50" onclick="sortTable(2, 'saleTable')">User</th>
+                        <th class="w-10" onclick="sortTable(3, 'saleTable')">Lines</th>
+                        <th class="w-10" onclick="sortTable(1, 'saleTable')">Complete</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="saleTable">
+                        <% if (session.sales) session.sales.forEach(sale => { %>
+                            <tr>
+                                <td data-sort="<%= sale._date.getTime() %>">
+                                    <%= sale._date.toLocaleTimeString() %>
+                                </td>
+                                <td>
+                                    <%= sale.user.rank._rank %> <%= sale.user._name %>, <%= sale.user._ini %>
+                                </td>
+                                <td>
+                                    <% if (sale.lines) { %>
+                                        <%= sale.lines.length %>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <input class='form-control form-control-sm' type="checkbox" <% if (sale._complete) { %> checked <% } %> disabled>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12">
+            <a class="my-3" data-toggle="collapse" href="#collapseItems" role="button" aria-expanded="false" aria-controls="collapseItems">
+                <h4>Items (<%= items.length %>)</h4>
+            </a>
+            <div class="collapse mb-3" id="collapseItems">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-60" onclick="sortTable(0, 'itemTable')">Name</th>
+                        <th class="w-20" onclick="sortTable(1, 'itemTable')">Sales</th>
+                        <th class="w-20" onclick="sortTable(2, 'itemTable')">Qty Sold</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="itemTable">
+                        <% if (items) items.forEach(item => { %>
+                            <tr>
+                                <td>
+                                    <%= item._name %>
+                                </td>
+                                <td>
+                                    <%= item.sales.length %>
+                                </td>
+                                <td>
+                                    <% let _qty = 0; %>
+                                    <% item.sales.forEach(sale => { %>
+                                        <% _qty += Number(sale._qty) %>
+                                    <% }) %>
+                                    <%= _qty %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<% include ../../../partials/foot/full %>
+<script>
+    sortTable(0, 'sessionTable', 'desc');
+</script>
+<% include ../../../partials/foot/htmlClose %>

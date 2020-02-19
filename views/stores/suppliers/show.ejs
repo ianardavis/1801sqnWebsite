@@ -134,10 +134,10 @@
         </div>
         <div class="col-12 col-lg-7 bordered">
             <h4>Items From This Supplier</h4>
-            <select id="itemsize_id" class="form-control form-control-sm" size="24" ondblclick=goToItemSize()>
+            <select id="item_size_id" class="form-control form-control-sm" size="24" ondblclick=goToItemSize()>
                 <% if (supplier.item_sizes) { %>
                     <% supplier.item_sizes.forEach(item_size => { %>
-                        <option value="<%= item_size.itemsize_id %>"><%= item_size.item._description %>, size: <%= item_size._size %></option>
+                        <option value="<%= item_size.item_size_id %>"><%= item_size.item._description %>, size: <%= item_size._size %></option>
                     <% }); %>
                 <% }; %>
             </select>
@@ -200,7 +200,7 @@
         filter(['system'],"/stores/suppliers/<%= supplier.supplier_id %>");
     };
     function goToItemSize() {
-        var item_size = document.querySelector('#itemsize_id');
+        var item_size = document.querySelector('#item_size_id');
         if (item_size) window.location = '/stores/item_sizes/' + item_size.value;
     };
 </script>

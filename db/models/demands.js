@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true
     },
     'supplier_id': {
-      type: DataTypes.INTEGER(4),
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
@@ -27,21 +27,21 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_filename': {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(255),
       allowNull: true,
       comment: "null"
     },
     'user_id': {
-      type: DataTypes.INTEGER(4),
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'createdAt': {
+    'updatedAt': {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
     },
-    'updatedAt': {
+    'createdAt': {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "null"

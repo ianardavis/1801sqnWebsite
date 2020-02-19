@@ -14,7 +14,7 @@
 				</a>
             </li>
             <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/item_sizes/<%= stock.item_size.itemsize_id %>">
+				<a class="nav-link stores_nav" href="/stores/item_sizes/<%= stock.item_size.item_size_id %>">
 					Size: <%= stock.item_size._size %>
 				</a>
             </li>
@@ -32,8 +32,7 @@
 			<h4>Location</h4>
 			<form action="/stores/stock/<%= stock.stock_id %>?_method=PUT" method="POST">
 				<div class="mb-2">
-					<input type="hidden" name="stock[stock_id]" value="<%= stock.stock_id %>" readonly>
-					<input type="text" class="form-control" name="stock[location_id]" maxlength="10" value="<%= stock.location._location %>" required>
+					<input type="text" class="form-control" name="_location" maxlength="20" value="<%= stock.location._location %>" required>
 					<input type="submit" class="btn btn-success confirm" value="Save">
 				</div>
 			</form>
@@ -63,8 +62,8 @@
 					<thead class="thead-dark">
 						<th class="w-25" onclick="sortTable(0, 'adjustsTable')">Date</th>
 						<th class="w-10" onclick="sortTable(1, 'adjustsTable')">Type</th>
-						<th class="w-10" onclick="sortTable(2, 'adjustsTable')">Adjust Qty</th>
-						<th class="w-10" onclick="sortTable(3, 'adjustsTable')">Variation</th>
+						<th class="w-10" onclick="sortTable(2, 'adjustsTable')">Qty</th>
+						<th class="w-10" onclick="sortTable(3, 'adjustsTable')">Variance</th>
 						<th class="w-45" onclick="sortTable(4, 'adjustsTable')">User</th>
 					</thead>
 					<tbody id="adjustsTable">
@@ -95,7 +94,7 @@
 		</div>
 		<div class="col-12 mx-auto bordered mb-2">
 			<a class="my-3" data-toggle="collapse" href="#collapseReceipt" role="button" aria-expanded="false" aria-controls="collapseReceipt">
-				<h4>Receipts (<%= stock.receipts_ls.length %>)</h4>
+				<h4>Receipts (<%= stock.receipt_lines.length %>)</h4>
 			</a>
 			<div class="collapse mb-3" id="collapseReceipt">
 				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
@@ -106,8 +105,8 @@
 						<th><i class="fas fa-search"></i></th>
 					</thead>
 					<tbody id="receiptTable">
-						<% if (stock.receipts_ls && stock.receipts_ls.length > 0) { %>
-							<% stock.receipts_ls.forEach(receipt => { %>
+						<% if (stock.receipt_lines && stock.receipt_lines.length > 0) { %>
+							<% stock.receipt_lines.forEach(receipt => { %>
 								<tr>
 									<td data-sort="<%= receipt.receipt._date.getTime() %>">
 										<%= receipt.receipt._date.toDateString() %>
@@ -132,7 +131,7 @@
 		</div>
 		<div class="col-12 mx-auto bordered mb-2">
 			<a class="my-3" data-toggle="collapse" href="#collapseIssue" role="button" aria-expanded="false" aria-controls="collapseIssue">
-				<h4>Issues (<%= stock.issues_ls.length %>)</h4>
+				<h4>Issues (<%= stock.issue_lines.length %>)</h4>
 			</a>
 			<div class="collapse mb-3" id="collapseIssue">
 				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
@@ -144,8 +143,8 @@
 						<th><i class="fas fa-search"></i></th>
 					</thead>
 					<tbody id="issueTable">
-						<% if (stock.issues_ls && stock.issues_ls.length > 0) { %>
-							<% stock.issues_ls.forEach(issue => { %>
+						<% if (stock.issue_lines && stock.issue_lines.length > 0) { %>
+							<% stock.issue_lines.forEach(issue => { %>
 								<tr>
 									<td data-sort="<%= issue.issue._date.getTime() %>">
 										<%= issue.issue._date.toDateString() %>
@@ -173,7 +172,7 @@
 		</div>
 		<div class="col-12 mx-auto bordered mb-2">
 			<a class="my-3" data-toggle="collapse" href="#collapseReturn" role="button" aria-expanded="false" aria-controls="collapseReturn">
-				<h4>Returns (<%= stock.returns_ls.length %>)</h4>
+				<h4>Returns (<%= stock.return_lines.length %>)</h4>
 			</a>
 			<div class="collapse mb-3" id="collapseReturn">
 				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
@@ -184,8 +183,8 @@
 						<th><i class="fas fa-search"></i></th>
 					</thead>
 					<tbody id="returnTable">
-						<% if (stock.returns_ls && stock.returns_ls.length > 0) { %>
-							<% stock.returns_ls.forEach(_return => { %>
+						<% if (stock.return_lines && stock.return_lines.length > 0) { %>
+							<% stock.return_lines.forEach(_return => { %>
 								<tr>
 									<td data-sort="<%= _return.return._date.getTime() %>">
 										<%= _return.return._date.toDateString() %>

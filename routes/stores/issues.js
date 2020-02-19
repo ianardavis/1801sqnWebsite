@@ -12,12 +12,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     fn.users('_to'), 
                     fn.users('_by'),
                     {
-                        model: m.issues_l,
+                        model: m.issue_lines,
                         as: 'lines'
                     }
-                ],
-                nullOk: false,
-                attributes: null
+                ]
             }
         )
         .then(issues => {
@@ -34,6 +32,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         if (req.body.selected) {
             let items = [];
             for (let [key, line] of Object.entries(req.body.selected)) {
+                if (!line._qty) line._qty = 1;
                 items.push(line);
             };
             fn.createIssue(
@@ -55,7 +54,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.getOne(
                 m.users,
                 {user_id: req.query.user},
-                {include: [m.ranks], attributes: null, nullOK: false}
+                {include: [m.ranks]}
             )
             .then(user => {
                 if (req.query.user !== req.user.user_id) {

@@ -18,7 +18,7 @@
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= itemsize.itemsize_id %>'>
+                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= itemsize.item_size_id %>'>
                     Size: <%= itemsize._size %>
                 </a>
             </li>
@@ -34,7 +34,7 @@
 	<div class='row'>
 		<div class='col-12 col-lg-4 mx-auto bordered'>
 			<form action='/stores/nsns' method='POST'>
-				<input type='hidden' name='nsn[itemsize_id]' value='<%= itemsize.itemsize_id %>'>
+				<input type='hidden' name='nsn[item_size_id]' value='<%= itemsize.item_size_id %>'>
                 <div class='row'>
                     <div class='col-12'>
                         <input class='form-control' type='text' inputmode='numeric' name='nsn[_nsn]' maxlength='20' placeholder='NSN' required>

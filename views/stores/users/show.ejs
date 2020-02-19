@@ -167,7 +167,7 @@
                                                     <%= request.item_size.item._description %>
                                                 </td>
                                                 <td>
-                                                    <a class="float-right btn btn-sm btn-primary" href='/stores/item_sizes/<%= request.itemsize_id %>'><i class="fas fa-search"></i></a>
+                                                    <a class="float-right btn btn-sm btn-primary" href='/stores/item_sizes/<%= request.item_size_id %>'><i class="fas fa-search"></i></a>
                                                     <%= request.item_size._size %>
                                                 </td>
                                                 <td>
@@ -177,7 +177,7 @@
                                                     <%= request._status %>
                                                 </td>
                                                 <td>
-                                                    <a class='btn btn-sm btn-primary' href='/stores/requests/<%= request.request_id %>?sb=request'>
+                                                    <a class='btn btn-sm btn-primary' href='/stores/requests/<%= request.request_id %>'>
                                                         <i class="fas fa-search"></i>
                                                     </a>
                                                 </td>
@@ -237,7 +237,7 @@
                                                     <%= order.item_size.item._description %>
                                                 </td>
                                                 <td>
-                                                    <a class="float-right btn btn-sm btn-primary" href='/stores/item_sizes/<%= order.itemsize_id %>'><i class="fas fa-search"></i></a>
+                                                    <a class="float-right btn btn-sm btn-primary" href='/stores/item_sizes/<%= order.item_size_id %>'><i class="fas fa-search"></i></a>
                                                     <%= order.item_size._size %>
                                                 </td>
                                                 <td>
@@ -316,7 +316,7 @@
                                                         <%= issue.item_size.item._description %>
                                                     </td>
                                                     <td>
-                                                        <a class="float-right btn btn-sm btn-primary" href='/stores/item_sizes/<%= issue.itemsize_id %>'>
+                                                        <a class="float-right btn btn-sm btn-primary" href='/stores/item_sizes/<%= issue.item_size_id %>'>
                                                             <i class="fas fa-search"></i>
                                                         </a>
                                                         <%= issue.item_size._size %>
