@@ -66,6 +66,21 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-sm-3">
+                        <label class="col-form-label" for="_stores">Account/Inventory:</label>
+                    </div>
+                    <div class="col-10 col-sm-8">
+                        <select class='form-control' name="supplier[account_id]" required>
+                            <% accounts.forEach(account => { %>
+                                <option value="<%= account.account_id %>" <% if (Number(account.account_id) === Number(supplier.account_id)) { %> selected <% } %>><%= account._number %>: <%= account._name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-2 col-sm-1">
+                        <a class='float-right btn btn-success' href="/stores/accounts/new?supplier_id=<%= supplier.supplier_id %>"><i class='fas fa-plus'></i></a>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-sm-5">
                         <label class="col-form-label" for="_stores">RAF Stores?:</label>
                     </div>

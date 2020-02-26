@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('inventories', {
-    'inventory_id': {
+  return sequelize.define('accounts', {
+    'account_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,13 +10,8 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    '_code': {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      comment: "null"
-    },
-    '_rank': {
-      type: DataTypes.STRING(45),
+    '_number': {
+      type: DataTypes.STRING(255),
       allowNull: false,
       comment: "null"
     },
@@ -25,8 +20,8 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_sqn': {
-      type: DataTypes.STRING(45),
+    'user_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
@@ -41,6 +36,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'inventories'
+    tableName: 'accounts'
   });
 };

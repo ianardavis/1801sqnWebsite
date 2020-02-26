@@ -47,4 +47,9 @@
 <script src='/js/newForm/openAddItem.js'></script>
 <script src='/js/newForm/newItemCard.js'></script>
 <script src='/js/newForm/addNewItemSize.js'></script>
+<script>
+	<% if (typeof(items) !== 'undefined' && items.length > 0) { %>
+		<%- JSON.stringify(items) %>.forEach(item => addSize(item));
+	<% }; %>
+</script>
 <% include ../../partials/foot/htmlClose %>

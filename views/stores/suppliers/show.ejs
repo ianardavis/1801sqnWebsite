@@ -17,7 +17,7 @@
 <section class="container">
 	<div class="row">
 		<div class="col-12 col-lg-5 bordered">
-            <% if (permissions.suppliers_edit) { %>
+            <% if (permissions.supplier_edit) { %>
                 <a class="float-left btn btn-primary mr-1" href="/stores/suppliers/<%= supplier.supplier_id %>/edit">
                     <i class='fas fa-pencil-alt'></i>
                 </a>
@@ -27,7 +27,7 @@
                     </button>
                 </form>
             <% } %>
-            <% if (permissions.suppliers_delete === 1) { %>
+            <% if (permissions.supplier_delete === 1) { %>
                 <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete supplier?');">
                     <button class="float-left btn btn-danger mr-1 confirm">
                         <i class='fas fa-trash-alt'></i>
@@ -71,16 +71,16 @@
                     <input class="form-control form-control-sm" type="text" value="<%= supplier._email %>" readonly>
                 </div>
             </div>
-            <% if (supplier.inventory) { %>
+            <% if (supplier.account) { %>
             <div class="row">
                 <div class="col-4">
-                    <label class="col-form-label">Inventory:</label>
+                    <label class="col-form-label">Account:</label>
                 </div>
                 <div class="col-7">
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier.inventory._code %>" readonly>
+                    <input class="form-control form-control-sm" type="text" value="<%= supplier.account._number %>" readonly>
                 </div>
                 <div class="col-1">
-                    <a class="float-right btn btn-sm btn-primary" href="/stores/inventories/<%= supplier.inventory_id %>/edit">
+                    <a class="float-right btn btn-sm btn-primary" href="/stores/accounts/<%= supplier.account_id %>/edit">
                         <i class='fas fa-search'></i>
                     </a>
                 </div>
@@ -116,7 +116,7 @@
                         </a>
                     </div>
                 <% }; %>
-                <% if (permissions.files_add) { %>
+                <% if (permissions.file_add) { %>
                     <div class="col-12">
                         <form ref="uploadForm" id="uploadForm" action="/stores/files?s=<%= supplier.supplier_id %>" method="POST" encType="multipart/form-data">
                             <div class="row">
@@ -134,16 +134,16 @@
         </div>
         <div class="col-12 col-lg-7 bordered">
             <h4>Items From This Supplier</h4>
-            <select id="item_size_id" class="form-control form-control-sm" size="24" ondblclick=goToItemSize()>
-                <% if (supplier.item_sizes) { %>
-                    <% supplier.item_sizes.forEach(item_size => { %>
-                        <option value="<%= item_size.item_size_id %>"><%= item_size.item._description %>, size: <%= item_size._size %></option>
+            <select id="size_id" class="form-control form-control-sm" size="24" ondblclick=goToItemSize()>
+                <% if (supplier.sizes) { %>
+                    <% supplier.sizes.forEach(size => { %>
+                        <option value="<%= size.size_id %>"><%= size.item._description %>, size: <%= size._size %></option>
                     <% }); %>
                 <% }; %>
             </select>
         </div>
         <div class="col-12 mx-auto bordered mb-2">
-            <% if (permissions.receipts_add) { %>
+            <% if (permissions.receipt_add) { %>
                 <a class="float-left btn btn-success" href="/stores/receipts/new?supplier_id=<%= supplier.supplier_id %>">
                     <i class='fas fa-plus'></i>
                 </a>
@@ -183,15 +183,17 @@
 					</tbody>
 				</table>
 			</div>
-		</div>
-        <div class="col-12 bordered">
-            <% if (permissions.notes_add) { %>
-                <a class="float-left btn btn-success" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">
-                    <i class='fas fa-plus'></i>
-                </a>
-            <% } %>
-            <% include ../../partials/noteTable %>
         </div>
+        <% if (permissions.access_notes) { %>
+            <div class="col-12 bordered">
+                <% if (permissions.note_add) { %>
+                    <a class="float-left btn btn-success" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">
+                        <i class='fas fa-plus'></i>
+                    </a>
+                <% } %>
+                <% include ../../partials/noteTable %>
+            </div>
+        <% } %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
@@ -200,8 +202,8 @@
         filter(['system'],"/stores/suppliers/<%= supplier.supplier_id %>");
     };
     function goToItemSize() {
-        var item_size = document.querySelector('#item_size_id');
-        if (item_size) window.location = '/stores/item_sizes/' + item_size.value;
+        var size = document.querySelector('#size_id');
+        if (size) window.location = '/stores/sizes/' + size.value;
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

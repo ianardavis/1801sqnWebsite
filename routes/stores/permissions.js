@@ -1,6 +1,6 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //Edit
-    app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('users_permissions'), (req, res) => {
+    app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('user_permissions'), (req, res) => {
         if (Number(req.params.id) === req.user.user_id) {
             req.flash('danger', 'You can not edit your own permissions');
             res.redirect('/stores/users/' + req.params.id);
@@ -37,12 +37,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     //Put
-    app.put('/stores/permissions/:id', isLoggedIn, allowed('users_permissions'), (req, res) => {
+    app.put('/stores/permissions/:id', isLoggedIn, allowed('user_permissions'), (req, res) => {
         if (Number(req.params.id) !== req.user.user_id) {
             if (Number(req.params.id) !== 1) {
-                res.locals.permissions._options.attributes.forEach(permission => {
+                for (let [permission, value] of Object.entries(res.locals.permissions)) {
                     if (!req.body.permissions[permission]) req.body.permissions[permission] = 0;
-                });
+                };
                 fn.update(
                     m.permissions,
                     req.body.permissions,

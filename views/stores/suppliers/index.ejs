@@ -8,7 +8,7 @@
 			<li class="nav-item">
 				<a class="nav-link stores_nav" href="/stores/suppliers">Suppliers</a>
 			</li>
-			<% if (permissions.suppliers_add) { %>
+			<% if (permissions.supplier_add) { %>
 				<li class="nav-item">
 					<a class="nav-link stores_nav cardGreen" href="/stores/suppliers/new"><i class='fas fa-plus'></i></a>
 				</li>
@@ -30,7 +30,7 @@
 					<% } %>
 				</div>
 				<div class="card-body">
-					<p>Items: <%= supplier.item_sizes.length %></p>
+					<p>Items: <%= supplier.sizes.length %></p>
 				</div>
 			</div>
 		</div>

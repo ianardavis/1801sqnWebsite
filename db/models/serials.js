@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       unique: true
     },
-    'item_size_id': {
+    'size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"

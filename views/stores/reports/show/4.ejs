@@ -18,14 +18,14 @@
     <div class="container">
         <div class="row">
             <% items.forEach(item => { %>
-                <div class="col-12">
+                <div class="col-12 bordered">
                     <a class="my-3" data-toggle="collapse" href="#collapse<%= item.item_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= item.item_id %>">
                         <h5 class="text-left">
                             <%= item._description %>
                         </h5>
                     </a>
                     <div class="collapse mb-3" id="collapse<%= item.item_id %>">
-                        <a class="float-left" href="/stores/items/<%= item.item_id %>"><i class="fas fa-search"></i></a>
+                        <a class="float-left btn btn-primary mb-2" href="/stores/items/<%= item.item_id %>"><i class="fas fa-search"></i></a>
                         <table class="table table-sm table-hover">
                             <thead class="thead-dark">
                                 <th class="w-40" onclick="sortTable(0, 'table<%= item.item_id %>')">Size</th>
@@ -34,41 +34,39 @@
                                 <th class="w-10" onclick="sortTable(3, 'table<%= item.item_id %>')">Ordered</th>
                             </thead>
                             <tbody id="table<%= item.item_id %>">
-                                <% if (item.item_sizes) { %>
-                                    <% item.item_sizes.forEach(size => { %>
-                                        <% let _stock = 0, _requests = 0, _orders = 0 %>
-                                        <% if (size.stocks && size.stocks.length > 0) { %>
-                                            <% size.stocks.forEach(stock => { %>
-                                                <% _stock += Number(stock._qty) %>
-                                            <% }) %>
-                                        <% } %>
-                                        <% if (size.request_lines && size.request_lines.length > 0) { %>
-                                            <% size.request_lines.forEach(request => { %>
-                                                <% _requests += Number(request._qty) %>
-                                            <% }) %>
-                                        <% } %>
-                                        <% if (size.order_lines && size.order_lines.length > 0) { %>
-                                            <% size.order_lines.forEach(order => { %>
-                                                <% _orders += Number(order._qty) %>
-                                            <% }) %>
-                                        <% } %>
-                                        <tr>
-                                            <td>
-                                                <a class="float-right" href="/stores/item_sizes/<%= size.item_size_id %>"><i class="fas fa-search"></i></a>
-                                                <a href="#"><%= size._size %></a>
-                                            </td>
-                                            <td <% if (_stock <= 0) { %> class="cardRed"<% } %>>
-                                                <a href="#"><%= _stock %></a>
-                                            </td>
-                                            <td>
-                                                <a href="#"><%= _requests %></a>
-                                            </td>
-                                            <td>
-                                                <a href="#"><%= _orders %></a>
-                                            </td>
-                                        </tr>
-                                    <% }) %>
-                                <% } %>
+                                <% if (item.sizes) item.sizes.forEach(size => { %>
+                                    <% let _stock = 0, _requests = 0, _orders = 0 %>
+                                    <% if (size.stocks && size.stocks.length > 0) { %>
+                                        <% size.stocks.forEach(stock => { %>
+                                            <% _stock += Number(stock._qty) %>
+                                        <% }) %>
+                                    <% } %>
+                                    <% if (size.request_lines && size.request_lines.length > 0) { %>
+                                        <% size.request_lines.forEach(request => { %>
+                                            <% _requests += Number(request._qty) %>
+                                        <% }) %>
+                                    <% } %>
+                                    <% if (size.order_lines && size.order_lines.length > 0) { %>
+                                        <% size.order_lines.forEach(order => { %>
+                                            <% _orders += Number(order._qty) %>
+                                        <% }) %>
+                                    <% } %>
+                                    <tr>
+                                        <td>
+                                            <a class="btn btn-sm btn-primary float-right" href="/stores/sizes/<%= size.size_id %>"><i class="fas fa-search"></i></a>
+                                            <%= size._size %>
+                                        </td>
+                                        <td <% if (_stock <= 0) { %> class="cardRed"<% } %>>
+                                            <%= _stock %>
+                                        </td>
+                                        <td>
+                                            <%= _requests %>
+                                        </td>
+                                        <td>
+                                            <%= _orders %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
                             </tbody>
                         </table>
                     </div>

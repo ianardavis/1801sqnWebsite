@@ -1,0 +1,68 @@
+<% include ../../partials/head/full %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores">
+                    Stores
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/suppliers">
+                    Suppliers
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/suppliers/<%= supplier.supplier_id %>">
+                    <%= supplier._name %>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link stores_nav" href="/stores/accounts/new?supplier_id=<%= supplier.supplier_id %>">
+                    New Account
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class="row">
+    <div class="col-md-9 col-xl-6 container bordered">
+        <form action="/stores/accounts" method="POST">
+            <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="col-form-label" for="_name">Name:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="_name" name="account[_name]" type="text" placeholder="Name" maxlength="45" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="col-form-label" for="_name">Number:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="_name" name="account[_number]" type="text" placeholder="Number" maxlength="255" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="col-form-label" for="_address1">Owner:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <select class='form-control' name="account[user_id]">
+                            <% users.forEach(user => { %>
+                                <option value="<%= user.user_id %>" ><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
+                <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
+                <a class='float-left' href="/stores/suppliers/<%= supplier.supplier_id %>">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

@@ -1,4 +1,4 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     function itemOptions() {
         return [
             {table: 'categories'}, 
@@ -45,8 +45,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         });
     });
 
+    // New Form
+    app.get('/stores/items/new', isLoggedIn, allowed('item_add'), (req, res) => {
+        fn.getOptions(itemOptions(), req)
+        .then(classes => res.render('stores/items/new', {classes: classes}))
+    });
     // New Logic
-    app.post('/stores/items', isLoggedIn, allowed('items_add'), (req, res) => {
+    app.post('/stores/items', isLoggedIn, allowed('item_add'), (req, res) => {
         req.body.item = nullify(req.body.item);
         fn.create(
             m.items,
@@ -56,14 +61,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
 
-    // New Form
-    app.get('/stores/items/new', isLoggedIn, allowed('items_add'), (req, res) => {
-        fn.getOptions(itemOptions(), req)
-        .then(classes => res.render('stores/items/new', {classes: classes}))
-    });
-    
     // Edit
-    app.get('/stores/items/:id/edit', isLoggedIn, allowed('items_edit'), (req, res) => {
+    app.get('/stores/items/:id/edit', isLoggedIn, allowed('item_edit'), (req, res) => {
         fn.getOne(
             m.items,
             {item_id: req.params.id}
@@ -79,27 +78,30 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, 'stores/items/' + req.params.id, req, res));
     });
-
     // Put
-    app.put('/stores/items/:id', isLoggedIn, allowed('items_edit'), (req, res) => {
+    app.put('/stores/items/:id', isLoggedIn, allowed('item_edit'), (req, res) => {
         req.body.item = nullify(req.body.item);
         fn.update(
             m.items,
             req.body.item,
             {item_id: req.params.id}
         )
-        .then(result => res.redirect('/stores/items/' + req.params.id))
+        .then(result => {
+            req.flash('success', 'Item updated');
+            res.redirect('/stores/items/' + req.params.id);
+        })
         .catch(err => fn.error(err, '/stores/items/' + req.params.id, req, res));
     });
 
     // Delete
-    app.delete('/stores/items/:id', isLoggedIn, allowed('items_delete'), (req, res) => {
+    app.delete('/stores/items/:id', isLoggedIn, allowed('item_delete'), (req, res) => {
         fn.getOne(
-            m.item_sizes,
-            {item_id: req.params.id}
+            m.sizes,
+            {item_id: req.params.id},
+            {nullOK: true}
         )
-        .then(item_sizes => {
-            if (!item_sizes) {
+        .then(sizes => {
+            if (!sizes) {
                 fn.delete(
                     'items',
                     {item_id: req.params.id}
@@ -125,7 +127,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             m.groups, 
             m.types, 
             m.subtypes,
-            {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
+            inc.sizes({stock: true})
         ];
         fn.getOne(
             m.items,
@@ -133,7 +135,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {include: include}
         )
         .then(item => {
-            item.item_sizes.forEach(item_size => item_size.locationStock = fn.summer(item_size.stocks));
+            item.sizes.forEach(size => size.locationStock = fn.summer(size.stocks));
             fn.getNotes('items', req.params.id, req)
             .then(notes => {
                 res.render('stores/items/show', {

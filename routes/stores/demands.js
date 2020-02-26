@@ -1,6 +1,6 @@
 const op = require('sequelize').Op;
 
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //index
     app.get('/stores/demands', isLoggedIn, allowed('access_demands'), (req, res) => {
         let query = {}, where = {};
@@ -14,12 +14,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             where,
             {
                 include: [
-                    fn.users(),
-                    m.suppliers,
-                    {
-                        model: m.demand_lines,
-                        as: 'lines'
-                    }
+                    inc.users(),
+                    inc.demand_lines(),
+                    m.suppliers
                 ]
             }
         )
@@ -41,7 +38,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     //New Logic
-    app.post('/stores/demands', isLoggedIn, allowed('demands_add'), (req, res) => {
+    app.post('/stores/demands', isLoggedIn, allowed('demand_add'), (req, res) => {
         let supplier_id = req.body.supplier_id;
         fn.getUndemandedOrders(supplier_id)
         .then(orders => {
@@ -62,7 +59,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         )
                         .then(demand_id => {
                             req.flash('success', 'Demand raised, ID: ' + demand_id + ', orders updated');
-                            fn.downloadFile(results.file, res);
+                            res.redirect('/stores/orders?download=' + results.file);
                         })
                         .catch(err => fn.error(err, '/stores/orders', req, res));
                     })
@@ -94,17 +91,25 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     //action
-    app.put('/stores/demands/:id', isLoggedIn, allowed('receipts_add'), (req, res) => {
-        let actions = [],
-            cancels = req.body.actions.filter(e => JSON.parse(e).action === 'cancel'),
-            receipts = req.body.actions.filter(e => JSON.parse(e).action === 'receive');
-        if (cancels.length > 0) actions.push(fn.cancelDemandLines(cancels));
+    app.put('/stores/demands/:id', isLoggedIn, allowed('receipt_add'), (req, res) => {
+        let actions = [], cancels = [], receipts = [];
+        for (let [demand_line_id, line] of Object.entries(req.body.actions)) {
+            if (line.action === 'cancel') cancels.push(demand_line_id)
+            else if (line.action !== 'cancel' && line.action !== 'null') {
+                receipts.push({
+                    line_id:  demand_line_id,
+                    qty:      line.qty,
+                    stock_id: line.action
+                })
+            };
+        };
+        if (cancels.length > 0)  actions.push(fn.cancelDemandLines(cancels));
         if (receipts.length > 0) actions.push(fn.receiveDemandLines(receipts, req.user.user_id));
         if (actions.length > 0) {
             Promise.allSettled(actions)
             .then(results => {
                 results.forEach(result => {
-                    if (result.demandCLosed && result.demandClosed === true) req.flash('info', 'Demand closed')
+                    if (result.demandClosed && result.demandClosed === true) req.flash('info', 'Demand closed')
                 });
                 req.flash('success', 'Lines actioned')
                 res.redirect('/stores/demands/' + req.params.id);
@@ -118,22 +123,16 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     
     //Show
     app.get('/stores/demands/:id', isLoggedIn, allowed('access_demands'), (req, res) => {
-        let include = [
-            fn.users(),
-            m.suppliers,
-            {
-                model: m.demand_lines,
-                as: 'lines',
-                include: [{
-                    model: m.item_sizes,
-                    include: fn.itemSize_inc({stock: true})
-                }]
-            }
-        ];
         fn.getOne(
             m.demands,
             {demand_id: req.params.id},
-            {include: include}
+            {include: [
+                inc.users(),
+                m.suppliers,
+                inc.demand_lines({sizes: true, include: [
+                    inc.sizes({stock: true}),
+                ]}),
+            ]}
         )
         .then(demand => {
             fn.getNotes('demands', req.params.id, req)
@@ -150,7 +149,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
 
     
     // Delete
-    app.delete('/stores/demands/:id', isLoggedIn, allowed('demands_delete'), (req, res) => {
+    app.delete('/stores/demands/:id', isLoggedIn, allowed('demand_delete'), (req, res) => {
         fn.delete(
             'demands',
             {demand_id: req.params.id},

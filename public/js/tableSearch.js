@@ -11,11 +11,8 @@ function searchTable(table, inputfield) {
         td = tr[i].getElementsByTagName("td")[0];
         if (td) {
             txtValue = td.textContent || td.innerText;
-            if ((txtValue.toUpperCase().indexOf(filter) > -1) || filter === '') {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
-        }
-    }
+            if ((txtValue.toUpperCase().indexOf(filter) > -1) || filter === '') tr[i].style.display = "";
+            else tr[i].style.display = "none";
+        };
+    };
 }    

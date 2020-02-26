@@ -9,9 +9,7 @@ module.exports = (app, m) => {
     
     app.get("/resources", (req, res) => res.render("resources"));
     
-    app.get('/login', (req, res) => {
-        res.render('login')
-    });
+    app.get('/login', (req, res) => res.render('login', {redirect: req.query.redirect}));
 
     app.get('/logout', (req, res) => {
         req.logout();
@@ -19,8 +17,8 @@ module.exports = (app, m) => {
     });
     
     app.post('/login', passport.authenticate('local-signin', {
-        failureRedirect: 'login',
-    }), (req, res) => res.redirect('/stores'));
+        failureRedirect: '/login',
+    }), (req, res) => res.redirect('/' + req.query.redirect || 'stores'));
     
     app.get("*",  (req, res) => res.render("404"));
 };

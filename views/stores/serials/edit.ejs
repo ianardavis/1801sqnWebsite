@@ -13,13 +13,13 @@
 				</a>
             </li>
             <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/items/<%= serial.item_size.item_id %>">
-					<%= serial.item_size.item._description %>
+				<a class="nav-link stores_nav" href="/stores/items/<%= serial.size.item_id %>">
+					<%= serial.size.item._description %>
 				</a>
             </li>
             <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/item_sizes/<%= serial.item_size.item_size_id %>">
-					Size: <%= serial.item_size._size %>
+				<a class="nav-link stores_nav" href="/stores/sizes/<%= serial.size.size_id %>">
+					Size: <%= serial.size._size %>
 				</a>
             </li>
             <li class="nav-item">
@@ -40,14 +40,16 @@
 				<input class="btn btn-success w-100 confirm" type="submit" value='Save'>
 			</form>
 		</div>
-		<div class="col-12 col-md-9 mx-auto bordered">
-			<% if (permissions.notes_add) { %>
-				<a class="float-left btn btn-success" href="/stores/notes/new?table=serials&id=<%= serial.serial_id %>">
-					<i class='fas fa-plus'></i>
-				</a>
-			<% } %>
-			<% include ../../partials/noteTable %>
-		</div>
+		<% if (permissions.access_notes) { %>
+			<div class="col-12 col-md-9 mx-auto bordered">
+				<% if (permissions.note_add) { %>
+					<a class="float-left btn btn-success" href="/stores/notes/new?table=serials&id=<%= serial.serial_id %>">
+						<i class='fas fa-plus'></i>
+					</a>
+				<% } %>
+				<% include ../../partials/noteTable %>
+			</div>
+		<% } %>
 	</div>
 </section>
 <% include ../../partials/foot/full %>

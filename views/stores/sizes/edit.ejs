@@ -9,24 +9,24 @@
                 <a class='nav-link stores_nav' href='/stores/items'>Items</a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items/<%= item_size.item_id %>'><%= item_size.item._description %></a>
+                <a class='nav-link stores_nav' href='/stores/items/<%= size.item_id %>'><%= size.item._description %></a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.item_size_id %>'>Size: <%= item_size._size %></a>
+                <a class='nav-link stores_nav' href='/stores/sizes/<%= size.size_id %>'>Size: <%= size._size %></a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= item_size.item_size_id %>/edit'>Edit</a>
+                <a class='nav-link stores_nav' href='/stores/sizes/<%= size.size_id %>/edit'>Edit</a>
             </li>
         </ul>
     </nav>
 </section>
 <section class='container bordered'>
-    <form action='/stores/item_sizes/<%= item_size.item_size_id %>?_method=PUT' method='POST'>
+    <form action='/stores/sizes/<%= size.size_id %>?_method=PUT' method='POST'>
         <div class='form-group'>
             <div class='row'>
                 <div class='col-12'>
                     <input class="btn btn-success col-12 confirm" type="submit" value="Save">
-                    <a class='float-left' href='/stores/item_sizes/<%= item_size.item_size_id %>'>Cancel</a>
+                    <a class='float-left' href='/stores/sizes/<%= size.size_id %>'>Cancel</a>
                 </div>
             </div>
             <div class='row'>
@@ -34,7 +34,7 @@
                     <label class='col-form-label'>Issueable:</label>
                 </div> 
                 <div class='col-7'>
-                    <input class='form-control' id='_issueable' type='checkbox' name='item_size[_issueable]' value='1' <% if (item_size._issueable) { %> checked <% } %> onchange=orderableCheck()>
+                    <input class='form-control' id='_issueable' type='checkbox' name='size[_issueable]' value='1' <% if (size._issueable) { %> checked <% } %> onchange=orderableCheck()>
                 </div>
             </div>
             <div class='row'>
@@ -42,7 +42,7 @@
                     <label class='col-form-label'>Orderable:</label>
                 </div> 
                 <div class='col-7'>
-                    <input class='form-control' id='_orderable' type='checkbox' name='item_size[_orderable]' value='1' <% if (item_size._orderable) { %> checked <% } %> onchange=orderableCheck()>
+                    <input class='form-control' id='_orderable' type='checkbox' name='size[_orderable]' value='1' <% if (size._orderable) { %> checked <% } %> onchange=orderableCheck()>
                 </div>
             </div>
             <div class='row'>
@@ -50,7 +50,7 @@
                     <label class='col-form-label'>Has Serial #:</label>
                 </div> 
                 <div class='col-7'>
-                    <input class='form-control' id='_serials' type='checkbox' name='item_size[_serials]' value='1' <% if (item_size._serials) { %> checked <% } %> onchange=orderableCheck()>
+                    <input class='form-control' id='_serials' type='checkbox' name='size[_serials]' value='1' <% if (size._serials) { %> checked <% } %> onchange=orderableCheck()>
                 </div>
             </div>
             <div class='row'>
@@ -58,7 +58,7 @@
                     <label class='col-form-label'>Has NSNs:</label>
                 </div> 
                 <div class='col-7'>
-                    <input class='form-control' id='_nsns' type='checkbox' name='item_size[_nsns]' value='1' <% if (item_size._nsns) { %> checked <% } %> onchange=orderableCheck()>
+                    <input class='form-control' id='_nsns' type='checkbox' name='size[_nsns]' value='1' <% if (size._nsns) { %> checked <% } %> onchange=orderableCheck()>
                 </div>
             </div>
             <div class='row'>
@@ -66,9 +66,9 @@
                     <label class='col-form-label'>Supplier:</label>
                 </div> 
                 <div class='col-7'>
-                    <select class='form-control' name='item_size[supplier_id]' id='supplier_id' type='text' onchange=supplierCheck()>
+                    <select class='form-control' name='size[supplier_id]' id='supplier_id' type='text' onchange=supplierCheck()>
                         <% suppliers.forEach(supplier => { %>
-                            <% if (supplier.supplier_id === item_size.supplier_id) { %>
+                            <% if (supplier.supplier_id === size.supplier_id) { %>
                                 <option value='<%= supplier.supplier_id %>' selected><%= supplier._name %></option>         
                             <% } else { %>
                                 <option value='<%= supplier.supplier_id %>'><%= supplier._name %></option>         
@@ -82,7 +82,7 @@
                     <label class='col-form-label'>Demand Page:</label>
                 </div> 
                 <div class='col-7'>
-                    <input class='form-control' id='_demand_page' type='text' name='item_size[_demand_page]' maxlength='20' value='<%= item_size._demand_page %>'>
+                    <input class='form-control' id='_demand_page' type='text' name='size[_demand_page]' maxlength='20' value='<%= size._demand_page %>'>
                 </div>
             </div>
             <div class='row'>
@@ -90,7 +90,7 @@
                     <label class='col-form-label'>Cell:</label>
                 </div> 
                 <div class='col-7'>
-                    <input class='form-control' id='_demand_cell' type='text' name='item_size[_demand_cell]' value='<%= item_size._demand_cell %>' maxlength='3'>
+                    <input class='form-control' id='_demand_cell' type='text' name='size[_demand_cell]' value='<%= size._demand_cell %>' maxlength='3'>
                 </div>
             </div>
             <div class='row'>
@@ -98,7 +98,7 @@
                     <label class='col-form-label'>Ordering Details:</label>
                 </div> 
                 <div class='col-7'>
-                    <textarea class='form-control' name='item_size[_ordering_details]' cols='50' rows='10' maxlength='1000'><%= item_size._ordering_details %></textarea>
+                    <textarea class='form-control' name='size[_ordering_details]' cols='50' rows='10' maxlength='1000'><%= size._ordering_details %></textarea>
                 </div>
             </div>
         </div>

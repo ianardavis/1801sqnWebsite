@@ -28,7 +28,7 @@
                     <a class='float-left btn btn-primary mr-1' href='/stores/notes/<%= note.note_id %>/edit'>
                         <i class='fas fa-pencil-alt'></i>
                     </a>
-                    <% if (permissions.notes_delete) { %>
+                    <% if (permissions.note_delete) { %>
                         <form action='/stores/notes/<%= note.note_id %>?_method=DELETE' method='POST'>
                             <button class='float-left btn btn-danger confirm'>
                                 <i class='fas fa-trash-alt'></i>

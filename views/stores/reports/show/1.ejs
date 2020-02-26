@@ -29,12 +29,12 @@
                     <% stock.forEach(item => { %>
                         <tr>
                             <td>
-                                <a class="btn btn-sm btn-primary float-right" href="/stores/items/<%= item.item_size.item_id %>"><i class="fas fa-search"></i></a>
-                                <%= item.item_size.item._description %>
+                                <a class="btn btn-sm btn-primary float-right" href="/stores/items/<%= item.size.item_id %>"><i class="fas fa-search"></i></a>
+                                <%= item.size.item._description %>
                             </td>
                             <td>
-                                <a class="btn btn-sm btn-primary float-right" href="/stores/item_sizes/<%= item.item_size_id %>"><i class="fas fa-search"></i></a>
-                                <%= item.item_size._size %>
+                                <a class="btn btn-sm btn-primary float-right" href="/stores/sizes/<%= item.size_id %>"><i class="fas fa-search"></i></a>
+                                <%= item.size._size %>
                             </td>
                             <td>
                                 <a class="btn btn-sm btn-primary float-right" href="/stores/stock/<%= item.stock_id %>/edit"><i class="fas fa-search"></i></a>

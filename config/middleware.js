@@ -18,7 +18,7 @@ module.exports = (mw, getPermissions) => {
             };
         } else {
             req.flash('danger', 'You need to be signed in to do that!');
-            res.redirect('/login');
+            res.redirect('/login?redirect=' + req.route.path.split('/')[1]);
         };
     };
 };

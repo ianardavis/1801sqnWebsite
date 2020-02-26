@@ -1,5 +1,5 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     app.get('/stores/reports', isLoggedIn, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
 
     app.get('/stores/reports/:id', isLoggedIn, allowed('access_reports'), (req, res) => {
@@ -7,7 +7,11 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.getAllWhere(
                 m.stock,
                 {_qty: {[op.lt]: 0}},
-                {include: [m.locations, {model: m.item_sizes, include: fn.itemSize_inc()}], nullOk: true}
+                {include: [
+                    m.locations,
+                    inc.sizes()
+                ],
+                nullOk: true}
             )
             .then(stock => res.render('stores/reports/show/1', {stock: stock}))
             .catch(err => fn.error(err, '/stores/reports', req, res));
@@ -20,8 +24,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 },
                 {
                     include: [
-                        {model: m.issue_lines, as: 'lines'},
-                        fn.users('_to')
+                        inc.issue_lines(),
+                        inc.users({as: '_to'})
                     ],
                     nullOk: true
                 }
@@ -32,24 +36,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.getAll(
                 m.items,
                 [{
-                    model: m.item_sizes,
+                    model: m.sizes,
                     where: {_orderable: 1},
                     include: [
                         m.stock,
-                        {
-                            model: m.suppliers,
-                            where: {supplier_id: Number(req.query.supplier_id) || 1}
-                        },{
-                            model: m.order_lines,
-                            as: 'orders',
-                            where: {demand_line_id: null},
-                            required: false
-                        },{
-                            model: m.request_lines,
-                            as: 'requests',
-                            where: {_status: 'Pending'},
-                            required: false
-                        }
+                        inc.suppliers({where: {supplier_id: Number(req.query.supplier_id) || 1}}),
+                        inc.order_lines({as: 'orders', where: {demand_line_id: null}}),
+                        inc.request_lines({as: 'requests', where: {_status: 'Pending'}})
                     ]
                 }]
             )
@@ -63,17 +56,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.getAll(
                 m.items,
                 [{
-                    model: m.item_sizes,
-                    include: [{
-                        model: m.stock,
-                        include: [
-                            m.locations,
-                            {
-                                model: m.item_sizes,
-                                include: fn.itemSize_inc()
-                            }
-                        ]
-                    }]
+                    model: m.sizes,
+                    include: [inc.stock({size: true})]
                 }]                
             )
             .then(items => res.render('stores/reports/show/4', {items: items}))
@@ -81,13 +65,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         } else if (Number(req.params.id) === 5) {
             fn.getAll(
                 m.locations,
-                [{
-                    model: m.stock,
-                    include: [{
-                        model: m.item_sizes,
-                        include: fn.itemSize_inc()
-                    }]
-                }]
+                [inc.stock({size: true})]
             )
             .then(locations => {
                 locations.sort(function(a, b) {
@@ -115,7 +93,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.post('/stores/reports/3', isLoggedIn, allowed('access_reports'), (req, res) => {
         let selected = []
         for (let [key, line] of Object.entries(req.body.selected)) {
-            if (Number(line) > 0) selected.push({item_size_id: key, qty: line});
+            if (Number(line) > 0) selected.push({size_id: key, qty: line});
         };
         if (selected.length > 0) {
             fn.createOrder(

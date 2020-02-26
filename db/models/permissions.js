@@ -14,43 +14,49 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '1',
       comment: "null"
     },
+    'file_download': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "account_enabled"
+    },
     'access_items': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'items_add': {
+    'item_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_items"
     },
-    'items_delete': {
+    'item_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_items"
     },
-    'items_edit': {
+    'item_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_items"
     },
-    'item_sizes_add': {
+    'size_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_items"
     },
-    'item_sizes_edit': {
+    'size_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_items"
     },
-    'item_sizes_delete': {
+    'size_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -80,7 +86,7 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_stock"
     },
-    'adjusts_add': {
+    'adjust_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -92,19 +98,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_stock"
     },
-    'locations_add': {
+    'location_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_locations"
     },
-    'locations_edit': {
+    'location_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_locations"
     },
-    'locations_delete': {
+    'location_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -116,19 +122,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_items"
     },
-    'serials_add': {
+    'serial_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_serials"
     },
-    'serials_edit': {
+    'serial_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_serials"
     },
-    'serials_delete': {
+    'serial_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -140,19 +146,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_items"
     },
-    'nsns_add': {
+    'nsn_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_nsns"
     },
-    'nsns_edit': {
+    'nsn_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_nsns"
     },
-    'nsns_delete': {
+    'nsn_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -164,19 +170,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '1',
       comment: "account_enabled"
     },
-    'requests_add': {
+    'request_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '1',
       comment: "access_requests"
     },
-    'requests_edit': {
+    'request_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_requests"
     },
-    'requests_delete': {
+    'request_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -188,19 +194,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'orders_add': {
+    'order_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_orders"
     },
-    'orders_edit': {
+    'order_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_orders"
     },
-    'orders_delete': {
+    'order_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -212,13 +218,13 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'demands_add': {
+    'demand_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_demands"
     },
-    'demands_delete': {
+    'demand_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -230,13 +236,13 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_suppliers"
     },
-    'receipts_add': {
+    'receipt_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_receipts"
     },
-    'receipts_delete': {
+    'receipt_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -248,13 +254,13 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'issues_add': {
+    'issue_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_issues"
     },
-    'issues_delete': {
+    'issue_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -266,13 +272,13 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_issues"
     },
-    'returns_add': {
+    'return_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_returns"
     },
-    'returns_delete': {
+    'return_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -284,31 +290,31 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'users_add': {
+    'user_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_users"
     },
-    'users_edit': {
+    'user_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_users"
     },
-    'users_delete': {
+    'user_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_users"
     },
-    'users_permissions': {
+    'user_permissions': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_users"
     },
-    'users_password': {
+    'user_password': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -320,19 +326,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'notes_add': {
+    'note_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_notes"
     },
-    'notes_edit': {
+    'note_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_notes"
     },
-    'notes_delete': {
+    'note_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -344,23 +350,47 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'suppliers_add': {
+    'supplier_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_suppliers"
     },
-    'suppliers_edit': {
+    'supplier_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_suppliers"
     },
-    'suppliers_delete': {
+    'supplier_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_suppliers"
+    },
+    'access_accounts': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_suppliers"
+    },
+    'account_add': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_accounts"
+    },
+    'account_edit': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_accounts"
+    },
+    'account_delete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "access_accounts"
     },
     'access_reports': {
       type: DataTypes.INTEGER(4),
@@ -374,133 +404,133 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "account_enabled"
     },
-    'settings_edit': {
+    'setting_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'ranks_add': {
+    'rank_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'ranks_edit': {
+    'rank_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'ranks_delete': {
+    'rank_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'statuses_add': {
+    'status_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'statuses_delete': {
+    'status_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'statuses_edit': {
+    'status_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'genders_add': {
+    'gender_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'genders_delete': {
+    'gender_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'genders_edit': {
+    'gender_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'categories_add': {
+    'category_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'categories_delete': {
+    'category_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'categories_edit': {
+    'category_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'groups_add': {
+    'group_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'groups_delete': {
+    'group_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'groups_edit': {
+    'group_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'types_add': {
+    'type_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'types_edit': {
+    'type_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'types_delete': {
+    'type_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'subtypes_add': {
+    'subtype_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'subtypes_edit': {
+    'subtype_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'subtypes_delete': {
+    'subtype_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -512,19 +542,19 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_suppliers"
     },
-    'files_add': {
+    'file_add': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_files"
     },
-    'files_edit': {
+    'file_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_files"
     },
-    'files_delete': {
+    'file_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',

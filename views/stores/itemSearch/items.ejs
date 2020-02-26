@@ -4,6 +4,7 @@
 <section id='body'>
     <div class='row container mx-auto'>
         <div class='col-12 bordered mb-2'>
+            <h3><%= callType %></h3>
             <h5>Items</h5>
             <input class='form-control' type='text' id='itemSearch' onkeyup='searchTable("itemsTable", "itemSearch")' placeholder='Search for items...'>
             <form action='/stores/itemSearch' method='POST'>

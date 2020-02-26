@@ -4,16 +4,17 @@
 <section id='body'>
 <div class='row container mx-auto'>
     <div class='col-12 col-md-6 bordered mb-2 mx-auto'>
+        <h3><%= callType %></h3>
         <h4><%= description %></h4>
         <input class='form-control' type='text' id='sizeSearch' onkeyup='searchTable("sizesTable", "sizeSearch")' placeholder='Search for sizes...'>
         <form action='/stores/itemSearch/size' method='POST'>
             <input type='hidden' name='item_id' value='<%= item_id %>'>
             <input type='hidden' name='callType' value='<%= callType %>'>
             <input type='hidden' name='supplier_id' value='<%= supplier_id %>'>
-            <select class='form-control w-100' name='item_size' id='sizesTable' type='text' size='15'>
+            <select class='form-control w-100' name='size' id='sizesTable' type='text' size='15'>
                 <option value=''></option>
-                <% item_sizes.forEach(item_size => { %>
-                    <option value='<%= item_size.item_size_id %>'><%= item_size._size %></option>
+                <% sizes.forEach(size => { %>
+                    <option value='<%= size.size_id %>'><%= size._size %></option>
                 <% }); %>
             </select>
             <button class='btn btn-success w-100'>Select</button>

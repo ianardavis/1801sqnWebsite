@@ -1,34 +1,33 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
+    // New Form
+    app.get('/stores/serials/new', isLoggedIn, allowed('serial_add'), (req, res) => {
+        fn.getOne(
+            m.sizes,
+            {size_id: req.query.size_id},
+            {include: [m.items]}
+        )
+        .then(itemsize => res.render('stores/serials/new', {itemsize: itemsize}))
+        .catch(err => fn.error(err, '/stores/sizes/' + req.query.size_id, req, res));
+    });
     // New Logic
-    app.post('/stores/serials', isLoggedIn, allowed('serials_add'), (req, res) => {
+    app.post('/stores/serials', isLoggedIn, allowed('serial_add'), (req, res) => {
         fn.create(
             m.serials,
             req.body.serial
         )
         .then(serial => {
             req.flash('success', 'Serial added')
-            res.redirect('/stores/item_sizes/' + serial.item_size_id);
+            res.redirect('/stores/sizes/' + serial.size_id);
         })
-        .catch(err => fn.error(err, '/stores/item_sizes/' + req.body.serial.item_size_id, req, res));
-    });
-
-    // New Form
-    app.get('/stores/serials/new', isLoggedIn, allowed('serials_add'), (req, res) => {
-        fn.getOne(
-            m.item_sizes,
-            {item_size_id: req.query.item_size_id},
-            {include: fn.itemSize_inc()}
-        )
-        .then(itemsize => res.render('stores/serials/new', {itemsize: itemsize}))
-        .catch(err => fn.error(err, '/stores/item_sizes/' + req.query.item_size_id, req, res));
+        .catch(err => fn.error(err, '/stores/sizes/' + req.body.serial.size_id, req, res));
     });
 
     // Edit
-    app.get('/stores/serials/:id/edit', isLoggedIn, allowed('serials_edit'), (req, res) => {
+    app.get('/stores/serials/:id/edit', isLoggedIn, allowed('serial_edit'), (req, res) => {
         fn.getOne(
             m.serials,
             {serial_id: req.params.id},
-            {include: [{model: m.item_sizes, include: [m.items]}]}
+            {include: [inc.sizes()]}
         )
         .then(serial => {
             fn.getNotes('serials', req.params.id, req)
@@ -43,7 +42,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
     // Put
-    app.put('/stores/serials/:id', isLoggedIn, allowed('serials_edit'), (req, res) => {
+    app.put('/stores/serials/:id', isLoggedIn, allowed('serial_edit'), (req, res) => {
         fn.update(
             m.serials,
             req.body.serial,
@@ -51,12 +50,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         )
         .then(result => {
             req.flash('success', 'Serial updated');
-            res.redirect('/stores/item_sizes/' + serial.item_size_id);
+            res.redirect('/stores/sizes/' + serial.size_id);
         })
-        .catch(err => fn.error(err, '/stores/item_sizes/' + serial.item_size_id, req, res));
+        .catch(err => fn.error(err, '/stores/sizes/' + serial.size_id, req, res));
     });
     // Delete
-    app.delete('/stores/serials/:id', isLoggedIn, allowed('serials_delete'), (req, res) => {
+    app.delete('/stores/serials/:id', isLoggedIn, allowed('serial_delete'), (req, res) => {
         fn.delete(
             'serials', 
             {serial_id: req.params.id}

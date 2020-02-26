@@ -9,44 +9,33 @@
     </nav>
 </section>
 <section>
-	<% if (requests && requests.length > 0) { %>
-		<div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
-			<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-				<div class="toast-header">
-					<strong class="mr-auto">Requests</strong>
-					<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="toast-body cardDarkText">
-					There are open requests which require attention!
-				</div>
-			</div>
-		</div>
-	<% } %>
 	<% let cards = [] %>
 	<% if (permissions.access_suppliers) cards.push({href: 'stores/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
 	<% if (permissions.access_items)	 cards.push({href: 'stores/items', 	   title: 'Items', 	   image: 'tshirt'}) %>
 	<% if (permissions.access_users) { %>
 		<% cards.push({href: 'stores/users', title: 'Users', image: 'user'}) %>
 	<% } else { %>
-		<% cards.push({href: 'stores/users/' + currentUser.user_id, title: 'Your Profile', image: 'user'}) %>
+		<% cards.push({href: 'stores/users/' + currentUser.user_id, title: 'Your Account', image: 'user'}) %>
 	<% } %>
-	<% if (permissions.access_requests)  cards.push({href: '/stores/requests',	  title: 'Requests',  image: 'question'}) %>
-	<% if (permissions.access_orders) 	 cards.push({href: '/stores/orders',  	  title: 'Orders',    image: 'list'}) %>
-	<% if (permissions.access_demands) 	 cards.push({href: '/stores/demands', 	  title: 'Demands',   image: 'stream'}) %>
-	<% if (permissions.access_issues) 	 cards.push({href: '/stores/issues',  	  title: 'Issues',    image: 'address-card'}) %>
-	<% if (permissions.access_receipts)  cards.push({href: '/stores/receipts',	  title: 'Receipts',  image: 'receipt'}) %>
-	<% if (permissions.access_reports) 	 cards.push({href: '/stores/reports', 	  title: 'Reports',   image: 'chart-pie'}) %>
-	<% if (permissions.access_canteen) 	 cards.push({href: '/stores/canteen', title: 'Canteen',   image: 'cash-register'}) %>
-	<% if (permissions.access_settings)  cards.push({href: '/stores/settings',    title: 'Settings',  image: 'cog'}) %>
+	<% if (permissions.access_requests) cards.push({href: '/stores/requests', title: 'Requests', image: 'question', notifications: requests.length}) %>
+	<% if (permissions.access_orders)   cards.push({href: '/stores/orders',	  title: 'Orders',   image: 'list'}) %>
+	<% if (permissions.access_demands)  cards.push({href: '/stores/demands',  title: 'Demands',  image: 'stream'}) %>
+	<% if (permissions.access_issues)   cards.push({href: '/stores/issues',   title: 'Issues',   image: 'address-card'}) %>
+	<% if (permissions.access_receipts) cards.push({href: '/stores/receipts', title: 'Receipts', image: 'receipt'}) %>
+	<% if (permissions.access_reports) 	cards.push({href: '/stores/reports',  title: 'Reports',  image: 'chart-pie'}) %>
+	<% if (permissions.access_settings) cards.push({href: '/stores/settings', title: 'Settings', image: 'cog'}) %>
 	<div class="row container m-auto p-0 menu">
 		<% cards.forEach(card => { %>
 			<div class="col-6 col-lg-4 col-xl-3">
 				<div class="card m-3">
 					<a href="<%= card.href %>">
 						<div class="card-header">
-							<h3><%= card.title %></h3>
+							<h3>
+								<%= card.title %>
+								<% if (card.notifications && card.notifications > 0) { %>
+									<span class="float-right badge badge-danger"><%= card.notifications %></span>
+								<% } %>
+							</h3>
 						</div>
 						<div class="card-body">
 							<i class="fas fa-<%= card.image %> fa-5x"></i>
@@ -58,8 +47,4 @@
 	</div>
 </section>
 <% include ../partials/foot/full %>
-<script>
-	$('.toast').toast({autohide: false});
-	$('.toast').toast('show');
-</script>
 <% include ../partials/foot/htmlClose %>

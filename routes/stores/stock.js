@@ -1,4 +1,14 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
+    // New Form
+    app.get('/stores/stock/new', isLoggedIn, allowed('stock_add'), (req, res) => {
+        fn.getOne(
+            m.sizes,
+            {size_id: req.query.size_id},
+            {include: inc.sizes()}
+        )
+        .then(item => res.render('stores/stock/new', {item: item}))
+        .catch(err => fn.error(err, '/stores/items', req, res));
+    });
     // New Logic
     app.post('/stores/stock', isLoggedIn, allowed('stock_add'), (req, res) => {
         fn.getOne(
@@ -23,20 +33,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
     function createStock(stock, req, res) {
         fn.create(m.stock,stock)
-        .then(stock => res.redirect('/stores/item_sizes/' + stock.item_size_id))
+        .then(stock => res.redirect('/stores/sizes/' + stock.size_id))
         .catch(err => fn.error(err, '/stores/items', req, res));;
     };
-
-    // New Form
-    app.get('/stores/stock/new', isLoggedIn, allowed('stock_add'), (req, res) => {
-        fn.getOne(
-            m.item_sizes,
-            {item_size_id: req.query.item_size_id},
-            {include: fn.itemSize_inc()}
-        )
-        .then(item => res.render('stores/stock/new', {item: item}))
-        .catch(err => fn.error(err, '/stores/items', req, res));
-    });
 
     // Edit
     app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'), (req, res) => {
@@ -45,11 +44,11 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {stock_id: req.params.id},
             {
                 include: [
-                    {model: m.item_sizes, include: [m.items]},
-                    {model: m.adjusts,    include: [fn.users()]},
-                    {model: m.receipt_lines, include: [{model: m.receipts, include: [fn.users()]}]},
-                    {model: m.issue_lines,   include: [{model: m.issues,   include: [fn.users('_to')]}]},
-                    {model: m.return_lines,  include: [{model: m.returns,  include: [fn.users('_from')]}]},
+                    inc.sizes(),
+                    inc.adjusts(),
+                    inc.receipt_lines({receipts: true, as: 'receipts'}),
+                    inc.issue_lines({issues: true, as: 'issues'}),
+                    inc.return_lines({returns: true, as: 'returns'}),
                     m.locations
                 ]
             }
@@ -66,7 +65,6 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
-
     // Put
     app.put('/stores/stock/:id', isLoggedIn, allowed('stock_edit'), (req, res) => {
         fn.getOne(
@@ -81,10 +79,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             .then(location => {
                 if (location) {
                     if (Number(location.location_id) !== Number(stock.location_id)) {
-                        updateStockLocation(stock.item_size_id, location.location_id, req, res)
+                        updateStockLocation(stock.size_id, location.location_id, req, res)
                     } else {
                         req.flash('info', 'No changes')
-                        res.redirect('/stores/item_sizes/' + stock.item_size_id)
+                        res.redirect('/stores/sizes/' + stock.size_id)
                     };
                 } else {
                     fn.create(
@@ -92,17 +90,17 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         {_location: req.body._location}
                     )
                     .then(new_location => {
-                        updateStockLocation(stock.item_size_id, new_location.location_id, req, res)
+                        updateStockLocation(stock.size_id, new_location.location_id, req, res)
                     })
-                    .catch(err => fn.error(err, '/stores/item_sizes/' + stock.item_size_id, req, res));
+                    .catch(err => fn.error(err, '/stores/sizes/' + stock.size_id, req, res));
                 };
             })
-            .catch(err => fn.error(err, '/stores/item_sizes/' + stock.item_size_id, req, res));
+            .catch(err => fn.error(err, '/stores/sizes/' + stock.size_id, req, res));
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
         
     });
-    function updateStockLocation(item_size_id, location_id, req, res) {
+    function updateStockLocation(size_id, location_id, req, res) {
         fn.update(
             m.stock,
             {location_id: location_id},
@@ -110,9 +108,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         )
         .then(result => {
             req.flash('success', 'Stock updated');
-            res.redirect('/stores/item_sizes/' + item_size_id)
+            res.redirect('/stores/sizes/' + size_id)
         })
-        .catch(err => fn.error(err, '/stores/item_sizes/' + item_size_id, req, res));
+        .catch(err => fn.error(err, '/stores/sizes/' + size_id, req, res));
     };
 
     // Delete
@@ -129,12 +127,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 )
                 .then(result => {
                     if (result) req.flash('success', 'Stock deleted')
-                    res.redirect('/stores/item_sizes/' + stock.item_size_id)
+                    res.redirect('/stores/sizes/' + stock.size_id)
                 })
                 .catch(err => fn.error(err, '/stores/items', req, res));
             } else {
                 req.flash('danger', 'Cannot delete stock!');
-                res.redirect('/stores/item_sizes/' + stock.item_size_id);
+                res.redirect('/stores/sizes/' + stock.size_id);
             };
         })
         .catch(err => fn.error(err, '/stores/items', req, res));

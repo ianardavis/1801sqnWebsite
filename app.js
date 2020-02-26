@@ -38,10 +38,11 @@ app.use(express.static(__dirname + '/public'));
 
 let m = require('./db/models');
 require('./routes/stores')(app, m);
+require('./routes/canteen')(app, m);
 require('./routes/site')(app, m);
 require('./config/passport.js')(passport, m);
 
-app.listen(1801, err => {
+app.listen(3000, err => {
     if (err) console.log(err);
     else console.log('Server listening on port 1801');
 });

@@ -1,32 +1,31 @@
-const fn = {},
-      mw = {},
+const fn = {}, mw = {}, inc = {},
       op = require('sequelize').Op;
 module.exports = (app, m) => {
     var al = require(process.env.ROOT + '/config/allowed.js');
-    require(process.env.ROOT + '/functions')(fn, m);
+    require(process.env.ROOT + '/includes')(inc, m);
+    require(process.env.ROOT + '/functions')(fn, m, inc);
     require(process.env.ROOT + '/config/middleware')(mw, fn.getPermissions);
-    require('./adjusts')    (app, al, fn, mw.isLoggedIn, m);
-    require('./canteen')    (app, al, fn, mw.isLoggedIn, m);
-    require('./demands')    (app, al, fn, mw.isLoggedIn, m);
-    require('./files')      (app, al, fn, mw.isLoggedIn, m);
-    require('./issues')     (app, al, fn, mw.isLoggedIn, m);
-    require('./item_sizes') (app, al, fn, mw.isLoggedIn, m);
-    require('./items')      (app, al, fn, mw.isLoggedIn, m);
-    require('./itemSearch') (app, fn, mw.isLoggedIn,     m);
-    require('./notes')      (app, al, fn, mw.isLoggedIn, m);
-    require('./nsns')       (app, al, fn, mw.isLoggedIn, m);
-    require('./options')    (app, al, fn, mw.isLoggedIn, m);
-    require('./orders')     (app, al, fn, mw.isLoggedIn, m);
-    require('./permissions')(app, al, fn, mw.isLoggedIn, m);
-    require('./receipts')   (app, al, fn, mw.isLoggedIn, m);
-    require('./reports')    (app, al, fn, mw.isLoggedIn, m);
-    require('./requests')   (app, al, fn, mw.isLoggedIn, m);
-    require('./returns')    (app, al, fn, mw.isLoggedIn);
-    require('./serials')    (app, al, fn, mw.isLoggedIn, m);
-    require('./settings')   (app, al, fn, mw.isLoggedIn, m);
-    require('./stock')      (app, al, fn, mw.isLoggedIn, m);
-    require('./suppliers')  (app, al, fn, mw.isLoggedIn, m);
-    require('./users')      (app, al, fn, mw.isLoggedIn, m);
+    require('./accounts')   (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./adjusts')    (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./demands')    (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./files')      (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./issues')     (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./sizes') (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./items')      (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./itemSearch') (app, fn, inc, mw.isLoggedIn,     m);
+    require('./notes')      (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./nsns')       (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./orders')     (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./permissions')(app, al, fn, inc, mw.isLoggedIn, m);
+    require('./receipts')   (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./reports')    (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./requests')   (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./returns')    (app, al, fn, inc, mw.isLoggedIn);
+    require('./serials')    (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./settings')   (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./stock')      (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./suppliers')  (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./users')      (app, al, fn, inc, mw.isLoggedIn, m);
 
     app.get('/stores', mw.isLoggedIn, (req, res) => {
         fn.getAllWhere(m.requests, 
@@ -37,5 +36,9 @@ module.exports = (app, m) => {
         )
         .then(requests => res.render('stores/index', {requests: requests}))
         .catch(err => res.render(err));
+    });
+
+    app.get('/stores/download', mw.isLoggedIn, al('file_download'), (req, res) => {
+        if (req.query.file) fn.downloadFile(req.query.file, res);
     });
 };

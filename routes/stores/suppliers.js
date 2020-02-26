@@ -1,11 +1,11 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     // Index
     app.get('/stores/suppliers', isLoggedIn, allowed('access_suppliers'), (req, res) => {
         fn.getAllWhere(
             m.suppliers,
             {supplier_id: {[op.not]: 3}},
-            {include: [m.item_sizes]}
+            {include: [m.sizes]}
         )
         .then(suppliers => {
             fn.getSetting({setting: 'default_supplier', default: -1})
@@ -15,8 +15,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores', req, res));
     });
 
+    // New Form
+    app.get('/stores/suppliers/new', isLoggedIn, allowed('supplier_add'), (req, res) => res.render('stores/suppliers/new'));
     // New Logic
-    app.post('/stores/suppliers', isLoggedIn, allowed('suppliers_add'), (req, res) => {
+    app.post('/stores/suppliers', isLoggedIn, allowed('supplier_add'), (req, res) => {
         if (!req.body.supplier._stores) {req.body.supplier._stores = 0};
         fn.create(
             m.suppliers,
@@ -39,22 +41,26 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/suppliers/' + supplier_id, req, res));
     };
 
-    // New Form
-    app.get('/stores/suppliers/new', isLoggedIn, allowed('suppliers_add'), (req, res) => res.render('stores/suppliers/new'));
-
     // Edit
-    app.get('/stores/suppliers/:id/edit', isLoggedIn, allowed('suppliers_edit'), (req, res) => {
+    app.get('/stores/suppliers/:id/edit', isLoggedIn, allowed('supplier_edit'), (req, res) => {
         fn.getSetting({setting: 'default_supplier', default: -1})
         .then(defaultSupplier => {
-            fn.getOne(m.suppliers, {supplier_id: req.params.id})
-            .then(supplier => res.render('stores/suppliers/edit', {supplier: supplier, _default: defaultSupplier}))
+            fn.getAll(m.accounts)
+            .then(accounts => {
+                fn.getOne(m.suppliers, {supplier_id: req.params.id})
+                .then(supplier => res.render('stores/suppliers/edit', {
+                    supplier: supplier,
+                    _default: defaultSupplier,
+                    accounts: accounts
+                }))
+                .catch(err => fn.error(err, '/stores/suppliers/' + req.params.id, req, res));
+            })
             .catch(err => fn.error(err, '/stores/suppliers/' + req.params.id, req, res));
         });
     });
-
     // Put
     app.put('/stores/suppliers/:id/default', isLoggedIn, allowed('suppliers_edit'), (req, res) => setDefault(req.params.id, req, res));
-    app.put('/stores/suppliers/:id', isLoggedIn, allowed('suppliers_edit'), (req, res) => {
+    app.put('/stores/suppliers/:id', isLoggedIn, allowed('supplier_edit'), (req, res) => {
         if (!req.body.supplier._stores) {req.body.supplier._stores = 0};
         fn.update(
             m.suppliers,
@@ -69,7 +75,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     // Delete
-    app.delete('/stores/suppliers/:id', isLoggedIn, allowed('suppliers_delete'), (req, res) => {
+    app.delete('/stores/suppliers/:id', isLoggedIn, allowed('supplier_delete'), (req, res) => {
         if (req.params.id !== '1' && req.params.id !== '2' && req.params.id !== '3') {
             fn.delete(
                 'suppliers',
@@ -98,9 +104,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {supplier_id: req.params.id},
             {include: [
                 m.files,
-                m.inventories,
-                {model: m.item_sizes, include: [m.items]},
-                {model: m.receipts,   include: [fn.users(), {model: m.receipt_lines, as: 'lines'}]}
+                m.accounts,
+                inc.sizes(),
+                inc.receipts({as: 'receipts', lines: true})
             ]}
         )
         .then(supplier => {
@@ -109,7 +115,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 res.render('stores/suppliers/show', {
                     supplier: supplier,
                     notes:    notes,
-                    query:    {sn: Number(req.query.sn) || 2}
+                    query:    {system: Number(req.query.system) || 2}
                 });
             });
         })

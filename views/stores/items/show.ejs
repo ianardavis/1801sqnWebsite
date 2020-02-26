@@ -23,10 +23,10 @@
 <section class='container'>
 	<div class='row'>
 		<div class='col-12 col-md-6 col-lg-7 mb-2 container bordered'>
-            <% if (permissions.items_edit) { %>
+            <% if (permissions.item_edit) { %>
                 <a class='float-left btn btn-success mr-1' href='/stores/items/<%= item.item_id %>/edit'><i class='fas fa-pencil-alt'></i></a>
             <% } %>
-            <% if (permissions.items_delete) { %>
+            <% if (permissions.item_delete) { %>
                 <form action='/stores/items/<%= item.item_id %>?_method=DELETE' method='POST'>
                     <button class='float-left btn btn-danger confirm'>
                         <i class='fas fa-trash-alt'></i>
@@ -86,8 +86,8 @@
             </div>
 		</div>
 		<div class='col-12 col-md-6 col-lg-5 mb-2 container bordered'>
-                <% if (permissions.item_sizes_add) { %>
-                    <a class='float-left btn btn-success mb-1' href='/stores/item_sizes/new?item_id=<%= item.item_id %>'>
+                <% if (permissions.size_add) { %>
+                    <a class='float-left btn btn-success mb-1' href='/stores/sizes/new?item_id=<%= item.item_id %>'>
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
@@ -101,16 +101,16 @@
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='sizeTable'>
-                    <% item.item_sizes.forEach(item_size => { %>
+                    <% item.sizes.forEach(size => { %>
                         <tr>
                             <td>
-                                <%= item_size._size %>
+                                <%= size._size %>
                             </td>
                             <td>
-                                <%= item_size.locationStock %>
+                                <%= size.locationStock %>
                             </td>
                             <td>
-                                <a class='btn btn-sm btn-primary' href='/stores/item_sizes/<%= item_size.item_size_id %>'>
+                                <a class='btn btn-sm btn-primary' href='/stores/sizes/<%= size.size_id %>'>
                                     <i class='fas fa-search'></i>
                                 </a>
                             </td>
@@ -120,12 +120,12 @@
             </table>
         </div>
         <% if (permissions.access_notes) {%>
-        <div class='col-12 bordered'>
-            <% if (permissions.notes_add) { %>
-                <a class='float-left btn btn-success' href='/stores/notes/new?table=items&id=<%= item.item_id %>'><i class='fas fa-plus'></i></a>
-            <% } %>
-            <% include ../../partials/noteTable %>
-        </div>
+            <div class='col-12 bordered'>
+                <% if (permissions.note_add) { %>
+                    <a class='float-left btn btn-success' href='/stores/notes/new?table=items&id=<%= item.item_id %>'><i class='fas fa-plus'></i></a>
+                <% } %>
+                <% include ../../partials/noteTable %>
+            </div>
         <% } %>
     </div>
 </section>

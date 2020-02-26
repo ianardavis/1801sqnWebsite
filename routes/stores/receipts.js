@@ -1,6 +1,6 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //New Form
-    app.get('/stores/receipts/new', isLoggedIn, allowed('receipts_add'), (req, res) => {
+    app.get('/stores/receipts/new', isLoggedIn, allowed('receipt_add'), (req, res) => {
         if (req.query.supplier_id && req.query.supplier_id !== '') {
             fn.getOne(
                 m.suppliers,
@@ -14,16 +14,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         };
     });
     //New Logic
-    app.post('/stores/receipts', isLoggedIn, allowed('receipts_add'), (req, res) => {
+    app.post('/stores/receipts', isLoggedIn, allowed('receipt_add'), (req, res) => {
         if (req.body.selected) {
-            let items = [];
-            for (let [key, line] of Object.entries(req.body.selected)) {
-                items.push(line);
-            };
             if (items.length > 0) {
                 fn.createReceipt(
                     req.body.supplier_id,
-                    items,
+                    req.body.selected,
                     req.user.user_id
                 )
                 .then(result => res.redirect('/stores/receipts/' + result))
@@ -45,16 +41,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     {
                         model: m.receipt_lines,
                         as: 'lines',
-                        include: [
-                            {
-                                model: m.stock, include: [
-                                    m.locations,
-                                    {model: m.item_sizes, include: fn.itemSize_inc()}
-                                ]
-                            }
-                        ]
+                        include: [inc.stock({size: true})]
                     },
-                    fn.users(),
+                    inc.users(),
                     m.suppliers
                 ]
             }
@@ -65,7 +54,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 res.render('stores/receipts/show', {
                     receipt: receipt,
                     notes:   notes,
-                    query:   {sn: Number(req.query.sn) || 2}
+                    query:   {system: Number(req.query.system) || 2}
                 });
             });
         })
@@ -78,11 +67,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             m.receipts,
             [
                 m.suppliers,
-                fn.users(),
-                {
-                    model: m.receipt_lines,
-                    as: 'lines'
-                }
+                inc.users(),
+                inc.receipt_lines()
             ]
         )
         .then(receipts => {
@@ -95,7 +81,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
     
     // Delete
-    app.delete('/stores/receipts/:id', isLoggedIn, allowed('receipts_delete'), (req, res) => {
+    app.delete('/stores/receipts/:id', isLoggedIn, allowed('receipt_delete'), (req, res) => {
         fn.delete(
             'receipts',
             {receipt_id: req.params.id},

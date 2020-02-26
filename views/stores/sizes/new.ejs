@@ -12,13 +12,13 @@
                 <a class='nav-link stores_nav' href='/stores/items/<%= item.item_id %>'><%= item._description %></a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/new'>Add Size</a>
+                <a class='nav-link stores_nav' href='/stores/sizes/new'>Add Size</a>
             </li>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <form action='/stores/item_sizes' method='POST'>
+    <form action='/stores/sizes' method='POST'>
         <input type='hidden' name='details[item_id]', value='<%= item.item_id %>' readonly>
         <div class='row'>
             <div class='col-12 bordered mb-1'>

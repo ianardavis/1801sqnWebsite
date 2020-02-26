@@ -6,7 +6,7 @@ function options() {
         {table: 'statuses'}
     ]
 };
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     // Index
     app.get('/stores/users', isLoggedIn, allowed('access_users', false), (req, res) => {
         if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id);
@@ -29,13 +29,18 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         statuses: statuses
                     });
                 })
-                .catch(err => fn.error(err, '/stores', req, res))
+                .catch(err => fn.error(err, '/stores', req, res));
             });
         };
     });
 
+    // New Form
+    app.get('/stores/users/new', isLoggedIn, allowed('user_add'), (req, res) => {
+        fn.getOptions(options(), req)
+        .then(classes => res.render('stores/users/new', {classes: classes}))
+    });
     // New Logic
-    app.post('/stores/users', isLoggedIn, allowed('users_add'), (req, res) => {
+    app.post('/stores/users', isLoggedIn, allowed('user_add'), (req, res) => {
         let salt = bCrypt.genSaltSync(10);
         req.body.user._salt = salt;
         req.body.user._password = bCrypt.hashSync(req.body._password, salt);
@@ -55,14 +60,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/users', req, res));
     });
 
-    // New Form
-    app.get('/stores/users/new', isLoggedIn, allowed('users_add'), (req, res) => {
-        fn.getOptions(options(), req)
-        .then(classes => res.render('stores/users/new', {classes: classes}))
-    });
-
     // Edit password
-    app.get('/stores/password', isLoggedIn, allowed('users_password', false), (req, res) => {
+    app.get('/stores/password', isLoggedIn, allowed('user_password', false), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.query.user)) {
             fn.getOne(
                 m.users,
@@ -78,7 +77,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     // Edit password Put
-    app.put('/stores/password/:id', isLoggedIn, allowed('users_password', false), (req, res) => {
+    app.put('/stores/password/:id', isLoggedIn, allowed('user_password', false), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             req.body.user._salt = bCrypt.genSaltSync(10)
             req.body.user._password = bCrypt.hashSync(req.body._password, req.body.user._salt);
@@ -96,7 +95,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     // Edit
-    app.get('/stores/users/:id/edit', isLoggedIn, allowed('users_edit'), (req, res) => {
+    app.get('/stores/users/:id/edit', isLoggedIn, allowed('user_edit'), (req, res) => {
         fn.getOptions(options(), req)
         .then(classes => {
             fn.getOne(
@@ -115,7 +114,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     // Put
-    app.put('/stores/users/:id', isLoggedIn, allowed('users_edit'), (req, res) => {
+    app.put('/stores/users/:id', isLoggedIn, allowed('user_edit'), (req, res) => {
         if (!req.body.user)        req.body.user = {};
         if (!req.body.user._reset) req.body.user._reset = 0;
         fn.update(
@@ -131,7 +130,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     // Delete
-    app.delete('/stores/users/:id', isLoggedIn, allowed('users_delete'), (req, res) => {
+    app.delete('/stores/users/:id', isLoggedIn, allowed('user_delete'), (req, res) => {
         if (Number(req.user.user_id) !== Number(req.params.id)) {
             fn.delete(
                 'users',
@@ -179,7 +178,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
-                {include: fn.user_inc({statuses: true, permissions: true})}
+
+                {include: [m.ranks, m.permissions, m.statuses]}
             )
             .then(user => {
                 fn.getAllWhere(
@@ -187,8 +187,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     where.requests,
                     {
                         include: [
-                            {model: m.requests, where: {requested_for: user.user_id}},
-                            {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
+                            inc.requests({where: {requested_for: user.user_id}, required: true}),
+                            inc.sizes({stock: true})
                         ]
                     }
                 )
@@ -198,8 +198,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         where.orders,
                         {
                             include: [
-                                {model: m.orders, where: {ordered_for: user.user_id}},
-                                {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
+                                inc.orders({where: {ordered_for: user.user_id}, required: true}),
+                                inc.sizes({stock: true})
                             ]
                         }
                     )
@@ -209,8 +209,17 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             where.issues,
                             {
                                 include: [
-                                    {model: m.issues, where: {issued_to: user.user_id}},
-                                    {model: m.item_sizes, include: fn.itemSize_inc({stock: true})}
+                                    inc.issues({where: {issued_to: user.user_id}, required: true}),
+                                    inc.stock({
+                                        size: true,
+                                        include: [
+                                            m.locations,
+                                            inc.sizes({include:[
+                                                m.items,
+                                                inc.stock()
+                                            ]})
+                                        ]
+                                    })
                                 ]
                             }
                         )

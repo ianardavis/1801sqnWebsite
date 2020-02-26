@@ -20,12 +20,12 @@ cn.Issue = function (issue, user_id) {
     this._date_due = issue._date_due || addYears(7);
 };
 cn.IssueLine = function (issue_id, item, line) {
-    this.issue_id    = issue_id;
-    this._line       = line;
-    this.nsn_id      = item.nsn_id;
-    this.item_size_id = item.item_size_id;
-    this._qty        = item.qty;
-    this.stock_id    = item.stock_id;
+    this.issue_id  = issue_id;
+    this._line     = line;
+    this.nsn_id    = item.nsn_id || null;
+    this.serial_id = item.serial_id || null;
+    this._qty      = item.qty || 1;
+    this.stock_id  = item.stock_id;
 };
 
 cn.Return = function (from, user_id) {
@@ -56,10 +56,10 @@ cn.Order = function (ordered_for, ordered_by) {
     this._date       = Date.now();
     this._complete   = 0;
 };
-cn.OrderLine = function (order_id, item) {
-    this.order_id    = order_id;
-    this.item_size_id = item.item_size_id;
-    this._qty        = item.qty;
+cn.OrderLine = function (order_id, size_id, qty) {
+    this.order_id = order_id;
+    this.size_id  = size_id;
+    this._qty     = qty;
 };;
 
 cn.Request = function (requested_by, requested_for) {
@@ -67,10 +67,11 @@ cn.Request = function (requested_by, requested_for) {
     this.requested_for = requested_for;
     this._date         = Date.now();
 };
-cn.RequestLine = function (request_id, item) {
-    this.request_id  = request_id;
-    this.item_size_id = item.item_size_id;
-    this._qty        = item.qty;
+cn.RequestLine = function (request_id, size_id, qty) {
+    this.request_id   = request_id;
+    this.size_id = size_id;
+    this._qty         = qty;
+    this._status      = 'Pending';
 };
 cn.RequestStatus = function (line, user_id) {
     this._status = line._status;
@@ -95,9 +96,9 @@ cn.Demand = function (supplier_id, user_id) {
     this._complete   = 0;
     this.user_id     = user_id;
 };
-cn.DemandLine = function (demand_id, item_size_id, qty) {
+cn.DemandLine = function (demand_id, size_id, qty) {
     this.demand_id   = demand_id;
-    this.item_size_id = item_size_id;
+    this.size_id = size_id;
     this._qty        = qty;
 };
 

@@ -1,6 +1,6 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     // Edit
-    app.get('/stores/files/:id/edit', isLoggedIn, allowed('files_edit'), (req, res) => {
+    app.get('/stores/files/:id/edit', isLoggedIn, allowed('file_edit'), (req, res) => {
         fn.getOne(
             m.files,
             {file_id: req.params.id}
@@ -13,7 +13,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
     
     // Put
-    app.put('/stores/files/:id', isLoggedIn, allowed('files_edit'), (req, res) => {
+    app.put('/stores/files/:id', isLoggedIn, allowed('file_edit'), (req, res) => {
         fn.update(
             m.files,
             req.body.file,
@@ -27,7 +27,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
     
     // New
-    app.post('/stores/files', isLoggedIn, allowed('files_add'), (req, res) => {
+    app.post('/stores/files', isLoggedIn, allowed('file_add'), (req, res) => {
         if (!req.files || Object.keys(req.files).length !== 1) {
             req.flash('info', 'No file or multiple files selected')
             res.redirect('/stores/suppliers/' + req.query.s)

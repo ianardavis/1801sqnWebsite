@@ -63,6 +63,8 @@
                 <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_storeman()">Storeman - As Issuer with stores related permissions</button>
                 <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_admin()">Admin - As Storeman with settings and suppliers</button>
                 <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_super()">Superuser - All permissions</button>
+                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_canteen()">Canteen</button>
+                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_canteen_supervisor()">Canteen Supervisor</button>
                 <form id="permissionForm" action="/stores/permissions/<%= f_user.user_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit permissions?');">
                     <ul id="treeUL" class="list-group">
                         <li id="account_enabled_li" class="list-group-item">
@@ -80,9 +82,6 @@
 </section>
 <% include ../../partials/foot/full %>
 <script>
-    // for (let [key, value] of Object.entries(<% permissions %>)) {
-    //     console.log(key, value);
-    // };
     insertPermission('account_enabled');
 
     var toggler = document.getElementsByClassName("caret"),
@@ -161,71 +160,106 @@
             <%- key %>.checked = as;
         <% }; %>
     };
-    function p_disabled() {
-        setAll(false);
+    function p_disabled() {setAll(false);};
+    function p_super() {setAll(true);};
+
+    function p_canteen() {
+        document.querySelector('#access_canteen').checked = true;
+        document.querySelector('#canteen_supervisor').checked = false;
     };
-    function p_super() {
-        setAll(true);
+    function p_canteen_supervisor() {
+        document.querySelector('#access_canteen').checked = true;
+        document.querySelector('#canteen_supervisor').checked = true;
     };
+
     function p_user() {
         p_disabled();
         document.querySelector('#account_enabled').checked = true;
         document.querySelector('#access_requests').checked = true;
-        document.querySelector('#requests_add').checked = true;
+        document.querySelector('#request_add').checked = true;
     };
     function p_issuer() {
         p_user();
-        document.querySelector('#access_issues').checked = true;
+        document.querySelector('#file_download').checked = true;
         document.querySelector('#access_items').checked = true;
         document.querySelector('#access_stock').checked = true;
+        document.querySelector('#access_locations').checked = true;
+        document.querySelector('#access_serials').checked = true;
         document.querySelector('#access_nsns').checked = true;
+        document.querySelector('#request_edit').checked = true;
+        document.querySelector('#access_issues').checked = true;
+        document.querySelector('#issue_add').checked = true;
         document.querySelector('#access_returns').checked = true;
-        document.querySelector('#issues_add').checked = true;
-        document.querySelector('#returns_add').checked = true;
+        document.querySelector('#return_add').checked = true;
         document.querySelector('#access_notes').checked = true;
-        document.querySelector('#notes_add').checked = true;
-        document.querySelector('#requests_edit').checked = true;
+        document.querySelector('#note_add').checked = true;
     };
     function p_storeman() {
-        p_user();
         p_issuer();
-        document.querySelector('#items_add').checked = true;
-        document.querySelector('#items_edit').checked = true;
-        document.querySelector('#item_sizes_add').checked = true;
-        document.querySelector('#item_sizes_edit').checked = true;
-        document.querySelector('#locations_add').checked = true;
-        document.querySelector('#locations_edit').checked = true;
-        document.querySelector('#nsns_add').checked = true;
-        document.querySelector('#nsns_edit').checked = true;
-        document.querySelector('#adjusts_add').checked = true;
-        document.querySelector('#requests_edit').checked = true;
+        document.querySelector('#item_add').checked = true;
+        document.querySelector('#item_edit').checked = true;
+        document.querySelector('#size_add').checked = true;
+        document.querySelector('#size_edit').checked = true;
+        document.querySelector('#stock_add').checked = true;
+        document.querySelector('#stock_edit').checked = true;
+        document.querySelector('#adjust_add').checked = true;
+        document.querySelector('#location_add').checked = true;
+        document.querySelector('#location_edit').checked = true;
+        document.querySelector('#serial_add').checked = true;
+        document.querySelector('#serial_edit').checked = true;
+        document.querySelector('#nsn_add').checked = true;
+        document.querySelector('#nsn_edit').checked = true;
+
+        document.querySelector('#request_edit').checked = true;
+
         document.querySelector('#access_orders').checked = true;
-        document.querySelector('#orders_add').checked = true;
-        document.querySelector('#orders_edit').checked = true;
+        document.querySelector('#order_add').checked = true;
+        document.querySelector('#order_edit').checked = true;
+
         document.querySelector('#access_demands').checked = true;
-        document.querySelector('#demands_add').checked = true;
+        document.querySelector('#demand_add').checked = true;
+        
+        document.querySelector('#access_suppliers').checked = true;
+        document.querySelector('#access_receipts').checked = true;
+        document.querySelector('#receipt_add').checked = true;
+        document.querySelector('#supplier_add').checked = true;
+        document.querySelector('#supplier_edit').checked = true;
+        document.querySelector('#access_accounts').checked = true;
+        document.querySelector('#access_files').checked = true;
+
         document.querySelector('#access_reports').checked = true;
     };
     function p_admin() {
-        p_user();
-        p_issuer();
         p_storeman();
-        document.querySelector('#nsns_delete').checked = true;
-        document.querySelector('#items_delete').checked = true;
-        document.querySelector('#item_sizes_delete').checked = true;
-        document.querySelector('#locations_delete').checked = true;
-        document.querySelector('#stock_delete').checked = true;
         document.querySelector('#access_users').checked = true;
-        document.querySelector('#users_add').checked = true;
-        document.querySelector('#users_edit').checked = true;
-        document.querySelector('#users_permissions').checked = true;
-        document.querySelector('#users_password').checked = true;
-        document.querySelector('#notes_edit').checked = true;
-        document.querySelector('#access_suppliers').checked = true;
-        document.querySelector('#suppliers_add').checked = true;
-        document.querySelector('#suppliers_edit').checked = true;
+        document.querySelector('#user_add').checked = true;
+        document.querySelector('#user_edit').checked = true;
+        document.querySelector('#user_permissions').checked = true;
+        document.querySelector('#user_password').checked = true;
+
+        document.querySelector('#note_edit').checked = true;
+
+        document.querySelector('#account_add').checked = true;
+        document.querySelector('#account_edit').checked = true;
+        document.querySelector('#file_add').checked = true;
+        document.querySelector('#file_edit').checked = true;
+
         document.querySelector('#access_settings').checked = true;
-        document.querySelector('#settings_edit').checked = true;
+        document.querySelector('#setting_edit').checked = true;
+        document.querySelector('#rank_add').checked = true;
+        document.querySelector('#rank_edit').checked = true;
+        document.querySelector('#status_add').checked = true;
+        document.querySelector('#status_edit').checked = true;
+        document.querySelector('#gender_add').checked = true;
+        document.querySelector('#gender_edit').checked = true;
+        document.querySelector('#category_add').checked = true;
+        document.querySelector('#category_edit').checked = true;
+        document.querySelector('#group_add').checked = true;
+        document.querySelector('#group_edit').checked = true;
+        document.querySelector('#type_add').checked = true;
+        document.querySelector('#type_edit').checked = true;
+        document.querySelector('#subtype_add').checked = true;
+        document.querySelector('#subtype_edit').checked = true;
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -1,4 +1,4 @@
-function NewItemCard (item) {
+function NewItemCard (item, id_field) {
     let _div        = document.createElement('div'),
         _card       = document.createElement('div'),
         _header     = document.createElement('div'),
@@ -6,27 +6,13 @@ function NewItemCard (item) {
         _title      = document.createElement('h5'),
         _subtitle   = document.createElement('p'),
         _delete     = document.createElement('a'),
-        qty         = document.createElement('input');
+        serial_id   = item.serial_id || '';
+        card_id     = 'id-' + item[id_field] + serial_id;
 
-    _div.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
-    _div.id = 'id-' + item.item_size_id;
+    _div.classList.add('col-12', 'col-sm-6', 'col-lg-4');
+    _div.id = card_id;
     
     _card.classList.add('card', 'cardDarkText', 'm-3', 'text-left');
-
-    if (item.item_size_id) {
-        let item_size_id = document.createElement('input');
-        item_size_id.type  = 'hidden';
-        item_size_id.name  = 'selected[' + item.item_size_id + '][item_size_id]';
-        item_size_id.value = item.item_size_id;
-        _card.appendChild(item_size_id);
-    };
-    if (item.stock_id) {
-        let stock_id = document.createElement('input');
-        stock_id.type  = 'hidden';
-        stock_id.name  = 'selected[' + item.stock_id + '][stock_id]';
-        stock_id.value = item.stock_id;
-        _card.appendChild(stock_id);
-    };
     
     _header.classList.add('card-header');
 
@@ -37,7 +23,7 @@ function NewItemCard (item) {
     _subtitle.innerText = 'Size: ' + item.size;
 
     _delete.classList.add('float-right', 'btn', 'btn-sm', 'btn-danger');
-    _delete.href = 'javascript:removeID("id-' + item.item_size_id + '")';
+    _delete.href = 'javascript:removeID("' + card_id + '")';
     _delete.innerHTML = '<i class="fas fa-trash-alt"></i>';
     
     _header.appendChild(_delete);
@@ -46,45 +32,64 @@ function NewItemCard (item) {
     
     _body.classList.add('card-body');
     
-    if (item.serials) { 
-        let newSerials = document.createElement('select');
-        newSerials.name = 'selected[' + item.item_size_id + '][serial_id]';
-        newSerials.classList.add('form-control','form-control-sm');
-        item.serials.forEach(serial => newSerials.appendChild(newOption(serial.serial_id, serial._serial)));
-        if (item.serial_id) newSerials.value = item.serial_id;
-        _body.appendChild(newSerials);
+    if (item.request_line_id) {
+        let request_line_id = document.createElement('input');
+        request_line_id.type = 'hidden';
+        request_line_id.name = 'selected[' + card_id + '][request_line_id]';
+        request_line_id.value = item.request_line_id;
+        _body.appendChild(request_line_id);
+    };
+
+    if (item.serials) {
+        _body.appendChild(newRow('Serial', 
+            newSelect(String(item[id_field]), 'serial', '_serial', item)));
     } else {
+        let qty       = document.createElement('input');
         qty.type = 'number';
-        qty.name = 'selected[' + item.item_size_id + '][qty]';
+        qty.name = 'selected[' + String(item[id_field]) + '][qty]';
         qty.classList.add('form-control','form-control-sm');
         qty.value = item.qty;
-        _body.appendChild(qty);
+        _body.appendChild(newRow('Quantity', qty));
     };
 
     if (item.nsns) {
-        let newNSNs = document.createElement('select');
-        newNSNs.name = 'selected[' + item.item_size_id + '][nsn_id]';
-        newNSNs.classList.add('form-control','form-control-sm');
-        item.nsns.forEach(nsn => newNSNs.appendChild(newOption(nsn.nsn_id, nsn._nsn)));
-        if (item.nsn_id) newNSNs.value = item.nsn_id;
-        _body.appendChild(newNSNs);
+        _body.appendChild(newRow('NSN', 
+            newSelect(String(item[id_field]), 'nsn', '_nsn', item)));
     };
     if (item.stocks) {
-        let newStocks = document.createElement('select');
-        newStocks.name = 'selected[' + item.item_size_id + '][stock_id]';
-        newStocks.classList.add('form-control','form-control-sm');
-        item.stocks.forEach(stock => newStocks.appendChild(newOption(stock.stock_id, stock._location)));
-        if (item.stock_id) newStocks.value = item.stock_id;
-        _body.appendChild(newStocks);
+        _body.appendChild(newRow('Location', 
+            newSelect(String(item[id_field]), 'stock', '_location', item)));
     };
-
     _card.appendChild(_header);
     _card.appendChild(_body);
     _div.appendChild(_card);
-
     return _div;
 };
 
+function newSelect (card_id, field_name, field_display, item) {
+    let _select = document.createElement('select');
+    _select.name = 'selected[' + card_id + '][' + field_name + '_id]';
+    _select.classList.add('form-control','form-control-sm');
+    item[field_name + 's'].forEach(_data => _select.appendChild(newOption(_data[field_name + '_id'], _data[field_display])));
+    if (item[field_name + '_id']) _select.value = item[field_name + '_id'];
+    return _select;
+};
+function newRow (label, _input) {
+    let _row       = document.createElement('div'),
+        _label_div = document.createElement('div'),
+        _label     = document.createElement('label'),
+        _text_div  = document.createElement('div');
+    _text_div.classList.add('col-8');
+    _text_div.appendChild(_input);
+    _row.classList.add('row');
+    _label_div.classList.add('col-4');
+    _label.classList.add('col-form-label');
+    _label.innerText = label;
+    _label_div.appendChild(_label);
+    _row.appendChild(_label_div);
+    _row.appendChild(_text_div);
+    return _row;
+};
 function newOption (value, innerText) {
     let option = document.createElement('option');
     option.value = value;

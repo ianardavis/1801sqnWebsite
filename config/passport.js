@@ -33,7 +33,11 @@ module.exports = (passport, m) => {
             fn.getOne(
                 m.users,
                 {_login_id: _login_id},
-                {include: [m.permissions], attributes: ['_login_id', 'user_id', '_reset', '_password']}
+                {
+                    include: [m.permissions],
+                    attributes: ['_login_id', 'user_id', '_reset', '_password'],
+                    nullOK: true
+                }
             )
             .then(user => {
                 if (!user) {

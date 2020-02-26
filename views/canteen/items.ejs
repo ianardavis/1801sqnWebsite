@@ -1,19 +1,14 @@
-<% include ../../partials/head/full %>
+<% include ../partials/head/full %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Stores
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/canteen'>
+                <a class='nav-link stores_nav' href='/canteen'>
                     Canteen
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/canteen/items'>
+                <a class='nav-link stores_nav' href='/canteen/items'>
                     Items
                 </a>
             </li>
@@ -24,7 +19,7 @@
     <div class="row">
         <% if (permissions.canteen_supervisor) { %>
             <div class="col-12 bordered mb-2">
-                <form action="/stores/canteen/items" method='POST'>
+                <form action="/canteen/items" method='POST'>
                     <div class="row">
                         <div class="col-6">
                             <label class='col-form-label'>Name</label>
@@ -54,7 +49,7 @@
                             <label class='col-form-label'>Stock</label>
                         </div>
                         <div class="col-6">
-                            <input class='form-control' type="number" name='item[_stock]' step='1' value='0' placeholder='Stock' maxlength="11">
+                            <input class='form-control' type="number" name='item[_qty]' step='1' value='0' placeholder='Stock' maxlength="11">
                         </div>
                     </div>
                     <div class="row">
@@ -86,7 +81,7 @@
                     <% if (items) items.forEach(item => { %>
                         <tr>
                             <% if (permissions.canteen_supervisor) { %>
-                                <form action="/stores/canteen/items/<%= item.item_id %>?_method=PUT" method='POST'>
+                                <form action="/canteen/items/<%= item.item_id %>?_method=PUT" method='POST'>
                                     <td>
                                         <input class='form-control form-control-sm' type="text" name='item[_name]' value='<%= item._name %>'>
                                     </td>
@@ -97,7 +92,7 @@
                                         <input class='form-control form-control-sm' type="number" step='0.01' name='item[_price]' value='<%= item._price %>'>
                                     </td>
                                     <td>
-                                        <input class='form-control form-control-sm' type="number" step='1' name='item[_stock]' value='<%= item._stock %>'>
+                                        <input class='form-control form-control-sm' type="number" step='1' name='item[_qty]' value='<%= item._qty %>'>
                                     </td>
                                     <td>
                                         <select class='form-control form-control-sm' name="item[_current]">
@@ -110,7 +105,7 @@
                                     </td>
                                 </form>
                                 <td>
-                                    <form action="/stores/canteen/items/<%= item.item_id %>?_method=DELETE" method='POST'>
+                                    <form action="/canteen/items/<%= item.item_id %>?_method=DELETE" method='POST'>
                                         <button class='btn btn-sm btn-danger confirm'><i class='fas fa-trash-alt'></i></button>
                                     </form>
                                 </td>
@@ -118,7 +113,7 @@
                                 <td><%= item._name %></td>
                                 <td>£<%= item._cost %></td>
                                 <td>£<%= item._price %></td>
-                                <td><%= item._stock %></td>
+                                <td><%= item._qty %></td>
                                 <td>
                                     <input class='form-control form-control-sm' type="checkbox" <% if (item._current) { %> checked <% } %> disabled>
                                 </td>
@@ -130,5 +125,5 @@
         </div>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<% include ../partials/foot/full %>
+<% include ../partials/foot/htmlClose %>

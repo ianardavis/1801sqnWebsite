@@ -22,12 +22,12 @@
                     <input class="btn btn-success w-100" type="submit" value="Update Stock">
                 </div>
                 <% locations.forEach(location => { %>
-                    <div class="col-12">
+                    <div class="col-12 bordered">
                         <a class="my-3" data-toggle="collapse" href="#collapse<%= location.location_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= location.location_id %>">
                             <h5 class="text-left"><%= location._location %></h5>
                         </a>
                         <div class="collapse mb-3" id="collapse<%= location.location_id %>">
-                            <a class="float-left" href="/stores/locations/<%= location.location_id %>"><i class="fas fa-search"></i></a>
+                            <a class="btn btn-primary float-left mb-2" href="/stores/locations/<%= location.location_id %>"><i class="fas fa-search"></i></a>
                             <table class="table table-sm table-hover">
                                 <thead class="thead-dark">
                                     <th class="w-40" onclick="sortTable(0, 'table<%= location.location_id %>')">Item</th>
@@ -40,16 +40,16 @@
                                         <% location.stocks.forEach(_stock => { %>
                                             <tr>
                                                 <td>
-                                                    <a class="btn btn-sm btn-primary float-right" href="/stores/items/<%= _stock.item_size.item.item_id %>">
+                                                    <a class="btn btn-sm btn-primary float-right" href="/stores/items/<%= _stock.size.item.item_id %>">
                                                         <i class="fas fa-search"></i>
                                                     </a>
-                                                    <%= _stock.item_size.item._description %>
+                                                    <%= _stock.size.item._description %>
                                                 </td>
                                                 <td>
-                                                    <a class="btn btn-sm btn-primary float-right" href="/stores/item_sizes/<%= _stock.item_size_id %>">
+                                                    <a class="btn btn-sm btn-primary float-right" href="/stores/sizes/<%= _stock.size_id %>">
                                                         <i class="fas fa-search"></i>
                                                     </a>
-                                                    <%= _stock.item_size._size %>
+                                                    <%= _stock.size._size %>
                                                 </td>
                                                 <td <% if (_stock._qty < 0) { %> class="cardRed"<% } %>>
                                                     <%= _stock._qty %>

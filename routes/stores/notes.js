@@ -1,6 +1,6 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //New
-    app.get('/stores/notes/new', isLoggedIn, allowed('notes_add'), (req, res) => {
+    app.get('/stores/notes/new', isLoggedIn, allowed('note_add'), (req, res) => {
         res.render('stores/notes/new', {
             link: {
                 table: req.query.table,
@@ -9,7 +9,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         });
     });
     //New logic
-    app.post('/stores/notes', isLoggedIn, allowed('notes_add'), (req, res) => {
+    app.post('/stores/notes', isLoggedIn, allowed('note_add'), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         fn.create(
             m.notes,
@@ -23,7 +23,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     //Edit
-    app.get('/stores/notes/:id/edit', isLoggedIn, allowed('notes_add'), (req, res) => {
+    app.get('/stores/notes/:id/edit', isLoggedIn, allowed('note_add'), (req, res) => {
         fn.getOne(
             m.notes,
             {note_id: req.params.id}
@@ -32,7 +32,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         .catch(err => fn.error(err, 'back', req, res));
     });
     // Put
-    app.put('/stores/notes/:id', isLoggedIn, allowed('notes_edit'), (req, res) => {
+    app.put('/stores/notes/:id', isLoggedIn, allowed('note_edit'), (req, res) => {
         fn.update(
             m.notes,
             req.body.note,
@@ -50,14 +50,14 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.notes,
             {note_id: req.params.id},
-            {include: [fn.users()]}
+            {include: [inc.users()]}
         )
         .then(note => res.render('stores/notes/show', {note: note}))
         .catch(err => fn.error(err, 'back', req, res));
     });
 
     //Delete
-    app.delete('/stores/notes/:id', isLoggedIn, allowed('notes_delete'), (req, res) => {
+    app.delete('/stores/notes/:id', isLoggedIn, allowed('note_delete'), (req, res) => {
         fn.delete(
             'notes',
             {note_id: req.params.id}

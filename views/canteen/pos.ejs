@@ -1,27 +1,22 @@
-<% include ../../partials/head/head %>
+<% include ../partials/head/head %>
 <body>
-<% include ../../partials/head/flash %>
+<% include ../partials/head/flash %>
 <section id='body'>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Stores
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/canteen'>
+                <a class='nav-link stores_nav' href='/canteen'>
                     Canteen
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/canteen/pos'>
+                <a class='nav-link stores_nav' href='/canteen/pos'>
                     Point of Sale
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/canteen/pos'>
+                <a class='nav-link stores_nav' href='/canteen/pos'>
                     Sale: <%= sale_id %>
                 </a>
             </li>
@@ -36,7 +31,7 @@
                     <% if (item.item_id !== 0 || permissions.canteen_supervisor) { %>
                         <div class="col-6 col-xl-3">
                             <div class="card">
-                                <form action="/stores/canteen/sale_lines" method='POST'>
+                                <form action="/canteen/sale_lines" method='POST'>
                                     <div class="card-header py-1">
                                         <h3><%= item._name %></h3>
                                         <p class="card-subtitle text-left text-muted">
@@ -110,7 +105,7 @@
                     <a class='btn btn-lg btn-danger w-100 confirm' href="javascript:cancelSale()">Cancel</a>
                 </div>
             </div>
-            <form action="/stores/canteen/sales/<%= sale_id %>?_method=PUT" method="POST">
+            <form action="/canteen/sales/<%= sale_id %>?_method=PUT" method="POST">
                 <button class='btn btn-lg btn-success w-100 confirm mb-2'>Pay</button>
                 <div class="row mb-2">
                     <div class="col-6">
@@ -156,14 +151,14 @@
                                 <%= Number(item._price * item._qty).toFixed(2) %>
                             </td>
                             <td>
-                                <form action="/stores/canteen/sale_lines?_method=PUT" method='POST'>
+                                <form action="/canteen/sale_lines?_method=PUT" method='POST'>
                                     <input type="hidden" name='sale_line[sale_line_id]' value='<%= item.sale_line_id %>'>
                                     <input type="hidden" name='sale_line[_qty]' value='-1'>
                                     <button class='btn btn-danger'><i class='fas fa-minus'></i></button>
                                 </form>
                             </td>
                             <td>
-                                <form action="/stores/canteen/sale_lines?_method=PUT" method='POST'>
+                                <form action="/canteen/sale_lines?_method=PUT" method='POST'>
                                     <input type="hidden" name='sale_line[sale_line_id]' value='<%= item.sale_line_id %>'>
                                     <input type="hidden" name='sale_line[_qty]' value='1'>
                                     <button class='btn btn-success'><i class='fas fa-plus'></i></button>
@@ -176,7 +171,7 @@
         </div>
     </div>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../partials/foot/full %>
 <script>
     let items = {}, selected = {},
         _total = document.querySelector('#_total');
@@ -215,4 +210,4 @@
         tendered.value = amt;
     };
 </script>
-<% include ../../partials/foot/htmlClose %>
+<% include ../partials/foot/htmlClose %>

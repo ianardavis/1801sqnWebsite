@@ -1,19 +1,14 @@
-<% include ../../../partials/head/full %>
+<% include ../../partials/head/full %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Stores
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/canteen'>
+                <a class='nav-link stores_nav' href='/canteen'>
                     Canteen
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/canteen/sessions'>
+                <a class='nav-link stores_nav' href='/canteen/sessions'>
                     Sessions
                 </a>
             </li>
@@ -24,7 +19,7 @@
     <div class="row">
         <% if (Number(session) === -1) { %>
             <div class="col-12 bordered mb-2">
-                <form action="/stores/canteen/sessions" method='POST'>
+                <form action="/canteen/sessions" method='POST'>
                     <h4>Opening Balance</h4>
                     <table class="table table-sm table-hover">
                         <thead class="thead-dark">
@@ -137,7 +132,7 @@
                                 <% if (session._end) { %>
                                     <%= session._end.toLocaleString() %>
                                 <% } else { %>
-                                    <form action="/stores/canteen/sessions/<%= session.session_id %>?_method=PUT" method='POST'>
+                                    <form action="/canteen/sessions/<%= session.session_id %>?_method=PUT" method='POST'>
                                         <button class='btn btn-sm btn-success w-100 confirm'>Close Session</button>
                                     </form>
                                 <% } %>
@@ -156,7 +151,7 @@
                                 <% } %>
                             </td>
                             <td>
-                                <a class='btn btn-sm btn-primary' href="/stores/canteen/sessions/<%= session.session_id %>"><i class='fas fa-search'></i></a>
+                                <a class='btn btn-sm btn-primary' href="/canteen/sessions/<%= session.session_id %>"><i class='fas fa-search'></i></a>
                             </td>
                         </tr>
                     <% }) %>
@@ -165,8 +160,8 @@
         </div>
     </div>
 </section>
-<% include ../../../partials/foot/full %>
+<% include ../../partials/foot/full %>
 <script>
     sortTable(0, 'sessionTable', 'desc');
 </script>
-<% include ../../../partials/foot/htmlClose %>
+<% include ../../partials/foot/htmlClose %>

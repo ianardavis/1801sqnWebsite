@@ -17,7 +17,7 @@
 <section class="container">
 	<div class="row">
 		<div class="col-12 col-lg-4 bordered mb-2">
-			<% if (permissions.receipts_delete) { %>
+			<% if (permissions.receipt_delete) { %>
 				<div class="col-12 mb-3">
 					<form action="/stores/receipts/<%= receipt.receipt_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete receipt?');">
 						<button class="float-left btn btn-danger"><i class='fas fa-trash-alt'></i></button>
@@ -71,19 +71,19 @@
 									<% } %>
 								</td>
 								<td>
-									<a class='float-right btn btn-sm btn-primary' href="/stores/items<% if (line.stock) { %>/<%= line.stock.item_size.item_id %><% } %>">
+									<a class='float-right btn btn-sm btn-primary' href="/stores/items<% if (line.stock) { %>/<%= line.stock.size.item_id %><% } %>">
 										<i class='fas fa-search'></i>
 									</a>
 									<% if (line.stock) { %>
-										<%= line.stock.item_size.item._description %>
+										<%= line.stock.size.item._description %>
 									<% } %>
 								</td>
 								<td>
-									<a class='float-right btn btn-sm btn-primary' href="/stores<% if (line.stock) { %>/item_sizes/<%= line.stock.item_size_id %><% } %>">
+									<a class='float-right btn btn-sm btn-primary' href="/stores<% if (line.stock) { %>/sizes/<%= line.stock.size_id %><% } %>">
 										<i class='fas fa-search'></i>
 									</a>
 									<% if (line.stock) { %>
-										<%= line.stock.item_size._size %>
+										<%= line.stock.size._size %>
 									<% } %>
 								</td>
 								<td>
@@ -97,7 +97,7 @@
 		</div>
 		<% if (permissions.access_notes) { %> 
 			<div class="col-12 mb-3 bordered">
-				<% if (permissions.notes_add) { %>
+				<% if (permissions.note_add) { %>
 					<a class="float-left btn btn-success" href="/stores/notes/new?table=receipt&id=<%= receipt.receipt_id %>">
 						<i class='fas fa-plus'></i>
 					</a>

@@ -68,13 +68,13 @@
                                 <table class="table table-sm table-hover">
                                     <thead class="thead-dark">
                                         <th class="w-100">Rank</th>
-                                        <% if (permissions.ranks_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.ranks_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                        <% if (permissions.rank_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.rank_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
                                     </thead>
                                     <tbody>
                                         <% classes.ranks.forEach(rank => { %>
                                             <tr>
-                                                <% if (permissions.ranks_edit) { %>
+                                                <% if (permissions.rank_edit) { %>
                                                     <form action='/stores/settings/ranks/<%= rank.rank_id %>?_method=PUT' method='POST'>
                                                         <td>
                                                             <input class='form-control' type='text' name='ranks[_rank]' maxlength='10' value='<%= rank._rank %>' required>
@@ -86,7 +86,7 @@
                                                 <% } else { %>
                                                     <td><%= rank._rank %></td>
                                                 <% } %>
-                                                <% if (permissions.ranks_delete) { %>
+                                                <% if (permissions.rank_delete) { %>
                                                     <td>
                                                         <form action="/stores/settings/ranks/<%= rank.rank_id %>?_method=DELETE" method="POST">
                                                             <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
@@ -114,13 +114,13 @@
                                 <table class="table table-sm table-hover">
                                     <thead class="thead-dark">
                                         <th class="w-100">Rank</th>
-                                        <% if (permissions.statuses_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.statuses_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                        <% if (permissions.status_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.status_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
                                     </thead>
                                     <tbody>
                                         <% classes.statuses.forEach(status => { %>
                                             <tr>
-                                                <% if (permissions.statuses_edit) { %>
+                                                <% if (permissions.status_edit && status.status_id > 5) { %>
                                                     <form action='/stores/settings/statuses/<%= status.status_id %>?_method=PUT' method='POST'>
                                                         <td>
                                                             <input class='form-control' type='text' name='statuses[_status]' maxlength='10' value='<%= status._status %>' required>
@@ -131,14 +131,15 @@
                                                     </form>
                                                 <% } else { %>
                                                     <td><%= status._status %></td>
+                                                    <td></td>
                                                 <% } %>
-                                                <% if (permissions.statuses_delete) { %>
-                                                    <td>
+                                                <td>
+                                                    <% if (permissions.status_delete && status.status_id > 5) { %>
                                                         <form action="/stores/settings/statuses/<%= status.status_id %>?_method=DELETE" method="POST">
                                                             <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
-                                                    </td>
-                                                <% } %>
+                                                    <% } %>
+                                                </td>
                                             </tr>
                                         <% }); %>
                                     </tbody>
@@ -160,13 +161,13 @@
                                 <table class="table table-sm table-hover">
                                     <thead class="thead-dark">
                                         <th class="w-100">Rank</th>
-                                        <% if (permissions.genders_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.genders_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                        <% if (permissions.gender_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.gender_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
                                     </thead>
                                     <tbody>
                                         <% classes.genders.forEach(gender => { %>
                                             <tr>
-                                                <% if (permissions.genders_edit) { %>
+                                                <% if (permissions.gender_edit) { %>
                                                     <form action='/stores/settings/genders/<%= gender.gender_id %>?_method=PUT' method='POST'>
                                                         <td>
                                                             <input class='form-control' type='text' name='genders[_gender]' maxlength='10' value='<%= gender._gender %>' required>
@@ -178,7 +179,7 @@
                                                 <% } else { %>
                                                     <td><%= gender._gender %></td>
                                                 <% } %>
-                                                <% if (permissions.genders_delete) { %>
+                                                <% if (permissions.gender_delete) { %>
                                                     <td>
                                                         <form action="/stores/settings/genders/<%= gender.gender_id %>?_method=DELETE" method="POST">
                                                             <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
@@ -197,144 +198,203 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-12 col-md-3">
-                                <% if (permissions.categories_add) { %>
-                                    <form class="row" action="/stores/options/categories" method="POST" onsubmit="return confirm('Add category ?');">
-                                        <div class="col-9">
-                                            <input class="form-control form-control-sm" type="text" name="record[_category]" maxlength="20">
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-sm btn-success">Add</button>
-                                        </div>
-                                    </form>
-                                <% } %>
-                                <% if (permissions.categories_delete) { %>
-                                    <form action="/stores/options/categories?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete category?');">
-                                        <input id="delete_category_id" type="hidden" name="where" value="{category_id: -1}">
-                                        <button class="w-100 mb-1 btn btn-sm btn-danger">Delete Selected</button>
-                                    </form>
-                                <% } %>
-                                <select class='form-control w-100' id="category_id" name="record[category_id]" type="text" size="10" onchange="setGroups()">
-                                    <option value=""></option>
-                                    <% classes.categories.forEach(category => { %>
-                                        <option value="<%= category.category_id %>"><%= category._category %></option>
-                                    <% }); %>
-                                </select>
-                                <% if (permissions.categories_edit) { %>
-                                    <form class="row" action="/stores/options/categories?_method=PUT" method="POST" onsubmit="return confirm('Edit category?');">
-                                        <input id="edit_category_id" type="hidden" name="where" value="{category_id: -1}">
-                                        <div class="col-9">
-                                            <input id="category_id_edit" class="form-control form-control-sm" type="text" name="record[_category]" maxlength="20">
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-sm btn-primary">Edit</button>
+                                <div class="mb-2">
+                                    <form action='/stores/settings/categories' method='POST'>
+                                        <div class="row">
+                                            <div class="col-10">
+                                                <input class='form-control' type='text' name='categories[_category]' maxlength='20' placeholder='Category' required>
+                                            </div>
+                                            <div class="col-2">
+                                                <button class="float-right btn btn-success confirm"><i class='fas fa-plus'></i></button>
+                                            </div>
                                         </div>
                                     </form>
-                                <% } %>
+                                </div>
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-dark">
+                                        <th class='w-20'></th>
+                                        <th class="w-80">Rank</th>
+                                        <% if (permissions.category_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.category_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                    </thead>
+                                    <tbody>
+                                        <% classes.categories.forEach(category => { %>
+                                            <tr>
+                                                <td>
+                                                    <input class='form-control' type="radio" id='<%= category.category_id %>' name='category' value='<%= category.category_id %>' onchange='radio({"table":"group","id":"<%= category.category_id %>"})'>
+                                                </td>
+                                                <% if (permissions.category_edit) { %>
+                                                    <form action='/stores/settings/categories/<%= category.category_id %>?_method=PUT' method='POST'>
+                                                        <td>
+                                                            <input class='form-control' type='text' name='categories[_category]' maxlength='10' value='<%= category._category %>' required>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                        </td>
+                                                    </form>
+                                                <% } else { %>
+                                                    <td><%= category._category %></td>
+                                                <% } %>
+                                                <% if (permissions.category_delete) { %>
+                                                    <td>
+                                                        <form action="/stores/settings/categories/<%= category.category_id %>?_method=DELETE" method="POST">
+                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                        </form>
+                                                    </td>
+                                                <% } %>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
                             </div>
                             <div class="col-12 col-md-3">
-                                <% if (permissions.groups_add) { %>
-                                    <form class="row" action="/stores/options/groups" method="POST" onsubmit="return confirm('Add group?');">
-                                        <input id="group_category_id" type="hidden" name="record[category_id]" value="">
-                                        <div class="col-9">
-                                            <input class="form-control form-control-sm" type="text" name="record[_group]" maxlength="20">
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-sm btn-success">Add</button>
-                                        </div>
-                                    </form>
-                                <% } %>
-                                <% if (permissions.groups_delete) { %>
-                                    <form action="/stores/options/groups?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete group?');">
-                                        <input id="delete_group_id" type="hidden" name="where" value="{group_id: -1}">
-                                        <button class="w-100 mb-1 btn btn-sm btn-danger">Delete Selected</button>
-                                    </form>
-                                <% } %>
-                                <select class='form-control w-100' id="group_id" name="record[group_id]" type="text" size="10" onchange="setTypes()">
-                                    <% classes.groups.forEach(group => { %>
-                                        <option style="display: none;" data-tag="<%= group.category_id %>" value="<%= group.group_id %>"><%= group._group %></option>
-                                    <% }); %>
-                                </select>
-                                <% if (permissions.groups_edit) { %>
-                                    <form class="row" action="/stores/options/groups?_method=PUT" method="POST" onsubmit="return confirm('Edit group?');">
-                                        <input id="edit_group_id" type="hidden" name="where" value="{category_id: -1}">
-                                        <div class="col-9">
-                                            <input id="group_id_edit" class="form-control form-control-sm" type="text" name="record[_group]" maxlength="20">
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-sm btn-primary">Edit</button>
+                                <div class="mb-2">
+                                    <form action='/stores/settings/groups' method='POST'>
+                                        <input type="hidden" id='group_parent' name='groups[category_id]' value='-1'>
+                                        <div class="row">
+                                            <div class="col-10">
+                                                <input class='form-control' type='text' name='groups[_group]' maxlength='20' placeholder='Group' required>
+                                            </div>
+                                            <div class="col-2">
+                                                <button class="float-right btn btn-success confirm"><i class='fas fa-plus'></i></button>
+                                            </div>
                                         </div>
                                     </form>
-                                <% } %>
+                                </div>
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-dark">
+                                        <th class='w-20'></th>
+                                        <th class="w-80">Rank</th>
+                                        <% if (permissions.group_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.group_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                    </thead>
+                                    <tbody id="group">
+                                        <% classes.groups.forEach(group => { %>
+                                            <tr data-parent='<%= group.category_id %>' style='display: none;'>
+                                                <td>
+                                                    <input class='form-control' type="radio" id='<%= group.group_id %>' name='group' value='<%= group.group_id %>' onchange='radio({"table":"type","id":"<%= group.group_id %>"})'>
+                                                </td>
+                                                <% if (permissions.group_edit) { %>
+                                                    <form action='/stores/settings/groups/<%= group.group_id %>?_method=PUT' method='POST'>
+                                                        <td>
+                                                            <input class='form-control' type='text' name='groups[_group]' maxlength='10' value='<%= group._group %>' required>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                        </td>
+                                                    </form>
+                                                <% } else { %>
+                                                    <td><%= group._group %></td>
+                                                <% } %>
+                                                <% if (permissions.group_delete) { %>
+                                                    <td>
+                                                        <form action="/stores/settings/groups/<%= group.group_id %>?_method=DELETE" method="POST">
+                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                        </form>
+                                                    </td>
+                                                <% } %>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
                             </div>
                             <div class="col-12 col-md-3">
-                                <% if (permissions.types_add) { %>
-                                    <form class="row" action="/stores/options/types" method="POST" onsubmit="return confirm('Add type ?');">
-                                        <input id="type_group_id" type="hidden" name="record[group_id]" value="">
-                                        <div class="col-9">
-                                            <input class="form-control form-control-sm" type="text" name="record[_type]" maxlength="20">
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-sm btn-success">Add</button>
-                                        </div>
-                                    </form>
-                                <% } %>
-                                <% if (permissions.types_delete) { %>
-                                    <form action="/stores/options/types?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete type?');">
-                                        <input id="delete_type_id" type="hidden" name="where" value="{type_id: -1}">
-                                        <button class="w-100 mb-1 btn btn-sm btn-danger">Delete Selected</button>
-                                    </form>
-                                <% } %>
-                                <select class='form-control w-100' id="type_id" name="record[type_id]" type="text" size="10" onchange="setSubtypes()">
-                                    <% classes.types.forEach(type => { %>
-                                        <option style="display: none;" data-tag="<%= type.group_id %>" value="<%= type.type_id %>"><%= type._type %></option>
-                                    <% }); %>
-                                </select>
-                                <% if (permissions.types_edit) { %>
-                                    <form class="row" action="/stores/options/types?_method=PUT" method="POST" onsubmit="return confirm('Edit type?');">
-                                        <input id="edit_type_id" type="hidden" name="where" value="{type_id: -1}">
-                                        <div class="col-9">
-                                            <input id="type_id_edit" class="form-control form-control-sm" type="text" name="record[_type]" maxlength="20">
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-sm btn-primary">Edit</button>
+                                <div class="mb-2">
+                                    <form action='/stores/settings/types' method='POST'>
+                                        <input type="hidden" id='type_parent' name='types[group_id]' value='-1'>
+                                        <div class="row">
+                                            <div class="col-10">
+                                                <input class='form-control' type='text' name='types[_type]' maxlength='20' placeholder='Type' required>
+                                            </div>
+                                            <div class="col-2">
+                                                <button class="float-right btn btn-success confirm"><i class='fas fa-plus'></i></button>
+                                            </div>
                                         </div>
                                     </form>
-                                <% } %>
+                                </div>
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-dark">
+                                        <th class='w-20'></th>
+                                        <th class="w-80">Rank</th>
+                                        <% if (permissions.type_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.type_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                    </thead>
+                                    <tbody id="type">
+                                        <% classes.types.forEach(type => { %>
+                                            <tr data-parent='<%= type.group_id %>' style='display: none;'>
+                                                <td>
+                                                    <input class='form-control' type="radio" id='<%= type.type_id %>' name='type' value='<%= type.type_id %>' onchange='radio({"table":"subtype","id":"<%= type.type_id %>"})'>
+                                                </td>
+                                                <% if (permissions.type_edit) { %>
+                                                    <form action='/stores/settings/types/<%= type.type_id %>?_method=PUT' method='POST'>
+                                                        <td>
+                                                            <input class='form-control' type='text' name='types[_type]' maxlength='10' value='<%= type._type %>' required>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                        </td>
+                                                    </form>
+                                                <% } else { %>
+                                                    <td><%= type._type %></td>
+                                                <% } %>
+                                                <% if (permissions.type_delete) { %>
+                                                    <td>
+                                                        <form action="/stores/settings/types/<%= type.type_id %>?_method=DELETE" method="POST">
+                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                        </form>
+                                                    </td>
+                                                <% } %>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
                             </div>
                             <div class="col-12 col-md-3">
-                                <% if (permissions.subtypes_add) { %>
-                                    <form class="row" action="/stores/options/subtypes" method="POST" onsubmit="return confirm('Add subtype?');">
-                                        <input id="subtype_type_id" type="hidden" name="record[type_id]" value="">
-                                        <div class="col-9">
-                                            <input class="form-control form-control-sm" type="text" name="record[_subtype]" maxlength="20">
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-sm btn-success">Add</button>
-                                        </div>
-                                    </form>
-                                <% } %>
-                                <% if (permissions.subtypes_delete) { %>
-                                    <form action="/stores/options/subtypes?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete subtype?');">
-                                        <input id="delete_subtype_id" type="hidden" name="where" value="{subtype_id: -1}">
-                                        <button class="w-100 mb-1 btn btn-sm btn-danger">Delete Selected</button>
-                                    </form>
-                                <% } %>
-                                <select class='form-control w-100' id="subtype_id" name="record[subtype_id]" type="text" size="10" onchange="setSubTypeID()">
-                                    <% classes.subtypes.forEach(subtype => { %>
-                                        <option style="display: none;" data-tag="<%= subtype.type_id %>" value="<%= subtype.subtype_id %>"><%= subtype._subtype %></option>
-                                    <% }); %>
-                                </select>
-                                <% if (permissions.subtypes_edit) { %>
-                                    <form class="row" action="/stores/options/subtypes?_method=PUT" method="POST" onsubmit="return confirm('Edit subtype ?');">
-                                        <input id="edit_subtype_id" type="hidden" name="where" value="{subtype_id: -1}">
-                                        <div class="col-9">
-                                            <input id="subtype_id_edit" class="form-control form-control-sm" type="text" name="record[_subtype]" maxlength="20">
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-sm btn-primary">Edit</button>
+                                <div class="mb-2">
+                                    <form action='/stores/settings/subtypes' method='POST'>
+                                        <input type="hidden" id='subtype_parent' name='subtypes[type_id]' value='-1'>
+                                        <div class="row">
+                                            <div class="col-10">
+                                                <input class='form-control' type='text' name='subtypes[_subtype]' maxlength='20' placeholder='Subtype' required>
+                                            </div>
+                                            <div class="col-2">
+                                                <button class="float-right btn btn-success confirm"><i class='fas fa-plus'></i></button>
+                                            </div>
                                         </div>
                                     </form>
-                                <% } %>
+                                </div>
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-dark">
+                                        <th class="w-100">Rank</th>
+                                        <% if (permissions.subtype_edit) { %><th><i class='fas fa-save'></i></th><% } %>
+                                        <% if (permissions.subtype_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                                    </thead>
+                                    <tbody id="subtype">
+                                        <% classes.subtypes.forEach(subtype => { %>
+                                            <tr data-parent='<%= subtype.type_id %>' style='display: none;'>
+                                                <% if (permissions.subtype_edit) { %>
+                                                    <form action='/stores/settings/subtypes/<%= subtype.subtype_id %>?_method=PUT' method='POST'>
+                                                        <td>
+                                                            <input class='form-control' type='text' name='subtypes[_subtype]' maxlength='10' value='<%= subtype._subtype %>' required>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                        </td>
+                                                    </form>
+                                                <% } else { %>
+                                                    <td><%= subtype._subtype %></td>
+                                                <% } %>
+                                                <% if (permissions.subtype_delete) { %>
+                                                    <td>
+                                                        <form action="/stores/settings/subtypes/<%= subtype.subtype_id %>?_method=DELETE" method="POST">
+                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                        </form>
+                                                    </td>
+                                                <% } %>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -347,13 +407,13 @@
 <script src="/js/settings.js"></script>
 <script>
     showTab('<%= showtab %>');
-
     function showTab(_tab) {
+        if (_tab === 'categories' || _tab === 'groups' || _tab === 'types' || _tab === 'subtypes') _tab = 'item-classes';
         let tabHead = document.querySelector('#' + _tab + '-tab'),
             tabBody = document.querySelector('#' + _tab);
         tabHead.classList.add('active');
         tabBody.classList.add('active', 'show');
-
+    
     };
 </script>
 <% include ../../partials/foot/htmlClose %>

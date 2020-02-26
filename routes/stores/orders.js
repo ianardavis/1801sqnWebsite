@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //New Form
-    app.get('/stores/orders/new', isLoggedIn, allowed('orders_add'), (req, res) => {
+    app.get('/stores/orders/new', isLoggedIn, allowed('order_add'), (req, res) => {
         let user = Number(req.query.user);
         if (!user) user = -1
         if (user !== -1) {
@@ -12,7 +12,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             )
             .then(user => {
                 if (user !== req.user.user_id) {
-                    if (user.status_id === 1) res.render('stores/orders/new', {user: user}); 
+                    if (user.status_id === 1 || user.status_id === 2) res.render('stores/orders/new', {user: user}); 
                     else {
                         req.flash('danger', 'Orders can only be made for current users')
                         res.redirect('/stores/users/' + user);
@@ -26,15 +26,11 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         } else res.render('stores/orders/new', {user: {user_id: -1}});
     });
     //New Logic
-    app.post('/stores/orders', isLoggedIn, allowed('orders_add'), (req, res) => {
+    app.post('/stores/orders', isLoggedIn, allowed('order_add'), (req, res) => {
         if (req.body.selected) {
-            let items = [];
-            for (let [key, line] of Object.entries(req.body.selected)) {
-                items.push(line);
-            };
             fn.createOrder(
                 req.body.ordered_for,
-                items,
+                req.body.selected,
                 req.user.user_id
             )
             .then(order_id => {
@@ -51,7 +47,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     };
 
     //put
-    app.put('/stores/orders/:id', isLoggedIn, allowed('orders_edit'), (req, res) => {
+    app.put('/stores/orders/:id', isLoggedIn, allowed('order_edit'), (req, res) => {
         if (req.body.lines) {
             let actions = [];
             if (req.body.action === 'demand') {
@@ -91,13 +87,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                         let items = [], issued_to = JSON.parse(lines[0])._for;
                         lines.forEach(line => {
                             line = JSON.parse(line);
-                            let _index = items.findIndex(e => e.item_size_id === line.item_size_id);
-                            if (_index === -1) items.push({item_size_id: line.item_size_id, qty: line.qty, order_line_id: line.line_id})
+                            let _index = items.findIndex(e => e.size_id === line.size_id);
+                            if (_index === -1) items.push({size_id: line.size_id, qty: line.qty, order_line_id: line.line_id})
                             else items[_index].qty += line.qty;
                             actions.push(
                                 fn.getOne(
-                                    m.item_sizes,
-                                    {item_size_id: line.item_size_id},
+                                    m.sizes,
+                                    {size_id: line.size_id},
                                     {
                                         include: [m.nsns, m.items, {model: m.stock, include: [m.locations]}]
                                     }
@@ -105,17 +101,17 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             )
                         });
                         Promise.allSettled(actions)
-                        .then(item_sizes => {
+                        .then(sizes => {
                             fn.getOne(m.users, {user_id: issued_to}, {include: [m.ranks], attributes: null, nullOK: false})
                             .then(user => {
                                 items.forEach(item => {
-                                    let item_size = item_sizes.filter(e => e.item_size_id === item.item_size_id)[0];
-                                    item._description = item_size.item._description;
-                                    item._size_text   = item_size.size._text;
+                                    let size = sizes.filter(e => e.size_id === item.size_id)[0];
+                                    item._description = size.item._description;
+                                    item._size_text   = size.size._text;
                                     item.nsns = [];
-                                    item_size.nsns.forEach(nsn => item.nsns.push({nsn_id: nsn.nsn_id, _nsn: nsn._nsn}));
+                                    size.nsns.forEach(nsn => item.nsns.push({nsn_id: nsn.nsn_id, _nsn: nsn._nsn}));
                                     item.stocks = [];
-                                    item_size.stocks.forEach(stock => item.stocks.push({stock_id: stock.stockj_id, _location: stock.location._location}));
+                                    size.stocks.forEach(stock => item.stocks.push({stock_id: stock.stockj_id, _location: stock.location._location}));
                                 });
                                 res.render('stores/issues/new', {user: user, items: items});
                             })
@@ -140,7 +136,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     //delete
-    app.delete('/stores/orders/:id', isLoggedIn, allowed('orders_delete'), (req, res) => {
+    app.delete('/stores/orders/:id', isLoggedIn, allowed('order_delete'), (req, res) => {
         if (req.query.user) {
             fn.delete(
                 'orders',
@@ -158,16 +154,16 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     //Index
     app.get('/stores/orders', isLoggedIn, allowed('access_orders'), (req, res) => {
         let where = {};
-        if (Number(req.query.complete) === 2)      where._complete = 0
+        if      (Number(req.query.complete) === 2) where._complete = 0
         else if (Number(req.query.complete) === 3) where._complete = 1;
         fn.getAllWhere(
             m.orders,
             where,
             {
                 include: [
-                    fn.users('_for'),
-                    fn.users('_by'),
-                    {model: m.order_lines, as: 'lines'}
+                    inc.users({as: '_for'}),
+                    inc.users({as: '_by'}),
+                    inc.order_lines()
                 ]
             }
         )
@@ -180,7 +176,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 res.render('stores/orders/index',{
                     orders:    orders,
                     query:     req.query,
-                    suppliers: suppliers
+                    suppliers: suppliers,
+                    download:  req.query.download || null
                 });
             })
             .catch(err => fn.error(err, '/stores', req, res));
@@ -192,11 +189,10 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     app.get('/stores/orders/:id', isLoggedIn, allowed('access_orders'), (req, res) => {
         let query = {},
             where = {};
-        query.ul = Number(req.query.ul) || 1;
         query.demanded = Number(req.query.demanded) || 1;
         query.received = Number(req.query.received) || 1;
         query.issued   = Number(req.query.issued)   || 2;
-        query.system   = Number(req.query.sn)       || 2;
+        query.system   = Number(req.query.system)   || 2;
 
         if (query.demanded === 2)      where.demand_line_id  = {[op.is]: null}
         else if (query.demanded === 3) where.demand_line_id  = {[op.not]: null};
@@ -211,20 +207,14 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             m.orders,
             {order_id: req.params.id},
             {include: [
-                {
-                    model:    m.order_lines,
-                    as:       'lines',
-                    where:    where,
-                    required: false,
-                    include: [
-                        {model: m.demand_lines, include:[m.demands]},
-                        {model: m.receipt_lines, include:[m.receipts]},
-                        {model: m.issue_lines, include:[m.issues]},
-                        {model: m.item_sizes, include: fn.itemSize_inc()}
-                    ]
-                },
-                fn.users('_for'),
-                fn.users('_by')
+                inc.users({as: '_for'}),
+                inc.users({as: '_by'}),
+                inc.order_lines({where: where, include: [
+                    inc.demand_lines({as: 'demand_line', demands: true}),
+                    inc.receipt_lines({as: 'receipt_line', receipts: true}),
+                    inc.issue_lines({as: 'issue_line', issues: true}),
+                    inc.sizes()
+                ]})
             ]}
         )
         .then(order => {
@@ -232,9 +222,9 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                 fn.getNotes('orders', req.params.id, req)
                 .then(notes => {
                     res.render('stores/orders/show',{
-                        order: order,
-                        notes: notes,
-                        query: query
+                        order:    order,
+                        notes:    notes,
+                        query:    query
                     });
                 });
             } else {

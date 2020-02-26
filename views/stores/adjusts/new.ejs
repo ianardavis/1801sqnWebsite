@@ -13,13 +13,13 @@
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items/<%= stock.item_size.item.item_id %>'>
-                    <%= stock.item_size.item._description %>
+                <a class='nav-link stores_nav' href='/stores/items/<%= stock.size.item.item_id %>'>
+                    <%= stock.size.item._description %>
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/item_sizes/<%= stock.item_size_id %>'>
-                    Size: <%= stock.item_size._size %>
+                <a class='nav-link stores_nav' href='/stores/sizes/<%= stock.size_id %>'>
+                    Size: <%= stock.size._size %>
                 </a>
             </li>
             <li class='nav-item'>
@@ -28,7 +28,7 @@
                 </a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/adjusts/new?stock_id=<%= stock.item_size_id %>&adjustType=<%= query.adjustType %>'>
+                <a class='nav-link stores_nav' href='/stores/adjusts/new?stock_id=<%= stock.size_id %>&adjustType=<%= query.adjustType %>'>
                     <%= query.adjustType %>
                 </a>
             </li>

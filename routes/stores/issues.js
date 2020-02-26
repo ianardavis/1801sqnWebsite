@@ -1,20 +1,17 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     // Index
     app.get('/stores/issues', isLoggedIn, allowed('access_issues'), (req, res) => {
         let where = {};
-        if (Number(req.query.closed) === 2)      where._complete = 0;
+        if      (Number(req.query.closed) === 2) where._complete = 0;
         else if (Number(req.query.closed) === 3) where._complete = 1;
         fn.getAllWhere(
             m.issues, 
             where,
             {
                 include: [
-                    fn.users('_to'), 
-                    fn.users('_by'),
-                    {
-                        model: m.issue_lines,
-                        as: 'lines'
-                    }
+                    inc.users({as: '_to'}), 
+                    inc.users({as: '_by'}),
+                    inc.issue_lines()
                 ]
             }
         )
@@ -28,16 +25,11 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     //New Logic
-    app.post('/stores/issues', isLoggedIn, allowed('issues_add'), (req, res) => {
+    app.post('/stores/issues', isLoggedIn, allowed('issue_add'), (req, res) => {
         if (req.body.selected) {
-            let items = [];
-            for (let [key, line] of Object.entries(req.body.selected)) {
-                if (!line._qty) line._qty = 1;
-                items.push(line);
-            };
             fn.createIssue(
                 req.body.issue,
-                items,
+                req.body.selected,
                 req.user.user_id
             )
             .then(issue_id => {
@@ -49,7 +41,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     //new form
-    app.get('/stores/issues/new', isLoggedIn, allowed('issues_add'), (req, res) => {
+    app.get('/stores/issues/new', isLoggedIn, allowed('issue_add'), (req, res) => {
         if (req.query.user) {
             fn.getOne(
                 m.users,
@@ -76,7 +68,7 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     //delete
-    app.delete('/stores/issues/:id', isLoggedIn, allowed('issues_delete'), (req, res) => {
+    app.delete('/stores/issues/:id', isLoggedIn, allowed('issue_delete'), (req, res) => {
         if (req.query.user) {
             fn.delete(
                 'issues',
@@ -96,7 +88,30 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id},
-            {include: fn.issues_inc(true)}
+            {
+                include: [
+                    inc.users({as: '_to'}),
+                    inc.users({as: '_by'}),
+                    inc.issue_lines({include: [
+                        m.nsns,
+                        m.serials,
+                        inc.return_lines({
+                            as: 'return',
+                            include: [
+                                inc.stock(),
+                                inc.returns()
+                            ]
+                        }),
+                        inc.stock({include: [
+                            m.locations,
+                            inc.sizes({include: [
+                                m.items,
+                                inc.stock()
+                            ]})
+                        ]})
+                    ]})
+                ]
+            }
         )
         .then(issue => {
             if (req.allowed || issue.issuedTo.user_id === req.user.user_id) {
@@ -105,7 +120,8 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                     res.render('stores/issues/show', {
                         issue: issue,
                         notes: notes,
-                        query: {system: Number(req.query.system) || 2}
+                        query: {system: Number(req.query.system) || 2},
+                        download: req.query.download || null
                     })
                 });
             } else {
@@ -123,14 +139,12 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
             {issue_id: req.params.id}
         )
         .then(issue => {
-            if (issue._filename && issue._filename !== '') fn.downloadFile(issue._filename, res);
-            else {
+            if (issue._filename && issue._filename !== '') {
+                res.redirect('/stores/issues' + req.params.id  + '?download=' + issue._filename);
+            } else {
                 fn.createLoanCard(req.params.id)
-                .then(result => fn.downloadFile(result, res))
-                .catch(err => {
-                    req.flash('danger', err.message);
-                    res.redirect('/stores/issues/' + req.params.id);
-                });
+                .then(result => res.redirect('/stores/issues/' + req.params.id  + '?download=' + result))
+                .catch(err => fn.error(err, '/stores/issues/' + req.params.id, req, res));
             }
         })
         .catch(err => fn.error(err, '/stores/issues/' + req.params.id, req, res));

@@ -1,44 +1,24 @@
-module.exports = (app, fn, isLoggedIn, m) => {
+module.exports = (app, fn, inc, isLoggedIn, m) => {
     //Display Items
     app.get('/stores/itemSearch', isLoggedIn, (req, res) => {
-        let callType    = req.query.c || 'issue',
+        let callType    = req.query.callType || 'issue',
             supplier_id = Number(req.query.supplier_id) || -1,
 			include		= [];
         if (callType === 'receipt') {
-            include.push({
-                model: m.item_sizes,
-                where: {supplier_id: supplier_id}
-            })
+            include.push(inc.sizes({where: {supplier_id: supplier_id}}))
         } else if (callType === 'order') {
-            include.push({
-                model: m.item_sizes,
-                where: {_orderable: 1}
-            })
+            include.push(inc.sizes({where: {_orderable: 1}}))
         } else if (callType === 'issue') {
             include.push({
-                model: m.item_sizes,
+                model: m.sizes,
                 where: {_issueable: 1},
                 include: [
-                    {
-                        model: m.stock,
-                        include: [
-                            {
-                                model: m.locations,
-                                required: true
-                            }
-                        ],
-                        required: true
-                    },{
-                        model: m.nsns,
-                        required: true
-                    }
+                    inc.stock({require_locations: true, required: true}),
+                    inc.nsns({required: true})
                 ]
             })
         } else if (callType === 'request') {
-            include.push({
-                model: m.item_sizes,
-                where: {_issueable: 1}
-            })
+            include.push(inc.sizes({where: {_issueable: 1}}))
         };
         fn.getAll(
             m.items,
@@ -94,15 +74,15 @@ module.exports = (app, fn, isLoggedIn, m) => {
                 search._issueable = 1;
             };
             fn.getAllWhere(
-                m.item_sizes,
+                m.sizes,
                 search,
                 {
                     include: include
                 }
             )
-            .then(item_sizes => {
+            .then(sizes => {
                 res.render('stores/itemSearch/sizes', {
-                    item_sizes:  item_sizes,
+                    sizes:  sizes,
                     item_id:     item.item_id,
                     description: item._description,
                     callType:    callType,
@@ -124,19 +104,19 @@ module.exports = (app, fn, isLoggedIn, m) => {
             include_options.serials = {};
             include_options.serials.issued = false;
         };
-        if (req.body.item_size) {
+        if (req.body.size) {
             fn.getOne(
-                m.item_sizes,
+                m.sizes,
                 {
-                    item_size_id: req.body.item_size,
+                    size_id: req.body.size,
                     _issueable: 1
                 },{
                     include: fn.itemSize_inc(include_options)
                 }                
             )
-            .then(item_size => {
+            .then(size => {
                 res.render('stores/itemSearch/details', {
-                    item_size:   item_size,
+                    size:   size,
                     callType:    callType,
                     supplier_id: req.body.supplier_id
                 });

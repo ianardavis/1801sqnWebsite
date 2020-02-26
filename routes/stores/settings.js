@@ -1,4 +1,4 @@
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     function options() {
         return [
             {table: 'categories'},
@@ -26,9 +26,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
 
     // New Logic
-    app.post('/stores/settings/ranks',    isLoggedIn, allowed('ranks_add'),    (req, res) => createSetting('ranks', req, res));
-    app.post('/stores/settings/genders',  isLoggedIn, allowed('genders_add'),  (req, res) => createSetting('genders', req, res));
-    app.post('/stores/settings/statuses', isLoggedIn, allowed('statuses_add'), (req, res) => createSetting('statuses', req, res));
+    app.post('/stores/settings/ranks',      isLoggedIn, allowed('rank_add'),     (req, res) => createSetting('ranks',      req, res));
+    app.post('/stores/settings/genders',    isLoggedIn, allowed('gender_add'),   (req, res) => createSetting('genders',    req, res));
+    app.post('/stores/settings/statuses',   isLoggedIn, allowed('status_add'),   (req, res) => createSetting('statuses',   req, res));
+    app.post('/stores/settings/categories', isLoggedIn, allowed('category_add'), (req, res) => createSetting('categories', req, res));
+    app.post('/stores/settings/groups',     isLoggedIn, allowed('group_add'),    (req, res) => createSetting('groups',     req, res));
+    app.post('/stores/settings/types',      isLoggedIn, allowed('type_add'),     (req, res) => createSetting('types',      req, res));
+    app.post('/stores/settings/subtypes',   isLoggedIn, allowed('subtype_add'),  (req, res) => createSetting('subtypes',   req, res));
     function createSetting(table, req, res) {
         fn.create(
             m[table],
@@ -42,9 +46,13 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     };
     
     // Put
-    app.put('/stores/settings/ranks/:id',    isLoggedIn, allowed('ranks_edit'),    (req, res) => updateSetting('ranks', req, res));
-    app.put('/stores/settings/genders/:id',  isLoggedIn, allowed('genders_edit'),  (req, res) => updateSetting('genders', req, res));
-    app.put('/stores/settings/statuses/:id', isLoggedIn, allowed('statuses_edit'), (req, res) => updateSetting('statuses', req, res));
+    app.put('/stores/settings/ranks/:id',      isLoggedIn, allowed('rank_edit'),     (req, res) => updateSetting('ranks',      req, res));
+    app.put('/stores/settings/genders/:id',    isLoggedIn, allowed('gender_edit'),   (req, res) => updateSetting('genders',    req, res));
+    app.put('/stores/settings/statuses/:id',   isLoggedIn, allowed('status_edit'),   (req, res) => updateSetting('statuses',   req, res));
+    app.put('/stores/settings/categories/:id', isLoggedIn, allowed('category_edit'), (req, res) => updateSetting('categories', req, res));
+    app.put('/stores/settings/groups/:id',     isLoggedIn, allowed('group_edit'),    (req, res) => updateSetting('groups',     req, res));
+    app.put('/stores/settings/types/:id',      isLoggedIn, allowed('type_edit'),     (req, res) => updateSetting('types',      req, res));
+    app.put('/stores/settings/subtypes/:id',   isLoggedIn, allowed('subtype_edit'),  (req, res) => updateSetting('subtypes',   req, res));
     function updateSetting(table, req, res) {
         let id_field = {};
         id_field[fn.singularise(table) + '_id'] = req.params.id;
@@ -61,43 +69,67 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     };
     
     // Delete
-    app.delete('/stores/settings/genders/:id', isLoggedIn, allowed('genders_delete'), (req, res) => {
+    app.delete('/stores/settings/genders/:id',    isLoggedIn, allowed('gender_delete'),   (req, res) => _delete('genders', req, res));
+    app.delete('/stores/settings/ranks/:id',      isLoggedIn, allowed('rank_delete'),     (req, res) => deleteSetting('ranks', req, res));
+    app.delete('/stores/settings/statuses/:id',   isLoggedIn, allowed('status_delete'),   (req, res) => deleteSetting('statuses', req, res));
+    app.delete('/stores/settings/categories/:id', isLoggedIn, allowed('category_delete'), (req, res) => checkDelete('categories', req, res));
+    app.delete('/stores/settings/groups/:id',     isLoggedIn, allowed('group_delete'),    (req, res) => checkDelete('groups',     req, res));
+    app.delete('/stores/settings/types/:id',      isLoggedIn, allowed('type_delete'),     (req, res) => checkDelete('types',      req, res));
+    app.delete('/stores/settings/subtypes/:id',   isLoggedIn, allowed('subtype_delete'),  (req, res) => checkDelete('subtypes',   req, res));
+    function checkDelete (table, req, res) {
+        let check_table;
+        if (table === 'categories')  check_table = m.groups
+        else if (table === 'groups') check_table = m.types
+        else if (table === 'types')  check_table = m.subtypes;
+        if (table !== 'subtypes') {
+            let where = {};
+            where[fn.singularise(table) + '_id'] = req.params.id;
+            fn.getOne(
+                check_table,
+                where,
+                {nullOK: true}
+            )
+            .then(result => {
+                if (result) fn.error(new Error('Can not delete ' + fn.singularise(table) + ' whilst it has sub options'), '/stores/settings?show=item-classes', req, res);
+                else _delete(table, req, res);
+            })
+            .catch(err => fn.error(err, '/stores/settings?show=item-classes', req, res))
+        } else _delete(table, req, res);
+    };
+    function deleteSetting(table, req, res) {
+        if (table === 'statuses' && req.params.id <= 5) {
+            req.flash('danger', 'This status can not be deleted');
+            res.redirect('/stores/settings?show=statuses');
+        } else {
+            let id_field = {};
+            id_field[fn.singularise(table) + '_id'] = req.params.id;
+            fn.getOne(
+                m.users,
+                id_field,
+                {nullOK: true}
+            )
+            .then(record => {
+                if (!record) _delete(table, req, res)
+                else {
+                    req.flash('danger', 'Cannot delete a ' + fn.singularise(table) + ' whilst it is assigned to any users!');
+                    res.redirect('/stores/settings?show=' + table);
+                };
+            })
+            .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
+        };
+    };
+    function _delete (table, req, res) {
+        let where = {};
+        where[fn.singularise(table) + '_id'] = req.params.id;
         fn.delete(
-            'genders',
-            {gender_id: req.params.id}
+            table,
+            where
         )
         .then(result => {
-            req.flash('success', 'Gender deleted');
-            res.redirect('/stores/settings?show=genders');
-        })
-        .catch(err => fn.error(err, '/stores/settings?show=genders', req, res));
-    });
-    app.delete('/stores/settings/ranks/:id',    isLoggedIn, allowed('ranks_delete'),    (req, res) => deleteSetting('ranks', req, res));
-    app.delete('/stores/settings/statuses/:id', isLoggedIn, allowed('statuses_delete'), (req, res) => deleteSetting('statuses', req, res));
-    function deleteSetting(table, req, res) {
-        let id_field = {};
-        id_field[fn.singularise(table) + '_id'] = req.params.id;
-        fn.getOne(
-            m.users,
-            id_field,
-            {nullOK: true}
-        )
-        .then(record => {
-            if (!record) {
-                fn.delete(
-                    table,
-                    id_field
-                )
-                .then(result => {
-                    if (result) req.flash('success', 'Record deleted from ' + table);
-                    res.redirect('/stores/settings?show=' + table);
-                })
-                .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
-            } else {
-                req.flash('danger', 'Cannot delete a ' + fn.singularise(table) + ' whilst it is assigned to any users!');
-                res.redirect('/stores/settings?show=' + table);
-            }
+            if (result) req.flash('success', 'Record deleted from ' + table);
+            res.redirect('/stores/settings?show=' + table);
         })
         .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
     };
+
 };
