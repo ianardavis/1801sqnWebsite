@@ -209,6 +209,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             where.issues,
                             {
                                 include: [
+                                    inc.return_lines({as: 'return', include: [inc.stock()]}),
                                     inc.issues({where: {issued_to: user.user_id}, required: true}),
                                     inc.stock({
                                         size: true,

@@ -1,6 +1,5 @@
 var downloadWindow = null;
 function download_file(file) {
-    console.log(file);
     if (downloadWindow === null || downloadWindow.closed) {
         downloadWindow = window.open("/stores/download?file=" + file,
                                 "Downloads",

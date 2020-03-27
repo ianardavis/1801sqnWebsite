@@ -5,7 +5,7 @@ module.exports = (permission, redirect = true) => {
         else {
             if (redirect) {
                 req.flash('danger', 'Permission denied!');
-                res.redirect('back');
+                res.redirect('/resources');
             } else next();
         };
     };

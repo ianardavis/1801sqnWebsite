@@ -119,14 +119,24 @@
                 <% if (permissions.file_add) { %>
                     <div class="col-12">
                         <form ref="uploadForm" id="uploadForm" action="/stores/files?s=<%= supplier.supplier_id %>" method="POST" encType="multipart/form-data">
-                            <div class="row">
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="demandfile" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                                    <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+                                </div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04"><i class='fas fa-file-upload'></i></button>
+                                </div>
+                            </div>
+
+                            <!-- <div class="row">
                                 <div class="col-10">
                                     <input class="btn btn-sm btn-primary" type="file" name="demandfile">
                                 </div>
                                 <div class="col-2">
                                     <button class="float-right btn btn-primary confirm"><i class='fas fa-file-upload'></i></button>
                                 </div>
-                            </div>
+                            </div> -->
                          </form>
                     </div>
                 <% }; %>

@@ -40,6 +40,9 @@
 							<% requests.forEach(request => { %>
 								<tr>
 									<td>
+										<a class='float-right btn btn-sm btn-primary' href="/stores/users/<%= request.requested_for %>">
+											<i class='fas fa-search'></i>
+										</a>
 										<%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %>
 									</td>
 									<td data-sort="<%= request._date.getTime() %>">

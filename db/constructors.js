@@ -22,9 +22,9 @@ cn.Issue = function (issue, user_id) {
 cn.IssueLine = function (issue_id, item, line) {
     this.issue_id  = issue_id;
     this._line     = line;
-    this.nsn_id    = item.nsn_id || null;
+    this.nsn_id    = item.nsn_id    || null;
     this.serial_id = item.serial_id || null;
-    this._qty      = item.qty || 1;
+    this._qty      = item.qty       || 1;
     this.stock_id  = item.stock_id;
 };
 
@@ -68,10 +68,10 @@ cn.Request = function (requested_by, requested_for) {
     this._date         = Date.now();
 };
 cn.RequestLine = function (request_id, size_id, qty) {
-    this.request_id   = request_id;
-    this.size_id = size_id;
-    this._qty         = qty;
-    this._status      = 'Pending';
+    this.request_id = request_id;
+    this.size_id    = size_id;
+    this._qty       = qty;
+    this._status    = 'Pending';
 };
 cn.RequestStatus = function (line, user_id) {
     this._status = line._status;
@@ -97,9 +97,18 @@ cn.Demand = function (supplier_id, user_id) {
     this.user_id     = user_id;
 };
 cn.DemandLine = function (demand_id, size_id, qty) {
-    this.demand_id   = demand_id;
-    this.size_id = size_id;
-    this._qty        = qty;
+    this.demand_id = demand_id;
+    this.size_id   = size_id;
+    this._qty      = qty;
+};
+
+cn.Adjustment = function (stock_id, _type, qty, stock, user_id) {
+    this.stock_id        = stock_id;
+    this._type           = _type;
+    this._qty            = qty;
+    this._qty_difference = qty - stock;
+    this._date           = Date.now();
+    this.user_id         = user_id;
 };
 
 module.exports = cn;

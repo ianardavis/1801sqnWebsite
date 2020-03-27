@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('canteen_sale_lines', {
-    'sale_line_id': {
+    'line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -20,15 +20,20 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_price': {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-      defaultValue: '0.50',
-      comment: "null"
-    },
     '_qty': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
+      comment: "null"
+    },
+    '_new_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    '_price': {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      defaultValue: '0.00',
       comment: "null"
     },
     'createdAt': {

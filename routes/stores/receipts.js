@@ -6,7 +6,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 m.suppliers,
                 {supplier_id: req.query.supplier_id}
             )
-            .then(supplier => res.render('stores/receipts/new',{supplier: supplier}))
+            .then(supplier => res.render('stores/receipts/new', {supplier: supplier}))
             .catch(err => fn.error(err, 'back', req, res));
         } else {
             req.flash('danger', 'No supplier specified');
@@ -16,7 +16,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //New Logic
     app.post('/stores/receipts', isLoggedIn, allowed('receipt_add'), (req, res) => {
         if (req.body.selected) {
-            if (items.length > 0) {
+            if (req.body.selected.length > 0) {
                 fn.createReceipt(
                     req.body.supplier_id,
                     req.body.selected,

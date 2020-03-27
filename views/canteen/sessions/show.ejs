@@ -41,31 +41,46 @@
                     </div>
                 </div>
             <% } %>
+            <% if (permissions.canteen_supervisor && !session._closing_balance) { %>
+                <form action="/canteen/sessions/<%= session.session_id %>?_method=PUT" method='POST'>
+            <% } %>
             <div class="row">
                 <div class="col-6">
-                    <label class='col-form-label'>Opening Balance</label>
+                    <label class='col-form-label'>Opening Balance (£)</label>
                 </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='£<%= Number(session._opening_balance).toFixed(2) %>' readonly>
+                <% if (permissions.canteen_supervisor && !session._closing_balance) { %>
+                    <div class="col-5">
+                <% } else { %> 
+                    <div class="col-6">
+                <% } %>
+                    <input class='form-control' type="text" name='session[_opening_balance]' value='<%= Number(session._opening_balance).toFixed(2) %>' <% if (!permissions.canteen_supervisor || session._closing_balance) { %>readonly<% } %>>
                 </div>
+                <% if (permissions.canteen_supervisor && !session._closing_balance) { %>
+                    <div class="col-1">
+                        <button class='float-right btn btn-success'><i class='fas fa-save'></i></button>
+                    </div>
+                <% } %>
             </div>
+            <% if (permissions.canteen_supervisor && !session._closing_balance) { %>
+                </form>
+            <% } %>
             <% if (session._takings) { %>
                 <div class="row">
                     <div class="col-6">
-                        <label class='col-form-label'>Takings</label>
+                        <label class='col-form-label'>Takings (£)</label>
                     </div>
                     <div class="col-6">
-                        <input class='form-control' type="text" value='£<%= Number(session._takings).toFixed(2) %>' readonly>
+                        <input class='form-control' type="text" value='<%= Number(session._takings).toFixed(2) %>' readonly>
                     </div>
                 </div>
             <% } %>
             <% if (session._closing_balance) { %>
                 <div class="row">
                     <div class="col-6">
-                        <label class='col-form-label'>End</label>
+                        <label class='col-form-label'>Closing Balance (£)</label>
                     </div>
                     <div class="col-6">
-                        <input class='form-control' type="text" value='£<%= Number(session._closing_balance).toFixed(2) %>' readonly>
+                        <input class='form-control' type="text" value='<%= Number(session._closing_balance).toFixed(2) %>' readonly>
                     </div>
                 </div>
             <% } %>
@@ -88,7 +103,7 @@
                 </div>
             <% } %>
         </div>
-        <div class="col-12">
+        <div class="col-12 bordered">
             <a class="my-3" data-toggle="collapse" href="#collapseSales" role="button" aria-expanded="false" aria-controls="collapseSales">
                 <h4>Sales (<%= session.sales.length %>)</h4>
             </a>
@@ -96,9 +111,9 @@
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-30" onclick="sortTable(0, 'saleTable')">Time</th>
-                        <th class="w-50" onclick="sortTable(2, 'saleTable')">User</th>
-                        <th class="w-10" onclick="sortTable(3, 'saleTable')">Lines</th>
-                        <th class="w-10" onclick="sortTable(1, 'saleTable')">Complete</th>
+                        <th class="w-50" onclick="sortTable(1, 'saleTable')">User</th>
+                        <th class="w-10" onclick="sortTable(2, 'saleTable')">Lines</th>
+                        <th class="w-10" onclick="sortTable(3, 'saleTable')">Complete</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id="saleTable">
@@ -116,7 +131,12 @@
                                     <% } %>
                                 </td>
                                 <td>
-                                    <input class='form-control form-control-sm' type="checkbox" <% if (sale._complete) { %> checked <% } %> disabled>
+                                    <% if (sale._complete) { %> <i class='fas fa-check'></i> <% } %>
+                                </td>
+                                <td>
+                                    <a class='btn btn-sm btn-primary' href="/canteen/sales/<%= sale.sale_id %>">
+                                        <i class='fas fa-search'></i>
+                                    </a>
                                 </td>
                             </tr>
                         <% }) %>
@@ -124,7 +144,7 @@
                 </table>
             </div>
         </div>
-        <div class="col-12">
+        <div class="col-12 bordered">
             <a class="my-3" data-toggle="collapse" href="#collapseItems" role="button" aria-expanded="false" aria-controls="collapseItems">
                 <h4>Items (<%= items.length %>)</h4>
             </a>
@@ -151,6 +171,11 @@
                                         <% _qty += Number(sale._qty) %>
                                     <% }) %>
                                     <%= _qty %>
+                                </td>
+                                <td>
+                                    <a class='btn btn-sm btn-primary' href="/canteen/items/<%= item.item_id %>">
+                                        <i class='fas fa-search'></i>
+                                    </a>
                                 </td>
                             </tr>
                         <% }) %>

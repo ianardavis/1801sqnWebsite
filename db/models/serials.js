@@ -23,18 +23,20 @@ module.exports = function(sequelize, DataTypes) {
     },
     'issue_line_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
-      defaultValue: -1,
+      allowNull: false,
+      defaultValue: '-1',
       comment: "null"
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {

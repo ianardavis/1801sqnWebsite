@@ -1,0 +1,119 @@
+<% include ../../partials/head/full %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen'>
+                    Canteen
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen/writeoffs'>
+                    Writeoffs
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen/writeoffs/<%= writeoff.writeoff_id %>'>
+                    <%= writeoff.writeoff_id %>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <div class="row">
+        <div class="col-12 mb-1">
+            <div class="row">
+                <div class="col-6">
+                    <label class='col-form-label'>Date</label>
+                </div>
+                <div class="col-6">
+                    <input class='form-control' type="text" value='<%= writeoff._date.toDateString() %>' readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label class='col-form-label'>Reason</label>
+                </div>
+                <div class="col-6">
+                    <input class='form-control' type="text" value='<%= writeoff._reason %>' readonly>
+                </div>
+            </div>
+            <div class="row">
+                <% if (writeoff._complete) { %>
+                    <div class="col-6">
+                        <label class='col-form-label'>Complete</label>
+                    </div>
+                    <div class="col-6">
+                        <i class='fas fa-check'></i>
+                    </div>
+                <% } else { %> 
+                    <div class="col-12">
+                        <a class='btn btn-success w-100 confirm' href="/canteen/writeoffs/<%= writeoff.writeoff_id %>/complete">
+                            Complete Writeoff
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <div class="col-12 bordered">
+            <a class="my-3" data-toggle="collapse" href="#collapseLines" role="button" aria-expanded="false" aria-controls="collapseLines">
+                <h4>Lines (<%= writeoff.lines.length %>)</h4>
+            </a>
+            <div class="collapse mb-3" id="collapseLines">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-50" onclick="sortTable(0, 'lineTable')">Item</th>
+                        <th class="w-25" onclick="sortTable(1, 'lineTable')">Qty</th>
+                        <th class="w-25" onclick="sortTable(2, 'lineTable')">Cost</th>
+                        <% if (!writeoff._complete) { %>
+                            <th><i class='fas fa-save'></i></th>
+                            <th><i class='fas fa-trash-alt'></i></th>
+                        <% } %>
+                    </thead>
+                    <tbody id="lineTable">
+                        <% if (writeoff.lines) writeoff.lines.forEach(line => { %>
+                            <tr>
+                                <% if (writeoff._complete) { %>
+                                    <td>
+                                        <a class='float-right btn btn-sm btn-primary' href="/canteen/items/<%= line.item_id %>">
+                                            <i class='fas fa-search'></i>
+                                        </a>
+                                        <%= line.item._name %>
+                                    </td>
+                                    <td><%= line._qty %></td>
+                                    <td><%= line._cost %></td>
+                                <% } else { %>
+                                    <form action="/canteen/writeoff_lines/<%= line.line_id %>?_method=PUT&page=writeoffs&id=<%= writeoff.writeoff_id %>" method='POST'>
+                                        <td>
+                                            <a class='float-right btn btn-sm btn-primary' href="/canteen/items/<%= line.item_id %>">
+                                                <i class='fas fa-search'></i>
+                                            </a>
+                                            <label class='col-form-label'><%= line.item._name %></label>
+                                        </td>
+                                        <td>
+                                            <input class='form-control form-control-sm' type="number" name='line[_qty]' value='<%= line._qty %>'>
+                                        </td>
+                                        <td>
+                                            <input class='form-control form-control-sm' type="number" step='0.01' name='line[_cost]' value='<%= line._cost %>'>
+                                        </td>
+                                        <td>
+                                            <button class='btn btn-sm btn-success confirm'><i class='fas fa-save'></i></button>
+                                        </td>
+                                    </form>
+                                    <td>
+                                        <form action="/canteen/writeoff_lines/<%= line.line_id %>?_method=DELETE&page=writeoffs&id=<%= writeoff.writeoff_id %>" method='POST'>
+                                            <button class='btn btn-sm btn-danger confirm'><i class='fas fa-trash-alt'></i></button>
+                                        </form>
+                                    </td>
+                                <% } %>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

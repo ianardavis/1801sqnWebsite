@@ -34,7 +34,7 @@ module.exports = function(sequelize, DataTypes) {
     'status_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: '12',
+      defaultValue: '1',
       comment: "null"
     },
     '_login_id': {
@@ -66,12 +66,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {

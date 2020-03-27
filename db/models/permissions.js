@@ -488,13 +488,13 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0',
       comment: "access_settings"
     },
-    'group_delete': {
+    'group_edit': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
       comment: "access_settings"
     },
-    'group_edit': {
+    'group_delete': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',
@@ -575,11 +575,13 @@ module.exports = function(sequelize, DataTypes) {
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {

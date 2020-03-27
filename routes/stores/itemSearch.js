@@ -111,7 +111,7 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
                     size_id: req.body.size,
                     _issueable: 1
                 },{
-                    include: fn.itemSize_inc(include_options)
+                    include: [m.items, inc.nsns(), inc.stock(), inc.serials()]
                 }                
             )
             .then(size => {

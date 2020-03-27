@@ -1,5 +1,5 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, fn, isLoggedIn, m) => {
+module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     // Index
     app.get('/canteen/sessions', isLoggedIn, allowed('access_canteen'), (req, res) => {
         fn.getAll(
@@ -52,11 +52,11 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
                             model: m.canteen_sale_lines,
                             as: 'lines'
                         },
-                        fn.users()
+                        inc.users()
                     ]
                 },
-                fn.users('_opened_by'),
-                fn.users('_closed_by')
+                inc.users({as: '_opened_by'}),
+                inc.users({as: '_closed_by'})
             ]}
         )
         .then(session => {
@@ -87,6 +87,19 @@ module.exports = (app, allowed, fn, isLoggedIn, m) => {
     });
     // Close session
     app.put('/canteen/sessions/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+        fn.update(
+            m.canteen_sessions,
+            req.body.session,
+            {session_id: req.params.id}
+        )
+        .then(result => {
+            req.flash('success', 'Session updated');
+            res.redirect('/canteen/sessions/' + req.params.id);
+        })
+        .catch(err => fn.error(err, '/canteen/sessions/' + req.params.id, req, res));
+    });
+    // Close session
+    app.put('/canteen/sessions/:id/close', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.getAllWhere(m.canteen_sales, {_complete: 0})
         .then(sales => {
             let salesToDelete = [];

@@ -26,7 +26,7 @@
 	<% if (permissions.access_settings) cards.push({href: '/stores/settings', title: 'Settings', image: 'cog'}) %>
 	<div class="row container m-auto p-0 menu">
 		<% cards.forEach(card => { %>
-			<div class="col-6 col-lg-4 col-xl-3">
+			<div class="col-md-6 col-lg-4 col-xl-3">
 				<div class="card m-3">
 					<a href="<%= card.href %>">
 						<div class="card-header">

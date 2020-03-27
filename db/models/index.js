@@ -108,8 +108,9 @@ db.demands.hasOne(db.suppliers,     {foreignKey: 'supplier_id', sourceKey: 'supp
 db.demands.hasOne(db.users,         {foreignKey: 'user_id',     sourceKey: 'user_id',     constraints: false});
 db.demands.hasMany(db.demand_lines, {foreignKey: 'demand_id',   targetKey: 'demand_id',                           as: 'lines'});
 
-db.demand_lines.hasOne(db.sizes,      {foreignKey: 'size_id',   sourceKey: 'size_id', constraints: false});
-db.demand_lines.belongsTo(db.demands, {foreignKey: 'demand_id', targetKey: 'demand_id'});
+db.demand_lines.hasOne(db.sizes,        {foreignKey: 'size_id',        sourceKey: 'size_id', constraints: false});
+db.demand_lines.belongsTo(db.demands,   {foreignKey: 'demand_id',      targetKey: 'demand_id'});
+db.demand_lines.hasMany(db.order_lines, {foreignKey: 'demand_line_id', targetKey: 'line_id'});
 
 db.groups.belongsTo(db.categories, {foreignKey: 'category_id', targetKey: 'category_id'});
 db.types.belongsTo(db.groups,      {foreignKey: 'group_id',    targetKey: 'group_id'});
@@ -118,15 +119,31 @@ db.subtypes.belongsTo(db.types,    {foreignKey: 'type_id',     targetKey: 'type_
 db.serials.belongsTo(db.sizes,    {foreignKey: 'size_id', targetKey: 'size_id'});
 db.serials.hasOne(db.issue_lines, {foreignKey: 'line_id', sourceKey: 'issue_line_id', as: 'issue', constraints: false});
 
-db.canteen_sessions.hasMany(db.canteen_sales,   {foreignKey: 'session_id', targetKey: 'session_id', as: 'sales'});
-db.canteen_sales.hasMany(db.canteen_sale_lines, {foreignKey: 'sale_id',    targetKey: 'sale_id',    as: 'lines'});
-db.canteen_items.hasMany(db.canteen_sale_lines, {foreignKey: 'item_id',    targetKey: 'item_id',    as: 'sales'});
-db.canteen_sale_lines.hasOne(db.canteen_sales,  {foreignKey: 'sale_id',    sourceKey: 'sale_id',    as: 'sale',      constraints: false});
-db.canteen_sales.hasOne(db.users,               {foreignKey: 'user_id',    sourceKey: 'user_id',    constraints: false});
-db.canteen_sessions.hasOne(db.users,            {foreignKey: 'user_id',    sourceKey: 'opened_by',  as: '_opened_by', constraints: false});
-db.canteen_sessions.hasOne(db.users,            {foreignKey: 'user_id',    sourceKey: 'closed_by',  as: '_closed_by', constraints: false});
-db.canteen_sale_lines.hasOne(db.canteen_items,  {foreignKey: 'item_id',    sourceKey: 'item_id',    as: 'item',       constraints: false});
+db.canteen_sessions.hasMany(db.canteen_sales, {foreignKey: 'session_id', targetKey: 'session_id', as: 'sales'});
+db.canteen_sessions.hasOne(db.users,          {foreignKey: 'user_id',    sourceKey: 'opened_by',  as: '_opened_by', constraints: false});
+db.canteen_sessions.hasOne(db.users,          {foreignKey: 'user_id',    sourceKey: 'closed_by',  as: '_closed_by', constraints: false});
 
+db.canteen_items.hasMany(db.canteen_sale_lines,     {foreignKey: 'item_id', targetKey: 'item_id', as: 'sales'});
+db.canteen_items.hasMany(db.canteen_receipt_lines,  {foreignKey: 'item_id', targetKey: 'item_id', as: 'receipts'});
+db.canteen_items.hasMany(db.canteen_writeoff_lines, {foreignKey: 'item_id', targetKey: 'item_id', as: 'writeoffs'});
+
+db.canteen_sales.hasMany(db.canteen_sale_lines,  {foreignKey: 'sale_id', targetKey: 'sale_id', as: 'lines'});
+db.canteen_sales.hasOne(db.users,                {foreignKey: 'user_id', sourceKey: 'user_id', constraints: false});
+
+db.canteen_sale_lines.hasOne(db.canteen_sales, {foreignKey: 'sale_id', sourceKey: 'sale_id', as: 'sale', constraints: false});
+db.canteen_sale_lines.hasOne(db.canteen_items, {foreignKey: 'item_id', sourceKey: 'item_id', as: 'item', constraints: false});
+
+db.canteen_receipts.hasOne(db.users,                  {foreignKey: 'user_id',    sourceKey: 'user_id',    constraints: false});
+db.canteen_receipts.hasMany(db.canteen_receipt_lines, {foreignKey: 'receipt_id', targetKey: 'receipt_id', as: 'lines'});
+
+db.canteen_receipt_lines.hasOne(db.canteen_items,       {foreignKey: 'item_id',    sourceKey: 'item_id',    as: 'item', constraints: false});
+db.canteen_receipt_lines.belongsTo(db.canteen_receipts, {foreignKey: 'receipt_id', targetKey: 'receipt_id', as: 'receipt'});
+
+db.canteen_writeoffs.hasOne(db.users,                   {foreignKey: 'user_id',     sourceKey: 'user_id',      constraints: false});
+db.canteen_writeoffs.hasMany(db.canteen_writeoff_lines, {foreignKey: 'writeoff_id', targetKey: 'writeoff_id', as: 'lines'});
+
+db.canteen_writeoff_lines.hasOne(db.canteen_items,        {foreignKey: 'item_id',     sourceKey: 'item_id',      as: 'item', constraints: false});
+db.canteen_writeoff_lines.belongsTo(db.canteen_writeoffs, {foreignKey: 'writeoff_id', targetKey: 'writeoff_id', as: 'writeoff'});
 
 db.sequelize = seq;
 db.Sequelize = Seq;

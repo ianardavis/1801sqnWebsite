@@ -39,6 +39,6 @@ module.exports = (app, m) => {
     });
 
     app.get('/stores/download', mw.isLoggedIn, al('file_download'), (req, res) => {
-        if (req.query.file) fn.downloadFile(req.query.file, res);
+        if (req.query.file) fn.downloadFile(req.query.file, req, res);
     });
 };

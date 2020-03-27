@@ -52,26 +52,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
 
-    //delete
-    app.delete('/stores/requests/:id', isLoggedIn, allowed('request_delete'), (req, res) => {
-        if (req.query.user) {
-            fn.delete(
-                'requests',
-                {request_id: req.params.id},
-                {hasLines: true}
-            )
-            .then(result => {
-                req.flash(result.success, result.message);
-                res.redirect('/stores/requests');
-            })
-            .catch(err => fn.error(err, '/stores/requests', req, res));
-        };
-    });
-
     //Approve/Decline
-    app.put('/stores/requests/:id', isLoggedIn, allowed('request_edit'), (req, res) => {
-        console.log(req.body.action);
-        console.log(req.body.selected);
+    app.put('/stores/requests/:id/approval', isLoggedIn, allowed('request_edit'), (req, res) => {
         if (req.body.selected) {
             fn.getOne(m.requests, {request_id: req.params.id}, {include: [inc.users({as: '_for'})]})
             .then(request => {
@@ -105,6 +87,32 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             fn.getOne(
                                 m.request_lines,
                                 {line_id: line_id},
+                                {include: [inc.sizes()]}
+                            )
+                        )
+                    });
+                    Promise.allSettled(actions)
+                    .then(results => {
+                        let items = [];
+                        results.forEach(result => {
+                            let line = result.value;
+                            let new_item = {};
+                            new_item['description'] = line.size.item._description;
+                            new_item['size'] = line.size._size;
+                            new_item['size_id'] = line.size_id;
+                            new_item['qty'] = line._qty;
+                            new_item['request_line_id'] = line.line_id;
+                            items.push(new_item);
+                        });
+                        res.render('stores/orders/new', {user: request._for, items: items})
+                    })
+                    .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
+                } else if (req.body.action === 'issue') {
+                    req.body.selected.forEach(line_id => {
+                        actions.push(
+                            fn.getOne(
+                                m.request_lines,
+                                {line_id: line_id},
                                 {include: [inc.sizes({stock: true, nsns: true, serials: true})]}
                             )
                         )
@@ -126,32 +134,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                                 new_item['nsns'] = line.value.size.nsns;
                                 let _stock = [];
                                 line.value.size.stocks.forEach(stock => {
-                                    _stock.push({stock_id: stock.stock_id, _location: stock.location._location})
+                                    _stock.push({stock_id: stock.stock_id, _location: stock.location._location, qty: stock._qty})
                                 });
                                 new_item['stocks'] = _stock;
                                 items.push(new_item);
                             };
-
                         });
-                        console.log(items);
-                        res.render('stores/orders/new', {user: request._for, items: items})
-                        // res.redirect('/stores/requests/' + req.params.id);
-                    })
-                    .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
-                } else if (req.body.action === 'issue') {
-                    req.body.selected.forEach(line_id => {
-                        actions.push(
-                            fn.getOne(
-                                m.request_lines,
-                                {line_id: line_id},
-                                {include: [inc.sizes({stock: true, nsns: true, serials: true})]}
-                            )
-                        )
-                    });
-                    Promise.allSettled(actions)
-                    .then(results => {
-                        console.log(results);
-                        res.redirect('/stores/requests/' + req.params.id);
+                        res.render('stores/issues/new', {user: request._for, items: items})
                     })
                     .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
                 } else {
@@ -164,17 +153,49 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             res.redirect('/stores/requests/' + req.params.id);
         };
     });
-    app.put('/stores/requests/:id/approval', isLoggedIn, allowed('request_edit'), (req, res) => {
-        fn.processRequests(
-            req.body,
-            req.user.user_id
+    // Close
+    app.put('/stores/requests/:id/close', isLoggedIn, allowed('request_edit'), (req, res) => {
+        let actions = [];
+        actions.push(
+            fn.update(
+                m.request_lines,
+                {
+                    _status: 'Declined',
+                    _date: Date.now(),
+                    user_id: req.user.user_id
+                },
+                {
+                    request_id: req.params.id,
+                    _status: 'Pending'
+                }
+            )
+        );
+        actions.push(
+            fn.create(
+                m.notes,
+                {
+                    _table:  'requests',
+                    _id:     req.params.id,
+                    _note:   'Request closed',
+                    _system: true,
+                    _date:   Date.now(),
+                    user_id: req.user.user_id
+                }
+            )
         )
-        .then(noNSNs => {
-            noNSNs.forEach(line_id => req.flash('danger', 'Can not issue line ' + line_id + ', no NSNs available'));
-            req.flash('success', 'Requests processed')
-            res.redirect('/stores/requests');
+        actions.push(
+            fn.update(
+                m.requests,
+                {_complete: true},
+                {request_id: req.params.id}
+            )
+        )
+        Promise.allSettled(actions)
+        .then(result => {
+            req.flash('success', 'Request closed');
+            res.redirect('/stores/requests/' + req.params.id);
         })
-        .catch(err => fn.error(err, '/stores/requests', req, res));
+        .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
     });
 
     //Index
@@ -232,6 +253,20 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 req.flash('danger', 'Permission Denied!')
                 res.redirect('/stores/requests');
             };
+        })
+        .catch(err => fn.error(err, '/stores/requests', req, res));
+    });
+
+    //delete
+    app.delete('/stores/requests/:id', isLoggedIn, allowed('request_delete'), (req, res) => {
+        fn.delete(
+            'requests',
+            {request_id: req.params.id},
+            {hasLines: true}
+        )
+        .then(result => {
+            req.flash(result.success, result.message);
+            res.redirect('/stores/requests');
         })
         .catch(err => fn.error(err, '/stores/requests', req, res));
     });

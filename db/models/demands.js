@@ -38,12 +38,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {

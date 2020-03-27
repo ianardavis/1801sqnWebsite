@@ -28,6 +28,7 @@ module.exports = function(sequelize, DataTypes) {
     '_status': {
       type: DataTypes.STRING(15),
       allowNull: false,
+      defaultValue: 'Pending',
       comment: "null"
     },
     '_action': {
@@ -52,12 +53,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {

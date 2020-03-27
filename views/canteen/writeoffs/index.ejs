@@ -1,0 +1,61 @@
+<% include ../../partials/head/full %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen'>
+                    Canteen
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen/writeoffs'>
+                    Writeoffs
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link stores_nav dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class='fas fa-plus'></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/canteen/writeoffs/new/Out_of_Date">Out of Date</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-35" onclick="sortTable(0, 'writeoffTable')">Date</th>
+                    <th class="w-35" onclick="sortTable(1, 'writeoffTable')">User</th>
+                    <th class="w-10" onclick="sortTable(2, 'writeoffTable')">Complete</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="writeoffTable">
+                    <% if (writeoffs) writeoffs.forEach(writeoff => { %>
+                        <tr>
+                            <td data-sort="<%= writeoff._date.getTime() %>">
+                                <%= writeoff._date.toDateString() %>
+                            </td>
+                            <td>
+                                <%= writeoff.user.rank._rank %> <%= writeoff.user._name %>, <%= writeoff.user._ini %>
+                            </td>
+                            <td>
+                                <% if (writeoff._complete) { %><i class='fas fa-check'></i><% } %>
+                            </td>
+                            <td>
+                                <a class='btn btn-sm btn-primary' href="/canteen/writeoffs/<%= writeoff.writeoff_id %>">
+                                    <i class='fas fa-search'></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

@@ -96,7 +96,7 @@ function addSize() {
                 selected.stock_id = JSON.parse(stocks.value).id;
                 selected.stocks = [];
                 <%- JSON.stringify(size.stocks) %>.forEach(stock => {
-                    selected.stocks.push({stock_id: stock.stock_id, _location: stock.location._location});
+                    selected.stocks.push({stock_id: stock.stock_id, _location: stock.location._location, qty: stock._qty});
                 });
                 <% if (size._nsns) { %>
                     if (callType === 'issue') {
@@ -118,9 +118,7 @@ function addSize() {
             <% } else { %>
                 selected.qty = qty;
             <% } %>
-            if (callType !== 'issue' && callType !== 'receipt') {
-                selected.size_id = <%= size.size_id %>;
-            };
+            selected.size_id = <%= size.size_id %>;
             selected.description  = '<%= size.item._description %>';
             selected.size         = '<%= size._size %>';
 

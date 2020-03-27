@@ -25,6 +25,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
+    '_status': {
+      type: DataTypes.STRING(15),
+      allowNull: false,
+      defaultValue: 'Open',
+      comment: "null"
+    },
     'demand_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
@@ -42,12 +48,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {

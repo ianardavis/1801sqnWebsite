@@ -23,9 +23,16 @@
 <section class="container">
 	<div class="row">
 		<div class="col-12 col-lg-6 mb-3 bordered">
+			<% if (permissions.request_edit && !request._complete) { %>
+				<form action="/stores/requests/<%= request.request_id %>/close?_method=PUT" method="POST">
+					<button class="float-left btn btn-warning confirm">
+						<i class='fas fa-window-close'></i>
+					</button>
+				</form>
+			<% }; %>
 			<% if (permissions.request_delete) { %>
-				<form action="/stores/requests/<%= request.request_id %>?_method=DELETE&user=<%= request.requested_for %>" method="POST">
-					<button class="float-left btn btn-danger confirm">
+				<form action="/stores/requests/<%= request.request_id %>/close?_method=DELETE&user=<%= request.requested_for %>" method="POST">
+					<button class="float-right btn btn-danger confirm">
 						<i class='fas fa-trash-alt'></i>
 					</button>
 				</form>
@@ -83,7 +90,7 @@
 		<div class="col-12 bordered">
 			<h4>Lines</h4>
 			<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
-				<form action="/stores/requests/<%= request.request_id %>?_method=PUT" method="POST">
+				<form action="/stores/requests/<%= request.request_id %>/approval?_method=PUT" method="POST">
 					<div class="row">
 						<div class="col-md-6">
 							<select class='form-control' name="action">
@@ -99,23 +106,26 @@
 			<% } %>
 				<table class="table table-sm table-hover mx-auto w-100">
 					<thead class="thead-dark">
-						<th class='w-5'></th>
-						<th class="w-15" onclick="sortTable(1, 'requestTable')">Item</th>
-						<th class="w-10" onclick="sortTable(2, 'requestTable')">Size</th>
+						<% if (!request._complete) { %><th class="w-5" ></th><% } %>
+						<th class="w-20" onclick="sortTable(1, 'requestTable')">Item</th>
+						<th class="w-15" onclick="sortTable(2, 'requestTable')">Size</th>
 						<th class="w-5"  onclick="sortTable(3, 'requestTable')">Qty</th>
-						<th class="w-10" onclick="sortTable(4, 'requestTable')">Status</th>
-						<th class="w-10" onclick="sortTable(5, 'requestTable')">Date Approved</th>
-						<th class="w-10" onclick="sortTable(6, 'requestTable')">Approved By</th>
-						<th class="w-10" onclick="sortTable(7, 'requestTable')"></th>
+						<% if (!request._complete) { %><th class="w-5"  onclick="sortTable(4, 'requestTable')">Current<br>Stock</th><% } %>
+						<th class="w-10" onclick="sortTable(5, 'requestTable')">Status</th>
+						<th class="w-15" onclick="sortTable(6, 'requestTable')">Date Approved</th>
+						<th class="w-15" onclick="sortTable(7, 'requestTable')">Approved By</th>
+						<th class="w-10" onclick="sortTable(8, 'requestTable')"></th>
 					</thead>
 					<tbody id="requestTable">
 						<% if (request.lines) request.lines.forEach(line => { %>
 							<tr>
-								<td>
-									<% if (line._status === 'Pending') { %>
-										<input class='form-control' type="checkbox" name='selected[]' value='<%= line.line_id %>'>
-									<% } %>
-								</td>
+								<% if (!request._complete) { %>
+									<td>
+										<% if (line._status === 'Pending') { %>
+											<input class='form-control' type="checkbox" name='selected[]' value='<%= line.line_id %>'>
+										<% } %>
+									</td>
+								<% } %>
 								<td>
 									<a class='float-right btn btn-sm btn-primary' href="/stores/items/<%= line.size.item_id %>">
 										<i class='fas fa-search'></i>
@@ -131,6 +141,15 @@
 								<td>
 									<%= line._qty %>
 								</td>
+								<% if (!request._complete) { %>
+									<td>
+										<% let _stock = 0 %>
+										<% line.size.stocks.forEach(stock => { %>
+											<% _stock += Number(stock._qty) %>
+										<% }) %>
+										<%= _stock %>
+									</td>
+								<% } %>
 								<td>
 									<%= line._status %>
 								</td>
@@ -146,8 +165,9 @@
 								</td>
 								<td>
 									<% if (line._id && line._id !== '') { %>
-										<a href="/stores/<% if (line._action === 'Issue') { %>issues<% } else if (line._action === 'Order') { %>orders<% } %>/<%= line._id %>">
-											<%= line._action %>: <%= line._id %>
+										<%= line._action %>: <%= line._id %>
+										<a class='float-right btn btn-sm btn-primary' href="/stores/<% if (line._action === 'Issue') { %>issues<% } else if (line._action === 'Order') { %>orders<% } %>/<%= line._id %>">
+											<i class='fas fa-search'></i>
 										</a>
 									<% } %>
 								</td>

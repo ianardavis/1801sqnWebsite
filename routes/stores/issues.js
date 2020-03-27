@@ -24,22 +24,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores', req, res));
     });
 
-    //New Logic
-    app.post('/stores/issues', isLoggedIn, allowed('issue_add'), (req, res) => {
-        if (req.body.selected) {
-            fn.createIssue(
-                req.body.issue,
-                req.body.selected,
-                req.user.user_id
-            )
-            .then(issue_id => {
-                req.flash('success', 'Items issued, ID: ' + issue_id);
-                res.redirect('/stores/users/' + req.body.issue.issued_to);
-            })
-            .catch(err => fn.error(err, '/stores/users/' + req.body.issue.issued_to, req, res));
-        } else redirect(new Error('No items selected'), req, res);
-    });
-
     //new form
     app.get('/stores/issues/new', isLoggedIn, allowed('issue_add'), (req, res) => {
         if (req.query.user) {
@@ -50,7 +34,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             )
             .then(user => {
                 if (req.query.user !== req.user.user_id) {
-                    if (user.status_id === 1) res.render('stores/issues/new', {user: user}); 
+                    if (user.status_id === 1 || user.status_id === 2) res.render('stores/issues/new', {user: user}); 
                     else {
                         req.flash('danger', 'Issues can only be made to current users')
                         res.redirect('/stores/users/' + req.query.user);
@@ -65,6 +49,21 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('danger', 'No user specified!');
             res.redirect('/stores/users');
         };
+    });
+    //New Logic
+    app.post('/stores/issues', isLoggedIn, allowed('issue_add'), (req, res) => {
+        if (req.body.selected) {
+            fn.createIssue(
+                req.body.issue,
+                req.body.selected,
+                req.user.user_id
+            )
+            .then(issue_id => {
+                req.flash('success', 'Items issued, ID: ' + issue_id);
+                res.redirect('/stores/users/' + req.body.issue.issued_to);
+            })
+            .catch(err => fn.error(err, '/stores/users/' + req.body.issue.issued_to, req, res));
+        } else redirect(new Error('No items selected'), req, res);
     });
 
     //delete
@@ -140,7 +139,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         )
         .then(issue => {
             if (issue._filename && issue._filename !== '') {
-                res.redirect('/stores/issues' + req.params.id  + '?download=' + issue._filename);
+                res.redirect('/stores/issues/' + req.params.id  + '?download=' + issue._filename);
             } else {
                 fn.createLoanCard(req.params.id)
                 .then(result => res.redirect('/stores/issues/' + req.params.id  + '?download=' + result))

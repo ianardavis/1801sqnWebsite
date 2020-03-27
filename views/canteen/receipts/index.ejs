@@ -1,0 +1,58 @@
+<% include ../../partials/head/full %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen'>
+                    Canteen
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen/receipts'>
+                    Receipts
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen/receipts/new'>
+                    <i class='fas fa-plus'></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-35" onclick="sortTable(0, 'receiptTable')">Date</th>
+                    <th class="w-35" onclick="sortTable(1, 'receiptTable')">User</th>
+                    <th class="w-10" onclick="sortTable(2, 'receiptTable')">Complete</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="receiptTable">
+                    <% if (receipts) receipts.forEach(receipt => { %>
+                        <tr>
+                            <td data-sort="<%= receipt._date.getTime() %>">
+                                <%= receipt._date.toDateString() %>
+                            </td>
+                            <td>
+                                <%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
+                            </td>
+                            <td>
+                                <% if (receipt._complete) { %><i class='fas fa-check'></i><% } %>
+                            </td>
+                            <td>
+                                <a class='btn btn-sm btn-primary' href="/canteen/receipts/<%= receipt.receipt_id %>">
+                                    <i class='fas fa-search'></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

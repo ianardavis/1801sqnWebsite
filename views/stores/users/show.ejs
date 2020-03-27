@@ -18,18 +18,18 @@
     <div class="row">
         <div class="col-12 col-lg-4 bordered mb-3">
             <% if (permissions.user_edit) { %>
-                <a class="float-left btn btn-primary mr-1" href="/stores/users/<%= f_user.user_id %>/edit">
+                <a class="float-left btn btn-primary mr-1" href="/stores/users/<%= f_user.user_id %>/edit" data-toggle="tooltip" data-placement="bottom" title="Edit User">
                     <i class='fas fa-pencil-alt'></i>
                 </a>
             <% } %>
             <% if (permissions.user_password || f_user.user_id === user.user_id) { %>
-                <a class="float-left btn btn-warning mr-1" href="/stores/password?user=<%= f_user.user_id %>">
+                <a class="float-left btn btn-warning mr-1" href="/stores/password?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Change Password">
                     <i class='fas fa-key'></i>
                 </a>
             <% } %>
             <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
                 <form action="/stores/users/<%= f_user.user_id %>?_method=DELETE" method="POST">
-                    <button class="float-left btn btn-danger confirm">
+                    <button class="float-left btn btn-danger confirm" data-toggle="tooltip" data-placement="bottom" title="Delete User">
                         <i class='fas fa-trash-alt'></i>
                     </button>
                 </form>
@@ -100,7 +100,7 @@
         </div>
         <div class="col-12 col-lg-3 bordered mb-3">
             <% if (permissions.user_permissions && f_user.user_id !== user.user_id) { %>
-                <a class="float-left btn btn-primary mb-1" href="/stores/permissions/<%= f_user.user_id %>/edit">
+                <a class="float-left btn btn-primary mb-1" href="/stores/permissions/<%= f_user.user_id %>/edit" data-toggle="tooltip" data-placement="bottom" title="Edit Permissions">
                     <i class='fas fa-pencil-alt'></i>
                 </a>
             <% } %>
@@ -116,7 +116,7 @@
         <% if (permissions.access_notes || user.user_id === f_user.user_id) { %> 
             <div class="col-12 col-lg-5 bordered mb-3">
                 <% if (permissions.note_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/notes/new?table=users&id=<%= f_user.user_id %>">
+                    <a class="float-left btn btn-success" href="/stores/notes/new?table=users&id=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Note">
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
@@ -126,7 +126,7 @@
         <% if (permissions.access_requests || user.user_id === f_user.user_id) { %>
             <div class="col-12 bordered mb-3">
                 <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/requests/new?user=<%= f_user.user_id %>">
+                    <a class="float-left btn btn-success" href="/stores/requests/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Request">
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
@@ -162,11 +162,15 @@
                                                 <%= request.request._date.toDateString() %>
                                             </td>
                                             <td>
-                                                <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= request.size.item_id %>'><i class="fas fa-search"></i></a>
+                                                <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= request.size.item_id %>' data-toggle="tooltip" data-placement="bottom" title="View Item">
+                                                    <i class="fas fa-search"></i>
+                                                </a>
                                                 <%= request.size.item._description %>
                                             </td>
                                             <td>
-                                                <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= request.size_id %>'><i class="fas fa-search"></i></a>
+                                                <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= request.size_id %>' data-toggle="tooltip" data-placement="bottom" title="View Size">
+                                                    <i class="fas fa-search"></i>
+                                                </a>
                                                 <%= request.size._size %>
                                             </td>
                                             <td>
@@ -176,7 +180,7 @@
                                                 <%= request._status %>
                                             </td>
                                             <td>
-                                                <a class='btn btn-sm btn-primary' href='/stores/requests/<%= request.request_id %>'>
+                                                <a class='btn btn-sm btn-primary' href='/stores/requests/<%= request.request_id %>' data-toggle="tooltip" data-placement="bottom" title="View Request">
                                                     <i class="fas fa-search"></i>
                                                 </a>
                                             </td>
@@ -192,7 +196,7 @@
         <% if (permissions.access_orders || user.user_id === f_user.user_id) { %>
             <div class="col-12 bordered mb-3">
                 <% if (user.user_id !== f_user.user_id && permissions.order_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/orders/new?user=<%= f_user.user_id %>">
+                    <a class="float-left btn btn-success" href="/stores/orders/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Order">
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
@@ -230,11 +234,15 @@
                                                 <%= order.order._date.toDateString() %>
                                             </td>
                                             <td>
-                                                <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= order.size.item_id %>'><i class="fas fa-search"></i></a>
+                                                <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= order.size.item_id %>' data-toggle="tooltip" data-placement="bottom" title="View Item">
+                                                    <i class="fas fa-search"></i>
+                                                </a>
                                                 <%= order.size.item._description %>
                                             </td>
                                             <td>
-                                                <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= order.size_id %>'><i class="fas fa-search"></i></a>
+                                                <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= order.size_id %>' data-toggle="tooltip" data-placement="bottom" title="View Size">
+                                                    <i class="fas fa-search"></i>
+                                                </a>
                                                 <%= order.size._size %>
                                             </td>
                                             <td>
@@ -250,7 +258,7 @@
                                                 <input class="form-control form-control-sm" type="checkbox" <% if (order.issue_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Issued">
                                             </td>
                                             <td>
-                                                <a class='btn btn-sm btn-primary' href='/stores/orders/<%= order.order_id %>'>
+                                                <a class='btn btn-sm btn-primary' href='/stores/orders/<%= order.order_id %>' data-toggle="tooltip" data-placement="bottom" title="View Order">
                                                     <i class="fas fa-search"></i>
                                                 </a>
                                             </td>
@@ -266,7 +274,7 @@
         <% if (permissions.access_issues || user.user_id === f_user.user_id) { %>
             <div class="col-12 bordered mb-3">
                 <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/issues/new?user=<%= f_user.user_id %>">
+                    <a class="float-left btn btn-success" href="/stores/issues/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Issue">
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
@@ -308,7 +316,7 @@
                                                 </td>
                                                 <td>
                                                     <% if (issue.stock && issue.stock.size) { %>
-                                                        <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= issue.stock.size.item_id %>'>
+                                                        <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= issue.stock.size.item_id %>' data-toggle="tooltip" data-placement="bottom" title="View Item">
                                                             <i class="fas fa-search"></i>
                                                         </a>
                                                         <%= issue.stock.size.item._description %>
@@ -318,7 +326,7 @@
                                                 </td>
                                                 <td>
                                                     <% if (issue.stock && issue.stock.size) { %>
-                                                        <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= issue.stock.size_id %>'>
+                                                        <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= issue.stock.size_id %>' data-toggle="tooltip" data-placement="bottom" title="View Size">
                                                             <i class="fas fa-search"></i>
                                                         </a>
                                                         <%= issue.stock.size._size %>
@@ -331,7 +339,7 @@
                                                 </td>
                                                 <td>
                                                     <% if (issue.return) { %>
-                                                        <a class="float-right" href='/stores/returns/<%= issue.return_line_id %>'>
+                                                        <a class="float-right btn btn-sm btn-primary" href='/stores/returns/<%= issue.return_line_id %>' data-toggle="tooltip" data-placement="bottom" title="View Return">
                                                             <i class="fas fa-search"></i>
                                                         </a>
                                                         <%= issue.return.stock.location._location %>
@@ -349,7 +357,7 @@
                                                     <% } %>
                                                 </td>
                                                 <td>
-                                                    <a class='btn btn-sm btn-primary' href='/stores/issues/<%= issue.issue_id %>'>
+                                                    <a class='btn btn-sm btn-primary' href='/stores/issues/<%= issue.issue_id %>' data-toggle="tooltip" data-placement="bottom" title="View Issue">
                                                         <i class="fas fa-search"></i>
                                                     </a>
                                                 </td>

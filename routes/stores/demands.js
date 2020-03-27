@@ -40,36 +40,43 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //New Logic
     app.post('/stores/demands', isLoggedIn, allowed('demand_add'), (req, res) => {
         let supplier_id = req.body.supplier_id;
-        fn.getUndemandedOrders(supplier_id)
-        .then(orders => {
-            fn.sortOrdersForDemand(orders)
-            .then(sortResults => {
-                if (sortResults.orders.length > 0) {
-                    fn.raiseDemand(
-                        supplier_id, 
-                        sortResults.orders, 
-                        sortResults.users
-                    )
+        fn.getOne(
+            m.suppliers,
+            {supplier_id: supplier_id},
+            {include: [
+                m.files, 
+                {model: m.accounts, include: [inc.users()]}
+            ]}
+        )
+        .then(supplier => {
+            if (supplier._raise_demand) {
+                fn.getAllWhere(
+                    m.order_lines,
+                    {demand_line_id: null},
+                    {include: [
+                        inc.sizes({include: [
+                            inc.suppliers({
+                                where: {supplier_id: req.body.supplier_id},
+                                required: true
+                            })
+                        ]}),
+                        inc.orders({include: [
+                            inc.users({as: '_for'})
+                        ]})   
+                    ]}
+                )
+                .then(orders => {
+                    fn.raiseDemand(orders, supplier_id, req.user.user_id)
                     .then(results => {
-                        fn.createDemand(
-                            supplier_id,
-                            results.items.success,
-                            req.user.user_id,
-                            results.file
-                        )
-                        .then(demand_id => {
-                            req.flash('success', 'Demand raised, ID: ' + demand_id + ', orders updated');
-                            res.redirect('/stores/orders?download=' + results.file);
-                        })
-                        .catch(err => fn.error(err, '/stores/orders', req, res));
+                        req.flash('success', 'Demand raised, ID: ' + results.demand_id + ', orders updated');
+                        res.redirect('/stores/orders?download=' + results.file);
                     })
                     .catch(err => fn.error(err, '/stores/orders', req, res));
-                } else {
-                    req.flash('info', 'No orders that can be demanded');
-                    res.redirect('/stores/orders');
-                };
-            })
-            .catch(err => fn.error(err, '/stores/orders', req, res));
+                })
+                .catch(err => fn.error(err, '/stores/orders', req, res));
+            } else {
+                
+            };
         })
         .catch(err => fn.error(err, '/stores/orders', req, res));
     });
@@ -92,31 +99,27 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
 
     //action
     app.put('/stores/demands/:id', isLoggedIn, allowed('receipt_add'), (req, res) => {
-        let actions = [], cancels = [], receipts = [];
-        for (let [demand_line_id, line] of Object.entries(req.body.actions)) {
-            if (line.action === 'cancel') cancels.push(demand_line_id)
-            else if (line.action !== 'cancel' && line.action !== 'null') {
-                receipts.push({
-                    line_id:  demand_line_id,
-                    qty:      line.qty,
-                    stock_id: line.action
+        if (req.body.selected) {
+            if (req.body.action === 'receive') {
+                fn.receive_demand_lines(req.body.selected)
+                .then(results => {
+                    if (results.noStocks) req.flash('danger', 'Some items have no stock records');
+                    res.render('stores/receipts/new', results);
                 })
-            };
-        };
-        if (cancels.length > 0)  actions.push(fn.cancelDemandLines(cancels));
-        if (receipts.length > 0) actions.push(fn.receiveDemandLines(receipts, req.user.user_id));
-        if (actions.length > 0) {
-            Promise.allSettled(actions)
-            .then(results => {
-                results.forEach(result => {
-                    if (result.demandClosed && result.demandClosed === true) req.flash('info', 'Demand closed')
-                });
-                req.flash('success', 'Lines actioned')
+                .catch(err => fn.error(err, '/stores/demands/' + req.params.id, req, res));
+            } else if (req.body.action === 'cancel') {
+                fn.cancel_demand_lines(req.body.selected, req.params.id, req.user.user_id)
+                .then(result => {
+                    req.flash('success', 'Lines cancelled');
+                    res.redirect('/stores/demands/' + req.params.id);
+                })
+                .catch(err => fn.error(err, '/stores/demands/' + req.params.id,req, res));
+            } else {
+                req.flash('danger', 'Invalid request');
                 res.redirect('/stores/demands/' + req.params.id);
-            })
-            .catch(err => fn.error(err, '/stores/demands', req, res));
+            };
         } else {
-            req.flash('info', 'No lines to action')
+            req.flash('info', 'No lines selected');
             res.redirect('/stores/demands/' + req.params.id);
         };
     });
@@ -130,7 +133,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.users(),
                 m.suppliers,
                 inc.demand_lines({sizes: true, include: [
-                    inc.sizes({stock: true}),
+                    inc.sizes({stock: true})
                 ]}),
             ]}
         )
@@ -139,7 +142,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .then(notes => {
                 res.render('stores/demands/show', {
                     demand: demand,
-                    query:  {system: Number(req.query.system) || 2, received: Number(req.query.received) || 2},
+                    query:  {system: Number(req.query.system) || 2},
                     notes:  notes
                 });
             })

@@ -1,0 +1,84 @@
+<% include ../../partials/head/full %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen'>
+                    Canteen
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen/sessions'>
+                    Sales
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen/sales/<%= sale.sale_id %>'>
+                    <%= sale.sale_id %>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <div class="row">
+        <div class="col-12 mb-1">
+            <div class="row">
+                <div class="col-6">
+                    <label class='col-form-label'>Date</label>
+                </div>
+                <div class="col-6">
+                    <input class='form-control' type="text" value='<%= sale._date.toDateString() %>' readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label class='col-form-label'>User</label>
+                </div>
+                <div class="col-6">
+                    <input class='form-control' type="text" value='<%= sale.user.rank._rank %> <%= sale.user._name %>, <%= sale.user._ini %>' readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label class='col-form-label'>Complete</label>
+                </div>
+                <div class="col-6">
+                    <% if (sale._complete) { %>
+                        <i class='fas fa-check'></i>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 bordered">
+            <a class="my-3" data-toggle="collapse" href="#collapseLines" role="button" aria-expanded="false" aria-controls="collapseLines">
+                <h4>Lines (<%= sale.lines.length %>)</h4>
+            </a>
+            <div class="collapse mb-3" id="collapseLines">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-50" onclick="sortTable(0, 'lineTable')">Item</th>
+                        <th class="w-25" onclick="sortTable(1, 'lineTable')">Qty</th>
+                        <th class="w-25" onclick="sortTable(2, 'lineTable')">Price</th>
+                    </thead>
+                    <tbody id="lineTable">
+                        <% if (sale.lines) sale.lines.forEach(line => { %>
+                            <tr>
+                                <td>
+                                    <a class='float-right btn btn-sm btn-primary' href="/canteen/items/<%= line.item_id %>">
+                                        <i class='fas fa-search'></i>
+                                    </a>
+                                    <%= line.item._name %>
+                                </td>
+                                <td><%= line._qty %></td>
+                                <td><%= line._price %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>

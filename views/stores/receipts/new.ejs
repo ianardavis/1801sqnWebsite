@@ -40,7 +40,12 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/removeID.js"></script>
-<script src='/js/newForm/openAddItem.js'></script>
-<script src='/js/newForm/newItemCard.js'></script>
-<script src="/js/newForm/addNewStock.js"></script>
+<script src='/js/newItemCard.js'></script>
+<script>
+	<% if (typeof(items) !== 'undefined' && items.length > 0) { %>
+		<% items.forEach(item => { %>
+			addSize(<%- JSON.stringify(item) %>)
+		<% }); %>
+	<% }; %>
+</script>
 <% include ../../partials/foot/htmlClose %>

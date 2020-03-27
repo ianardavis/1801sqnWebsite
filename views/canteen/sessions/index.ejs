@@ -132,7 +132,7 @@
                                 <% if (session._end) { %>
                                     <%= session._end.toLocaleString() %>
                                 <% } else { %>
-                                    <form action="/canteen/sessions/<%= session.session_id %>?_method=PUT" method='POST'>
+                                    <form action="/canteen/sessions/<%= session.session_id %>/close?_method=PUT" method='POST'>
                                         <button class='btn btn-sm btn-success w-100 confirm'>Close Session</button>
                                     </form>
                                 <% } %>

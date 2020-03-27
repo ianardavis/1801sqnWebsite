@@ -1,0 +1,64 @@
+<% include ../../partials/head/full %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen'>
+                    Canteen
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link stores_nav' href='/canteen/items'>
+                    Items
+                </a>
+            </li>
+            <% if (permissions.canteen_supervisor) { %>
+                <li class='nav-item'>
+                    <a class='nav-link stores_nav' href='/canteen/items/new'>
+                        <i class='fas fa-plus'></i>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-30" onclick="sortTable(0, 'itemTable')">Name</th>
+                    <th class="w-30" onclick="sortTable(1, 'itemTable')">Price</th>
+                    <th class="w-30" onclick="sortTable(2, 'itemTable')">Stock</th>
+                    <th class="w-10" onclick="sortTable(3, 'itemTable')">Current</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="itemTable">
+                    <% if (items) items.forEach(item => { %>
+                        <tr>
+                            <td>
+                                <%= item._name %>
+                            </td>
+                            <td>
+                                <%= item._price %>
+                            </td>
+                            <td>
+                                <%= item._qty %>
+                            </td>
+                            <td>
+                               <% if (item._current) { %> <i class='fas fa-check'></i> <% } %>
+                            </td>
+                            <td>
+                                <a class='btn btn-sm btn-primary' href="/canteen/items/<%= item.item_id %>">
+                                    <i class='fas fa-search'></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<% include ../../partials/foot/full %>
+<% include ../../partials/foot/htmlClose %>
