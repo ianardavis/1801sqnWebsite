@@ -1,54 +1,47 @@
-<% include ../../partials/head/full %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Stores
-                </a>
-			</li>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Notes
-                </a>
-			</li>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/notes/new'>
-                    New
-                </a>
-			</li>
-        </ul>
-    </nav>
-</section>
-<section class='container'>
-    <div class='row'>
-        <div class='col-12 col-lg-6 bordered mx-auto'>
-            <form action='/stores/notes' method='POST'>
-                <div class='row mb-2'>
-                    <div class='col-12'>
-                        <h3>New Note For Record:</h3>
-                        <div class='row'>
-                            <div class='col-6'>
-                                <input class='form-control' type='text' name='note[_table]' value='<%= link.table %>' readonly>
-                            </div>
-                            <div class='col-6'>
-                                <input class='form-control' type='text' name='note[_id]' value='<%= link.id %>' readonly>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class='row'>
-                    <div class='col-12'>
-                        <textarea class='form-control' name='note[_note]' rows='10' maxlength='1000' required></textarea>
-                    </div>
-                    <div class="col-12">
-                        <input class='btn btn-success col-12 confirm' type='submit' value='Save'>
-                        <a class='float-left' href='/stores/<%= link.table %>/<%= link.id %>'>Cancel</a>
-                    </div>
-                </div>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'><section class="container">
+    <div class="row">
+        <div class="col-12 col-lg-6 mx-auto bordered">
+            <form id='noteForm'>
+                <input type="hidden" name="note[_table]" value="<%= table %>">
+                <input type="hidden" name="note[_id]"    value="<%= id %>">
+                <textarea class="form-control" name="note[_note]" rows="19" maxlength="1000" required></textarea>
+                <input class=" btn btn-success confirm" type="submit" value="Save">
+                <a class="float-left" href="javascript:close()">Cancel</a>
             </form>
         </div>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include('../../partials/foot/full') %>
+<script>
+    window.addEventListener( "load", function () {
+        function sendData() {
+            const XHR = new XMLHttpRequest();
+            const FD = new FormData(form);
+            XHR.addEventListener("load", function(event) {
+                let response = JSON.parse(event.target.responseText);
+                if (response.result) {
+                    alert('Note added');
+                    window.opener.location.reload();
+                    close();
+                } else {
+                    alert('Note NOT added: ' + response.error);
+                };
+            });
+            XHR.addEventListener("error", function(event) {
+                alert('Something went wrong.');
+            });
+            XHR.open("POST", "/stores/notes");
+            XHR.send(FD);
+        };
+
+        let form = document.querySelector("#noteForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData();
+        });
+    });
+</script>
+<%- include('../../partials/foot/htmlClose') %>

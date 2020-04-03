@@ -14,17 +14,15 @@
 <section>
 	<div class="container">
 		<form id="requests" action="/stores/requests/approve" method="POST" onsubmit="return confirm('Confirm approval/rejection?');">
-			<div class="container">
-				<div>
-					<div class="row">
-						<label class="col-3 col-form-label text-right" for="complete">Completed Requests:</label>
-						<select id="complete" class='form-control col-9' type="text" onchange=filterSelects()>
-							<option value="1" <% if (Number(query.complete) === 1) { %>selected<% } %> >Include</option>
-							<option value="2" <% if (Number(query.complete) === 2) { %>selected<% } %> >Exclude</option>
-							<option value="3" <% if (Number(query.complete) === 3) { %>selected<% } %> >Only</option>
-						</select>
-					</div>
+			<div class="input-group mb-2">
+				<div class="input-group-prepend">
+					<label class="input-group-text" for="complete">Completed Requests</label>
 				</div>
+				<select class="custom-select" id='complete' onchange=filterSelects()>
+					<option value="1" <% if (Number(query.complete) === 1) { %>selected<% } %> >Include</option>
+					<option value="2" <% if (Number(query.complete) === 2) { %>selected<% } %> >Exclude</option>
+					<option value="3" <% if (Number(query.complete) === 3) { %>selected<% } %> >Only</option>
+				</select>
 			</div>
 			<div>
 				<table class="table table-sm table-hover mx-auto w-100">

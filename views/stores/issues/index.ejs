@@ -12,17 +12,15 @@
     </nav>
 </section>
 <section class='container'>
-	<div class='row'>
-		<div class='col-5'>
-			<label class='col-form-label' for='closed'>Closed Issues:</label>
+	<div class="input-group mb-2">
+		<div class="input-group-prepend">
+			<label class="input-group-text" for="closed">Closed Issues</label>
 		</div>
-		<div class='col-7'>
-			<select class='form-control' id='closed' type='text' onchange=filterSelects()>
-				<option value='1' <% if (query.closed === 1) { %>selected<% } %> >Include</option>
-				<option value='2' <% if (query.closed === 2) { %>selected<% } %> >Exclude</option>
-				<option value='3' <% if (query.closed === 3) { %>selected<% } %> >Only</option>
-			</select>
-		</div>
+		<select class="custom-select" id='closed' onchange=filterSelects()>
+			<option value='1' <% if (query.closed === 1) { %>selected<% } %> >Include</option>
+			<option value='2' <% if (query.closed === 2) { %>selected<% } %> >Exclude</option>
+			<option value='3' <% if (query.closed === 3) { %>selected<% } %> >Only</option>
+		</select>
 	</div>
 	<% if (issues) { %>
 		<div class='row'>

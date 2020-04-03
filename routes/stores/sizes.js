@@ -47,7 +47,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             m.sizes,
             {size_id: req.params.id},
             {
-                include: inc.sizes({include: [m.items, inc.suppliers()]})
+                include: [m.items, inc.suppliers()]
             }
         )
         .then(size => {

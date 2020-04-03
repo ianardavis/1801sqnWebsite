@@ -2,14 +2,16 @@
     <h4>Notes (<%= notes.length %>)</h4>
 </a>
 <div class="collapse mb-3" id="collapseNote">
-    <div class="row px-3">
-        <label class="col-5 col-form-label" for="system">System Notes:</label>
-        <select class='form-control form-control-sm col-7' id="system" type="text" onchange=filterSelects()>
+	<div class="input-group mb-2">
+		<div class="input-group-prepend">
+			<label class="input-group-text" for="system">System Notes</label>
+		</div>
+		<select class="custom-select" id='system' onchange=filterSelects()>
             <option value="1" <% if (query.system === 1) { %> selected <% } %>>Include</option>
             <option value="2" <% if (query.system === 2) { %> selected <% } %>>Exclude</option>
             <option value="3" <% if (query.system === 3) { %> selected <% } %>>Only</option>
-        </select>
-    </div>
+		</select>
+	</div>
     <div>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
@@ -26,20 +28,20 @@
                             <%= note._date.toDateString() %>
                         </td>
                         <td>
-                            <input class="form-control form-control-sm" type="checkbox"<% if (note._system) { %> checked <% } %> disabled>
+                            <% if (note._system) { %><i class='fas fa-check'></i><% } %>
                         </td>
                         <td>
                             <%= note._note %>
                         </td>
                         <td>
-                            <a class='btn btn-sm btn-primary' href="/stores/notes/<%= note.note_id %>">
+                            <a class='btn btn-sm btn-primary' href='javascript:viewNote(<%= note.note_id %>)'>
                                 <i class="fas fa-search"></i>
                             </a>
                         </td>
                         <% if (permissions.note_delete === 1) { %>
                             <td>
-                                <form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete note?');">
-                                    <button class="btn btn-sm btn-danger">
+                                <form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST">
+                                    <button class="btn btn-sm btn-danger confirm">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>

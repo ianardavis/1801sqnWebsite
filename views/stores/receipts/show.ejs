@@ -18,37 +18,39 @@
 	<div class="row">
 		<div class="col-12 col-lg-4 bordered mb-2">
 			<% if (permissions.receipt_delete) { %>
-				<div class="col-12 mb-3">
 					<form action="/stores/receipts/<%= receipt.receipt_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete receipt?');">
-						<button class="float-left btn btn-danger"><i class='fas fa-trash-alt'></i></button>
+						<button class="float-left btn btn-danger mb-1	"><i class='fas fa-trash-alt'></i></button>
 					</form>
-				</div>
 			<% } %>
 			<h4>Receipt Details</h4>
-			<div class="row">
-				<div class="col-sm-4">
-					<label class="col-form-label">Supplier:</label>
+			<div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Supplier</span>
+                </div>
+                <p class="form-control"><%= receipt.supplier._name %></p>
+				<div class="input-group-append">
+					<a class='btn btn-primary' href='/stores/suppliers/<%= receipt.supplier_id %>'>
+						<i class='fas fa-search'></i>
+					</a>
 				</div>
-				<div class="col-sm-8">
-					<input class="form-control" type="text" value="<%= receipt.supplier._name %>" readonly>
+            </div>
+			<div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Received By</span>
+                </div>
+                <p class="form-control"><%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %></p>
+				<div class="input-group-append">
+					<a class='btn btn-primary' href='/stores/users/<%= receipt.user_id %>'>
+						<i class='fas fa-search'></i>
+					</a>
 				</div>
-			</div>
-			<div class="row">
-				<div class="col-sm-4">
-					<label class="col-form-label">Received:</label>
-				</div>
-				<div class="col-sm-8">
-					<input class="form-control" type="text" value="<%= receipt._date.toDateString() %>" readonly>
-				</div>
-			</div>	
-			<div class="row">
-				<div class="col-sm-4">
-					<label class="col-form-label">Received By:</label>
-				</div>
-				<div class="col-sm-8">
-					<input class="form-control" type="text" value="<%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>" readonly>
-				</div>
-			</div>
+            </div>
+			<div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Received</span>
+                </div>
+                <p class="form-control"><%= receipt._date.toDateString() %></p>
+            </div>
 		</div>
 		<div class="col-12 col-lg-8 bordered mb-2">
 			<table id="receiptTable" class="table table-sm table-hover mx-auto w-100">
@@ -63,7 +65,7 @@
 						<% receipt.lines.forEach(line => { %>
 							<tr>
 								<td>
-									<a class='float-right btn btn-sm btn-primary' href="/stores/stock<% if (line.stock) { %>/<%= line.stock_id %><% } %>">
+									<a class='float-right btn btn-sm btn-primary' href="/stores/stock<% if (line.stock) { %>/<%= line.stock_id %><% } %>/edit">
 										<i class='fas fa-search'></i>
 									</a>
 									<% if (line.stock) { %>
@@ -98,7 +100,7 @@
 		<% if (permissions.access_notes) { %> 
 			<div class="col-12 mb-3 bordered">
 				<% if (permissions.note_add) { %>
-					<a class="float-left btn btn-success" href="/stores/notes/new?table=receipt&id=<%= receipt.receipt_id %>">
+					<a class="float-left btn btn-success mb-1" href='javascript:addNote("receipts","<%= receipt.receipt_id %>")'>
 						<i class='fas fa-plus'></i>
 					</a>
 				<% } %>

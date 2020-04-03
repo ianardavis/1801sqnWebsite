@@ -32,51 +32,49 @@
 				</form>
 			<% } %>
 			<h4 class='mb-3'>Details</h4>
-			<div class='row'>
-				<div class='col-sm-4'>
-					<label class='col-form-label'>For:</label>
-				</div>
-			<div class='<% if (order.ordered_for !== -1) { %>col-10 col-sm-6<% } else { %>col-sm-8<% } %>'>
-					<input class='form-control' type='text' value='<% if (order.ordered_for !== -1) { %><%= order._for.rank._rank %> <%= order._for._name %>, <%= order._for._ini %><% } else { %>Backing Stock<% } %>' readonly>
-				</div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">For</span>
+                </div>
+                <p class="form-control"><% if (order.ordered_for !== -1) { %><%= order._for.rank._rank %> <%= order._for._name %>, <%= order._for._ini %><% } else { %>Backing Stock<% } %></p>
 				<% if (order.ordered_for !== -1) { %>
-					<div class='col-2'>
-						<a class='float-right btn btn-primary' href="/stores/users/<%= order.ordered_for %>"><i class='fas fa-search'></i></a>
+					<div class="input-group-append">
+						<a class='btn btn-primary' href="/stores/users/<%= order.ordered_for %>">
+							<i class='fas fa-search'></i>
+						</a>
 					</div>
 				<% } %>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">By</span>
+                </div>
+                <p class="form-control"><%= order._by.rank._rank %> <%= order._by._name %>, <%= order._by._ini %></p>
+				<% if (order.ordered_for !== -1) { %>
+					<div class="input-group-append">
+						<a class='btn btn-primary' href="/stores/users/<%= order.user_id %>">
+							<i class='fas fa-search'></i>
+						</a>
+					</div>
+				<% } %>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Ordered</span>
+                </div>
+                <p class="form-control"><%= order._date.toDateString() %></p>
 			</div>
-			<div class='row'>
-				<div class='col-sm-4'>
-					<label class='col-form-label'>By:</label>
-				</div>
-				<div class='col-10 col-sm-6'>
-					<input class='form-control' type='text' value='<%= order._by.rank._rank %> <%= order._by._name %>, <%= order._by._ini %>' readonly>
-				</div>
-				<div class='col-2'>
-					<a class='float-right btn btn-primary' href="/stores/users/<%= order.user_id %>"><i class='fas fa-search'></i></a>
-				</div>
-			</div>
-			<div class='row'>
-				<div class='col-sm-4'>
-					<label class='col-form-label'>Ordered:</label>
-				</div>
-				<div class='col-sm-8'>
-					<input class='form-control' type='text' value='<%= order._date.toDateString() %>' readonly>
-				</div>
-			</div>
-			<div class='row'>
-				<div class='col-sm-4'>
-					<label class='col-form-label'>Complete:</label>
-				</div>
-				<div class='col-sm-8'>
-					<input class='form-control' type='checkbox' disabled<% if (order._complete) { %> checked<% } %>>
-				</div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Complete</span>
+                </div>
+                <p class="form-control"><% if (order._complete) { %>Yes<% } else { %>No<% } %></p>
 			</div>
 		</div>
 		<% if (permissions.access_notes) { %> 
 			<div class='col-12 col-xl-8 mb-3 bordered'>
 				<% if (permissions.note_add) { %>
-					<a class='float-left btn btn-success' href='/stores/notes/new?table=orders&id=<%= order.order_id %>'>
+					<a class='float-left btn btn-success' href='javascript:addNote("orders","<%= order.order_id %>")'>
 						<i class='fas fa-plus'></i>
 					</a>
 				<% } %>
@@ -86,19 +84,17 @@
 		<div class='col-12 mb-3 bordered container'>
 			<% if (permissions.order_edit && !order._complete) { %>
 				<form action='/stores/orders/<%= order.order_id %>?_method=PUT' method='POST'>
-					<div class='row'>
-						<div class='col-12 col-md-6'>
-							<select class='form-control' name='action'>
-								<option value='demand'>Demand Selected Lines</option>
-								<option value='receive'>Receive Selected Lines</option>
-								<option value='issue'>Issue Selected Lines</option>
-								<% if (permissions.order_delete) { %>
-									<option value='cancel'>Cancel Selected Lines</option>
-								<% } %>
-							</select>
-						</div>
-						<div class='col-12 col-md-6'>
-							<input class='w-100 btn btn-success mb-1 confirm' type='submit' value='Go'>
+					<div class="input-group">
+						<select class="custom-select" name='action'>
+							<option value='demand'>Demand Selected Lines</option>
+							<option value='receive'>Receive Selected Lines</option>
+							<option value='issue'>Issue Selected Lines</option>
+							<% if (permissions.order_delete) { %>
+								<option value='cancel'>Cancel Selected Lines</option>
+							<% } %>
+						</select>
+						<div class="input-group-append w-25">
+						  	<button class="btn btn-success w-100 confirm" type="button">Go</button>
 						</div>
 					</div>
 			<% } %>

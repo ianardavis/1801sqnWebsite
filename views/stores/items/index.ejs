@@ -19,73 +19,63 @@
 <section class='container'>
 	<div class='mx-auto row'>
 		<div class='col-12 col-lg-6 mx-auto'>
-			<div class='row'>
-				<div class='col-3'>
-					<label class='col-form-label text-right' for='category_id'>Category:</label>
+			<div class="input-group mb-1">
+				<div class="input-group-prepend w-20">
+					<label class="input-group-text w-100" for="category_id">Category</label>
 				</div>
-				<div class='col-9'>
-					<select class='form-control form-control-sm' id='category_id' type='text' onchange=setGroup()>
-						<option value='' data-tag='<blank>'></option>
-						<% classes.categories.forEach(cat => { %>
-							<option value='<%= cat.category_id %>'<% if (query.cat === cat.category_id) { %> selected <% } %>><%= cat._category %></option>
-						<% }) %>
-					</select>
-				</div>
+				<select class="custom-select" id='category_id' onchange=setGroup()>
+					<option value='' data-tag='<blank>'></option>
+					<% classes.categories.forEach(cat => { %>
+						<option value='<%= cat.category_id %>'<% if (query.cat === cat.category_id) { %> selected <% } %>><%= cat._category %></option>
+					<% }) %>
+				</select>
 			</div>
-			<div class='row'>
-				<div class='col-3'>
-					<label class='col-form-label text-right' for='group_id'>Group:</label>
+			<div class="input-group mb-1">
+				<div class="input-group-prepend w-20">
+					<label class="input-group-text w-100" for="group_id">Group</label>
 				</div>
-				<div class='col-9'>
-					<select class='form-control form-control-sm' id='group_id' type='text' onchange='setType()'>
-						<option value='' data-tag='<blank>'></option>
-						<% classes.groups.forEach(group => { %>
-							<option value='<%= group.group_id %>' data-tag='<%= group.category_id %>' style='display: none;'<% if (query.grp === group.group_id) { %> selected <% } %>><%= group._group %></option>
-						<% }) %>
-					</select>
-				</div>
+				<select class="custom-select" id='group_id' onchange=setType()>
+					<option value='' data-tag='<blank>'></option>
+					<% classes.groups.forEach(group => { %>
+						<option value='<%= group.group_id %>' data-tag='<%= group.category_id %>' style='display: none;'<% if (query.grp === group.group_id) { %> selected <% } %>><%= group._group %></option>
+					<% }) %>
+				</select>
 			</div>
-			<div class='row'>
-				<div class='col-3'>
-					<label class='col-form-label text-right' for='type_id'>Type:</label>
+			<div class="input-group mb-1">
+				<div class="input-group-prepend w-20">
+					<label class="input-group-text w-100" for="type_id">Type</label>
 				</div>
-				<div class='col-9'>
-					<select class='form-control form-control-sm' id='type_id' type='text' onchange='setSubtype()'> 
-						<option value='' data-tag='<blank>' ></option>
-						<% classes.types.forEach(typ => { %>
-							<option value='<%= typ.type_id %>' data-tag='<%= typ.group_id %>' style='display: none;'<% if (query.typ === typ.type_id) { %> selected <% } %>><%= typ._type %></option>
-						<% }) %>
-					</select>
-				</div>
+				<select class="custom-select" id='type_id' onchange=setSubtype()>
+					<option value='' data-tag='<blank>' ></option>
+					<% classes.types.forEach(typ => { %>
+						<option value='<%= typ.type_id %>' data-tag='<%= typ.group_id %>' style='display: none;'<% if (query.typ === typ.type_id) { %> selected <% } %>><%= typ._type %></option>
+					<% }) %>
+				</select>
 			</div>
-			<div class='row'>
-				<div class='col-3'>
-					<label class='col-form-label text-right' for='subtype_id'>Sub Type:</label>
+			<div class="input-group mb-1">
+				<div class="input-group-prepend w-20">
+					<label class="input-group-text w-100" for="subtype_id">Sub Type</label>
 				</div>
-				<div class='col-9'>
-					<select class='form-control form-control-sm' id='subtype_id' type='text'>
-						<option value='' data-tag='<blank>'></option>
-						<% classes.subtypes.forEach(sub => { %>
-							<option value='<%= sub.subtype_id %>' data-tag='<%= sub.type_id %>' style='display: none;'<% if (query.sub === sub.subtype_id) { %> selected <% } %>><%= sub._subtype %></option>
-						<% }) %>
-					</select>
-				</div>
+				<select class="custom-select" id='subtype_id'>
+					<option value='' data-tag='<blank>'></option>
+					<% classes.subtypes.forEach(sub => { %>
+						<option value='<%= sub.subtype_id %>' data-tag='<%= sub.type_id %>' style='display: none;'<% if (query.sub === sub.subtype_id) { %> selected <% } %>><%= sub._subtype %></option>
+					<% }) %>
+				</select>
 			</div>
-			<div class='row'>
-				<div class='col-3'>
-					<label class='col-form-label text-right' for='gender_id'>Gender:</label>
+			<div class="input-group mb-1">
+				<div class="input-group-prepend w-20">
+					<label class="input-group-text w-100" for="gender_id">Gender</label>
 				</div>
-				<div class='col-9'>
-					<select class='form-control form-control-sm' id='gender_id' type='text'>
-						<option value='' data-tag='<blank>'></option>
-						<% classes.genders.forEach(gen => { %>
-							<option value='<%= gen.gender_id %>'<% if (query.gen === gen.gender_id) { %> selected <% } %>><%= gen._gender %></option>
-						<% }) %>
-					</select>
-				</div>
+				<select class="custom-select" id='gender_id'>
+					<option value='' data-tag='<blank>'></option>
+					<% classes.genders.forEach(gen => { %>
+						<option value='<%= gen.gender_id %>'<% if (query.gen === gen.gender_id) { %> selected <% } %>><%= gen._gender %></option>
+					<% }) %>
+				</select>
 			</div>
 			<div>
-				<form class='mb-1' action='/stores/items' method='GET'>
+				<form class='mb-2' action='/stores/items' method='GET'>
 					<input class='btn btn-warning' type='button' value='Filter Results' onclick='filter();'>
 				</form>
 			</div>

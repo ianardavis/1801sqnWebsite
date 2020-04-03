@@ -40,7 +40,7 @@
 		<% if (permissions.access_notes) { %>
 			<div class="col-12 col-md-9 mx-auto bordered mb-2">
 				<% if (permissions.note_add) { %>
-					<a class="float-left btn btn-success" href="/stores/notes/new?table=stock&id=<%= stock.stock_id %>">
+					<a class="float-left btn btn-success" href='javascript:addNote("stock","<%= stock.stock_id %>")'>
 						<i class='fas fa-plus'></i>
 					</a>
 				<% } %>

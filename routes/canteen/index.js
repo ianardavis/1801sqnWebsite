@@ -2,8 +2,8 @@ const fn = {}, mw = {}, inc = {},
       op = require('sequelize').Op;
 module.exports = (app, m) => {
     var allowed = require(process.env.ROOT + '/config/allowed.js');
-    require(process.env.ROOT + '/includes')(inc, m);
-    require(process.env.ROOT + '/functions')(fn, m);
+    require('./includes') (inc, m);
+    require('./functions')(fn, m);
     require(process.env.ROOT + '/config/middleware')(mw, fn.getPermissions);
     require('./sales')    (app, allowed, fn, inc, mw.isLoggedIn, m);
     require('./sessions') (app, allowed, fn, inc, mw.isLoggedIn, m);

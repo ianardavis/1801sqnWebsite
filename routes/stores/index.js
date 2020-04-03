@@ -2,15 +2,15 @@ const fn = {}, mw = {}, inc = {},
       op = require('sequelize').Op;
 module.exports = (app, m) => {
     var al = require(process.env.ROOT + '/config/allowed.js');
-    require(process.env.ROOT + '/includes')(inc, m);
-    require(process.env.ROOT + '/functions')(fn, m, inc);
+    require('./includes') (inc, m);
+    require('./functions')(fn, m, inc);
     require(process.env.ROOT + '/config/middleware')(mw, fn.getPermissions);
     require('./accounts')   (app, al, fn, inc, mw.isLoggedIn, m);
     require('./adjusts')    (app, al, fn, inc, mw.isLoggedIn, m);
     require('./demands')    (app, al, fn, inc, mw.isLoggedIn, m);
     require('./files')      (app, al, fn, inc, mw.isLoggedIn, m);
     require('./issues')     (app, al, fn, inc, mw.isLoggedIn, m);
-    require('./sizes') (app, al, fn, inc, mw.isLoggedIn, m);
+    require('./sizes')      (app, al, fn, inc, mw.isLoggedIn, m);
     require('./items')      (app, al, fn, inc, mw.isLoggedIn, m);
     require('./itemSearch') (app, fn, inc, mw.isLoggedIn,     m);
     require('./notes')      (app, al, fn, inc, mw.isLoggedIn, m);

@@ -9,7 +9,7 @@ var express  = require('express'),
     upload   = require('express-fileupload');
 function portInUseCheck () {
     return new Promise((resolve, reject) => {
-        console.log('Port in use check:');
+        console.log('Checking port 3000 is available');
         const execSync = require('child_process').execSync;
         try {
             const output = execSync('ss -tnlp | grep :3000', { encoding: 'utf-8' });
@@ -17,24 +17,22 @@ function portInUseCheck () {
             console.log('   In use by PID ' +  pid);
             try {
                 const kill_output = execSync('kill -9 ' + pid, { encoding: 'utf-8' });
-                console.log('   PID killed');
-                resolve(true);
+                resolve('   PID killed');
             } catch (error) {
-                console.log(error);
-                reject(true);
+                reject(error);
             };
         } catch (error) {
             if (error.output[0]) {
                 reject(error);
             } else {
-                console.log('   Not in use');
-                resolve(false);
+                resolve('   Not in use');
             };
         };
     });
 };
 portInUseCheck()
 .then(result => {
+    console.log(result);
     process.env.ROOT = __dirname;
     if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
     console.log('environment: ' + process.env.NODE_ENV);
@@ -73,6 +71,4 @@ portInUseCheck()
         else console.log('Server listening on port 1801');
     });
 })
-.catch(err => {
-    console.log(err);
-});
+.catch(err => console.log(err));

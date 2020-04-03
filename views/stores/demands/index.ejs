@@ -12,32 +12,28 @@
 	</nav>
 </section>
 <section class='container mb-2'>
-	<div class='row'>
-		<div class='col-3'>
-			<label class='col-form-label text-right'  for='supplier_id'>Suppliers:</label>
+	<div class="input-group mb-2">
+		<div class="input-group-prepend">
+			<label class="input-group-text" for="supplier_id">Suppliers</label>
 		</div>
-		<div class='col-9'>
-			<select id='supplier_id' class='form-control' type='text' onchange=filterSelects()>
-				<option value='0' <% if (query.supplier_id === 0) { %>selected<% } %>>All</option>
-				<% suppliers.forEach(supplier => { %>
-					<option value='<%= supplier.supplier_id %>' <% if (query.supplier_id === supplier.supplier_id) { %> selected <% } %>>
-						<%= supplier._name %>
-					</option>
-				<% }); %>
-			</select>
-		</div>
+		<select class="custom-select" id='supplier_id' onchange=filterSelects()>
+			<option value='0' <% if (query.supplier_id === 0) { %>selected<% } %>>All</option>
+			<% suppliers.forEach(supplier => { %>
+				<option value='<%= supplier.supplier_id %>' <% if (query.supplier_id === supplier.supplier_id) { %> selected <% } %>>
+					<%= supplier._name %>
+				</option>
+			<% }); %>
+		</select>
 	</div>
-	<div class='row'>
-		<div class='col-3'>
-			<label class='col-form-label text-right'  for='complete'>Completed Demands:</label>
+	<div class="input-group mb-2">
+		<div class="input-group-prepend">
+			<label class="input-group-text" for="complete">Completed Demands</label>
 		</div>
-		<div class='col-9'>
-			<select id='complete' class='form-control' type='text' onchange=filterSelects()>
-				<option value='1' <% if (query.complete === 1) { %> selected <% } %>>Include</option>
+		<select class="custom-select" id='complete' onchange=filterSelects()>
+			<option value='1' <% if (query.complete === 1) { %> selected <% } %>>Include</option>
 				<option value='2' <% if (query.complete === 2) { %> selected <% } %>>Exclude</option>
 				<option value='3' <% if (query.complete === 3) { %> selected <% } %>>Only</option>
-			</select>
-		</div>
+		</select>
 	</div>
 	<% if (demands) { %>
 		<div class='row'>

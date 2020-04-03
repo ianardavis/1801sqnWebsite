@@ -38,49 +38,45 @@
 				</form>
 			<% }; %>
 			<h4 class='mb-3'>Details</h4>
-			<div class="row">
-				<div class="col-sm-4">
-					<p class="col-form-label">For:</p>
+			<div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">For</span>
+                </div>
+                <p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
+				<div class="input-group-append">
+					<a class='btn btn-primary' href="/stores/users/<%= request._for.user_id %>">
+						<i class='fas fa-search'></i>
+					</a>
 				</div>
-				<div class="col-sm-7">
-					<p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
+            </div>
+			<div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">By</span>
+                </div>
+                <p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
+				<div class="input-group-append">
+					<a class='btn btn-primary' href="/stores/users/<%= request._by.user_id %>">
+						<i class='fas fa-search'></i>
+					</a>
 				</div>
-				<div class="col-sm-1">
-					<a class='float-right btn btn-primary' href="/stores/users/<%= request._for.user_id %>"><i class='fas fa-search'></i></a>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-sm-4">
-					<p class="col-form-label">By:</p>
-				</div>
-				<div class="col-sm-7">
-					<p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
-				</div>
-				<div class="col-sm-1">
-					<a class='float-right btn btn-primary' href="/stores/users/<%= request._by.user_id %>"><i class='fas fa-search'></i></a>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-sm-4">
-					<p class="col-form-label">Date:</p>
-				</div>
-				<div class="col-sm-8">
-					<p class="form-control"><%= request._date.toDateString() %></p>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-sm-4">
-					<p class="col-form-label">Complete:</p>
-				</div>
-				<div class="col-sm-8">
-					<input class="form-control" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled>
-				</div>
-			</div>
+            </div>
+			<div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Date</span>
+                </div>
+                <p class="form-control"><%= request._date.toDateString() %></p>
+            </div>
+			<div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Complete</span>
+                </div>
+                <p class="form-control"><% if (request._complete) { %>Yes<% } else { %>No<% } %></p>
+            </div>
 		</div>
 		<% if (permissions.access_notes) { %> 
 			<div class="col-12 col-lg-6 mb-3 bordered">
 				<% if (permissions.note_add) { %>
-					<a class="float-left btn btn-success" href="/stores/notes/new?table=requests&id=<%= request.request_id %>">
+					<a class="float-left btn btn-success" href='javascript:addNote("requests","<%= request.request_id %>")'>
 						<i class='fas fa-plus'></i>
 					</a>
 				<% }; %>
@@ -91,16 +87,14 @@
 			<h4>Lines</h4>
 			<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
 				<form action="/stores/requests/<%= request.request_id %>/approval?_method=PUT" method="POST">
-					<div class="row">
-						<div class="col-md-6">
-							<select class='form-control' name="action">
-								<option value="cancel">Decline Selected Lines</option>
-								<option value="order">Order Selected Lines</option>
-								<option value="issue">Issue Selected Lines</option>
-							</select>
-						</div>
-						<div class="col-md-6">
-							<input class="btn btn-success w-100 mb-1 confirm" type="submit" value='Go'>
+					<div class="input-group mb-1">
+						<select class="custom-select" name='action'>
+							<option value="cancel">Decline Selected Lines</option>
+							<option value="order">Order Selected Lines</option>
+							<option value="issue">Issue Selected Lines</option>
+						</select>
+						<div class="input-group-append w-25">
+						  	<button class="btn btn-success w-100 confirm" type="button">Go</button>
 						</div>
 					</div>
 			<% } %>
@@ -122,7 +116,7 @@
 								<% if (!request._complete) { %>
 									<td>
 										<% if (line._status === 'Pending') { %>
-											<input class='form-control' type="checkbox" name='selected[]' value='<%= line.line_id %>'>
+											<input class='form-control form-control-sm' type="checkbox" name='selected[]' value='<%= line.line_id %>'>
 										<% } %>
 									</td>
 								<% } %>

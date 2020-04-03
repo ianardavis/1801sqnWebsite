@@ -74,7 +74,7 @@
 		<% if (permissions.access_notes) { %> 
 			<div class='col-12 col-lg-6 col-xl-7 mb-3 bordered'>
 				<% if (permissions.note_add) { %>
-					<a class='float-left btn btn-success' href='/stores/notes/new?table=demands&id=<%= demand.demand_id %>'>
+					<a class='float-left btn btn-success' href='javascript:addNote("demands","<%= demand.demand_id %>")'>
 						<i class='fas fa-plus'></i>
 					</a>
 				<% } %>

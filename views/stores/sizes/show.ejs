@@ -41,69 +41,60 @@
                 </form>
             <% } %>
             <h4 class='mb-3'>Details</h4>
-            <div class="form-group">
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Issueable:</label>
-                    </div>   
-                    <div class='col-7'>
-                        <input id='_issueable' class='form-control' type='checkbox'<% if (size._issueable) { %> checked<% } %> disabled>
-                    </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Issueable</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Orderable:</label>
-                    </div>   
-                    <div class='col-7'>
-                        <input id='_orderable' class='form-control' type='checkbox'<% if (size._orderable) { %> checked<% } %> disabled>
-                    </div>
+                <p class="form-control"><% if (size._issueable) { %>Yes<% } else { %>No<% } %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Orderable</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Has Serial #:</label>
-                    </div>   
-                    <div class='col-7'>
-                        <input id='_serials' class='form-control' type='checkbox'<% if (size._serials) { %> checked<% } %> disabled>
-                    </div>
+                <p class="form-control"><% if (size._orderable) { %>Yes<% } else { %>No<% } %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Has Serial #</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Has NSNs:</label>
-                    </div>   
-                    <div class='col-7'>
-                        <input id='_serials' class='form-control' type='checkbox'<% if (size._nsns) { %> checked<% } %> disabled>
-                    </div>
+                <p class="form-control"><% if (size._serials) { %>Yes<% } else { %>No<% } %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Has NSNs</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <% if (size.supplier) { %><a class='float-right btn btn-primary' href='/stores/suppliers/<%= size.supplier_id %>'><i class='fas fa-search'></i></a><% } %>
-                        <label class='col-form-label'>Supplier:</label>
-                    </div>
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<% if (size.supplier) { %><%= size.supplier._name %><% } %>' readonly>
-                    </div>
+                <p class="form-control"><% if (size._nsns) { %>Yes<% } else { %>No<% } %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Supplier</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Demand Page:</label>
-                    </div>   
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<%= size._demand_page %>' readonly>
+                <p class='form-control'><% if (size.supplier) { %><%= size.supplier._name %><% } %></p>
+                <% if (size.supplier) { %>
+                    <div class="input-group-append">
+                        <a class='btn btn-primary' href='/stores/suppliers/<%= size.supplier_id %>'>
+                            <i class='fas fa-search'></i>
+                        </a>
                     </div>
+                <% } %>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Demand Page</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Cell:</label>
-                    </div>
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<%= size._demand_cell %>' readonly>
-                    </div>
+                <p class="form-control"><%= size._demand_page %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Demand Cell</span>
                 </div>
-                <div class='row'>
-                    <div class='col-12'>
-                        <textarea class='form-control' maxlength='1000' readonly><%= size._ordering_details %></textarea>
-                    </div>
+                <p class="form-control"><%= size._demand_cell %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Ordering Details</span>
                 </div>
+                <textarea class="form-control" maxlength='1000' aria-label="Ordering details" readonly><%= size._ordering_details %></textarea>
             </div>
 		</div>
         <% if (permissions.access_nsns) {%>
@@ -385,7 +376,7 @@
         <% if (permissions.access_notes) {%>
             <div class='col-8 mb-2 bordered'>
                 <% if (permissions.note_add) { %> 
-                    <a class='float-left btn btn-success' href='/stores/notes/new?table=sizes&id=<%= size.size_id %>'>
+                    <a class='float-left btn btn-success' href='javascript:addNote("sizes","<%= size.size_id %>")'>
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>

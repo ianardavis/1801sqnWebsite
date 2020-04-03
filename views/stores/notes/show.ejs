@@ -1,88 +1,18 @@
-<% include ../../partials/head/full %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Stores
-                </a>
-			</li>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Notes
-                </a>
-			</li>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/notes/<%= note.note_id %>'>
-                    <%= note.note_id %>
-                </a>
-			</li>
-        </ul>
-    </nav>
-</section>
-<section class='container'>
-	<div class='row'>
-		<div class='col-6 mb-3 mx-auto form-group bordered'>
-            <div class='row mb-3'>
-                <div class='col-12'>
-                    <a class='float-left btn btn-primary mr-1' href='/stores/notes/<%= note.note_id %>/edit'>
-                        <i class='fas fa-pencil-alt'></i>
-                    </a>
-                    <% if (permissions.note_delete) { %>
-                        <form action='/stores/notes/<%= note.note_id %>?_method=DELETE' method='POST'>
-                            <button class='float-left btn btn-danger confirm'>
-                                <i class='fas fa-trash-alt'></i>
-                            </button>
-                        </form>
-                    <% } %>
-                    <h3>Note <%= note.note_id %> For Record:</h3>
-                    <div class='row'>
-                        <div class='col-6'>
-                            <input class='form-control' type='text' value='<%= note._table %>' readonly>
-                        </div>
-                        <div class='col-6'>
-                            <input class='form-control' type='text' value='<%= note._id %>' readonly>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-sm-3'>
-                    <label class= col-form-label>Created BY:</label>
-                </div>
-                <div class='col-sm-8'>
-                    <input class='form-control' type='text' value='<%= note.user.rank._rank %> <%= note.user._name %>, <%= note.user._ini %>' readonly>
-                </div>
-                <div class='col-sm-1'>
-                    <a class=' float-right btn btn-primary' href='/stores/users/<%= note.user_id %>'><i class='fas fa-search'></i></a>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-sm-3'>
-                    <label class= col-form-label>Date:</label>
-                </div>
-                <div class='col-sm-9'>
-                    <input class='form-control' type='text' value='<%= note.createdAt.toDateString() %>' readonly>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-sm-3'>
-                    <label class= col-form-label>System Note:</label>
-                </div>
-                <div class='col-sm-9'>
-                    <input class='form-control' type='checkbox' disabled <% if (note._system) { %> checked <% } %>>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-12'>
-                    <label class= col-form-label>Text:</label>
-                </div>
-                <div class='col-12'>
-                    <textarea class='form-control' rows='10' readonly><%= note._note %></textarea>
-                </div>
-            </div>
-		</div>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'><section class="container">
+    <div class="row">
+        <div class="col-12 col-lg-6 mx-auto bordered">
+            <form id='noteForm'>
+                <textarea class="form-control" rows="19" maxlength="1000" readonly><%= note._note %></textarea>
+                <% if (permissions.note_edit) { %>
+                    <a class=" btn btn-warning w-100" href="/stores/notes/<%= note.note_id %>/edit">Edit</a>
+                <% } %>
+                <a class="float-left" href="javascript:close()">Close</a>
+            </form>
+        </div>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include('../../partials/foot/full') %>
+<%- include('../../partials/foot/htmlClose') %>

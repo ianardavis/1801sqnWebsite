@@ -18,23 +18,23 @@
 </section>
 <section>
 	<div class="container">
-		<div class="row">
-			<div class="col-12 col-md-3">
-				<label class="col-md-3 col-form-label" for="_system">Showing:</label>
+		<div class="input-group mb-2">
+			<div class="input-group-prepend">
+				<label class="input-group-text" for="showing">Showing</label>
 			</div>
-			<div class="col-12 col-md-9">
-				<select class="form-control" id="_system" type="text" onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
-					<% statuses.forEach((stat) => { %>
-						<% if (stat.status_id !== 4) { %>
-							<% if (stat.status_id === Number(status)) { %>
-								<option value="<%= stat.status_id %>" selected><%= stat._status %></option>
-							<% } else { %>
-								<option value="<%= stat.status_id %>"><%= stat._status %></option>
-							<% } %>
+			<select class="custom-select" id='showing' onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
+				<% statuses.forEach(stat => { %>
+					<% if (stat.status_id !== 4) { %>
+						<% if (stat.status_id === Number(status)) { %>
+							<option value="<%= stat.status_id %>" selected><%= stat._status %></option>
+						<% } else { %>
+							<option value="<%= stat.status_id %>"><%= stat._status %></option>
 						<% } %>
-					<% }) %>
-				</select>
-			</div>
+					<% } %>
+				<% }) %>
+			</select>
+		</div>
+		<div class="row">
 			<div class="col-12">
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">

@@ -2,24 +2,21 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //New
     app.get('/stores/notes/new', isLoggedIn, allowed('note_add'), (req, res) => {
         res.render('stores/notes/new', {
-            link: {
-                table: req.query.table,
-                id:    req.query.id
-            }
+            table: req.query.table,
+            id:    req.query.id
         });
     });
     //New logic
-    app.post('/stores/notes', isLoggedIn, allowed('note_add'), (req, res) => {
-        req.body.note.user_id = req.user.user_id;
-        fn.create(
-            m.notes,
-            req.body.note
-        )
-        .then(note => {
-            req.flash('success', 'Note added')
-            res.redirect('/stores/' + note._table + '/' + note._id);
-        })
-        .catch(err => fn.error(err, 'back', req, res));
+    app.post('/stores/notes', isLoggedIn, allowed('note_add', false), (req, res) => {
+        if (!req.allowed) {
+            res.send({result: false, error: 'Permission denied'})
+        } else {
+            req.body.note.user_id = req.user.user_id;
+            req.body.note._date = Date.now();
+            fn.create(m.notes, req.body.note)
+            .then(note => res.send({result: true}))
+            .catch(err => res.send({result: false, error: err.message}));
+        };
     });
 
     //Edit
@@ -33,16 +30,19 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     // Put
     app.put('/stores/notes/:id', isLoggedIn, allowed('note_edit'), (req, res) => {
-        fn.update(
-            m.notes,
-            req.body.note,
-            {note_id: req.params.id}
-        )
-        .then(result => {
-            req.flash('success', 'Note updated');
-            res.redirect('/stores/' + req.body._table + '/' + req.body._id);
-        })
-        .catch(err => fn.error(err, '/stores/' + req.body._table + '/' + req.body._id, req, res));
+        if (!req.allowed) {
+            res.send({result: false, error: 'Permission denied'})
+        } else {
+            req.body.note.user_id = req.user.user_id;
+            req.body.note._date = Date.now();
+            fn.update(
+                m.notes,
+                req.body.note,
+                {note_id: req.params.id}
+            )
+            .then(note => res.send({result: true}))
+            .catch(err => res.send({result: false, error: err.message}));
+        };
     });
     
     //Show

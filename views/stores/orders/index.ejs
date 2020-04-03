@@ -23,31 +23,27 @@
 	</nav>
 </section>
 <section class='container'>
-	<form action='/stores/demands' method='POST'>
-		<div class='row mb-2'>
-			<div class='col-6'>
-				<input class='btn btn-success w-100 confirm' type='submit' value='Raise Demands For:'>
+	<form class='mb-2' action='/stores/demands' method='POST'>
+		<div class="input-group">
+			<div class="input-group-prepend w-25">
+				<button class="btn btn-success w-100 confirm" type="button">Raise Demands For</button>
 			</div>
-			<div class='col-6'>
-				<select class='form-control' name='supplier_id' type='text'>
-					<% suppliers.forEach(supplier => { %>
-						<option value='<%= supplier.supplier_id %>'><%= supplier._name %></option>
-					<% }); %>
-				</select>
-			</div>
-		</div>
-	</form>
-	<div class='row mb-2'>
-		<div class='col-3'>
-			<label class='col-form-label' for='complete'>Completed Orders:</label>
-		</div>
-		<div class='col-9'>
-			<select id='complete' class='form-control form-control-sm' type='text' onchange=filterSelects()>
-				<option value='1'<% if (Number(query.complete) === 1) { %> selected <% } %>>Include</option>
-				<option value='2'<% if (Number(query.complete) === 2) { %> selected <% } %>>Exclude</option>
-				<option value='3'<% if (Number(query.complete) === 3) { %> selected <% } %>>Only</option>
+			<select class="custom-select" name='supplier_id'>
+				<% suppliers.forEach(supplier => { %>
+					<option value='<%= supplier.supplier_id %>'><%= supplier._name %></option>
+				<% }); %>
 			</select>
+		</div>	
+	</form>
+	<div class="input-group mb-2">
+		<div class="input-group-prepend w-25">
+			<label class="input-group-text text-centre w-100" for="complete">Completed Orders</label>
 		</div>
+		<select class="custom-select" id='complete' onchange=filterSelects()>
+			<option value='1'<% if (Number(query.complete) === 1) { %> selected <% } %>>Include</option>
+			<option value='2'<% if (Number(query.complete) === 2) { %> selected <% } %>>Exclude</option>
+			<option value='3'<% if (Number(query.complete) === 3) { %> selected <% } %>>Only</option>
+		</select>
 	</div>
 	<div class='row'>
 		<div class='col-12'>

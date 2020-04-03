@@ -35,88 +35,94 @@
                 </form>
             <% } %>
             <h4 class='mb-3'>Details</h4>
-            <div class="row">
-                <div class="col-sm-4">
-                    <label class="col-form-label">Supplier Name:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Supplier Name</span>
                 </div>
-                <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier._name %>" readonly>
-                </div>
+                <p class="form-control"><%= supplier._name %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <label class="col-form-label">Address:</label>
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Address</span>
                 </div>
-                <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier._address1 %>" readonly>
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier._address2 %>" readonly>
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier._address3 %>" readonly>
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier._address4 %>" readonly>
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier._address5 %>" readonly>
-                </div>
+                <p class="form-control"><%= supplier._address1 %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <label class="col-form-label">Tel:</label>
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100"></span>
                 </div>
-                <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier._telephone %>" readonly>
-                </div>
+                <p class="form-control"><%= supplier._address2 %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <label class="col-form-label">Email:</label>
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100"></span>
                 </div>
-                <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier._email %>" readonly>
+                <p class="form-control"><%= supplier._address3 %></p>
+            </div>
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100"></span>
                 </div>
+                <p class="form-control"><%= supplier._address4 %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100"></span>
+                </div>
+                <p class="form-control"><%= supplier._address5 %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Telephone</span>
+                </div>
+                <p class="form-control"><%= supplier._telephone %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Email</span>
+                </div>
+                <p class="form-control"><%= supplier._email %></p>
             </div>
             <% if (supplier.account) { %>
-            <div class="row">
-                <div class="col-4">
-                    <label class="col-form-label">Account:</label>
+                <div class="input-group input-group-sm mb-1">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100">Account</span>
+                    </div>
+                    <p class="form-control"><%= supplier.account._number %></p>
+                    <div class="input-group-append">
+                        <a class="btn btn-primary" href="/stores/accounts/<%= supplier.account_id %>/edit">
+                            <i class='fas fa-search'></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="col-7">
-                    <input class="form-control form-control-sm" type="text" value="<%= supplier.account._number %>" readonly>
-                </div>
-                <div class="col-1">
-                    <a class="float-right btn btn-sm btn-primary" href="/stores/accounts/<%= supplier.account_id %>/edit">
-                        <i class='fas fa-search'></i>
-                    </a>
-                </div>
-            </div>
             <% } %>
-            <div class="row">
-                <div class="col-4">
-                    <label class="col-form-label">RAF Stores?:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">RAF Stores</span>
                 </div>
-                <div class="col-8">
-                    <input class="form-control form-control-sm" type="checkbox" id="_stores" value="1"<% if (supplier._stores) { %> checked<% } %> disabled>
-                </div>
+                <p class="form-control"><% if (supplier._stores) { %>Yes<% } else { %>No<% } %></p>
             </div>
-            <div class="form-group row">
-                <div class="col-4">
-                    <label class="col-form-label" for="_stores">Create Demand File?:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-35">
+                    <span class="input-group-text w-100">Create Demand File</span>
                 </div>
-                <div class="col-8">
-                    <input class="form-control form-control-sm" id="_stores" name="supplier[_raise_demand]" value="1" type="checkbox"<% if (supplier._raise_demand) { %> checked <% } %> disabled>
-                </div>
+                <p class="form-control"><% if (supplier._raise_demand) { %>Yes<% } else { %>No<% } %></p>
             </div>
             <div class="row mb-1">
                 <% if (supplier.file) { %>
-                    <div class="col-4">
-                        <label class="col-form-label">Demand File:</label>
-                    </div>
-                    <div class="col-7">
-                        <input class="form-control form-control-sm" type="text" value="<%= supplier.file._path %>" readonly>
-                    </div>
-                    <div class="col-1">
-                        <a class="float-right btn btn-sm btn-primary" href="/stores/files/<%= supplier.file_id %>/edit">
-                            <i class='fas fa-pencil-alt'></i>
-                        </a>
+                    <div class="input-group input-group-sm mb-1">
+                        <div class="input-group-prepend w-35">
+                            <span class="input-group-text w-100">Demand File</span>
+                        </div>
+                        <p class="form-control"><%= supplier.file._path %></p>
+                        <div class="input-group-append">
+                            <a class="btn btn-primary" href="/stores/files/<%= supplier.file_id %>/edit">
+                                <i class='fas fa-pencil-alt'></i>
+                            </a>
+                        </div>
                     </div>
                 <% }; %>
-                <% if (permissions.file_add) { %>
+                <% if (supplier._raise_demand && permissions.file_add) { %>
                     <div class="col-12">
                         <form ref="uploadForm" id="uploadForm" action="/stores/files?s=<%= supplier.supplier_id %>" method="POST" encType="multipart/form-data">
                             <div class="input-group">
@@ -125,18 +131,11 @@
                                     <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
                                 </div>
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04"><i class='fas fa-file-upload'></i></button>
+                                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">
+                                        <i class='fas fa-file-upload'></i>
+                                    </button>
                                 </div>
                             </div>
-
-                            <!-- <div class="row">
-                                <div class="col-10">
-                                    <input class="btn btn-sm btn-primary" type="file" name="demandfile">
-                                </div>
-                                <div class="col-2">
-                                    <button class="float-right btn btn-primary confirm"><i class='fas fa-file-upload'></i></button>
-                                </div>
-                            </div> -->
                          </form>
                     </div>
                 <% }; %>
@@ -144,7 +143,7 @@
         </div>
         <div class="col-12 col-lg-7 bordered">
             <h4>Items From This Supplier</h4>
-            <select id="size_id" class="form-control form-control-sm" size="24" ondblclick=goToItemSize()>
+            <select id="size_id" class="form-control form-control-sm" size="20" ondblclick=goToItemSize()>
                 <% if (supplier.sizes) { %>
                     <% supplier.sizes.forEach(size => { %>
                         <option value="<%= size.size_id %>"><%= size.item._description %>, size: <%= size._size %></option>
@@ -197,7 +196,7 @@
         <% if (permissions.access_notes) { %>
             <div class="col-12 bordered">
                 <% if (permissions.note_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/notes/new?table=suppliers&id=<%= supplier.supplier_id %>">
+                    <a class="float-left btn btn-success" href='javascript:addNote("suppliers","<%= supplier.supplier_id %>")'>
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>

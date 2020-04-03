@@ -34,49 +34,45 @@
                 </form>
             <% } %>
             <h4 class='mb-3'>Issue Details</h4>
-            <div class='row'>
-                <div class='col-sm-4'>
-                    <label class='col-form-label'>To:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">To</span>
                 </div>
-                <div class='col-10 col-sm-6'>
-                    <input class='form-control' type='text' value='<%= issue._to.rank._rank %> <%= issue._to._name %>, <%= issue._to._ini %>' readonly>
-                </div>
-                <div class="col-2">
-                    <a class='btn btn-primary float-right' href="/stores/users/<%= issue.issued_to %>"><i class='fas fa-search'></i></a>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-sm-4'>
-                    <label class='col-form-label'>By:</label>
-                </div>
-                <div class='col-10 col-sm-6'>
-                    <input class='form-control' type='text' value='<%= issue._by.rank._rank %> <%= issue._by._name %>, <%= issue._by._ini %>' readonly>
-                </div>
-                <div class="col-2">
-                    <a class='btn btn-primary float-right' href="/stores/users/<%= issue.user_id %>"><i class='fas fa-search'></i></a>
+                <p class="form-control"><%= issue._to.rank._rank %> <%= issue._to._name %>, <%= issue._to._ini %></p>
+                <div class="input-group-append">
+                    <a class='btn btn-primary' href="/stores/users/<%= issue.issued_to %>">
+                        <i class='fas fa-search'></i>
+                    </a>
                 </div>
             </div>
-            <div class='row'>
-                <div class='col-sm-4'>
-                    <label class='col-form-label'>Date:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">By</span>
                 </div>
-                <div class='col-sm-8'>
-                    <input class='form-control' type='text' value='<%= issue._date.toDateString() %>' readonly>
+                <p class="form-control"><%= issue._by.rank._rank %> <%= issue._by._name %>, <%= issue._by._ini %></p>
+                <div class="input-group-append">
+                    <a class='btn btn-primary' href="/stores/users/<%= issue.user_id %>">
+                        <i class='fas fa-search'></i>
+                    </a>
                 </div>
             </div>
-            <div class='row'>
-                <div class='col-sm-4'>
-                    <label class='col-form-label'>Due Back:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Date</span>
                 </div>
-                <div class='col-sm-8'>
-                    <input class='form-control' type='text' value='<%= issue._date_due.toDateString() %>' readonly>
+                <p class="form-control"><%= issue._date.toDateString() %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Due Back</span>
                 </div>
+                <p class="form-control"><%= issue._date_due.toDateString() %></p>
             </div>
         </div>
         <% if (permissions.access_notes) { %> 
             <div class='col-12 col-lg-6 col-xl-7 mb-3 bordered'>
                 <% if (permissions.note_add) { %>
-                    <a class='float-left btn btn-success' href='/stores/notes/new?table=issues&id=<%= issue.issue_id %>'>
+                    <a class='float-left btn btn-success mb-1' href='javascript:addNote("issues","<%= issue.issue_id %>")'>
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>

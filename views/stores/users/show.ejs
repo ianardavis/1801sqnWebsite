@@ -35,68 +35,56 @@
                 </form>
             <% } %>
             <h4 class='mb-3'>Details</h4>
-            <div class="row">
-                <div class="col-sm-3">
-                    <label class="col-form-label">Bader #:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-25">
+                    <span class="input-group-text w-100">Bader #</span>
                 </div>
-                <div class="col-sm-9">
-                    <input class="form-control" type="text" value="<%= f_user._bader %>" readonly>
-                </div>
+                <p class="form-control"><%= f_user._bader %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <label class="col-form-label">Rank:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-25">
+                    <span class="input-group-text w-100">Rank</span>
                 </div>
-                <div class="col-sm-9">
-                    <input class="form-control" type="text" value="<%= f_user.rank._rank %>" readonly>
-                </div>
+                <p class="form-control"><%= f_user.rank._rank %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <label class="col-form-label">Name:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-25">
+                    <span class="input-group-text w-100">Name</span>
                 </div>
-                <div class="col-sm-9">
-                    <input class="form-control" type="text" value="<%= f_user._name %>" readonly>
-                </div>
+                <p class="form-control"><%= f_user._name %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <label class="col-form-label">Initials:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-25">
+                    <span class="input-group-text w-100">Initials</span>
                 </div>
-                <div class="col-sm-9">
-                    <input class="form-control" type="text" value="<%= f_user._ini %>" readonly>
-                </div>
+                <p class="form-control"><%= f_user._ini %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <label class="col-form-label">Status:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-25">
+                    <span class="input-group-text w-100">Status</span>
                 </div>
-                <div class="col-sm-9">
-                    <input class="form-control" type="text" value="<%= f_user.status._status %>" readonly>
-                </div>
+                <p class="form-control"><%= f_user.status._status %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <label class="col-form-label">Login ID:</label>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-25">
+                    <span class="input-group-text w-100">Login ID</span>
                 </div>
-                <div class="col-sm-9">
-                    <input class="form-control" type="text" value="<%= f_user._login_id %>" readonly>
-                </div>
+                <p class="form-control"><%= f_user._login_id %></p>
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <label class="col-form-label">Reset:</label>
+            <% if (permissions.user_password) { %>
+                <form action="/stores/users/<%= f_user.user_id %>?_method=PUT" method="POST">
+            <% } %>
+            <div class="input-group mb-1">
+                <div class="input-group-prepend w-75">
+                    <span class="input-group-text w-100">Change password on next login</span>
                 </div>
-                <div class="col-sm-9">
-                    <% if (permissions.user_password) { %>
-                        <form action="/stores/users/<%= f_user.user_id %>?_method=PUT" method="POST">
-                    <% } %>
-                    <input class="form-control confirm" <% if (permissions.user_password) { %>name="user[_reset]" onChange="this.form.submit()" value='1' <% } %>type="checkbox" <% if (f_user._reset) { %>checked <% } %>>
-                    <% if (permissions.user_password) { %>
-                        </form>
-                    <% } %>
-                </div>
+                <p class='form-control'>
+                    <input class="form-control form-control-sm confirm" <% if (permissions.user_password) { %>name="user[_reset]" onChange="this.form.submit()" value='1' <% } %>type="checkbox" <% if (f_user._reset) { %>checked <% } %>>
+                </p>
             </div>
+            <% if (permissions.user_password) { %>
+                </form>
+            <% } %>
         </div>
         <div class="col-12 col-lg-3 bordered mb-3">
             <% if (permissions.user_permissions && f_user.user_id !== user.user_id) { %>
@@ -105,7 +93,7 @@
                 </a>
             <% } %>
             <h4>Permissions</h4>
-            <select class="form-control" size="13">
+            <select class="form-control" size="11">
                 <% for (var permission in f_user.permission.dataValues) { %>
                     <% if (f_user.permission[permission] === 1 && permission !== 'user_id' && permission !== 'createdAt' && permission !== 'updatedAt') { %>
                         <option><%= permission%></option>
@@ -116,7 +104,7 @@
         <% if (permissions.access_notes || user.user_id === f_user.user_id) { %> 
             <div class="col-12 col-lg-5 bordered mb-3">
                 <% if (permissions.note_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/notes/new?table=users&id=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Note">
+                    <a class="float-left btn btn-success mb-1" href='javascript:addNote("users","<%= f_user.user_id %>")' data-toggle="tooltip" data-placement="bottom" title="Add Note">
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
@@ -134,17 +122,17 @@
                     <h4 class='mb-3'>Requests (<%= requests.length %>)</h4>
                 </a>
                 <div class="collapse" id="collapseRequests">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="closed">Closed Requests</label>
+                        </div>
+                        <select class="custom-select" id='closed' onchange=filterSelects()>
+                            <option value="1" <% if (query.closed === 1) { %>selected<% } %> >Include</option>
+                            <option value="2" <% if (query.closed === 2) { %>selected<% } %> >Exclude</option>
+                            <option value="3" <% if (query.closed === 3) { %>selected<% } %> >Only</option>
+                        </select>
+                    </div>
                     <div class="row">
-                        <div class="col-5">
-                            <label class="col-form-label" for="closed">Closed Requests:</label>
-                        </div>
-                        <div class="col-7">
-                            <select id="closed" class='form-control form-control-sm' type="text" onchange=filterSelects()>
-                                <option value="1" <% if (query.closed === 1) { %>selected<% } %> >Include</option>
-                                <option value="2" <% if (query.closed === 2) { %>selected<% } %> >Exclude</option>
-                                <option value="3" <% if (query.closed === 3) { %>selected<% } %> >Only</option>
-                            </select>
-                        </div>
                         <div class="col-12">
                             <table class='table table-sm table-hover'>
                                 <thead class="thead-dark">
@@ -204,17 +192,17 @@
                     <h4 class='mb-3'>Orders (<%= orders.length %>)</h4>
                 </a>
                 <div class="collapse" id="collapseOrders">
-                    <div class="row">
-                        <div class="col-5">
-                            <label class="col-form-label" for="issued">Issued Orders:</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="issued">Issued Orders</label>
                         </div>
-                        <div class="col-7">
-                            <select id="issued" class='form-control form-control-sm' type="text" onchange="filterSelects()">
-                                <option value="1" <% if (query.issued === 1) { %> selected <% } %> >Include</option>
+                        <select class="custom-select" id='issued' onchange=filterSelects()>
+                            <option value="1" <% if (query.issued === 1) { %> selected <% } %> >Include</option>
                                 <option value="2" <% if (query.issued === 2) { %> selected <% } %> >Exclude</option>
                                 <option value="3" <% if (query.issued === 3) { %> selected <% } %> >Only</option>
                             </select>
-                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-12">
                             <table class='table table-sm table-hover'>
                                 <thead class="thead-dark">
@@ -282,17 +270,17 @@
                     <h4 class='mb-3'>Issues (<%= issues.length %>)</h4>
                 </a>
                 <div class="collapse" id="collapseIssues">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="returned">Returned Lines</label>
+                        </div>
+                        <select class="custom-select" id='returned' onchange=filterSelects()>
+                            <option value="1"<% if (query.returned === 1) { %> selected <% } %>>Include</option>
+                            <option value="2"<% if (query.returned === 2) { %> selected <% } %>>Exclude</option>
+                            <option value="3"<% if (query.returned === 3) { %> selected <% } %>>Only</option>
+                        </select>
+                    </div>
                     <div class="row">
-                        <div class="col-5">
-                            <label class="col-form-label" for="returned">Returned Lines:</label>
-                        </div>
-                        <div class="col-7">
-                            <select class='form-control form-control-sm' id="returned" type="text" onchange="filterSelects()">
-                                <option value="1"<% if (query.returned === 1) { %> selected <% } %>>Include</option>
-                                <option value="2"<% if (query.returned === 2) { %> selected <% } %>>Exclude</option>
-                                <option value="3"<% if (query.returned === 3) { %> selected <% } %>>Only</option>
-                            </select>
-                        </div>
                         <div class="col-12">
                             <table class='table table-sm table-hover mx-auto w-100'>
                                 <thead class="thead-dark">

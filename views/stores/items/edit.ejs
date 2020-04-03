@@ -18,39 +18,29 @@
     </nav>
 </section>
 <section class='container bordered'>
-    <form action='/stores/items/<%= item.item_id %>?_method=PUT' method='POST'>
-        <div class='form-group'>
-            <div class='row'>
-                <div class='col-12'>
-                    <input class='btn btn-success btn-lg col-12 confirm' type='submit' value='Save'>
-                    <a class='float-left' href='/stores/items/<%= item.item_id %>'>Cancel</a>
-                </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Description:</label>
-                </div>                        
-                <div class='col-7'>
+    <div class="row">
+        <div class="col-12">
+            <form action='/stores/items/<%= item.item_id %>?_method=PUT' method='POST'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Description</span>
+                    </div>
                     <input class='form-control' type='text' name='item[_description]' value='<%= item._description %>' maxlength='45'>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Category:</label>
-                </div> 
-                <div class='col-7'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Category</span>
+                    </div>
                     <select class='form-control' name='item[category_id]' id='category_id' type='text' onchange=setGroup()>
                         <% classes.categories.forEach(category => { %>
                             <option value='<%= category.category_id %>'<% if (category.category_id === item.category_id) { %> selected <% } %>><%= category._category %></option>
                         <% }) %>
                     </select>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Group:</label>
-                </div> 
-                <div class='col-7'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Group</span>
+                    </div>
                     <select class='form-control' name='item[group_id]' id='group_id' type='text' onchange=setType()>
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.groups.forEach(group => { %>
@@ -58,12 +48,10 @@
                         <% }) %>
                     </select>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Type:</label>
-                </div> 
-                <div class='col-7'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Type</span>
+                    </div>
                     <select class='form-control' name='item[type_id]' id='type_id' type='text' onchange=setSubtype()>
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.types.forEach(type => { %>
@@ -71,12 +59,10 @@
                         <% }) %>
                     </select>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Sub Type:</label>
-                </div> 
-                <div class='col-7'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Sub Type</span>
+                    </div>
                     <select class='form-control' name='item[subtype_id]' id='subtype_id' type='text'>
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.subtypes.forEach(subtype => { %>
@@ -84,12 +70,10 @@
                         <% }) %>
                     </select>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Gender:</label>
-                </div> 
-                <div class='col-7'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Gender</span>
+                    </div>
                     <select class='form-control' name='item[gender_id]' id='gender_id' type='text'>
                         <option value='' data-tag='<blank>'></option> 
                         <% classes.genders.forEach(gender => { %>
@@ -97,14 +81,14 @@
                         <% }) %>
                     </select>
                 </div>
-            </div>
-            <div class='row'>
-                <div class='col-5' >
-                    <label class='col-form-label'>Size Text:</label>
-                </div>                        
-                <div class='col-7'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Size Text</span>
+                    </div>
                     <input class='form-control' type='text' name='item[_size_text]' value='<%= item._size_text %>' maxlength='45'>
                 </div>
+                <input class='btn btn-success btn-lg col-12 confirm' type='submit' value='Save'>
+                <a class='float-left' href='/stores/items/<%= item.item_id %>'>Cancel</a>
             </div>
         </div>
     </form>

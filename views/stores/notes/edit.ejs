@@ -1,63 +1,45 @@
-<% include ../../partials/head/full %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Stores
-                </a>
-			</li>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Notes
-                </a>
-			</li>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/notes/<%= note.note_id %>'>
-                    <%= note.note_id %>
-                </a>
-			</li>
-			<li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/notes/<%= note.note_id %>'>
-                    Edit
-                </a>
-			</li>
-        </ul>
-    </nav>
-</section>
-<section class='container'>
-    <div class='row'>
-        <div class='col-12 col-lg-6 bordered mx-auto'>
-            <div class='row mb-3'>
-                <div class='col-12'>
-                    <h3>Edit Note <%= note.note_id %> For Record:</h3>
-                    <div class='row'>
-                        <div class='col-6'>
-                            <input class='form-control' type='text' value='<%= note._table %>' readonly>
-                        </div>
-                        <div class='col-6'>
-                            <input class='form-control' type='text' value='<%= note._id %>' readonly>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <form action='/stores/notes/<%= note.note_id %>?_method=PUT' method='POST'>
-                <input type='hidden' name='_table' value='<%= note._table %>'>
-                <input type='hidden' name='_id'    value='<%= note._id %>'>
-                <div class='row'>
-                    <div class='col-12'>
-                        <textarea class='form-control' name='note[_note]' rows='10' maxlength='1000' required><%= note._note %></textarea>
-                    </div>
-                </div>
-                <div class='row'>
-                    <div class='col-12'>
-                        <input class='btn btn-success confirm' type='submit' value='Save'>
-                        <a class='float-left' href='/stores/notes/<%= note.note_id %>'>Cancel</a>
-                    </div>
-                </div>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'><section class="container">
+    <div class="row">
+        <div class="col-12 col-lg-6 mx-auto bordered">
+            <form id='noteForm'>
+                <textarea class="form-control" name="note[_note]" rows="19" maxlength="1000" required><%= note._note %></textarea>
+                <input class=" btn btn-success confirm" type="submit" value="Save">
+                <a class="float-left" href="javascript:close()">Cancel</a>
             </form>
         </div>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include('../../partials/foot/full') %>
+<script>
+    window.addEventListener( "load", function () {
+        function sendData() {
+            const XHR = new XMLHttpRequest();
+            const FD = new FormData(form);
+            XHR.addEventListener("load", function(event) {
+                let response = JSON.parse(event.target.responseText);
+                if (response.result) {
+                    alert('Note Saved');
+                    window.opener.location.reload();
+                    close();
+                } else {
+                    alert('Note NOT Saved: ' + response.error);
+                };
+            });
+            XHR.addEventListener("error", function(event) {
+                alert('Something went wrong.');
+            });
+            XHR.open("PUT", "/stores/notes/<%= note.note_id %>");
+            XHR.send(FD);
+        };
+
+        let form = document.querySelector("#noteForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData();
+        });
+    });
+</script>
+<%- include('../../partials/foot/htmlClose') %>

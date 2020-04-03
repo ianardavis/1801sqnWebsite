@@ -43,7 +43,7 @@
 		<% if (permissions.access_notes) { %>
 			<div class="col-12 col-md-9 mx-auto bordered">
 				<% if (permissions.note_add) { %>
-					<a class="float-left btn btn-success" href="/stores/notes/new?table=serials&id=<%= serial.serial_id %>">
+					<a class="float-left btn btn-success" href='javascript:addNote("serials","<%= serial.serial_id %>")'>
 						<i class='fas fa-plus'></i>
 					</a>
 				<% } %>

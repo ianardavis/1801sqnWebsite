@@ -34,55 +34,41 @@
                 </form>
             <% } %>
             <h4 class='mb-3'>Details</h4>
-            <div class="form-group">
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Description:</label>
-                    </div>                        
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<%= item._description %>' readonly>
-                    </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Description</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Category:</label>
-                    </div> 
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<% if(item.category) { %><%= item.category._category %><% } %>' readonly>
-                    </div>
+                <p class="form-control"><%= item._description %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Category</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Group:</label>
-                    </div> 
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<% if(item.group) { %><%= item.group._group %><% } %>' readonly>
-                    </div>
+                <p class="form-control"><% if(item.category) { %><%= item.category._category %><% } %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Group</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Type:</label>
-                    </div> 
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<% if(item.type) { %><%= item.type._type %><% } %>' readonly>
-                    </div>
+                <p class="form-control"><% if(item.group) { %><%= item.group._group %><% } %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Type</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Sub Type:</label>
-                    </div> 
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<% if(item.subtype) { %><%= item.subtype._subtype %><% } %>' readonly>
-                    </div>
+                <p class="form-control"><% if(item.type) { %><%= item.type._type %><% } %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Sub Type</span>
                 </div>
-                <div class='row'>
-                    <div class='col-5' >
-                        <label class='col-form-label'>Gender:</label>
-                    </div> 
-                    <div class='col-7'>
-                        <input class='form-control' type='text' value='<% if(item.gender) { %><%= item.gender._gender %><% } %>' readonly>
-                    </div>
+                <p class="form-control"><% if(item.subtype) { %><%= item.subtype._subtype %><% } %></p>
+            </div>
+            <div class="input-group input-group-sm mb-1">
+                <div class="input-group-prepend w-20">
+                    <span class="input-group-text w-100">Gender</span>
                 </div>
+                <p class="form-control"><% if(item.gender) { %><%= item.gender._gender %><% } %></p>
             </div>
 		</div>
 		<div class='col-12 col-md-6 col-lg-5 mb-2 container bordered'>
@@ -122,7 +108,9 @@
         <% if (permissions.access_notes) {%>
             <div class='col-12 bordered'>
                 <% if (permissions.note_add) { %>
-                    <a class='float-left btn btn-success' href='/stores/notes/new?table=items&id=<%= item.item_id %>'><i class='fas fa-plus'></i></a>
+                    <a class='float-left btn btn-success' href='javascript:addNote("items","<%= item.item_id %>")'>
+                        <i class='fas fa-plus'></i>
+                    </a>
                 <% } %>
                 <% include ../../partials/noteTable %>
             </div>

@@ -15,28 +15,22 @@
     </nav>
 </section>
 <section class="container mb-2">
-    <div class="row">
-        <div class="col-12 col-md-6">
-            <div class="row">
-                <div class="col-6">
-                    <label class="col-form-label">Supplier</label>
-                </div>
-                <div class="col-6">
-                    <select class="form-control" id="supplier_id" onchange="javascript:filterSelects()">
-                        <% suppliers.forEach(supplier => { %>
-                            <option value="<%= supplier.supplier_id %>" <% if (Number(supplier_id) === supplier.supplier_id) { %> selected<% } %>>
-                                <%= supplier._name %>
-                            </option>
-                        <% }) %>
-                    </select>
-                </div>
-            </div>
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="supplier_id">Supplier</label>
         </div>
-        <div class="col-12 col-md-6">
-            <button form="orders" class="btn btn-success w-100">Order Selected Items</button>
+        <select class="custom-select" id='supplier_id' onchange=filterSelects()>
+            <% suppliers.forEach(supplier => { %>
+                <option value="<%= supplier.supplier_id %>" <% if (Number(supplier_id) === supplier.supplier_id) { %> selected<% } %>>
+                    <%= supplier._name %>
+                </option>
+            <% }) %>
+        </select>
+        <div class="input-group-append">
+            <button form="orders" class="btn btn-success confirm">Order Selected Items</button>
         </div>
     </div>
-    <form id="orders" action="/stores/reports/3" method="POST" onsubmit="return confirm('Order selected items?');">
+    <form id="orders" action="/stores/reports/3" method="POST">
         <div class="row">
             <input type="hidden" name="ordered_for" value="-1">
             <% var totals = {}; %>
