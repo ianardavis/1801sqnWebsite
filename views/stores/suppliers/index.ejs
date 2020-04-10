@@ -10,7 +10,9 @@
 			</li>
 			<% if (permissions.supplier_add) { %>
 				<li class="nav-item">
-					<a class="nav-link stores_nav cardGreen" href="/stores/suppliers/new"><i class='fas fa-plus'></i></a>
+					<a class="nav-link stores_nav cardGreen" href='javascript:add("suppliers",{"height":572})'>
+						<i class='fas fa-plus'></i>
+					</a>
 				</li>
 			<% } %>
 		</ul>
@@ -20,21 +22,21 @@
 	<% suppliers.forEach(supplier => { %>
 		<div class="col-12 col-sm-6 col-lg-4 col-xl-3">
 			<div class="card m-3 text-left">
-				<div class="card-header">
-					<a class="float-right btn btn-sm btn-primary" href="/stores/suppliers/<%= supplier.supplier_id %>">
-						<i class="fas fa-search"></i>
-					</a>
-					<h3 class="card-title"><%= supplier._name %></h3>
-					<% if (Number(supplier.supplier_id) === Number(_default)) { %>
-						<p class="card-subtitle text-muted">Default</p>
-					<% } %>
-				</div>
-				<div class="card-body">
-					<p>Items: <%= supplier.sizes.length %></p>
-				</div>
+				<a href="/stores/suppliers/<%= supplier.supplier_id %>">
+					<div class="card-header">
+						<h3 class="card-title"><%= supplier._name %></h3>
+						<% if (Number(supplier.supplier_id) === Number(_default)) { %>
+							<p class="card-subtitle text-muted f-10">Default</p>
+						<% } %>
+					</div>
+					<div class="card-body">
+						<p class='f-10'>Items: <%= supplier.sizes.length %></p>
+					</div>
+				</a>
 			</div>
 		</div>
 	<% }) %>
 </div>
 <% include ../../partials/foot/full %>
+<script src='/js/add.js'></script>
 <% include ../../partials/foot/htmlClose %>

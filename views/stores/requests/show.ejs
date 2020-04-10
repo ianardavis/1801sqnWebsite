@@ -21,83 +21,94 @@
 	</nav>
 </section>
 <section class="container">
-	<div class="row">
-		<div class="col-12 col-lg-6 mb-3 bordered">
-			<% if (permissions.request_edit && !request._complete) { %>
-				<form action="/stores/requests/<%= request.request_id %>/close?_method=PUT" method="POST">
-					<button class="float-left btn btn-warning confirm">
-						<i class='fas fa-window-close'></i>
-					</button>
-				</form>
-			<% }; %>
-			<% if (permissions.request_delete) { %>
-				<form action="/stores/requests/<%= request.request_id %>/close?_method=DELETE&user=<%= request.requested_for %>" method="POST">
-					<button class="float-right btn btn-danger confirm">
-						<i class='fas fa-trash-alt'></i>
-					</button>
-				</form>
-			<% }; %>
-			<h4 class='mb-3'>Details</h4>
-			<div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">For</span>
-                </div>
-                <p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
-				<div class="input-group-append">
-					<a class='btn btn-primary' href="/stores/users/<%= request._for.user_id %>">
-						<i class='fas fa-search'></i>
-					</a>
-				</div>
-            </div>
-			<div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">By</span>
-                </div>
-                <p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
-				<div class="input-group-append">
-					<a class='btn btn-primary' href="/stores/users/<%= request._by.user_id %>">
-						<i class='fas fa-search'></i>
-					</a>
-				</div>
-            </div>
-			<div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">Date</span>
-                </div>
-                <p class="form-control"><%= request._date.toDateString() %></p>
-            </div>
-			<div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">Complete</span>
-                </div>
-                <p class="form-control"><% if (request._complete) { %>Yes<% } else { %>No<% } %></p>
-            </div>
-		</div>
-		<% if (permissions.access_notes) { %> 
-			<div class="col-12 col-lg-6 mb-3 bordered">
-				<% if (permissions.note_add) { %>
-					<a class="float-left btn btn-success" href='javascript:addNote("requests","<%= request.request_id %>")'>
-						<i class='fas fa-plus'></i>
-					</a>
+	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
+                Details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
+                Lines (<%= request.lines.length %>)
+            </a>
+        </li>
+        <% if (permissions.access_notes) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
+                    Notes (<%= notes.notes.length %>)
+                </a>
+            </li>
+        <% } %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="container">
+				<% if (permissions.request_edit && !request._complete) { %>
+					<form id='closeForm'>
+						<button class="float-left btn btn-warning confirm">
+							<i class='fas fa-window-close'></i>
+						</button>
+					</form>
 				<% }; %>
-				<% include ../../partials/noteTable %>
-			</div>
-		<% }; %>
-		<div class="col-12 bordered">
-			<h4>Lines</h4>
-			<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
-				<form action="/stores/requests/<%= request.request_id %>/approval?_method=PUT" method="POST">
-					<div class="input-group mb-1">
-						<select class="custom-select" name='action'>
-							<option value="cancel">Decline Selected Lines</option>
-							<option value="order">Order Selected Lines</option>
-							<option value="issue">Issue Selected Lines</option>
-						</select>
-						<div class="input-group-append w-25">
-						  	<button class="btn btn-success w-100 confirm" type="button">Go</button>
-						</div>
+				<% if (permissions.request_delete) { %>
+					<form id='deleteForm'>
+						<button class="float-right btn btn-danger confirm">
+							<i class='fas fa-trash-alt'></i>
+						</button>
+					</form>
+				<% }; %>
+				<h4 class='mb-3'>Details</h4>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-20">
+						<span class="input-group-text w-100">For</span>
 					</div>
-			<% } %>
+					<p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
+					<div class="input-group-append">
+						<a class='btn btn-primary' href="/stores/users/<%= request._for.user_id %>">
+							<i class='fas fa-search'></i>
+						</a>
+					</div>
+				</div>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-20">
+						<span class="input-group-text w-100">By</span>
+					</div>
+					<p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
+					<div class="input-group-append">
+						<a class='btn btn-primary' href="/stores/users/<%= request._by.user_id %>">
+							<i class='fas fa-search'></i>
+						</a>
+					</div>
+				</div>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-20">
+						<span class="input-group-text w-100">Date</span>
+					</div>
+					<p class="form-control"><%= request._date.toDateString() %></p>
+				</div>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-20">
+						<span class="input-group-text w-100">Complete</span>
+					</div>
+					<p class="form-control"><% if (request._complete) { %>Yes<% } else { %>No<% } %></p>
+				</div>
+			</div>
+		</div>
+        <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
+            <div class="container">
+				<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
+					<form id='approveForm'>
+						<div class="input-group mb-1">
+							<select class="custom-select" name='action'>
+								<option value="cancel">Decline Selected Lines</option>
+								<option value="order">Order Selected Lines</option>
+								<option value="issue">Issue Selected Lines</option>
+							</select>
+							<div class="input-group-append w-25">
+								  <button class="btn btn-success w-100 confirm" type="button">Go</button>
+							</div>
+						</div>
+				<% } %>
 				<table class="table table-sm table-hover mx-auto w-100">
 					<thead class="thead-dark">
 						<% if (!request._complete) { %><th class="w-5" ></th><% } %>
@@ -169,16 +180,46 @@
 						<% }); %>
 					</tbody>
 				</table>
-			<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
-				</form>
-			<% } %>
+				<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
+					</form>
+				<% } %>
+			</div>
 		</div>
-	</div>
+		<% if (permissions.access_notes) { %> 
+			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+				<div class="container">
+					<% include ../../partials/noteTable %>
+				</div>
+			</div>
+		<% }; %>
+    </div>
 </section>
 <% include ../../partials/foot/full %>
 <script>
+    window.addEventListener( "load", function () {
+        let delete_form = document.querySelector("#deleteForm");
+        delete_form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(delete_form, 'DELETE', '/stores/requests/<%= request.request_id %>',{reload: true});
+        });
+    });
+    window.addEventListener( "load", function () {
+        let close_form = document.querySelector("#closeForm");
+        close_form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(close_form, 'PUT', '/stores/requests/<%= request.request_id %>/close',{reload: true});
+        });
+    });
+    window.addEventListener( "load", function () {
+        let close_form = document.querySelector("#closeForm");
+        close_form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(close_form, 'PUT', '/stores/requests/<%= request.request_id %>/approval',{reload: true});
+        });
+    });
     function filterSelects() {
         filter(['system'],"/stores/requests/<%= request.request_id %>");
     };
+    showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>

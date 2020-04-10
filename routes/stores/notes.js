@@ -1,25 +1,12 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //New
+    //NEW
     app.get('/stores/notes/new', isLoggedIn, allowed('note_add'), (req, res) => {
         res.render('stores/notes/new', {
             table: req.query.table,
             id:    req.query.id
         });
     });
-    //New logic
-    app.post('/stores/notes', isLoggedIn, allowed('note_add', false), (req, res) => {
-        if (!req.allowed) {
-            res.send({result: false, error: 'Permission denied'})
-        } else {
-            req.body.note.user_id = req.user.user_id;
-            req.body.note._date = Date.now();
-            fn.create(m.notes, req.body.note)
-            .then(note => res.send({result: true}))
-            .catch(err => res.send({result: false, error: err.message}));
-        };
-    });
-
-    //Edit
+    //EDIT
     app.get('/stores/notes/:id/edit', isLoggedIn, allowed('note_add'), (req, res) => {
         fn.getOne(
             m.notes,
@@ -28,44 +15,35 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(note => res.render('stores/notes/edit', {note: note}))
         .catch(err => fn.error(err, 'back', req, res));
     });
-    // Put
-    app.put('/stores/notes/:id', isLoggedIn, allowed('note_edit'), (req, res) => {
-        if (!req.allowed) {
-            res.send({result: false, error: 'Permission denied'})
-        } else {
-            req.body.note.user_id = req.user.user_id;
-            req.body.note._date = Date.now();
-            fn.update(
-                m.notes,
-                req.body.note,
-                {note_id: req.params.id}
-            )
-            .then(note => res.send({result: true}))
-            .catch(err => res.send({result: false, error: err.message}));
-        };
-    });
-    
-    //Show
-    app.get('/stores/notes/:id', isLoggedIn, allowed('access_notes'), (req, res) => {
-        fn.getOne(
-            m.notes,
-            {note_id: req.params.id},
-            {include: [inc.users()]}
-        )
-        .then(note => res.render('stores/notes/show', {note: note}))
-        .catch(err => fn.error(err, 'back', req, res));
+
+    //POST
+    app.post('/stores/notes', isLoggedIn, allowed('note_add', {send: true}), (req, res) => {
+        req.body.note.user_id = req.user.user_id;
+        fn.create(m.notes, req.body.note)
+        .then(note => res.send({result: true, message: 'Note added'}))
+        .catch(err => res.send({result: false, error: err.message}));
     });
 
-    //Delete
-    app.delete('/stores/notes/:id', isLoggedIn, allowed('note_delete'), (req, res) => {
+    //PUT
+    app.put('/stores/notes/:id', isLoggedIn, allowed('note_edit', {send: true}), (req, res) => {
+        req.body.note.user_id = req.user.user_id;
+        req.body.note._date = Date.now();
+        fn.update(
+            m.notes,
+            req.body.note,
+            {note_id: req.params.id}
+        )
+        .then(note => res.send({result: true, message: 'Note saved'}))
+        .catch(err => res.send({result: false, error: err.message}));
+    });
+    
+    //DELETE
+    app.delete('/stores/notes/:id', isLoggedIn, allowed('note_delete', {send: true}), (req, res) => {
         fn.delete(
             'notes',
             {note_id: req.params.id}
         )
-        .then(result => {
-            req.flash('success', 'Note deleted')
-            res.redirect('back')
-        })
-        .catch(err =>fn.error(err, 'back', req, res));
+        .then(result => res.send({result: true, message: 'Note deleted'}))
+        .catch(err =>fn.send_error(err.message, res));
     });
 };

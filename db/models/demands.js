@@ -18,9 +18,16 @@ module.exports = function(sequelize, DataTypes) {
     '_date': {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     '_complete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "null"
+    },
+    '_closed': {
       type: DataTypes.INTEGER(4),
       allowNull: false,
       defaultValue: '0',

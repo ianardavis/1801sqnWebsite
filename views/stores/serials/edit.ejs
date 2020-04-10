@@ -1,61 +1,28 @@
-<% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores">
-					Stores
-				</a>
-            </li>
-            <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/items">
-					Items
-				</a>
-            </li>
-            <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/items/<%= serial.size.item_id %>">
-					<%= serial.size.item._description %>
-				</a>
-            </li>
-            <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/sizes/<%= serial.size.size_id %>">
-					Size: <%= serial.size._size %>
-				</a>
-            </li>
-            <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/serials/<%= serial.serial_id %>">
-					Serial: <%= serial._serial %>
-				</a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
 <section class="container">
-	<div class="row">
-		<div class="col-12 col-md-3 mx-auto bordered">
-			<h4>Serial</h4>
-			<form action="/stores/serials/<%= serial.serial_id %>?_method=PUT" method="POST">
-				<input type="hidden" name="serial[serial_id]" value="<%= serial.serial_id %>">
-				<input class="form-control" type="text" name="serial[_serial]" maxlength="20" value="<%= serial._serial %>" required>
-				<input class="btn btn-success w-100 confirm" type="submit" value='Save'>
-			</form>
-		</div>
-		<% if (permissions.access_notes) { %>
-			<div class="col-12 col-md-9 mx-auto bordered">
-				<% if (permissions.note_add) { %>
-					<a class="float-left btn btn-success" href='javascript:addNote("serials","<%= serial.serial_id %>")'>
-						<i class='fas fa-plus'></i>
-					</a>
-				<% } %>
-				<% include ../../partials/noteTable %>
+	<form id='serialForm'>
+		<input type="hidden" name="serial[serial_id]" value="<%= serial.serial_id %>">
+		<div class="input-group mb-1">
+			<div class="input-group-prepend w-20">
+				<span class="input-group-text w-100">Serial #</span>
 			</div>
-		<% } %>
-	</div>
+			<input class="form-control" type="text" name="serial[_serial]" maxlength="20" value="<%= serial._serial %>" required>
+		</div>
+		<input class="btn btn-success w-100 confirm" type="submit" value='Save'>
+		<a class='float-left' href="javascript:close()">Cancel</a>
+	</form>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
 <script>
-    function filterSelects() {
-        filter(['system'],"/stores/serials/<%= serial.serial_id %>/edit");
-    };
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#serialForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'PUT', '/stores/serials/<%= serial.serial_id %>');
+        });
+    });
 </script>
 <% include ../../partials/foot/htmlClose %>

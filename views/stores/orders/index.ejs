@@ -56,31 +56,31 @@
 					<th><i class='fas fa-search'></i></th>
 				</thead>
 				<tbody id='orderTable'>
-					<% if (orders) { %>
-						<% orders.forEach(order => { %>
-							<tr>
-								<td>
-									<% if (order.ordered_for !== -1) { %>
-										<%= order._for.rank._rank %> <%= order._for._name %>, <%= order._for._ini %>
-									<% } else { %>
-										Backing Stock
-									<% } %>
-								</td>
-								<td data-sort='<%= order._date.getTime() %>'>
-									<%= order._date.toDateString() %>
-								</td>
-								<td>
-									<%= order.lines.length %>
-								</td>
-								<td>
-									<input class='form-control form-control-sm' type='checkbox' disabled <% if (order._complete) { %> checked <% } %>>
-								</td>
-								<td>
-									<a class='btn btn-sm btn-primary' href='/stores/orders/<%= order.order_id %>'><i class='fas fa-search'></i></a>
-								</td>
-							</tr>
-						<% }) %>
-					<% } %>
+					<% if (orders) orders.forEach(order => { %>
+						<tr>
+							<td>
+								<% if (order.ordered_for !== -1) { %>
+									<%= order._for.rank._rank %> <%= order._for._name %>, <%= order._for._ini %>
+								<% } else { %>
+									Backing Stock
+								<% } %>
+							</td>
+							<td data-sort='<%= order._date.getTime() %>'>
+								<%= order._date.toDateString() %>
+							</td>
+							<td>
+								<%= order.lines.length %>
+							</td>
+							<td>
+								<% if (order._complete) { %><i class='fas fa-check'></i><% } %>
+							</td>
+							<td>
+								<a class='btn btn-sm btn-primary' href='/stores/orders/<%= order.order_id %>'>
+									<i class='fas fa-search'></i>
+								</a>
+							</td>
+						</tr>
+					<% }) %>
 				</tbody>
 			</table>
 		</div>

@@ -1,79 +1,61 @@
-<% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">
-                    Stores
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users">
-                    Users
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users/<%= f_user.user_id %>">
-                    <%= f_user.rank._rank %> <%= f_user._name %>, <%= f_user._ini %>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/permissions/<%= f_user.user_id %>/edit">
-                    Edit Permissions
-                </a>
-            </li>
-        </ul>
-    </nav>
-</section>
-<section class="container row">
-    <div class="bordered col-12 col-lg-9 col-xl-7 mx-auto">
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Bader #</span>
-            </div>
-            <p class="form-control"><%= f_user._bader %></p>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
+<section class="container">
+    <div class="input-group mb-1">
+        <div class="input-group-prepend w-30">
+            <span class="input-group-text w-100">Bader #</span>
         </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Rank</span>
-            </div>
-            <p class="form-control"><%= f_user.rank._rank %></p>
+        <p class="form-control"><%= f_user._bader %></p>
+    </div>
+    <div class="input-group mb-1">
+        <div class="input-group-prepend w-30">
+            <span class="input-group-text w-100">Rank</span>
         </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Initials</span>
-            </div>
-            <p class="form-control"><%= f_user._ini %></p>
+        <p class="form-control"><%= f_user.rank._rank %></p>
+    </div>
+    <div class="input-group mb-1">
+        <div class="input-group-prepend w-30">
+            <span class="input-group-text w-100">Initials</span>
         </div>
-        <button class="btn btn-success btn-lg col-12" form="permissionForm" type="submit" id="_submit">Save</button>
-        <a class='float-left' href="/stores/users/<%= f_user.user_id %>">Cancel</a>
-        <div class="form-group">
-            <div>
-                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_disabled()">Disabled</button>
-                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_user()">User - Basic access and requests</button>
-                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_issuer()">Issuer - As User with issuing and returns</button>
-                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_storeman()">Storeman - As Issuer with stores related permissions</button>
-                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_admin()">Admin - As Storeman with settings and suppliers</button>
-                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_super()">Superuser - All permissions</button>
-                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_canteen()">Canteen</button>
-                <button class="btn btn-sm btn-primary w-100 mb-1" onclick="p_canteen_supervisor()">Canteen Supervisor</button>
-                <form id="permissionForm" action="/stores/permissions/<%= f_user.user_id %>?_method=PUT" method="POST" onsubmit="return confirm('Edit permissions?');">
-                    <ul id="treeUL" class="list-group">
-                        <li id="account_enabled_li" class="list-group-item">
-                            <div class="row cardDarkText">
-                                <span class="col-2 caret my-auto"></span>
-                                <label class="col-6 text-left col-form-label">Account Enabled</label>
-                                <input class="col-4 form-control form-control-sm" id="account_enabled" type="checkbox" name="permissions[account_enabled]" onchange=checkPermission(this) value="1" <% if (f_user.permission['account_enabled'] === 1) { %> checked <% } %>>
-                            </div>
-                        </li>
-                    </ul>
-                </form>
-            </div>
+        <p class="form-control"><%= f_user._ini %></p>
+    </div>
+    <button class="btn btn-success btn-lg col-12" form="permissionForm" type="submit" id="_submit">Save</button>
+    <a class='float-left' href="javascript:close()">Cancel</a>
+    <div class="form-group">
+        <div>
+            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_disabled()>Disabled</button>
+            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_user()>User - Basic access and requests</button>
+            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_issuer()>Issuer - As User with issuing and returns</button>
+            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_storeman()>Storeman - As Issuer with stores related permissions</button>
+            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_admin()>Admin - As Storeman with settings and suppliers</button>
+            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_super()>Superuser - All permissions</button>
+            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen()>Canteen</button>
+            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen_supervisor()>Canteen Supervisor</button>
+            <form id="permissionForm">
+                <ul id="treeUL" class="list-group">
+                    <li id="account_enabled_li" class="list-group-item">
+                        <div class="row cardDarkText">
+                            <span class="col-2 caret my-auto"></span>
+                            <label class="col-6 text-left col-form-label">Account Enabled</label>
+                            <input class="col-4 form-control form-control-sm" id="account_enabled" type="checkbox" name="permissions[account_enabled]" onchange=checkPermission(this) value="1" <% if (f_user.permission['account_enabled'] === 1) { %> checked <% } %>>
+                        </div>
+                    </li>
+                </ul>
+            </form>
         </div>
     </div>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
 <script>
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#permissionForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'PUT', '/stores/permissions/<%= f_user.user_id %>');
+        });
+    });
     insertPermission('account_enabled');
 
     var toggler = document.getElementsByClassName("caret"),

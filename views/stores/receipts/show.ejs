@@ -15,54 +15,76 @@
 	</nav>
 </section>
 <section class="container">
-	<div class="row">
-		<div class="col-12 col-lg-4 bordered mb-2">
-			<% if (permissions.receipt_delete) { %>
-					<form action="/stores/receipts/<%= receipt.receipt_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete receipt?');">
-						<button class="float-left btn btn-danger mb-1	"><i class='fas fa-trash-alt'></i></button>
+	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
+                Details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
+                Lines (<%= receipt.lines.length %>)
+            </a>
+        </li>
+        <% if (permissions.access_notes) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
+                    Notes (<%= notes.notes.length %>)
+                </a>
+            </li>
+        <% } %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="container">
+				<% if (permissions.receipt_delete) { %>
+					<form id='deleteForm'>
+						<button class="float-left btn btn-danger mb-1 confirm">
+							<i class='fas fa-trash-alt'></i>
+						</button>
 					</form>
-			<% } %>
-			<h4>Receipt Details</h4>
-			<div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Supplier</span>
-                </div>
-                <p class="form-control"><%= receipt.supplier._name %></p>
-				<div class="input-group-append">
-					<a class='btn btn-primary' href='/stores/suppliers/<%= receipt.supplier_id %>'>
-						<i class='fas fa-search'></i>
-					</a>
+				<% } %>
+				<div class="input-group input-group-sm mb-1">
+					<div class="input-group-prepend w-30">
+						<span class="input-group-text w-100">Supplier</span>
+					</div>
+					<p class="form-control"><%= receipt.supplier._name %></p>
+					<div class="input-group-append">
+						<a class='btn btn-primary' href='/stores/suppliers/<%= receipt.supplier_id %>'>
+							<i class='fas fa-search'></i>
+						</a>
+					</div>
 				</div>
-            </div>
-			<div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Received By</span>
-                </div>
-                <p class="form-control"><%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %></p>
-				<div class="input-group-append">
-					<a class='btn btn-primary' href='/stores/users/<%= receipt.user_id %>'>
-						<i class='fas fa-search'></i>
-					</a>
+				<div class="input-group input-group-sm mb-1">
+					<div class="input-group-prepend w-30">
+						<span class="input-group-text w-100">Received By</span>
+					</div>
+					<p class="form-control"><%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %></p>
+					<div class="input-group-append">
+						<a class='btn btn-primary' href='/stores/users/<%= receipt.user_id %>'>
+							<i class='fas fa-search'></i>
+						</a>
+					</div>
 				</div>
-            </div>
-			<div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Received</span>
-                </div>
-                <p class="form-control"><%= receipt._date.toDateString() %></p>
-            </div>
+				<div class="input-group input-group-sm mb-1">
+					<div class="input-group-prepend w-30">
+						<span class="input-group-text w-100">Received</span>
+					</div>
+					<p class="form-control"><%= receipt._date.toDateString() %></p>
+				</div>
+			</div>
 		</div>
-		<div class="col-12 col-lg-8 bordered mb-2">
-			<table id="receiptTable" class="table table-sm table-hover mx-auto w-100">
-				<thead class="thead-dark">
-					<th class="w-15" onclick="sortTable(0, 'receiptTable')">Location</th>
-					<th class="w-30" onclick="sortTable(1, 'receiptTable')">Item</th>
-					<th class="w-30" onclick="sortTable(2, 'receiptTable')">Size</th>
-					<th class="w-10" onclick="sortTable(3, 'receiptTable')">Quantity</th>
-				</thead>
-				<tbody>
-					<% if (receipt.lines) { %>
-						<% receipt.lines.forEach(line => { %>
+        <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
+            <div class="container">
+				<table id="receiptTable" class="table table-sm table-hover mx-auto w-100">
+					<thead class="thead-dark">
+						<th class="w-15" onclick="sortTable(0, 'receiptTable')">Location</th>
+						<th class="w-30" onclick="sortTable(1, 'receiptTable')">Item</th>
+						<th class="w-30" onclick="sortTable(2, 'receiptTable')">Size</th>
+						<th class="w-10" onclick="sortTable(3, 'receiptTable')">Quantity</th>
+					</thead>
+					<tbody>
+						<% if (receipt.lines) receipt.lines.forEach(line => { %>
 							<tr>
 								<td>
 									<a class='float-right btn btn-sm btn-primary' href="/stores/stock<% if (line.stock) { %>/<%= line.stock_id %><% } %>/edit">
@@ -93,26 +115,31 @@
 								</td>
 							</tr>
 						<% }) %>
-					<% } %>
-				</tbody>
-			</table>
+					</tbody>
+				</table>
+			</div>
 		</div>
-		<% if (permissions.access_notes) { %> 
-			<div class="col-12 mb-3 bordered">
-				<% if (permissions.note_add) { %>
-					<a class="float-left btn btn-success mb-1" href='javascript:addNote("receipts","<%= receipt.receipt_id %>")'>
-						<i class='fas fa-plus'></i>
-					</a>
-				<% } %>
-				<% include ../../partials/noteTable %>
+		<% if (permissions.access_notes) { %>
+			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+				<div class="container">
+					<% include ../../partials/noteTable %>
+				</div>
 			</div>
 		<% } %>
-	</div>
+    </div>
 </section>
 <% include ../../partials/foot/full %>
 <script>
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#deleteForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'DELETE', '/stores/receipts/<%= receipt.receipt_id %>',{reload: true});
+        });
+    });
     function filterSelects() {
         filter(['system'],"/stores/receipts/<%= receipt.receipt_id %>");
     };
+    showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -1,0 +1,58 @@
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
+<section class='container'>
+	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
+                Details
+            </a>
+        </li>
+        <% if (permissions.access_notes) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
+                    Notes (<%= notes.notes.length %>)
+                </a>
+            </li>
+        <% } %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="container">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-20">
+                        <span class="input-group-text w-100">NSN</span>
+                    </div>
+					<p class="form-control"><%= nsn._nsn %></p>
+					<div class="input-group-append">
+						<a class='btn btn-warning' href='javascript:edit("nsns",<%= nsn.nsn_id %>,{height:200})'>
+							<i class='fas fa-pencil-alt'></i>
+						</a>
+					</div>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-20">
+                        <span class="input-group-text w-100">Default?</span>
+                    </div>
+                    <p class="form-control"><% if (Number(nsn.size.nsn_id) === Number(nsn.nsn_id)) { %>Yes<% } else { %>No<% } %></p>
+                </div>
+			</div>
+		</div>
+        <% if (permissions.access_notes) { %>
+			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+				<div class="container">
+					<% include ../../partials/noteTable %>
+				</div>
+			</div>
+        <% } %>
+    </div>
+</section>
+<% include ../../partials/foot/noNav %>
+<script>
+    function filterSelects() {
+        filter(['system'],'/stores/nsns/<%= nsn.nsn_id %>/edit');
+    };
+    showTab('<%= show_tab %>');
+</script>
+<% include ../../partials/foot/htmlClose %>

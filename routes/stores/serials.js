@@ -1,5 +1,5 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    // New Form
+    //NEW
     app.get('/stores/serials/new', isLoggedIn, allowed('serial_add'), (req, res) => {
         fn.getOne(
             m.sizes,
@@ -9,20 +9,26 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(itemsize => res.render('stores/serials/new', {itemsize: itemsize}))
         .catch(err => fn.error(err, '/stores/sizes/' + req.query.size_id, req, res));
     });
-    // New Logic
-    app.post('/stores/serials', isLoggedIn, allowed('serial_add'), (req, res) => {
-        fn.create(
+    //SHOW
+    app.get('/stores/serials/:id', isLoggedIn, allowed('serial_edit'), (req, res) => {
+        fn.getOne(
             m.serials,
-            req.body.serial
+            {serial_id: req.params.id}
         )
         .then(serial => {
-            req.flash('success', 'Serial added')
-            res.redirect('/stores/sizes/' + serial.size_id);
+            fn.getNotes('serials', req.params.id, req)
+            .then(notes => {
+                res.render('stores/serials/show', {
+                    serial:   serial,
+                    notes:    notes,
+                    query:    {system: req.query.system || 2},
+                    show_tab: req.query.tab || 'details'
+                });
+            });
         })
-        .catch(err => fn.error(err, '/stores/sizes/' + req.body.serial.size_id, req, res));
+        .catch(err => fn.error(err, '/', req, res));
     });
-
-    // Edit
+    //EDIT
     app.get('/stores/serials/:id/edit', isLoggedIn, allowed('serial_edit'), (req, res) => {
         fn.getOne(
             m.serials,
@@ -41,29 +47,35 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
-    // Put
-    app.put('/stores/serials/:id', isLoggedIn, allowed('serial_edit'), (req, res) => {
+
+    //POST
+    app.post('/stores/serials', isLoggedIn, allowed('serial_add', {send: true}), (req, res) => {
+        fn.create(
+            m.serials,
+            req.body.serial
+        )
+        .then(serial => res.send({result: true, message: 'Serial added'}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+
+    //PUT
+    app.put('/stores/serials/:id', isLoggedIn, allowed('serial_edit', {send: true}), (req, res) => {
         fn.update(
             m.serials,
             req.body.serial,
             {serial_id: req.params.id}
         )
-        .then(result => {
-            req.flash('success', 'Serial updated');
-            res.redirect('/stores/sizes/' + serial.size_id);
-        })
-        .catch(err => fn.error(err, '/stores/sizes/' + serial.size_id, req, res));
+        .then(result => res.send({result: true, message: 'Serial # saved'}))
+        .catch(err => fn.send_error(err.message, res));
     });
-    // Delete
-    app.delete('/stores/serials/:id', isLoggedIn, allowed('serial_delete'), (req, res) => {
+    
+    //DELETE
+    app.delete('/stores/serials/:id', isLoggedIn, allowed('serial_delete', {send: true}), (req, res) => {
         fn.delete(
             'serials', 
             {serial_id: req.params.id}
         )
-        .then(result => {
-            req.flash('info', 'Serial deleted')
-            res.redirect('back');
-        })
-        .catch(err => fn.error(err, 'back', req, res));
+        .then(result => res.send({result: true, message: 'Serial deleted'}))
+        .catch(err => fn.send_error(err.message, res));
     });
 };

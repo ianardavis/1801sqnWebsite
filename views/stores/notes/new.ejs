@@ -14,33 +14,13 @@
         </div>
     </div>
 </section>
-<%- include('../../partials/foot/full') %>
+<%- include('../../partials/foot/noNav') %>
 <script>
     window.addEventListener( "load", function () {
-        function sendData() {
-            const XHR = new XMLHttpRequest();
-            const FD = new FormData(form);
-            XHR.addEventListener("load", function(event) {
-                let response = JSON.parse(event.target.responseText);
-                if (response.result) {
-                    alert('Note added');
-                    window.opener.location.reload();
-                    close();
-                } else {
-                    alert('Note NOT added: ' + response.error);
-                };
-            });
-            XHR.addEventListener("error", function(event) {
-                alert('Something went wrong.');
-            });
-            XHR.open("POST", "/stores/notes");
-            XHR.send(FD);
-        };
-
         let form = document.querySelector("#noteForm");
         form.addEventListener("submit", function (event) {
             event.preventDefault();
-            sendData();
+            sendData(form, 'POST', "/stores/notes");
         });
     });
 </script>

@@ -15,164 +15,192 @@
 	</nav>
 </section>
 <section class='container'>
-	<div class='row'>
-		<div class='col-12 col-xl-4 mb-3 bordered'>
-			<% if (permissions.order_edit && !order._complete) { %>
-				<form action="/stores/orders/<%= order.order_id %>/close?_method=PUT" method="POST">
-					<button class="float-left btn btn-warning confirm">
-						<i class='fas fa-window-close'></i>
-					</button>
-				</form>
-			<% }; %>
-			<% if (permissions.order_delete) { %>
-				<form action='/stores/orders/<%= order.order_id %>?_method=DELETE&user=<%= order.ordered_for %>' method='POST'>
-					<button class='float-right btn btn-danger confirm'>
-						<i class='fas fa-trash-alt'></i>
-					</button>
-				</form>
-			<% } %>
-			<h4 class='mb-3'>Details</h4>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">For</span>
-                </div>
-                <p class="form-control"><% if (order.ordered_for !== -1) { %><%= order._for.rank._rank %> <%= order._for._name %>, <%= order._for._ini %><% } else { %>Backing Stock<% } %></p>
-				<% if (order.ordered_for !== -1) { %>
-					<div class="input-group-append">
-						<a class='btn btn-primary' href="/stores/users/<%= order.ordered_for %>">
-							<i class='fas fa-search'></i>
-						</a>
-					</div>
+	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
+                Details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
+                Lines (<%= order.lines.length %>)
+            </a>
+        </li>
+        <% if (permissions.access_notes) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
+                    Notes (<%= notes.notes.length %>)
+                </a>
+            </li>
+        <% } %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="container">
+				<% if (permissions.order_edit && !order._complete) { %>
+					<form action="/stores/orders/<%= order.order_id %>/close?_method=PUT" method="POST">
+						<button class="float-left m-1 btn btn-warning confirm">
+							<i class='fas fa-window-close'></i>
+						</button>
+					</form>
+				<% }; %>
+				<% if (permissions.order_delete) { %>
+					<form id='deleteForm'>
+						<button class='float-right m-1 btn btn-danger confirm'>
+							<i class='fas fa-trash-alt'></i>
+						</button>
+					</form>
 				<% } %>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">By</span>
-                </div>
-                <p class="form-control"><%= order._by.rank._rank %> <%= order._by._name %>, <%= order._by._ini %></p>
-				<% if (order.ordered_for !== -1) { %>
-					<div class="input-group-append">
-						<a class='btn btn-primary' href="/stores/users/<%= order.user_id %>">
-							<i class='fas fa-search'></i>
-						</a>
+				<h4 class='mb-3'>Details</h4>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-30">
+						<span class="input-group-text w-100">For</span>
 					</div>
-				<% } %>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Ordered</span>
-                </div>
-                <p class="form-control"><%= order._date.toDateString() %></p>
-			</div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Complete</span>
-                </div>
-                <p class="form-control"><% if (order._complete) { %>Yes<% } else { %>No<% } %></p>
+					<p class="form-control"><% if (order.ordered_for !== -1) { %><%= order._for.rank._rank %> <%= order._for._name %>, <%= order._for._ini %><% } else { %>Backing Stock<% } %></p>
+					<% if (order.ordered_for !== -1) { %>
+						<div class="input-group-append">
+							<a class='btn btn-primary' href="/stores/users/<%= order.ordered_for %>">
+								<i class='fas fa-search'></i>
+							</a>
+						</div>
+					<% } %>
+				</div>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-30">
+						<span class="input-group-text w-100">By</span>
+					</div>
+					<p class="form-control"><%= order._by.rank._rank %> <%= order._by._name %>, <%= order._by._ini %></p>
+					<% if (order.ordered_for !== -1) { %>
+						<div class="input-group-append">
+							<a class='btn btn-primary' href="/stores/users/<%= order.user_id %>">
+								<i class='fas fa-search'></i>
+							</a>
+						</div>
+					<% } %>
+				</div>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-30">
+						<span class="input-group-text w-100">Ordered</span>
+					</div>
+					<p class="form-control"><%= order._date.toDateString() %></p>
+				</div>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-30">
+						<span class="input-group-text w-100">Complete</span>
+					</div>
+					<p class="form-control"><% if (order._complete) { %>Yes<% } else { %>No<% } %></p>
+				</div>
 			</div>
 		</div>
-		<% if (permissions.access_notes) { %> 
-			<div class='col-12 col-xl-8 mb-3 bordered'>
-				<% if (permissions.note_add) { %>
-					<a class='float-left btn btn-success' href='javascript:addNote("orders","<%= order.order_id %>")'>
-						<i class='fas fa-plus'></i>
-					</a>
-				<% } %>
-				<% include ../../partials/noteTable %>
-			</div>
-		<% } %>
-		<div class='col-12 mb-3 bordered container'>
-			<% if (permissions.order_edit && !order._complete) { %>
-				<form action='/stores/orders/<%= order.order_id %>?_method=PUT' method='POST'>
-					<div class="input-group">
-						<select class="custom-select" name='action'>
-							<option value='demand'>Demand Selected Lines</option>
-							<option value='receive'>Receive Selected Lines</option>
-							<option value='issue'>Issue Selected Lines</option>
-							<% if (permissions.order_delete) { %>
-								<option value='cancel'>Cancel Selected Lines</option>
-							<% } %>
-						</select>
-						<div class="input-group-append w-25">
-						  	<button class="btn btn-success w-100 confirm" type="button">Go</button>
-						</div>
-					</div>
-			<% } %>
-				<table class='table table-sm table-hover mx-auto w-100'>
-					<thead class='thead-dark'>
-						<% if (permissions.order_edit && !order._complete) { %>
-						<th class='w-5'></th>
-						<% } %>
-						<th class='w-20' onclick='sortTable(1, "orderTable")'>Item</th>
-						<th class='w-15' onclick='sortTable(2, "orderTable")'>Size</th>
-						<th class='w-5' onclick='sortTable(3, "orderTable")'>Qty</th>
-						<th class='w-10' onclick='sortTable(3, "orderTable")'>Status</th>
-						<th class='w-15' onclick='sortTable(4, "orderTable")'>Demand Date</th>
-						<th class='w-15' onclick='sortTable(5, "orderTable")'>Receipt Date</th>
-						<th class='w-15' onclick='sortTable(6, "orderTable")'>Issue Date</th>
-					</thead>
-					<tbody id='orderTable'>
-						<% if (order.lines) order.lines.forEach(line => { %>
-							<tr>
-								<% if (permissions.order_edit && !order._complete) { %>
-									<td>
-										<input class='form-control form-control-sm' type='checkbox' name='selected[]' value='<%= line.line_id %>'>
-									</td>
+        <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
+            <div class="container">
+				<% if (permissions.order_edit && !order._complete) { %>
+					<form action='/stores/orders/<%= order.order_id %>?_method=PUT' method='POST'>
+						<div class="input-group mb-1">
+							<select class="custom-select" name='action'>
+								<option value='demand'>Demand Selected Lines</option>
+								<option value='receive'>Receive Selected Lines</option>
+								<option value='issue'>Issue Selected Lines</option>
+								<% if (permissions.order_delete) { %>
+									<option value='cancel'>Cancel Selected Lines</option>
 								<% } %>
-								<td>
-									<a class='float-right btn btn-sm btn-primary' href='/stores/items/<%= line.size.item_id %>'><i class='fas fa-search'></i></a>
-									<%= line.size.item._description %>
-								</td>
-								<td>
-									<a class='float-right btn btn-sm btn-primary' href='/stores/sizes/<%= line.size_id %>'><i class='fas fa-search'></i></a>
-									<%= line.size._size %>
-								</td>
-								<td>
-									<%= line._qty %>
-								</td>
-								<td>
-									<%= line._status %>
-								</td>
-								<td>
-									<% if (line.demand_line) { %>
-										<a class='float-right btn btn-sm btn-primary' href='/stores/demands/<%= line.demand_line.demand_id %>'>
-											<i class='fas fa-search'></i>
-										</a>
-										<%= line.demand_line.demand._date.toDateString() %>
-									<% }; %>
-								</td>
-								<td>
-									<% if (line.receipt_line) { %>
-										<a class='float-right btn btn-sm btn-primary' href='/stores/receipts/<%= line.receipt_line.receipt_id %>'>
-											<i class='fas fa-search'></i>
-										</a>
-										<%= line.receipt_line.receipt._date.toDateString() %>
-									<% }; %>
-								</td>
-								<td>
-									<% if (Number(order.ordered_for) === -1) { %>
-										N/A
-									<% } else { %>
-										<% if (line.issue_line) { %>
-											<a class='float-right btn btn-sm btn-primary' href='/stores/issues/<%= line.issue_line.issue_id %>'>
+							</select>
+							<div class="input-group-append w-25">
+								  <button class="btn btn-success w-100 confirm" type="button">Go</button>
+							</div>
+						</div>
+				<% } %>
+					<table class='table table-sm table-hover mx-auto w-100'>
+						<thead class='thead-dark'>
+							<% if (permissions.order_edit && !order._complete) { %>
+							<th class='w-5'></th>
+							<% } %>
+							<th class='w-20' onclick='sortTable(1, "orderTable")'>Item</th>
+							<th class='w-15' onclick='sortTable(2, "orderTable")'>Size</th>
+							<th class='w-5' onclick='sortTable(3, "orderTable")'>Qty</th>
+							<th class='w-10' onclick='sortTable(3, "orderTable")'>Status</th>
+							<th class='w-15' onclick='sortTable(4, "orderTable")'>Demand Date</th>
+							<th class='w-15' onclick='sortTable(5, "orderTable")'>Receipt Date</th>
+							<th class='w-15' onclick='sortTable(6, "orderTable")'>Issue Date</th>
+						</thead>
+						<tbody id='orderTable'>
+							<% if (order.lines) order.lines.forEach(line => { %>
+								<tr>
+									<% if (permissions.order_edit && !order._complete) { %>
+										<td>
+											<input class='form-control form-control-sm' type='checkbox' name='selected[]' value='<%= line.line_id %>'>
+										</td>
+									<% } %>
+									<td>
+										<a class='float-right btn btn-sm btn-primary' href='/stores/items/<%= line.size.item_id %>'><i class='fas fa-search'></i></a>
+										<%= line.size.item._description %>
+									</td>
+									<td>
+										<a class='float-right btn btn-sm btn-primary' href='/stores/sizes/<%= line.size_id %>'><i class='fas fa-search'></i></a>
+										<%= line.size._size %>
+									</td>
+									<td>
+										<%= line._qty %>
+									</td>
+									<td>
+										<%= line._status %>
+									</td>
+									<td>
+										<% if (line.demand_line) { %>
+											<a class='float-right btn btn-sm btn-primary' href='/stores/demands/<%= line.demand_line.demand_id %>'>
 												<i class='fas fa-search'></i>
 											</a>
-											<%= line.issue_line.issue._date.toDateString() %>
+											<%= line.demand_line.demand._date.toDateString() %>
 										<% }; %>
-									<% }; %>
-								</td>
-							</tr>
-						<% }); %>
-					</tbody>
-				</table>
-			<% if (permissions.order_edit && !order._complete) { %>
-			</form>
-			<% } %>
+									</td>
+									<td>
+										<% if (line.receipt_line) { %>
+											<a class='float-right btn btn-sm btn-primary' href='/stores/receipts/<%= line.receipt_line.receipt_id %>'>
+												<i class='fas fa-search'></i>
+											</a>
+											<%= line.receipt_line.receipt._date.toDateString() %>
+										<% }; %>
+									</td>
+									<td>
+										<% if (Number(order.ordered_for) === -1) { %>
+											N/A
+										<% } else { %>
+											<% if (line.issue_line) { %>
+												<a class='float-right btn btn-sm btn-primary' href='/stores/issues/<%= line.issue_line.issue_id %>'>
+													<i class='fas fa-search'></i>
+												</a>
+												<%= line.issue_line.issue._date.toDateString() %>
+											<% }; %>
+										<% }; %>
+									</td>
+								</tr>
+							<% }); %>
+						</tbody>
+					</table>
+				<% if (permissions.order_edit && !order._complete) { %>
+				</form>
+				<% } %>
+			</div>
 		</div>
-	</div>
+        <% if (permissions.access_notes) { %>
+			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+				<div class="container">
+					<% include ../../partials/noteTable %>
+				</div>
+			</div>
+        <% } %>
+    </div>
 </section>
 <% include ../../partials/foot/full %>
 <script>
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#deleteForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'DELETE', '/stores/orders/<%= f_user.user_id %>',{reload: true});
+        });
+    });
     function filterSelects() {filter(['system'], '/stores/orders/<%= order.order_id %>')};
+    showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>

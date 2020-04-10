@@ -122,6 +122,10 @@ module.exports = (fn, m, inc) => {
         req.flash('danger', err.message);
         res.redirect(redirect);
     };
+    fn.send_error = (err, res) => {
+        console.log(err);
+        res.send({result: false, error: err});
+    };
     fn.counter = () => {
         let count = 0;
         return () => {
@@ -139,7 +143,7 @@ module.exports = (fn, m, inc) => {
         return year + month + day + ' ' + hour + minute + second;
     };
 
-    fn.addStock = (stock_id, qty, table = 'stock') => new Promise((resolve, reject) => {
+    fn.add_qty = (stock_id, qty, table = 'stock') => new Promise((resolve, reject) => {
         m[table].findByPk(stock_id)
         .then(stock => stock.increment('_qty', {by: qty}))
         .then(stock => resolve(Number(stock._qty) + Number(qty)))
@@ -157,8 +161,8 @@ module.exports = (fn, m, inc) => {
             system = Number(req.query.system) || 2;
         if (system === 2) whereObj._system = false
         else if (system === 3)  whereObj._system = true;
-        fn.getAllWhere(m.notes, whereObj, {nullOk: true})
-        .then(notes => resolve(notes))
+        fn.getAllWhere(m.notes, whereObj, {include: [inc.users()], nullOk: true})
+        .then(notes => resolve({table: table, id: id, notes:notes}))
         .catch(err => {
             req.flash('danger', 'Error searching notes');
             console.log(err);

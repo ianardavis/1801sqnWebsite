@@ -7,8 +7,8 @@ function options() {
     ]
 };
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    // Index
-    app.get('/stores/users', isLoggedIn, allowed('access_users', false), (req, res) => {
+    //INDEX
+    app.get('/stores/users', isLoggedIn, allowed('access_users', {allow: true}), (req, res) => {
         if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id);
         else {
             let query = Number(req.query.status) || 1;
@@ -33,130 +33,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             });
         };
     });
-
-    // New Form
+    //NEW
     app.get('/stores/users/new', isLoggedIn, allowed('user_add'), (req, res) => {
         fn.getOptions(options(), req)
         .then(classes => res.render('stores/users/new', {classes: classes}))
     });
-    // New Logic
-    app.post('/stores/users', isLoggedIn, allowed('user_add'), (req, res) => {
-        let salt = bCrypt.genSaltSync(10);
-        req.body.user._salt = salt;
-        req.body.user._password = bCrypt.hashSync(req.body._password, salt);
-        req.body.user._reset = 0
-        fn.create(
-            m.users,
-            req.body.user
-        )
-        .then(user => {
-            fn.create(
-                m.permissions,
-                {user_id: user.user_id}
-            )
-            .then(permission => res.redirect('/stores/users/' + user.user_id))
-            .catch(err => fn.error(err, '/stores/users', req, res))
-        })
-        .catch(err => fn.error(err, '/stores/users', req, res));
-    });
-
-    // Edit password
-    app.get('/stores/password', isLoggedIn, allowed('user_password', false), (req, res) => {
-        if (req.allowed || req.user.user_id === Number(req.query.user)) {
-            fn.getOne(
-                m.users,
-                {user_id: req.query.user},
-                {include: [m.ranks]}
-            )
-            .then(user => res.render('stores/users/password', {user: user}))
-            .catch(err => fn.error(err, '/stores/users/' + req.query.user, req, res));
-        } else {
-            req.flash('danger', 'Permission Denied!');
-            res.redirect('back');
-        };
-    });
-
-    // Edit password Put
-    app.put('/stores/password/:id', isLoggedIn, allowed('user_password', false), (req, res) => {
-        if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            req.body.user._salt = bCrypt.genSaltSync(10)
-            req.body.user._password = bCrypt.hashSync(req.body._password, req.body.user._salt);
-            fn.update(
-                m.users,
-                req.body.user,
-                {user_id: req.params.id}
-            )
-            .then(result => res.redirect('/stores/users/' + req.params.id))
-            .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
-        } else {
-            req.flash('danger', 'Permission Denied!');
-            res.redirect('back');
-        };
-    });
-
-    // Edit
-    app.get('/stores/users/:id/edit', isLoggedIn, allowed('user_edit'), (req, res) => {
-        fn.getOptions(options(), req)
-        .then(classes => {
-            fn.getOne(
-                m.users,
-                {user_id: req.params.id},
-                {include: [m.ranks]}
-            )
-            .then(user => {
-                res.render('stores/users/edit', {
-                    user:    user,
-                    classes: classes
-                });
-            })
-            .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
-        });
-    });
-
-    // Put
-    app.put('/stores/users/:id', isLoggedIn, allowed('user_edit'), (req, res) => {
-        if (!req.body.user)        req.body.user = {};
-        if (!req.body.user._reset) req.body.user._reset = 0;
-        fn.update(
-            m.users,
-            req.body.user,
-            {user_id: req.params.id}
-        )
-        .then(result => {
-            req.flash('success', 'User updated');
-            res.redirect('/stores/users/' + req.params.id);
-        })
-        .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
-    });
-
-    // Delete
-    app.delete('/stores/users/:id', isLoggedIn, allowed('user_delete'), (req, res) => {
-        if (Number(req.user.user_id) !== Number(req.params.id)) {
-            fn.delete(
-                'users',
-                {user_id: req.params.id}
-            )
-            .then(result => {
-                if (result) req.flash('success', 'User deleted');
-                fn.delete(
-                    'permissions',
-                    {user_id: req.params.id}
-                )
-                .then(result => {
-                    if (result) req.flash('success', 'Permission deleted');
-                    res.redirect('/stores/users');
-                })
-                .catch(err => fn.error(err, '/stores/users', req, res));
-            })
-            .catch(err => fn.error(err, '/stores/users', req, res));
-        } else {
-            req.flash('danger', 'You can not delete your own account');
-            res.redirect('/stores/users/' + req.params.id);
-        };        
-    });
-
-    // Show
-    app.get('/stores/users/:id', isLoggedIn, allowed('access_users', false), (req, res) => {
+    //SHOW
+    app.get('/stores/users/:id', isLoggedIn, allowed('access_users', {allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             let where = {}, query = {};
             query.issued =   Number(req.query.issued)   || 2;
@@ -233,7 +116,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                                     orders:   orders,
                                     issues:   issues,
                                     notes:    notes,
-                                    query:    query
+                                    query:    query,
+                                    show_tab: req.query.tab || 'details'
                                 });
                             });
                         })
@@ -248,5 +132,103 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('danger', 'Permission denied!')
             res.redirect('/stores/users');
         };
+    });
+    //EDIT PASSWORD
+    app.get('/stores/users/:id/password', isLoggedIn, allowed('user_password', {allow: true}), (req, res) => {
+        if (req.allowed || req.user.user_id === Number(req.params.id)) {
+            fn.getOne(
+                m.users,
+                {user_id: req.params.id},
+                {include: [m.ranks]}
+            )
+            .then(user => res.render('stores/users/password', {user: user}))
+            .catch(err => fn.error(err, '/', req, res));
+        } else fn.error(new Error('Permission denied'), '/', req, res);
+    });
+    //EDIT
+    app.get('/stores/users/:id/edit', isLoggedIn, allowed('user_edit'), (req, res) => {
+        fn.getOptions(options(), req)
+        .then(classes => {
+            fn.getOne(
+                m.users,
+                {user_id: req.params.id},
+                {include: [m.ranks]}
+            )
+            .then(user => {
+                res.render('stores/users/edit', {
+                    user:    user,
+                    classes: classes
+                });
+            })
+            .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
+        });
+    });
+
+    //POST
+    app.post('/stores/users', isLoggedIn, allowed('user_add', {send: true}), (req, res) => {
+        let salt = bCrypt.genSaltSync(10);
+        req.body.user._salt = salt;
+        req.body.user._password = bCrypt.hashSync(req.body._password, salt);
+        req.body.user._reset = 0
+        fn.create(
+            m.users,
+            req.body.user
+        )
+        .then(user => {
+            fn.create(
+                m.permissions,
+                {user_id: user.user_id}
+            )
+            .then(permission => res.send({result: true, message: 'User added'}))
+            .catch(err => fn.send_error(err.message, res))
+        })
+        .catch(err => fn.send_error(err.message, res));
+    });
+
+    //PUT PASSWORD
+    app.put('/stores/password/:id', isLoggedIn, allowed('user_password', {allow: true, send: true}), (req, res) => {
+        if (req.allowed || req.user.user_id === Number(req.params.id)) {
+            req.body.user._salt = bCrypt.genSaltSync(10)
+            req.body.user._password = bCrypt.hashSync(req.body._password, req.body.user._salt);
+            fn.update(
+                m.users,
+                req.body.user,
+                {user_id: req.params.id}
+            )
+            .then(result => res.send({result: true, message: 'Password changed'}))
+            .catch(err => fn.send_error(err.message, res));
+        } else fn.send_error('Permission denied', res)
+    });
+    //PUT
+    app.put('/stores/users/:id', isLoggedIn, allowed('user_edit', {send: true}), (req, res) => {
+        if (!req.body.user)        req.body.user = {};
+        if (!req.body.user._reset) req.body.user._reset = 0;
+        fn.update(
+            m.users,
+            req.body.user,
+            {user_id: req.params.id}
+        )
+        .then(result => res.send({result: true, message: 'User saved'}))
+        .catch(err => fn.send_error(err,message, res));
+    });
+
+    //DELETE
+    app.delete('/stores/users/:id', isLoggedIn, allowed('user_delete', {send: true}), (req, res) => {
+        if (Number(req.user.user_id) !== Number(req.params.id)) {
+            fn.delete(
+                'users',
+                {user_id: req.params.id}
+            )
+            .then(result => {
+                if (result) req.flash('success', 'User deleted');
+                fn.delete(
+                    'permissions',
+                    {user_id: req.params.id}
+                )
+                .then(result => res.send({result: true, message: 'User/Permissions deleted'}))
+                .catch(err => fn.send_error(err.message, res));
+            })
+            .catch(err => fn.send_error(err.message, res));
+        } else res.send_error('You can not delete your own account', res);       
     });
 };

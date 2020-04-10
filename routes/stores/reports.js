@@ -1,5 +1,6 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
+    //INDEX
     app.get('/stores/reports', isLoggedIn, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
 
     app.get('/stores/reports/:id', isLoggedIn, allowed('access_reports'), (req, res) => {

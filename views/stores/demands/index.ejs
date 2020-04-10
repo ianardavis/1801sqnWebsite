@@ -13,8 +13,8 @@
 </section>
 <section class='container mb-2'>
 	<div class="input-group mb-2">
-		<div class="input-group-prepend">
-			<label class="input-group-text" for="supplier_id">Suppliers</label>
+		<div class="input-group-prepend w-20">
+			<label class="input-group-text w-100" for="supplier_id">Suppliers</label>
 		</div>
 		<select class="custom-select" id='supplier_id' onchange=filterSelects()>
 			<option value='0' <% if (query.supplier_id === 0) { %>selected<% } %>>All</option>
@@ -26,8 +26,8 @@
 		</select>
 	</div>
 	<div class="input-group mb-2">
-		<div class="input-group-prepend">
-			<label class="input-group-text" for="complete">Completed Demands</label>
+		<div class="input-group-prepend w-20">
+			<label class="input-group-text w-100" for="complete">Completed Demands</label>
 		</div>
 		<select class="custom-select" id='complete' onchange=filterSelects()>
 			<option value='1' <% if (query.complete === 1) { %> selected <% } %>>Include</option>
@@ -40,17 +40,16 @@
 			<% demands.forEach(demand => { %>
 				<div class='col-12 col-sm-6 col-lg-4 col-xl-3'>
 					<div class='card cardDarkText m-3 text-left <% if (demand._complete) { %> cardGreen <% } else { %> cardRed <% } %>'>
-						<div class='card-header'>
-							<a class='float-right btn btn-sm btn-primary' href='/stores/demands/<%= demand.demand_id %>'>
-								<i class='fas fa-search'></i>
-							</a>
-							<h3><%= demand.supplier._name %></h3>
-							<p class='card-subtitle text-muted'><%= demand._date.toDateString() %></p>
-						</div>
-						<div class='card-body'>
-							<p>Raised By: <%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %></p>
-							<p>Lines: <%= demand.lines.length %></p>
-						</div>
+						<a href='/stores/demands/<%= demand.demand_id %>'>
+							<div class='card-header'>
+								<h3><%= demand.supplier._name %></h3>
+								<p class='card-subtitle f-10 text-muted'><%= demand._date.toDateString() %></p>
+							</div>
+							<div class='card-body f-10'>
+								<p>Raised By: <%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %></p>
+								<p>Lines: <%= demand.lines.length %></p>
+							</div>
+						</a>
 					</div>
 				</div>
 			<% }) %>

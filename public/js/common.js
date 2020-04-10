@@ -15,22 +15,6 @@ function download_file(file) {
     } else downloadWindow.focus();
 };
 
-var noteWindow = null;
-function addNote(table, id) {
-    if (noteWindow === null || noteWindow.closed) {
-        noteWindow = window.open("/stores/notes/new?table=" + table + '&id=' + id,
-                                "Notes",
-                                "width=600,height=840,resizeable=no,location=no");
-    } else noteWindow.focus();
-};
-function viewNote(note_id) {
-    if (noteWindow === null || noteWindow.closed) {
-        noteWindow = window.open("/stores/notes/" + note_id,
-                                "Notes",
-                                "width=600,height=840,resizeable=no,location=no");
-    } else noteWindow.focus();
-};
-
 function filter(selected, url) {
     var filters = [];
     if (selected) {
@@ -79,3 +63,59 @@ function sortTable(n, tableName, dir = 'asc') {
       }
     }
   }
+  
+function showTab(_tab) {
+  let tabHead = document.querySelector('#' + _tab + '-tab'),
+      tabBody = document.querySelector('#' + _tab);
+  if (tabHead) tabHead.classList.add('active');
+  if (tabBody) tabBody.classList.add('active', 'show');
+};
+
+function add(table, options = {}) {
+  let addWindow = null, height = 600, width = 600, queries = '';
+  if (options.queries) queries = options.queries;
+  if (options.height) height   = options.height;
+  if (options.width) width     = options.width;
+  addWindow = window.open('/stores/' + table + '/new?' + queries,
+                          table + '_add',
+                          'width=' + width + ',height=' + height + ',resizeable=no,location=no');
+};
+function edit(table, id, options = {}) {
+  let editWindow = null, height = 600, width = 600, queries = '';
+  if (options.queries) queries = options.queries;
+  if (options.height) height   = options.height;
+  if (options.width) width     = options.width;
+  editWindow = window.open('/stores/' + table + '/' + id + '/edit?' + queries,
+                          table + '_edit',
+                          'width=' + width + ',height=' + height + ',resizeable=no,location=no');
+};
+function show(table, id, options = {}) {
+  let showWindow = null, height = 600, width = 600, queries = '';
+  if (options.queries) queries = options.queries;
+  if (options.height) height   = options.height;
+  if (options.width) width     = options.width;
+  showWindow = window.open('/stores/' + table + '/' + id + '?' + queries,
+                          table + '_show',
+                          'width=' + width + ',height=' + height + ',resizeable=no,location=no');
+};
+
+function sendData(form, method, _location, options = {reload: false, reload_opener: true, _close: true}) {
+  const XHR = new XMLHttpRequest();
+  const FD = new FormData(form);
+  XHR.addEventListener("load", function(event) {
+      let response = JSON.parse(event.target.responseText);
+      if (response.result) {
+          alert('Success: ' + response.message);
+          if (options.reload_opener) window.opener.location.reload();
+          if (options.reload) window.location.reload();
+          if (options._close) close();
+      } else {
+          alert('Error: ' + response.error);
+      };
+  });
+  XHR.addEventListener("error", function(event) {
+      alert('Oops! Something went wrong.');
+  });
+  XHR.open(method, _location);
+  XHR.send(FD);
+};

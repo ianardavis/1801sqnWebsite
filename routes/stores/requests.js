@@ -1,8 +1,33 @@
 const op = require('sequelize').Op;
 
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //New Form
-    app.get('/stores/requests/new', isLoggedIn, allowed('request_add', false), (req, res) => {
+    //INDEX
+    app.get('/stores/requests', isLoggedIn, allowed('access_requests', {allow: true}), (req, res) => {
+        let where = {}, query = {};
+        query.complete = Number(req.query.complete) || 2
+        if      (query.complete === 2) where._complete = 0;
+        else if (query.complete === 3) where._complete = 1;
+        if (req.allowed === false) where.requested_for = req.user.user_id;
+        fn.getAllWhere(
+            m.requests,
+            where,
+            {
+                include: [
+                    inc.request_lines(),
+                    inc.users({as: '_for'})
+                ]
+            }
+        )
+        .then(requests => {
+            res.render('stores/requests/index',{
+                requests: requests,
+                query:    query
+            });
+        })
+        .catch(err => fn.error(err, '/stores', req, res));
+    });
+    //NEW
+    app.get('/stores/requests/new', isLoggedIn, allowed('request_add', {allow: true}), (req, res) => {
         if (req.query.user) {
             if (req.allowed || Number(req.query.user) === req.user.user_id) {
                 fn.getOne(
@@ -27,9 +52,42 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             res.redirect('/stores/users');
         };
     });
+    //SHOW
+    app.get('/stores/requests/:id', isLoggedIn, allowed('request_edit', {allow: true}), (req, res) => {
+        fn.getOne(
+            m.requests,
+            {request_id: req.params.id},
+            {
+                include: [
+                    inc.request_lines({include: [inc.sizes({stock: true, nsns: true}), inc.users()]}),
+                    inc.users({as: '_for'}),
+                    inc.users({as: '_by'})
+                ]
+            }
+        )
+        .then(request => {
+            if (req.allowed || request._for.user_id === req.user.user_id) {
+                fn.getNotes('requests', req.params.id, req)
+                .then(notes => {
+                    res.render('stores/requests/show', 
+                        {
+                            request: request,
+                            notes:   notes,
+                            query:   req.query,
+                            show_tab: req.query.tab || 'details'
+                        }
+                    );
+                });
+            } else {
+                req.flash('danger', 'Permission Denied!')
+                res.redirect('/stores/requests');
+            };
+        })
+        .catch(err => fn.error(err, '/stores/requests', req, res));
+    });
 
-    //New Logic
-    app.post('/stores/requests', isLoggedIn, allowed('request_add', false), (req, res) => {
+    //POST
+    app.post('/stores/requests', isLoggedIn, allowed('request_add', {allow: true}), (req, res) => {
         if (req.allowed || Number(req.body.requested_for) === req.user.user_id) {
             if (req.body.selected) {
                 fn.createRequest(
@@ -52,8 +110,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
 
-    //Approve/Decline
-    app.put('/stores/requests/:id/approval', isLoggedIn, allowed('request_edit'), (req, res) => {
+    //APPROVAL
+    app.put('/stores/requests/:id/approval', isLoggedIn, allowed('request_edit', {send: true}), (req, res) => {
         if (req.body.selected) {
             fn.getOne(m.requests, {request_id: req.params.id}, {include: [inc.users({as: '_for'})]})
             .then(request => {
@@ -153,8 +211,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             res.redirect('/stores/requests/' + req.params.id);
         };
     });
-    // Close
-    app.put('/stores/requests/:id/close', isLoggedIn, allowed('request_edit'), (req, res) => {
+    //CLOSE
+    app.put('/stores/requests/:id/close', isLoggedIn, allowed('request_edit', {send: true}), (req, res) => {
         let actions = [];
         actions.push(
             fn.update(
@@ -198,67 +256,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
     });
 
-    //Index
-    app.get('/stores/requests', isLoggedIn, allowed('access_requests', false), (req, res) => {
-        let where = {}, query = {};
-        query.complete = Number(req.query.complete) || 2
-        if      (query.complete === 2) where._complete = 0;
-        else if (query.complete === 3) where._complete = 1;
-        if (req.allowed === false) where.requested_for = req.user.user_id;
-        fn.getAllWhere(
-            m.requests,
-            where,
-            {
-                include: [
-                    inc.request_lines(),
-                    inc.users({as: '_for'})
-                ]
-            }
-        )
-        .then(requests => {
-            res.render('stores/requests/index',{
-                requests: requests,
-                query:    query
-            });
-        })
-        .catch(err => fn.error(err, '/stores', req, res));
-    });
-
-    //Show
-    app.get('/stores/requests/:id', isLoggedIn, allowed('request_edit', false), (req, res) => {
-        fn.getOne(
-            m.requests,
-            {request_id: req.params.id},
-            {
-                include: [
-                    inc.request_lines({include: [inc.sizes({stock: true, nsns: true}), inc.users()]}),
-                    inc.users({as: '_for'}),
-                    inc.users({as: '_by'})
-                ]
-            }
-        )
-        .then(request => {
-            if (req.allowed || request._for.user_id === req.user.user_id) {
-                fn.getNotes('requests', req.params.id, req)
-                .then(notes => {
-                    res.render('stores/requests/show', 
-                        {
-                            request: request,
-                            notes:   notes,
-                            query:   req.query
-                        }
-                    );
-                });
-            } else {
-                req.flash('danger', 'Permission Denied!')
-                res.redirect('/stores/requests');
-            };
-        })
-        .catch(err => fn.error(err, '/stores/requests', req, res));
-    });
-
-    //delete
-    app.delete('/stores/requests/:id', isLoggedIn, allowed('request_delete'), (req, res) => {
+    //DELETE
+    app.delete('/stores/requests/:id', isLoggedIn, allowed('request_delete', {send: true}), (req, res) => {
         fn.delete(
             'requests',
             {request_id: req.params.id},

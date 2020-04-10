@@ -1,5 +1,5 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    // Index
+    //INDEX
     app.get('/stores/issues', isLoggedIn, allowed('access_issues'), (req, res) => {
         let where = {};
         if      (Number(req.query.closed) === 2) where._complete = 0;
@@ -23,8 +23,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores', req, res));
     });
-
-    //new form
+    //NEW
     app.get('/stores/issues/new', isLoggedIn, allowed('issue_add'), (req, res) => {
         if (req.query.user) {
             fn.getOne(
@@ -50,40 +49,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             res.redirect('/stores/users');
         };
     });
-    //New Logic
-    app.post('/stores/issues', isLoggedIn, allowed('issue_add'), (req, res) => {
-        if (req.body.selected) {
-            fn.createIssue(
-                req.body.issue,
-                req.body.selected,
-                req.user.user_id
-            )
-            .then(issue_id => {
-                req.flash('success', 'Items issued, ID: ' + issue_id);
-                res.redirect('/stores/users/' + req.body.issue.issued_to);
-            })
-            .catch(err => fn.error(err, '/stores/users/' + req.body.issue.issued_to, req, res));
-        } else redirect(new Error('No items selected'), req, res);
-    });
-
-    //delete
-    app.delete('/stores/issues/:id', isLoggedIn, allowed('issue_delete'), (req, res) => {
-        if (req.query.user) {
-            fn.delete(
-                'issues',
-                {issue_id: req.params.id},
-                {hasLines: true}
-            )
-            .then(result => {
-                req.flash(result.success, result.message);
-                res.redirect('/stores/issues');
-            })
-            .catch(err => fn.error(err, '/stores/issues', req, res));
-        };
-    });
-
-    //show
-    app.get('/stores/issues/:id', isLoggedIn, allowed('access_issues', false), (req, res) => {
+    //SHOW
+    app.get('/stores/issues/:id', isLoggedIn, allowed('access_issues', {allow: true}), (req, res) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id},
@@ -120,7 +87,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         issue: issue,
                         notes: notes,
                         query: {system: Number(req.query.system) || 2},
-                        download: req.query.download || null
+                        download: req.query.download || null,
+                        show_tab: req.query.tab || 'details'
                     })
                 });
             } else {
@@ -130,8 +98,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/issues', req, res));
     });
-    
-    //download loancard
+    //DOWNLOAD
     app.get('/stores/issues/:id/loancard', isLoggedIn, allowed('access_issues'), (req, res) => {
         fn.getOne(
             m.issues,
@@ -147,5 +114,34 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             }
         })
         .catch(err => fn.error(err, '/stores/issues/' + req.params.id, req, res));
+    });
+
+    //POST
+    app.post('/stores/issues', isLoggedIn, allowed('issue_add', {send: true}), (req, res) => {
+        if (req.body.selected) {
+            fn.createIssue(
+                req.body.issue,
+                req.body.selected,
+                req.user.user_id
+            )
+            .then(issue_id => {
+                req.flash('success', 'Items issued, ID: ' + issue_id);
+                res.redirect('/stores/users/' + req.body.issue.issued_to);
+            })
+            .catch(err => fn.error(err, '/stores/users/' + req.body.issue.issued_to, req, res));
+        } else redirect(new Error('No items selected'), req, res);
+    });
+
+    //DELETE
+    app.delete('/stores/issues/:id', isLoggedIn, allowed('issue_delete', {send: true}), (req, res) => {
+        if (req.query.user) {
+            fn.delete(
+                'issues',
+                {issue_id: req.params.id},
+                {hasLines: true}
+            )
+            .then(result => res.send({result: result.success, message: result.message}))
+            .catch(err => fn.send_error(err.message, res));
+        };
     });
 };

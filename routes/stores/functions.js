@@ -64,20 +64,6 @@ module.exports = (fn, m, inc) => {
         .catch(err => reject({ result: true, err: err }));
     });
 
-    fn.getNotes = (table, id, req) => new Promise(resolve => {
-        let whereObj = {_table: table, _id: id}, 
-            system = Number(req.query.system) || 2;
-        if (system === 2) whereObj._system = false
-        else if (system === 3)  whereObj._system = true;
-        fn.getAllWhere(m.notes, whereObj, {nullOk: true})
-        .then(notes => resolve(notes))
-        .catch(err => {
-            req.flash('danger', 'Error searching notes');
-            console.log(err);
-            resolve(null);
-        });
-    });
-
     fn.closeRequest = (request_id, user_id) => new Promise((resolve, reject) => {
         closeIfNoLines({
             table: 'requests', 
@@ -520,68 +506,71 @@ module.exports = (fn, m, inc) => {
         .catch(err => reject(err));
     });
 
-    fn.raiseDemand = (order_list, supplier, user_id) => new Promise((resolve, reject) => {
-        let orders = [], rejects = false, users = [];
-        order_list.forEach(order => {
-            if (String(order.size._demand_page) === '' || String(order.size._demand_cell) === '') rejects = true;
-            else {
-                let existing = orders.findIndex(e => e.size_id === order.size_id);
-                if (existing === -1) 
-                    orders.push({
-                        line_ids: [order.line_id],
-                        size_id: order.size_id,
-                        page: order.size._demand_page,
-                        cell: order.size._demand_cell,
-                        qty: order._qty
-                    });
-                else {
-                    orders[existing].qty += order._qty;
-                    orders[existing].lines.push(order.line_id);
-                };
-                if (order.order.ordered_for !== -1 && !users.some(e => e.bader === order.order._for._bader)) {
-                    let user = {
-                        rank: order.order._for.rank._rank,
-                        name: order.order._for._name,
-                        bader: order.order._for._bader
-                    };
-                    users.push(user);
-                };
-            };
-        });
-        createDemandFile(supplier)
-        .then(file => {
-            writeItems(file, orders)
-            .then(results1 => {
-                if (results1.fails.length > 0) rejects = true;
-                if (results1.success.length > 0)
-                    writeCoverSheet(
-                        file,
-                        supplier,
-                        users
-                    )
-                    .then(results2 => {
-                        fn.createDemand(
-                            supplier_id,
-                            results1.success,
-                            user_id,
-                            results.file
+    // order_list.forEach(order => {
+    //     if (String(order.size._demand_page) === '' || String(order.size._demand_cell) === '') rejects = true;
+    //     else {
+    //         let existing = orders.findIndex(e => e.size_id === order.size_id);
+    //         if (existing === -1) 
+    //             orders.push({
+    //                 line_ids: [order.line_id],
+    //                 size_id: order.size_id,
+    //                 page: order.size._demand_page,
+    //                 cell: order.size._demand_cell,
+    //                 qty: order._qty
+    //             });
+    //         else {
+    //             orders[existing].qty += order._qty;
+    //             orders[existing].lines.push(order.line_id);
+    //         };
+    //         if (order.order.ordered_for !== -1 && !users.some(e => e.bader === order.order._for._bader)) {
+    //             let user = {
+    //                 rank: order.order._for.rank._rank,
+    //                 name: order.order._for._name,
+    //                 bader: order.order._for._bader
+    //             };
+    //             users.push(user);
+    //         };
+    //     };
+    // });
+
+    fn.raiseDemand = (items, supplier_id, users = []) => new Promise((resolve, reject) => {
+        let rejects = false;
+        fn.getOne(
+            m.suppliers,
+            {supplier_id: supplier_id},
+            {include: [
+                inc.files(),
+                inc.accounts()
+            ]}
+        )
+        .then(supplier => {
+            createDemandFile(supplier.file)
+            .then(demandFile => {
+                writeItems(demandFile, items)
+                .then(results1 => {
+                    if (results1.fails.length > 0) rejects = true;
+                    if (results1.success.length > 0) {
+                        writeCoverSheet(
+                            demandFile,
+                            supplier,
+                            users
                         )
-                        .then(demand_id => resolve({demand_id: demand_id, file: file, rejects: rejects}))
+                        .then(results2 => resolve(demandFile))
                         .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-                else reject(new Error('No items written to demand'));
+                    } else reject(new Error('No items written to demand'));
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         })
         .catch(err => reject(err));
     });
-    function createDemandFile (supplier) {
+    function createDemandFile (file, demand_id) {
         return new Promise((resolve, reject) => {
-            if (supplier.file._path) {
+            if (file._path) {
                 let path = process.env.ROOT + '/public/res/',
-                    newDemand = 'demands/' + fn.timestamp() + ' demand - ' + supplier._name + '.xlsx',
-                    demandFile = path + 'files/' + supplier.file._path;
+                    newDemand = 'demands/' + fn.timestamp() + ' demand - ' + demand_id + '.xlsx',
+                    demandFile = path + 'files/' + file._path;
                 fs.copyFile(demandFile, path + newDemand, err => {
                     if (!err) resolve(newDemand)
                     else reject(err);
@@ -589,43 +578,11 @@ module.exports = (fn, m, inc) => {
             } else reject(new Error('No demand file specified'));
         });
     };
-    function writeItems (file, orders) {
+    function writeCoverSheet (demandFile, supplier, users) {
         return new Promise((resolve, reject) => {
             let workbook = new ex.Workbook(),
-                path = process.env.ROOT + '/public/res/';
-            workbook.xlsx.readFile(path + file)
-            .then(() => {
-                let success = [],
-                    fails = [];
-                orders.forEach(order => {
-                    try {
-                        let worksheet = workbook.getWorksheet(order.page),
-                            cell = worksheet.getCell(order.cell);
-                        cell.value = order.qty;
-                        success.push({
-                            lines: order.line_ids,
-                            size_id: order.size_id,
-                            qty: order.qty
-                        });
-                    } catch (err) {
-                        fails.push({
-                            lines: order.line_ids,
-                            reason: err.message
-                        });
-                    };
-                });
-                workbook.xlsx.writeFile(path + file)
-                .then(() => resolve({success: success, fails: fails}))
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function writeCoverSheet (file, supplier, users) {
-        return new Promise((resolve, reject) => {
-            let workbook = new ex.Workbook(),
-                path = process.env.ROOT + '/public/res/';
-            workbook.xlsx.readFile(path + file)
+                path     = process.env.ROOT + '/public/res/';
+            workbook.xlsx.readFile(path + demandFile)
             .then(() => {
                 try {
                     let worksheet = workbook.getWorksheet(supplier.file._cover_sheet);
@@ -645,26 +602,56 @@ module.exports = (fn, m, inc) => {
                     let cell = worksheet.getCell(supplier.file._date),
                         now = new Date(),
                         line = fn.counter();
-
-                    for (let r = Number(supplier.file._request_start); r <= Number(supplier.file._request_end); r++) {
-                        let rankCell = worksheet.getCell(supplier.file._rank_column + r),
-                            nameCell = worksheet.getCell(supplier.file._name_column + r),
-                            currentLine = line() - 1,
-                            sortedKeys = Object.keys(users).sort(),
-                            user = users[sortedKeys[currentLine]];
-                        if (user) {
-                            rankCell.value = user.rank;
-                            nameCell.value = user.name + ' (' + user.bader + ')';
-                        } else break;
-                    };
                     cell.value = now.toDateString();
-                    workbook.xlsx.writeFile(path + file)
+
+                    if (users) {
+                        for (let r = Number(supplier.file._request_start); r <= Number(supplier.file._request_end); r++) {
+                            let rankCell = worksheet.getCell(supplier.file._rank_column + r),
+                                nameCell = worksheet.getCell(supplier.file._name_column + r),
+                                currentLine = line() - 1,
+                                sortedKeys = Object.keys(users).sort(),
+                                user = users[sortedKeys[currentLine]];
+                            if (user) {
+                                rankCell.value = user.rank;
+                                nameCell.value = user.name + ' (' + user.bader + ')';
+                            } else break;
+                        };
+                    };
+                    
+                    workbook.xlsx.writeFile(path + demandFile)
                     .then(() => resolve(true))
                     .catch(err => reject(err));
                 } catch (err) {
                     reject(err);
-                }
+                };
             }).catch(err => reject(err));
+        });
+    };
+    function writeItems (demandFile, items) {
+        return new Promise((resolve, reject) => {
+            let workbook = new ex.Workbook(),
+                path = process.env.ROOT + '/public/res/';
+            workbook.xlsx.readFile(path + demandFile)
+            .then(() => {
+                let success = [], fails = [];
+                items.forEach(item => {
+                    try {
+                        let worksheet = workbook.getWorksheet(item.page),
+                            cell      = worksheet.getCell(item.cell);
+                        cell.value = item.qty;
+                        success.push({
+                            size_id: item.size_id,
+                            qty:     item.qty
+                        });
+                    } catch (err) {
+                        fails.push({reason: err.message});
+                    };
+                });
+                workbook.xlsx.writeFile(path + demandFile)
+                .then(() => resolve({success: success, fails: fails}))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
         });
     };
 
@@ -944,52 +931,82 @@ module.exports = (fn, m, inc) => {
         });
     };
     
-    fn.createDemand = (supplier_id, lines, user_id, file = null) => new Promise((resolve, reject) => {
-        let newDemand = new cn.Demand(supplier_id, user_id);
-        if (file) newDemand._filename = file;
-        fn.create(
-            m.demands,
-            newDemand
+    fn.createDemand = (supplier_id, user_id) => new Promise((resolve, reject) => {
+        fn.getOne(
+            m.suppliers,
+            {supplier_id: supplier_id}
         )
-        .then(demand => {
-            let demandLines = [];
-            lines.forEach(line => demandLines.push(createDemandLine(demand.demand_id, line)));
-            if (demandLines.length > 0) {
-                Promise.allSettled(demandLines)
-                .then(results => resolve({demand_id: demand.demand_id}))
+        .then(supplier => {
+            if (supplier._raise_demand) {
+                fn.getOne(
+                    m.demands,
+                    {
+                        supplier_id: supplier.supplier_id,
+                        _complete: 0
+                    },
+                    {nullOK: true}
+                )
+                .then(demand => {
+                    if (demand) reject(new Error('There is already an open demand for this supplier'))
+                    else {
+                        fn.create(
+                            m.demands,
+                            {
+                                supplier_id: supplier.supplier_id,
+                                user_id: user_id
+                            }
+                        )
+                        .then(demand => resolve(demand.demand_id))
+                        .catch(err => reject(err));
+                    };
+                })
                 .catch(err => reject(err));
-            } else reject(new Error('No demanded lines'));
+            } else reject(new Error('Demands are not raised for this supplier'));
         })
         .catch(err => reject(err));
     });
-    function createDemandLine (demand_id, line) {
-        return new Promise((resolve, reject) => {
-            fn.create(
-                m.demand_lines,
-                new cn.DemandLine(demand_id, line.size_id, line.qty)
+    fn.createDemandLine = (demand_id, line) => new Promise((resolve, reject) => {
+        fn.getOne(
+            m.sizes,
+            {size_id: line.size_id}
+        )
+        .then(size => {
+            fn.getOne(
+                m.demands,
+                {demand_id: demand_id}
             )
-            .then(demand_line => {
-                if (line.order_lines) {
-                    let order_updates = [];
-                    line.order_lines.forEach(line_id => {
-                        order_updates.push(
-                            fn.update(
-                                m.order_lines,
-                                {demand_line_id: demand_line.line_id},
-                                {line_id: line_id}
+            .then(demand => {
+                if (size.supplier_id === demand.supplier_id) {
+                    fn.getOne(
+                        m.demand_lines,
+                        {
+                            demand_id: demand.demand_id,
+                            size_id: size.size_id
+                        },
+                        {nullOK: true}
+                    )
+                    .then(demandline => {
+                        if (demandline) {
+                            fn.add_qty(demandline.line_id, line._qty, 'demand_lines')
+                            .then(new_qty => resolve('Line updated: ' + demandline.line_id))
+                            .catch(err => reject(err));
+                        } else {
+                            line.demand_id = demand.demand_id;
+                            fn.create(
+                                m.demand_lines,
+                                line
                             )
-                        );
-                    });
-                    if (order_updates.length > 0) {
-                        Promise.allSettled(order_updates)
-                        .then(results => resolve(results))
-                        .catch(err => reject(err));
-                    } else reject(new Error('No line IDs'));
-                } else resolve(demand_line.line_id);
+                            .then(demand_line => resolve('Line added: ' + demand_line.line_id))
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                } else err => reject(new Error('Size is not for this supplier'));
             })
             .catch(err => reject(err));
-        });
-    };
+        })
+        .catch(err => reject(err));
+    });
 
     fn.createReceipt = (supplier_id, lines, user_id) => new Promise((resolve, reject) => {
         let newReceipt = new cn.Receipt(supplier_id, user_id);
@@ -1001,7 +1018,7 @@ module.exports = (fn, m, inc) => {
             let actions = [];
             for (let [key, line] of Object.entries(lines)) {
                 actions.push(createReceiptLine(receipt.receipt_id, line));
-                actions.push(fn.addStock(line.stock_id, line.qty));
+                actions.push(fn.add_qty(line.stock_id, line.qty));
             };            
             if (actions.length > 0) {
                 Promise.allSettled(actions)
@@ -1162,7 +1179,7 @@ module.exports = (fn, m, inc) => {
                 });
                 if (stockToReturn.length > 0) {
                     stockToReturn.forEach(stock => {
-                        actions.push(fn.addStock(stock.stock_id, stock.qty));
+                        actions.push(fn.add_qty(stock.stock_id, stock.qty));
                     });
                 };
                 if (return_line() === 1) {

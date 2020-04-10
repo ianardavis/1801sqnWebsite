@@ -1,5 +1,5 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //Edit
+    //EDIT
     app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('user_permissions'), (req, res) => {
         if (Number(req.params.id) === req.user.user_id) {
             req.flash('danger', 'You can not edit your own permissions');
@@ -36,8 +36,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
 
-    //Put
-    app.put('/stores/permissions/:id', isLoggedIn, allowed('user_permissions'), (req, res) => {
+    //PUT
+    app.put('/stores/permissions/:id', isLoggedIn, allowed('user_permissions', {send: true}), (req, res) => {
         if (Number(req.params.id) !== req.user.user_id) {
             if (Number(req.params.id) !== 1) {
                 for (let [permission, value] of Object.entries(res.locals.permissions)) {
@@ -48,12 +48,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     req.body.permissions,
                     {user_id: req.params.id}
                 )
-                .then(result => {
-                    req.flash('success', 'Permissions saved')
-                    res.redirect('/stores/users/' + req.params.id)
-                })
-                .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
-            } else fn.error(new Error('You can not edit the Admin user permissions'), '/stores/users/' + req.params.id, req, res);
-        } else fn.error(new Error('You can not edit your own permissions'), '/stores/users/' + req.params.id, req, res);
+                .then(result => res.send({result: true, message: 'Permissions saved'}))
+                .catch(err => fn.send_error(err.message, res));
+            } else fn.send_error('You can not edit the Admin user permissions', res);
+        } else fn.send_error('You can not edit your own permissions', res);
     });
 };

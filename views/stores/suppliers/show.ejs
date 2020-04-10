@@ -15,198 +15,285 @@
     </nav>
 </section>
 <section class="container">
-	<div class="row">
-		<div class="col-12 col-lg-5 bordered">
-            <% if (permissions.supplier_edit) { %>
-                <a class="float-left btn btn-primary mr-1" href="/stores/suppliers/<%= supplier.supplier_id %>/edit">
-                    <i class='fas fa-pencil-alt'></i>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
+                Details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="items-tab" data-toggle="tab" href="#items" role="tab" aria-controls="items" aria-selected="true">
+                Items (<%= supplier.sizes.length %>)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="demands-tab" data-toggle="tab" href="#demands" role="tab" aria-controls="demands" aria-selected="true">
+                Demands (<%= supplier.demands.length %>)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="receipts-tab" data-toggle="tab" href="#receipts" role="tab" aria-controls="receipts" aria-selected="true">
+                Receipts (<%= supplier.receipts.length %>)
+            </a>
+        </li>
+        <% if (permissions.access_notes) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
+                    Notes (<%= notes.notes.length %>)
                 </a>
-                <form action="/stores/suppliers/<%= supplier.supplier_id %>/default?_method=PUT" method="POST" onsubmit="return confirm('Make supplier the default?');">
-                    <button class="float-left btn btn-warning mr-1 confirm">
-                        <i class='fas fa-check'></i>
-                    </button>
-                </form>
-            <% } %>
-            <% if (permissions.supplier_delete === 1) { %>
-                <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST" onsubmit="return confirm('Confirm delete supplier?');">
-                    <button class="float-left btn btn-danger mr-1 confirm">
-                        <i class='fas fa-trash-alt'></i>
-                    </button>
-                </form>
-            <% } %>
-            <h4 class='mb-3'>Details</h4>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100">Supplier Name</span>
-                </div>
-                <p class="form-control"><%= supplier._name %></p>
-            </div>
-            <div class="input-group input-group-sm">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100">Address</span>
-                </div>
-                <p class="form-control"><%= supplier._address1 %></p>
-            </div>
-            <div class="input-group input-group-sm">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100"></span>
-                </div>
-                <p class="form-control"><%= supplier._address2 %></p>
-            </div>
-            <div class="input-group input-group-sm">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100"></span>
-                </div>
-                <p class="form-control"><%= supplier._address3 %></p>
-            </div>
-            <div class="input-group input-group-sm">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100"></span>
-                </div>
-                <p class="form-control"><%= supplier._address4 %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100"></span>
-                </div>
-                <p class="form-control"><%= supplier._address5 %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100">Telephone</span>
-                </div>
-                <p class="form-control"><%= supplier._telephone %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100">Email</span>
-                </div>
-                <p class="form-control"><%= supplier._email %></p>
-            </div>
-            <% if (supplier.account) { %>
-                <div class="input-group input-group-sm mb-1">
+            </li>
+        <% } %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="container">
+                <% if (permissions.supplier_edit) { %>
+                    <a class="float-right btn btn-primary m-1" href='javascript:edit("suppliers",<%= supplier.supplier_id %>,{"height":555})'>
+                        <i class='fas fa-pencil-alt'></i>
+                    </a>
+                    <% if (_default != supplier.supplier_id) { %>
+                        <form action="/stores/suppliers/<%= supplier.supplier_id %>/default?_method=PUT" method="POST">
+                            <button class="float-right btn btn-warning m-1 confirm">
+                                <i class='fas fa-check'></i>
+                            </button>
+                        </form>
+                    <% } %>
+                <% } %>
+                <% if (permissions.supplier_delete === 1) { %>
+                    <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST">
+                        <button class="float-right btn btn-danger m-1 confirm">
+                            <i class='fas fa-trash-alt'></i>
+                        </button>
+                    </form>
+                <% } %>
+                <div class="input-group mb-1">
                     <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Account</span>
+                        <span class="input-group-text w-100">Supplier Name</span>
                     </div>
-                    <p class="form-control"><%= supplier.account._number %></p>
-                    <div class="input-group-append">
-                        <a class="btn btn-primary" href="/stores/accounts/<%= supplier.account_id %>/edit">
-                            <i class='fas fa-search'></i>
-                        </a>
+                    <p class="form-control"><%= supplier._name %></p>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100">Address</span>
                     </div>
+                    <p class="form-control"><%= supplier._address1 %></p>
                 </div>
-            <% } %>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100">RAF Stores</span>
+                <div class="input-group">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100"></span>
+                    </div>
+                    <p class="form-control"><%= supplier._address2 %></p>
                 </div>
-                <p class="form-control"><% if (supplier._stores) { %>Yes<% } else { %>No<% } %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-35">
-                    <span class="input-group-text w-100">Create Demand File</span>
+                <div class="input-group">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100"></span>
+                    </div>
+                    <p class="form-control"><%= supplier._address3 %></p>
                 </div>
-                <p class="form-control"><% if (supplier._raise_demand) { %>Yes<% } else { %>No<% } %></p>
-            </div>
-            <div class="row mb-1">
+                <div class="input-group">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100"></span>
+                    </div>
+                    <p class="form-control"><%= supplier._address4 %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100"></span>
+                    </div>
+                    <p class="form-control"><%= supplier._address5 %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100">Telephone</span>
+                    </div>
+                    <p class="form-control"><%= supplier._telephone %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100">Email</span>
+                    </div>
+                    <p class="form-control"><%= supplier._email %></p>
+                </div>
+                <% if (supplier.account) { %>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend w-35">
+                            <span class="input-group-text w-100">Account</span>
+                        </div>
+                        <p class="form-control"><%= supplier.account._number %></p>
+                        <div class="input-group-append">
+                            <a class="btn btn-primary" href='javascript:show("accounts",<%= supplier.account_id %>,{"height":400})'>
+                                <i class='fas fa-search'></i>
+                            </a>
+                        </div>
+                    </div>
+                <% } %>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100">RAF Stores</span>
+                    </div>
+                    <p class="form-control"><% if (supplier._stores) { %>Yes<% } else { %>No<% } %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-35">
+                        <span class="input-group-text w-100">Create Demand File</span>
+                    </div>
+                    <p class="form-control"><% if (supplier._raise_demand) { %>Yes<% } else { %>No<% } %></p>
+                </div>
                 <% if (supplier.file) { %>
-                    <div class="input-group input-group-sm mb-1">
+                    <div class="input-group mb-1">
                         <div class="input-group-prepend w-35">
                             <span class="input-group-text w-100">Demand File</span>
                         </div>
                         <p class="form-control"><%= supplier.file._path %></p>
                         <div class="input-group-append">
-                            <a class="btn btn-primary" href="/stores/files/<%= supplier.file_id %>/edit">
+                            <a class="btn btn-primary" href='javascript:edit("files",<%= supplier.file_id %>,{"height":708})'>
                                 <i class='fas fa-pencil-alt'></i>
                             </a>
                         </div>
+                        <div class="input-group-append">
+                            <form id='fileDeleteForm'>
+                                <button class='btn btn-danger confirm'>
+                                    <i class='fas fa-trash-alt'></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                <% }; %>
-                <% if (supplier._raise_demand && permissions.file_add) { %>
-                    <div class="col-12">
-                        <form ref="uploadForm" id="uploadForm" action="/stores/files?s=<%= supplier.supplier_id %>" method="POST" encType="multipart/form-data">
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" name="demandfile" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                                    <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
-                                </div>
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">
-                                        <i class='fas fa-file-upload'></i>
-                                    </button>
-                                </div>
+                <% } else if (supplier._raise_demand && permissions.file_add) { %>
+                    <form id="fileForm" encType="multipart/form-data">
+                        <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
+                        <div class="input-group">
+                            <div class="custom-file w-25">
+                                <input type="file" class="custom-file-input" name="demandfile" id="file_upload">
+                                <label class="custom-file-label" for="file_upload">Choose file</label>
                             </div>
-                         </form>
-                    </div>
+                            <div class="input-group-append">
+                                <button class="btn btn-success confirm">
+                                    <i class='fas fa-file-upload'></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 <% }; %>
             </div>
         </div>
-        <div class="col-12 col-lg-7 bordered">
-            <h4>Items From This Supplier</h4>
-            <select id="size_id" class="form-control form-control-sm" size="20" ondblclick=goToItemSize()>
-                <% if (supplier.sizes) { %>
-                    <% supplier.sizes.forEach(size => { %>
-                        <option value="<%= size.size_id %>"><%= size.item._description %>, size: <%= size._size %></option>
-                    <% }); %>
-                <% }; %>
-            </select>
+        <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+            <div class="container">
+                <select id="size_id" class="form-control" size="20" ondblclick=goToItemSize()>
+                    <% if (supplier.sizes) { %>
+                        <% supplier.sizes.forEach(size => { %>
+                            <option value="<%= size.size_id %>"><%= size.item._description %>, size: <%= size._size %></option>
+                        <% }); %>
+                    <% }; %>
+                </select>
+            </div>
         </div>
-        <div class="col-12 mx-auto bordered mb-2">
-            <% if (permissions.receipt_add) { %>
-                <a class="float-left btn btn-success" href="/stores/receipts/new?supplier_id=<%= supplier.supplier_id %>">
-                    <i class='fas fa-plus'></i>
-                </a>
-            <% } %>
-			<a class="my-3" data-toggle="collapse" href="#collapseReceipt" role="button" aria-expanded="false" aria-controls="collapseReceipt">
-				<h4>Receipts (<%= supplier.receipts.length %>)</h4>
-			</a>
-			<div class="collapse mb-3" id="collapseReceipt">
-				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
-					<thead class="thead-dark">
-						<th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
-						<th class="w-10" onclick="sortTable(1, 'receiptTable')">Lines</th>
-						<th class="w-45" onclick="sortTable(2, 'receiptTable')">User</th>
-						<th><i class="fas fa-search"></i></th>
-					</thead>
-					<tbody id="receiptTable">
-						<% if (supplier.receipts && supplier.receipts.length > 0) { %>
-							<% supplier.receipts.forEach(receipt => { %>
-								<tr>
-									<td data-sort="<%= receipt._date.getTime() %>">
-										<%= receipt._date.toDateString() %>
-									</td>
-									<td>
-										<%= receipt.lines.length %>
-									</td>
-									<td>
-										<%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
-									</td>
-									<td>
-										<a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
-											<i class="fas fa-search"></i>
-										</a>
-									</td>
-								</tr>
-							<% }) %>
-						<% } %>
-					</tbody>
-				</table>
-			</div>
-        </div>
-        <% if (permissions.access_notes) { %>
-            <div class="col-12 bordered">
-                <% if (permissions.note_add) { %>
-                    <a class="float-left btn btn-success" href='javascript:addNote("suppliers","<%= supplier.supplier_id %>")'>
+        <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
+            <div class="container">
+                <% if (permissions.demand_add) { %>
+                    <a class="float-right m-1 btn btn-success" href="/stores/demands/new?supplier_id=<%= supplier.supplier_id %>">
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
-                <% include ../../partials/noteTable %>
+                <table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
+                    <thead class="thead-dark">
+                        <th class="w-45" onclick="sortTable(0, 'demandTable')">Date</th>
+                        <th class="w-10" onclick="sortTable(1, 'demandTable')">Lines</th>
+                        <th class="w-10" onclick="sortTable(2, 'demandTable')">Complete</th>
+                        <th class="w-35" onclick="sortTable(3, 'demandTable')">User</th>
+                        <th><i class="fas fa-search"></i></th>
+                    </thead>
+                    <tbody id="demandTable">
+                        <% if (supplier.demands && supplier.demands.length > 0) { %>
+                            <% supplier.demands.forEach(demand => { %>
+                                <tr>
+                                    <td data-sort="<%= demand._date.getTime() %>">
+                                        <%= demand._date.toDateString() %>
+                                    </td>
+                                    <td>
+                                        <%= demand.lines.length %>
+                                    </td>
+                                    <td>
+                                        <% if (demand._complete) { %><i class='fas fa-check'></i><% } %>
+                                    </td>
+                                    <td>
+                                        <%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %>
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-sm btn-primary' href="/stores/demands/<%= demand.demand_id %>">
+                                            <i class="fas fa-search"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
+            <div class="container">
+                <% if (permissions.receipt_add) { %>
+                    <a class="float-right m-1 btn btn-success" href="/stores/receipts/new?supplier_id=<%= supplier.supplier_id %>">
+                        <i class='fas fa-plus'></i>
+                    </a>
+                <% } %>
+                <table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
+                    <thead class="thead-dark">
+                        <th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
+                        <th class="w-10" onclick="sortTable(1, 'receiptTable')">Lines</th>
+                        <th class="w-45" onclick="sortTable(2, 'receiptTable')">User</th>
+                        <th><i class="fas fa-search"></i></th>
+                    </thead>
+                    <tbody id="receiptTable">
+                        <% if (supplier.receipts && supplier.receipts.length > 0) { %>
+                            <% supplier.receipts.forEach(receipt => { %>
+                                <tr>
+                                    <td data-sort="<%= receipt._date.getTime() %>">
+                                        <%= receipt._date.toDateString() %>
+                                    </td>
+                                    <td>
+                                        <%= receipt.lines.length %>
+                                    </td>
+                                    <td>
+                                        <%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
+                                            <i class="fas fa-search"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <% if (permissions.access_notes) { %>
+            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                <div class="container">
+                    <% include ../../partials/noteTable %>
+                </div>
             </div>
         <% } %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script>
+    window.addEventListener( "load", function () {
+        let uploadForm = document.querySelector("#fileForm");
+        uploadForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(uploadForm, 'POST', '/stores/files', {reload: true});
+        });
+        <% if (supplier.file) { %>
+            let deleteFileForm = document.querySelector("#fileDeleteForm");
+            deleteFileForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                sendData(deleteFileForm, 'DELETE', '/stores/files/<%= supplier.file_id %>', {reload: true});
+            });
+        <% } %>
+    });
     function filterSelects() {
         filter(['system'],"/stores/suppliers/<%= supplier.supplier_id %>");
     };
@@ -214,5 +301,6 @@
         var size = document.querySelector('#size_id');
         if (size) window.location = '/stores/sizes/' + size.value;
     };
+    showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>

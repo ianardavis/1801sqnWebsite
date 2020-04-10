@@ -1,44 +1,21 @@
 <%- include('../../partials/head/head') %>
 <body>
 <%- include('../../partials/head/flash') %>
-<section id='body'><section class="container">
-    <div class="row">
-        <div class="col-12 col-lg-6 mx-auto bordered">
-            <form id='noteForm'>
-                <textarea class="form-control" name="note[_note]" rows="19" maxlength="1000" required><%= note._note %></textarea>
-                <input class=" btn btn-success confirm" type="submit" value="Save">
-                <a class="float-left" href="javascript:close()">Cancel</a>
-            </form>
-        </div>
-    </div>
+<section id='body'>
+<section class="container">
+    <form id='noteForm'>
+        <textarea class="form-control" name="note[_note]" rows="19" maxlength="1000" required><%= note._note %></textarea>
+        <input class=" btn btn-success w-100 confirm" type="submit" value="Save">
+        <a class="float-left" href="javascript:close()">Cancel</a>
+    </form>
 </section>
-<%- include('../../partials/foot/full') %>
+<%- include('../../partials/foot/noNav') %>
 <script>
     window.addEventListener( "load", function () {
-        function sendData() {
-            const XHR = new XMLHttpRequest();
-            const FD = new FormData(form);
-            XHR.addEventListener("load", function(event) {
-                let response = JSON.parse(event.target.responseText);
-                if (response.result) {
-                    alert('Note Saved');
-                    window.opener.location.reload();
-                    close();
-                } else {
-                    alert('Note NOT Saved: ' + response.error);
-                };
-            });
-            XHR.addEventListener("error", function(event) {
-                alert('Something went wrong.');
-            });
-            XHR.open("PUT", "/stores/notes/<%= note.note_id %>");
-            XHR.send(FD);
-        };
-
         let form = document.querySelector("#noteForm");
         form.addEventListener("submit", function (event) {
             event.preventDefault();
-            sendData();
+            sendData(form, 'PUT', "/stores/notes/<%= note.note_id %>");
         });
     });
 </script>

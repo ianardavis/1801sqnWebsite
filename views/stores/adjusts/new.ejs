@@ -1,57 +1,58 @@
-<% include ../../partials/head/full %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Stores
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items'>
-                    Items
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items/<%= stock.size.item.item_id %>'>
-                    <%= stock.size.item._description %>
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/sizes/<%= stock.size_id %>'>
-                    Size: <%= stock.size._size %>
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/stock/<%= stock.stock_id %>'>
-                    Location: <%= stock.location._location %>
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/adjusts/new?stock_id=<%= stock.size_id %>&adjustType=<%= query.adjustType %>'>
-                    <%= query.adjustType %>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
 <section class='container'>
-	<div class='row'>
-		<div class='col-12 col-lg-3 mx-auto mb-3 bordered'>
-            <h4><%= query.adjustType %></h4>
-            <h5>Current Quantity: <%= stock._qty %></h5>
-            <form action='/stores/adjusts' method='POST'>
-                <div class='mb-2'>
-                    <input type='hidden' name='adjust[_type]' value='<%= query.adjustType %>'>
-                    <input type='hidden' name='adjust[stock_id]' value='<%= stock.stock_id %>'>
-                    <input class='form-control' type='number' name='adjust[_qty]' inputmode='numeric' maxlength='11' placeholder='Quantity' required>
-                </div>
-                <div class='mb-2'>
-                    <input type='submit' class='btn btn-success w-100 confirm' value='Save'>
-                </div>
-            </form>
-		</div>
-    </div>
+    <form id='adjustForm'>
+        <input name="adjust[stock_id]" type="hidden" value='<%= stock.stock_id %>'>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Type</span>
+            </div>
+            <input class="form-control" name="adjust[_type]" type="text" value='<%= query.adjustType %>' required readonly>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Item</span>
+            </div>
+            <p class="form-control"><%= stock.size.item._description %></p>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Size</span>
+            </div>
+            <p class="form-control"><%= stock.size._size %></p>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Location</span>
+            </div>
+            <p class="form-control"><%= stock.location._location %></p>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Current Quantity</span>
+            </div>
+            <p class="form-control"><%= stock._qty %></p>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Quantity</span>
+            </div>
+            <input class='form-control' type='number' name='adjust[_qty]' inputmode='numeric' maxlength='11' placeholder='Required' required>
+        </div>
+        <input type='submit' class='btn btn-success w-100 confirm' value='Save'>
+        <a class='float-left' href="javascript:close()">Cancel</a>
+    </form>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
+<script>
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#adjustForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'POST', '/stores/adjusts');
+        });
+    });
+</script>
 <% include ../../partials/foot/htmlClose %>

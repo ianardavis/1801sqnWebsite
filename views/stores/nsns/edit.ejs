@@ -1,74 +1,39 @@
-<% include ../../partials/head/full %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores'>
-					Stores
-				</a>
-            </li>
-            <li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/items'>
-					Items
-				</a>
-            </li>
-            <li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/items/<%= nsn.size.item_id %>'>
-					<%= nsn.size.item._description %>
-				</a>
-            </li>
-            <li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/sizes/<%= nsn.size_id %>'>
-					Size: <%= nsn.size._size %>
-				</a>
-            </li>
-            <li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/nsns/<%= nsn.nsn_id %>'>
-					NSN: <%= nsn._nsn %>
-				</a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
 <section class='container'>
-	<div class='row'>
-		<div class='col-12 col-md-4 mx-auto bordered'>
-			<h4>NSN</h4>
-			<form action='/stores/nsns/<%= nsn.nsn_id %>?_method=PUT' method='POST''>
-				<input type='hidden' name='nsn[nsn_id]' value='<%= nsn.nsn_id %>' readonly>
-				<input type='hidden' name='size_id' value='<%= nsn.size_id %>' readonly>
-				<input type='hidden' name='currentDefault' value='<%= nsn.size.nsn_id %>' readonly>
-
-				<div class='row'>
-                    <div class='col-12'>
-                        <input class='form-control' type='text' inputmode='numeric' name='nsn[_nsn]' maxlength='20' value='<%= nsn._nsn %>' placeholder='NSN' required>
-                    </div>
-                </div>
-                <div class='row'>
-                    <div class='col-4'>
-                        <label class='col-form-label'>Make Default:</label>
-                    </div>
-                    <div class='col-8'>
-                        <input class='form-control' type='checkbox' name='default' value='1' <% if (Number(nsn.size.nsn_id) === Number(nsn.nsn_id)) { %> checked <% } %>>
-                    </div>
-                </div>
-				<input class='btn btn-success confirm w-100' type='submit' value='Save'>
-			</form>
+	<form id='nsnForm'>
+		<input type='hidden' name='nsn[nsn_id]' value='<%= nsn.nsn_id %>' readonly>
+		<input type='hidden' name='size_id' value='<%= nsn.size_id %>' readonly>
+		<input type='hidden' name='currentDefault' value='<%= nsn.size.nsn_id %>' readonly>
+		<div class="input-group mb-1">
+			<div class="input-group-prepend w-20">
+				<span class="input-group-text w-100">NSN</span>
+			</div>
+			<input class='form-control' type='text' inputmode='numeric' name='nsn[_nsn]' maxlength='20' value='<%= nsn._nsn %>' placeholder='NSN' required>
 		</div>
-		<div class='col-12 col-md-8 mx-auto bordered'>
-			<% if (permissions.note_add) { %>
-				<a class='float-left btn btn-success' href='javascript:addNote("nsns","<%= nsn.nsn_id %>")'>
-					<i class='fas fa-plus'></i>
-				</a>
-			<% } %>
-			<% include ../../partials/noteTable %>
+		<div class="input-group mb-1">
+			<div class="input-group-prepend w-20">
+				<span class="input-group-text w-100">Default?</span>
+			</div>
+			<select class='form-control' name="default">
+				<option value="0"<% if (Number(nsn.size.nsn_id) !== Number(nsn.nsn_id)) { %> selected<% } %>>No</option>
+				<option value="1"<% if (Number(nsn.size.nsn_id) === Number(nsn.nsn_id)) { %> selected<% } %>>Yes</option>
+			</select>
 		</div>
-	</div>
+		<input class='btn btn-success confirm w-100' type='submit' value='Save'>
+		<a class='float-left' href="javascript:close()">Cancel</a>
+	</form>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
 <script>
-    function filterSelects() {
-        filter(['system'],'/stores/nsns/<%= nsn.nsn_id %>/edit');
-    };
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#nsnForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'PUT', '/stores/nsns/<%= nsn.nsn_id %>');
+        });
+    });
 </script>
 <% include ../../partials/foot/htmlClose %>

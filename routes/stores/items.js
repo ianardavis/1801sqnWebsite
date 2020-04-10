@@ -15,7 +15,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         if (item.gender_id === '')  item.gender_id  = null;
         return item;
     };
-    // Index
+    //INDEX
     app.get('/stores/items', isLoggedIn, allowed('access_items'), (req, res) => {
         let query = {}, where = {};
         query.cat = Number(req.query.cat) || -1;
@@ -44,82 +44,12 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => fn.error(err, '/stores', req, res));
         });
     });
-
-    // New Form
+    //NEW
     app.get('/stores/items/new', isLoggedIn, allowed('item_add'), (req, res) => {
         fn.getOptions(itemOptions(), req)
         .then(classes => res.render('stores/items/new', {classes: classes}))
     });
-    // New Logic
-    app.post('/stores/items', isLoggedIn, allowed('item_add'), (req, res) => {
-        req.body.item = nullify(req.body.item);
-        fn.create(
-            m.items,
-            req.body.item
-        )
-        .then(item => res.redirect('/stores/items/' + item.item_id))
-        .catch(err => fn.error(err, '/stores/items', req, res));
-    });
-
-    // Edit
-    app.get('/stores/items/:id/edit', isLoggedIn, allowed('item_edit'), (req, res) => {
-        fn.getOne(
-            m.items,
-            {item_id: req.params.id}
-        )
-        .then(item => {
-            fn.getOptions(itemOptions(), req)
-            .then(classes => {
-                res.render('stores/items/edit', {
-                    item:    item, 
-                    classes: classes
-                });
-            });
-        })
-        .catch(err => fn.error(err, 'stores/items/' + req.params.id, req, res));
-    });
-    // Put
-    app.put('/stores/items/:id', isLoggedIn, allowed('item_edit'), (req, res) => {
-        req.body.item = nullify(req.body.item);
-        fn.update(
-            m.items,
-            req.body.item,
-            {item_id: req.params.id}
-        )
-        .then(result => {
-            req.flash('success', 'Item updated');
-            res.redirect('/stores/items/' + req.params.id);
-        })
-        .catch(err => fn.error(err, '/stores/items/' + req.params.id, req, res));
-    });
-
-    // Delete
-    app.delete('/stores/items/:id', isLoggedIn, allowed('item_delete'), (req, res) => {
-        fn.getOne(
-            m.sizes,
-            {item_id: req.params.id},
-            {nullOK: true}
-        )
-        .then(sizes => {
-            if (!sizes) {
-                fn.delete(
-                    'items',
-                    {item_id: req.params.id}
-                )
-                .then(result => {
-                    req.flash('success', 'Item deleted')
-                    res.redirect('/stores/items');
-                })
-                .catch(err => fn.error(err, '/stores/items', req, res));
-            } else {
-                req.flash('danger', 'Cannot delete item while it has sizes assigned!');
-                res.redirect('/stores/items/' + req.params.id);
-            };
-        })
-        .catch(err => fn.error(err, '/stores/items/' + req.params.id, req, res));
-    });
-
-    // Show
+    //SHOW
     app.get('/stores/items/:id', isLoggedIn, allowed('access_items'), (req, res) => {
         let include = [
             m.genders, 
@@ -141,10 +71,71 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 res.render('stores/items/show', {
                     item:  item,
                     notes: notes,
-                    query: {sn: req.query.sn || 2}
+                    query: {system: req.query.system || 2},
+                    show_tab: req.query.tab || 'details'
                 });
             });
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
+    });
+    //EDIT
+    app.get('/stores/items/:id/edit', isLoggedIn, allowed('item_edit'), (req, res) => {
+        fn.getOne(
+            m.items,
+            {item_id: req.params.id}
+        )
+        .then(item => {
+            fn.getOptions(itemOptions(), req)
+            .then(classes => {
+                res.render('stores/items/edit', {
+                    item:    item, 
+                    classes: classes
+                });
+            });
+        })
+        .catch(err => fn.error(err, 'stores/items/' + req.params.id, req, res));
+    });
+
+    //POST
+    app.post('/stores/items', isLoggedIn, allowed('item_add', {send: true}), (req, res) => {
+        req.body.item = nullify(req.body.item);
+        fn.create(
+            m.items,
+            req.body.item
+        )
+        .then(item => res.send({result: true, message: 'Item added'}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+
+    //PUT
+    app.put('/stores/items/:id', isLoggedIn, allowed('item_edit', {send: true}), (req, res) => {
+        req.body.item = nullify(req.body.item);
+        fn.update(
+            m.items,
+            req.body.item,
+            {item_id: req.params.id}
+        )
+        .then(result => res.send({result: true, message: 'Item saved'}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+
+    //DELETE
+    app.delete('/stores/items/:id', isLoggedIn, allowed('item_delete', {send: true}), (req, res) => {
+        fn.getOne(
+            m.sizes,
+            {item_id: req.params.id},
+            {nullOK: true}
+        )
+        .then(sizes => {
+            if (!sizes) {
+                fn.delete(
+                    'items',
+                    {item_id: req.params.id}
+                )
+                .then(result => res.send({result: true, message: 'Item deleted'}))
+                .catch(err => fn.send_error(err.message, res));
+            } else fn.send_error('Cannot delete item while it has sizes assigned', res);
+        })
+        .catch(err => fn.send_error(err.message, res));
     });
 };

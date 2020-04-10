@@ -1,5 +1,6 @@
+const fs = require('fs');
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    // Edit
+    //EDIT
     app.get('/stores/files/:id/edit', isLoggedIn, allowed('file_edit'), (req, res) => {
         fn.getOne(
             m.files,
@@ -12,50 +13,78 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/suppliers', req, res));
     });
     
-    // Put
-    app.put('/stores/files/:id', isLoggedIn, allowed('file_edit'), (req, res) => {
+    //PUT
+    app.put('/stores/files/:id', isLoggedIn, allowed('file_edit', {send: true}), (req, res) => {
         fn.update(
             m.files,
             req.body.file,
             {file_id: req.params.id}
         )
-        .then(result => {
-            if (result) req.flash('success', 'File updated')
-            res.redirect('/stores/suppliers')
-        })
-        .catch(err => fn.error(err, '/stores/suppliers', req, res));
+        .then(result => res.send({result: true, message: 'File details saved'}))
+        .catch(err => fn.send_error(err.message, res));
     });
     
-    // New
-    app.post('/stores/files', isLoggedIn, allowed('file_add'), (req, res) => {
-        if (!req.files || Object.keys(req.files).length !== 1) {
-            req.flash('info', 'No file or multiple files selected')
-            res.redirect('/stores/suppliers/' + req.query.s)
-        } else {
+    //POST
+    app.post('/stores/files', isLoggedIn, allowed('file_add', {send: true}), (req, res) => {
+        if (!req.files || Object.keys(req.files).length !== 1) fn.send_error('No file or multiple files selected', res)
+        else {
             let uploaded = req.files.demandfile;
-            uploaded.mv(process.env.ROOT + '/public/res/files/' + req.files.demandfile.name)
-            .then(result => {
-                fn.create(
-                    m.files,
-                    {_path: req.files.demandfile.name}
-                )
-                .then(file => {
-                    fn.update(
-                        m.suppliers,
-                        {file_id: file.file_id},
-                        {supplier_id: req.query.s}
+            fs.rename(
+                uploaded.file,
+                process.env.ROOT + '/public/res/files/' + uploaded.filename,
+                function (err) {
+                    if (err) throw err
+                    fn.create(
+                        m.files,
+                        {_path: uploaded.filename}
                     )
-                    .then(result => {
-                        if (result) {
-                            req.flash('success', 'Demand file uploaded');
-                            res.redirect('/stores/files/' + file.file_id + '/edit');
-                        } else fn.error(new Error('Error uploading demand file'), '/stores/suppliers/' + req.query.s, req, res);
+                    .then(file => {
+                        fn.update(
+                            m.suppliers,
+                            {file_id: file.file_id},
+                            {supplier_id: req.body.supplier_id}
+                        )
+                        .then(result => {
+                            if (result) res.send({result: true, message: 'File uploaded'}) 
+                            else fn.send_error('Error uploading demand file', res);
+                        })
+                        .catch(err => fn.send_error(err.message, res));
                     })
-                    .catch(err => fn.error(err, '/stores/suppliers/' + req.query.s, req, res));
-                })
-                .catch(err => fn.error(err, '/stores/suppliers/' + req.query.s, req, res));
-            })
-            .catch(err => fn.error(err, '/stores/suppliers/' + req.query.s, req, res));
+                    .catch(err => fn.send_error(err.message, res));
+                }
+            );
         };
+    });
+
+    //DELETE
+    app.delete('/stores/files/:id', isLoggedIn, allowed('file_delete', {send: true}), (req, res) => {
+        fn.getOne(
+            m.files,
+            {file_id: req.params.id}
+        )
+        .then(file => {
+            fn.delete(
+                'files',
+                {file_id: req.params.id}
+            )
+            .then(result => {
+                fn.update(
+                    m.suppliers,
+                    {file_id: null},
+                    {file_id: req.params.id}
+                )
+                .then(result => {
+                    try {
+                        fs.unlinkSync(process.env.ROOT + '/public/res/files/' + file._path)
+                        res.send({result: true, message: 'File deleted'});
+                    } catch(err) {
+                        fn.send_error(err.message, res);
+                    };
+                })
+                .catch(err => fn.send_error(err.message, res));
+            })
+            .catch(err => fn.send_error(err.message, res));
+        })
+        .catch(err => fn.send_error(err.message, res));
     });
 };

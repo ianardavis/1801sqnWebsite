@@ -1,6 +1,6 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn) => {
-    // New Logic
-    app.post('/stores/returns', isLoggedIn, allowed('return_add'), (req, res) => {
+    //POST
+    app.post('/stores/returns', isLoggedIn, allowed('return_add', {send: true}), (req, res) => {
         let returnLines = req.body.returnLines.filter(line => (line !== '' && typeof(line) === 'string'));
         if (returnLines.length > 0) {
             if (req.body.returnLines) {

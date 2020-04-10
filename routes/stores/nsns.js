@@ -1,5 +1,5 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    // New Form
+    //NEW
     app.get('/stores/nsns/new', isLoggedIn, allowed('nsn_add'), (req, res) => {
         fn.getOne(
             m.sizes,
@@ -9,29 +9,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(itemsize => res.render('stores/nsns/new', {itemsize: itemsize}))
         .catch(err => fn.error(err, '/stores/sizes/' + req.query.size_id, req, res));
     });
-    // New Logic
-    app.post('/stores/nsns', isLoggedIn, allowed('nsn_add'), (req, res) => {
-        fn.create(
-            m.nsns,
-            req.body.nsn
-        )
-        .then(nsn => {
-            req.flash('success', 'NSN added')
-            if (req.body.default) {
-                fn.update(
-                    m.sizes,
-                    {nsn_id: nsn.nsn_id},
-                    {size_id: nsn.size_id}
-                )
-                .then(result => res.redirect('/stores/sizes/' + nsn.size_id))
-                .catch(err => fn.error(err, '/stores/sizes/' + nsn.size_id, req, res));
-            } else res.redirect('/stores/sizes/' + nsn.size_id);
-        })
-        .catch(err => fn.error(err, '/stores/sizes/' + req.body.nsn.size_id, req, res));
-    });
-
-    // Edit
-    app.get('/stores/nsns/:id/edit', isLoggedIn, allowed('nsn_edit'), (req, res) => {
+    //SHOW
+    app.get('/stores/nsns/:id', isLoggedIn, allowed('nsn_edit'), (req, res) => {
         fn.getOne(
             m.nsns,
             {nsn_id: req.params.id},
@@ -40,17 +19,49 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(nsn => {
             fn.getNotes('nsns', req.params.id, req)
             .then(notes => {
-                res.render('stores/nsns/edit', {
+                res.render('stores/nsns/show', {
                     nsn:   nsn,
                     notes: notes,
-                    query: {system: req.query.system || 2}
+                    query: {system: req.query.system || 2},
+                    show_tab: req.query.tab || 'details'
                 });
             });
         })
-        .catch(err => fn.error(err, '/stores/items', req, res));
+        .catch(err => fn.error(err, '/', req, res));
     });
-    // Put
-    app.put('/stores/nsns/:id', isLoggedIn, allowed('nsn_edit'), (req, res) => {
+    //EDIT
+    app.get('/stores/nsns/:id/edit', isLoggedIn, allowed('nsn_edit'), (req, res) => {
+        fn.getOne(
+            m.nsns,
+            {nsn_id: req.params.id},
+            {include: [inc.sizes()]}
+        )
+        .then(nsn => res.render('stores/nsns/edit', {nsn: nsn}))
+        .catch(err => fn.error(err, '/', req, res));
+    });
+    
+    //POST
+    app.post('/stores/nsns', isLoggedIn, allowed('nsn_add', {send: true}), (req, res) => {
+        fn.create(
+            m.nsns,
+            req.body.nsn
+        )
+        .then(nsn => {
+            if (req.body.default) {
+                fn.update(
+                    m.sizes,
+                    {nsn_id: nsn.nsn_id},
+                    {size_id: nsn.size_id}
+                )
+                .then(result => res.send({result: true, message: 'NSN added as default'}))
+                .catch(err => fn.send_error(err.message, res));
+            } else res.send({result: true, message: 'NSN added'});
+        })
+        .catch(err => fn.send_error(err.message, res));
+    });
+
+    //PUT
+    app.put('/stores/nsns/:id', isLoggedIn, allowed('nsn_edit', {send: true}), (req, res) => {
         let actions = [];
         actions.push(
             fn.update(
@@ -77,15 +88,12 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             );
         };
         Promise.allSettled(actions)
-        .then(result => {
-            req.flash('success', 'NSN updated');
-            res.redirect('/stores/sizes/' + req.body.size_id);
-        })
-        .catch(err => fn.error(err, '/stores/sizes/' + req.body.size_id, req, res));
+        .then(result => res.send({result: true, message: 'NSN saved'}))
+        .catch(err => fn.send_error(err.message, res));
     });
 
-    // Delete
-    app.delete('/stores/nsns/:id', isLoggedIn, allowed('nsn_delete'), (req, res) => {
+    //DELETE
+    app.delete('/stores/nsns/:id', isLoggedIn, allowed('nsn_delete', {send: true}), (req, res) => {
         fn.delete(
             'nsns', 
             {nsn_id: req.params.id}
@@ -97,13 +105,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {nsn_id: req.params.id},
                 true
             )
-            .then(result => {
-                if (result) req.flash('info', 'Default NSN deleted')
-                else req.flash('info', 'NSN deleted')
-                res.redirect('back');
-            })
-            .catch(err => fn.error(err, 'back', req, res));
+            .then(result => res.send({result: true, message: 'NSN deleted'}))
+            .catch(err => fn.send_error(err.message, res));
         })
-        .catch(err => fn.error(err, 'back', req, res));
+        .catch(err => fn.send_error(err.message, res));
     });
 };

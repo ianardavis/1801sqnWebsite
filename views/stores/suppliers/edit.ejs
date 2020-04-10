@@ -1,118 +1,105 @@
-<% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">
-                    Stores
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
+<section class="container">
+    <form id='supplierForm'>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Supplier Name</span>
+            </div>
+            <input class="form-control" id="_name" name="supplier[_name]" type="text" value="<%= supplier._name %>" maxlength="20" required>
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Address</span>
+            </div>
+            <input class="form-control" id="_name" name="supplier[_address1]" type="text" value="<%= supplier._address1 %>" maxlength="45">
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100"></span>
+            </div>
+            <input class="form-control" id="_name" name="supplier[_address2]" type="text" value="<%= supplier._address2 %>" maxlength="45">
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100"></span>
+            </div>
+            <input class="form-control" id="_name" name="supplier[_address3]" type="text" value="<%= supplier._address3 %>" maxlength="45">
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100"></span>
+            </div>
+            <input class="form-control" id="_name" name="supplier[_address4]" type="text" value="<%= supplier._address4 %>" maxlength="45">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100"></span>
+            </div>
+            <input class="form-control" id="_name" name="supplier[_address5]" type="text" value="<%= supplier._address5 %>" maxlength="45">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Telephone</span>
+            </div>
+            <input class="form-control" id="_telephone" name="supplier[_telephone]" type="text" value="<%= supplier._telephone %>" maxlength="20">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Email</span>
+            </div>
+            <input class="form-control" id="_email" name="supplier[_email]" type="text" value="<%= supplier._email %>" maxlength="255">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Account/Inventory</span>
+            </div>
+            <select class='form-control' name="supplier[account_id]">
+                <option value=""></option>
+                <% accounts.forEach(account => { %>
+                    <option value="<%= account.account_id %>" <% if (Number(account.account_id) === Number(supplier.account_id)) { %> selected <% } %>><%= account._number %>: <%= account._name %></option>
+                <% }) %>
+            </select>
+            <div class="input-group-append">
+                <a class='btn btn-success' href='javascript:add("accounts",{"height":235})'>
+                    <i class='fas fa-plus'></i>
                 </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers">
-                    Suppliers
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers/<%= supplier.supplier_id %>">
-                    <%= supplier._name %>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers/<%= supplier.supplier_id %>/edit">
-                    Edit
-                </a>
-            </li>
-        </ul>
-    </nav>
+            </div>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">RAF Stores</span>
+            </div>
+            <select class='form-control' name="supplier[_stores]" required>
+                <option value="0"<% if (!supplier._stores) { %> selected<% } %>>No</option>
+                <option value="1"<% if (supplier._stores) { %> selected<% } %>>Yes</option>
+            </select>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Create Demand File</span>
+            </div>
+            <select class='form-control' name="supplier[_raise_demand]" required>
+                <option value="0"<% if (!supplier._raise_demand) { %> selected<% } %>>No</option>
+                <option value="1"<% if (supplier._raise_demand) { %> selected<% } %>>Yes</option>
+            </select>
+        </div>
+        <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
+        <a class='float-left' href='javascript:close()'>Cancel</a>
+    </form>
 </section>
-<section class="row">
-    <div class="col-md-9 col-xl-6 container bordered">
-        <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=PUT" method="POST">
-            <div class="input-group mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Supplier Name</span>
-                </div>
-                <input class="form-control" id="_name" name="supplier[_name]" type="text" value="<%= supplier._name %>" maxlength="20" required>
-            </div>
-            <div class="input-group">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Address</span>
-                </div>
-                <input class="form-control" id="_name" name="supplier[_address1]" type="text" value="<%= supplier._address1 %>" maxlength="20" required>
-            </div>
-            <div class="input-group">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100"></span>
-                </div>
-                <input class="form-control" id="_name" name="supplier[_address2]" type="text" value="<%= supplier._address2 %>" maxlength="20" required>
-            </div>
-            <div class="input-group">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100"></span>
-                </div>
-                <input class="form-control" id="_name" name="supplier[_address3]" type="text" value="<%= supplier._address3 %>" maxlength="20" required>
-            </div>
-            <div class="input-group">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100"></span>
-                </div>
-                <input class="form-control" id="_name" name="supplier[_address4]" type="text" value="<%= supplier._address4 %>" maxlength="20" required>
-            </div>
-            <div class="input-group mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100"></span>
-                </div>
-                <input class="form-control" id="_name" name="supplier[_address5]" type="text" value="<%= supplier._address5 %>" maxlength="20" required>
-            </div>
-            <div class="input-group mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Telephone</span>
-                </div>
-                <input class="form-control" id="_telephone" name="supplier[_telephone]" type="text" value="<%= supplier._telephone %>" maxlength="20">
-            </div>
-            <div class="input-group mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Email</span>
-                </div>
-                <input class="form-control" id="_email" name="supplier[_email]" type="text" value="<%= supplier._email %>" maxlength="255">
-            </div>
-            <div class="input-group mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Account/Inventory</span>
-                </div>
-                <select class='form-control' name="supplier[account_id]" required>
-                    <% accounts.forEach(account => { %>
-                        <option value="<%= account.account_id %>" <% if (Number(account.account_id) === Number(supplier.account_id)) { %> selected <% } %>><%= account._number %>: <%= account._name %></option>
-                    <% }) %>
-                </select>
-                <div class="input-group-append">
-                    <a class='btn btn-success' href="/stores/accounts/new?supplier_id=<%= supplier.supplier_id %>">
-                        <i class='fas fa-plus'></i>
-                    </a>
-                </div>
-            </div>
-            <div class="input-group mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">RAF Stores</span>
-                </div>
-                <select class='form-control' name="supplier[_stores]" required>
-                    <option value="0"<% if (!supplier._stores) { %> selected<% } %>>No</option>
-                    <option value="1"<% if (supplier._stores) { %> selected<% } %>>Yes</option>
-                </select>
-            </div>
-            <div class="input-group mb-1">
-                <div class="input-group-prepend w-30">
-                    <span class="input-group-text w-100">Create Demand File</span>
-                </div>
-                <select class='form-control' name="supplier[_raise_demand]" required>
-                    <option value="0"<% if (!supplier._raise_demand) { %> selected<% } %>>No</option>
-                    <option value="1"<% if (supplier._raise_demand) { %> selected<% } %>>Yes</option>
-                </select>
-            </div>
-            <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
-            <a class='float-left' href="/stores/suppliers/<%= supplier.supplier_id %>">Cancel</a>
-        </form>
-    </div>
-</section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
+<script src="/js/add.js"></script>
+<script src="/js/sendData.js"></script>
+<script>
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#supplierForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'PUT', '/stores/suppliers/<%=supplier.supplier_id %>');
+        });
+    });
+</script>
 <% include ../../partials/foot/htmlClose %>

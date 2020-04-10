@@ -1,12 +1,13 @@
-module.exports = (permission, redirect = true) => {
+module.exports = (permission, options = {}) => {
     return (req, res, next) => {
         req.allowed = (res.locals.permissions[permission] === 1);
-        if (res.locals.permissions[permission]) next();
+        if (res.locals.permissions[permission] || options.allow) next();
         else {
-            if (redirect) {
-                req.flash('danger', 'Permission denied!');
+            if (options.send) res.send({result: false, error: 'Permission denied'})
+            else {
+                req.flash('danger', 'Permission denied');
                 res.redirect('/resources');
-            } else next();
+            };
         };
     };
 };

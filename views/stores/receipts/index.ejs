@@ -22,32 +22,30 @@
 				<th><i class='fas fa-search'></i></th>
 			</thead>
 			<tbody id="orderTable">
-				<% if (receipts) { %>
-					<% receipts.forEach(receipt => { %>
-						<tr>
-							<td>
-								<a class='float-right btn btn-sm btn-primary' href="/stores/suppliers/<%= receipt.supplier_id %>">
-									<i class='fas fa-search'></i>
-								</a>
-								<%= receipt.supplier._name %>
-							</td>
-							<td>
-								<%= receipt._date.toDateString() %>
-							</td>
-							<td>
-								<%= receipt.lines.length %>
-							</td>
-							<td>
-								<%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
-							</td>
-							<td>
-								<a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
-									<i class='fas fa-search'></i>
-								</a>
-							</td>
-						</tr>
-					<% }) %>
-				<% } %>
+				<% if (receipts) receipts.forEach(receipt => { %>
+					<tr>
+						<td>
+							<a class='float-right btn btn-sm btn-primary' href="/stores/suppliers/<%= receipt.supplier_id %>">
+								<i class='fas fa-search'></i>
+							</a>
+							<%= receipt.supplier._name %>
+						</td>
+						<td>
+							<%= receipt._date.toDateString() %>
+						</td>
+						<td>
+							<%= receipt.lines.length %>
+						</td>
+						<td>
+							<%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
+						</td>
+						<td>
+							<a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
+								<i class='fas fa-search'></i>
+							</a>
+						</td>
+					</tr>
+				<% }) %>
 			</tbody>
 		</table>
 	</div>

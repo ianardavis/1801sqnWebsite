@@ -20,6 +20,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
+    '_complete': {
+      type: DataTypes.INTEGER(4),
+      allowNull: false,
+      defaultValue: '0',
+      comment: "null"
+    },
     'user_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,

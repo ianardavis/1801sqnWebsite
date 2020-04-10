@@ -1,218 +1,31 @@
-<% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items">Items</a>
-            </li>
-            <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/items/<%= stock.size.item_id %>">
-					<%= stock.size.item._description %>
-				</a>
-            </li>
-            <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/sizes/<%= stock.size.size_id %>">
-					Size: <%= stock.size._size %>
-				</a>
-            </li>
-            <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/stock/<%= stock.stock_id %>/edit">
-					Location: <%= stock.location._location %>
-				</a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
 <section class="container">
-	<div class="row">
-		<div class="col-12 col-md-3 mx-auto bordered mb-2">
-			<h4>Location</h4>
-			<form action="/stores/stock/<%= stock.stock_id %>?_method=PUT" method="POST">
-				<div class="mb-2">
-					<input type="text" class="form-control" name="_location" maxlength="20" value="<%= stock.location._location %>" required>
-					<input type="submit" class="btn btn-success confirm" value="Save">
-				</div>
-			</form>
-		</div>
-		<% if (permissions.access_notes) { %>
-			<div class="col-12 col-md-9 mx-auto bordered mb-2">
-				<% if (permissions.note_add) { %>
-					<a class="float-left btn btn-success" href='javascript:addNote("stock","<%= stock.stock_id %>")'>
-						<i class='fas fa-plus'></i>
-					</a>
-				<% } %>
-				<% include ../../partials/noteTable %>
+	<form id='stockForm'>
+		<div class="input-group mb-1">
+			<div class="input-group-prepend w-20">
+				<span class="input-group-text w-100">Location</span>
 			</div>
-		<% } %>
-		<div class="col-12 mx-auto bordered mb-2">
-			<% if (permissions.adjust_add) { %> 
-				<a class="float-left btn btn-primary mr-1" href="/stores/adjusts/new?stock_id=<%= stock.stock_id %>&adjustType=Count">
-					<i class='fas fa-pencil-alt'></i>
-				</a>
-				<a class="float-left btn btn-danger mr-1" href="/stores/adjusts/new?stock_id=<%= stock.stock_id %>&adjustType=Scrap">
-					<i class='fas fa-trash-alt'></i>
-				</a>
-			<% } %>
-			<a class="my-3" data-toggle="collapse" href="#collapseAdjust" role="button" aria-expanded="false" aria-controls="collapseAdjust">
-				<h4 class='mb-3'>Adjustments (<%= stock.adjusts.length %>)</h4>
-			</a>
-			<div class="collapse mb-3" id="collapseAdjust">
-				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
-					<thead class="thead-dark">
-						<th class="w-25" onclick="sortTable(0, 'adjustsTable')">Date</th>
-						<th class="w-10" onclick="sortTable(1, 'adjustsTable')">Type</th>
-						<th class="w-10" onclick="sortTable(2, 'adjustsTable')">Qty</th>
-						<th class="w-10" onclick="sortTable(3, 'adjustsTable')">Variance</th>
-						<th class="w-45" onclick="sortTable(4, 'adjustsTable')">User</th>
-					</thead>
-					<tbody id="adjustsTable">
-						<% if (stock.adjusts && stock.adjusts.length > 0) { %>
-							<% stock.adjusts.forEach(adjust => { %>
-								<tr>
-									<td data-sort="<%= adjust._date.getTime() %>">
-										<a href="#"><%= adjust._date.toDateString() %></a>
-									</td>
-									<td>
-										<a href="#"><%= adjust._type %></a>
-									</td>
-									<td>
-										<a href="#"><%= adjust._qty %></a>
-									</td>
-									<td>
-										<a href="#"><%= adjust._qty_difference %></a>
-									</td>
-									<td>
-										<a href="#"><%= adjust.user.rank._rank %> <%= adjust.user._name %>, <%= adjust.user._ini %></a>
-									</td>
-								</tr>
-							<% }) %>
-						<% } %>
-					</tbody>
-				</table>
+			<input type="text" class="form-control" name="_location" maxlength="20" value="<%= stock.location._location %>" required>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<input type="submit" class="btn btn-success confirm" value="Save">
+				<a class="float-left" href="javascript:close()">Cancel</a>
 			</div>
 		</div>
-		<div class="col-12 mx-auto bordered mb-2">
-			<a class="my-3" data-toggle="collapse" href="#collapseReceipt" role="button" aria-expanded="false" aria-controls="collapseReceipt">
-				<h4>Receipts (<%= stock.receipts.length %>)</h4>
-			</a>
-			<div class="collapse mb-3" id="collapseReceipt">
-				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
-					<thead class="thead-dark">
-						<th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
-						<th class="w-10" onclick="sortTable(1, 'receiptTable')">Qty</th>
-						<th class="w-45" onclick="sortTable(2, 'receiptTable')">User</th>
-						<th><i class="fas fa-search"></i></th>
-					</thead>
-					<tbody id="receiptTable">
-						<% if (stock.receipts && stock.receipts.length > 0) { %>
-							<% stock.receipts.forEach(receipt => { %>
-								<tr>
-									<td data-sort="<%= receipt.receipt._date.getTime() %>">
-										<%= receipt.receipt._date.toDateString() %>
-									</td>
-									<td>
-										<%= receipt._qty %>
-									</td>
-									<td>
-										<%= receipt.receipt.user.rank._rank %> <%= receipt.receipt.user._name %>, <%= receipt.receipt.user._ini %>
-									</td>
-									<td>
-										<a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
-											<i class="fas fa-search"></i>
-										</a>
-									</td>
-								</tr>
-							<% }) %>
-						<% } %>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<div class="col-12 mx-auto bordered mb-2">
-			<a class="my-3" data-toggle="collapse" href="#collapseIssue" role="button" aria-expanded="false" aria-controls="collapseIssue">
-				<h4>Issues (<%= stock.issues.length %>)</h4>
-			</a>
-			<div class="collapse mb-3" id="collapseIssue">
-				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
-					<thead class="thead-dark">
-						<th class="w-40" onclick="sortTable(0, 'issueTable')">Date</th>
-						<th class="w-40" onclick="sortTable(1, 'issueTable')">To</th>
-						<th class="w-10" onclick="sortTable(2, 'issueTable')">Qty</th>
-						<th class="w-10" onclick="sortTable(3, 'issueTable')">Returned?</th>
-						<th><i class="fas fa-search"></i></th>
-					</thead>
-					<tbody id="issueTable">
-						<% if (stock.issues && stock.issues.length > 0) { %>
-							<% stock.issues.forEach(issue => { %>
-								<tr>
-									<td data-sort="<%= issue.issue._date.getTime() %>">
-										<%= issue.issue._date.toDateString() %>
-									</td>
-									<td>
-										<%= issue.issue._to.rank._rank %> <%= issue.issue._to._name %>, <%= issue.issue._to._ini %>
-									</td>
-									<td>
-										<%= issue._qty %>
-									</td>
-									<td>
-										<input class="form-control form-control-sm" type="checkbox" disabled<% if (issue.return_line_id !== null) { %> selected <% } %>>
-									</td>
-									<td>
-										<a class='btn btn-sm btn-primary' href="/stores/issues/<%= issue.issue_id %>">
-											<i class="fas fa-search"></i>
-										</a>
-									</td>
-								</tr>
-							<% }) %>
-						<% } %>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<div class="col-12 mx-auto bordered mb-2">
-			<a class="my-3" data-toggle="collapse" href="#collapseReturn" role="button" aria-expanded="false" aria-controls="collapseReturn">
-				<h4>Returns (<%= stock.returns.length %>)</h4>
-			</a>
-			<div class="collapse mb-3" id="collapseReturn">
-				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
-					<thead class="thead-dark">
-						<th class="w-45" onclick="sortTable(0, 'returnTable')">Date</th>
-						<th class="w-45" onclick="sortTable(1, 'returnTable')">From</th>
-						<th class="w-10" onclick="sortTable(2, 'returnTable')">Qty</th>
-						<th><i class="fas fa-search"></i></th>
-					</thead>
-					<tbody id="returnTable">
-						<% if (stock.returns && stock.returns.length > 0) { %>
-							<% stock.returns.forEach(_return => { %>
-								<tr>
-									<td data-sort="<%= _return.return._date.getTime() %>">
-										<%= _return.return._date.toDateString() %>
-									</td>
-									<td>
-										<%= _return._from.user.rank._rank %> <%= _return._from.user._name %>, <%= _return._from.user._ini %>
-									</td>
-									<td>
-										<%= _return._qty %>
-									</td>
-									<td>
-										<a class='btn btn-sm btn-primary' href="/stores/returns/<%= _return.return_id %>"><i class="fas fa-search"></i></a>
-									</td>
-								</tr>
-							<% }) %>
-						<% } %>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+	</form>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
 <script>
-    function filterSelects() {
-        filter(['system'],"/stores/stock/<%= stock.stock_id %>/edit");
-    };
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#stockForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'PUT', '/stores/stock/<%= stock.stock_id %>');
+        });
+    });
 </script>
 <% include ../../partials/foot/htmlClose %>

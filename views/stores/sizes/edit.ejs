@@ -1,105 +1,90 @@
-<% include ../../partials/head/full %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>Stores</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items'>Items</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items/<%= size.item_id %>'><%= size.item._description %></a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/sizes/<%= size.size_id %>'>Size: <%= size._size %></a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/sizes/<%= size.size_id %>/edit'>Edit</a>
-            </li>
-        </ul>
-    </nav>
-</section>
-<section class='container bordered'>
-    <form action='/stores/sizes/<%= size.size_id %>?_method=PUT' method='POST'>
-        <div class='row'>
-            <div class='col-12'>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Issueable</span>
-                    </div>
-                    <select class='form-control' name="supplier[_issueable]" required>
-                        <option value="0"<% if (!size._issueable) { %> selected<% } %>>No</option>
-                        <option value="1"<% if (size._issueable) { %> selected<% } %>>Yes</option>
-                    </select>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Orderable</span>
-                    </div>
-                    <select class='form-control' name="supplier[_orderable]" required>
-                        <option value="0"<% if (!size._orderable) { %> selected<% } %>>No</option>
-                        <option value="1"<% if (size._orderable) { %> selected<% } %>>Yes</option>
-                    </select>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Has Serial #</span>
-                    </div>
-                    <select class='form-control' name="supplier[_serials]" required>
-                        <option value="0"<% if (!size._serials) { %> selected<% } %>>No</option>
-                        <option value="1"<% if (size._serials) { %> selected<% } %>>Yes</option>
-                    </select>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Has NSNs</span>
-                    </div>
-                    <select class='form-control' name="supplier[_nsns]" required>
-                        <option value="0"<% if (!size._nsns) { %> selected<% } %>>No</option>
-                        <option value="1"<% if (size._nsns) { %> selected<% } %>>Yes</option>
-                    </select>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Supplier</span>
-                    </div>
-                    <select class='form-control' name='size[supplier_id]' onchange=supplierCheck()>
-                        <% suppliers.forEach(supplier => { %>
-                            <% if (supplier.supplier_id === size.supplier_id) { %>
-                                <option value='<%= supplier.supplier_id %>' selected><%= supplier._name %></option>         
-                            <% } else { %>
-                                <option value='<%= supplier.supplier_id %>'><%= supplier._name %></option>         
-                            <% } %>
-                        <% }) %>
-                    </select>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Demand Page</span>
-                    </div>
-                    <input class='form-control' id='_demand_page' type='text' name='size[_demand_page]' maxlength='20' value='<%= size._demand_page %>'>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Demand Cell</span>
-                    </div>
-                    <input class='form-control' id='_demand_cell' type='text' name='size[_demand_cell]' value='<%= size._demand_cell %>' maxlength='3'>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Ordering Details</span>
-                    </div>
-                    <textarea class="form-control" maxlength='1000' aria-label="Ordering details"><%= size._ordering_details %></textarea>
-                </div>
-                <input class="btn btn-success col-12 confirm" type="submit" value="Save">
-                <a class='float-left' href='/stores/sizes/<%= size.size_id %>'>Cancel</a>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
+<section class='container'>
+    <form id='sizeForm'>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Issueable</span>
             </div>
+            <select class='form-control' name="supplier[_issueable]" required>
+                <option value="0"<% if (!size._issueable) { %> selected<% } %>>No</option>
+                <option value="1"<% if (size._issueable) { %> selected<% } %>>Yes</option>
+            </select>
         </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Orderable</span>
+            </div>
+            <select class='form-control' name="supplier[_orderable]" required>
+                <option value="0"<% if (!size._orderable) { %> selected<% } %>>No</option>
+                <option value="1"<% if (size._orderable) { %> selected<% } %>>Yes</option>
+            </select>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Has Serial #</span>
+            </div>
+            <select class='form-control' name="supplier[_serials]" required>
+                <option value="0"<% if (!size._serials) { %> selected<% } %>>No</option>
+                <option value="1"<% if (size._serials) { %> selected<% } %>>Yes</option>
+            </select>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Has NSNs</span>
+            </div>
+            <select class='form-control' name="supplier[_nsns]" required>
+                <option value="0"<% if (!size._nsns) { %> selected<% } %>>No</option>
+                <option value="1"<% if (size._nsns) { %> selected<% } %>>Yes</option>
+            </select>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Supplier</span>
+            </div>
+            <select class='form-control' name='size[supplier_id]' onchange=supplierCheck()>
+                <% suppliers.forEach(supplier => { %>
+                    <% if (supplier.supplier_id === size.supplier_id) { %>
+                        <option value='<%= supplier.supplier_id %>' selected><%= supplier._name %></option>         
+                    <% } else { %>
+                        <option value='<%= supplier.supplier_id %>'><%= supplier._name %></option>         
+                    <% } %>
+                <% }) %>
+            </select>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Demand Page</span>
+            </div>
+            <input class='form-control' id='_demand_page' type='text' name='size[_demand_page]' maxlength='20' value='<%= size._demand_page %>'>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Demand Cell</span>
+            </div>
+            <input class='form-control' id='_demand_cell' type='text' name='size[_demand_cell]' value='<%= size._demand_cell %>' maxlength='3'>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Ordering Details</span>
+            </div>
+            <textarea class="form-control" maxlength='1000' aria-label="Ordering details"><%= size._ordering_details %></textarea>
+        </div>
+        <input class="btn btn-success col-12 confirm" type="submit" value="Save">
+        <a class='float-left' href='javascript:close()'>Cancel</a>
     </form>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
 <script>
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#sizeForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'PUT', '/stores/sizes/<%= size.size_id %>');
+        });
+    });
     function orderableCheck () {
         var _orderable = document.querySelector('#_orderable');
         if (!_orderable.checked) {

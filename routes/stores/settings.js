@@ -10,6 +10,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {table: 'statuses'}
         ]
     };
+    //INDEX
     app.get('/stores/settings', isLoggedIn, allowed('access_settings'), (req, res) => {
         fn.getAll(m.settings)
         .then(settings => {
@@ -25,7 +26,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores', req, res));
     });
 
-    // New Logic
+    //POST
     app.post('/stores/settings/ranks',      isLoggedIn, allowed('rank_add'),     (req, res) => createSetting('ranks',      req, res));
     app.post('/stores/settings/genders',    isLoggedIn, allowed('gender_add'),   (req, res) => createSetting('genders',    req, res));
     app.post('/stores/settings/statuses',   isLoggedIn, allowed('status_add'),   (req, res) => createSetting('statuses',   req, res));
@@ -45,7 +46,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
     };
     
-    // Put
+    //PUT
     app.put('/stores/settings/ranks/:id',      isLoggedIn, allowed('rank_edit'),     (req, res) => updateSetting('ranks',      req, res));
     app.put('/stores/settings/genders/:id',    isLoggedIn, allowed('gender_edit'),   (req, res) => updateSetting('genders',    req, res));
     app.put('/stores/settings/statuses/:id',   isLoggedIn, allowed('status_edit'),   (req, res) => updateSetting('statuses',   req, res));
@@ -68,7 +69,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
     };
     
-    // Delete
+    //DELETE
     app.delete('/stores/settings/genders/:id',    isLoggedIn, allowed('gender_delete'),   (req, res) => _delete('genders', req, res));
     app.delete('/stores/settings/ranks/:id',      isLoggedIn, allowed('rank_delete'),     (req, res) => deleteSetting('ranks', req, res));
     app.delete('/stores/settings/statuses/:id',   isLoggedIn, allowed('status_delete'),   (req, res) => deleteSetting('statuses', req, res));

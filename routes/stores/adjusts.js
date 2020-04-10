@@ -1,5 +1,5 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //New Form
+    //NEW
     app.get('/stores/adjusts/new', isLoggedIn, allowed('adjust_add'), (req, res) => {
         if (req.query.adjustType === 'Scrap' || 'Count') {
             if (req.query.stock_id) {
@@ -27,8 +27,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             res.redirect('/stores/items');
         };
     });
-    //New Logic
-    app.post('/stores/adjusts', isLoggedIn, allowed('adjust_add'), (req, res) => {
+
+    //POST
+    app.post('/stores/adjusts', isLoggedIn, allowed('adjust_add', {send: true}), (req, res) => {
         if (req.body.adjust) {
             let adjust = req.body.adjust;
             fn.adjustStock(
@@ -37,14 +38,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 adjust._qty,
                 req.user.user_id
             )
-            .then(result => {
-                req.flash('success', 'Adjustment made')
-                res.redirect('/stores/stock/' + adjust.stock_id + '/edit');
-            })
-            .catch(err => fn.error(err, '/stores/items', req, res));
-        } else {
-            req.flash('info', 'No adjustment entered!');
-            res.redirect('/stores/items');
-        };
+            .then(result => res.send({result: true, message: 'Adjustment made'}))
+            .catch(err => fn.send_error(err,message, res));
+        } else fn.send_error('No adjustment entered', res);
     });
 };

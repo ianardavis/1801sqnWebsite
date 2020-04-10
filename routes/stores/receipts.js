@@ -1,5 +1,23 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //New Form
+    //INDEX
+    app.get('/stores/receipts', isLoggedIn, allowed('access_receipts'), (req, res) => {
+        fn.getAll(
+            m.receipts,
+            [
+                m.suppliers,
+                inc.users(),
+                inc.receipt_lines()
+            ]
+        )
+        .then(receipts => {
+            res.render('stores/receipts/index',{
+                receipts: receipts,
+                query:    {cr: Number(req.query.cr) || 2}
+            });
+        })
+        .catch(err => fn.error(err, '/stores', req, res));
+    });
+    //NEW
     app.get('/stores/receipts/new', isLoggedIn, allowed('receipt_add'), (req, res) => {
         if (req.query.supplier_id && req.query.supplier_id !== '') {
             fn.getOne(
@@ -13,25 +31,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             res.redirect('back');
         };
     });
-    //New Logic
-    app.post('/stores/receipts', isLoggedIn, allowed('receipt_add'), (req, res) => {
-        if (req.body.selected) {
-            if (req.body.selected.length > 0) {
-                fn.createReceipt(
-                    req.body.supplier_id,
-                    req.body.selected,
-                    req.user.user_id
-                )
-                .then(result => res.redirect('/stores/receipts/' + result))
-                .catch(err => fn.error(err, '/stores/receipts', req, res));
-            };
-        } else {
-            req.flash('info', 'No items selected!');
-            res.redirect('/stores');
-        };
-    });
-
-    //Show
+    //SHOW
     app.get('/stores/receipts/:id', isLoggedIn, allowed('access_receipts'), (req, res) => {
         fn.getOne(
             m.receipts,
@@ -54,34 +54,34 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 res.render('stores/receipts/show', {
                     receipt: receipt,
                     notes:   notes,
-                    query:   {system: Number(req.query.system) || 2}
+                    query:   {system: Number(req.query.system) || 2},
+                    show_tab: req.query.tab || 'details'
                 });
             });
         })
         .catch(err => fn.error(err, '/stores/receipts', req, res));
     });
     
-    //Index
-    app.get('/stores/receipts', isLoggedIn, allowed('access_receipts'), (req, res) => {
-        fn.getAll(
-            m.receipts,
-            [
-                m.suppliers,
-                inc.users(),
-                inc.receipt_lines()
-            ]
-        )
-        .then(receipts => {
-            res.render('stores/receipts/index',{
-                receipts: receipts,
-                query:    {cr: Number(req.query.cr) || 2}
-            });
-        })
-        .catch(err => fn.error(err, '/stores', req, res));
+    //POST
+    app.post('/stores/receipts', isLoggedIn, allowed('receipt_add', {send: true}), (req, res) => {
+        if (req.body.selected) {
+            if (req.body.selected.length > 0) {
+                fn.createReceipt(
+                    req.body.supplier_id,
+                    req.body.selected,
+                    req.user.user_id
+                )
+                .then(result => res.redirect('/stores/receipts/' + result))
+                .catch(err => fn.error(err, '/stores/receipts', req, res));
+            };
+        } else {
+            req.flash('info', 'No items selected!');
+            res.redirect('/stores');
+        };
     });
     
-    // Delete
-    app.delete('/stores/receipts/:id', isLoggedIn, allowed('receipt_delete'), (req, res) => {
+    //DELETE
+    app.delete('/stores/receipts/:id', isLoggedIn, allowed('receipt_delete', {send: true}), (req, res) => {
         fn.delete(
             'receipts',
             {receipt_id: req.params.id},

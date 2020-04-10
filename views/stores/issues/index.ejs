@@ -13,8 +13,8 @@
 </section>
 <section class='container'>
 	<div class="input-group mb-2">
-		<div class="input-group-prepend">
-			<label class="input-group-text" for="closed">Closed Issues</label>
+		<div class="input-group-prepend w-25">
+			<label class="input-group-text w-100" for="closed">Closed Issues</label>
 		</div>
 		<select class="custom-select" id='closed' onchange=filterSelects()>
 			<option value='1' <% if (query.closed === 1) { %>selected<% } %> >Include</option>
@@ -27,17 +27,16 @@
 			<% issues.forEach(issue => { %>
 				<div class='col-12 col-sm-6 col-lg-4 col-xl-3'>
 					<div class='card cardDarkText m-3 text-left <% if (issue._complete) { %> cardGreen <% } else { %> cardRed <% } %>'>
-						<div class='card-header'>
-							<a class='float-right btn btn-sm btn-primary' href='/stores/issues/<%= issue.issue_id %>'>
-								<i class='fas fa-search'></i>
-							</a>
-							<h3><%= issue._to.rank._rank %> <%= issue._to._name %>, <%= issue._to._ini %></h3>
-							<p class='card-subtitle text-muted'><%= issue._date.toDateString() %></p>
-						</div>
-						<div class='card-body'>
-							<p>Lines: <%= issue.lines.length %></p>
-							<p>Due Back: <%= issue._date_due.toDateString() %></p>
-						</div>
+						<a href='/stores/issues/<%= issue.issue_id %>'>
+							<div class='card-header'>
+								<h3><%= issue._to.rank._rank %> <%= issue._to._name %>, <%= issue._to._ini %></h3>
+								<p class='card-subtitle text-muted f-10'><%= issue._date.toDateString() %></p>
+							</div>
+							<div class='card-body f-10'>
+								<p>Lines: <%= issue.lines.length %></p>
+								<p>Due Back: <%= issue._date_due.toDateString() %></p>
+							</div>
+						</a>
 					</div>
 				</div>
 			<% }) %>

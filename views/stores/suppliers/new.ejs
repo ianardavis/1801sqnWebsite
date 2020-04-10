@@ -1,94 +1,97 @@
-<% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">
-                    Stores
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers">
-                    Suppliers
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers/new">
-                    New
-                </a>
-            </li>
-        </ul>
-    </nav>
-</section>
-<section class="row">
-    <div class="col-md-9 col-xl-6 container bordered">
-        <form action="/stores/suppliers" method="POST">
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-sm-3">
-                        <label class="col-form-label" for="_name">Supplier Name:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <input class="form-control" id="_name" name="supplier[_name]" type="text" placeholder="Supplier Name" maxlength="20" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <label class="col-form-label" for="_address1">Address:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <input class="form-control" id="_address1" name="supplier[_address1]" type="text" placeholder="Building Name" maxlength="45" required>
-                        <input class="form-control" name="supplier[_address2]" type="text" placeholder="Street" maxlength="45">
-                        <input class="form-control" name="supplier[_address3]" type="text" placeholder="Town" maxlength="45">
-                        <input class="form-control" name="supplier[_address4]" type="text" placeholder="County" maxlength="45">
-                        <input class="form-control" name="supplier[_address5]" type="text" placeholder="Post Code" maxlength="45">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <label class="col-form-label" for="_telephone">Telephone:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <input class="form-control" id="_telephone" name="supplier[_telephone]" type="text" placeholder="Telephone" maxlength="20">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <label class="col-form-label" for="_email">Email:</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <input class="form-control" id="_email" name="supplier[_email]" type="text" placeholder="address@domain.com" maxlength="255">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5">
-                        <label class="col-form-label" for="_stores">RAF Stores?:</label>
-                    </div>
-                    <div class="col-sm-7">
-                        <input class="form-control" id="_stores" name="supplier[_stores]" type="checkbox" value="1">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5">
-                        <label class="col-form-label" for="_raise_demand">Create Demand File?:</label>
-                    </div>
-                    <div class="col-sm-7">
-                        <input class="form-control" id="_raise_demand" name="supplier[_raise_demand]" type="checkbox" value="1">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5">
-                        <label class="col-form-label" for="_default">Make default?:</label>
-                    </div>
-                    <div class="col-sm-7">
-                        <input class="form-control" id="_default" name="default" type="checkbox" value="1">
-                    </div>
-                </div>
-                <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
-                <a class='float-left' href="/stores/suppliers">Cancel</a>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
+<section class="container">
+    <form id='supplierForm'>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Supplier Name</span>
             </div>
-        </form>
-    </div>
+            <input class="form-control" id="_name" name="supplier[_name]" type="text" placeholder="Required" maxlength="20" required>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Address</span>
+            </div>
+            <input class="form-control" id="_address1" name="supplier[_address1]" type="text" placeholder="Required" maxlength="45" required>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100"></span>
+            </div>
+            <input class="form-control" name="supplier[_address2]" type="text" maxlength="45">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100"></span>
+            </div>
+            <input class="form-control" name="supplier[_address3]" type="text" maxlength="45">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100"></span>
+            </div>
+            <input class="form-control" name="supplier[_address4]" type="text" maxlength="45">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100"></span>
+            </div>
+            <input class="form-control" name="supplier[_address5]" type="text" maxlength="45">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Telephone</span>
+            </div>
+            <input class="form-control" id="_telephone" name="supplier[_telephone]" type="text" placeholder="Telephone" maxlength="20">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Email</span>
+            </div>
+            <input class="form-control" id="_email" name="supplier[_email]" type="text" placeholder="address@domain.com" maxlength="255">
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">RAF Stores?</span>
+            </div>
+            <select name="supplier[_stores]" class="form-control">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Create Demand File?</span>
+            </div>
+            <select name="supplier[_raise_demand]" class="form-control">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-35">
+                <span class="input-group-text w-100">Make default?</span>
+            </div>
+            <select name="default" class="form-control">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+        <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
+        <a class='float-left' href='javascript:close()'>Cancel</a>
+    </form>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
+<script src="/js/sendData.js"></script>
+<script>
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#supplierForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'POST', '/stores/suppliers');
+        });
+    });
+</script>
 <% include ../../partials/foot/htmlClose %>

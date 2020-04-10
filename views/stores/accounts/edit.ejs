@@ -1,75 +1,44 @@
-<% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">
-                    Stores
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers">
-                    Suppliers
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers/<%= account.supplier.supplier_id %>">
-                    <%= account.supplier._name %>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/accounts/<%= account.account_id %>/edit">
-                    Account Details
-                </a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include('../../partials/head/head') %>
+<body>
+<%- include('../../partials/head/flash') %>
+<section id='body'>
 <section class="container">
-    <div class="row">
-        <div class="col-md-9 col-xl-6 bordered">
-            <form action="/stores/accounts/<%= account.account_id %>?_method=PUT" method="POST">
-                <input type="hidden" name='supplier_id' value='<%= account.supplier.supplier_id %>'>
-                <div class="input-group input-group-sm mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Name</span>
-                    </div>
-                    <input class="form-control" id="_name" name="account[_name]" type="text" value="<%= account._name %>" maxlength="45" required>
-                </div>
-                <div class="input-group input-group-sm mb-1">
-                    <div class="input-group-prepend w-30">
-                        <span class="input-group-text w-100">Number</span>
-                    </div>
-                    <input class="form-control" id="_name" name="account[_number]" type="text" value="<%= account._number %>" maxlength="45" required>
-                </div>
-                <div class="input-group input-group-sm mb-1">
-                    <div class="input-group-prepend w-30">
-                        <label class="input-group-text w-100">Owner</label>
-                    </div>
-                    <select class="custom-select" name="account[user_id]">
-                        <% users.forEach(user => { %>
-                            <option value="<%= user.user_id %>" <% if (Number(account.user_id) === Number(user.user_id)) { %> selected <% } %>><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></option>
-                        <% }) %>
-                    </select>
-                </div>
-                <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
-                <a class='float-left' href="/stores/suppliers/<%= account.supplier.supplier_id %>">Cancel</a>
-            </form>
-        </div>
-        <% if (permissions.access_notes) {%>
-            <div class='col-6 bordered'>
-                <% if (permissions.note_add) { %>
-                    <a class='float-left btn btn-success mb-1' href='/stores/notes/new?table=accounts&id=<%= account.account_id %>'><i class='fas fa-plus'></i></a>
-                <% } %>
-                <% include ../../partials/noteTable %>
+    <form id='accountForm'>
+        <input type="hidden" name='supplier_id' value='<%= account.supplier.supplier_id %>'>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Name</span>
             </div>
-        <% } %>
-    </div>
+            <input class="form-control" id="_name" name="account[_name]" type="text" value="<%= account._name %>" maxlength="45" required>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <span class="input-group-text w-100">Number</span>
+            </div>
+            <input class="form-control" id="_name" name="account[_number]" type="text" value="<%= account._number %>" maxlength="45" required>
+        </div>
+        <div class="input-group mb-1">
+            <div class="input-group-prepend w-30">
+                <label class="input-group-text w-100">Owner</label>
+            </div>
+            <select class="custom-select" name="account[user_id]">
+                <% users.forEach(user => { %>
+                    <option value="<%= user.user_id %>" <% if (Number(account.user_id) === Number(user.user_id)) { %> selected <% } %>><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></option>
+                <% }) %>
+            </select>
+        </div>
+        <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
+        <a class='float-left' href="javascript:close()">Cancel</a>
+    </form>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/noNav %>
 <script>
-    function filterSelects() {
-        filter(['system'],'/stores/accounts/<%= account.account_id %>/edit');
-    };
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#accountForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'PUT', '/stores/accounts/<%= account.account_id %>');
+        });
+    });
 </script>
 <% include ../../partials/foot/htmlClose %>

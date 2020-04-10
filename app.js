@@ -5,8 +5,7 @@ var express  = require('express'),
     bb       = require('express-busboy'),
     flash    = require('connect-flash'),
     override = require('method-override'),
-    memStore = require('memorystore')(session),
-    upload   = require('express-fileupload');
+    memStore = require('memorystore')(session);
 function portInUseCheck () {
     return new Promise((resolve, reject) => {
         console.log('Checking port 3000 is available');
@@ -36,6 +35,11 @@ portInUseCheck()
     process.env.ROOT = __dirname;
     if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
     console.log('environment: ' + process.env.NODE_ENV);
+    bb.extend(app, {
+        upload: true,
+        path: process.env.ROOT + '/public/uploads',
+        allowedPath: /./
+    });
     app.use(
         session({
             secret: '1801 (Alnwick) Squadron Air Training Corps',
@@ -48,7 +52,6 @@ portInUseCheck()
     app.use(passport.session());
     app.use(flash());
     app.use(override('_method'));
-    app.use(upload());
     app.use((req, res, next) => {
         res.locals.user    = req.user;
         res.locals.info    = req.flash('info');
@@ -57,7 +60,6 @@ portInUseCheck()
         next();
     });
     app.set('view engine', 'ejs');
-    bb.extend(app);
     app.use(express.static(__dirname + '/public'));
 
     let m = require('./db/models');
@@ -68,7 +70,7 @@ portInUseCheck()
 
     app.listen(3000, err => {
         if (err) console.log(err);
-        else console.log('Server listening on port 1801');
+        else console.log('Server listening');
     });
 })
 .catch(err => console.log(err));

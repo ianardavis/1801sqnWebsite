@@ -21,106 +21,132 @@
     </nav>
 </section>
 <section class='container'>
-	<div class='row'>
-		<div class='col-12 col-md-6 col-lg-7 mb-2 container bordered'>
-            <% if (permissions.item_edit) { %>
-                <a class='float-left btn btn-success mr-1' href='/stores/items/<%= item.item_id %>/edit'><i class='fas fa-pencil-alt'></i></a>
-            <% } %>
-            <% if (permissions.item_delete) { %>
-                <form action='/stores/items/<%= item.item_id %>?_method=DELETE' method='POST'>
-                    <button class='float-left btn btn-danger confirm'>
-                        <i class='fas fa-trash-alt'></i>
-                    </button>
-                </form>
-            <% } %>
-            <h4 class='mb-3'>Details</h4>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">Description</span>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
+                Details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#sizes" role="tab" aria-controls="sizes" aria-selected="true">
+                Sizes (<%= item.sizes.length %>)
+            </a>
+        </li>
+        <% if (permissions.access_notes) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
+                    Notes (<%= notes.notes.length %>)
+                </a>
+            </li>
+        <% } %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="container">
+                <% if (permissions.item_edit) { %>
+                    <a class='float-left btn btn-success m-1' href='javascript:edit("items",<%= item.item_id %>,{"height":413})'>
+                        <i class='fas fa-pencil-alt'></i>
+                    </a>
+                <% } %>
+                <% if (permissions.item_delete) { %>
+                    <form id='deleteForm'>
+                        <button class='float-left m-1 btn btn-danger confirm'>
+                            <i class='fas fa-trash-alt'></i>
+                        </button>
+                    </form>
+                <% } %>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-20">
+                        <span class="input-group-text w-100">Description</span>
+                    </div>
+                    <p class="form-control"><%= item._description %></p>
                 </div>
-                <p class="form-control"><%= item._description %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">Category</span>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-20">
+                        <span class="input-group-text w-100">Category</span>
+                    </div>
+                    <p class="form-control"><% if(item.category) { %><%= item.category._category %><% } %></p>
                 </div>
-                <p class="form-control"><% if(item.category) { %><%= item.category._category %><% } %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">Group</span>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-20">
+                        <span class="input-group-text w-100">Group</span>
+                    </div>
+                    <p class="form-control"><% if(item.group) { %><%= item.group._group %><% } %></p>
                 </div>
-                <p class="form-control"><% if(item.group) { %><%= item.group._group %><% } %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">Type</span>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-20">
+                        <span class="input-group-text w-100">Type</span>
+                    </div>
+                    <p class="form-control"><% if(item.type) { %><%= item.type._type %><% } %></p>
                 </div>
-                <p class="form-control"><% if(item.type) { %><%= item.type._type %><% } %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">Sub Type</span>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-20">
+                        <span class="input-group-text w-100">Sub Type</span>
+                    </div>
+                    <p class="form-control"><% if(item.subtype) { %><%= item.subtype._subtype %><% } %></p>
                 </div>
-                <p class="form-control"><% if(item.subtype) { %><%= item.subtype._subtype %><% } %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-20">
-                    <span class="input-group-text w-100">Gender</span>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-20">
+                        <span class="input-group-text w-100">Gender</span>
+                    </div>
+                    <p class="form-control"><% if(item.gender) { %><%= item.gender._gender %><% } %></p>
                 </div>
-                <p class="form-control"><% if(item.gender) { %><%= item.gender._gender %><% } %></p>
             </div>
-		</div>
-		<div class='col-12 col-md-6 col-lg-5 mb-2 container bordered'>
+        </div>
+        <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
+            <div class="container">
                 <% if (permissions.size_add) { %>
-                    <a class='float-left btn btn-success mb-1' href='/stores/sizes/new?item_id=<%= item.item_id %>'>
+                    <a class='float-left btn btn-success m-1' href='javascript:add("sizes",{"queries":"item_id=<%= item.item_id %>","height":600})'>
                         <i class='fas fa-plus'></i>
                     </a>
                 <% } %>
-			<h4>
-                Sizes
-            </h4>
-            <table class='table table-sm table-hover w-100'>
-                <thead class='thead-dark'>
-                    <th class='w-50' onclick='sortTable(0, "sizeTable")'><%= item._size_text %></th>
-                    <th class='w-50' onclick='sortTable(1, "sizeTable")'>Stock</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id='sizeTable'>
-                    <% item.sizes.forEach(size => { %>
-                        <tr>
-                            <td>
-                                <%= size._size %>
-                            </td>
-                            <td>
-                                <%= size.locationStock %>
-                            </td>
-                            <td>
-                                <a class='btn btn-sm btn-primary' href='/stores/sizes/<%= size.size_id %>'>
-                                    <i class='fas fa-search'></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-50' onclick='sortTable(0, "sizeTable")'><%= item._size_text %></th>
+                        <th class='w-50' onclick='sortTable(1, "sizeTable")'>Stock</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='sizeTable'>
+                        <% item.sizes.forEach(size => { %>
+                            <tr>
+                                <td>
+                                    <%= size._size %>
+                                </td>
+                                <td>
+                                    <%= size.locationStock %>
+                                </td>
+                                <td>
+                                    <a class='btn btn-sm btn-primary' href='/stores/sizes/<%= size.size_id %>'>
+                                        <i class='fas fa-search'></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <% if (permissions.access_notes) {%>
-            <div class='col-12 bordered'>
-                <% if (permissions.note_add) { %>
-                    <a class='float-left btn btn-success' href='javascript:addNote("items","<%= item.item_id %>")'>
-                        <i class='fas fa-plus'></i>
-                    </a>
-                <% } %>
-                <% include ../../partials/noteTable %>
+            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                <div class="container">
+                    <% include ../../partials/noteTable %>
+                </div>
             </div>
         <% } %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script>
+    window.addEventListener( "load", function () {
+        let form = document.querySelector("#deleteForm");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(form, 'DELETE', '/stores/items/<%= item.item_id %>');
+        });
+    });
     function filterSelects() {
         filter(['system'],'/stores/items/<%= item.item_id %>');
     };
+    showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>

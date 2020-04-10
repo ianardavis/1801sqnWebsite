@@ -1,55 +1,65 @@
-<a class="my-3" data-toggle="collapse" href="#collapseNote" role="button" aria-expanded="false" aria-controls="collapseNote">
-    <h4>Notes (<%= notes.length %>)</h4>
-</a>
-<div class="collapse mb-3" id="collapseNote">
-	<div class="input-group mb-2">
-		<div class="input-group-prepend">
-			<label class="input-group-text" for="system">System Notes</label>
-		</div>
-		<select class="custom-select" id='system' onchange=filterSelects()>
-            <option value="1" <% if (query.system === 1) { %> selected <% } %>>Include</option>
-            <option value="2" <% if (query.system === 2) { %> selected <% } %>>Exclude</option>
-            <option value="3" <% if (query.system === 3) { %> selected <% } %>>Only</option>
-		</select>
-	</div>
-    <div>
-        <table class="table table-sm table-hover">
-            <thead class="thead-dark">
-                <th class="w-25" onclick="sortTable(0, 'notesTable')">Date</th>
-                <th class="w-10" onclick="sortTable(1, 'notesTable')">Sys</th>
-                <th class="w-65" onclick="sortTable(2, 'notesTable')">Note</th>
-                <th><i class="fas fa-search"></i></th>
-                <% if (permissions.note_delete === 1) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-            </thead>
-            <tbody id="notesTable">
-                <% if (notes) notes.forEach(note => { %>
-                    <tr>
-                        <td data-sort="<%= note._date.getTime() %>">
-                            <%= note._date.toDateString() %>
-                        </td>
-                        <td>
-                            <% if (note._system) { %><i class='fas fa-check'></i><% } %>
-                        </td>
-                        <td>
-                            <%= note._note %>
-                        </td>
-                        <td>
-                            <a class='btn btn-sm btn-primary' href='javascript:viewNote(<%= note.note_id %>)'>
-                                <i class="fas fa-search"></i>
-                            </a>
-                        </td>
-                        <% if (permissions.note_delete === 1) { %>
-                            <td>
-                                <form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST">
-                                    <button class="btn btn-sm btn-danger confirm">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        <% } %>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
+<div class="row">
+    <% if (permissions.note_add) { %>
+        <div class="col-1">
+            <a class='float-left btn btn-success' href='javascript:add("notes",{"queries":"table=<%= notes.table %>&id=<%= notes.id %>","height":600})'>
+                <i class='fas fa-plus'></i>
+            </a>
+        </div>
+    <% } %>
+    <div class="col-<% if (permissions.note_add) { %>11<% } else { %>12<% } %>">
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="system">System Notes</label>
+            </div>
+            <select class="custom-select" id='system' onchange=filterSelects()>
+                <option value="1" <% if (query.system === 1) { %> selected <% } %>>Include</option>
+                <option value="2" <% if (query.system === 2) { %> selected <% } %>>Exclude</option>
+                <option value="3" <% if (query.system === 3) { %> selected <% } %>>Only</option>
+            </select>
+        </div>
     </div>
 </div>
+<table class="table table-sm table-hover">
+    <thead class="thead-dark">
+        <th class="w-25" onclick="sortTable(0, 'notesTable')">Date</th>
+        <th class="w-10" onclick="sortTable(1, 'notesTable')">Sys</th>
+        <th class="w-45" onclick="sortTable(2, 'notesTable')">Note</th>
+        <th class="w-20" onclick="sortTable(3, 'notesTable')">User</th>
+        <th><i class="fas fa-search"></i></th>
+        <% if (permissions.note_delete === 1) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+    </thead>
+    <tbody id="notesTable">
+        <% if (notes.notes) notes.notes.forEach(note => { %>
+            <tr>
+                <td data-sort="<%= note._date.getTime() %>">
+                    <%= note._date.toDateString() %>
+                </td>
+                <td>
+                    <% if (note._system) { %><i class='fas fa-check'></i><% } %>
+                </td>
+                <td>
+                    <%= note._note %>
+                </td>
+                <td>
+                    <%= note.user.rank._rank %> <%= note.user._name %>, <%= note.user._ini %>
+                </td>
+                <td>
+                    <a class='btn btn-sm btn-warning' href='javascript:edit("notes",<%= note.note_id %>,{"height":600})'>
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                </td>
+                <% if (permissions.note_delete) { %>
+                    <td>
+                        <% if (!note._system) { %>
+                            <form action="/stores/notes/<%= note.note_id %>?_method=DELETE" method="POST">
+                                <button class="btn btn-sm btn-danger confirm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        <% } %>
+                    </td>
+                <% } %>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>

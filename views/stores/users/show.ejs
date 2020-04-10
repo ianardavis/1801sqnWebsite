@@ -15,270 +15,303 @@
     </nav>
 </section>
 <section class="container">
-    <div class="row">
-        <div class="col-12 col-lg-4 bordered mb-3">
-            <% if (permissions.user_edit) { %>
-                <a class="float-left btn btn-primary mr-1" href="/stores/users/<%= f_user.user_id %>/edit" data-toggle="tooltip" data-placement="bottom" title="Edit User">
-                    <i class='fas fa-pencil-alt'></i>
-                </a>
-            <% } %>
-            <% if (permissions.user_password || f_user.user_id === user.user_id) { %>
-                <a class="float-left btn btn-warning mr-1" href="/stores/password?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Change Password">
-                    <i class='fas fa-key'></i>
-                </a>
-            <% } %>
-            <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
-                <form action="/stores/users/<%= f_user.user_id %>?_method=DELETE" method="POST">
-                    <button class="float-left btn btn-danger confirm" data-toggle="tooltip" data-placement="bottom" title="Delete User">
-                        <i class='fas fa-trash-alt'></i>
-                    </button>
-                </form>
-            <% } %>
-            <h4 class='mb-3'>Details</h4>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-25">
-                    <span class="input-group-text w-100">Bader #</span>
-                </div>
-                <p class="form-control"><%= f_user._bader %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-25">
-                    <span class="input-group-text w-100">Rank</span>
-                </div>
-                <p class="form-control"><%= f_user.rank._rank %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-25">
-                    <span class="input-group-text w-100">Name</span>
-                </div>
-                <p class="form-control"><%= f_user._name %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-25">
-                    <span class="input-group-text w-100">Initials</span>
-                </div>
-                <p class="form-control"><%= f_user._ini %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-25">
-                    <span class="input-group-text w-100">Status</span>
-                </div>
-                <p class="form-control"><%= f_user.status._status %></p>
-            </div>
-            <div class="input-group input-group-sm mb-1">
-                <div class="input-group-prepend w-25">
-                    <span class="input-group-text w-100">Login ID</span>
-                </div>
-                <p class="form-control"><%= f_user._login_id %></p>
-            </div>
-            <% if (permissions.user_password) { %>
-                <form action="/stores/users/<%= f_user.user_id %>?_method=PUT" method="POST">
-            <% } %>
-            <div class="input-group mb-1">
-                <div class="input-group-prepend w-75">
-                    <span class="input-group-text w-100">Change password on next login</span>
-                </div>
-                <p class='form-control'>
-                    <input class="form-control form-control-sm confirm" <% if (permissions.user_password) { %>name="user[_reset]" onChange="this.form.submit()" value='1' <% } %>type="checkbox" <% if (f_user._reset) { %>checked <% } %>>
-                </p>
-            </div>
-            <% if (permissions.user_password) { %>
-                </form>
-            <% } %>
-        </div>
-        <div class="col-12 col-lg-3 bordered mb-3">
-            <% if (permissions.user_permissions && f_user.user_id !== user.user_id) { %>
-                <a class="float-left btn btn-primary mb-1" href="/stores/permissions/<%= f_user.user_id %>/edit" data-toggle="tooltip" data-placement="bottom" title="Edit Permissions">
-                    <i class='fas fa-pencil-alt'></i>
-                </a>
-            <% } %>
-            <h4>Permissions</h4>
-            <select class="form-control" size="11">
-                <% for (var permission in f_user.permission.dataValues) { %>
-                    <% if (f_user.permission[permission] === 1 && permission !== 'user_id' && permission !== 'createdAt' && permission !== 'updatedAt') { %>
-                        <option><%= permission%></option>
-                    <% } %>
-                <% } %>
-            </select>
-        </div>
-        <% if (permissions.access_notes || user.user_id === f_user.user_id) { %> 
-            <div class="col-12 col-lg-5 bordered mb-3">
-                <% if (permissions.note_add) { %>
-                    <a class="float-left btn btn-success mb-1" href='javascript:addNote("users","<%= f_user.user_id %>")' data-toggle="tooltip" data-placement="bottom" title="Add Note">
-                        <i class='fas fa-plus'></i>
-                    </a>
-                <% } %>
-                <% include ../../partials/noteTable %>
-            </div>
-        <% } %>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
+                Details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="permissions-tab" data-toggle="tab" href="#permissions" role="tab" aria-controls="permissions" aria-selected="true">
+                Permissions
+            </a>
+        </li>
         <% if (permissions.access_requests || user.user_id === f_user.user_id) { %>
-            <div class="col-12 bordered mb-3">
-                <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/requests/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Request">
-                        <i class='fas fa-plus'></i>
+            <li class="nav-item">
+                <a class="nav-link" id="requests-tab" data-toggle="tab" href="#requests" role="tab" aria-controls="requests" aria-selected="true">
+                    Requests (<%= requests.length %>)
+                </a>
+            </li>
+        <% } %>
+        <% if (permissions.access_orders || user.user_id === f_user.user_id) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="orders-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="true">
+                    Orders (<%= orders.length %>)
+                </a>
+            </li>
+        <% } %>
+        <% if (permissions.access_issues || user.user_id === f_user.user_id) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="issues-tab" data-toggle="tab" href="#issues" role="tab" aria-controls="issues" aria-selected="true">
+                    Issues (<%= issues.length %>)
+                </a>
+            </li>
+        <% } %>
+        <% if (permissions.access_notes) { %>
+            <li class="nav-item">
+                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
+                    Notes (<%= notes.notes.length %>)
+                </a>
+            </li>
+        <% } %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <div class="container">
+                <% if (permissions.user_edit) { %>
+                    <a class="float-left btn btn-primary m-1" href='javascript:edit("users",<%= f_user.user_id %>,{"height":361})' data-toggle="tooltip" data-placement="bottom" title="Edit User">
+                        <i class='fas fa-pencil-alt'></i>
                     </a>
                 <% } %>
-                <a data-toggle="collapse" href="#collapseRequests" role="button" aria-expanded="false" aria-controls="collapseRequests">
-                    <h4 class='mb-3'>Requests (<%= requests.length %>)</h4>
-                </a>
-                <div class="collapse" id="collapseRequests">
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="closed">Closed Requests</label>
-                        </div>
-                        <select class="custom-select" id='closed' onchange=filterSelects()>
-                            <option value="1" <% if (query.closed === 1) { %>selected<% } %> >Include</option>
-                            <option value="2" <% if (query.closed === 2) { %>selected<% } %> >Exclude</option>
-                            <option value="3" <% if (query.closed === 3) { %>selected<% } %> >Only</option>
-                        </select>
+                <% if (permissions.user_password || f_user.user_id === user.user_id) { %>
+                    <a class="float-left btn btn-warning m-1" href='javascript:changePassword(<%= f_user.user_id %>)' data-toggle="tooltip" data-placement="bottom" title="Change Password">
+                        <i class='fas fa-key'></i>
+                    </a>
+                <% } %>
+                <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
+                    <form id='userDeleteForm'>
+                        <button class="float-left m-1 btn btn-danger confirm" data-toggle="tooltip" data-placement="bottom" title="Delete User">
+                            <i class='fas fa-trash-alt'></i>
+                        </button>
+                    </form>
+                <% } %>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-25">
+                        <span class="input-group-text w-100">Bader #</span>
                     </div>
+                    <p class="form-control"><%= f_user._bader %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-25">
+                        <span class="input-group-text w-100">Rank</span>
+                    </div>
+                    <p class="form-control"><%= f_user.rank._rank %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-25">
+                        <span class="input-group-text w-100">Name</span>
+                    </div>
+                    <p class="form-control"><%= f_user._name %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-25">
+                        <span class="input-group-text w-100">Initials</span>
+                    </div>
+                    <p class="form-control"><%= f_user._ini %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-25">
+                        <span class="input-group-text w-100">Status</span>
+                    </div>
+                    <p class="form-control"><%= f_user.status._status %></p>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-25">
+                        <span class="input-group-text w-100">Login ID</span>
+                    </div>
+                    <p class="form-control"><%= f_user._login_id %></p>
+                </div>
+                <% if (permissions.user_password) { %>
+                    <form action="/stores/users/<%= f_user.user_id %>?_method=PUT" method="POST">
+                <% } %>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-75">
+                        <span class="input-group-text w-100">Change password on next login</span>
+                    </div>
+                    <p class='form-control'>
+                        <input class="form-control form-control-sm confirm" <% if (permissions.user_password) { %>name="user[_reset]" onChange="this.form.submit()" value='1' <% } %>type="checkbox" <% if (f_user._reset) { %>checked <% } %>>
+                    </p>
+                </div>
+                <% if (permissions.user_password) { %>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+            <div class="container">
+                <% if (permissions.user_permissions && f_user.user_id !== user.user_id) { %>
+                    <a class="float-left btn btn-primary m-1" href='javascript:edit("permissions",<%= f_user.user_id %>,{"height":600})' data-toggle="tooltip" data-placement="bottom" title="Edit Permissions">
+                        <i class='fas fa-pencil-alt'></i>
+                    </a>
+                <% } %>
+                <select class="form-control" size="11">
+                    <% for (var permission in f_user.permission.dataValues) { %>
+                        <% if (f_user.permission[permission] === 1 && permission !== 'user_id' && permission !== 'createdAt' && permission !== 'updatedAt') { %>
+                            <option><%= permission%></option>
+                        <% } %>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <% if (permissions.access_requests || user.user_id === f_user.user_id) { %>
+            <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
+                <div class="container">
                     <div class="row">
-                        <div class="col-12">
-                            <table class='table table-sm table-hover'>
-                                <thead class="thead-dark">
-                                    <th class="w-20" onclick="sortTable(0, 'tableRequests')">Date</th>
-                                    <th class="w-30" onclick="sortTable(1, 'tableRequests')">Item</th>
-                                    <th class="w-20" onclick="sortTable(2, 'tableRequests')">Size</th>
-                                    <th class="w-10" onclick="sortTable(3, 'tableRequests')">Qty</th>
-                                    <th class="w-20" onclick="sortTable(4, 'tableRequests')">Status</th>
-                                    <th><i class="fas fa-search"></i></th>
-                                </thead>
-                                <tbody id="tableRequests">
-                                    <% if(requests) requests.forEach(request => { %>
-                                        <tr>
-                                            <td data-sort="<%= request.request._date.getTime() %>">
-                                                <%= request.request._date.toDateString() %>
-                                            </td>
-                                            <td>
-                                                <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= request.size.item_id %>' data-toggle="tooltip" data-placement="bottom" title="View Item">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                                <%= request.size.item._description %>
-                                            </td>
-                                            <td>
-                                                <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= request.size_id %>' data-toggle="tooltip" data-placement="bottom" title="View Size">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                                <%= request.size._size %>
-                                            </td>
-                                            <td>
-                                                <%= request._qty %>
-                                            </td>
-                                            <td>
-                                                <%= request._status %>
-                                            </td>
-                                            <td>
-                                                <a class='btn btn-sm btn-primary' href='/stores/requests/<%= request.request_id %>' data-toggle="tooltip" data-placement="bottom" title="View Request">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <% }) %>
-                                </tbody>
-                            </table>
+                        <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
+                            <div class="col-1">
+                                <a class="float-left btn btn-success" href="/stores/requests/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Request">
+                                    <i class='fas fa-plus'></i>
+                                </a>
+                            </div>
+                        <% } %>
+                        <div class="col-<% if (user.user_id === f_user.user_id || permissions.request_add) { %>11<% } else { %>12<% } %>">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="closed">Closed Requests</label>
+                                </div>
+                                <select class="custom-select" id='closed' onchange=filterSelects()>
+                                    <option value="1" <% if (query.closed === 1) { %>selected<% } %> >Include</option>
+                                    <option value="2" <% if (query.closed === 2) { %>selected<% } %> >Exclude</option>
+                                    <option value="3" <% if (query.closed === 3) { %>selected<% } %> >Only</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+                    <table class='table table-sm table-hover'>
+                        <thead class="thead-dark">
+                            <th class="w-20" onclick="sortTable(0, 'tableRequests')">Date</th>
+                            <th class="w-30" onclick="sortTable(1, 'tableRequests')">Item</th>
+                            <th class="w-20" onclick="sortTable(2, 'tableRequests')">Size</th>
+                            <th class="w-10" onclick="sortTable(3, 'tableRequests')">Qty</th>
+                            <th class="w-20" onclick="sortTable(4, 'tableRequests')">Status</th>
+                            <th><i class="fas fa-search"></i></th>
+                        </thead>
+                        <tbody id="tableRequests">
+                            <% if(requests) requests.forEach(request => { %>
+                                <tr>
+                                    <td data-sort="<%= request.request._date.getTime() %>">
+                                        <%= request.request._date.toDateString() %>
+                                    </td>
+                                    <td>
+                                        <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= request.size.item_id %>' data-toggle="tooltip" data-placement="bottom" title="View Item">
+                                            <i class="fas fa-search"></i>
+                                        </a>
+                                        <%= request.size.item._description %>
+                                    </td>
+                                    <td>
+                                        <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= request.size_id %>' data-toggle="tooltip" data-placement="bottom" title="View Size">
+                                            <i class="fas fa-search"></i>
+                                        </a>
+                                        <%= request.size._size %>
+                                    </td>
+                                    <td>
+                                        <%= request._qty %>
+                                    </td>
+                                    <td>
+                                        <%= request._status %>
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-sm btn-primary' href='/stores/requests/<%= request.request_id %>' data-toggle="tooltip" data-placement="bottom" title="View Request">
+                                            <i class="fas fa-search"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         <% } %>
         <% if (permissions.access_orders || user.user_id === f_user.user_id) { %>
-            <div class="col-12 bordered mb-3">
-                <% if (user.user_id !== f_user.user_id && permissions.order_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/orders/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Order">
-                        <i class='fas fa-plus'></i>
-                    </a>
-                <% } %>
-                <a data-toggle="collapse" href="#collapseOrders" role="button" aria-expanded="false" aria-controls="collapseOrders">
-                    <h4 class='mb-3'>Orders (<%= orders.length %>)</h4>
-                </a>
-                <div class="collapse" id="collapseOrders">
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="issued">Issued Orders</label>
-                        </div>
-                        <select class="custom-select" id='issued' onchange=filterSelects()>
-                            <option value="1" <% if (query.issued === 1) { %> selected <% } %> >Include</option>
-                                <option value="2" <% if (query.issued === 2) { %> selected <% } %> >Exclude</option>
-                                <option value="3" <% if (query.issued === 3) { %> selected <% } %> >Only</option>
-                            </select>
-                    </div>
+            <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                <div class="container">
                     <div class="row">
-                        <div class="col-12">
-                            <table class='table table-sm table-hover'>
-                                <thead class="thead-dark">
-                                    <th class="w-25" onclick="sortTable(0, 'tableOrders')">Date</th>
-                                    <th class="w-30" onclick="sortTable(1, 'tableOrders')">Item</th>
-                                    <th class="w-20" onclick="sortTable(2, 'tableOrders')">Size</th>
-                                    <th class="w-10" onclick="sortTable(3, 'tableOrders')">Qty</th>
-                                    <th class="w-5" onclick="sortTable(4, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Demanded">D</th>
-                                    <th class="w-5" onclick="sortTable(5, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Received">R</th>
-                                    <th class="w-5" onclick="sortTable(6, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Issued">I</th>
-                                    <th><i class="fas fa-search"></i></th>
-                                </thead>
-                                <tbody id="tableOrders">
-                                    <% if (orders) orders.forEach(order => { %>
-                                        <tr>
-                                            <td data-sort="<%= order.order._date.getTime() %>">
-                                                <%= order.order._date.toDateString() %>
-                                            </td>
-                                            <td>
-                                                <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= order.size.item_id %>' data-toggle="tooltip" data-placement="bottom" title="View Item">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                                <%= order.size.item._description %>
-                                            </td>
-                                            <td>
-                                                <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= order.size_id %>' data-toggle="tooltip" data-placement="bottom" title="View Size">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                                <%= order.size._size %>
-                                            </td>
-                                            <td>
-                                                <%= order._qty %>
-                                            </td>
-                                            <td>
-                                                <input class="form-control form-control-sm" type="checkbox" <% if (order.demand_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Demanded">
-                                            </td>
-                                            <td>
-                                                <input class="form-control form-control-sm" type="checkbox" <% if (order.receipt_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Received">
-                                            </td>
-                                            <td>
-                                                <input class="form-control form-control-sm" type="checkbox" <% if (order.issue_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Issued">
-                                            </td>
-                                            <td>
-                                                <a class='btn btn-sm btn-primary' href='/stores/orders/<%= order.order_id %>' data-toggle="tooltip" data-placement="bottom" title="View Order">
-                                                    <i class="fas fa-search"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <% }) %>
-                                </tbody>
-                            </table>
+                        <% if (user.user_id !== f_user.user_id && permissions.order_add) { %>
+                            <div class="col-1">
+                                <a class="float-left btn btn-success" href="/stores/orders/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Order">
+                                    <i class='fas fa-plus'></i>
+                                </a>
+                            </div>
+                        <% } %>
+                        <div class="col-<% if (user.user_id !== f_user.user_id && permissions.order_add) { %>11<% } else { %>12<% } %>">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="issued">Issued Orders</label>
+                                </div>
+                                <select class="custom-select" id='issued' onchange=filterSelects()>
+                                    <option value="1" <% if (query.issued === 1) { %> selected <% } %> >Include</option>
+                                    <option value="2" <% if (query.issued === 2) { %> selected <% } %> >Exclude</option>
+                                    <option value="3" <% if (query.issued === 3) { %> selected <% } %> >Only</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+                    <table class='table table-sm table-hover'>
+                        <thead class="thead-dark">
+                            <th class="w-25" onclick="sortTable(0, 'tableOrders')">Date</th>
+                            <th class="w-30" onclick="sortTable(1, 'tableOrders')">Item</th>
+                            <th class="w-20" onclick="sortTable(2, 'tableOrders')">Size</th>
+                            <th class="w-10" onclick="sortTable(3, 'tableOrders')">Qty</th>
+                            <th class="w-5" onclick="sortTable(4, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Demanded">D</th>
+                            <th class="w-5" onclick="sortTable(5, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Received">R</th>
+                            <th class="w-5" onclick="sortTable(6, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Issued">I</th>
+                            <th><i class="fas fa-search"></i></th>
+                        </thead>
+                        <tbody id="tableOrders">
+                            <% if (orders) orders.forEach(order => { %>
+                                <tr>
+                                    <td data-sort="<%= order.order._date.getTime() %>">
+                                        <%= order.order._date.toDateString() %>
+                                    </td>
+                                    <td>
+                                        <a class="float-right btn btn-sm btn-primary" href='/stores/items/<%= order.size.item_id %>' data-toggle="tooltip" data-placement="bottom" title="View Item">
+                                            <i class="fas fa-search"></i>
+                                        </a>
+                                        <%= order.size.item._description %>
+                                    </td>
+                                    <td>
+                                        <a class="float-right btn btn-sm btn-primary" href='/stores/sizes/<%= order.size_id %>' data-toggle="tooltip" data-placement="bottom" title="View Size">
+                                            <i class="fas fa-search"></i>
+                                        </a>
+                                        <%= order.size._size %>
+                                    </td>
+                                    <td>
+                                        <%= order._qty %>
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="checkbox" <% if (order.demand_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Demanded">
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="checkbox" <% if (order.receipt_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Received">
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="checkbox" <% if (order.issue_line_id) { %>checked <% } %>disabled data-toggle="tooltip" data-placement="bottom" title="Issued">
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-sm btn-primary' href='/stores/orders/<%= order.order_id %>' data-toggle="tooltip" data-placement="bottom" title="View Order">
+                                            <i class="fas fa-search"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         <% } %>
         <% if (permissions.access_issues || user.user_id === f_user.user_id) { %>
-            <div class="col-12 bordered mb-3">
-                <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
-                    <a class="float-left btn btn-success" href="/stores/issues/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Issue">
-                        <i class='fas fa-plus'></i>
-                    </a>
-                <% } %>
-                <a data-toggle="collapse" href="#collapseIssues" role="button" aria-expanded="false" aria-controls="collapseIssues">
-                    <h4 class='mb-3'>Issues (<%= issues.length %>)</h4>
-                </a>
-                <div class="collapse" id="collapseIssues">
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="returned">Returned Lines</label>
+            <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+                <div class="container">
+                    <div class="row">
+                        <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
+                            <div class="col-1">
+                                <a class="float-left btn btn-success" href="/stores/issues/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Issue">
+                                    <i class='fas fa-plus'></i>
+                                </a>
+                            </div>
+                        <% } %>
+                        <div class="col-<% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>11<% } else { %>12<% } %>">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="returned">Returned Lines</label>
+                                </div>
+                                <select class="custom-select" id='returned' onchange=filterSelects()>
+                                    <option value="1"<% if (query.returned === 1) { %> selected <% } %>>Include</option>
+                                    <option value="2"<% if (query.returned === 2) { %> selected <% } %>>Exclude</option>
+                                    <option value="3"<% if (query.returned === 3) { %> selected <% } %>>Only</option>
+                                </select>
+                            </div>
                         </div>
-                        <select class="custom-select" id='returned' onchange=filterSelects()>
-                            <option value="1"<% if (query.returned === 1) { %> selected <% } %>>Include</option>
-                            <option value="2"<% if (query.returned === 2) { %> selected <% } %>>Exclude</option>
-                            <option value="3"<% if (query.returned === 3) { %> selected <% } %>>Only</option>
-                        </select>
                     </div>
                     <div class="row">
                         <div class="col-12">
@@ -359,12 +392,26 @@
                 </div>
             </div>
         <% } %>
+        <% if (permissions.access_notes) { %>
+            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                <div class="container">
+                    <% include ../../partials/noteTable %>
+                </div>
+            </div>
+        <% } %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
+<script src="/js/changePassword.js"></script>
 <script>
+    let deleteUserForm = document.querySelector("#userDeleteForm");
+    deleteUserForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        sendData(deleteUserForm, 'DELETE', '/stores/users/<%= f_user.user_id %>', {reload: true});
+    });
     function filterSelects() {
         filter(['system', 'issued', 'closed', 'returned'],"/stores/users/<%= f_user.user_id %>");
     };
+    showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>
