@@ -14,26 +14,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         fn.getOne(
             m.stock,
             {stock_id: req.params.id},
-            {
-                include: [
-                    inc.sizes(),
-                    inc.adjusts(),
-                    inc.receipt_lines({receipts: true, as: 'receipts'}),
-                    inc.issue_lines({issues: true, as: 'issues'}),
-                    inc.return_lines({returns: true, as: 'returns'}),
-                    m.locations
-                ]
-            }
-        )
+            {include: [
+                inc.sizes(),
+                m.locations
+        ]})
         .then(stock => {
-            fn.getNotes('stock', req.params.id, req)
-            .then(notes => {
-                res.render('stores/stock/show', {
-                    stock: stock,
-                    notes: notes,
-                    query: {system: req.query.system || 2},
-                    show_tab: req.query.tab || 'details'
-                });
+            res.render('stores/stock/show', {
+                stock: stock,
+                notes: {table: 'stock', id: stock.stock_id},
+                show_tab: req.query.tab || 'details'
             });
         })
         .catch(err => fn.error(err, '/', req, res));
@@ -47,6 +36,16 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         )
         .then(stock => res.render('stores/stock/edit', {stock: stock}))
         .catch(err => fn.error(err, '/', req, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getstock', isLoggedIn, allowed('access_stock', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.stock,
+            req.query,
+            {include: [inc.locations({as: 'location'})]}
+        )
+        .then(stock => res.send({result: true, stock: stock}))
+        .catch(err => fn.send_error(err.message, res));
     });
     
     //POST

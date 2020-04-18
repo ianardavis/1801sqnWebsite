@@ -20,7 +20,7 @@ module.exports = (app, m) => {
     require('./receipts')   (app, al, fn, inc, mw.isLoggedIn, m);
     require('./reports')    (app, al, fn, inc, mw.isLoggedIn, m);
     require('./requests')   (app, al, fn, inc, mw.isLoggedIn, m);
-    require('./returns')    (app, al, fn, inc, mw.isLoggedIn);
+    require('./returns')    (app, al, fn, inc, mw.isLoggedIn, m);
     require('./serials')    (app, al, fn, inc, mw.isLoggedIn, m);
     require('./settings')   (app, al, fn, inc, mw.isLoggedIn, m);
     require('./stock')      (app, al, fn, inc, mw.isLoggedIn, m);
@@ -30,7 +30,8 @@ module.exports = (app, m) => {
     app.get('/stores', mw.isLoggedIn, (req, res) => {
         fn.getAllWhere(m.requests, 
             {
-                _complete: 0,
+                _complete: 1,
+                _closed: 0,
                 requested_for: {[op.not]: req.user.user_id}
             }
         )

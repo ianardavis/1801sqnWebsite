@@ -11,26 +11,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     app.get('/stores/users', isLoggedIn, allowed('access_users', {allow: true}), (req, res) => {
         if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id);
         else {
-            let query = Number(req.query.status) || 1;
             fn.getAll(m.statuses)
-            .then(statuses => {
-                fn.getAllWhere(
-                    m.users,
-                    {
-                        user_id: {[op.not]: 1},
-                        status_id: query
-                    },
-                    {include: [m.ranks]}
-                )
-                .then(users => {
-                    res.render('stores/users/index', {
-                        users:    users,
-                        status:   query,
-                        statuses: statuses
-                    });
-                })
-                .catch(err => fn.error(err, '/stores', req, res));
-            });
+            .then(statuses => res.render('stores/users/index', {statuses: statuses}));
         };
     });
     //NEW
@@ -41,23 +23,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //SHOW
     app.get('/stores/users/:id', isLoggedIn, allowed('access_users', {allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            let where = {}, query = {};
-            query.issued =   Number(req.query.issued)   || 2;
-            query.closed =   Number(req.query.closed)   || 2;
-            query.returned = Number(req.query.returned) || 2;
-            query.system =   Number(req.query.system)   || 2;
-            where.requests = {};
-            where.orders =   {};
-            where.issues =   {};
-            if (query.issued === 2)        where.orders.issue_line_id  = null;
-            else if (query.issued === 3)   where.orders.issue_line_id  = {[op.not]: null};
-
-            if (query.closed === 2)        where.requests._status      = 'Pending';
-            else if (query.closed === 3)   where.requests._status      = {[op.not]: 'Pending'};
-
-            if (query.returned === 2)      where.issues.return_line_id = null;
-            else if (query.returned === 3) where.issues.return_line_id = {[op.not]: null};
-
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
@@ -65,67 +30,11 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {include: [m.ranks, m.permissions, m.statuses]}
             )
             .then(user => {
-                fn.getAllWhere(
-                    m.request_lines,
-                    where.requests,
-                    {
-                        include: [
-                            inc.requests({where: {requested_for: user.user_id}, required: true}),
-                            inc.sizes({stock: true})
-                        ]
-                    }
-                )
-                .then(requests => {
-                    fn.getAllWhere(
-                        m.order_lines,
-                        where.orders,
-                        {
-                            include: [
-                                inc.orders({where: {ordered_for: user.user_id}, required: true}),
-                                inc.sizes({stock: true})
-                            ]
-                        }
-                    )
-                    .then(orders => {
-                        fn.getAllWhere(
-                            m.issue_lines,
-                            where.issues,
-                            {
-                                include: [
-                                    inc.return_lines({as: 'return', include: [inc.stock()]}),
-                                    inc.issues({where: {issued_to: user.user_id}, required: true}),
-                                    inc.stock({
-                                        size: true,
-                                        include: [
-                                            m.locations,
-                                            inc.sizes({include:[
-                                                m.items,
-                                                inc.stock()
-                                            ]})
-                                        ]
-                                    })
-                                ]
-                            }
-                        )
-                        .then(issues => {
-                            fn.getNotes('users', req.params.id, req)
-                            .then(notes => {
-                                res.render('stores/users/show', {
-                                    f_user:   user, 
-                                    requests: requests,
-                                    orders:   orders,
-                                    issues:   issues,
-                                    notes:    notes,
-                                    query:    query,
-                                    show_tab: req.query.tab || 'details'
-                                });
-                            });
-                        })
-                        .catch(err => fn.error(err, '/stores/users', req, res));
-                    })
-                    .catch(err => fn.error(err, '/stores/users', req, res));
-                })
-                .catch(err => fn.error(err, '/stores/users', req, res));
+                res.render('stores/users/show', {
+                    f_user:   user,
+                    notes:    {table: 'users', id: user.user_id},
+                    show_tab: req.query.tab || 'details'
+                });
             })
             .catch(err => fn.error(err, '/stores/users', req, res));
         } else {
@@ -162,6 +71,16 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             })
             .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
         });
+    });
+    //ASYNC GET
+    app.get('/stores/getusers', isLoggedIn, allowed('access_users', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.users,
+            req.query,
+            {include: [m.ranks]}
+        )
+        .then(users => res.send({result: true, users: users}))
+        .catch(err => fn.send_error(err.message, res));
     });
 
     //POST

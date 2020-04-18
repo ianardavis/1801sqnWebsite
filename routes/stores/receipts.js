@@ -1,20 +1,8 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
     app.get('/stores/receipts', isLoggedIn, allowed('access_receipts'), (req, res) => {
-        fn.getAll(
-            m.receipts,
-            [
-                m.suppliers,
-                inc.users(),
-                inc.receipt_lines()
-            ]
-        )
-        .then(receipts => {
-            res.render('stores/receipts/index',{
-                receipts: receipts,
-                query:    {cr: Number(req.query.cr) || 2}
-            });
-        })
+        fn.getAll(m.suppliers)
+        .then(suppliers => res.render('stores/receipts/index', {suppliers: suppliers}))
         .catch(err => fn.error(err, '/stores', req, res));
     });
     //NEW
@@ -36,30 +24,56 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         fn.getOne(
             m.receipts,
             {receipt_id: req.params.id},
-            {
-                include: [
-                    {
-                        model: m.receipt_lines,
-                        as: 'lines',
-                        include: [inc.stock({size: true})]
-                    },
-                    inc.users(),
-                    m.suppliers
-                ]
-            }
-        )
+            {include: [
+                inc.users(),
+                inc.suppliers({as: 'supplier'})
+        ]})
         .then(receipt => {
-            fn.getNotes('receipts', req.params.id, req)
-            .then(notes => {
-                res.render('stores/receipts/show', {
-                    receipt: receipt,
-                    notes:   notes,
-                    query:   {system: Number(req.query.system) || 2},
-                    show_tab: req.query.tab || 'details'
-                });
+            res.render('stores/receipts/show', {
+                receipt: receipt,
+                notes:   {table: 'receipts', id: receipt.receipt_id},
+                show_tab: req.query.tab || 'details'
             });
         })
         .catch(err => fn.error(err, '/stores/receipts', req, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getreceipts', isLoggedIn, allowed('access_receipts', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.receipts,
+            req.query,
+            {include: [
+                inc.suppliers({as: 'supplier'}),
+                inc.receipt_lines(),
+                inc.users()
+        ]})
+        .then(receipts => res.send({result: true, receipts: receipts}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.get('/stores/getreceiptlines', isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.receipt_lines,
+            req.query,
+            {include: [
+                inc.receipts(),
+                inc.stock({as: 'stock', size: true})
+        ]})
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.get('/stores/getreceiptlinesbysize', isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
+        fn.getAll(
+            m.receipt_lines,
+            [
+                inc.receipts(),
+                inc.users(),
+                inc.stock({
+                    as: 'stock',
+                    where: {size_id: req.query.size_id},
+                    required: true})
+        ])
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
     });
     
     //POST

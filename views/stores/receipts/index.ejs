@@ -13,47 +13,47 @@
 </section>
 <section>
 	<div class="container">
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-20">
+				<label class="input-group-text w-100" for="sel_supplier">Suppliers</label>
+			</div>
+			<select class="custom-select" id='sel_supplier' onchange=getReceipts()>
+				<option value='-1' selected>All</option>
+				<% suppliers.forEach(supplier => { %>
+					<option value='<%= supplier.supplier_id %>'>
+						<%= supplier._name %>
+					</option>
+				<% }); %>
+			</select>
+		</div>
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-20">
+				<label class="input-group-text w-100" for="sel_complete">Completed Receipts</label>
+			</div>
+			<select class="custom-select" id='sel_complete' onchange=getReceipts()>
+				<option value='1' selected>Include</option>
+				<option value='2'>Exclude</option>
+				<option value='3'>Only</option>
+			</select>
+		</div>
+		<div id='spn_receipts' class="spinner-border text-primary" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class="w-25" onclick="sortTable(0, 'orderTable')">Supplier</th>
-				<th class="w-25" onclick="sortTable(1, 'orderTable')">Receipt Date</th>
-				<th class="w-25" onclick="sortTable(2, 'orderTable')">Lines</th>
-				<th class="w-25" onclick="sortTable(3, 'orderTable')">Received By</th>
+				<th class="w-25" onclick="sortTable(0, 'receiptTable')">Supplier</th>
+				<th class="w-25" onclick="sortTable(1, 'receiptTable')">Receipt Date</th>
+				<th class="w-10" onclick="sortTable(2, 'receiptTable')">Lines</th>
+				<th class="w-10" onclick="sortTable(3, 'receiptTable')">Complete</th>
+				<th class="w-30" onclick="sortTable(4, 'receiptTable')">Received By</th>
 				<th><i class='fas fa-search'></i></th>
 			</thead>
-			<tbody id="orderTable">
-				<% if (receipts) receipts.forEach(receipt => { %>
-					<tr>
-						<td>
-							<a class='float-right btn btn-sm btn-primary' href="/stores/suppliers/<%= receipt.supplier_id %>">
-								<i class='fas fa-search'></i>
-							</a>
-							<%= receipt.supplier._name %>
-						</td>
-						<td>
-							<%= receipt._date.toDateString() %>
-						</td>
-						<td>
-							<%= receipt.lines.length %>
-						</td>
-						<td>
-							<%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
-						</td>
-						<td>
-							<a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
-								<i class='fas fa-search'></i>
-							</a>
-						</td>
-					</tr>
-				<% }) %>
+			<tbody id="receiptTable">
 			</tbody>
 		</table>
 	</div>
 </section>
 <% include ../../partials/foot/full %>
-<script>
-    function filterSelects() {
-        filter(['co'], "/stores/receipts");
-    };
-</script>
+<script src="/js/specific/receipts_index.js"></script>
+<script async>getReceipts()</script>
 <% include ../../partials/foot/htmlClose %>

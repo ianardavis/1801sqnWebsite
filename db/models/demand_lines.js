@@ -31,6 +31,11 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: 'Pending',
       comment: "null"
     },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,

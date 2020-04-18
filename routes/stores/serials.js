@@ -16,14 +16,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {serial_id: req.params.id}
         )
         .then(serial => {
-            fn.getNotes('serials', req.params.id, req)
-            .then(notes => {
-                res.render('stores/serials/show', {
-                    serial:   serial,
-                    notes:    notes,
-                    query:    {system: req.query.system || 2},
-                    show_tab: req.query.tab || 'details'
-                });
+            res.render('stores/serials/show', {
+                serial:   serial,
+                notes:    {table: 'serials', id: serial.serial_id},
+                show_tab: req.query.tab || 'details'
             });
         })
         .catch(err => fn.error(err, '/', req, res));
@@ -46,6 +42,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             });
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getserials', isLoggedIn, allowed('access_serials', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.serials,
+            req.query
+        )
+        .then(serials => res.send({result: true, serials: serials}))
+        .catch(err => fn.send_error(err.message, res));
     });
 
     //POST

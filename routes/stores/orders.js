@@ -2,35 +2,15 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
     app.get('/stores/orders', isLoggedIn, allowed('access_orders'), (req, res) => {
-        let where = {}, query = {};
-        query.complete = req.query.complete || 2;
-        if      (Number(query.complete) === 2) where._complete = 0
-        else if (Number(query.complete) === 3) where._complete = 1;
         fn.getAllWhere(
-            m.orders,
-            where,
-            {
-                include: [
-                    inc.users({as: '_for'}),
-                    inc.users({as: '_by'}),
-                    inc.order_lines()
-                ]
-            }
+            m.suppliers,
+            {supplier_id: {[op.not]: 3}}
         )
-        .then(orders => {
-            fn.getAllWhere(
-                m.suppliers,
-                {supplier_id: {[op.not]: 3}}
-            )
-            .then(suppliers => {
-                res.render('stores/orders/index',{
-                    orders:    orders,
-                    query:     query,
-                    suppliers: suppliers,
-                    download:  req.query.download || null
-                });
-            })
-            .catch(err => fn.error(err, '/stores', req, res));
+        .then(suppliers => {
+            res.render('stores/orders/index',{
+                suppliers: suppliers,
+                download:  req.query.download || null
+            });
         })
         .catch(err => fn.error(err, '/stores', req, res));
     });
@@ -66,25 +46,14 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {order_id: req.params.id},
             {include: [
                 inc.users({as: '_for'}),
-                inc.users({as: '_by'}),
-                inc.order_lines({include: [
-                    inc.demand_lines({as: 'demand_line', demands: true}),
-                    inc.receipt_lines({as: 'receipt_line', receipts: true}),
-                    inc.issue_lines({as: 'issue_line', issues: true}),
-                    inc.sizes()
-                ]})
-            ]}
-        )
+                inc.users({as: '_by'})
+        ]})
         .then(order => {
             if (req.allowed || order.orderedFor.user_id === req.user.user_id) {
-                fn.getNotes('orders', req.params.id, req)
-                .then(notes => {
-                    res.render('stores/orders/show',{
-                        order: order,
-                        notes: notes,
-                        query: {system: Number(req.query.system) || 2},
-                        show_tab: req.query.tab || 'details'
-                    });
+                res.render('stores/orders/show',{
+                    order: order,
+                    notes: {table: 'orders', id: order.order_id},
+                    show_tab: req.query.tab || 'details'
                 });
             } else {
                 req.flash('danger', 'Permission Denied!')
@@ -92,6 +61,45 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             }; 
         })
         .catch(err => fn.error(err, '/stores/orders', req, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getorders', isLoggedIn, allowed('access_orders', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.orders,
+            req.query,
+            {include: [
+                inc.users({as: '_for'}),
+                inc.users({as: '_by'}),
+                inc.order_lines()
+        ]})
+        .then(orders => res.send({result: true, orders: orders}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getorderlines', isLoggedIn, allowed('access_order_lines', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.order_lines,
+            req.query,
+            {include: [
+                inc.sizes(),
+                inc.orders()
+        ]})
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getorderlinesbyuser/:id', isLoggedIn, allowed('access_order_lines', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.order_lines,
+            req.query,
+            {include: [
+                inc.sizes(),
+                inc.orders({
+                    where: {ordered_for: req.params.id},
+                    required: true
+        })]})
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
     });
     
     //POST

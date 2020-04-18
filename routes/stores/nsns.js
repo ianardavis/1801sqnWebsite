@@ -17,14 +17,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.sizes()]}
         )
         .then(nsn => {
-            fn.getNotes('nsns', req.params.id, req)
-            .then(notes => {
-                res.render('stores/nsns/show', {
-                    nsn:   nsn,
-                    notes: notes,
-                    query: {system: req.query.system || 2},
-                    show_tab: req.query.tab || 'details'
-                });
+            res.render('stores/nsns/show', {
+                nsn:   nsn,
+                notes: {table: 'nsns', id: nsn.nsn_id},
+                show_tab: req.query.tab || 'details'
             });
         })
         .catch(err => fn.error(err, '/', req, res));
@@ -38,6 +34,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         )
         .then(nsn => res.render('stores/nsns/edit', {nsn: nsn}))
         .catch(err => fn.error(err, '/', req, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getnsns', isLoggedIn, allowed('access_nsns', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.nsns,
+            req.query
+        )
+        .then(nsns => res.send({result: true, nsns: nsns}))
+        .catch(err => fn.send_error(err.message, res));
     });
     
     //POST

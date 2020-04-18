@@ -11,15 +11,15 @@
 		</ul>
 	</nav>
 </section>
-<section class='container mb-2'>
+<section class='container'>
 	<div class="input-group mb-2">
 		<div class="input-group-prepend w-20">
-			<label class="input-group-text w-100" for="supplier_id">Suppliers</label>
+			<label class="input-group-text w-100" for="sel_supplier">Suppliers</label>
 		</div>
-		<select class="custom-select" id='supplier_id' onchange=filterSelects()>
-			<option value='0' <% if (query.supplier_id === 0) { %>selected<% } %>>All</option>
+		<select class="custom-select" id='sel_supplier' onchange=getDemands()>
+			<option value='-1' selected>All</option>
 			<% suppliers.forEach(supplier => { %>
-				<option value='<%= supplier.supplier_id %>' <% if (query.supplier_id === supplier.supplier_id) { %> selected <% } %>>
+				<option value='<%= supplier.supplier_id %>'>
 					<%= supplier._name %>
 				</option>
 			<% }); %>
@@ -27,39 +27,42 @@
 	</div>
 	<div class="input-group mb-2">
 		<div class="input-group-prepend w-20">
-			<label class="input-group-text w-100" for="complete">Completed Demands</label>
+			<label class="input-group-text w-100" for="sel_complete">Completed Demands</label>
 		</div>
-		<select class="custom-select" id='complete' onchange=filterSelects()>
-			<option value='1' <% if (query.complete === 1) { %> selected <% } %>>Include</option>
-				<option value='2' <% if (query.complete === 2) { %> selected <% } %>>Exclude</option>
-				<option value='3' <% if (query.complete === 3) { %> selected <% } %>>Only</option>
+		<select class="custom-select" id='sel_complete' onchange=getDemands()>
+			<option value='1' selected>Include</option>
+			<option value='2'>Exclude</option>
+			<option value='3'>Only</option>
 		</select>
 	</div>
-	<% if (demands) { %>
-		<div class='row'>
-			<% demands.forEach(demand => { %>
-				<div class='col-12 col-sm-6 col-lg-4 col-xl-3'>
-					<div class='card cardDarkText m-3 text-left <% if (demand._complete) { %> cardGreen <% } else { %> cardRed <% } %>'>
-						<a href='/stores/demands/<%= demand.demand_id %>'>
-							<div class='card-header'>
-								<h3><%= demand.supplier._name %></h3>
-								<p class='card-subtitle f-10 text-muted'><%= demand._date.toDateString() %></p>
-							</div>
-							<div class='card-body f-10'>
-								<p>Raised By: <%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %></p>
-								<p>Lines: <%= demand.lines.length %></p>
-							</div>
-						</a>
-					</div>
-				</div>
-			<% }) %>
+	<div class="input-group mb-2">
+		<div class="input-group-prepend w-20">
+			<label class="input-group-text w-100" for="sel_closed">Closed Demands</label>
 		</div>
-	<% } %>
+		<select class="custom-select" id='sel_closed' onchange=getDemands()>
+			<option value='1' selected>Include</option>
+			<option value='2'>Exclude</option>
+			<option value='3'>Only</option>
+		</select>
+	</div>
+	<div id='spn_demands' class="spinner-border text-primary" role="status">
+		<span class="sr-only">Loading...</span>
+	</div>
+	<table class="table table-sm table-hover">
+		<thead class="thead-dark">
+			<th class="w-25" onclick="sortTable(0, 'demandTable')">Supplier</th>
+			<th class="w-20" onclick="sortTable(1, 'demandTable')">Date</th>
+			<th class="w-25" onclick="sortTable(2, 'demandTable')">Raised By</th>
+			<th class="w-10" onclick="sortTable(3, 'demandTable')">Lines</th>
+			<th class="w-10" onclick="sortTable(4, 'demandTable')">Complete</th>
+			<th class="w-10" onclick="sortTable(5, 'demandTable')">Closed</th>
+			<th><i class="fas fa-search"></i></th>
+		</thead>
+		<tbody id="demandTable">
+		</tbody>
+	</table>
 </section>
 <% include ../../partials/foot/full %>
-<script>
-    function filterSelects() {
-        filter(['complete', 'supplier_id'], '/stores/demands');
-    };
-</script>
+<script src="/js/specific/demands_index.js"></script>
+<script async>getDemands()</script>
 <% include ../../partials/foot/htmlClose %>

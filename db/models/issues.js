@@ -18,6 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     '_date': {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     '_date_due': {

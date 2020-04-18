@@ -1,28 +1,6 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/issues', isLoggedIn, allowed('access_issues'), (req, res) => {
-        let where = {};
-        if      (Number(req.query.closed) === 2) where._complete = 0;
-        else if (Number(req.query.closed) === 3) where._complete = 1;
-        fn.getAllWhere(
-            m.issues, 
-            where,
-            {
-                include: [
-                    inc.users({as: '_to'}), 
-                    inc.users({as: '_by'}),
-                    inc.issue_lines()
-                ]
-            }
-        )
-        .then(issues => {
-            res.render('stores/issues/index', {
-                query:  {closed: Number(req.query.closed) || 2},
-                issues: issues
-            });
-        })
-        .catch(err => fn.error(err, '/stores', req, res));
-    });
+    app.get('/stores/issues', isLoggedIn, allowed('access_issues'), (req, res) => res.render('stores/issues/index'));
     //NEW
     app.get('/stores/issues/new', isLoggedIn, allowed('issue_add'), (req, res) => {
         if (req.query.user) {
@@ -54,52 +32,27 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id},
-            {
-                include: [
-                    inc.users({as: '_to'}),
-                    inc.users({as: '_by'}),
-                    inc.issue_lines({include: [
-                        m.nsns,
-                        m.serials,
-                        inc.return_lines({
-                            as: 'return',
-                            include: [
-                                inc.stock(),
-                                inc.returns()
-                            ]
-                        }),
-                        inc.stock({include: [
-                            m.locations,
-                            inc.sizes({include: [
-                                m.items,
-                                inc.stock()
-                            ]})
-                        ]})
-                    ]})
-                ]
-            }
-        )
+            {include: [
+                inc.users({as: '_to'}),
+                inc.users({as: '_by'})
+        ]})
         .then(issue => {
             if (req.allowed || issue.issuedTo.user_id === req.user.user_id) {
-                fn.getNotes('issues', req.params.id, req)
-                .then(notes => {
-                    res.render('stores/issues/show', {
-                        issue: issue,
-                        notes: notes,
-                        query: {system: Number(req.query.system) || 2},
-                        download: req.query.download || null,
-                        show_tab: req.query.tab || 'details'
-                    })
-                });
+                res.render('stores/issues/show', {
+                    issue: issue,
+                    notes: {table: 'issues', id: issue.issue_id},
+                    download: req.query.download || null,
+                    show_tab: req.query.tab || 'details'
+                })
             } else {
                 req.flash('danger', 'Permission denied');
-                res.redirect('/stores/issues');
+                res.redirect('/');
             };
         })
-        .catch(err => fn.error(err, '/stores/issues', req, res));
+        .catch(err => fn.error(err, '/', req, res));
     });
     //DOWNLOAD
-    app.get('/stores/issues/:id/loancard', isLoggedIn, allowed('access_issues'), (req, res) => {
+    app.get('/stores/issues/:id/download', isLoggedIn, allowed('access_issues'), (req, res) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id}
@@ -115,13 +68,81 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/issues/' + req.params.id, req, res));
     });
+    //ASYNC GET
+    app.get('/stores/getissues', isLoggedIn, allowed('access_issues', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.issues,
+            req.query,
+            {include: [
+                inc.users({as: '_to'}), 
+                inc.users({as: '_by'}),
+                inc.issue_lines()
+        ]})
+        .then(issues => res.send({result: true, issues: issues}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getissuelinesbysize', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
+        fn.getAll(
+            m.issue_lines,
+            [
+                inc.issues(),
+                inc.users(),
+                inc.stock({
+                    as: 'stock',
+                    where: req.query,
+                    required: true})
+        ])
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getissuelinesbyuser/:id', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.issue_lines,
+            req.query,
+            {include: [
+                inc.users(),
+                inc.stock({as: 'stock', size: true}),
+                inc.issues({
+                    where: {issued_to: req.params.id},
+                    required: true
+        })]})
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.get('/stores/getissuelines', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.issue_lines,
+            req.query,
+            {include: [
+                m.nsns,
+                m.serials,
+                inc.return_lines({
+                    as: 'return',
+                    include: [
+                        inc.stock({as: 'stock'}),
+                        inc.returns()
+                    ]
+                }),
+                inc.stock({
+                    as: 'stock',
+                    include: [
+                        m.locations,
+                        inc.sizes({
+                            include: [
+                                m.items,
+                                inc.stock()
+        ]})]})]})
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
+    });
 
     //POST
     app.post('/stores/issues', isLoggedIn, allowed('issue_add', {send: true}), (req, res) => {
         if (req.body.selected) {
             fn.createIssue(
-                req.body.issue,
-                req.body.selected,
+                req.body.user_id,
                 req.user.user_id
             )
             .then(issue_id => {
@@ -131,17 +152,32 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => fn.error(err, '/stores/users/' + req.body.issue.issued_to, req, res));
         } else redirect(new Error('No items selected'), req, res);
     });
+    app.post('/stores/issue_lines/:id', isLoggedIn, allowed('issue_line_add', {send: true}), (req, res) => {
+        fn.createIssueLine(req.params.id, req.body.line)
+        .then(message => res.send({result: true, message: message}))
+        .catch(err => fn.send_error(err.message, res))
+    });
 
     //DELETE
     app.delete('/stores/issues/:id', isLoggedIn, allowed('issue_delete', {send: true}), (req, res) => {
-        if (req.query.user) {
+        fn.delete(
+            'issue_lines',
+            {issue_id: req.params.id},
+            true
+        )
+        .then(result => {
             fn.delete(
                 'issues',
-                {issue_id: req.params.id},
-                {hasLines: true}
+                {issue_id: req.params.id}
             )
-            .then(result => res.send({result: result.success, message: result.message}))
+            .then(result => res.send({result: true, message: 'Issue deleted'}))
             .catch(err => fn.send_error(err.message, res));
-        };
+        })
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.delete('/stores/issue_lines/:id', isLoggedIn, allowed('issue_delete', {send: true}), (req, res) => {
+        fn.delete('issue_lines', {line_id: req.params.id})
+        .then(result => res.send({result: true, message: 'Line deleted'}))
+        .catch(err => fn.send_error(err.message, res));
     });
 };

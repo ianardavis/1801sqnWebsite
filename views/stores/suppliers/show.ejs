@@ -23,23 +23,23 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" id="items-tab" data-toggle="tab" href="#items" role="tab" aria-controls="items" aria-selected="true">
-                Items (<%= supplier.sizes.length %>)
+                Items (<span id='item_count'></span>)
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="demands-tab" data-toggle="tab" href="#demands" role="tab" aria-controls="demands" aria-selected="true">
-                Demands (<%= supplier.demands.length %>)
+                Demands (<span id='demand_count'></span>)
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="receipts-tab" data-toggle="tab" href="#receipts" role="tab" aria-controls="receipts" aria-selected="true">
-                Receipts (<%= supplier.receipts.length %>)
+                Receipts (<span id='receipt_count'></span>)
             </a>
         </li>
         <% if (permissions.access_notes) { %>
             <li class="nav-item">
                 <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<%= notes.notes.length %>)
+                    Notes (<span id='note_count'></span>)
                 </a>
             </li>
         <% } %>
@@ -177,94 +177,102 @@
             </div>
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+            <div id='spn_items' class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
             <div class="container">
                 <select id="size_id" class="form-control" size="20" ondblclick=goToItemSize()>
-                    <% if (supplier.sizes) { %>
-                        <% supplier.sizes.forEach(size => { %>
-                            <option value="<%= size.size_id %>"><%= size.item._description %>, size: <%= size._size %></option>
-                        <% }); %>
-                    <% }; %>
                 </select>
             </div>
         </div>
         <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
             <div class="container">
-                <% if (permissions.demand_add) { %>
-                    <a class="float-right m-1 btn btn-success" href="/stores/demands/new?supplier_id=<%= supplier.supplier_id %>">
-                        <i class='fas fa-plus'></i>
-                    </a>
-                <% } %>
-                <table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
+                <div id='spn_demands' class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="row">
+                    <% if (permissions.demand_add) { %>
+                        <div class="col-1">
+                            <form id='newDemandForm'>
+                                <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
+                                <button class="float-left btn btn-success confirm">
+                                    <i class='fas fa-plus'></i>
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+                    <div class="col-<% if (permissions.note_add) { %>11<% } else { %>12<% } %>">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend w-20">
+                                <label class="input-group-text w-100" for="sel_complete_demands">Completed Demands</label>
+                            </div>
+                            <select class="custom-select" id='sel_complete_demands' onchange=getDemands(<%= supplier.supplier_id %>)>
+                                <option value='1' selected>Include</option>
+                                <option value='2'>Exclude</option>
+                                <option value='3'>Only</option>
+                            </select>
+                        </div>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend w-20">
+                                <label class="input-group-text w-100" for="sel_closed">Closed Demands</label>
+                            </div>
+                            <select class="custom-select" id='sel_closed' onchange=getDemands(<%= supplier.supplier_id %>)>
+                                <option value='1' selected>Include</option>
+                                <option value='2'>Exclude</option>
+                                <option value='3'>Only</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-45" onclick="sortTable(0, 'demandTable')">Date</th>
+                        <th class="w-35" onclick="sortTable(0, 'demandTable')">Date</th>
                         <th class="w-10" onclick="sortTable(1, 'demandTable')">Lines</th>
                         <th class="w-10" onclick="sortTable(2, 'demandTable')">Complete</th>
-                        <th class="w-35" onclick="sortTable(3, 'demandTable')">User</th>
+                        <th class="w-10" onclick="sortTable(3, 'demandTable')">Closed</th>
+                        <th class="w-35" onclick="sortTable(4, 'demandTable')">User</th>
                         <th><i class="fas fa-search"></i></th>
                     </thead>
                     <tbody id="demandTable">
-                        <% if (supplier.demands && supplier.demands.length > 0) { %>
-                            <% supplier.demands.forEach(demand => { %>
-                                <tr>
-                                    <td data-sort="<%= demand._date.getTime() %>">
-                                        <%= demand._date.toDateString() %>
-                                    </td>
-                                    <td>
-                                        <%= demand.lines.length %>
-                                    </td>
-                                    <td>
-                                        <% if (demand._complete) { %><i class='fas fa-check'></i><% } %>
-                                    </td>
-                                    <td>
-                                        <%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %>
-                                    </td>
-                                    <td>
-                                        <a class='btn btn-sm btn-primary' href="/stores/demands/<%= demand.demand_id %>">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        <% } %>
                     </tbody>
                 </table>
             </div>
         </div>
         <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
             <div class="container">
-                <% if (permissions.receipt_add) { %>
-                    <a class="float-right m-1 btn btn-success" href="/stores/receipts/new?supplier_id=<%= supplier.supplier_id %>">
-                        <i class='fas fa-plus'></i>
-                    </a>
-                <% } %>
+                <div id='spn_receipts' class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="row">
+                    <% if (permissions.receipt_add) { %>
+                        <div class="col-1">
+                            <a class="float-left btn btn-success" href="/stores/receipts/new?supplier_id=<%= supplier.supplier_id %>">
+                                <i class='fas fa-plus'></i>
+                            </a>
+                        </div>
+                    <% } %>
+                    <div class="col-<% if (permissions.note_add) { %>11<% } else { %>12<% } %>">
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend w-20">
+                                <label class="input-group-text w-100" for="sel_complete_receipts">Completed Receipts</label>
+                            </div>
+                            <select class="custom-select" id='sel_complete_receipts' onchange=getReceipts(<%= supplier.supplier_id %>)>
+                                <option value='1' selected>Include</option>
+                                <option value='2'>Exclude</option>
+                                <option value='3'>Only</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
                     <thead class="thead-dark">
-                        <th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
+                        <th class="w-40" onclick="sortTable(0, 'receiptTable')">Date</th>
                         <th class="w-10" onclick="sortTable(1, 'receiptTable')">Lines</th>
-                        <th class="w-45" onclick="sortTable(2, 'receiptTable')">User</th>
+                        <th class="w-10" onclick="sortTable(2, 'receiptTable')">Complete</th>
+                        <th class="w-40" onclick="sortTable(3, 'receiptTable')">User</th>
                         <th><i class="fas fa-search"></i></th>
                     </thead>
                     <tbody id="receiptTable">
-                        <% if (supplier.receipts && supplier.receipts.length > 0) { %>
-                            <% supplier.receipts.forEach(receipt => { %>
-                                <tr>
-                                    <td data-sort="<%= receipt._date.getTime() %>">
-                                        <%= receipt._date.toDateString() %>
-                                    </td>
-                                    <td>
-                                        <%= receipt.lines.length %>
-                                    </td>
-                                    <td>
-                                        <%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
-                                    </td>
-                                    <td>
-                                        <a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        <% } %>
                     </tbody>
                 </table>
             </div>
@@ -279,12 +287,13 @@
     </div>
 </section>
 <% include ../../partials/foot/full %>
+<script src="/js/specific/suppliers_show.js"></script>
 <script>
     window.addEventListener( "load", function () {
-        let uploadForm = document.querySelector("#fileForm");
-        uploadForm.addEventListener("submit", function (event) {
+        let newDemandForm = document.querySelector("#newDemandForm");
+        newDemandForm.addEventListener("submit", function (event) {
             event.preventDefault();
-            sendData(uploadForm, 'POST', '/stores/files', {reload: true});
+            sendData(newDemandForm, 'POST', '/stores/demands', {reload: true});
         });
         <% if (supplier.file) { %>
             let deleteFileForm = document.querySelector("#fileDeleteForm");
@@ -292,15 +301,17 @@
                 event.preventDefault();
                 sendData(deleteFileForm, 'DELETE', '/stores/files/<%= supplier.file_id %>', {reload: true});
             });
+        <% } else if (supplier._raise_demand && permissions.file_add) { %>
+            let uploadForm = document.querySelector("#fileForm");
+            uploadForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                sendData(uploadForm, 'POST', '/stores/files', {reload: true});
+            });
         <% } %>
     });
-    function filterSelects() {
-        filter(['system'],"/stores/suppliers/<%= supplier.supplier_id %>");
-    };
-    function goToItemSize() {
-        var size = document.querySelector('#size_id');
-        if (size) window.location = '/stores/sizes/' + size.value;
-    };
     showTab('<%= show_tab %>');
 </script>
+<script async>getItems(<%= supplier.supplier_id %>)</script>
+<script async>getDemands(<%= supplier.supplier_id %>)</script>
+<script async>getReceipts(<%= supplier.supplier_id %>)</script>
 <% include ../../partials/foot/htmlClose %>

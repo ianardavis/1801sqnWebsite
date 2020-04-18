@@ -1,22 +1,33 @@
+a {
+	color: #B9CBE2;
+}
 body {
 	background-color: #131c43;
 	color: #B9CBE2;
 }
-a {
-	color: #B9CBE2;
-}
+
 .bg-light {
  	background-color: #B9CBE2 !important;
 }
-.navbar-light .navbar-nav .nav-link {
-	 color: #131c43;
- }
-.navbar-light .navbar-brand {
-    color: #31639e;
+.bg-dark {
+	background-color: #010a1f !important;
 }
-.nav-link:hover {
-	background-color: #010a1f;
-	color: #B9CBE2 !important;
+.bg-nav {
+	background-color: #131c43;
+}
+.bordered {
+	border: 3px solid #B9CBE2;
+}
+.cardRed a{
+	background-color: #ffb7b7;
+	color: #131c43;
+}
+.cardGreen a{
+	background-color: #bdffa3;
+	color: #131c43;
+}
+.cardDarkText {
+	color: #131c43;
 }
 .dropdown-divider {
 	color: #010a1f;
@@ -30,11 +41,18 @@ a {
 	color: #010a1f;
 	background-color: #B9CBE2;
 }
+.navbar-light .navbar-nav .nav-link {
+	 color: #131c43;
+ }
+.navbar-light .navbar-brand {
+    color: #31639e;
+}
+.nav-link:hover {
+	background-color: #010a1f;
+	color: #B9CBE2 !important;
+}
 table, th, td, thead {
 	border: 1px solid #B9CBE2;
-}
-.bg-dark {
-	background-color: #010a1f !important;
 }
 .navbar-dark .navbar-nav .nav-link {
 	color: #B9CBE2;
@@ -46,18 +64,12 @@ table, th, td, thead {
    background-color: #B9CBE2;
    color: #010a1f !important; 
 }
-.bordered {
-	border: 3px solid #B9CBE2;
-}
 .pwd_warn {
 	background: #f95056;
 }
 .stores_nav {
 	color: #131c43 !important;
 	background-color: #B9CBE2;
-}
-.bg-nav {
-	background-color: #131c43;
 }
 .table {
 	color: #B9CBE2;
@@ -69,19 +81,6 @@ table, th, td, thead {
 .menu .card .card-header {
 	color: #131c43;
 	background-color: #B9CBE2;
-}
-.cardRed {
-	background-color: #ffb7b7;
-	color: #131c43;
-}
-.cardRed a{
-	color: #131c43;
-}
-.cardDarkText {
-	color: #131c43;
-}
-.cardGreen {
-	background-color: #bdffa3;
 }
 .table-hover tbody tr:hover {
 	color: #B9CBE2;

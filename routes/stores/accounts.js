@@ -21,17 +21,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [m.suppliers, inc.users()]}
         )
         .then(account => {
-            fn.getNotes('accounts', req.params.id, req)
-            .then(notes => {
-                res.render('stores/accounts/show', {
-                    account:  account,
-                    notes:    notes,
-                    query:    req.query,
-                    show_tab: req.query.tab || 'details'
+            res.render('stores/accounts/show', {
+                account:  account,
+                notes:    {table: 'accounts', id: account.account_id},
+                query:    req.query,
+                show_tab: req.query.tab || 'details'
 
-                });
-            })
-            .catch(err => fn.error(err, '/', req, res));
+            });
         })
         .catch(err => fn.error(err, '/', req, res));
     });

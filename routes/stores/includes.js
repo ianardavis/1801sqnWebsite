@@ -2,20 +2,37 @@ module.exports = (inc, m) => {
     inc.users = (options = {}) => {
         let include = options.include || [m.ranks];
         return {
-            model:   m.users,
-            as:      options.as || 'user',
-            include: include
+            model:    m.users,
+            attributes: options.attributes || null,
+            as:       options.as       || 'user',
+            include:  include,
+            where:    options.where    || null,
+            required: options.required || false
         };
     };
     inc.stock = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            include.push({model: m.locations, required: options.require_locations || false});
+            include.push(inc.locations({as: 'location', required: options.require_locations || false}));
             if (options.size) include.push(inc.sizes());
         };
         return {
             model:    m.stock,
+            attributes: options.attributes || null,
+            as:       options.as       || 'stocks',
+            include:  include,
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
+    inc.locations = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include;
+        return {
+            model:    m.locations,
+            attributes: options.attributes || null,
+            as:       options.as       || 'locations',
             include:  include,
             where:    options.where    || null,
             required: options.required || false
@@ -31,10 +48,27 @@ module.exports = (inc, m) => {
             if (options.serials) include.push(inc.serials());
         };
         return {
-            model:    m.sizes,
-            include:  include,
-            where:    options.where    || null,
-            required: options.required || false
+            model:      m.sizes,
+            include:    include,
+            as:         options.as         || 'size',
+            where:      options.where      || null,
+            required:   options.required   || false,
+            attributes: options.attributes || null
+        };
+    };
+    inc.items = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        else {
+            if (options.sizes) include.push(inc.sizes());
+        };
+        return {
+            model:      m.items,
+            attributes: options.attributes || null,
+            as:         options.as         || 'item',
+            include:    include,
+            where:      options.where      || null,
+            required:   options.required   || false
         };
     };
 
@@ -43,10 +77,11 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         return {
             model:    m.nsns,
+            attributes: options.attributes || null,
+            as:       options.as       || 'nsns',
             include:  include,
             required: options.required || false,
-            where:    options.where    || null,
-            required: options.required || false
+            where:    options.where    || null
         };
     };
     inc.adjusts = (options = {}) => {
@@ -57,10 +92,11 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.adjusts,
+            attributes: options.attributes || null,
+            as:       options.as       || 'adjusts',
             include:  include,
             required: options.required || false,
-            where:    options.where    || null,
-            required: options.required || false
+            where:    options.where    || null
         };
     };
     inc.serials = (options = {}) => {
@@ -68,10 +104,11 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         return {
             model:    m.serials,
+            attributes: options.attributes || null,
+            as:       options.as       || 'serials',
             include:  include,
             required: options.required || false,
-            where:    options.where    || null,
-            required: options.required || false
+            where:    options.where    || null
         };
     };
     inc.suppliers = (options = {}) => {
@@ -79,10 +116,11 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         return {
             model:    m.suppliers,
+            attributes: options.attributes || null,
+            as:       options.as       || 'suppliers',
             include:  include,
             required: options.required || false,
-            where:    options.where    || null,
-            required: options.required || false
+            where:    options.where    || null
         };
     };
 
@@ -94,6 +132,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.request_lines,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
@@ -110,6 +149,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.requests,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'request',
             where:    options.where    || null,
@@ -125,6 +165,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.order_lines,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
@@ -141,6 +182,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.orders,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'order',
             where:    options.where    || null,
@@ -157,6 +199,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.demand_lines,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
@@ -172,6 +215,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.demands,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'demand',
             where:    options.where    || null,
@@ -187,6 +231,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.receipt_lines,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
@@ -202,6 +247,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.receipts,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'receipt',
             where:    options.where    || null,
@@ -217,6 +263,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.issue_lines,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
@@ -233,6 +280,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.issues,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'issue',
             where:    options.where    || null,
@@ -248,6 +296,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.return_lines,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
@@ -264,6 +313,7 @@ module.exports = (inc, m) => {
         };
         return {
             model:    m.returns,
+            attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'return',
             where:    options.where    || null,

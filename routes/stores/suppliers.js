@@ -23,24 +23,17 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {supplier_id: req.params.id},
             {include: [
                 m.files,
-                m.accounts,
-                inc.sizes(),
-                inc.receipts({as: 'receipts', lines: true}),
-                inc.demands({as: 'demands', lines: true})
+                m.accounts
             ]}
         )
         .then(supplier => {
             fn.getSetting({setting: 'default_supplier', default: -1})
             .then(defaultSupplier => {
-                fn.getNotes('suppliers', req.params.id, req)
-                .then(notes => {
-                    res.render('stores/suppliers/show', {
-                        _default:  defaultSupplier,
-                        supplier: supplier,
-                        notes:    notes,
-                        query:    {system: Number(req.query.system) || 2},
-                        show_tab: req.query.tab || 'details'
-                    });
+                res.render('stores/suppliers/show', {
+                    _default: defaultSupplier,
+                    supplier: supplier,
+                    notes:    {table: 'suppliers', id: supplier.supplier_id},
+                    show_tab: req.query.tab || 'details'
                 });
             })
             .catch(err => fn.error(err, '/stores/suppliers', req, res));

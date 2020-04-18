@@ -15,7 +15,7 @@
 	<% if (permissions.access_users) { %>
 		<% cards.push({href: 'stores/users', title: 'Users', image: 'user'}) %>
 	<% } else { %>
-		<% cards.push({href: 'stores/users/' + currentUser.user_id, title: 'Your Account', image: 'user'}) %>
+		<% cards.push({href: 'stores/users/' + user.user_id, title: 'Your Account', image: 'user'}) %>
 	<% } %>
 	<% if (permissions.access_requests) cards.push({href: '/stores/requests', title: 'Requests', image: 'question', notifications: requests.length}) %>
 	<% if (permissions.access_orders)   cards.push({href: '/stores/orders',	  title: 'Orders',   image: 'list'}) %>

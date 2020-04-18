@@ -29,13 +29,13 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
-                Lines (<%= issue.lines.length %>)
+                Lines (<span id='line_count'></span>)
             </a>
         </li>
         <% if (permissions.access_notes) { %>
             <li class="nav-item">
                 <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<%= notes.notes.length %>)
+                    Notes (<span id='note_count'></span>)
                 </a>
             </li>
         <% } %>
@@ -43,7 +43,7 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
-                <a class='float-left btn btn-primary m-1' href='/stores/issues/<%= issue.issue_id %>/loancard'>
+                <a class='float-left btn btn-primary m-1' href='/stores/issues/<%= issue.issue_id %>/download'>
                     <i class='fas fa-file-download'></i>
                 </a>
                 <% if (permissions.issue_delete) { %>
@@ -92,20 +92,30 @@
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
                 <% if (permissions.return_add) { %>
-                    <form id='issues' action='/stores/returns?src=/stores/issues/<%= issue.issue_id %>' method='POST'>
+                <form id='issues' action='/stores/returns?src=/stores/issues/<%= issue.issue_id %>' method='POST'>
                     <input class='btn btn-primary mb-1 confirm' type='submit' value='Return Selected Lines'>
                     <input type='hidden' name='from' value='<%= issue.issued_to %>'>
                 <% } %>
+                <% if (permissions.issue_line_add) { %>
+                    <a class='float-right btn btn-success' href='javascript:addSize("issue",<%= issue.issue_id %>,{"height":600})'>
+                        <i class='fas fa-plus'></i>
+                    </a>
+                <% } %>
+				<div id='spn_issues' class="spinner-border text-primary" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
                 <table class='table table-sm table-hover mx-auto w-100'>
                     <thead class='thead-dark'>
                         <th class='w-5' onclick='sortTable(0, "issueTable")'>Line</th>
-                        <th class='w-15' onclick='sortTable(1, "issueTable")'>NSN/Serial</th>
-                        <th class='w-25' onclick='sortTable(2, "issueTable")'>Item</th>
-                        <th class='w-20' onclick='sortTable(3, "issueTable")'>Size</th>
-                        <th class='w-5' onclick='sortTable(4, "issueTable")'>Qty</th>
-                        <th class='w-10' onclick='sortTable(5, "issueTable")'>Issue Location</th>
-                        <th class='w-10' onclick='sortTable(6, "issueTable")'>Return Location</th>
-                        <th class='w-10' onclick='sortTable(7, "issueTable")'>Date Returned</th>
+                        <th class='w-10' onclick='sortTable(1, "issueTable")'>NSN</th>
+                        <th class='w-10' onclick='sortTable(2, "issueTable")'>Serial</th>
+                        <th class='w-20' onclick='sortTable(3, "issueTable")'>Item</th>
+                        <th class='w-20' onclick='sortTable(4, "issueTable")'>Size</th>
+                        <th class='w-5' onclick='sortTable(5, "issueTable")'>Qty</th>
+                        <th class='w-10' onclick='sortTable(6, "issueTable")'>Issue Location</th>
+                        <th class='w-10' onclick='sortTable(7, "issueTable")'>Return Location</th>
+                        <th class='w-10' onclick='sortTable(8, "issueTable")'>Date Returned</th>
+                        <% if (permissions.issue_line_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
                     </thead>
                     <tbody id='issueTable'>
                         <% if (issue.lines) issue.lines.forEach(line => { %>
@@ -185,7 +195,9 @@
     </div>
 </section>
 <% include ../../partials/foot/full %>
+<script src='/js/addSize.js'></script>
 <script src='/js/download.js'></script>
+<script src="/js/specific/issues_show.js"></script>
 <script>
     window.addEventListener( "load", function () {
         let form = document.querySelector("#deleteForm");
@@ -197,9 +209,7 @@
 	<% if (download) { %>
 	    download_file('<%= download %>');
 	<% } %>
-    function filterSelects() {
-        filter(['system'],'/stores/issues/<%= issue.issue_id %>');
-    };
     showTab('<%= show_tab %>');
 </script>
+<script async>getLines(<%= issue.issue_id %>, <%= permissions.return_add %>, <%= permissions.issue_delete %>)</script>
 <% include ../../partials/foot/htmlClose %>

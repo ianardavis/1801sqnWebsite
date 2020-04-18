@@ -14,56 +14,43 @@
 <section>
 	<div class="container">
 		<div class="input-group mb-2">
-			<div class="input-group-prepend">
-				<label class="input-group-text" for="complete">Completed Requests</label>
+			<div class="input-group-prepend w-25">
+				<label class="input-group-text text-centre w-100" for="sel_complete">Completed Requests</label>
 			</div>
-			<select class="custom-select" id='complete' onchange=filterSelects()>
-				<option value="1" <% if (Number(query.complete) === 1) { %>selected<% } %> >Include</option>
-				<option value="2" <% if (Number(query.complete) === 2) { %>selected<% } %> >Exclude</option>
-				<option value="3" <% if (Number(query.complete) === 3) { %>selected<% } %> >Only</option>
+			<select class="custom-select" id='sel_complete' onchange=getRequests()>
+				<option value='1'>Include</option>
+				<option value='2'>Exclude</option>
+				<option value='3' selected>Only</option>
 			</select>
+		</div>
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-25">
+				<label class="input-group-text text-centre w-100" for="sel_closed">Closed Requests</label>
+			</div>
+			<select class="custom-select" id='sel_closed' onchange=getRequests()>
+				<option value='1'>Include</option>
+				<option value='2' selected>Exclude</option>
+				<option value='3'>Only</option>
+			</select>
+		</div>
+		<div id='spn_requests' class="spinner-border text-primary" role="status">
+			<span class="sr-only">Loading...</span>
 		</div>
 		<table class="table table-sm table-hover mx-auto w-100">
 			<thead class="thead-dark">
-				<th class="w-40" onclick="sortTable(0, 'requestTable')">For</th>
-				<th class="w-40" onclick="sortTable(1, 'requestTable')">Date</th>
+				<th class="w-35" onclick="sortTable(0, 'requestTable')">For</th>
+				<th class="w-35" onclick="sortTable(1, 'requestTable')">Date</th>
 				<th class="w-10" onclick="sortTable(2, 'requestTable')">Lines</th>
 				<th class="w-10">Complete</th>
+				<th class="w-10">Closed</th>
 				<th><i class='fas fa-search'></i></th>
 			</thead>
 			<tbody id="requestTable">
-				<% if (requests) requests.forEach(request => { %>
-					<tr>
-						<td>
-							<a class='float-right btn btn-sm btn-primary' href="/stores/users/<%= request.requested_for %>">
-								<i class='fas fa-search'></i>
-							</a>
-							<%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %>
-						</td>
-						<td data-sort="<%= request._date.getTime() %>">
-							<%= request._date.toDateString() %>
-						</td>
-						<td>
-							<%= request.lines.length %>
-						</td>
-						<td>
-							<input class="form-control form-control-sm" type="checkbox" <% if (request._complete) { %>checked <% } %>disabled>
-						</td>
-						<td>
-							<a class='btn btn-sm btn-primary' href="/stores/requests/<%= request.request_id %>">
-								<i class='fas fa-search'></i>
-							</a>
-						</td>
-					</tr>
-				<% }); %>
 			</tbody>
 		</table>
 	</div>
 </section>
 <% include ../../partials/foot/full %>
-<script>
-	function filterSelects() {
-        filter(['complete'], "/stores/requests");
-	};
-</script>
+<script src='/js/specific/requests_index.js'></script>
+<script async>getRequests()</script>
 <% include ../../partials/foot/htmlClose %>

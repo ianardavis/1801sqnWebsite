@@ -21,58 +21,34 @@
 <section>
 	<div class="container">
 		<div class="input-group mb-2">
-			<div class="input-group-prepend">
-				<label class="input-group-text" for="showing">Showing</label>
+			<div class="input-group-prepend w-30">
+				<label class="input-group-text w-100" for="sel_status">Displaying</label>
 			</div>
-			<select class="custom-select" id='showing' onchange="window.location = '/stores/users?status=' + this.options[this.selectedIndex].value">
-				<% statuses.forEach(stat => { %>
-					<% if (stat.status_id !== 4) { %>
-						<% if (stat.status_id === Number(status)) { %>
-							<option value="<%= stat.status_id %>" selected><%= stat._status %></option>
-						<% } else { %>
-							<option value="<%= stat.status_id %>"><%= stat._status %></option>
-						<% } %>
-					<% } %>
+			<select class="custom-select" id='sel_status' onchange=getUsers()>
+				<% statuses.forEach(status => { %>
+					<option value="<%= status.status_id %>"<% if (Number(status.status_id) === 1){ %> selected<% } %>>
+						<%= status._status %>
+					</option>
 				<% }) %>
 			</select>
 		</div>
-		<div class="row">
-			<div class="col-12">
-				<table class="table table-sm table-hover">
-					<thead class="thead-dark">
-						<th class="w-40" onclick="sortTable(0, 'userTable')">Bader/Service #</th>
-						<th class="w-10" onclick="sortTable(1, 'userTable')">Rank</th>
-						<th class="w-40" onclick="sortTable(2, 'userTable')">Surname</th>
-						<th class="w-10" onclick="sortTable(3, 'userTable')">Initials</th>
-						<th><i class='fas fa-search'></i></th>
-					</thead>
-					<tbody id="userTable">
-						<% users.forEach(user => { %>
-							<tr>
-								<td>
-									<%= user._bader %>
-								</td>
-								<td>
-									<%= user.rank._rank %>
-								</td>
-								<td>
-									<%= user._name %>
-								</td>
-								<td>
-									<%= user._ini %>
-								</td>
-								<td>
-									<a class='btn btn-sm btn-primary' href="/stores/users/<%=user.user_id%>">
-										<i class='fas fa-search'></i>
-									</a>
-								</td>
-							</tr>
-						<% }) %>
-					</tbody>
-				</table>
-			</div>
+		<div id='spn_users' class="spinner-border text-primary" role="status">
+			<span class="sr-only">Loading...</span>
 		</div>
+		<table class="table table-sm table-hover">
+			<thead class="thead-dark">
+				<th class="w-40" onclick="sortTable(0, 'userTable')">Bader/Service #</th>
+				<th class="w-10" onclick="sortTable(1, 'userTable')">Rank</th>
+				<th class="w-40" onclick="sortTable(2, 'userTable')">Surname</th>
+				<th class="w-10" onclick="sortTable(3, 'userTable')">Initials</th>
+				<th><i class='fas fa-search'></i></th>
+			</thead>
+			<tbody id="userTable">
+			</tbody>
+		</table>
 	</div>
 </section>
 <% include ../../partials/foot/full %>
+<script src="/js/specific/users_index.js"></script>
+<script async>getUsers()</script>
 <% include ../../partials/foot/htmlClose %>

@@ -36,6 +36,7 @@ portInUseCheck()
     if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
     console.log('environment: ' + process.env.NODE_ENV);
     bb.extend(app, {
+        arrayLimit: 200,
         upload: true,
         path: process.env.ROOT + '/public/uploads',
         allowedPath: /./

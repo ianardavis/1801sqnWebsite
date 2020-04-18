@@ -17,32 +17,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     };
     //INDEX
     app.get('/stores/items', isLoggedIn, allowed('access_items'), (req, res) => {
-        let query = {}, where = {};
-        query.cat = Number(req.query.cat) || -1;
-        query.grp = Number(req.query.grp) || -1;
-        query.typ = Number(req.query.typ) || -1;
-        query.sub = Number(req.query.sub) || -1;
-        query.gen = Number(req.query.gen) || -1;
-        if (query.cat !== -1) where.category_id = query.cat;
-        if (query.grp !== -1) where.group_id    = query.grp;
-        if (query.typ !== -1) where.type_id     = query.typ;
-        if (query.sub !== -1) where.subtype_id  = query.sub;
-        if (query.gen !== -1) where.gender_id   = query.gen;
         fn.getOptions(itemOptions(), req)
-        .then(classes => {
-            fn.getAllWhere(
-                m.items,
-                where
-            )
-            .then(items => {
-                res.render('stores/items/index', {
-                    items:   items,
-                    classes: classes,
-                    query:   query
-                });
-            })
-            .catch(err => fn.error(err, '/stores', req, res));
-        });
+        .then(classes => res.render('stores/items/index', {classes: classes}));
     });
     //NEW
     app.get('/stores/items/new', isLoggedIn, allowed('item_add'), (req, res) => {
@@ -56,8 +32,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             m.categories, 
             m.groups, 
             m.types, 
-            m.subtypes,
-            inc.sizes({stock: true})
+            m.subtypes
         ];
         fn.getOne(
             m.items,
@@ -65,15 +40,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: include}
         )
         .then(item => {
-            item.sizes.forEach(size => size.locationStock = fn.summer(size.stocks));
-            fn.getNotes('items', req.params.id, req)
-            .then(notes => {
-                res.render('stores/items/show', {
-                    item:  item,
-                    notes: notes,
-                    query: {system: req.query.system || 2},
-                    show_tab: req.query.tab || 'details'
-                });
+            res.render('stores/items/show', {
+                item:  item,
+                notes: {table: 'items', id: item.item_id},
+                show_tab: req.query.tab || 'details'
             });
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
@@ -94,6 +64,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             });
         })
         .catch(err => fn.error(err, 'stores/items/' + req.params.id, req, res));
+    });
+    //ASYNC GET ITEMS
+    app.get('/stores/getitems', isLoggedIn, allowed('access_issues', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.items,
+            req.query
+        )
+        .then(items => res.send({result: true, items: items}))
+        .catch(err => fn.send_error(err.message, res));
     });
 
     //POST

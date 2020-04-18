@@ -1,28 +1,27 @@
 function setGroup(zeroise = true) {
-    var category = document.querySelector('#category_id');
+    var category = document.querySelector('#sel_category');
     if (category.value === '') {
-        hideAll("group_id");
+        hideAll("sel_group");
     } else {
-        hideSome("group_id", category.value, zeroise);
+        hideSome("sel_group", category.value, zeroise);
     };
     setType(zeroise);
 };
 function setType(zeroise = true) {
-    var group = document.querySelector('#group_id');
-    console.log(group.value);
+    var group = document.querySelector('#sel_group');
     if (group.value === '') {
-        hideAll("type_id");
+        hideAll("sel_type");
     } else {
-        hideSome("type_id", group.value, zeroise);
+        hideSome("sel_type", group.value, zeroise);
     };
     setSubtype(zeroise);
 };
 function setSubtype(zeroise = true) {
-    var type = document.querySelector('#type_id');
+    var type = document.querySelector('#sel_type');
     if (type.value === '') {
-        hideAll("subtype_id");
+        hideAll("sel_subtype");
     } else {
-        hideSome("subtype_id", type.value, zeroise);
+        hideSome("sel_subtype", type.value, zeroise);
     };
 };
 function hideSome(select, selected, zeroise = true) {

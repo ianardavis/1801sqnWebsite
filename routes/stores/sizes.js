@@ -15,50 +15,32 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
+    //ASYNC GET
+    app.get('/stores/getsizes/:key/:id', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
+        let where = {};
+        where[req.params.key] = req.params.id;
+        fn.getAllWhere(
+            m.sizes,
+            where,
+            {include: [inc.items()]}
+        )
+        .then(sizes => res.send({result: true, sizes: sizes}))
+        .catch(err => fn.send_error(err.message, res));
+    });
     //SHOW
-    app.get('/stores/sizes/:id', isLoggedIn, allowed('access_items'), (req, res) => {
-        let include = [m.items];
-        include.push(inc.suppliers());
-        include.push(inc.nsns());
-        include.push(inc.serials());
-        include.push(
-            inc.stock({
-                include: [
-                    m.locations,
-                    inc.issue_lines({
-                        issues: true,
-                        as: 'issues',
-                        where: {return_line_id: null}
-                    }),
-                    inc.receipt_lines({
-                        as: 'receipts',
-                        receipts: true
-                    })
-                ]
-            })
-        );
-        include.push(inc.request_lines({as: 'requests', requests: true, where: {_status: 'Pending'},    required: false}));
-        include.push(inc.order_lines({as: 'orders',     orders: true,   where: {receipt_line_id: null}, required: false}));
+    app.get('/stores/sizes/:id', isLoggedIn, allowed('access_sizes'), (req, res) => {
         fn.getOne(
             m.sizes,
             {size_id: req.params.id},
-            {include: include}
-        )
+            {include: [
+                m.items,
+                inc.suppliers({as: 'supplier'})
+        ]})
         .then(size => {
-            fn.getNotes('sizes', req.params.id, req)
-            .then(notes =>{
-                let stock = {};
-                stock._stock     = fn.summer(size.stocks) || 0;
-                stock._ordered   = fn.summer(size.orders) || 0;
-                stock._issued    = fn.summer(size.issues) || 0;
-                stock._requested = fn.summer(size.requests) || 0;
-                res.render('stores/sizes/show', {
-                    size:  size,
-                    notes: notes,
-                    stock: stock,
-                    query: {system: req.query.system || 2},
-                    show_tab: req.query.tab || 'details'
-                });
+            res.render('stores/sizes/show', {
+                size:  size,
+                notes: {table: 'sizes', id: size.size_id},
+                show_tab: req.query.tab || 'details'
             });
         })
         .catch(err => fn.error(err, '/stores/items', req, res));
@@ -83,6 +65,19 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => fn.error(err, '/stores/sizes/' + req.params.id, req, res));
         })
         .catch(err => fn.error(err, 'stores/sizes/' + req.params.id, req, res));
+    });
+    //ASYNC GET SIZES
+    app.get('/stores/getsizes', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.sizes,
+            req.query,
+            {include: [inc.stock()]}
+        )
+        .then(sizes => {
+            sizes.forEach(size => size.dataValues.locationStock = fn.summer(size.stocks));
+            res.send({result: true, sizes: sizes})
+        })
+        .catch(err => fn.send_error(err.message, res));
     });
 
     //POST

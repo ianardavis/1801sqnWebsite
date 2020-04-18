@@ -15,6 +15,16 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(note => res.render('stores/notes/edit', {note: note}))
         .catch(err => fn.error(err, 'back', req, res));
     });
+    //ASYNC GET
+    app.get('/stores/getnotes', isLoggedIn, allowed('access_notes', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.notes,
+            req.query,
+            {include: [inc.users()]}
+        )
+        .then(notes => res.send({result: true, notes: notes}))
+        .catch(err => fn.send_error(err.message, res));
+    });
 
     //POST
     app.post('/stores/notes', isLoggedIn, allowed('note_add', {send: true}), (req, res) => {
@@ -39,11 +49,20 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     
     //DELETE
     app.delete('/stores/notes/:id', isLoggedIn, allowed('note_delete', {send: true}), (req, res) => {
-        fn.delete(
-            'notes',
+        fn.getOne(
+            m.notes,
             {note_id: req.params.id}
         )
-        .then(result => res.send({result: true, message: 'Note deleted'}))
-        .catch(err =>fn.send_error(err.message, res));
+        .then(note => {
+            if (!note._system) {
+                fn.delete(
+                    'notes',
+                    {note_id: req.params.id}
+                )
+                .then(result => res.send({result: true, message: 'Note deleted'}))
+                .catch(err =>fn.send_error(err.message, res));
+            } else fn.send_error('System generated notes can NOT be deleted');
+        })
+        .catch(err => fn.send_error(err.message, res));
     });
 };

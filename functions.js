@@ -6,12 +6,16 @@ const op = require('sequelize').Op,
       pd = require('pdfkit');
 module.exports = (fn, m, inc) => {
     fn.getPermissions = user_id => new Promise((resolve, reject) => {
-        fn.getOne(
+        fn.getAllWhere(
             m.permissions,
             {user_id: user_id},
-            {attributes: {exclude: ['createdAt', 'updatedAt', 'user_id']}}
+            {attributes: ['_permission']}
         )
-        .then(permissions => resolve(permissions))
+        .then(permissions => {
+            let perms = [];
+            permissions.forEach(permission => perms[permission._permission] = true);
+            resolve(perms);
+        })
         .catch(err => reject(err));
     });
     fn.getAllWhere = (table, where, options = {}) => new Promise((resolve, reject) => {
@@ -56,29 +60,23 @@ module.exports = (fn, m, inc) => {
     fn.update = (table, record, where, nullOk = false) => new Promise((resolve, reject) => {
         table.update(
             record,
-            {where: where})
+            {where: where}
+        )
         .then(result => {
-            if (result) resolve(result);
-            else if (nullOk) resolve(result)
-            else reject(new Error(fn.singularise(table.tableName) + ' not updated',));
+            if (result)      resolve(true);
+            else if (nullOk) resolve(false)
+            else             reject(new Error(fn.singularise(table.tableName, true) + ' NOT updated',));
         })
         .catch(err => reject(err));
     });
-    fn.delete = (table, where, options = {warn: true}) => new Promise((resolve, reject) => {
-        m[table].destroy({where: where})
+    fn.delete = (table, where, nullOk = false) => new Promise((resolve, reject) => {
+        m[table].destroy(
+            {where: where}
+        )
         .then(result => {
-            if (options.hasLines) {
-                let line_table = table.substring(0, table.length - 1) + '_lines'
-                m[line_table].destroy({where: where})
-                .then(result_l => {
-                    if (!result && !result_l)     resolve({success: 'danger',  message: 'No ' + table + ' or lines deleted'})
-                    else if (!result && result_l) resolve({success: 'success',  message: 'No ' + table + ' deleted, lines deleted'})
-                    else if (result && !result_l) resolve({success: 'success',  message: fn.singularise(table, true) + ' deleted, no lines deleted'})
-                    else                          resolve({success: 'success', message: fn.singularise(table, true) + ' and lines deleted'});
-                })
-                .catch(err => reject(err))
-            } else if (!result && options.warn) reject(new Error('No ' + table.tableName + ' deleted'))
-            else resolve(result);
+            if (result)      resolve(true);
+            else if (nullOk) resolve(false)
+            else             reject(new Error(fn.singularise(table.tableName, true) + ' NOT deleted',));
         })
         .catch(err => reject(err));
     });
@@ -154,20 +152,6 @@ module.exports = (fn, m, inc) => {
         .then(stock => stock.decrement('_qty', {by: qty}))
         .then(stock => resolve(Number(stock._qty) - Number(qty)))
         .catch(err => reject(err));
-    });
-
-    fn.getNotes = (table, id, req) => new Promise(resolve => {
-        let whereObj = {_table: table, _id: id}, 
-            system = Number(req.query.system) || 2;
-        if (system === 2) whereObj._system = false
-        else if (system === 3)  whereObj._system = true;
-        fn.getAllWhere(m.notes, whereObj, {include: [inc.users()], nullOk: true})
-        .then(notes => resolve({table: table, id: id, notes:notes}))
-        .catch(err => {
-            req.flash('danger', 'Error searching notes');
-            console.log(err);
-            resolve(null);
-        });
     });
 
     fn.downloadFile = (file, req, res) => {

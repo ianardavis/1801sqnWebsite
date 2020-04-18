@@ -1,5 +1,5 @@
 var addWindow = null;
-function openAddItem(callType) {
+function addSize(callType) {
     if (addWindow === null || addWindow.closed) {
         addWindow = window.open("/stores/itemSearch?callType=" + callType,
                                 "itemSearch",

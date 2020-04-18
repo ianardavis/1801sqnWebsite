@@ -35,56 +35,56 @@
         <% if (permissions.access_nsns) { %>
             <li class="nav-item">
                 <a class="nav-link" id="nsns-tab" data-toggle="tab" href="#nsns" role="tab" aria-controls="nsns" aria-selected="true">
-                    NSNs (<%= size.nsns.length %>)
+                    NSNs (<span id='nsn_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (size._serials && permissions.access_serials) {%>
             <li class="nav-item">
                 <a class="nav-link" id="serials-tab" data-toggle="tab" href="#serials" role="tab" aria-controls="serials" aria-selected="true">
-                    Serial # (<%= size.serials.length %>)
+                    Serial # (<span id='serial_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (permissions.access_stock) {%>
             <li class="nav-item">
                 <a class="nav-link" id="stock-tab" data-toggle="tab" href="#stock" role="tab" aria-controls="stock" aria-selected="true">
-                    Stock (<%= stock._stock %>)
+                    Stock (<span id='stock_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (size._issueable && permissions.access_requests) {%>
             <li class="nav-item">
                 <a class="nav-link" id="requests-tab" data-toggle="tab" href="#requests" role="tab" aria-controls="requests" aria-selected="true">
-                    Requests (<%= stock._requested %>)
+                    Requests (<span id='request_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (size._orderable && permissions.access_orders) {%>
             <li class="nav-item">
                 <a class="nav-link" id="orders-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="true">
-                    Orders (<%= stock._ordered %>)
+                    Orders (<span id='order_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (permissions.access_receipts) {%>
             <li class="nav-item">
                 <a class="nav-link" id="receipts-tab" data-toggle="tab" href="#receipts" role="tab" aria-controls="receipts" aria-selected="true">
-                    Receipts
+                    Receipts (<span id='receipt_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (size._issueable && permissions.access_issues) {%>
             <li class="nav-item">
                 <a class="nav-link" id="issues-tab" data-toggle="tab" href="#issues" role="tab" aria-controls="issues" aria-selected="true">
-                    Issues (<%= stock._issued %>)
+                    Issues (<span id='issue_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (permissions.access_notes) { %>
             <li class="nav-item">
                 <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<%= notes.notes.length %>)
+                    Notes (<span id='note_count'></span>)
                 </a>
             </li>
         <% } %>
@@ -161,7 +161,7 @@
                 </div>
             </div>
         </div>
-        <% if (permissions.access_nsns) {%>
+        <% if (size._nsns && permissions.access_nsns) {%>
             <div class="tab-pane fade" id="nsns" role="tabpanel" aria-labelledby="nsns-tab">
                 <div class="container">
                     <% if (permissions.nsn_add) { %> 
@@ -169,42 +169,19 @@
                             <i class='fas fa-plus'></i>
                         </a> 
                     <% } %>
+                    <div id='spn_nsns' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th class='w-80' onclick='sortTable(0, "nsnTable")' >NSN</th>
-                            <th class='w-20'>default</th>
-                            <th><i class='fas fa-pencil-alt'></i></th>
-                            <% if (permissions.nsn_delete === 1) { %>
+                            <th class='w-20'>Default</th>
+                            <th><i class='fas fa-search'></i></th>
+                            <% if (permissions.nsn_delete) { %>
                                 <th><i class='fas fa-trash-alt'></i></th>
                             <% } %>
                         </thead>
                         <tbody id='nsnTable'>
-                            <% if (size.nsns) size.nsns.forEach(nsn => { %>
-                                <tr>
-                                    <td>
-                                        <%= nsn._nsn %>
-                                    </td>
-                                    <td>
-                                        <% if (size.nsn_id === nsn.nsn_id) { %>
-                                            <i class='fas fa-check'></i>
-                                        <% } %>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-sm btn-primary" href='javascript:show("nsns",<%= nsn.nsn_id %>,{"height":200})'>
-                                            <i class='fas fa-search'></i>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <% if (permissions.nsn_delete === 1) { %>
-                                            <form action='/stores/nsns/<%= nsn.nsn_id %>?_method=DELETE' method='POST'>
-                                                <button class='btn btn-sm btn-danger confirm'>
-                                                    <i class='fas fa-trash-alt'></i>
-                                                </button>
-                                            </form>
-                                        <% } %>
-                                    </td>
-                                </tr>
-                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -218,42 +195,18 @@
                             <i class='fas fa-plus'></i>
                         </a> 
                     <% } %>
+                    <div id='spn_serials' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
-                            <th class='w-80' onclick='sortTable(0, "serialTable")' >Serial #</th>
+                            <th class='w-100' onclick='sortTable(0, "serialTable")' >Serial #</th>
                             <th><i class='fas fa-pencil-alt'></i></th>
-                            <% if (permissions.serial_delete === 1) { %>
+                            <% if (permissions.serial_delete) { %>
                                 <th><i class='fas fa-trash-alt'></i></th>
                             <% } %>
                         </thead>
                         <tbody id='serialTable'>
-                            <% if (size.serials) size.serials.forEach(serial => { %>
-                                <tr>
-                                    <td>
-                                        <%= serial._serial %>
-                                        <% if (serial.issue_line_id && serial.issue_line_id !== -1) { %>
-                                            - Issued
-                                            <a class='float-right btn btn-sm btn-primary' href='/stores/issues/<%= serial.issue.issue_id %>'>
-                                                <i class='fas fa-search'></i>
-                                            </a>
-                                        <% } %>
-                                    </td>
-                                    <td>
-                                        <a class='btn btn-sm btn-primary' href='javascript:show("serials",<%= serial.serial_id %>,{"height":200})'>
-                                            <i class='fas fa-search'></i>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <% if (permissions.serial_delete === 1) { %>
-                                            <form action='/stores/serials/<%= serial.serial_id %>?_method=DELETE' method='POST'>
-                                                <button class='btn btn-sm btn-danger confirm'>
-                                                    <i class='fas fa-trash-alt'></i>
-                                                </button>
-                                            </form>
-                                        <% } %>
-                                    </td>
-                                </tr>
-                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -267,40 +220,19 @@
                             <i class='fas fa-plus'></i>
                         </a>
                     <% } %>
+                    <div id='spn_stock' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th onclick='sortTable(0, "stockTable")' class='w-80'>Location</th>
                             <th onclick='sortTable(1, "stockTable")' class='w-20'>Qty</th>
                             <th><i class='fas fa-search'></i></th>
-                            <% if (permissions.stock_delete === 1) { %>
+                            <% if (permissions.stock_delete) { %>
                                 <th><i class='fas fa-trash-alt'></i></th>
                             <% } %>
                         </thead>
                         <tbody id='stockTable'>
-                            <% if (size.stocks) size.stocks.forEach(stock => { %>
-                                <tr>
-                                    <td>
-                                        <%= stock.location._location %>
-                                    </td>
-                                    <td>
-                                        <%= stock._qty %>
-                                    </td>
-                                    <td>
-                                        <a class='btn btn-sm btn-primary' href='javascript:show("stock",<%= stock.stock_id %>)'>
-                                            <i class='fas fa-search'></i>
-                                        </a>
-                                    </td>
-                                    <% if (permissions.stock_delete === 1) { %>
-                                        <td>
-                                            <form action='/stores/stock/<%= stock.stock_id %>?_method=DELETE' method='POST'>
-                                                <button class='btn btn-sm btn-danger confirm'>
-                                                    <i class='fas fa-trash-alt'></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    <% } %>
-                                </tr>
-                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -309,6 +241,9 @@
         <% if (size._issueable && permissions.access_requests) {%>
             <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
                 <div class="container">
+                    <div id='spn_requests' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th onclick='sortTable(0, "requestTable")' class='w-80'>For</th>
@@ -316,21 +251,6 @@
                             <th><i class='fas fa-search'></i></th>
                         </thead>
                         <tbody id='requestTable'>
-                            <% if (size.requests)size.requests.forEach(request => { %>
-                                <tr>
-                                    <td>
-                                        <%= request.request._for.rank._rank %> <%= request.request._for._name %>, <%= request.request._for._ini %>
-                                    </td>
-                                    <td>
-                                        <%= request._qty %>
-                                    </td>
-                                    <td>
-                                        <a class='btn btn-sm btn-primary' href='/stores/requests/<%= request.request_id %>'>
-                                            <i class='fas fa-search'></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -342,6 +262,9 @@
                     <% if (permissions.order_add) { %> 
                         <a class='float-left btn btn-success m-1' href='/stores/orders/new?user=-1'><i class='fas fa-plus'></i></a>
                     <% } %>
+                    <div id='spn_orders' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th onclick='sortTable(0, "orderTable")' class='w-80'>For</th>
@@ -349,25 +272,6 @@
                             <th><i class='fas fa-search'></i></th>
                         </thead>
                         <tbody id='orderTable'>
-                            <% if (size.orders) size.orders.forEach(order => { %>
-                                <tr>
-                                    <td>
-                                        <% if (order.order.ordered_for === -1) { %>
-                                            Backing Stock
-                                        <% } else { %>
-                                            <%= order.order._for.rank._rank %> <%= order.order._for._name %>, <%= order.order._for._ini %>
-                                        <% } %>
-                                    </td>
-                                    <td>
-                                        <%= order._qty %>
-                                    </td>
-                                    <td>
-                                        <a class='btn btn-sm btn-primary' href='/stores/orders/<%= order.order_id %>'>
-                                            <i class='fas fa-search'></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -379,6 +283,9 @@
                     <% if (permissions.receipt_add) { %> 
                         <a class='float-left btn btn-success m-1' href='/stores/receipts/new?supplier_id=<%= size.supplier_id %>'><i class='fas fa-plus'></i></a>
                     <% } %>
+                    <div id='spn_receipts' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th onclick='sortTable(0, "receiptTable")' class='w-80'>Date</th>
@@ -387,26 +294,6 @@
                             <th><i class='fas fa-search'></i></th>
                         </thead>
                         <tbody id='receiptTable'>
-                            <% if (size.stocks) size.stocks.forEach(stock => { %>
-                                <% if (stock.receipts) stock.receipts.forEach(receipt => { %>
-                                    <tr>
-                                        <td>
-                                            <%= receipt.receipt._date.toDateString() %>
-                                        </td>
-                                        <td>
-                                            <%= stock.location._location %>
-                                        </td>
-                                        <td>
-                                            <%= receipt._qty %>
-                                        </td>
-                                        <td>
-                                            <a class='btn btn-sm btn-primary' href='/stores/receipts/<%= receipt.receipt_id %>'>
-                                                <i class='fas fa-search'></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -415,10 +302,14 @@
         <% if (size._issueable && permissions.access_issues) {%>
             <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
                 <div class="container">
+                    <div id='spn_issues' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "issueTable")' class='w-80'>To</th>
-                            <th onclick='sortTable(1, "issueTable")' class='w-20'>Qty</th>
+                            <th onclick='sortTable(0, "issueTable")' class='w-20'>Date</th>
+                            <th onclick='sortTable(1, "issueTable")' class='w-60'>To</th>
+                            <th onclick='sortTable(2, "issueTable")' class='w-20'>Qty</th>
                             <th><i class='fas fa-search'></i></th>
                         </thead>
                         <tbody id='issueTable'>
@@ -454,6 +345,7 @@
     </div>
 </section>
 <% include ../../partials/foot/full %>
+<script src="/js/specific/sizes_show.js"></script>
 <script>
     <% if (permissions.size_delete) { %>
         window.addEventListener( "load", function () {
@@ -469,4 +361,13 @@
     };
     showTab('<%= show_tab %>');
 </script>
+<% let default_nsn = -1; %>
+<% if (size.nsn_id) default_nsn = size.nsn_id; %>
+<% if (permissions.access_nsns && size._nsns) {%>         <script async>getNSNs(<%= size.size_id %>, <%= default_nsn %>, <%= permissions.nsn_delete %>)</script><% } %>
+<% if (permissions.access_serials && size._serials) {%>   <script async>getSerials(<%= size.size_id %>, <%= permissions.serial_delete %>)</script><% } %>
+<% if (permissions.access_stock) {%>                      <script async>getStock(<%= size.size_id %>, <%= permissions.stock_delete %>)</script><% } %>
+<% if (permissions.access_requests && size._issueable) {%><script async>getRequestLines(<%= size.size_id %>)</script><% } %>
+<% if (permissions.access_orders && size._orderable) {%>  <script async>getOrderLines(<%= size.size_id %>)</script><% } %>
+<% if (permissions.access_receipts) {%>                   <script async>getReceiptLines(<%= size.size_id %>)</script><% } %>
+<% if (permissions.access_issues && size._issueable) {%>  <script async>getIssueLines(<%= size.size_id %>)</script><% } %>
 <% include ../../partials/foot/htmlClose %>

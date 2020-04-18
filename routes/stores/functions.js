@@ -13,7 +13,14 @@ module.exports = (fn, m, inc) => {
             return b['_qty'] == null ? a : a + b['_qty'];
         }, 0);
     };
-
+    fn.addYears = (addYears = 0) => {
+        var newDate = new Date();
+        var dd = String(newDate.getDate()).padStart(2, '0');
+        var MM = String(newDate.getMonth() + 1).padStart(2, '0');
+        var yyyy = newDate.getFullYear() + addYears;
+        newDate = yyyy + '-' + MM + '-' + dd;
+        return newDate;
+    };
     fn.getOptions = (options, req) => new Promise((resolve, reject) => {
         let actions = [];
         options.forEach(option => {
@@ -988,7 +995,7 @@ module.exports = (fn, m, inc) => {
                     .then(demandline => {
                         if (demandline) {
                             fn.add_qty(demandline.line_id, line._qty, 'demand_lines')
-                            .then(new_qty => resolve('Line updated: ' + demandline.line_id))
+                            .then(new_qty => resolve(demandline.line_id))
                             .catch(err => reject(err));
                         } else {
                             line.demand_id = demand.demand_id;
@@ -996,7 +1003,7 @@ module.exports = (fn, m, inc) => {
                                 m.demand_lines,
                                 line
                             )
-                            .then(demand_line => resolve('Line added: ' + demand_line.line_id))
+                            .then(demand_line => resolve(demand_line.line_id))
                             .catch(err => reject(err));
                         };
                     })
@@ -1071,87 +1078,86 @@ module.exports = (fn, m, inc) => {
         });
     };
 
-    fn.createIssue = (issueDetails, lines, user_id, issueNote = null) => new Promise((resolve, reject) => {
-        if (Object.keys(lines).length > 0) {
-            fn.create(
-                m.issues,
-                new cn.Issue(issueDetails, user_id)
+    fn.createIssue = (issued_to, user_id) => new Promise((resolve, reject) => {
+        fn.getOne(
+            m.issues,
+            {
+                issued_to: issued_to,
+                _complete: 0
+            }
+        )
+        .then(issue => {
+            if (issue) reject(new Error('There is already an open issue for this user'))
+            else {
+                fn.create(
+                    m.issues,
+                    {
+                        issued_to: issued_to,
+                        user_id:   user_id,
+                        _date_due: Date.now()
+                    }
+                )              
+                .then(issue => resolve(issue.issue_id))
+                .catch(err => reject(err));
+            };
+        })
+        .catch(err => reject(err));
+    });
+    fn.createIssueLine = (issue_id, line) => new Promise((resolve, reject) => {
+        if (line) {
+            fn.getAllWhere(
+                m.issue_lines,
+                {issue_id: issue_id},
+                {nullOK: true}
             )
-            .then(issue => {
-                let actions = [];
-                if (issueNote) actions.push(fn.create(m.notes, new cn.Note('issues', issue.issue_id, issueNote._text, issueNote._system, user_id)));
-                let currentLine = fn.counter();
-                for (let [item_id, line] of Object.entries(lines)) {
-                    if (line) {
-                        actions.push(createIssueLine(issue.issue_id, line, user_id, currentLine()))
+            .then(lines => {
+                line._line    = lines.length + 1;
+                line.issue_id = issue_id;
+                fn.create(
+                    m.issue_lines,
+                    line
+                )
+                .then(issue_line => {
+                    let actions = [];
+                    actions.push(fn.subtractStock(issue_line.stock_id, issue_line.qty));
+                    if (line.serial_id) {
+                        actions.push(
+                            fn.update(
+                                m.serials,
+                                {issue_line_id: issue_line.line_id},
+                                {serial_id: line.serial_id}
+                            )
+                        );
                     };
-                };
-                Promise.allSettled(actions)
-                .then(results => {
-                    if (currentLine() === 1) {
-                        fn.delete('issues', {issue_id: issue.issue_id})
-                        .then(result => reject(new Error('No lines on issue, issue deleted')))
-                        .catch(err => reject(err));
-                    } else {
-                        fn.createLoanCard(issue.issue_id)
-                        .then(file => resolve(issue.issue_id))
-                        .catch(err => reject(err));
-                    };
+                    Promise.allSettled(actions)
+                    .then(result => resolve(issue_line.line_id))
+                    .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
-        } else reject(new Error('No items selected'));
+        } else reject(new Error('No line entered'));
     });
-    function createIssueLine (issue_id, line, user_id, lineNum) {
-        return new Promise((resolve, reject) => {
-            fn.create(
-                m.issue_lines,
-                new cn.IssueLine(issue_id, line, lineNum)
-            )
-            .then(issue_line => {
-                let actions = [];
-                actions.push(fn.subtractStock(issue_line.stock_id, issue_line.qty));
-                if (line.serial_id) {
-                    actions.push(
-                        fn.update(
-                            m.serials,
-                            {issue_line_id: issue_line.line_id},
-                            {serial_id: line.serial_id}
-                        )
-                    );
-                };
-                if (line.request_line_id) {
-                    actions.push(
-                        updateRequestStatus(
-                            line.request_line_id,
-                            { _status: 'Approved', _action: 'Issue', _id: issue_id },
-                            user_id
-                        )
-                    );
-                };
-                if (line.order_lines) {
-                    line.order_lines.forEach(order_line_id => {
-                        actions.push(
-                            fn.update(
-                                m.order_lines,
-                                {issue_line_id: issue_line.line_id},
-                                {line_id: order_line_id}
-                            )
-                        );
-                    });
-                };
-                if (actions.length > 0) {
-                    Promise.allSettled(actions)
-                    .then(result => resolve(issue_line.line_id))
-                    .catch(err => reject(err));
-                } else resolve(issue_line.line_id);
-                
-            })
-            .catch(err => reject(err));
-        });
-    };
-
+    // if (line.request_line_id) {
+    //     actions.push(
+    //         updateRequestStatus(
+    //             line.request_line_id,
+    //             { _status: 'Approved', _action: 'Issue', _id: issue_id },
+    //             user_id
+    //         )
+    //     );
+    // };
+    // if (line.order_lines) {
+    //     line.order_lines.forEach(order_line_id => {
+    //         actions.push(
+    //             fn.update(
+    //                 m.order_lines,
+    //                 {issue_line_id: issue_line.line_id},
+    //                 {line_id: order_line_id}
+    //             )
+    //         );
+    //     });
+    // };
     fn.createReturn = (from, lines, user_id) => new Promise((resolve, reject) => {
         if (Number(from) !== Number(user_id)) {
             let newReturn = new cn.Return(from, user_id),

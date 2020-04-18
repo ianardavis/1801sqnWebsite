@@ -45,6 +45,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,

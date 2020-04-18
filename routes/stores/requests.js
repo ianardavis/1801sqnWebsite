@@ -2,30 +2,7 @@ const op = require('sequelize').Op;
 
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/requests', isLoggedIn, allowed('access_requests', {allow: true}), (req, res) => {
-        let where = {}, query = {};
-        query.complete = Number(req.query.complete) || 2
-        if      (query.complete === 2) where._complete = 0;
-        else if (query.complete === 3) where._complete = 1;
-        if (req.allowed === false) where.requested_for = req.user.user_id;
-        fn.getAllWhere(
-            m.requests,
-            where,
-            {
-                include: [
-                    inc.request_lines(),
-                    inc.users({as: '_for'})
-                ]
-            }
-        )
-        .then(requests => {
-            res.render('stores/requests/index',{
-                requests: requests,
-                query:    query
-            });
-        })
-        .catch(err => fn.error(err, '/stores', req, res));
-    });
+    app.get('/stores/requests', isLoggedIn, allowed('access_requests', {allow: true}), (req, res) => res.render('stores/requests/index'));
     //NEW
     app.get('/stores/requests/new', isLoggedIn, allowed('request_add', {allow: true}), (req, res) => {
         if (req.query.user) {
@@ -36,7 +13,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     {include: [m.ranks]}
                 )
                 .then(user => {
-                    if (user.status_id === 1) res.render('stores/requests/new', {user: user}); 
+                    if (user.status_id === 1 || user.status_id === 2) res.render('stores/requests/new', {user: user}); 
                     else {
                         req.flash('danger', 'Requests can only be made for current users')
                         res.redirect('/stores/users/' + req.query.user);
@@ -53,30 +30,20 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
     //SHOW
-    app.get('/stores/requests/:id', isLoggedIn, allowed('request_edit', {allow: true}), (req, res) => {
+    app.get('/stores/requests/:id', isLoggedIn, allowed('access_requests', {allow: true}), (req, res) => {
         fn.getOne(
             m.requests,
             {request_id: req.params.id},
-            {
-                include: [
-                    inc.request_lines({include: [inc.sizes({stock: true, nsns: true}), inc.users()]}),
-                    inc.users({as: '_for'}),
-                    inc.users({as: '_by'})
-                ]
-            }
-        )
+            {include: [
+                inc.users({as: '_for'}),
+                inc.users({as: '_by'})
+        ]})
         .then(request => {
             if (req.allowed || request._for.user_id === req.user.user_id) {
-                fn.getNotes('requests', req.params.id, req)
-                .then(notes => {
-                    res.render('stores/requests/show', 
-                        {
-                            request: request,
-                            notes:   notes,
-                            query:   req.query,
-                            show_tab: req.query.tab || 'details'
-                        }
-                    );
+                res.render('stores/requests/show', {
+                    request: request,
+                    notes:   {table: 'requests', id: request.request_id},
+                    show_tab: req.query.tab || 'details'
                 });
             } else {
                 req.flash('danger', 'Permission Denied!')
@@ -84,6 +51,45 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             };
         })
         .catch(err => fn.error(err, '/stores/requests', req, res));
+    });
+    //ASYNC GET
+    app.get('/stores/getrequests', isLoggedIn, allowed('access_requests', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.requests,
+            req.query,
+            {include: [
+                inc.request_lines(),
+                inc.users({as: '_for'}),
+                inc.users({as: '_by'})
+        ]})
+        .then(requests => res.send({result: true, requests: requests}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.get('/stores/getrequestlines', isLoggedIn, allowed('access_request_lines', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.request_lines,
+            req.query,
+            {include: [
+                inc.sizes(),
+                inc.users(),
+                inc.requests()
+        ]})
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.get('/stores/getrequestlinesbyuser/:id', isLoggedIn, allowed('access_request_lines', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.request_lines,
+            req.query,
+            {include:[
+                inc.sizes(),
+                inc.users(),
+                inc.requests({
+                    where: {requested_for: req.params.id},
+                    required: true
+        })]})
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
     });
 
     //POST

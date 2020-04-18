@@ -2,129 +2,219 @@
 <body>
 <% include ../../partials/head/flash %>
 <section id='body'>
-<div class='row container mx-auto'>
-    <div class='col-12 col-md-6'>
+<div class='container'>
+    <div id="itemDiv" class='mb-2 bordered'>
         <h3><%= callType %></h3>
-        <h4><%= size.item._description %></h4>
-        <h5><%= size.item._size_text %>: <%= size._size %></h5>
-        <div class='row'>
-            <% if (size._nsns && callType === 'issue') { %>
-                <div class='col-12 bordered mb-2'>
-                    <h6>Select NSN</h6>
-                    <input class='form-control' type='text' id='nsnSearch' onkeyup='searchTable("nsns", "nsnSearch")' placeholder='Search for NSNs...'>
-                    <select class='form-control w-100' id='nsns' type='text' size='2'>
-                        <% size.nsns.forEach(nsn => { %>
-                            <option value='<%= nsn.nsn_id %>'><%= nsn._nsn %></option>
-                        <% }); %>
-                    </select>
+        <h5>Items</h5>
+        <input class='form-control' type='text' id='itemSearch' onkeyup='searchTable("itemSelect", "itemSearch")' placeholder='Search for items...'>
+        <form id='itemForm'>
+            <input type='hidden' name='callType' value='<%= callType %>'>
+            <input type='hidden' name='supplier_id' value='<%= supplier_id %>'>
+            <div class="input-group mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Select Item</span>
                 </div>
-            <% } %>
-            <% if (size._serials) { %>
-                <div class='col-12 bordered mb-2'>
-                    <h6>Select Serial</h6>
-                    <input class='form-control' type='text' id='serialSearch' onkeyup='searchTable("serials", "serialSearch")' placeholder='Search for Serials...'>
-                    <select class='form-control w-100' id='serials' type='text' size='2'>
-                        <% size.serials.forEach(serial => { %>
-                            <option value='<%= serial.serial_id %>'><%= serial._serial %></option>
-                        <% }); %>
-                    </select>
+                <select class='form-control' name='item_id' id='itemSelect' type='text' size='10' onchange="getSizes()">
+                    <option value=''></option>
+                    <% items.forEach(item => { %>
+                        <option value='<%= item.item_id %>'><%= item._description %></option>
+                    <% }); %>
+                </select>
+            </div>
+        </form>
+        <% if (callType === 'issue') { %>
+            <div>
+                <p>Note: only valid items are shown.<br>
+                Sizes must have associated NSNs and stock records to be valid</p>
+            </div>
+        <% }; %>
+    </div>
+    <div id='sizeDiv' style='display:none;' class='mb-2 bordered'>
+        <form id='sizeForm'>
+            <input type='hidden' name='item_id'     id='item_id' value=''>
+            <input type='hidden' name='callType'    value='<%= callType %>'>
+            <input type='hidden' name='supplier_id' value='<%= supplier_id %>'>
+            <input class='form-control' type='text' id='sizeSearch' onkeyup='searchTable("sizeSelect", "sizeSearch")' placeholder='Search for sizes...'>
+            <div class="input-group mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Select Size</span>
                 </div>
-            <% } else { %>
+                <select class='form-control' name='size_id' id='sizeSelect' type='text' size='10' onchange='getSize()'>
+                </select>
+            </div>
+        </form>
+        <% if (callType === 'issue') { %>
+            <div>
+                <p>Note: only valid sizes are shown.<br>
+                Sizes must have associated NSNs and stock records to be valid</p>
+            </div>
+        <% }; %>
+    </div>
 
+    <div id='detailDiv' style='display:none;' class='mb-2 bordered'>
+        <form id="addForm">
+            <input type="hidden" name='line[size_id]' id='size_id' value=''>
+            <div class="input-group mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Item</span>
+                </div>
+                <p id='item_name' class="form-control"></p>
+            </div>
+            <div class="input-group mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Size</span>
+                </div>
+                <p id='size_name' class="form-control"></p>
+            </div>
+            <% if (callType === 'issue') { %>
+                <input class='form-control' type='text' id='nsnSearch' onkeyup='searchTable("nsnSelect", "nsnSearch")' placeholder='Search for NSNs...'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Select NSN</span>
+                    </div>
+                    <select class='form-control' name='line[nsn_id]' id='nsnSelect' type='text' size='2'>
+                    </select>
+                </div>
             <% } %>
             <% if (callType === 'issue' || callType === 'receipt') { %>
-                <div class='col-12 bordered mb-2'>
-                    <h6>Issue From Location</h6>
-                    <input class='form-control' type='text' id='stockSearch' onkeyup='searchTable("stocks", "stockSearch")' placeholder='Search for stock...'>
-                    <select class='form-control w-100' id='stocks' type='text' size='2'>
-                        <% size.stocks.forEach(stock => { %>
-                            <option value='{"id":<%= stock.stock_id %>,"qty":<%= stock._qty %>}'><%= stock.location._location %>, Qty: <%= stock._qty %></option>
-                        <% }); %>
+                <input class='form-control' type='text' id='serialSearch' onkeyup='searchTable("serialSelect", "serialSearch")' placeholder='Search for Serials...'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Select Serial</span>
+                    </div>
+                    <select class='form-control' name='line[serial_id]' id='serialSelect' type='text' size='2'>
+                    </select>
+                </div>
+                <input class='form-control' type='text' id='stockSearch' onkeyup='searchTable("stockSelect", "stockSearch")' placeholder='Search for stock...'>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend w-30">
+                        <span class="input-group-text w-100">Location</span>
+                    </div>
+                    <select class='form-control' name='line[stock_id]' id='stockSelect' type='text' size='2'>
                     </select>
                 </div>
             <% } %>
-            <div class='col-12 bordered mb-2'>
-                <div class='row'>
-                    <div class='col-4 col-md-2'>
-                        <label class='col-form-label' for='qty'>Qty</label>
-                    </div>
-                    <div class='col-8 col-md-4'>
-                        <input class='form-control' type='number' input='numeric' id='qty' value='1'>
-                    </div>
-                    <div class='col-md-6'>
-                        <button class='btn btn-success w-100' onclick='javascript:addSize()'>Add Size</button>
-                    </div>
+            <div class="input-group mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">Quantity</span>
+                </div>
+                <input class='form-control' type='number' name='line[_qty]' input='numeric' value='1'>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <button class='btn btn-success w-100 mb-1' onclick=javascript:addSize()>Add Size</button>
+                    <a class='float-left btn btn-danger w-100' href='javascript:close()'>Close</a>
                 </div>
             </div>
-            <div class="col-12">
-                <div class='row'>
-                    <div class='col-6 mb-2'>
-                        <a class='btn btn-primary w-100' href='/stores/itemSearch?callType=<%= callType %>&supplier_id=<%= supplier_id %>'>New Search</a>
-                    </div>
-                    <div class='col-6 mb-2'>
-                        <a class='btn btn-primary w-100' href='/stores/itemSearch/item/<%= size.item_id %>?d=<%= size.item._description %>&callType=<%= callType %>&supplier_id=<%= supplier_id %>'>Back</a>
-                    </div>
-                    <div class='col-12'>
-                        <a class='btn btn-danger w-100' href='javascript:close()'>Finished Adding Items</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
-<% include ../../partials/foot/js %>
+<% include ../../partials/foot/noNav %>
 <script src='/js/selectSearch.js'></script>
 <script>
-function addSize() {
-    let qty    = Number(document.querySelector('#qty').value) || 0,
-        stocks = document.querySelector('#stocks'),
-        <% if (size._nsns) { %>   nsns    = document.querySelector('#nsns'),<% } %>
-        <% if (size._serials) { %>serials = document.querySelector('#serials'),<% } %>
-        callType = '<%= callType %>';
-    if ((callType === 'issue'   && (stocks.selectedIndex === -1 ||
-                             <% if (size._nsns) { %>nsns.selectedIndex === -1 ||<% } %>
-                                    qty === 0)) || 
-        (callType === 'receipt' && (stocks.selectedIndex === -1 ||
-                                    qty === 0)) || 
-        (callType === 'order'   &&  qty === 0) || 
-        (callType === 'request' &&  qty === 0)) {
-        alert('Select all fields');
-    } else {
-        if (window.opener.addSize) {
-            let selected = {}
-            if (callType === 'issue' || callType === 'receipt') {
-                selected.stock_id = JSON.parse(stocks.value).id;
-                selected.stocks = [];
-                <%- JSON.stringify(size.stocks) %>.forEach(stock => {
-                    selected.stocks.push({stock_id: stock.stock_id, _location: stock.location._location, qty: stock._qty});
+    function getSizes() {
+        const XHR = new XMLHttpRequest();
+        const FD = new FormData(itemForm);
+        XHR.addEventListener("load", function(event) {
+            let response = JSON.parse(event.target.responseText);
+            if (response.result) {
+                let sizeSelect = document.querySelector('#sizeSelect'),
+                    itemSelect = document.querySelector('#itemSelect'),
+                    size_div   = document.querySelector('#sizeDiv'),
+                    item_id    = document.querySelector('#item_id'),
+                    detail_div = document.querySelector('#detailDiv');
+                detail_div.style.display = 'none';
+                size_div.style.display   = 'block';
+                sizeSelect.innerHTML     = '';
+                sizeSelect.appendChild(document.createElement('option'));
+                if (response.sizes) response.sizes.forEach(size => {
+                    itemSelect.size = '1';
+                    let _option   = document.createElement('option'),
+                        item_name = document.querySelector('#item_name');
+                    item_name.innerText = itemSelect.options[itemSelect.selectedIndex].text;
+                    _option.value       = size.size_id;
+                    _option.innerText   = size._size;
+                    sizeSelect.appendChild(_option);
                 });
-                <% if (size._nsns) { %>
-                    if (callType === 'issue') {
-                        selected.nsn_id    = Number(nsns.value);
-                        selected.nsns = [];
-                        <%- JSON.stringify(size.nsns) %>.forEach(nsn => {
-                            selected.nsns.push({nsn_id: nsn.nsn_id, _nsn: nsn._nsn});
-                        });
+            } else alert('Error: ' + response.error);
+        });
+        XHR.addEventListener("error", function(event) {
+            alert('Oops! Something went wrong.');
+        });
+        XHR.open('POST', '/stores/itemSearch');
+        XHR.send(FD);
+    };
+    function getSize() {
+        const XHR = new XMLHttpRequest();
+        const FD = new FormData(sizeForm);
+        XHR.addEventListener("load", function(event) {
+            let response = JSON.parse(event.target.responseText);
+            if (response.result) {
+                let detail_div = document.querySelector('#detailDiv'),
+                    sizeSelect = document.querySelector('#sizeSelect'),
+                    size_name  = document.querySelector('#size_name'),
+                    size_id    = document.querySelector('#size_id');
+                size_id.value            = sizeSelect.value;
+                size_name.innerText      = sizeSelect.options[sizeSelect.selectedIndex].text;
+                sizeSelect.size          = '1';
+                detail_div.style.display = 'block';
+                <% if (callType === 'issue') { %>
+                    if (response.size.nsns && response.size.nsns.length > 0) {
+                        let nsnSelect = document.querySelector('#nsnSelect');
+                        nsnSelect.required = response.size._nsns;
+                        response.size.nsns.forEach(nsn => {
+                            let _option = document.createElement('option');
+                            _option.value     = nsn.nsn_id;
+                            _option.innerText = nsn._nsn;
+                            nsnSelect.appendChild(_option);
+                        })
                     };
                 <% } %>
-            };
-            <% if (size._serials) { %>
-                selected.qty = 1;
-                selected.serial_id = Number(serials.value);
-                selected.serials = [];
-                <%- JSON.stringify(size.serials) %>.forEach(serial => {
-                    selected.serials.push({serial_id: serial.serial_id, _serial: serial._serial});
-                });
-            <% } else { %>
-                selected.qty = qty;
-            <% } %>
-            selected.size_id = <%= size.size_id %>;
-            selected.description  = '<%= size.item._description %>';
-            selected.size         = '<%= size._size %>';
-
-            alert(window.opener.addSize(selected))
-        } else alert('unable to find target window!\nClose this window and try again');
+                if (response.size.serials && response.size.serials.length > 0) {
+                    let serialSelect = document.querySelector('#serialSelect');
+                    serialSelect.required = response.size._serials;
+                    response.size.serials.forEach(serial => {
+                        let _option      = document.createElement('option');
+                        _option.value     = serial.serial_id;
+                        _option.innerText = serial._serial;
+                        serialSelect.appendChild(_option);
+                    })
+                };
+                if (response.size.stocks && response.size.stocks.length > 0) {
+                    let stockSelect = document.querySelector('#stockSelect');
+                    stockSelect.required = true;
+                    response.size.stocks.forEach(stock => {
+                        let _option     = document.createElement('option');
+                        _option.value     = stock.stock_id;
+                        _option.innerText = stock.location._location + ', Qty: ' + stock._qty;
+                        stockSelect.appendChild(_option);
+                    })
+                };
+            } else alert('Error: ' + response.error);
+        });
+        XHR.addEventListener("error", function(event) {
+            alert('Oops! Something went wrong.');
+        });
+        XHR.open('POST', '/stores/itemSearch/size');
+        XHR.send(FD);
     };
-};
+    window.addEventListener( "load", function () {
+        let itemForm = document.querySelector("#itemForm"),
+            sizeForm = document.querySelector("#sizeForm"),
+            addForm = document.querySelector("#addForm");
+        
+        itemForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            getSizes();
+        });
+        sizeForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            getSize();
+        });
+        addForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            sendData(addForm, 'POST','/stores/<%= callType %>_lines/<%= id %>', {reload_opener: true});
+        });
+    });
 </script>
 <% include ../../partials/foot/htmlClose %>

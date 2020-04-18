@@ -14,39 +14,41 @@
 <section class='container'>
 	<div class="input-group mb-2">
 		<div class="input-group-prepend w-25">
-			<label class="input-group-text w-100" for="closed">Closed Issues</label>
+			<label class="input-group-text w-100" for="sel_complete">Complete Issues</label>
 		</div>
-		<select class="custom-select" id='closed' onchange=filterSelects()>
-			<option value='1' <% if (query.closed === 1) { %>selected<% } %> >Include</option>
-			<option value='2' <% if (query.closed === 2) { %>selected<% } %> >Exclude</option>
-			<option value='3' <% if (query.closed === 3) { %>selected<% } %> >Only</option>
+		<select class="custom-select" id='sel_complete' onchange=getIssues()>
+			<option value='1' selected>Include</option>
+			<option value='2'>Exclude</option>
+			<option value='3'>Only</option>
 		</select>
 	</div>
-	<% if (issues) { %>
-		<div class='row'>
-			<% issues.forEach(issue => { %>
-				<div class='col-12 col-sm-6 col-lg-4 col-xl-3'>
-					<div class='card cardDarkText m-3 text-left <% if (issue._complete) { %> cardGreen <% } else { %> cardRed <% } %>'>
-						<a href='/stores/issues/<%= issue.issue_id %>'>
-							<div class='card-header'>
-								<h3><%= issue._to.rank._rank %> <%= issue._to._name %>, <%= issue._to._ini %></h3>
-								<p class='card-subtitle text-muted f-10'><%= issue._date.toDateString() %></p>
-							</div>
-							<div class='card-body f-10'>
-								<p>Lines: <%= issue.lines.length %></p>
-								<p>Due Back: <%= issue._date_due.toDateString() %></p>
-							</div>
-						</a>
-					</div>
-				</div>
-			<% }) %>
+	<div class="input-group mb-2">
+		<div class="input-group-prepend w-25">
+			<label class="input-group-text w-100" for="sel_closed">Closed Issues</label>
 		</div>
-	<% } %>
+		<select class="custom-select" id='sel_closed' onchange=getIssues()>
+			<option value='1' selected>Include</option>
+			<option value='2'>Exclude</option>
+			<option value='3'>Only</option>
+		</select>
+	</div>
+	<div id='spn_issues' class="spinner-border text-primary" role="status">
+		<span class="sr-only">Loading...</span>
+	</div>
+	<table class="table table-sm table-hover">
+		<thead class="thead-dark">
+			<th class="w-40" onclick="sortTable(0, 'issueTable')">Issued To</th>
+			<th class="w-30" onclick="sortTable(1, 'issueTable')">Date</th>
+			<th class="w-10" onclick="sortTable(2, 'issueTable')">Lines</th>
+			<th class="w-10" onclick="sortTable(3, 'issueTable')">Complete</th>
+			<th class="w-10" onclick="sortTable(4, 'issueTable')">Closed</th>
+			<th><i class="fas fa-search"></i></th>
+		</thead>
+		<tbody id="issueTable">
+		</tbody>
+	</table>
 </section>
 <% include ../../partials/foot/full %>
-<script>
-    function filterSelects() {
-        filter(['closed'],'/stores/issues');
-    };
-</script>
+<script src='/js/specific/issues_index.js'></script>
+<script async>getIssues()</script>
 <% include ../../partials/foot/htmlClose %>

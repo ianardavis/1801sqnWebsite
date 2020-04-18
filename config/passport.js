@@ -34,7 +34,11 @@ module.exports = (passport, m) => {
                 m.users,
                 {_login_id: _login_id},
                 {
-                    include: [m.permissions],
+                    include: [{
+                        model: m.permissions,
+                        where: {_permission: 'account_enabled'},
+                        required: false
+                    }],
                     attributes: ['_login_id', 'user_id', '_reset', '_password'],
                     nullOK: true
                 }
@@ -54,14 +58,7 @@ module.exports = (passport, m) => {
                         false, 
                         {message: 'Invalid username or password!'}
                     );
-                } else if (!user.permission) {
-                    req.flash('danger', 'Permissions not found, contact the system administrator!')
-                    return done(
-                        null, 
-                        false, 
-                        {message: 'Permissions not found, contact the system administrator!'}
-                    );
-                } else if (user.permission.account_enabled === 0) {
+                } else if (!user.permissions || user.permissions.length === 0) {
                     req.flash('danger', 'Your account is disabled!')
                     return done(
                         null, 

@@ -29,13 +29,13 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
-                Lines (<%= request.lines.length %>)
+                Lines (<span id='line_count'></span>)
             </a>
         </li>
         <% if (permissions.access_notes) { %>
             <li class="nav-item">
                 <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<%= notes.notes.length %>)
+                    Notes (<span id='note_count'></span>)
                 </a>
             </li>
         <% } %>
@@ -57,7 +57,6 @@
 						</button>
 					</form>
 				<% }; %>
-				<h4 class='mb-3'>Details</h4>
 				<div class="input-group mb-1">
 					<div class="input-group-prepend w-20">
 						<span class="input-group-text w-100">For</span>
@@ -92,6 +91,12 @@
 					</div>
 					<p class="form-control"><% if (request._complete) { %>Yes<% } else { %>No<% } %></p>
 				</div>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-20">
+						<span class="input-group-text w-100">Closed</span>
+					</div>
+					<p class="form-control"><% if (request._closed) { %>Yes<% } else { %>No<% } %></p>
+				</div>
 			</div>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
@@ -109,75 +114,34 @@
 							</div>
 						</div>
 				<% } %>
+				<div class="input-group mb-2">
+					<div class="input-group-prepend w-20">
+						<label class="input-group-text w-100" for="sel_status">Status</label>
+					</div>
+					<select class="custom-select" id='sel_status' onchange='getLines(<%= request.request_id %>, <%= request._complete %>, <%= request._closed %>, <%= permissions.request_line_edit %>, <%= permissions.request_line_delete %>)'>
+						<option value='All' selected>All</option>
+						<option value='Pending'>Pending</option>
+						<option value='Approved'>Approved</option>
+						<option value='Rejected'>Rejected</option>
+						<option value='Cancelled'>Cancelled</option>
+					</select>
+				</div>
+				<div id="spn_requests" class="spinner-border text-primary" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
 				<table class="table table-sm table-hover mx-auto w-100">
 					<thead class="thead-dark">
-						<% if (!request._complete) { %><th class="w-5" ></th><% } %>
-						<th class="w-20" onclick="sortTable(1, 'requestTable')">Item</th>
-						<th class="w-15" onclick="sortTable(2, 'requestTable')">Size</th>
-						<th class="w-5"  onclick="sortTable(3, 'requestTable')">Qty</th>
-						<% if (!request._complete) { %><th class="w-5"  onclick="sortTable(4, 'requestTable')">Current<br>Stock</th><% } %>
-						<th class="w-10" onclick="sortTable(5, 'requestTable')">Status</th>
-						<th class="w-15" onclick="sortTable(6, 'requestTable')">Date Approved</th>
-						<th class="w-15" onclick="sortTable(7, 'requestTable')">Approved By</th>
-						<th class="w-10" onclick="sortTable(8, 'requestTable')"></th>
+						<th class="w-20" onclick="sortTable(0, 'requestTable')">Item</th>
+						<th class="w-20" onclick="sortTable(1, 'requestTable')">Size</th>
+						<th class="w-5"  onclick="sortTable(2, 'requestTable')">Qty</th>
+						<th class="w-15" onclick="sortTable(4, 'requestTable')">Status</th>
+						<th class="w-20" onclick="sortTable(5, 'requestTable')">Date Approved</th>
+						<th class="w-20" onclick="sortTable(6, 'requestTable')">Approved By</th>
+						<% if (permissions.request_line_delete && !request._complete && !request.closed) { %>
+						<th><i class="fas fa-trash-alt"></i></th>
+						<% } %>
 					</thead>
 					<tbody id="requestTable">
-						<% if (request.lines) request.lines.forEach(line => { %>
-							<tr>
-								<% if (!request._complete) { %>
-									<td>
-										<% if (line._status === 'Pending') { %>
-											<input class='form-control form-control-sm' type="checkbox" name='selected[]' value='<%= line.line_id %>'>
-										<% } %>
-									</td>
-								<% } %>
-								<td>
-									<a class='float-right btn btn-sm btn-primary' href="/stores/items/<%= line.size.item_id %>">
-										<i class='fas fa-search'></i>
-									</a>
-									<%= line.size.item._description %>
-								</td>
-								<td>
-									<a class='float-right btn btn-sm btn-primary' href="/stores/sizes/<%= line.size_id %>">
-										<i class='fas fa-search'></i>
-									</a>
-									<%= line.size._size %>
-								</td>
-								<td>
-									<%= line._qty %>
-								</td>
-								<% if (!request._complete) { %>
-									<td>
-										<% let _stock = 0 %>
-										<% line.size.stocks.forEach(stock => { %>
-											<% _stock += Number(stock._qty) %>
-										<% }) %>
-										<%= _stock %>
-									</td>
-								<% } %>
-								<td>
-									<%= line._status %>
-								</td>
-								<td>
-									<% if (line._date) { %>
-										<%= line._date.toDateString() %>
-									<% } %>
-								</td>
-								<td>
-									<% if (line.user) { %>
-										<%= line.user.rank._rank %> <%= line.user._name %>, <%= line.user._ini %>
-									<% } %>
-								</td>
-								<td>
-									<% if (line._id && line._id !== '') { %>
-										<%= line._action %>: <%= line._id %>
-										<a class='float-right btn btn-sm btn-primary' href="/stores/<% if (line._action === 'Issue') { %>issues<% } else if (line._action === 'Order') { %>orders<% } %>/<%= line._id %>">
-											<i class='fas fa-search'></i>
-										</a>
-									<% } %>
-								</td>
-							</tr>
-						<% }); %>
 					</tbody>
 				</table>
 				<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
@@ -195,6 +159,7 @@
     </div>
 </section>
 <% include ../../partials/foot/full %>
+<script src="/js/specific/requests_show.js"></script>
 <script>
     window.addEventListener( "load", function () {
         let delete_form = document.querySelector("#deleteForm");
@@ -217,9 +182,7 @@
             sendData(close_form, 'PUT', '/stores/requests/<%= request.request_id %>/approval',{reload: true});
         });
     });
-    function filterSelects() {
-        filter(['system'],"/stores/requests/<%= request.request_id %>");
-    };
     showTab('<%= show_tab %>');
 </script>
+<script async>getLines(<%= request.request_id %>, <%= request._complete %>, <%= request._closed %>, <%= permissions.request_line_edit %>, <%= permissions.request_line_delete %>)</script>
 <% include ../../partials/foot/htmlClose %>

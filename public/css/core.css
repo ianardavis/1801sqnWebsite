@@ -1,5 +1,13 @@
 @import "sizing.css";
 @import "colours.css";
+@media (min-width: 768px) {
+	h1 {font-size: 2.9rem}
+}
+@media (min-width: 992px) {
+	h1 {font-size: 3.6rem}
+}
+
+/* /////////////////////////////////////////////////////////////////// */
 body {
 	font-family: myriad-pro, sans-serif;
 	text-align: center;
@@ -11,8 +19,52 @@ a {
 h1 {
 	font-size: 1.6rem;
 }
+input {
+	text-align: center;
+}
+table {
+	overflow-x: auto;
+}
+
+/* /////////////////////////////////////////////////////////////////// */
 #title {
 	margin: 5px 5px 10px 5px;
+}
+#navigation {
+	margin: 5px 0 5px 0;
+	padding: 0;
+}
+#body {
+	margin: 10px 5px 5px 5px;
+	margin-bottom: 60px;
+}
+#treeUL {
+	margin: 0;
+	padding: 0;
+}
+
+/* /////////////////////////////////////////////////////////////////// */
+.alert {
+	margin-top: 10px;
+}
+.a-label {
+	font-size: 15px;
+}
+.active {
+	display: block;
+	transition: 0.2s;
+}
+.body {
+	margin-bottom: 37px;
+	padding-bottom: 20px;
+}
+.bordered {
+	padding: 10px;
+}
+.caret {
+	cursor: pointer;
+	user-select: none; /* Prevent text selection */
+	vertical-align: middle;
 }
 .crests {
 	padding: 0px;
@@ -23,69 +75,68 @@ h1 {
 	margin-left: auto;
 	margin-right: auto;
 }
+.dropdown_button {
+	font-size: 25px;
+}
+.fb {
+	height: 30px;
+}
+.form-control {
+	text-align: center;
+	text-align-last: center;
+	margin-bottom: 5px;
+}
+.nested {
+	display: none;
+	transition: 0.5s;
+}
+.nav-link {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+.navbar {
+	padding: 0;
+}
 .sqnName {
 	text-align: center;
 	margin: auto 0;
 	padding: 0;
 	font-weight: bold;
 }
-#navigation {
-	margin: 5px 0 5px 0;
-	padding: 0;
+.stores_nav {
+	padding: 0 8px !important;
+	margin: 0 2px !important;
 }
-.navbar-light .navbar-nav .nav-link {
-	 padding-left: 30px;
-	 padding-right: 30px;
-}
-.nav-link:hover {
-	transition: 0.3s;
-	-webkit-transition: 0.3s;
-	-moz-transition: 0.3s;
-}
-.nav-link {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-#body {
-	margin: 10px 5px 5px 5px;
-}
-.navbar {
-	padding: 0;
-}
+
+/* /////////////////////////////////////////////////////////////////// */
 .body .dropdown-item {
 	padding-top: 0;
 	padding-bottom: 0;
 }
-.body {
-	margin-bottom: 37px;
-	padding-bottom: 20px;
+.body .nav-link {
+	padding-top: 0;
+	padding-bottom: 0;
 }
 .dropdown-item:hover {
 	transition: 0.3s;
 	-webkit-transition: 0.3s;
 	-moz-transition: 0.3s;
 }
-.fb {
-	height: 30px;
-}
-#body {
-	margin-bottom: 60px;
-}
-
-.alert {
-	margin-top: 10px;
-}
 div input {
 	width: 100%;
 }
-input {
-	text-align: center;
+.navbar-light .navbar-nav .nav-link {
+	 padding-left: 30px;
+	 padding-right: 30px;
 }
-@media (min-width: 768px) {
-	h1 {font-size: 2.9rem}
+.navbar-dark .navbar-nav .nav-link {
+	padding-left: 30px;
+	padding-right: 30px;
 }
-@media (min-width: 992px) {
-	h1 {font-size: 3.6rem}
+.nav-link:hover {
+	transition: 0.3s;
+	-webkit-transition: 0.3s;
+	-moz-transition: 0.3s;
 }
 table, th, td, thead {
 	border-collapse: collapse;
@@ -95,65 +146,13 @@ tr.padded td {
 	padding-left: 10px;
 	padding-right: 10px;
 }
-.navbar-dark .navbar-nav .nav-link {
-	padding-left: 30px;
-	padding-right: 30px;
-}
-.body .nav-link {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-.bordered {
-	padding: 10px;
-}
 
-.alert {
-	margin-top: 10px;
-}
-.form-control {
-	text-align: center;
-	text-align-last: center;
-	margin-bottom: 5px;
-}
-.smallFont07 {
-	font-size: 0.7rem;
-}
 td a {
 	font-size: 1rem;
-}
-.dropdown_button {
-	font-size: 25px;
-}
-.stores_nav {
-	padding: 0 8px !important;
-	margin: 0 2px !important;
-}
-table {
-	overflow-x: auto;
-}
-.a-label {
-	font-size: 15px;
 }
 
 ul, #treeUL {
 	list-style-type: none;
-}
-#treeUL {
-	margin: 0;
-	padding: 0;
-}
-.nested {
-	display: none;
-	transition: 0.5s;
-}
-.active {
-	display: block;
-	transition: 0.2s;
-}
-.caret {
-	cursor: pointer;
-	user-select: none; /* Prevent text selection */
-	vertical-align: middle;
 }
 .caret::before {
 	content: "\25B6";

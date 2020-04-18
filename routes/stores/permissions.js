@@ -1,7 +1,7 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //EDIT
-    app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('user_permissions'), (req, res) => {
-        if (Number(req.params.id) === req.user.user_id) {
+    app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('permission_edit'), (req, res) => {
+        if (Number(req.params.id) === req.user.user_id && Number(req.params.id) !== 2) {
             req.flash('danger', 'You can not edit your own permissions');
             res.redirect('/stores/users/' + req.params.id);
         } else if (Number(req.params.id) === 1) {
@@ -37,18 +37,45 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //PUT
-    app.put('/stores/permissions/:id', isLoggedIn, allowed('user_permissions', {send: true}), (req, res) => {
-        if (Number(req.params.id) !== req.user.user_id) {
+    app.put('/stores/permissions/:id', isLoggedIn, allowed('permission_edit', {send: true}), (req, res) => {
+        if (Number(req.params.id) !== req.user.user_id || Number(req.params.id) === 2) {
             if (Number(req.params.id) !== 1) {
-                for (let [permission, value] of Object.entries(res.locals.permissions)) {
-                    if (!req.body.permissions[permission]) req.body.permissions[permission] = 0;
-                };
-                fn.update(
+                fn.getAllWhere(
                     m.permissions,
-                    req.body.permissions,
-                    {user_id: req.params.id}
+                    {user_id: req.params.id},
+                    {attributes: ['permission_id', '_permission']}
                 )
-                .then(result => res.send({result: true, message: 'Permissions saved'}))
+                .then(permissions => {
+                    let actions = [];
+                    req.body.permissions.forEach(permission => {
+                        if (permissions.filter(e => e._permission === permission).length === 0) {
+                            actions.push(
+                                fn.create(
+                                    m.permissions,
+                                    {
+                                        user_id: req.params.id,
+                                        _permission: permission
+                                    }
+                                )
+                            );
+                        };
+                    });
+                    permissions.forEach(permission => {
+                        if (req.body.permissions.filter(e => e === permission._permission).length === 0) {
+                            actions.push(
+                                fn.delete(
+                                    'permissions',
+                                    {permission_id: permission.permission_id}
+                                )
+                            );
+                        };
+                    });
+                    if (actions.length > 0) {
+                        Promise.allSettled(actions)
+                        .then(result => res.send({result: true, message: 'Permissions saved'}))
+                        .catch(err => fn.send_error(err.message, res));
+                    } else res.send({result: true, message: 'No changes'});
+                })
                 .catch(err => fn.send_error(err.message, res));
             } else fn.send_error('You can not edit the Admin user permissions', res);
         } else fn.send_error('You can not edit your own permissions', res);

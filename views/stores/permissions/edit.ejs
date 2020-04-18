@@ -11,44 +11,78 @@
     </div>
     <div class="input-group mb-1">
         <div class="input-group-prepend w-30">
-            <span class="input-group-text w-100">Rank</span>
+            <span class="input-group-text w-100">User</span>
         </div>
         <p class="form-control"><%= f_user.rank._rank %></p>
-    </div>
-    <div class="input-group mb-1">
-        <div class="input-group-prepend w-30">
-            <span class="input-group-text w-100">Initials</span>
-        </div>
         <p class="form-control"><%= f_user._ini %></p>
+        <p class="form-control"><%= f_user._name %></p>
     </div>
-    <button class="btn btn-success btn-lg col-12" form="permissionForm" type="submit" id="_submit">Save</button>
+    <button class="btn btn-success confirm col-12" form="permissionForm" type="submit" id="_submit">Save</button>
     <a class='float-left' href="javascript:close()">Cancel</a>
     <div class="form-group">
-        <div>
-            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_disabled()>Disabled</button>
-            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_user()>User - Basic access and requests</button>
-            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_issuer()>Issuer - As User with issuing and returns</button>
-            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_storeman()>Storeman - As Issuer with stores related permissions</button>
-            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_admin()>Admin - As Storeman with settings and suppliers</button>
-            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_super()>Superuser - All permissions</button>
-            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen()>Canteen</button>
-            <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen_supervisor()>Canteen Supervisor</button>
-            <form id="permissionForm">
-                <ul id="treeUL" class="list-group">
-                    <li id="account_enabled_li" class="list-group-item">
-                        <div class="row cardDarkText">
-                            <span class="col-2 caret my-auto"></span>
-                            <label class="col-6 text-left col-form-label">Account Enabled</label>
-                            <input class="col-4 form-control form-control-sm" id="account_enabled" type="checkbox" name="permissions[account_enabled]" onchange=checkPermission(this) value="1" <% if (f_user.permission['account_enabled'] === 1) { %> checked <% } %>>
-                        </div>
-                    </li>
-                </ul>
-            </form>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_disabled()>Disabled</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_user()>User - Basic access and requests</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_issuer()>Issuer - As User with issuing and returns</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_storeman()>Storeman - As Issuer with stores related permissions</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_admin()>Admin - As Storeman with settings and suppliers</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_super()>Superuser - All permissions</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen()>Canteen</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen_supervisor()>Canteen Supervisor</button>
+        <div id='spn_permissions' class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
+        <form id="permissionForm">
+            <ul id="treeUL" class="list-group">
+                <li id="account_enabled_li" class="list-group-item">
+                    <div class="row cardDarkText">
+                        <span class="col-2 caret my-auto"></span>
+                        <label class="col-6 text-left col-form-label">Account Enabled</label>
+                        <input class="col-4 form-control form-control-sm" id="account_enabled" type="checkbox" name="permissions[]" onchange=checkPermission(this) value="account_enabled" <% if (f_user.permission && f_user.permission['account_enabled'] === 1) { %> checked <% } %>>
+                    </div>
+                </li>
+            </ul>
+        </form>
     </div>
 </section>
 <% include ../../partials/foot/noNav %>
 <script>
+    let structure = 
+    {table: 'account_enabled', children: [
+        {table: 'issues',    singular: 'issue',    children: [
+            {table: 'issue_lines', singular: 'issue_line', children: []},
+            {table: 'returns',     singular: 'return',     children: [
+                {table: 'return_lines', singular: 'return_line', children: []}]}]},
+        {table: 'items',     singular: 'item',     children: [
+            {table: 'sizes',      singular: 'size', children: [
+                {table: 'adjusts', singular: 'adjust', children: []},
+                {table: 'nsns',    singular: 'nsn',    children: []},
+                {table: 'serials', singular: 'serial', children: []},
+                {table: 'stock',   singular: 'stock',  children: [
+                    {table: 'locations', singular: 'location', children: []}]}]},
+            {table: 'categories', singular: 'category', children: []},
+            {table: 'groups',     singular: 'group',    children: []},
+            {table: 'types',      singular: 'type',     children: []},
+            {table: 'subtypes',   singular: 'subtype',  children: []},
+            {table: 'genders',    singular: 'gender',   children: []}]},
+        {table: 'notes',     singular: 'note',     children: []},
+        {table: 'orders',    singular: 'order',    children: [
+            {table: 'order_lines', singular: 'order_line', children: []}]},
+        {table: 'receipts',  singular: 'receipt',  children: [
+            {table: 'receipt_lines', singular: 'receipt_line', children: []}]},
+        {table: 'requests',  singular: 'request',  children: [
+            {table: 'request_lines', singular: 'request_line', children: []}]},
+        {table: 'settings',  singular: 'setting',  children: []},
+        {table: 'suppliers', singular: 'supplier', children: [
+            {table: 'accounts', singular: 'account', children: []},
+            {table: 'files',    singular: 'file',    children: []},
+            {table: 'demands',   singular: 'demand',   children: [
+                {table: 'demand_lines', singular: 'demand_line', children: []}]}]},
+        {table: 'users',     singular: 'user',     children: [
+            {table: 'permissions', singular: 'permission', children: []},
+            {table: 'statuses',    singular: 'status',     children: []},
+            {table: 'ranks',       singular: 'rank',       children: []}]}
+    ]};
+
     window.addEventListener( "load", function () {
         let form = document.querySelector("#permissionForm");
         form.addEventListener("submit", function (event) {
@@ -56,50 +90,58 @@
             sendData(form, 'PUT', '/stores/permissions/<%= f_user.user_id %>');
         });
     });
-    insertPermission('account_enabled');
-
-    var toggler = document.getElementsByClassName("caret"),
-        i;
-
+    // checkboxes = document.querySelectorAll('input[type=checkbox]')
+    // checkboxes.forEach(checkbox => checkbox.addEventListener("change", function() {checkPermission(this)}));
+    
+    var toggler = document.getElementsByClassName("caret"), i;
     for (i = 0; i < toggler.length; i++) {
         toggler[i].addEventListener("click", function() {
-            this.parentElement.parentElement.querySelector(".nested").classList.toggle("active");
-            this.classList.toggle("caret-down");
+            let nested = this.parentElement.parentElement.querySelectorAll(".nested");
+            nested.forEach(node => {
+                if (node.parentElement === this.parentElement.parentElement) {
+                    node.classList.toggle("active");
+                    node.classList.toggle("caret-down");
+                };
+            });
         });
     };
 
     function insertPermission(_parent) {
-        var parent = document.querySelector('#' + _parent + '_li');
-        var children = [<%- attributes %>].filter(e => e.parent === _parent);
-        if (children.length > 0) {
+        let parent = '';
+        if (_parent.table !== 'account_enabled') {
+            let perm_parent = 'access_' + _parent.table;
+            parent = document.querySelector('#' + perm_parent + '_li');
+
+            let newUL = document.createElement('ul');
+            newUL.classList.add('list-group', 'nested');
+            newUL.id = _parent.table + '_ul';
+
+            ['_add', '_edit', '_delete'].forEach(action => {
+                let newLI = document.createElement('li');
+                newLI.appendChild(createCheckBox(_parent.singular + action));
+                newUL.appendChild(newLI);
+                parent.appendChild(newUL);
+            });
+        } else parent = document.querySelector('#' + _parent.table + '_li');
+
+        if (_parent.children.length > 0) _parent.children.forEach(child => {
             var newUL = document.createElement('ul');
             newUL.classList.add('list-group', 'nested');
-            newUL.id = _parent + '_ul';
-            children.forEach(permission => {
-                var subChildren = [<%- attributes %>].filter(e => e.parent === permission.name),
-                    newLI       = document.createElement('li');
-                    newLI.classList.add('list-group-item');
-                if (subChildren.length > 0) {
-                    var newSpan = document.createElement('span');
-                    newSpan.classList.add('caret');
-                    newLI.appendChild(createCheckBox(permission.name, true));
-                    newLI.id = permission.name + '_li'
-                    newUL.appendChild(newLI);
-                    parent.appendChild(newUL);
-                    insertPermission(permission.name);
-                } else {
-                    newLI.appendChild(createCheckBox(permission.name));
-                    newUL.appendChild(newLI);
-                    parent.appendChild(newUL);
-                };
-                document.querySelector('#' + permission.name).addEventListener("change", function() {checkPermission(this)});
-            });
-        };
+            newUL.id = 'access_' + child.table + '_ul';
+
+            let newChildLI = document.createElement('li');
+            newChildLI.classList.add('list-group-item');
+            newChildLI.id = 'access_' + child.table + '_li';
+            newChildLI.appendChild(createCheckBox('access_' + child.table, true));
+            newUL.appendChild(newChildLI);
+            parent.appendChild(newUL);
+            insertPermission(child);
+        });
     };
     function createCheckBox(permission, caret = false) {
-        var newDiv = document.createElement('div'),
-            newLbl = document.createElement('label'),
-            newInp = document.createElement('input'),
+        let newDiv  = document.createElement('div'),
+            newLbl  = document.createElement('label'),
+            newInp  = document.createElement('input'),
             newSpan = document.createElement('span');
         if (caret) newSpan.classList.add('caret');
         newSpan.classList.add('col-2', 'my-auto');
@@ -109,8 +151,8 @@
         newLbl.innerText = permission;
         newInp.id = permission;
         newInp.type = 'checkbox';
-        newInp.name = 'permissions[' + permission + ']';
-        newInp.value = '1';
+        newInp.name = 'permissions[]';
+        newInp.value = permission;
         if (<%- JSON.stringify(f_user.permission) %>[permission] === 1) newInp.checked = true;
         newDiv.appendChild(newSpan);
         newDiv.appendChild(newLbl);
@@ -119,7 +161,7 @@
     };
     function checkPermission(checkBox) {
         if (checkBox.checked) {
-            var parent = document.querySelector('#' + String(checkBox.parentElement.parentElement.parentElement.id).replace("_ul", ""));
+            var parent = document.querySelector('#access_' + String(checkBox.parentElement.parentElement.parentElement.id).replace("_ul", ""));
             if (!parent.checked) parent.checked = true;
         } else {
             var children = document.querySelectorAll('#' + checkBox.id + '_li input');
@@ -130,9 +172,8 @@
     };
 
     function setAll(as) {
-        <% for (let [key, value] of Object.entries(permissions)) { %>
-            <%- key %>.checked = as;
-        <% }; %>
+        let checkBoxes = document.querySelectorAll('input[type=checkbox]');
+        checkBoxes.forEach(checkbox => checkbox.checked = as);
     };
     function p_disabled() {setAll(false);};
     function p_super() {setAll(true);};
@@ -236,5 +277,10 @@
         document.querySelector('#subtype_add').checked = true;
         document.querySelector('#subtype_edit').checked = true;
     };
+</script>
+<script async>
+    let spn_permissions = document.querySelector('#spn_permissions');
+    insertPermission(structure);
+    spn_permissions.style.display = 'none';
 </script>
 <% include ../../partials/foot/htmlClose %>

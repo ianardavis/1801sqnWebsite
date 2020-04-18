@@ -3,37 +3,8 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
     app.get('/stores/demands', isLoggedIn, allowed('access_demands'), (req, res) => {
-        let query = {}, where = {};
-        query.complete    = Number(req.query.complete)    || 2;
-        query.supplier_id = Number(req.query.supplier_id) || 0;
-        if (query.complete === 2)      where._complete   = 0
-        else if (query.complete === 3) where._complete   = 1;
-        if (query.supplier_id !== 0)   where.supplier_id = query.supplier_id;
-        fn.getAllWhere(
-            m.demands,
-            where,
-            {
-                include: [
-                    inc.users(),
-                    inc.demand_lines(),
-                    m.suppliers
-                ]
-            }
-        )
-        .then(demands => {
-            fn.getAllWhere(
-                m.suppliers,
-                {supplier_id: {[op.not]: 3}}
-            )
-            .then(suppliers => {
-                res.render('stores/demands/index', {
-                    suppliers: suppliers,
-                    demands:   demands,
-                    query:     query
-                });
-            })
-            .catch(err => fn.error(err, '/stores', req, res));
-        })
+        fn.getAll(m.suppliers)
+        .then(suppliers => res.render('stores/demands/index', {suppliers: suppliers}))
         .catch(err => fn.error(err, '/stores', req, res));
     });
     //SHOW
@@ -43,22 +14,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {demand_id: req.params.id},
             {include: [
                 inc.users(),
-                m.suppliers,
-                inc.demand_lines({sizes: true, include: [
-                    inc.sizes({stock: true})
-                ]}),
+                m.suppliers
             ]}
         )
         .then(demand => {
-            fn.getNotes('demands', req.params.id, req)
-            .then(notes => {
-                res.render('stores/demands/show', {
-                    demand: demand,
-                    query:  {system: Number(req.query.system) || 2},
-                    notes:  notes,
-                    show_tab: req.query.tab || 'details'
-                });
-            })
+            res.render('stores/demands/show', {
+                demand: demand,
+                notes:  {table: 'demands', id: demand.demand_id},
+                show_tab: req.query.tab || 'details'
+            });
         })
         .catch(err => fn.error(err, '/stores/demands', req, res));
     });
@@ -77,16 +41,38 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores/demands', req, res));
     });
+    //ASYNC GET DEMAND
+    app.get('/stores/getdemands', isLoggedIn, allowed('access_demands', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.demands,
+            req.query,
+            {include: [
+                inc.demand_lines(),
+                inc.users(),
+                inc.suppliers({as: 'supplier'})
+        ]})
+        .then(demands => res.send({result: true, demands: demands}))
+        .catch(err => fn.send_error(err.message, res));
+    });//ASYNC GET LINES
+    app.get('/stores/getdemandlines', isLoggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.demand_lines,
+            req.query,
+            {include: [inc.sizes({stock: true})]}
+        )
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => fn.send_error(err.message, res));
+    });
 
     //POST
     app.post('/stores/demands', isLoggedIn, allowed('demand_add', {send: true}), (req, res) => {
-        fn.createDemand(req.query.supplier_id)
+        fn.createDemand(req.body.supplier_id, req.user.user_id)
         .then(demand_id => res.send({result: true, message: 'Demand raised: ' + demand_id}))
-        .catch(err => res.send_error(err.message, res));
+        .catch(err => fn.send_error(err.message, res));
     });
-    app.post('/stores/demands/:id', isLoggedIn, allowed('demand_add', {send: true}), (req, res) => {
+    app.post('/stores/demand_lines/:id', isLoggedIn, allowed('demand_line_add', {send: true}), (req, res) => {
         fn.createDemandLine(req.params.id, req.body.line)
-        .then(message => res.send({result: true, message: message}))
+        .then(message => res.send({result: true, message: 'Item added: ' + message}))
         .catch(err => fn.send_error(err.message, res))
     });
 
@@ -167,11 +153,23 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //DELETE
     app.delete('/stores/demands/:id', isLoggedIn, allowed('demand_delete', {send: true}), (req, res) => {
         fn.delete(
-            'demands',
+            'demand_lines',
             {demand_id: req.params.id},
-            {hasLines: true}
+            true
         )
-        .then(result => res.send({result: result.success, message: result.message}))
+        .then(result => {
+            fn.delete(
+                'demands',
+                {demand_id: req.params.id}
+            )
+            .then(result => res.send({result: true, message: 'Demand deleted'}))
+            .catch(err => fn.send_error(err.message, res));
+        })
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.delete('/stores/demand_lines/:id', isLoggedIn, allowed('demand_delete', {send: true}), (req, res) => {
+        fn.delete('demand_lines', {line_id: req.params.id})
+        .then(result => res.send({result: true, message: 'Line deleted'}))
         .catch(err => fn.send_error(err.message, res));
     });
 };

@@ -12,35 +12,35 @@
         <% if (permissions.access_adjusts) { %>
             <li class="nav-item">
                 <a class="nav-link" id="adjusts-tab" data-toggle="tab" href="#adjusts" role="tab" aria-controls="adjusts" aria-selected="true">
-                    Adjustments (<%= stock.adjusts.length %>)
+                    Adjustments (<span id='adjust_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (permissions.access_receipts) { %>
             <li class="nav-item">
                 <a class="nav-link" id="receipts-tab" data-toggle="tab" href="#receipts" role="tab" aria-controls="receipts" aria-selected="true">
-                    Receipts (<%= stock.receipts.length %>)
+                    Receipts (<span id='receipt_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (permissions.access_issues) { %>
             <li class="nav-item">
                 <a class="nav-link" id="issues-tab" data-toggle="tab" href="#issues" role="tab" aria-controls="issues" aria-selected="true">
-                    Issues (<%= stock.issues.length %>
+                    Issues (<span id='issue_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (permissions.access_returns) { %>
             <li class="nav-item">
                 <a class="nav-link" id="returns-tab" data-toggle="tab" href="#returns" role="tab" aria-controls="returns" aria-selected="true">
-                    Returns (<%= stock.returns.length %>
+                    Returns (<span id='return_count'></span>)
                 </a>
             </li>
         <% } %>
         <% if (permissions.access_notes) { %>
             <li class="nav-item">
                 <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<%= notes.notes.length %>)
+                    Notes (<span id='note_count'></span>)
                 </a>
             </li>
         <% } %>
@@ -72,7 +72,10 @@
 							<i class='fas fa-trash-alt'></i>
 						</a>
 					<% } %>
-					<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
+                    <div id='spn_adjusts' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+					<table class="table table-sm table-hover">
 						<thead class="thead-dark">
 							<th class="w-25" onclick="sortTable(0, 'adjustsTable')">Date</th>
 							<th class="w-10" onclick="sortTable(1, 'adjustsTable')">Type</th>
@@ -80,28 +83,7 @@
 							<th class="w-10" onclick="sortTable(3, 'adjustsTable')">Variance</th>
 							<th class="w-45" onclick="sortTable(4, 'adjustsTable')">User</th>
 						</thead>
-						<tbody id="adjustsTable">
-							<% if (stock.adjusts && stock.adjusts.length > 0) { %>
-								<% stock.adjusts.forEach(adjust => { %>
-									<tr>
-										<td data-sort="<%= adjust._date.getTime() %>">
-											<a href="#"><%= adjust._date.toDateString() %></a>
-										</td>
-										<td>
-											<a href="#"><%= adjust._type %></a>
-										</td>
-										<td>
-											<a href="#"><%= adjust._qty %></a>
-										</td>
-										<td>
-											<a href="#"><%= adjust._qty_difference %></a>
-										</td>
-										<td>
-											<a href="#"><%= adjust.user.rank._rank %> <%= adjust.user._name %>, <%= adjust.user._ini %></a>
-										</td>
-									</tr>
-								<% }) %>
-							<% } %>
+						<tbody id="adjustTable">
 						</tbody>
 					</table>
 				</div>
@@ -110,7 +92,10 @@
         <% if (permissions.access_receipts) { %>
 			<div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
 				<div class="container">
-					<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
+                    <div id='spn_receipts' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+					<table class="table table-sm table-hover">
 						<thead class="thead-dark">
 							<th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
 							<th class="w-10" onclick="sortTable(1, 'receiptTable')">Qty</th>
@@ -118,26 +103,6 @@
 							<th><i class="fas fa-search"></i></th>
 						</thead>
 						<tbody id="receiptTable">
-							<% if (stock.receipts && stock.receipts.length > 0) { %>
-								<% stock.receipts.forEach(receipt => { %>
-									<tr>
-										<td data-sort="<%= receipt.receipt._date.getTime() %>">
-											<%= receipt.receipt._date.toDateString() %>
-										</td>
-										<td>
-											<%= receipt._qty %>
-										</td>
-										<td>
-											<%= receipt.receipt.user.rank._rank %> <%= receipt.receipt.user._name %>, <%= receipt.receipt.user._ini %>
-										</td>
-										<td>
-											<a class='btn btn-sm btn-primary' href="/stores/receipts/<%= receipt.receipt_id %>">
-												<i class="fas fa-search"></i>
-											</a>
-										</td>
-									</tr>
-								<% }) %>
-							<% } %>
 						</tbody>
 					</table>
 				</div>
@@ -146,7 +111,10 @@
         <% if (permissions.access_issues) { %>
 			<div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
 				<div class="container">
-					<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
+                    <div id='spn_issues' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+					<table class="table table-sm table-hover">
 						<thead class="thead-dark">
 							<th class="w-40" onclick="sortTable(0, 'issueTable')">Date</th>
 							<th class="w-40" onclick="sortTable(1, 'issueTable')">To</th>
@@ -155,29 +123,6 @@
 							<th><i class="fas fa-search"></i></th>
 						</thead>
 						<tbody id="issueTable">
-							<% if (stock.issues && stock.issues.length > 0) { %>
-								<% stock.issues.forEach(issue => { %>
-									<tr>
-										<td data-sort="<%= issue.issue._date.getTime() %>">
-											<%= issue.issue._date.toDateString() %>
-										</td>
-										<td>
-											<%= issue.issue._to.rank._rank %> <%= issue.issue._to._name %>, <%= issue.issue._to._ini %>
-										</td>
-										<td>
-											<%= issue._qty %>
-										</td>
-										<td>
-											<input class="form-control form-control-sm" type="checkbox" disabled<% if (issue.return_line_id !== null) { %> selected <% } %>>
-										</td>
-										<td>
-											<a class='btn btn-sm btn-primary' href="/stores/issues/<%= issue.issue_id %>">
-												<i class="fas fa-search"></i>
-											</a>
-										</td>
-									</tr>
-								<% }) %>
-							<% } %>
 						</tbody>
 					</table>
 				</div>
@@ -185,7 +130,10 @@
         <% } %>
         <% if (permissions.access_returns) { %>
 			<div class="tab-pane fade" id="returns" role="tabpanel" aria-labelledby="returns-tab">
-				<table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
+				<div id='spn_returns' class="spinner-border text-primary" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-45" onclick="sortTable(0, 'returnTable')">Date</th>
 						<th class="w-45" onclick="sortTable(1, 'returnTable')">From</th>
@@ -223,10 +171,12 @@
 	</div>
 </section>
 <% include ../../partials/foot/noNav %>
+<script src="/js/specific/stock_show.js"></script>
 <script>
-    function filterSelects() {
-        filter(['system'],"/stores/stock/<%= stock.stock_id %>/edit");
-    };
     showTab('<%= show_tab %>');
 </script>
+<script async>getAdjusts(<%= stock.size_id %>)</script>
+<script async>getReceipts(<%= stock.size_id %>)</script>
+<script async>getIssues(<%= stock.size_id %>)</script>
+<script async>getReturns(<%= stock.size_id %>)</script>
 <% include ../../partials/foot/htmlClose %>
