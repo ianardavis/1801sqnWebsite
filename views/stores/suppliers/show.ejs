@@ -59,7 +59,7 @@
                         </form>
                     <% } %>
                 <% } %>
-                <% if (permissions.supplier_delete === 1) { %>
+                <% if (permissions.supplier_delete) { %>
                     <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST">
                         <button class="float-right btn btn-danger m-1 confirm">
                             <i class='fas fa-trash-alt'></i>
@@ -177,12 +177,18 @@
             </div>
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-            <div id='spn_items' class="spinner-border text-primary" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
             <div class="container">
-                <select id="size_id" class="form-control" size="20" ondblclick=goToItemSize()>
-                </select>
+                <div id='spn_items' class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-50" onclick="sortTable(0, 'sizeTable')">Item</th>
+                        <th class="w-50" onclick="sortTable(1, 'sizeTable')">Size</th>
+                    </thead>
+                    <tbody id="sizeTable">
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">

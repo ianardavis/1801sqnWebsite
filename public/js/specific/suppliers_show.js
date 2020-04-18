@@ -3,17 +3,20 @@ function getItems(supplier_id) {
     spn_items.style.display = 'block';
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {
-        let response  = JSON.parse(event.target.responseText),
-            sel_sizes = document.querySelector('#size_id');
-        sel_sizes.innerHTML = '';
+        let response   = JSON.parse(event.target.responseText),
+            table_body = document.querySelector('#sizeTable');
+            table_body.innerHTML = '';
         if (response.result) {
             let item_count = document.querySelector('#item_count');
             item_count.innerText = response.sizes.length;
             response.sizes.forEach(size => {
-                let _option = document.createElement('option');
-                _option.value = size.size_id;
-                _option.innerText = size.item._description + ', size: ' + size._size;
-                sel_sizes.appendChild(_option);
+                let row = table_body.insertRow(-1),
+                    cell1 = row.insertCell(-1),
+                    cell2 = row.insertCell(-1);
+                cell1.innerText = size.item._description;
+                cell1.appendChild(link('/stores/items/' + size.item_id));
+                cell2.innerText = size._size;
+                cell2.appendChild(link('/stores/sizes/' + size.size_id));
             });
         } else alert('Error: ' + response.error)
         spn_items.style.display = 'none';

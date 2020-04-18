@@ -25,14 +25,13 @@ function pwd_compare() {
     }
 }
 function checkFilled() {
-    if (input_bader.value === '' || 
-    input_name.value === '' || 
-    input_ini.value === '' || 
-    input_login_id.value === '' || 
-    input_password.value === '' || 
-    input_confirm.value === '') {
+    if (input_bader.value    === '' || 
+        input_name.value     === '' || 
+        input_ini.value      === '' || 
+        input_login_id.value === '' || 
+        input_password.value === '' || 
+        input_confirm.value  === '') {
+
         btn_submit.disabled= true;
-    } else {
-        btn_submit.disabled= false;
-    }
+    } else btn_submit.disabled= false;
 }

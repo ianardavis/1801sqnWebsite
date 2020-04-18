@@ -1103,37 +1103,48 @@ module.exports = (fn, m, inc) => {
         })
         .catch(err => reject(err));
     });
-    fn.createIssueLine = (issue_id, line) => new Promise((resolve, reject) => {
+    fn.createIssueLine = (issue_id, line, user_id) => new Promise((resolve, reject) => {
         if (line) {
-            fn.getAllWhere(
-                m.issue_lines,
-                {issue_id: issue_id},
-                {nullOK: true}
+            fn.getOne(
+                m.issues,
+                {issue_id: issue_id}
             )
-            .then(lines => {
-                line._line    = lines.length + 1;
-                line.issue_id = issue_id;
-                fn.create(
-                    m.issue_lines,
-                    line
-                )
-                .then(issue_line => {
-                    let actions = [];
-                    actions.push(fn.subtractStock(issue_line.stock_id, issue_line.qty));
-                    if (line.serial_id) {
-                        actions.push(
-                            fn.update(
-                                m.serials,
-                                {issue_line_id: issue_line.line_id},
-                                {serial_id: line.serial_id}
-                            )
-                        );
-                    };
-                    Promise.allSettled(actions)
-                    .then(result => resolve(issue_line.line_id))
+            .then(issue => {
+                if (issue._complete) reject(new Error('Lines can not be added to completed issues'))
+                else {
+                    fn.getAllWhere(
+                        m.issue_lines,
+                        {issue_id: issue_id},
+                        {nullOK: true}
+                    )
+                    .then(lines => {
+                        line._line    = lines.length + 1;
+                        line.issue_id = issue_id;
+                        line.user_id  = user_id;
+                        fn.create(
+                            m.issue_lines,
+                            line
+                        )
+                        .then(issue_line => {
+                            let actions = [];
+                            actions.push(fn.subtractStock(issue_line.stock_id, issue_line.qty));
+                            if (line.serial_id) {
+                                actions.push(
+                                    fn.update(
+                                        m.serials,
+                                        {issue_line_id: issue_line.line_id},
+                                        {serial_id: line.serial_id}
+                                    )
+                                );
+                            };
+                            Promise.allSettled(actions)
+                            .then(result => resolve(issue_line.line_id))
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    })
                     .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
+                };
             })
             .catch(err => reject(err));
         } else reject(new Error('No line entered'));

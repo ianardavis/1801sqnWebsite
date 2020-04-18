@@ -3,14 +3,14 @@ function getNotes(table, id, delete_permission) {
     spn_notes.style.display = 'block';
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", function(event) {
-        let response    = JSON.parse(event.target.responseText),
-            table_body  = document.querySelector('#notesTable');
+        let response   = JSON.parse(event.target.responseText),
+            table_body = document.querySelector('#notesTable');
         table_body.innerHTML = '';
         if (response.result) {
             let note_count = document.querySelector('#note_count');
             note_count.innerText = response.notes.length;
             response.notes.forEach(note => {
-                let row = table_body.insertRow(-1),
+                let row   = table_body.insertRow(-1),
                     cell1 = row.insertCell(-1),
                     cell2 = row.insertCell(-1),
                     cell3 = row.insertCell(-1),
@@ -24,9 +24,7 @@ function getNotes(table, id, delete_permission) {
                 cell5.appendChild(link('javascript:edit("notes",' + note.note_id + ',{"height":600})', false));
                 if (delete_permission) {
                     let cell6 = row.insertCell(-1);
-                    if (!note._system) {
-                        cell6.appendChild(deleteBtn('/stores/notes/' + note.note_id));
-                    };
+                    if (!note._system) cell6.appendChild(deleteBtn('/stores/notes/' + note.note_id));
                 };
             });
         } else alert('Error: ' + response.error)

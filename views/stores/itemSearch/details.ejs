@@ -4,7 +4,7 @@
 <section id='body'>
 <div class='container'>
     <div id="itemDiv" class='mb-2 bordered'>
-        <h3><%= callType %></h3>
+        <h3><%= callType.substring(0, 1).toUpperCase() + callType.substring(1, callType.length) %></h3>
         <h5>Items</h5>
         <input class='form-control' type='text' id='itemSearch' onkeyup='searchTable("itemSelect", "itemSearch")' placeholder='Search for items...'>
         <form id='itemForm'>
@@ -22,12 +22,6 @@
                 </select>
             </div>
         </form>
-        <% if (callType === 'issue') { %>
-            <div>
-                <p>Note: only valid items are shown.<br>
-                Sizes must have associated NSNs and stock records to be valid</p>
-            </div>
-        <% }; %>
     </div>
     <div id='sizeDiv' style='display:none;' class='mb-2 bordered'>
         <form id='sizeForm'>
@@ -43,12 +37,6 @@
                 </select>
             </div>
         </form>
-        <% if (callType === 'issue') { %>
-            <div>
-                <p>Note: only valid sizes are shown.<br>
-                Sizes must have associated NSNs and stock records to be valid</p>
-            </div>
-        <% }; %>
     </div>
 
     <div id='detailDiv' style='display:none;' class='mb-2 bordered'>
@@ -60,7 +48,7 @@
                 </div>
                 <p id='item_name' class="form-control"></p>
             </div>
-            <div class="input-group mb-1">
+            <div class="input-group mb-3">
                 <div class="input-group-prepend w-30">
                     <span class="input-group-text w-100">Size</span>
                 </div>
@@ -68,7 +56,7 @@
             </div>
             <% if (callType === 'issue') { %>
                 <input class='form-control' type='text' id='nsnSearch' onkeyup='searchTable("nsnSelect", "nsnSearch")' placeholder='Search for NSNs...'>
-                <div class="input-group mb-1">
+                <div class="input-group mb-3">
                     <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Select NSN</span>
                     </div>
@@ -78,7 +66,7 @@
             <% } %>
             <% if (callType === 'issue' || callType === 'receipt') { %>
                 <input class='form-control' type='text' id='serialSearch' onkeyup='searchTable("serialSelect", "serialSearch")' placeholder='Search for Serials...'>
-                <div class="input-group mb-1">
+                <div class="input-group mb-3">
                     <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Select Serial</span>
                     </div>
@@ -86,7 +74,7 @@
                     </select>
                 </div>
                 <input class='form-control' type='text' id='stockSearch' onkeyup='searchTable("stockSelect", "stockSearch")' placeholder='Search for stock...'>
-                <div class="input-group mb-1">
+                <div class="input-group mb-3">
                     <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Location</span>
                     </div>
@@ -102,7 +90,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button class='btn btn-success w-100 mb-1' onclick=javascript:addSize()>Add Size</button>
+                    <button class='btn btn-success w-100 mb-1'>Add Size</button>
                     <a class='float-left btn btn-danger w-100' href='javascript:close()'>Close</a>
                 </div>
             </div>
@@ -110,7 +98,6 @@
     </div>
 </div>
 <% include ../../partials/foot/noNav %>
-<script src='/js/selectSearch.js'></script>
 <script>
     function getSizes() {
         const XHR = new XMLHttpRequest();
@@ -161,7 +148,8 @@
                 <% if (callType === 'issue') { %>
                     if (response.size.nsns && response.size.nsns.length > 0) {
                         let nsnSelect = document.querySelector('#nsnSelect');
-                        nsnSelect.required = response.size._nsns;
+                        nsnSelect.innerHTML = '';
+                        nsnSelect.required  = response.size._nsns;
                         response.size.nsns.forEach(nsn => {
                             let _option = document.createElement('option');
                             _option.value     = nsn.nsn_id;
@@ -172,7 +160,8 @@
                 <% } %>
                 if (response.size.serials && response.size.serials.length > 0) {
                     let serialSelect = document.querySelector('#serialSelect');
-                    serialSelect.required = response.size._serials;
+                    serialSelect.innerHTML = '';
+                    serialSelect.required  = response.size._serials;
                     response.size.serials.forEach(serial => {
                         let _option      = document.createElement('option');
                         _option.value     = serial.serial_id;
@@ -182,7 +171,8 @@
                 };
                 if (response.size.stocks && response.size.stocks.length > 0) {
                     let stockSelect = document.querySelector('#stockSelect');
-                    stockSelect.required = true;
+                    stockSelect.innerHTML = '';
+                    stockSelect.required  = true;
                     response.size.stocks.forEach(stock => {
                         let _option     = document.createElement('option');
                         _option.value     = stock.stock_id;

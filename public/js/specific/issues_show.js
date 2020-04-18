@@ -1,4 +1,4 @@
-function getLines(issue_id, return_permission, delete_permission) {
+function getLines(issue_id, complete, return_permission, delete_permission) {
     let spn_issues = document.querySelector('#spn_issues');
     spn_issues.style.display = 'block';
     const XHR = new XMLHttpRequest();
@@ -47,14 +47,22 @@ function getLines(issue_id, return_permission, delete_permission) {
                 if (line.return) {
                     cell8.innerText = line.return.stock.location._location;
                     cell8.appendChild(link('/stores/stock/' + line.return.stock_id + '/edit'));
-                } else if (return_permission) {
-                    cell8.innerText = '***Return select***';
-                    // <select class='form-control form-control-sm' name='returnLines[]'>
-                    //     <option value='' selected></option>
-                    //     if (line.stock && line.stock.size && line.stock.size.stocks) line.stock.size.stocks.forEach(stock => {
-                    //         <option value='{"line_id":<%= line.line_id,"qty":<%= line._qty,"stock_id":<%= stock.stock_id,"issue_id":<%= issue.issue_id}'><%= stock.location._location</option>
-                    //     });
-                    // </select>
+                } else if (complete && return_permission) {
+                    let _select = document.createElement('select');
+                    _select.classList.add('form-control', 'form-control-sm');
+                    _select.name = 'returnLines';
+                    _select.appendChild(document.createElement('option'));
+                    line.stock.size.stocks.forEach(stock => {
+                        let _option = document.createElement('option');
+                        let _val = {}
+                        _val.line_id = line.line_id;
+                        _val._qty    = line._qty;
+                        _val.stock_id = stock.stock_id;
+                        _option.value = JSON.stringify(_val);
+                        _option.innerText = stock.location._location;
+                        _select.appendChild(_option);
+                    });
+                    cell8.appendChild(_select);
                 };
 
                 if (line.return) cell9.innerText = line.return.return._date.toDateString();

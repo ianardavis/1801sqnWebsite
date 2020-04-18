@@ -26,7 +26,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
-
                 {include: [m.ranks, m.permissions, m.statuses]}
             )
             .then(user => {

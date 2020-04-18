@@ -137,9 +137,32 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => fn.send_error(err.message, res));
     });
+    
+    //PUT
+    app.put('/stores/issues/:id', isLoggedIn, allowed('issue_edit', {send: true}), (req, res) => {
+        if (req.body.issue) {
+            fn.getOne(
+                m.issues,
+                {issue_id: req.params.id},
+                {include: [inc.issue_lines()], attributes: ['issue_id']}
+            )
+            .then(issue => {
+                if (issue.lines.length > 0) {
+                    fn.update(
+                        m.issues,
+                        req.body.issue,
+                        {issue_id: issue.issue_id}
+                    )
+                    .then(result => res.send({result: true, message: 'Issue updated'}))
+                    .catch(err => fn.send_error(err.message, res));
+                } else fn.send_error('An issue must have at least 1 line to be completed', res);
+            })
+            .catch(err => fn.send_error(err.message, res));
+        } else fn.send_error('No issue details', res);
+    });
 
     //POST
-    app.post('/stores/issues', isLoggedIn, allowed('issue_add', {send: true}), (req, res) => {
+    app.post('/stores/issues', isLoggedIn, allowed('issue_add'), (req, res) => {
         if (req.body.selected) {
             fn.createIssue(
                 req.body.user_id,
@@ -153,31 +176,54 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         } else redirect(new Error('No items selected'), req, res);
     });
     app.post('/stores/issue_lines/:id', isLoggedIn, allowed('issue_line_add', {send: true}), (req, res) => {
-        fn.createIssueLine(req.params.id, req.body.line)
+        fn.createIssueLine(req.params.id, req.body.line, req.user.user_id)
         .then(message => res.send({result: true, message: message}))
         .catch(err => fn.send_error(err.message, res))
     });
 
     //DELETE
     app.delete('/stores/issues/:id', isLoggedIn, allowed('issue_delete', {send: true}), (req, res) => {
-        fn.delete(
-            'issue_lines',
+        fn.getOne(
+            m.issues,
             {issue_id: req.params.id},
-            true
+            {include: [inc.issue_lines()]}
         )
-        .then(result => {
-            fn.delete(
-                'issues',
-                {issue_id: req.params.id}
-            )
-            .then(result => res.send({result: true, message: 'Issue deleted'}))
-            .catch(err => fn.send_error(err.message, res));
+        .then(issue => {
+            if (issue._complete || issue._closed) fn.send_error('Completed/closed issues can not be deleted');
+            else {
+                if (issue.lines.filter(e => e.return_line_id).length === 0) {
+                    fn.delete(
+                        'issue_lines',
+                        {issue_id: req.params.id},
+                        true
+                    )
+                    .then(result => {
+                        fn.delete(
+                            'issues',
+                            {issue_id: req.params.id}
+                        )
+                        .then(result => res.send({result: true, message: 'Issue deleted'}))
+                        .catch(err => fn.send_error(err.message, res));
+                    })
+                    .catch(err => fn.send_error(err.message, res));
+                } else fn.send_error('Returned issue lines can not be deleted');
+            };
         })
         .catch(err => fn.send_error(err.message, res));
     });
-    app.delete('/stores/issue_lines/:id', isLoggedIn, allowed('issue_delete', {send: true}), (req, res) => {
-        fn.delete('issue_lines', {line_id: req.params.id})
-        .then(result => res.send({result: true, message: 'Line deleted'}))
+    app.delete('/stores/issue_lines/:id', isLoggedIn, allowed('issue_line_delete', {send: true}), (req, res) => {
+        fn.getOne(
+            m.issue_lines,
+            {line_id: req.params.id}
+        )
+        .then(line => {
+            if (line.return_line_id) fn.send_error('Returned issue lines can not be deleted')
+            else {
+                fn.delete('issue_lines', {line_id: req.params.id})
+                .then(result => res.send({result: true, message: 'Line deleted'}))
+                .catch(err => fn.send_error(err.message, res));
+            };
+        })
         .catch(err => fn.send_error(err.message, res));
     });
 };
