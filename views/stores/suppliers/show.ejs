@@ -11,6 +11,48 @@
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/suppliers/<%= supplier.supplier_id %>"><%= supplier._name %></a>
             </li>
+            <li class="nav-item dropdown ml-auto">
+                <a class="nav-link dropdown-toggle stores_nav" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Options
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <% if (permissions.supplier_edit) { %>
+                        <a class="dropdown-item" href='javascript:edit("suppliers",<%= supplier.supplier_id %>,{"height":555})'>
+                            Edit
+                        </a>
+                        <% if (_default != supplier.supplier_id) { %>
+                            <form id='defaultForm'>
+                                <button class="dropdown-item dropdown_button confirm">
+                                    Make Default
+                                </button>
+                            </form>
+                        <% } %>
+                    <% } %>
+                    <% if (permissions.supplier_delete) { %>
+                        <form id='deleteForm'>
+                            <button class="dropdown-item dropdown_button confirm">
+                            Delete
+                            </button>
+                        </form>
+                    <% } %>
+                    <% if (permissions.demand_add) { %>
+                        <form id='newDemandForm'>
+                            <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
+                            <button class="dropdown-item dropdown_button confirm">
+                                New Demand
+                            </button>
+                        </form>
+                    <% } %>
+                    <% if (permissions.receipt_add) { %>
+                        <form id='newReceiptForm'>
+                            <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
+                            <button class="dropdown-item dropdown_button confirm">
+                                New Receipt
+                            </button>
+                        </form>
+                    <% } %>
+                </div>
+            </li>
         </ul>
     </nav>
 </section>
@@ -47,25 +89,6 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
-                <% if (permissions.supplier_edit) { %>
-                    <a class="float-right btn btn-primary m-1" href='javascript:edit("suppliers",<%= supplier.supplier_id %>,{"height":555})'>
-                        <i class='fas fa-pencil-alt'></i>
-                    </a>
-                    <% if (_default != supplier.supplier_id) { %>
-                        <form action="/stores/suppliers/<%= supplier.supplier_id %>/default?_method=PUT" method="POST">
-                            <button class="float-right btn btn-warning m-1 confirm">
-                                <i class='fas fa-check'></i>
-                            </button>
-                        </form>
-                    <% } %>
-                <% } %>
-                <% if (permissions.supplier_delete) { %>
-                    <form action="/stores/suppliers/<%= supplier.supplier_id %>?_method=DELETE" method="POST">
-                        <button class="float-right btn btn-danger m-1 confirm">
-                            <i class='fas fa-trash-alt'></i>
-                        </button>
-                    </form>
-                <% } %>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend w-35">
                         <span class="input-group-text w-100">Supplier Name</span>
@@ -121,7 +144,7 @@
                         </div>
                         <p class="form-control"><%= supplier.account._number %></p>
                         <div class="input-group-append">
-                            <a class="btn btn-primary" href='javascript:show("accounts",<%= supplier.account_id %>,{"height":400})'>
+                            <a class="btn btn-primary" href='javascript:show("accounts",<%= supplier.account_id %>,{"height":300})'>
                                 <i class='fas fa-search'></i>
                             </a>
                         </div>
@@ -197,17 +220,7 @@
                     <span class="sr-only">Loading...</span>
                 </div>
                 <div class="row">
-                    <% if (permissions.demand_add) { %>
-                        <div class="col-1">
-                            <form id='newDemandForm'>
-                                <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
-                                <button class="float-left btn btn-success confirm">
-                                    <i class='fas fa-plus'></i>
-                                </button>
-                            </form>
-                        </div>
-                    <% } %>
-                    <div class="col-<% if (permissions.note_add) { %>11<% } else { %>12<% } %>">
+                    <div class="col-12">
                         <div class="input-group mb-2">
                             <div class="input-group-prepend w-20">
                                 <label class="input-group-text w-100" for="sel_complete_demands">Completed Demands</label>
@@ -250,14 +263,7 @@
                     <span class="sr-only">Loading...</span>
                 </div>
                 <div class="row">
-                    <% if (permissions.receipt_add) { %>
-                        <div class="col-1">
-                            <a class="float-left btn btn-success" href="/stores/receipts/new?supplier_id=<%= supplier.supplier_id %>">
-                                <i class='fas fa-plus'></i>
-                            </a>
-                        </div>
-                    <% } %>
-                    <div class="col-<% if (permissions.note_add) { %>11<% } else { %>12<% } %>">
+                    <div class="col-12">
                         <div class="input-group mb-2">
                             <div class="input-group-prepend w-20">
                                 <label class="input-group-text w-100" for="sel_complete_receipts">Completed Receipts</label>
@@ -283,36 +289,29 @@
                 </table>
             </div>
         </div>
-        <% if (permissions.access_notes) { %>
-            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-                <div class="container">
-                    <% include ../../partials/noteTable %>
-                </div>
-            </div>
-        <% } %>
+        <% include ../../partials/noteTable %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/specific/suppliers_show.js"></script>
 <script>
     window.addEventListener( "load", function () {
-        let newDemandForm = document.querySelector("#newDemandForm");
-        newDemandForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(newDemandForm, 'POST', '/stores/demands', {reload: true});
-        });
+        <% if (_default != supplier.supplier_id) { %>
+            addFormListener('defaultForm', 'PUT', '/stores/suppliers/<%= supplier.supplier_id %>/default', {reload: true});
+        <% } %>
+        <% if (permissions.supplier_delete) { %>
+            addFormListener('deleteForm', 'DELETE', '/stores/suppliers/<%= supplier.supplier_id %>', {redirect: '/stores/suppliers'});
+        <% } %>
+        <% if (permissions.demand_add) { %>
+            addFormListener('newDemandForm', 'POST', '/stores/demands', {reload: true});
+        <% } %>
+        <% if (permissions.receipt_add) { %>
+            addFormListener('newReceiptForm', 'POST', '/stores/receipts', {reload: true});
+        <% } %>
         <% if (supplier.file) { %>
-            let deleteFileForm = document.querySelector("#fileDeleteForm");
-            deleteFileForm.addEventListener("submit", function (event) {
-                event.preventDefault();
-                sendData(deleteFileForm, 'DELETE', '/stores/files/<%= supplier.file_id %>', {reload: true});
-            });
+            addFormListener('fileDeleteForm', 'DELETE', '/stores/files/<%= supplier.file_id %>', {redirect: '/stores/suppliers'});
         <% } else if (supplier._raise_demand && permissions.file_add) { %>
-            let uploadForm = document.querySelector("#fileForm");
-            uploadForm.addEventListener("submit", function (event) {
-                event.preventDefault();
-                sendData(uploadForm, 'POST', '/stores/files', {reload: true});
-            });
+            addFormListener('fileForm', 'POST', '/stores/files', {reload: true});
         <% } %>
     });
     showTab('<%= show_tab %>');

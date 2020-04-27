@@ -18,24 +18,14 @@
 		</ul>
 	</nav>
 </section>
-<div class="container row m-auto p-0 menu">
-	<% suppliers.forEach(supplier => { %>
-		<div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-			<div class="card m-3 text-left">
-				<a href="/stores/suppliers/<%= supplier.supplier_id %>">
-					<div class="card-header">
-						<h3 class="card-title"><%= supplier._name %></h3>
-						<% if (Number(supplier.supplier_id) === Number(_default)) { %>
-							<p class="card-subtitle text-muted f-10">Default</p>
-						<% } %>
-					</div>
-					<div class="card-body">
-						<p class='f-10'>Items: <%= supplier.sizes.length %></p>
-					</div>
-				</a>
-			</div>
-		</div>
-	<% }) %>
-</div>
+<section class="container">
+	<div id='spn_suppliers' class="spinner-border text-primary" role="status">
+		<span class="sr-only">Loading...</span>
+	</div>
+	<div class='menu row' id="suppliers">
+	</div>
+	</section>
 <% include ../../partials/foot/full %>
+<script src='/js/specific/suppliers_index.js'></script>
+<script async>getSuppliers(<%= _default %>)</script>
 <% include ../../partials/foot/htmlClose %>

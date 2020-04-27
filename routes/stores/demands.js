@@ -66,12 +66,21 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
 
     //POST
     app.post('/stores/demands', isLoggedIn, allowed('demand_add', {send: true}), (req, res) => {
-        fn.createDemand(req.body.supplier_id, req.user.user_id)
-        .then(demand_id => res.send({result: true, message: 'Demand raised: ' + demand_id}))
+        fn.createDemand({
+            supplier_id: req.body.supplier_id,
+            user_id: req.user.user_id
+        })
+        .then(result => {
+            let message = 'Demand raised: ';
+            if (!result.created) message = 'There is already a demand open for this supplier: ';
+            res.send({result: true, message: message + result.demand_id});
+        })
         .catch(err => fn.send_error(err.message, res));
     });
     app.post('/stores/demand_lines/:id', isLoggedIn, allowed('demand_line_add', {send: true}), (req, res) => {
-        fn.createDemandLine(req.params.id, req.body.line)
+        req.body.line.demand_id = req.params.id;
+        req.body.line.user_id   = req.user.user_id;
+        fn.createDemandLine(req.body.line)
         .then(message => res.send({result: true, message: 'Item added: ' + message}))
         .catch(err => fn.send_error(err.message, res))
     });

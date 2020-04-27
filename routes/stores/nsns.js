@@ -44,6 +44,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(nsns => res.send({result: true, nsns: nsns}))
         .catch(err => fn.send_error(err.message, res));
     });
+    app.get('/stores/getnsnsbysize/:id', isLoggedIn, allowed('access_nsns', {send: true}), (req, res) => {
+        fn.getOne(
+            m.sizes,
+            {size_id: req.params.id},
+            {include: [inc.nsns()]}
+        )
+        .then(size => res.send({result: true, nsns: size.nsns, required: size._nsns}))
+        .catch(err => fn.send_error(err.message, res));
+    });
     
     //POST
     app.post('/stores/nsns', isLoggedIn, allowed('nsn_add', {send: true}), (req, res) => {

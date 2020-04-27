@@ -26,7 +26,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             fn.getOne(
                 m.users,
                 {user_id: req.params.id},
-                {include: [m.ranks, m.permissions, m.statuses]}
+                {include: [m.ranks, m.statuses]}
             )
             .then(user => {
                 res.render('stores/users/show', {
@@ -119,6 +119,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     //PUT
     app.put('/stores/users/:id', isLoggedIn, allowed('user_edit', {send: true}), (req, res) => {
+        console.log(req.body);
         if (!req.body.user)        req.body.user = {};
         if (!req.body.user._reset) req.body.user._reset = 0;
         fn.update(

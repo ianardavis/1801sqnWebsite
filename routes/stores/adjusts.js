@@ -57,14 +57,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //POST
     app.post('/stores/adjusts', isLoggedIn, allowed('adjust_add', {send: true}), (req, res) => {
         if (req.body.adjust) {
-            let adjust = req.body.adjust;
-            fn.adjustStock(
-                adjust._type,
-                adjust.stock_id,
-                adjust._qty,
-                req.user.user_id
-            )
-            .then(result => res.send({result: true, message: 'Adjustment made'}))
+            req.body.adjust.user_id = req.user.user_id;
+            fn.adjustStock(req.body.adjust)
+            .then(results => res.send({result: true, message: 'Adjustment made'}))
             .catch(err => fn.send_error(err,message, res));
         } else fn.send_error('No adjustment entered', res);
     });

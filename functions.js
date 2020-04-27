@@ -115,6 +115,14 @@ module.exports = (fn, m, inc) => {
     function capitalise (str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1, str.length)
     };
+    fn.addYears = (addYears = 0) => {
+        var newDate = new Date();
+        var dd = String(newDate.getDate()).padStart(2, '0');
+        var MM = String(newDate.getMonth() + 1).padStart(2, '0');
+        var yyyy = newDate.getFullYear() + addYears;
+        newDate = yyyy + '-' + MM + '-' + dd;
+        return newDate;
+    };
     fn.error = (err, redirect, req, res) => {
         console.log(err);
         req.flash('danger', err.message);
@@ -162,5 +170,21 @@ module.exports = (fn, m, inc) => {
                 req.flash('danger', err.message);
             };
         });
+    };
+    fn.promise_results = options => {
+        let result = true, reject_count = 0;
+        options.results.forEach(_result => {
+            if (_result.status === 'rejected') {
+                result = false;
+                reject_count += 1;
+                console.log(_result.reason);
+            };
+        });
+        let _return = {
+            result:       result,
+            reject_count: reject_count
+        };
+        if (options.return_value) _return = {..._return, ...options.return_value}
+        return _return;
     };
 };

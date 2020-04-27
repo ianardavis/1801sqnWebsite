@@ -1,40 +1,46 @@
-<script src="/js/notes.js"></script>
-<div class="row">
-    <% if (permissions.note_add) { %>
-        <div class="col-1">
-            <a class='float-left btn btn-success' href='javascript:add("notes",{"queries":"table=<%= notes.table %>&id=<%= notes.id %>","height":600})'>
-                <i class='fas fa-plus'></i>
-            </a>
-        </div>
-    <% } %>
-    <div class="col-<% if (permissions.note_add) { %>11<% } else { %>12<% } %>">
-        <div class="input-group mb-2">
-            <div class="input-group-prepend w-30">
-                <label class="input-group-text w-100" for="sel_system">System Notes</label>
+<% if (permissions.access_notes) { %>
+    <script src="/js/notes.js"></script>
+    <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+        <div class="container">
+            <div class="row">
+                <% if (permissions.note_add) { %>
+                    <div class="col-1">
+                        <a class='float-left btn btn-success' href='javascript:add("notes",{"queries":"table=<%= notes.table %>&id=<%= notes.id %>","height":600})'>
+                            <i class='fas fa-plus'></i>
+                        </a>
+                    </div>
+                <% } %>
+                <div class="col-<% if (permissions.note_add) { %>11<% } else { %>12<% } %>">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend w-30">
+                            <label class="input-group-text w-100" for="sel_system">System Notes</label>
+                        </div>
+                        <select class="custom-select" id='sel_system' onchange='getNotes("<%= notes.table %>",<%= notes.id %>, <%= permissions.note_delete %>)'>
+                            <option value="1">Include</option>
+                            <option value="2" selected>Exclude</option>
+                            <option value="3">Only</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <select class="custom-select" id='sel_system' onchange='getNotes("<%= notes.table %>",<%= notes.id %>, <%= permissions.note_delete %>)'>
-                <option value="1">Include</option>
-                <option value="2" selected>Exclude</option>
-                <option value="3">Only</option>
-            </select>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-25" onclick="sortTable(0, 'notesTable')">Date</th>
+                    <th class="w-10" onclick="sortTable(1, 'notesTable')">Sys</th>
+                    <th class="w-45" onclick="sortTable(2, 'notesTable')">Note</th>
+                    <th class="w-20" onclick="sortTable(3, 'notesTable')">User</th>
+                    <th><i class="fas fa-pencil-alt"></i></th>
+                    <% if (permissions.note_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+                </thead>
+                <div id='spn_notes' class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <tbody id="notesTable">
+                </tbody>
+            </table>
+            <script async>
+                getNotes('<%= notes.table %>',<%= notes.id %>, <%= permissions.note_delete %>)
+            </script>
         </div>
     </div>
-</div>
-<table class="table table-sm table-hover">
-    <thead class="thead-dark">
-        <th class="w-25" onclick="sortTable(0, 'notesTable')">Date</th>
-        <th class="w-10" onclick="sortTable(1, 'notesTable')">Sys</th>
-        <th class="w-45" onclick="sortTable(2, 'notesTable')">Note</th>
-        <th class="w-20" onclick="sortTable(3, 'notesTable')">User</th>
-        <th><i class="fas fa-pencil-alt"></i></th>
-        <% if (permissions.note_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-    </thead>
-    <div id='spn_notes' class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-    <tbody id="notesTable">
-    </tbody>
-</table>
-<script async>
-    getNotes('<%= notes.table %>',<%= notes.id %>, <%= permissions.note_delete %>)
-</script>
+<% } %>

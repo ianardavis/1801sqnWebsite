@@ -126,7 +126,7 @@ function sendData(form, method, _location, options = {reload: false, reload_open
           if (options.reload_opener) window.opener.location.reload();
           if (options.reload)        window.location.reload();
           if (options._close)        close();
-          if (options.redirect)      window.location = options.redirect
+          if (options.redirect)      window.location.replace(options.redirect);
       } else alert('Error: ' + response.error);
   });
   XHR.addEventListener("error", function(event) {
@@ -139,4 +139,12 @@ function sendData(form, method, _location, options = {reload: false, reload_open
 function removeID(id) {
   if (typeof(id) === 'string') document.querySelector('#' + id).remove();
   else id.remove();
+};
+function addFormListener (form_id, method, location, options = {reload: false, reload_opener: true, _close: true}) {
+  
+  let form = document.querySelector("#" + form_id);
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    sendData(form, method, location, options);
+  });
 };

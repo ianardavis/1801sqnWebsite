@@ -4,7 +4,6 @@ var express  = require('express'),
     session  = require('express-session'),
     bb       = require('express-busboy'),
     flash    = require('connect-flash'),
-    override = require('method-override'),
     memStore = require('memorystore')(session);
 function portInUseCheck () {
     return new Promise((resolve, reject) => {
@@ -52,7 +51,6 @@ portInUseCheck()
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(flash());
-    app.use(override('_method'));
     app.use((req, res, next) => {
         res.locals.user    = req.user;
         res.locals.info    = req.flash('info');

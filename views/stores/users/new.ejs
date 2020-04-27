@@ -71,10 +71,8 @@
 <script src="/js/loginBaderMirror.js"></script>
 <script src="/js/newUserFieldCheck.js"></script>
 <script>
-    let form = document.querySelector("#userForm");
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
-        sendData(form, 'POST', '/stores/users');
+    window.addEventListener( "load", function () {
+        addFormListener('userForm', 'POST', '/stores/users');
     });
 </script>
 <% include ../../partials/foot/htmlClose %>

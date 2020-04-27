@@ -16,13 +16,20 @@
                 </a>
             </li>
         <% } %>
+        <li class="nav-item dropdown ml-auto">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Options
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class='dropdown-item' href='javascript:edit("accounts",<%= account.account_id %>,{"height":236})'>
+                    Edit
+                </a>
+            </div>
+        </li>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
-                <a class='float-right btn btn-primary m-1' href='javascript:edit("accounts",<%= account.account_id %>,{"height":400})'>
-                    <i class='fas fa-pencil-alt'></i>
-                </a>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Name</span>
@@ -43,20 +50,11 @@
                 </div>
             </div>
         </div>
-        <% if (permissions.access_notes) {%>
-            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-                <div class="container">
-                    <% include ../../partials/noteTable %>
-                </div>
-            </div>
-        <% } %>
+        <% include ../../partials/noteTable %>
     </div>
 </section>
 <% include ../../partials/foot/noNav %>
 <script>
-    function filterSelects() {
-        filter(['system'],'/stores/accounts/<%= account.account_id %>');
-    };
     showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>

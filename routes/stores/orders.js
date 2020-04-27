@@ -14,31 +14,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.error(err, '/stores', req, res));
     });
-    //NEW
-    app.get('/stores/orders/new', isLoggedIn, allowed('order_add'), (req, res) => {
-        let user = Number(req.query.user);
-        if (!user) user = -1
-        if (user !== -1) {
-            fn.getOne(
-                m.users,
-                {user_id: user},
-                {include: [m.ranks]}
-            )
-            .then(user => {
-                if (user !== req.user.user_id) {
-                    if (user.status_id === 1 || user.status_id === 2) res.render('stores/orders/new', {user: user}); 
-                    else {
-                        req.flash('danger', 'Orders can only be made for current users')
-                        res.redirect('/stores/users/' + user);
-                    };
-                } else {
-                    req.flash('info', 'You can not order for yourself, make a request instead');
-                    res.redirect('/stores/users/' + user);
-                };
-            })
-            .catch(err => fn.error(err, '/stores/users', req, res));
-        } else res.render('stores/orders/new', {user: {user_id: -1}});
-    });
     //SHOW
     app.get('/stores/orders/:id', isLoggedIn, allowed('access_orders'), (req, res) => {
         fn.getOne(
@@ -61,6 +36,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             }; 
         })
         .catch(err => fn.error(err, '/stores/orders', req, res));
+    });
+    //SHOW LINE
+    app.get('/stores/order_lines/:id', isLoggedIn, allowed('access_orders', {allow: true}), (req, res) => {
+        fn.getOne(
+            m.order_lines,
+            {line_id: req.params.id},
+        )
+        .then(line => res.redirect('/stores/orders/' + line.order_id))
+        .catch(err => fn.error(err, '/', req, res));
     });
     //ASYNC GET
     app.get('/stores/getorders', isLoggedIn, allowed('access_orders', {send: true}), (req, res) => {
@@ -104,24 +88,24 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     
     //POST
     app.post('/stores/orders', isLoggedIn, allowed('order_add', {send: true}), (req, res) => {
-        if (req.body.selected) {
-            fn.createOrder(
-                req.body.ordered_for,
-                req.body.selected,
-                req.user.user_id
-            )
-            .then(order_id => {
-                req.flash('success', 'Order created: ' + order_id);
-                if (Number(req.body.ordered_for) === -1) res.redirect('/stores/orders/' + order_id)
-                else res.redirect('/stores/users/' + req.body.ordered_for);
-            })
-            .catch(err => redirect(err, req, res));
-        } else redirect(new Error('No items selected'), req, res);
+        fn.createOrder({
+            ordered_for: req.body.ordered_for,
+            user_id: req.user.user_id
+        })
+        .then(order_id => {
+            let message = 'Order raised: ';
+            if (!result.created) message = 'There is already an order open for this user: ';
+            res.send({result: true, message: message + order_id})
+        })
+        .catch(err => fn.send_error(err.message, res));
     });
-    function redirect(err, req, res) {
-        if (Number(req.body.ordered_for) === -1) fn.error(err, '/stores/orders', req, res) 
-        else fn.error(err, '/stores/users/' + req.body.ordered_for, req, res);
-    };
+    app.post('/stores/order_lines/:id', isLoggedIn, allowed('order_line_add', {send: true}), (req, res) => {
+        req.body.line.order_id = req.params.id;
+        req.body.line.user_id  = req.user.user_id;
+        fn.createOrderLine(req.body.line)
+        .then(line_id => res.send({result: true, message: 'Item added: ' + line_id}))
+        .catch(err => fn.send_error(err.message, res))
+    });
 
     //PUT
     app.put('/stores/orders/:id', isLoggedIn, allowed('order_edit', {send: true}), (req, res) => {
@@ -169,44 +153,43 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
     //CLOSE
-    app.put('/stores/orders/:id/close', isLoggedIn, allowed('order_edit', {send: true}), (req, res) => {
-        let actions = [];
-        actions.push(
-            fn.update(
-                m.order_lines,
-                {_status: 'Cancelled'},
-                {
-                    order_id: req.params.id,
-                    _status: 'Open'
-                }
-            )
-        );
-        actions.push(
-            fn.create(
-                m.notes,
-                {
-                    _table:  'orders',
-                    _id:     req.params.id,
-                    _note:   'Order closed',
-                    _system: true,
-                    _date:   Date.now(),
-                    user_id: req.user.user_id
-                }
-            )
-        )
-        Promise.allSettled(actions)
-        .then(result => {
-            fn.closeOrder(req.params.id, req.user.user_id)
-            .then(close_result => {
-                if (close_result.closed) req.flash('success', 'Order closed')
-                else req.flash('danger', 'Order NOT closed')
-                res.redirect('/stores/orders/' + req.params.id);
-            })
-            .catch(err => fn.error(err, '/stores/orders/' + req.params.id, req, res));
-            req.flash('success', 'Order closed');
-            res.redirect('/stores/orders/' + req.params.id);
+    app.put('/stores/orders/:id/complete', isLoggedIn, allowed('order_edit', {allow: true, send: true}), (req, res) => {
+        fn.getOne(m.orders, {order_id: req.params.id})
+        .then(order => {
+            if (allowed || Number(order.ordered_for) === req.user.user_id) {
+                fn.getAllWhere(
+                    m.order_lines,
+                    {order_id: order.order_id},
+                    {nullOK: true}
+                )
+                .then(lines => {
+                    if (lines) {
+                        fn.update(
+                            m.orders,
+                            {_complete: 1},
+                            {order_id: order.order_id}
+                        )
+                        .then(result => {
+                            fn.create(
+                                m.notes,
+                                {
+                                    _table:  'orders',
+                                    _id:     order.order_id,
+                                    _note:   'Order complete',
+                                    _system: true,
+                                    user_id: req.user.user_id
+                                }
+                            )
+                            .then(note => res.send({result: true, message: 'Order marked complete'}))
+                            .catch(err => fn.send_error(err.message, res));
+                        })
+                        .catch(err => fn.send_error(err.message, res));
+                    } else fn.send_error('An order must have at least 1 line before you can complete it', res);
+                })
+                .catch(err => fn.send_error(err.message, res));
+            } else fn.send_error('Permission denied', res);
         })
-        .catch(err => fn.error(err, '/stores/orders/' + req.params.id, req, res));
+        .catch(err => fn.send_error(err.message, res));
     });
 
     //DELETE

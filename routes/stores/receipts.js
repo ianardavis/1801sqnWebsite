@@ -5,20 +5,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(suppliers => res.render('stores/receipts/index', {suppliers: suppliers}))
         .catch(err => fn.error(err, '/stores', req, res));
     });
-    //NEW
-    app.get('/stores/receipts/new', isLoggedIn, allowed('receipt_add'), (req, res) => {
-        if (req.query.supplier_id && req.query.supplier_id !== '') {
-            fn.getOne(
-                m.suppliers,
-                {supplier_id: req.query.supplier_id}
-            )
-            .then(supplier => res.render('stores/receipts/new', {supplier: supplier}))
-            .catch(err => fn.error(err, 'back', req, res));
-        } else {
-            req.flash('danger', 'No supplier specified');
-            res.redirect('back');
-        };
-    });
     //SHOW
     app.get('/stores/receipts/:id', isLoggedIn, allowed('access_receipts'), (req, res) => {
         fn.getOne(
@@ -78,20 +64,23 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     
     //POST
     app.post('/stores/receipts', isLoggedIn, allowed('receipt_add', {send: true}), (req, res) => {
-        if (req.body.selected) {
-            if (req.body.selected.length > 0) {
-                fn.createReceipt(
-                    req.body.supplier_id,
-                    req.body.selected,
-                    req.user.user_id
-                )
-                .then(result => res.redirect('/stores/receipts/' + result))
-                .catch(err => fn.error(err, '/stores/receipts', req, res));
-            };
-        } else {
-            req.flash('info', 'No items selected!');
-            res.redirect('/stores');
-        };
+        fn.createReceipt({
+            supplier_id: req.body.supplier_id,
+            user_id: req.user.user_id
+        })
+        .then(receipt_id => {
+            let message = 'Receipt raised: ';
+            if (!result.created) message = 'There is already an receipt open for this user: ';
+            res.send({result: true, message: message + receipt_id})
+        })
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.post('/stores/receipt_lines/:id', isLoggedIn, allowed('receipt_line_add', {send: true}), (req, res) => {
+        req.body.line.user_id    = req.user.user_id;
+        req.body.line.receipt_id = req.params.id;
+        fn.createReceiptLine(req.body.line)
+        .then(receipt_id => res.send({result: true, message: 'Receipt raised: ' + receipt_id}))
+        .catch(err => fn.send_error(err.message, res));
     });
     
     //DELETE

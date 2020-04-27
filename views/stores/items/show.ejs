@@ -114,28 +114,15 @@
                 </table>
             </div>
         </div>
-        <% if (permissions.access_notes) {%>
-            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-                <div class="container">
-                    <% include ../../partials/noteTable %>
-                </div>
-            </div>
-        <% } %>
+        <% include ../../partials/noteTable %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script src='/js/specific/items_show.js'></script>
 <script>
     window.addEventListener( "load", function () {
-        let form = document.querySelector("#deleteForm");
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(form, 'DELETE', '/stores/items/<%= item.item_id %>');
-        });
+        addFormListener('deleteForm', 'DELETE', '/stores/items/<%= item.item_id %>', {redirect: '/stores/items'});
     });
-    function filterSelects() {
-        filter(['system'],'/stores/items/<%= item.item_id %>');
-    };
     showTab('<%= show_tab %>');
 </script>
 <script async>getSizes(<%= item.item_id %>)</script>

@@ -84,11 +84,7 @@
     ]};
 
     window.addEventListener( "load", function () {
-        let form = document.querySelector("#permissionForm");
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(form, 'PUT', '/stores/permissions/<%= f_user.user_id %>');
-        });
+        addFormListener('permissionForm', 'PUT', '/stores/permissions/<%= f_user.user_id %>')
     });
     // checkboxes = document.querySelectorAll('input[type=checkbox]')
     // checkboxes.forEach(checkbox => checkbox.addEventListener("change", function() {checkPermission(this)}));

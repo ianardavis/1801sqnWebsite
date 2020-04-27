@@ -1,32 +1,6 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
     app.get('/stores/issues', isLoggedIn, allowed('access_issues'), (req, res) => res.render('stores/issues/index'));
-    //NEW
-    app.get('/stores/issues/new', isLoggedIn, allowed('issue_add'), (req, res) => {
-        if (req.query.user) {
-            fn.getOne(
-                m.users,
-                {user_id: req.query.user},
-                {include: [m.ranks]}
-            )
-            .then(user => {
-                if (req.query.user !== req.user.user_id) {
-                    if (user.status_id === 1 || user.status_id === 2) res.render('stores/issues/new', {user: user}); 
-                    else {
-                        req.flash('danger', 'Issues can only be made to current users')
-                        res.redirect('/stores/users/' + req.query.user);
-                    };
-                } else {
-                    req.flash('info', 'You can not issue to yourself');
-                    res.redirect('/stores/users/' + req.query.user);
-                };
-            })
-            .catch(err => fn.error(err, '/stores/users', req, res));
-        } else {
-            req.flash('danger', 'No user specified!');
-            res.redirect('/stores/users');
-        };
-    });
     //SHOW
     app.get('/stores/issues/:id', isLoggedIn, allowed('access_issues', {allow: true}), (req, res) => {
         fn.getOne(
@@ -49,6 +23,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 res.redirect('/');
             };
         })
+        .catch(err => fn.error(err, '/', req, res));
+    });
+    //SHOW LINE
+    app.get('/stores/issue_lines/:id', isLoggedIn, allowed('access_issues', {allow: true}), (req, res) => {
+        fn.getOne(
+            m.issue_lines,
+            {line_id: req.params.id},
+        )
+        .then(line => res.redirect('/stores/issues/' + line.issue_id))
         .catch(err => fn.error(err, '/', req, res));
     });
     //DOWNLOAD
@@ -162,22 +145,24 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/issues', isLoggedIn, allowed('issue_add'), (req, res) => {
-        if (req.body.selected) {
-            fn.createIssue(
-                req.body.user_id,
-                req.user.user_id
-            )
-            .then(issue_id => {
-                req.flash('success', 'Items issued, ID: ' + issue_id);
-                res.redirect('/stores/users/' + req.body.issue.issued_to);
-            })
-            .catch(err => fn.error(err, '/stores/users/' + req.body.issue.issued_to, req, res));
-        } else redirect(new Error('No items selected'), req, res);
+    app.post('/stores/issues', isLoggedIn, allowed('issue_add', {send: true}), (req, res) => {
+        fn.createIssue({
+            issued_to: req.body.issued_to,
+            user_id:   req.user.user_id,
+            _date_due: fn.addYears(7)
+        })
+        .then(issue_id => {
+            let message = 'Issue raised: ';
+            if (!result.created) message = 'There is already an issue open for this user: ';
+            res.send({result: true, message: message + issue_id})
+        })
+        .catch(err => fn.send_error(err.message, res));
     });
     app.post('/stores/issue_lines/:id', isLoggedIn, allowed('issue_line_add', {send: true}), (req, res) => {
-        fn.createIssueLine(req.params.id, req.body.line, req.user.user_id)
-        .then(message => res.send({result: true, message: message}))
+        req.body.line.user_id = req.user.user_id;
+        req.body.line.issue_id = req.params.id;
+        fn.createIssueLine(req.body.line)
+        .then(line_id => res.send({result: true, message: 'Line added: ' + line_id}))
         .catch(err => fn.send_error(err.message, res))
     });
 

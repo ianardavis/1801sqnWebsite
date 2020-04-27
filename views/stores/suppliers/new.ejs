@@ -84,14 +84,9 @@
     </form>
 </section>
 <% include ../../partials/foot/noNav %>
-<script src="/js/sendData.js"></script>
 <script>
     window.addEventListener( "load", function () {
-        let form = document.querySelector("#supplierForm");
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(form, 'POST', '/stores/suppliers');
-        });
+        addFormListener('supplierForm', 'POST', '/stores/suppliers');
     });
 </script>
 <% include ../../partials/foot/htmlClose %>

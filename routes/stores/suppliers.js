@@ -2,16 +2,8 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
     app.get('/stores/suppliers', isLoggedIn, allowed('access_suppliers'), (req, res) => {
-        fn.getAllWhere(
-            m.suppliers,
-            {supplier_id: {[op.not]: 3}},
-            {include: [m.sizes]}
-        )
-        .then(suppliers => {
-            fn.getSetting({setting: 'default_supplier', default: -1})
-            .then(defaultSupplier => res.render('stores/suppliers/index', {suppliers: suppliers, _default: defaultSupplier}))
-            .catch(err => fn.error(err, '/stores', req, res));
-        })
+        fn.getSetting({setting: 'default_supplier', default: -1})
+        .then(defaultSupplier => res.render('stores/suppliers/index', {_default: defaultSupplier}))
         .catch(err => fn.error(err, '/stores', req, res));
     });
     //NEW
@@ -57,6 +49,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => fn.error(err, '/stores/suppliers/' + req.params.id, req, res));
         });
     });
+    //ASYNC GET
+    app.get('/stores/getsuppliers', isLoggedIn, allowed('access_suppliers', {send: true}), (req, res) => {
+        fn.getAll(
+            m.suppliers,
+            [m.sizes]
+        )
+        .then(suppliers => res.send({result: true, suppliers: suppliers}))
+        .catch(err => fn.send_error(err.message, res));
+    });
 
     //POST
     app.post('/stores/suppliers', isLoggedIn, allowed('supplier_add', {send: true}), (req, res) => {
@@ -89,17 +90,12 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(supplier => {
             fn.editSetting('default_supplier', supplier.supplier_id)
             .then(result => {
-                if (result) {
-                    req.flash('success', 'Default supplier updated');
-                    res.redirect('/stores/suppliers/' + supplier.supplier_id);
-                } else {
-                    req.flash('danger', 'Default supplier NOT updated');
-                    res.redirect('/stores/suppliers/' + supplier.supplier_id);
-                };
+                if (result) res.send({result: true, message: 'Default supplier updated'})
+                else  res.send({result: false, message: 'Default supplier NOT updated'});
             })
-            .catch(err => fn.error(err, '/stores/suppliers/' + supplier.supplier_id, req, res));
+            .catch(err => fn.send_error(err.message, res));
         })
-        .catch(err => fn.error(err, '/stores/suppliers', req, res));
+        .catch(err => fn.send_error(err.message, res));
     });
     app.put('/stores/suppliers/:id', isLoggedIn, allowed('supplier_edit', {send: true}), (req, res) => {
         if (req.body.supplier.account_id === '') {req.body.supplier.account_id = null};
@@ -114,7 +110,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
 
     //DELETE
     app.delete('/stores/suppliers/:id', isLoggedIn, allowed('supplier_delete', {send: true}), (req, res) => {
-        if (req.params.id !== '1' && req.params.id !== '2' && req.params.id !== '3') {
+        if (req.params.id !== '1' && req.params.id !== '2') {
             fn.delete(
                 'suppliers',
                 {supplier_id: req.params.id}
@@ -124,14 +120,11 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 .then(defaultSupplier => {
                     if (Number(defaultSupplier) === Number(req.params.id)) {
                         setDefault('', res);
-                    } else {
-                        req.flash('success', 'Supplier deleted');
-                        res.redirect('/stores/suppliers');
-                    };
+                    } else res.send({result: true, message: 'Supplier deleted'});
                 })
-                .catch(err => fn.error(err, '/stores/suppliers', req, res));
+                .catch(err => fn.send_error(err,message, res));
             })
-            .catch(err => fn.error(err, '/stores/suppliers', req, res));
-        } else fn.error(new Error('This supplier can not be deleted!'), '/stores/suppliers/' + req.params.id, req, res);
+            .catch(err => fn.send_error(err,message, res));
+        } else fn.send_error('This supplier can not be deleted!', res);
     });
 };

@@ -24,18 +24,20 @@
 						</a>
 						<div class="dropdown-divider"></div>
 					<% } %>
-					<% if (!demand._complete && !demand._closed) { %>
+					<% if (permissions.demand_edit && !demand._complete && !demand._closed) { %>
 						<!-- ////////////////////////////////// -->
 						<a class="dropdown-item" href='#'>
 							Complete
 						</a>
+					<% } %>
+					<% if (permissions.demand_line_add && !demand._complete && !demand._closed) { %>
 						<!-- ////////////////////////////////// -->
 						<a class="dropdown-item" href='javascript:addSize("demand",<%= demand.demand_id %>,"supplier_id=<%= demand.supplier_id%>")'>
 							Add Item
 						</a>
 					<% } %>
 					<div class="dropdown-divider"></div>
-					<% if (permissions.demand_delete) { %>
+					<% if (permissions.demand_delete && !demand._complete && !demand._closed) { %>
 						<form id='deleteForm'>
 							<button class='dropdown-item dropdown_button confirm'>
 								Delete
@@ -135,7 +137,7 @@
 				<div id='spn_demands' class="spinner-border text-primary" role="status">
 					<span class="sr-only">Loading...</span>
 				</div>
-				<table class='table table-sm table-hover mx-auto w-100'>
+				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
 						<% if (demand._complete && !demand._closed) { %><th class="w-5"></th><% } %>
 						<th class='w-30' onclick="sortTable(0, 'demandTable')">Item</th>
@@ -150,13 +152,7 @@
 				<% if (demand._complete && !demand._closed) { %></form><% } %>
 			</div>
 		</div>
-		<% if (permissions.access_notes) { %> 
-			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-				<div class="container">
-					<% include ../../partials/noteTable %>
-				</div>
-			</div>
-		<% } %>
+		<% include ../../partials/noteTable %>
     </div>
 	<div class='row'>
 </section>
@@ -165,11 +161,9 @@
 <script src="/js/specific/demands_show.js"></script>
 <script>
     window.addEventListener( "load", function () {
-        let deleteForm = document.querySelector("#deleteForm");
-        deleteForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(deleteForm, 'DELETE', '/stores/demands/<%= demand.demand_id %>', {redirect: '/stores/demands'});
-        });
+		<% if (permissions.demand_delete && !demand._complete && !demand._closed) { %>
+			addFormListener('deleteForm', 'DELETE', '/stores/demands/<%= demand.demand_id %>', {redirect: '/stores/demands'})
+		<% } %>
     });
 	showTab('<%= show_tab %>');
 </script>

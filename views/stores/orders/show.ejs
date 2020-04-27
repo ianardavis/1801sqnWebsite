@@ -11,6 +11,35 @@
 			<li class='nav-item'>
 				<a class='nav-link stores_nav' href='/stores/orders/<%= order.order_id %>'><%= order.order_id %></a>
 			</li>
+			<li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle stores_nav" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                	Options
+                </a>
+                <div class="dropdown-menu" aria-labelledby="optionsDropdown">
+					<% console.log(order.ordered_for) %>
+					<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for)) && !order._complete && !order._closed) { %>
+						<!-- ////////////////////////////////// -->
+						<form id='completeForm'>
+							<button class="dropdown-item dropdown_button confirm">
+								Complete
+							</button>
+						</form>
+						<div class="dropdown-divider"></div>
+						<!-- ////////////////////////////////// -->
+						<a class="dropdown-item" href='javascript:addSize("order",<%= order.order_id %>)'>
+							Add Item
+						</a>
+						<div class="dropdown-divider"></div>
+					<% } %>
+					<% if (permissions.order_delete) { %>
+						<form id='deleteForm'>
+							<button class='dropdown-item dropdown_button confirm'>
+								Delete
+							</button>
+						</form>
+					<% }; %>
+                </div>
+            </li>
 		</ul>
 	</nav>
 </section>
@@ -37,21 +66,6 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
-				<% if (permissions.order_edit && !order._complete) { %>
-					<form action="/stores/orders/<%= order.order_id %>/close?_method=PUT" method="POST">
-						<button class="float-left m-1 btn btn-warning confirm">
-							<i class='fas fa-window-close'></i>
-						</button>
-					</form>
-				<% }; %>
-				<% if (permissions.order_delete) { %>
-					<form id='deleteForm'>
-						<button class='float-right m-1 btn btn-danger confirm'>
-							<i class='fas fa-trash-alt'></i>
-						</button>
-					</form>
-				<% } %>
-				<h4 class='mb-3'>Details</h4>
 				<div class="input-group mb-1">
 					<div class="input-group-prepend w-30">
 						<span class="input-group-text w-100">For</span>
@@ -155,24 +169,20 @@
 				<% } %>
 			</div>
 		</div>
-        <% if (permissions.access_notes) { %>
-			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-				<div class="container">
-					<% include ../../partials/noteTable %>
-				</div>
-			</div>
-        <% } %>
+        <% include ../../partials/noteTable %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/specific/orders_show.js"></script>
+<script src="/js/addSize.js"></script>
 <script>
     window.addEventListener( "load", function () {
-        let form = document.querySelector("#deleteForm");
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(form, 'DELETE', '/stores/orders/<%= user.user_id %>',{redirect: '/stores/orders'});
-        });
+		<% if (permissions.order_delete) { %>
+			addFormListener('deleteForm', 'DELETE', '/stores/orders/<%= order.order_id %>',{redirect: '/stores/orders'});
+		<% } %>
+		<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for)) && !order._complete && !order._closed) { %>
+			addFormListener('completeForm', 'PUT', '/stores/orders/<%= order.order_id %>/complete', {reload: true});
+		<% } %>
     });
     showTab('<%= show_tab %>');
 </script>

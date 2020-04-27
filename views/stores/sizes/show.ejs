@@ -335,13 +335,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.access_notes) {%>
-            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-                <div class="container">
-                    <% include ../../partials/noteTable %>
-                </div>
-            </div>
-        <% } %>
+        <% include ../../partials/noteTable %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
@@ -349,16 +343,9 @@
 <script>
     <% if (permissions.size_delete) { %>
         window.addEventListener( "load", function () {
-            let form = document.querySelector("#sizeDeleteForm");
-            form.addEventListener("submit", function (event) {
-                event.preventDefault();
-                sendData(form, 'DELETE', '/stores/sizes/<%= size.size_id %>');
-            });
+            addFormListener('sizeDeleteForm', 'DELETE', '/stores/sizes/<%= size.size_id %>', {redirect: '/stores/items'});
         });
     <% } %>
-    function filterSelects() {
-        filter(['system'],'/stores/sizes/<%= size.size_id %>');
-    };
     showTab('<%= show_tab %>');
 </script>
 <% let default_nsn = -1; %>

@@ -11,6 +11,71 @@
             <li class="nav-item">
                 <a class="nav-link stores_nav" href="/stores/users/<%= f_user.user_id %>"><%= f_user.rank._rank %> <%= f_user._name %>, <%= f_user._ini %></a>
             </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle stores_nav" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Options
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <% if (permissions.user_edit) { %>
+                        <a class="dropdown-item" href='javascript:edit("users",<%= f_user.user_id %>,{"height":361})'>
+                            Edit User
+                        </a>
+                    <% } %>
+                    <div class="dropdown-divider"></div>
+                    <% if (permissions.user_edit || f_user.user_id === user.user_id) { %>
+                        <a class="dropdown-item" href='javascript:changePassword(<%= f_user.user_id %>)'>
+                            Change Password
+                        </a>
+                    <% } %>
+                    <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
+                        <form id='userDeleteForm'>
+                            <button class="dropdown-item dropdown_button confirm">
+                                Delete User
+                            </button>
+                        </form>
+                    <% } %>
+                    <div class="dropdown-divider"></div>
+                    <% if (permissions.permission_edit && f_user.user_id !== user.user_id) { %>
+                        <a class="dropdown-item" href='javascript:edit("permissions",<%= f_user.user_id %>,{"height":600})'>
+                            Edit Permissions
+                        </a>
+                    <% } %>
+                    <div class="dropdown-divider"></div>
+                    <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
+                        <form id="newRequestForm">
+                            <input type="hidden" name='requested_for' value='<%= f_user.user_id %>'>
+                            <button class='dropdown-item dropdown_button confirm'>
+                                New Request
+                            </button>
+                        </form>
+                    <% } %>
+                    <% if (user.user_id !== f_user.user_id && permissions.order_add) { %>
+                        <form id="newOrderForm">
+                            <input type="hidden" name='ordered_for' value='<%= f_user.user_id %>'>
+                            <button class='dropdown-item dropdown_button confirm'>
+                                New Order
+                            </button>
+                        </form>
+                    <% } %>
+                    <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
+                        <form id="newIssueForm">
+                            <input type="hidden" name='issued_to' value='<%= f_user.user_id %>'>
+                            <button class='dropdown-item dropdown_button confirm'>
+                                New Issue
+                            </button>
+                        </form>
+                    <% } %>
+                    <div class="dropdown-divider"></div>
+                    <% if (permissions.user_edit) { %>
+                        <form id='resetPasswordForm'>
+                            <input type="hidden" name='user[_reset]' value='<% if (f_user._reset) { %>0<% } else{ %>1<% } %>'>
+                            <button class='dropdown-item dropdown_button confirm'>
+                                Reset Password
+                            </button>
+                        </form>
+                    <% } %>
+                </div>
+            </li>
         </ul>
     </nav>
 </section>
@@ -23,7 +88,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" id="permissions-tab" data-toggle="tab" href="#permissions" role="tab" aria-controls="permissions" aria-selected="true">
-                Permissions
+                Permissions (<span id='permission_count'></span>)
             </a>
         </li>
         <% if (permissions.access_requests || user.user_id === f_user.user_id) { %>
@@ -58,23 +123,6 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
-                <% if (permissions.user_edit) { %>
-                    <a class="float-left btn btn-primary m-1" href='javascript:edit("users",<%= f_user.user_id %>,{"height":361})' data-toggle="tooltip" data-placement="bottom" title="Edit User">
-                        <i class='fas fa-pencil-alt'></i>
-                    </a>
-                <% } %>
-                <% if (permissions.user_password || f_user.user_id === user.user_id) { %>
-                    <a class="float-left btn btn-warning m-1" href='javascript:changePassword(<%= f_user.user_id %>)' data-toggle="tooltip" data-placement="bottom" title="Change Password">
-                        <i class='fas fa-key'></i>
-                    </a>
-                <% } %>
-                <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
-                    <form id='userDeleteForm'>
-                        <button class="float-left m-1 btn btn-danger confirm" data-toggle="tooltip" data-placement="bottom" title="Delete User">
-                            <i class='fas fa-trash-alt'></i>
-                        </button>
-                    </form>
-                <% } %>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend w-25">
                         <span class="input-group-text w-100">Bader #</span>
@@ -111,60 +159,38 @@
                     </div>
                     <p class="form-control"><%= f_user._login_id %></p>
                 </div>
-                <% if (permissions.user_password) { %>
-                    <form action="/stores/users/<%= f_user.user_id %>?_method=PUT" method="POST">
-                <% } %>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend w-75">
                         <span class="input-group-text w-100">Change password on next login</span>
                     </div>
                     <p class='form-control'>
-                        <input class="form-control form-control-sm confirm" <% if (permissions.user_password) { %>name="user[_reset]" onChange="this.form.submit()" value='1' <% } %>type="checkbox" <% if (f_user._reset) { %>checked <% } %>>
+                        <input class="form-control form-control-sm" type="checkbox" disabled<% if (f_user._reset) { %> checked<% } %>>
                     </p>
                 </div>
-                <% if (permissions.user_password) { %>
-                    </form>
-                <% } %>
             </div>
         </div>
         <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
             <div class="container">
-                <% if (permissions.permission_edit && f_user.user_id !== user.user_id) { %>
-                    <a class="float-left btn btn-primary m-1" href='javascript:edit("permissions",<%= f_user.user_id %>,{"height":600})' data-toggle="tooltip" data-placement="bottom" title="Edit Permissions">
-                        <i class='fas fa-pencil-alt'></i>
-                    </a>
-                <% } %>
-                <select class="form-control" size="11">
-                    <% f_user.permissions.forEach(permission => { %>
-                        <option><%= permission._permission %></option>
-                    <% }) %>
+                <div id='spn_permissions' class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <select id='permissionSelect' class="form-control" size="11">
                 </select>
             </div>
         </div>
         <% if (permissions.access_requests || user.user_id === f_user.user_id) { %>
             <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
                 <div class="container">
-                    <div class="row">
-                        <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
-                            <div class="col-1">
-                                <a class="float-left btn btn-success" href="/stores/requests/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Request">
-                                    <i class='fas fa-plus'></i>
-                                </a>
-                            </div>
-                        <% } %>
-                        <div class="col-<% if (user.user_id === f_user.user_id || permissions.request_add) { %>11<% } else { %>12<% } %>">
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend w-30">
-                                    <label class="input-group-text w-100" for="sel_requests">Status</label>
-                                </div>
-                                <select class="custom-select" id='sel_requests' onchange='getRequests(<%= f_user.user_id %>)'>
-                                    <option value="All" selected>All</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Approved">Approved</option>
-                                    <option value="Declined">Declined</option>
-                                </select>
-                            </div>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend w-30">
+                            <label class="input-group-text w-100" for="sel_requests">Status</label>
                         </div>
+                        <select class="custom-select" id='sel_requests' onchange='getRequests(<%= f_user.user_id %>)'>
+                            <option value="All" selected>All</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Declined">Declined</option>
+                        </select>
                     </div>
                     <div id='spn_requests' class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -187,29 +213,18 @@
         <% if (permissions.access_orders || user.user_id === f_user.user_id) { %>
             <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
                 <div class="container">
-                    <div class="row">
-                        <% if (user.user_id !== f_user.user_id && permissions.order_add) { %>
-                            <div class="col-1">
-                                <a class="float-left btn btn-success" href="/stores/orders/new?user=<%= f_user.user_id %>" data-toggle="tooltip" data-placement="bottom" title="Add Order">
-                                    <i class='fas fa-plus'></i>
-                                </a>
-                            </div>
-                        <% } %>
-                        <div class="col-<% if (user.user_id !== f_user.user_id && permissions.order_add) { %>11<% } else { %>12<% } %>">
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend w-30">
-                                    <label class="input-group-text w-100" for="sel_orders">Status</label>
-                                </div>
-                                <select class="custom-select" id='sel_orders' onchange='getOrders(<%= f_user.user_id %>)'>
-                                    <option value="All" selected>All</option>
-                                    <option value="Open">Open</option>
-                                    <option value="Demanded">Demanded</option>
-                                    <option value="Received">Received</option>
-                                    <option value="Complete">Complete</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                </select>
-                            </div>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend w-30">
+                            <label class="input-group-text w-100" for="sel_orders">Status</label>
                         </div>
+                        <select class="custom-select" id='sel_orders' onchange='getOrders(<%= f_user.user_id %>)'>
+                            <option value="All" selected>All</option>
+                            <option value="Open">Open</option>
+                            <option value="Demanded">Demanded</option>
+                            <option value="Received">Received</option>
+                            <option value="Complete">Complete</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
                     </div>
                     <div id='spn_orders' class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -235,86 +250,68 @@
         <% if (permissions.access_issues || user.user_id === f_user.user_id) { %>
             <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
                 <div class="container">
-                    <div class="row">
-                        <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
-                            <form id="newIssueForm" class='col-1'>
-                                <input type="hidden" name='user_id' value='<%= f_user.user_id %>'>
-                                <button class='btn btn-success float-left' data-toggle="tooltip" data-placement="bottom" title="New Issue">
-                                    <i class='fas fa-plus'></i>
-                                </button>
-                            </form>
-                        <% } %>
-                        <div class="col-<% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>11<% } else { %>12<% } %>">
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend w-30">
-                                    <label class="input-group-text w-100" for="sel_issues">Returned Lines</label>
-                                </div>
-                                <select class="custom-select" id='sel_issues' onchange='getIssues(<%= f_user.user_id %>)'>
-                                    <option value="1" selected>Include</option>
-                                    <option value="2">Exclude</option>
-                                    <option value="3">Only</option>
-                                </select>
-                            </div>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend w-30">
+                            <label class="input-group-text w-100" for="sel_issues">Returned Lines</label>
                         </div>
+                        <select class="custom-select" id='sel_issues' onchange='getIssues(<%= f_user.user_id %>)'>
+                            <option value="1" selected>Include</option>
+                            <option value="2">Exclude</option>
+                            <option value="3">Only</option>
+                        </select>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div id='spn_issues' class="spinner-border text-primary" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                            <table class='table table-sm table-hover'>
-                                <thead class="thead-dark">
-                                    <th class="w-20" onclick="sortTable(0, 'tableIssues')">Date Due</th>
-                                    <th class="w-30" onclick="sortTable(1, 'tableIssues')">Item</th>
-                                    <th class="w-20" onclick="sortTable(2, 'tableIssues')">Size</th>
-                                    <th class="w-10" onclick="sortTable(3, 'tableIssues')">Qty</th>
-                                    <th class="w-20" onclick="sortTable(4, 'tableIssues')">Return Location</th>
-                                    <th><i class="fas fa-search"></i></th>
-                                </thead>
-                                <tbody id="issueTable">
-                                    <% if (permissions.return_add) { %>
-                                        <form id='returnedLines' action="/stores/returns?src=/stores/users/<%= f_user.user_id %>" method='POST'>
-                                        <input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines">
-                                        <input type="hidden" name="from" value="<%= f_user.user_id %>">
-                                    <% } %>
-                                    <% if (permissions.return_add) { %></form><% } %>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div id='spn_issues' class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
                     </div>
+                    <table class='table table-sm table-hover'>
+                        <thead class="thead-dark">
+                            <th class="w-20" onclick="sortTable(0, 'tableIssues')">Date Due</th>
+                            <th class="w-30" onclick="sortTable(1, 'tableIssues')">Item</th>
+                            <th class="w-20" onclick="sortTable(2, 'tableIssues')">Size</th>
+                            <th class="w-10" onclick="sortTable(3, 'tableIssues')">Qty</th>
+                            <th class="w-20" onclick="sortTable(4, 'tableIssues')">Return Location</th>
+                            <th><i class="fas fa-search"></i></th>
+                        </thead>
+                        <tbody id="issueTable">
+                            <% if (permissions.return_add) { %>
+                                <form id='returnedLines' action="/stores/returns?src=/stores/users/<%= f_user.user_id %>" method='POST'>
+                                <input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines">
+                                <input type="hidden" name="from" value="<%= f_user.user_id %>">
+                            <% } %>
+                            <% if (permissions.return_add) { %></form><% } %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         <% } %>
-        <% if (permissions.access_notes) { %>
-            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-                <div class="container">
-                    <% include ../../partials/noteTable %>
-                </div>
-            </div>
-        <% } %>
+        <% include ../../partials/noteTable %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/changePassword.js"></script>
 <script src='/js/specific/users_show.js'></script>
 <script>
-    <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
-        let newIssueForm = document.querySelector("#newIssueForm");
-        newIssueForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(newIssueForm, 'POST', '/stores/issues', {reload: true});
-        });
-    <% } %>
-    <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
-        let deleteUserForm = document.querySelector("#userDeleteForm");
-        deleteUserForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(deleteUserForm, 'DELETE', '/stores/users/<%= f_user.user_id %>', {reload: true});
-        });
-    <% } %>
+    window.addEventListener( "load", function () {
+        <% if (permissions.user_edit) { %>
+            addFormListener('resetPasswordForm', 'PUT', '/stores/users/<%= f_user.user_id %>', {reload: true});
+        <% } %>
+        <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
+            addFormListener('newIssueForm', 'POST', '/stores/issues', {reload: true});
+        <% } %>
+        <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
+            addFormListener('newRequestForm', 'POST', '/stores/requests', {reload: true});
+        <% } %>
+        <% if (user.user_id !== f_user.user_id && permissions.order_add) { %>
+            addFormListener('newOrderForm', 'POST', '/stores/orders', {reload: true});
+        <% } %>
+        <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
+            addFormListener('userDeleteForm', 'DELETE', '/stores/users/<%= f_user.user_id %>', {redirect: '/stores/users'});
+        <% } %>
+    });
     showTab('<%= show_tab %>');
 </script>
 <script async>getRequests(<%= f_user.user_id %>)</script>
 <script async>getOrders(<%= f_user.user_id %>)</script>
 <script async>getIssues(<%= f_user.user_id %>)</script>
+<script async>getPermissions(<%= f_user.user_id %>)</script>
 <% include ../../partials/foot/htmlClose %>

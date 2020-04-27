@@ -55,10 +55,8 @@
 <% include ../../partials/foot/noNav %>
 <script src='/js/loginBaderMirror.js'></script>
 <script>
-    let form = document.querySelector("#userForm");
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
-        sendData(form, 'PUT', '/stores/users/<%= user.user_id %>');
+    window.addEventListener( "load", function () {
+        addFormListener('userForm', 'PUT', '/stores/users/<%= user.user_id %>');
     });
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -67,6 +67,18 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, 'stores/sizes/' + req.params.id, req, res));
     });
     //ASYNC GET SIZES
+    app.get('/stores/getsize/:id', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
+        fn.getOne(
+            m.sizes,
+            {size_id: req.params.id},
+            {include: [
+                inc.stock(),
+                inc.nsns(),
+                inc.serials()
+        ]})
+        .then(size => res.send({result: true, size: size}))
+        .catch(err => fn.send_error(err.message, res));
+    });
     app.get('/stores/getsizes', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.sizes,

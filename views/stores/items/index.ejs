@@ -86,11 +86,6 @@
 					<% }) %>
 				</select>
 			</div>
-			<div>
-				<form class='mb-2' action='/stores/items' method='GET'>
-					<input class='btn btn-warning' type='button' value='Filter Results' onclick='filter();'>
-				</form>
-			</div>
 			<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable("itemTable", "itemSearch")' placeholder='Search for item...'>
 			<div id='spn_items' class="spinner-border text-primary" role="status">
 				<span class="sr-only">Loading...</span>

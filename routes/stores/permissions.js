@@ -35,6 +35,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
         };
     });
+    //ASYNC GET
+    app.get('/stores/getpermissions/:id', isLoggedIn, allowed('access_permissions', {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.permissions,
+            {user_id: req.params.id}
+        )
+        .then(permissions => res.send({result: true, permissions: permissions}))
+        .catch(err => fn.send_error(err.message, res));
+    });
 
     //PUT
     app.put('/stores/permissions/:id', isLoggedIn, allowed('permission_edit', {send: true}), (req, res) => {

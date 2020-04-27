@@ -407,13 +407,5 @@
 <script src="/js/settings.js"></script>
 <script>
     showTab('<%= showtab %>');
-    function showTab(_tab) {
-        if (_tab === 'categories' || _tab === 'groups' || _tab === 'types' || _tab === 'subtypes') _tab = 'item-classes';
-        let tabHead = document.querySelector('#' + _tab + '-tab'),
-            tabBody = document.querySelector('#' + _tab);
-        tabHead.classList.add('active');
-        tabBody.classList.add('active', 'show');
-    
-    };
 </script>
 <% include ../../partials/foot/htmlClose %>

@@ -158,28 +158,30 @@
                         })
                     };
                 <% } %>
-                if (response.size.serials && response.size.serials.length > 0) {
-                    let serialSelect = document.querySelector('#serialSelect');
-                    serialSelect.innerHTML = '';
-                    serialSelect.required  = response.size._serials;
-                    response.size.serials.forEach(serial => {
-                        let _option      = document.createElement('option');
-                        _option.value     = serial.serial_id;
-                        _option.innerText = serial._serial;
-                        serialSelect.appendChild(_option);
-                    })
-                };
-                if (response.size.stocks && response.size.stocks.length > 0) {
-                    let stockSelect = document.querySelector('#stockSelect');
-                    stockSelect.innerHTML = '';
-                    stockSelect.required  = true;
-                    response.size.stocks.forEach(stock => {
-                        let _option     = document.createElement('option');
-                        _option.value     = stock.stock_id;
-                        _option.innerText = stock.location._location + ', Qty: ' + stock._qty;
-                        stockSelect.appendChild(_option);
-                    })
-                };
+                <% if (callType === 'issue' || callType === 'receipt') { %>
+                    if (response.size.serials && response.size.serials.length > 0) {
+                        let serialSelect = document.querySelector('#serialSelect');
+                        serialSelect.innerHTML = '';
+                        serialSelect.required  = response.size._serials;
+                        response.size.serials.forEach(serial => {
+                            let _option      = document.createElement('option');
+                            _option.value     = serial.serial_id;
+                            _option.innerText = serial._serial;
+                            serialSelect.appendChild(_option);
+                        })
+                    };
+                    if (response.size.stocks && response.size.stocks.length > 0) {
+                        let stockSelect = document.querySelector('#stockSelect');
+                        stockSelect.innerHTML = '';
+                        stockSelect.required  = true;
+                        response.size.stocks.forEach(stock => {
+                            let _option     = document.createElement('option');
+                            _option.value     = stock.stock_id;
+                            _option.innerText = stock.location._location + ', Qty: ' + stock._qty;
+                            stockSelect.appendChild(_option);
+                        })
+                    };
+                <% } %>
             } else alert('Error: ' + response.error);
         });
         XHR.addEventListener("error", function(event) {
@@ -189,21 +191,18 @@
         XHR.send(FD);
     };
     window.addEventListener( "load", function () {
+        addFormListener('addForm', 'POST', '/stores/<%= callType %>_lines/<%= id %>', {reload_opener: true});
+
         let itemForm = document.querySelector("#itemForm"),
-            sizeForm = document.querySelector("#sizeForm"),
-            addForm = document.querySelector("#addForm");
-        
+            sizeForm = document.querySelector("#sizeForm");
         itemForm.addEventListener("submit", function (event) {
             event.preventDefault();
             getSizes();
         });
+
         sizeForm.addEventListener("submit", function (event) {
             event.preventDefault();
             getSize();
-        });
-        addForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(addForm, 'POST','/stores/<%= callType %>_lines/<%= id %>', {reload_opener: true});
         });
     });
 </script>

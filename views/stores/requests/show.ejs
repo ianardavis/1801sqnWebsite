@@ -17,6 +17,38 @@
 					<%= request.request_id %>
 				</a>
 			</li>
+			<li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle stores_nav" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Options
+                </a>
+                <div class="dropdown-menu" aria-labelledby="optionsDropdown">
+					<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
+						<button form='approveForm' class="dropdown-item dropdown_button confirm">
+							Action Lines
+						</button>
+					<% } %>
+					<% if (permissions.request_edit &&!request._complete && !request._closed) { %>
+						<form id='completeForm'>
+							<button class="dropdown-item dropdown_button confirm">
+								Complete
+							</button>
+						</form>
+					<% }; %>
+					<% if (permissions.request_line_add && !request._complete && !request._closed) { %>
+						<a class="dropdown-item" href='javascript:addSize("request",<%= request.request_id %>)'>
+							Add Item
+						</a>
+					<% } %>
+					<div class="dropdown-divider"></div>
+					<% if (permissions.request_delete && !request._complete && !request._closed) { %>
+						<form id='deleteForm'>
+							<button class="dropdown-item dropdown_button confirm">
+								Delete
+							</button>
+						</form>
+					<% } %>
+                </div>
+            </li>
 		</ul>
 	</nav>
 </section>
@@ -43,20 +75,6 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
-				<% if (permissions.request_edit && !request._complete) { %>
-					<form id='closeForm'>
-						<button class="float-left btn btn-warning confirm">
-							<i class='fas fa-window-close'></i>
-						</button>
-					</form>
-				<% }; %>
-				<% if (permissions.request_delete) { %>
-					<form id='deleteForm'>
-						<button class="float-right btn btn-danger confirm">
-							<i class='fas fa-trash-alt'></i>
-						</button>
-					</form>
-				<% }; %>
 				<div class="input-group mb-1">
 					<div class="input-group-prepend w-20">
 						<span class="input-group-text w-100">For</span>
@@ -101,18 +119,8 @@
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
-				<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
+				<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
 					<form id='approveForm'>
-						<div class="input-group mb-1">
-							<select class="custom-select" name='action'>
-								<option value="cancel">Decline Selected Lines</option>
-								<option value="order">Order Selected Lines</option>
-								<option value="issue">Issue Selected Lines</option>
-							</select>
-							<div class="input-group-append w-25">
-								  <button class="btn btn-success w-100 confirm" type="button">Go</button>
-							</div>
-						</div>
 				<% } %>
 				<div class="input-group mb-2">
 					<div class="input-group-prepend w-20">
@@ -122,7 +130,7 @@
 						<option value='All' selected>All</option>
 						<option value='Pending'>Pending</option>
 						<option value='Approved'>Approved</option>
-						<option value='Rejected'>Rejected</option>
+						<option value='Declined'>Declined</option>
 						<option value='Cancelled'>Cancelled</option>
 					</select>
 				</div>
@@ -134,9 +142,9 @@
 						<th class="w-20" onclick="sortTable(0, 'requestTable')">Item</th>
 						<th class="w-20" onclick="sortTable(1, 'requestTable')">Size</th>
 						<th class="w-5"  onclick="sortTable(2, 'requestTable')">Qty</th>
-						<th class="w-15" onclick="sortTable(4, 'requestTable')">Status</th>
-						<th class="w-20" onclick="sortTable(5, 'requestTable')">Date Approved</th>
-						<th class="w-20" onclick="sortTable(6, 'requestTable')">Approved By</th>
+						<th class="w-15" onclick="sortTable(3, 'requestTable')">Status</th>
+						<th class="w-20" onclick="sortTable(4, 'requestTable')">Date Approved</th>
+						<th class="w-20" onclick="sortTable(5, 'requestTable')">Approved By</th>
 						<% if (permissions.request_line_delete && !request._complete && !request.closed) { %>
 						<th><i class="fas fa-trash-alt"></i></th>
 						<% } %>
@@ -144,44 +152,28 @@
 					<tbody id="requestTable">
 					</tbody>
 				</table>
-				<% if (permissions.request_edit && user.user_id !== request._for.user_id) { %>
+				<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
 					</form>
 				<% } %>
 			</div>
 		</div>
-		<% if (permissions.access_notes) { %> 
-			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-				<div class="container">
-					<% include ../../partials/noteTable %>
-				</div>
-			</div>
-		<% }; %>
+		<% include ../../partials/noteTable %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/specific/requests_show.js"></script>
 <script>
     window.addEventListener( "load", function () {
-        let delete_form = document.querySelector("#deleteForm");
-        delete_form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(delete_form, 'DELETE', '/stores/requests/<%= request.request_id %>',{reload: true});
-        });
-    });
-    window.addEventListener( "load", function () {
-        let close_form = document.querySelector("#closeForm");
-        close_form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(close_form, 'PUT', '/stores/requests/<%= request.request_id %>/close',{reload: true});
-        });
-    });
-    window.addEventListener( "load", function () {
-        let close_form = document.querySelector("#closeForm");
-        close_form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(close_form, 'PUT', '/stores/requests/<%= request.request_id %>/approval',{reload: true});
-        });
-    });
+		<% if (permissions.request_delete && !request._complete && !request._closed) { %>
+			addFormListener('deleteForm', 'DELETE', '/stores/requests/<%= request.request_id %>', {redirect: '/stores/requests'});
+		<% } %>
+		<% if (permissions.request_edit &&!request._complete && !request._closed) { %>
+    		addFormListener('completeForm', 'PUT', '/stores/requests/<%= request.request_id %>', {reload: true});
+		<% } %>
+		<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
+			addFormListener('approveForm', 'PUT', '/stores/requests/<%= request.request_id %>', {reload: true});
+		<% } %>
+	});
     showTab('<%= show_tab %>');
 </script>
 <script async>getLines(<%= request.request_id %>, <%= request._complete %>, <%= request._closed %>, <%= permissions.request_line_edit %>, <%= permissions.request_line_delete %>)</script>

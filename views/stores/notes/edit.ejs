@@ -12,11 +12,7 @@
 <%- include('../../partials/foot/noNav') %>
 <script>
     window.addEventListener( "load", function () {
-        let form = document.querySelector("#noteForm");
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(form, 'PUT', "/stores/notes/<%= note.note_id %>");
-        });
+        addFormListener('noteForm', 'PUT', '/stores/notes/<%= note.note_id %>');
     });
 </script>
 <%- include('../../partials/foot/htmlClose') %>

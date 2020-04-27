@@ -99,8 +99,10 @@ function getIssues(user_id) {
                     cell6 = row.insertCell(-1);
                 cell1.dataset.sort = new Date(line.issue._date).getTime();
                 cell1.innerText = new Date(line.issue._date).toDateString();
-                cell2.innerText = line.size.item._description;
-                cell3.innerText = line.size._size;
+                if (line.stock) {
+                    cell2.innerText = line.stock.size.item._description;
+                    cell3.innerText = line.stock.size._size;
+                };
                 cell4.innerText = line._qty;
                 cell5.innerText = 'location';
                 cell6.appendChild(link('/stores/issues/' + line.issue_id, false));
@@ -113,5 +115,28 @@ function getIssues(user_id) {
         query = [];
     // if (sel_issues.value !== 'All') query.push('_status=' + sel_issues.value);
     XHR.open('GET', '/stores/getissuelinesbyuser/' + user_id + '?' + query.join('&'));
+    XHR.send();
+};
+function getPermissions(user_id) {
+    let spn_permissions = document.querySelector('#spn_permissions');
+    spn_permissions.style.display = 'block';
+    const XHR = new XMLHttpRequest();
+    XHR.addEventListener("load", event => {
+        let response    = JSON.parse(event.target.responseText),
+            _select  = document.querySelector('#permissionSelect'),
+            permission_count = document.querySelector('#permission_count');
+        if (response.permissions) permission_count.innerText = response.permissions.length || '0';
+        _select.innerHTML = '';
+        if (response.result) {
+            response.permissions.forEach(permission => {
+                let _option = document.createElement('option');
+                _option.innerText = permission._permission;
+                _select.appendChild(_option);
+            });
+        } else alert('Error: ' + response.error)
+        spn_permissions.style.display = 'none';
+    });
+    XHR.addEventListener("error", event => alert('Oops! Something went wrong getting issues'));
+    XHR.open('GET', '/stores/getpermissions/' + user_id);
     XHR.send();
 };

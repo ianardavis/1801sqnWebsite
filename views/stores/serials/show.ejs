@@ -33,20 +33,11 @@
                 </div>
 			</div>
 		</div>
-        <% if (permissions.access_notes) { %>
-			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-				<div class="container">
-					<% include ../../partials/noteTable %>
-				</div>
-			</div>
-        <% } %>
+        <% include ../../partials/noteTable %>
 	</div>
 </section>
 <% include ../../partials/foot/noNav %>
 <script>
-    function filterSelects() {
-        filter(['system'],"/stores/serials/<%= serial.serial_id %>/edit");
-    };
     showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>

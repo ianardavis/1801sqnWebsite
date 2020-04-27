@@ -27,17 +27,7 @@ module.exports = (app, m) => {
     require('./suppliers')  (app, al, fn, inc, mw.isLoggedIn, m);
     require('./users')      (app, al, fn, inc, mw.isLoggedIn, m);
 
-    app.get('/stores', mw.isLoggedIn, (req, res) => {
-        fn.getAllWhere(m.requests, 
-            {
-                _complete: 1,
-                _closed: 0,
-                requested_for: {[op.not]: req.user.user_id}
-            }
-        )
-        .then(requests => res.render('stores/index', {requests: requests}))
-        .catch(err => res.render(err));
-    });
+    app.get('/stores', mw.isLoggedIn, (req, res) => res.render('stores/index'));
 
     app.get('/stores/download', mw.isLoggedIn, al('file_download'), (req, res) => {
         if (req.query.file) fn.downloadFile(req.query.file, req, res);

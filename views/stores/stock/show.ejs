@@ -163,11 +163,7 @@
 				</table>
 			</div>
         <% } %>
-		<% if (permissions.access_notes) { %>
-			<div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-				<% include ../../partials/noteTable %>
-			</div>
-		<% } %>
+		<% include ../../partials/noteTable %>
 	</div>
 </section>
 <% include ../../partials/foot/noNav %>

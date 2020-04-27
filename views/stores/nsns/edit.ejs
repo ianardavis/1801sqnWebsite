@@ -29,11 +29,7 @@
 <% include ../../partials/foot/noNav %>
 <script>
     window.addEventListener( "load", function () {
-        let form = document.querySelector("#nsnForm");
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            sendData(form, 'PUT', '/stores/nsns/<%= nsn.nsn_id %>');
-        });
+		addFormListener('nsnForm', 'PUT', '/stores/nsns/<%= nsn.nsn_id %>');
     });
 </script>
 <% include ../../partials/foot/htmlClose %>

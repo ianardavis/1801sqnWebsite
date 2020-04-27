@@ -1,36 +1,9 @@
 const op = require('sequelize').Op;
-
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/requests', isLoggedIn, allowed('access_requests', {allow: true}), (req, res) => res.render('stores/requests/index'));
-    //NEW
-    app.get('/stores/requests/new', isLoggedIn, allowed('request_add', {allow: true}), (req, res) => {
-        if (req.query.user) {
-            if (req.allowed || Number(req.query.user) === req.user.user_id) {
-                fn.getOne(
-                    m.users,
-                    {user_id: req.query.user},
-                    {include: [m.ranks]}
-                )
-                .then(user => {
-                    if (user.status_id === 1 || user.status_id === 2) res.render('stores/requests/new', {user: user}); 
-                    else {
-                        req.flash('danger', 'Requests can only be made for current users')
-                        res.redirect('/stores/users/' + req.query.user);
-                    };
-                })
-                .catch(err => fn.error(err, '/stores/users' + req.query.user, req, res));
-            } else {
-                req.flash('danger', 'Permission Denied!');
-                res.redirect('/stores/users/' + req.query.user);
-            };
-        } else {
-            req.flash('danger', 'No user specified!');
-            res.redirect('/stores/users');
-        };
-    });
+    app.get('/stores/requests',           isLoggedIn, allowed('access_requests',      {allow: true}), (req, res) => res.render('stores/requests/index'));
     //SHOW
-    app.get('/stores/requests/:id', isLoggedIn, allowed('access_requests', {allow: true}), (req, res) => {
+    app.get('/stores/requests/:id',       isLoggedIn, allowed('access_requests',      {allow: true}), (req, res) => {
         fn.getOne(
             m.requests,
             {request_id: req.params.id},
@@ -46,14 +19,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     show_tab: req.query.tab || 'details'
                 });
             } else {
-                req.flash('danger', 'Permission Denied!')
+                req.flash('danger', 'Permission denied')
                 res.redirect('/stores/requests');
             };
         })
         .catch(err => fn.error(err, '/stores/requests', req, res));
     });
     //ASYNC GET
-    app.get('/stores/getrequests', isLoggedIn, allowed('access_requests', {send: true}), (req, res) => {
+    app.get('/stores/getrequests',        isLoggedIn, allowed('access_requests',      {allow: true, send: true}), (req, res) => {
+        if (!allowed) req.query.requested_for = req.user.user_id;
         fn.getAllWhere(
             m.requests,
             req.query,
@@ -65,7 +39,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(requests => res.send({result: true, requests: requests}))
         .catch(err => fn.send_error(err.message, res));
     });
-    app.get('/stores/getrequestlines', isLoggedIn, allowed('access_request_lines', {send: true}), (req, res) => {
+    app.get('/stores/request_lines',      isLoggedIn, allowed('access_request_lines', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.request_lines,
             req.query,
@@ -77,7 +51,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => fn.send_error(err.message, res));
     });
-    app.get('/stores/getrequestlinesbyuser/:id', isLoggedIn, allowed('access_request_lines', {send: true}), (req, res) => {
+    app.get('/stores/request_lines/:id',  isLoggedIn, allowed('access_request_lines', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.request_lines,
             req.query,
@@ -93,177 +67,267 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/requests', isLoggedIn, allowed('request_add', {allow: true}), (req, res) => {
-        if (req.allowed || Number(req.body.requested_for) === req.user.user_id) {
-            if (req.body.selected) {
-                fn.createRequest(
-                    req.body.requested_for,
-                    req.body.selected,
-                    req.user.user_id
-                )
-                .then(request_id => {
-                    req.flash('success', 'Request added');
-                    res.redirect('/stores/users/' + req.body.requested_for);
-                })
-                .catch(err => fn.error(err, '/stores/users/' + req.body.requested_for, req, res));
-            } else {
-                req.flash('info', 'No items selected!');
-                res.redirect('/stores/users');
-            };
-        } else {
-            req.flash('danger', 'Permission Denied!');
-            res.redirect('/stores');
-        };
+    app.post('/stores/requests',          isLoggedIn, allowed('request_add',          {send: true}), (req, res) => {
+        fn.createRequest({
+            requested_for: req.body.requested_for,
+            user_id:       req.user.user_id
+        })
+        .then(request_id => {
+            let message = 'Request raised: ';
+            if (!result.created) message = 'There is already a request open for this user: ';
+            res.send({result: true, message: message + request_id})
+        })
+        .catch(err => fn.send_error(err.message, res));
+    });
+    app.post('/stores/request_lines/:id', isLoggedIn, allowed('request_line_add',     {send: true}), (req, res) => {
+        req.body.line.request_id = req.params.id;
+        req.body.line.user_id  = req.user.user_id;
+        fn.createRequestLine(req.body.line)
+        .then(line_id => res.send({result: true, message: 'Item added: ' + line_id}))
+        .catch(err => fn.send_error(err.message, res))
     });
 
     //APPROVAL
-    app.put('/stores/requests/:id/approval', isLoggedIn, allowed('request_edit', {send: true}), (req, res) => {
-        if (req.body.selected) {
-            fn.getOne(m.requests, {request_id: req.params.id}, {include: [inc.users({as: '_for'})]})
-            .then(request => {
-                let actions = [];
-                if (request.requested_for === req.user.user_id) {
-                    req.flash('danger', 'You can not approve requests for yourself');
-                    res.redirect('/stores/requests/' + req.params.id);
-                } else if (req.body.action === 'cancel') {
-                    req.body.selected.forEach(line_id => {
+    app.put('/stores/requests/:id',       isLoggedIn, allowed('request_edit',         {send: true}), (req, res) => {
+        fn.getOne(m.requests, {request_id: req.params.id}, {include: [inc.users({as: '_for'})]})
+        .then(request => {
+            if (request.requested_for === req.user.user_id) fn.send_error('You can not approve requests for yourself', result)
+            else {
+                let orders = [], issues = [], actions = [];
+                for (let [lineID, line] of Object.entries(req.body.actions)) {
+                    line.line_id = Number(String(lineID).replace('line_id', ''));
+                    if (line._action === 'Order') orders.push(line)
+                    else if (line._action === 'Issue') {
+                        line.offset = issues.length;
+                        issues.push(line);
+                    } else if (line._status === 'Declined') {
                         actions.push(
                             fn.update(
                                 m.request_lines,
                                 {
                                     _status: 'Declined',
-                                    _date: Date.now(),
+                                    _date:   Date.now(),
                                     user_id: req.user.user_id
                                 },
-                                {line_id: line_id}
+                                {line_id: line.line_id}
                             )
-                        )
-                    })
-                    Promise.allSettled(actions)
-                    .then(results => {
-                        req.flash('success', 'Lines cancelled');
-                        res.redirect('/stores/requests/' + req.params.id);
-                    })
-                    .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
-                } else if (req.body.action === 'order') {
-                    req.body.selected.forEach(line_id => {
-                        actions.push(
-                            fn.getOne(
-                                m.request_lines,
-                                {line_id: line_id},
-                                {include: [inc.sizes()]}
-                            )
-                        )
-                    });
-                    Promise.allSettled(actions)
-                    .then(results => {
-                        let items = [];
-                        results.forEach(result => {
-                            let line = result.value;
-                            let new_item = {};
-                            new_item['description'] = line.size.item._description;
-                            new_item['size'] = line.size._size;
-                            new_item['size_id'] = line.size_id;
-                            new_item['qty'] = line._qty;
-                            new_item['request_line_id'] = line.line_id;
-                            items.push(new_item);
-                        });
-                        res.render('stores/orders/new', {user: request._for, items: items})
-                    })
-                    .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
-                } else if (req.body.action === 'issue') {
-                    req.body.selected.forEach(line_id => {
-                        actions.push(
-                            fn.getOne(
-                                m.request_lines,
-                                {line_id: line_id},
-                                {include: [inc.sizes({stock: true, nsns: true, serials: true})]}
-                            )
-                        )
-                    });
-                    Promise.allSettled(actions)
-                    .then(results => {
-                        let items = [];
-                        results.forEach(line => {
-                            if (line.value.size.stocks) {
-                                let new_item = {};
-                                new_item['description'] = line.value.size.item._description;
-                                new_item['size'] = line.value.size._size;
-                                new_item['size_id'] = line.value.size_id;
-                                new_item['qty'] = line.value._qty;
-                                new_item['request_line_id'] = line.value.line_id;
-                                if (line.value.size.serials.length > 0) {
-                                    new_item['serials'] = line.value.size.serials;
-                                };
-                                new_item['nsns'] = line.value.size.nsns;
-                                let _stock = [];
-                                line.value.size.stocks.forEach(stock => {
-                                    _stock.push({stock_id: stock.stock_id, _location: stock.location._location, qty: stock._qty})
-                                });
-                                new_item['stocks'] = _stock;
-                                items.push(new_item);
-                            };
-                        });
-                        res.render('stores/issues/new', {user: request._for, items: items})
-                    })
-                    .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
-                } else {
-                    req.flash('danger', 'Invalid request');
-                    res.redirect('/stores/requests/' + req.params.id);
+                        );
+                    };
                 };
-            });
-        } else {
-            req.flash('info', 'No lines selected');
-            res.redirect('/stores/requests/' + req.params.id);
-        };
+                if (orders.length > 0) {
+                    actions.push(
+                        fn.createOrder({
+                            ordered_for: request.requested_for,
+                            user_id:     req.user.user_id
+                        })
+                    );
+                };
+                if (issues.length > 0) {
+                    actions.push(
+                        fn.createIssue({
+                            issued_to: request.requested_for,
+                            user_id:   req.user.user_id
+                        })
+                    );
+                };
+                Promise.allSettled(actions)
+                .then(results => {
+                    actions = [];
+                    if (issues.length > 0) {
+                        let issue_id = results.filter(e => e.value.hasOwnProperty('issue_id'))[0].value.issue_id;
+                        if (issue_id) {
+                            actions.push(
+                                issue_request_lines(
+                                    issue_id,
+                                    issues,
+                                    req.user.user_id
+                                )
+                            )
+                        };
+                    };
+                    if (orders.length > 0) {
+                        let order_id = results.filter(e => e.value.hasOwnProperty('order_id'))[0].value.order_id;
+                        if (order_id) {
+                            orders.forEach(line => {
+                                actions.push(
+                                    order_request_line(
+                                        order_id,
+                                        line.line_id,
+                                        req.user.user_id
+                                    )
+                                )
+                            });
+                        };
+                    };
+                    Promise.allSettled(actions)
+                    .then(results => {
+                        fn.getAllWhere(
+                            m.request_lines,
+                            {
+                                request_id: req.params.id,
+                                _status:    'Pending'
+                            },
+                            {nullOK: true}
+                        )
+                        .then(open_lines => {
+                            console.log(open_lines);
+                            if (open_lines && open_lines.length > 0) {
+                                let _results = fn.promise_results({results: results});
+                                if (_results.result) res.send({result: true, message: 'Lines actioned'});
+                                else res.send({result: false, message: result.reject_count + ' lines failed'});
+                            } else {
+                                fn.update(
+                                    m.requests,
+                                    {_closed: 1},
+                                    {request_id: req.params.id}
+                                )
+                                .then(result => {
+                                    let _results = fn.promise_results({results: results});
+                                    if (_results.result) res.send({result: true, message: 'Lines actioned, request closed'});
+                                    else res.send({result: false, message: result.reject_count + ' lines failed'});
+                                })
+                                .catch(err => fn.send_error(err.message, res));
+                            };
+                        })
+                        .catch(err => fn.send_error(err.message, res));
+                    })
+                    .catch(err => fn.send_error(err.message, res));
+                })
+                .catch(err => fn.send_error(err.message, res));
+            };
+        });
     });
-    //CLOSE
-    app.put('/stores/requests/:id/close', isLoggedIn, allowed('request_edit', {send: true}), (req, res) => {
-        let actions = [];
-        actions.push(
-            fn.update(
+    function order_request_line  (order_id, line_id, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.getOne(
                 m.request_lines,
-                {
-                    _status: 'Declined',
-                    _date: Date.now(),
-                    user_id: req.user.user_id
-                },
-                {
-                    request_id: req.params.id,
-                    _status: 'Pending'
-                }
+                {line_id: line_id}
             )
-        );
-        actions.push(
-            fn.create(
-                m.notes,
-                {
-                    _table:  'requests',
-                    _id:     req.params.id,
-                    _note:   'Request closed',
-                    _system: true,
-                    _date:   Date.now(),
-                    user_id: req.user.user_id
-                }
+            .then(line => {
+                fn.create(
+                    m.order_lines,
+                    {
+                        order_id: order_id,
+                        size_id:  line.size_id,
+                        _qty:     line._qty,
+                        user_id:  user_id
+                    }
+                )
+                .then(new_line => {
+                    fn.update(
+                        m.request_lines,
+                        {
+                            _status: 'Approved',
+                            _action: 'Order',
+                            _id:     new_line.line_id,
+                            _date:   Date.now(),
+                            user_id: user_id
+                        },
+                        {line_id: line_id}
+                    )
+                    .then(result => resolve(new_line.line_id))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function issue_request_lines (issue_id, lines, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.getAllWhere(
+                m.issue_lines,
+                {issue_id: issue_id},
+                {nullOK: true}
             )
+            .then(issue_lines => {
+                let actions = [];
+                lines.forEach(line => {
+                    line._line = issue_lines.length + line.offset + 1;
+                    actions.push(issue_request_line(issue_id, line, user_id));
+                });
+                Promise.allSettled(actions)
+                .then(results => resolve(fn.promise_results({results: results})))
+                .catch(err => reject(err))
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function issue_request_line  (issue_id, line, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.getOne(
+                m.request_lines,
+                {line_id: line.line_id}
+            )
+            .then(request_line => {
+                let _line = {
+                    stock_id: line.stock_id,
+                    issue_id: issue_id,
+                    size_id:  request_line.size_id,
+                    user_id:  user_id,
+                    _qty:     request_line._qty
+                };
+                if (line.nsn_id)    _line.nsn_id    = line.nsn_id;
+                if (line.serial_id) _line.serial_id = line.serial_id;
+                fn.createIssueLine(_line)
+                .then(result => {
+                    fn.update(
+                        m.request_lines,
+                        {
+                            _status: 'Approved',
+                            _action: 'Issue',
+                            _id:     result.line_id,
+                            _date:   Date.now(),
+                            user_id: user_id
+                        },
+                        {line_id: line.line_id}
+                    )
+                    .then(result => resolve(result.line_id))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    //COMPLETE
+    app.put('/stores/requests/:id',       isLoggedIn, allowed('request_edit',         {send: true}), (req, res) => {
+        fn.getAllWhere(
+            m.request_lines,
+            {
+                request_id: req.params.id,
+                _status:    {[op.not]: 'Cancelled'}
+            },
+            {nullOK: true}
         )
-        actions.push(
-            fn.update(
-                m.requests,
-                {_complete: true},
-                {request_id: req.params.id}
-            )
-        )
-        Promise.allSettled(actions)
-        .then(result => {
-            req.flash('success', 'Request closed');
-            res.redirect('/stores/requests/' + req.params.id);
-        })
-        .catch(err => fn.error(err, '/stores/requests/' + req.params.id, req, res));
+        .then(requests => {
+            if (requests && requests.length > 0) {
+                fn.update(
+                    m.requests,
+                    {_complete: 1},
+                    {request_id: req.params.id}
+                )
+                .then(result => {
+                    fn.create(
+                        m.notes,
+                        {
+                            _table:  'requests',
+                            _note:   'Request completed',
+                            _id:     req.params.id,
+                            user_id: req.user.user_id,
+                            _system: true
+                        }
+                    )
+                    .then(note => res.send({result: true, message: 'Request completed'}))
+                    .catch(err => fn.send_error(err.message, res));
+                })
+                .catch(err => fn.send_error(err.message, res));
+            } else fn.send_error('A request must have at least one line before you can complete it', res);
+        });
     });
 
     //DELETE
-    app.delete('/stores/requests/:id', isLoggedIn, allowed('request_delete', {send: true}), (req, res) => {
+    app.delete('/stores/requests/:id',    isLoggedIn, allowed('request_delete',       {send: true}), (req, res) => {
         fn.delete(
             'requests',
             {request_id: req.params.id},
