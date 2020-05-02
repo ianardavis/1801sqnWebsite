@@ -42,7 +42,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.query
         )
         .then(nsns => res.send({result: true, nsns: nsns}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.get('/stores/getnsnsbysize/:id', isLoggedIn, allowed('access_nsns', {send: true}), (req, res) => {
         fn.getOne(
@@ -51,7 +51,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.nsns()]}
         )
         .then(size => res.send({result: true, nsns: size.nsns, required: size._nsns}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     
     //POST
@@ -68,10 +68,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     {size_id: nsn.size_id}
                 )
                 .then(result => res.send({result: true, message: 'NSN added as default'}))
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             } else res.send({result: true, message: 'NSN added'});
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //PUT
@@ -103,7 +103,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
         Promise.allSettled(actions)
         .then(result => res.send({result: true, message: 'NSN saved'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //DELETE
@@ -120,8 +120,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 true
             )
             .then(result => res.send({result: true, message: 'NSN deleted'}))
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

@@ -1,9 +1,9 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/requests',           isLoggedIn, allowed('access_requests',      {allow: true}), (req, res) => res.render('stores/requests/index'));
+    app.get('/stores/requests',             isLoggedIn, allowed('access_requests',      {allow: true}),             (req, res) => res.render('stores/requests/index'));
     //SHOW
-    app.get('/stores/requests/:id',       isLoggedIn, allowed('access_requests',      {allow: true}), (req, res) => {
+    app.get('/stores/requests/:id',         isLoggedIn, allowed('access_requests',      {allow: true}),             (req, res) => {
         fn.getOne(
             m.requests,
             {request_id: req.params.id},
@@ -26,7 +26,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/requests', req, res));
     });
     //ASYNC GET
-    app.get('/stores/getrequests',        isLoggedIn, allowed('access_requests',      {allow: true, send: true}), (req, res) => {
+    app.get('/stores/getrequests',          isLoggedIn, allowed('access_requests',      {allow: true, send: true}), (req, res) => {
         if (!allowed) req.query.requested_for = req.user.user_id;
         fn.getAllWhere(
             m.requests,
@@ -37,9 +37,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.users({as: '_by'})
         ]})
         .then(requests => res.send({result: true, requests: requests}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
-    app.get('/stores/request_lines',      isLoggedIn, allowed('access_request_lines', {send: true}), (req, res) => {
+    app.get('/stores/request_lines',        isLoggedIn, allowed('access_request_lines', {send: true}),              (req, res) => {
         fn.getAllWhere(
             m.request_lines,
             req.query,
@@ -49,9 +49,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.requests()
         ]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
-    app.get('/stores/request_lines/:id',  isLoggedIn, allowed('access_request_lines', {send: true}), (req, res) => {
+    app.get('/stores/request_lines/:id',    isLoggedIn, allowed('access_request_lines', {send: true}),              (req, res) => {
         fn.getAllWhere(
             m.request_lines,
             req.query,
@@ -63,11 +63,11 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     required: true
         })]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST
-    app.post('/stores/requests',          isLoggedIn, allowed('request_add',          {send: true}), (req, res) => {
+    app.post('/stores/requests',            isLoggedIn, allowed('request_add',          {send: true}),              (req, res) => {
         fn.createRequest({
             requested_for: req.body.requested_for,
             user_id:       req.user.user_id
@@ -77,22 +77,82 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             if (!result.created) message = 'There is already a request open for this user: ';
             res.send({result: true, message: message + request_id})
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
-    app.post('/stores/request_lines/:id', isLoggedIn, allowed('request_line_add',     {send: true}), (req, res) => {
+    app.post('/stores/request_lines/:id',   isLoggedIn, allowed('request_line_add',     {send: true}),              (req, res) => {
         req.body.line.request_id = req.params.id;
         req.body.line.user_id  = req.user.user_id;
         fn.createRequestLine(req.body.line)
         .then(line_id => res.send({result: true, message: 'Item added: ' + line_id}))
-        .catch(err => fn.send_error(err.message, res))
+        .catch(err => fn.send_error(err, res))
     });
 
-    //APPROVAL
-    app.put('/stores/requests/:id',       isLoggedIn, allowed('request_edit',         {send: true}), (req, res) => {
-        fn.getOne(m.requests, {request_id: req.params.id}, {include: [inc.users({as: '_for'})]})
+    //COMPLETE
+    app.put('/stores/requests/:id',         isLoggedIn, allowed('request_edit',         {send: true, allow: true}), (req, res) => {
+        fn.getOne(
+            m.requests,
+            {request_id: req.params.id},
+            {
+                include: [inc.request_lines({where: {_status: {[op.not]: 'Cancelled'}}})],
+                nullOK:  true
+            }
+        )
         .then(request => {
-            if (request.requested_for === req.user.user_id) fn.send_error('You can not approve requests for yourself', result)
-            else {
+            if (!request.lines || request.lines.length === 0) {
+                fn.send_error('A request must have at least one open line before you can complete it', res);
+            } else if (request._complete) {
+                fn.send_error('Request is already complete', res);
+            } else if (!req.allowed && req.user.user_id !== request.requested_for) {
+                fn.send_error('Permission denied', res);
+            } else {
+                let actions = [];
+                actions.push(
+                    fn.update(
+                        m.requests,
+                        {_complete: 1},
+                        {request_id: req.params.id}
+                    )
+                );
+                actions.push(
+                    fn.update(
+                        m.request_lines,
+                        {_status: 'Open'},
+                        {request_id: req.params.id}
+                    )
+                );
+                Promise.allSettled(actions)
+                .then(result => {
+                    if (fn.promise_results(result).result === true) {
+                        fn.createNote(
+                            {
+                                table:  'requests',
+                                note:   'Completed',
+                                id:      req.params.id,
+                                user_id: req.user.user_id,
+                                system:  true
+                            }
+                        )
+                        .then(note => res.send({result: true, message: 'Request completed'}))
+                        .catch(err => fn.send_error(err, res));
+                    } else fn.send_error('Some actions have failed', res)
+                })
+                .catch(err => fn.send_error(err, res));
+            };
+        })
+        .catch(err => fn.send_error(err, res));
+    });
+    //APPROVAL
+    app.put('/stores/request_lines/:id',    isLoggedIn, allowed('request_edit',         {send: true}),              (req, res) => {
+        fn.getOne(
+            m.requests,
+            {request_id: req.params.id},
+            {include: [
+                inc.users({as: '_for'})
+        ]})
+        .then(request => {
+            if (request.requested_for === req.user.user_id) {
+                fn.send_error('You can not approve requests for yourself', result);
+            } else {
                 let orders = [], issues = [], actions = [];
                 for (let [lineID, line] of Object.entries(req.body.actions)) {
                     line.line_id = Number(String(lineID).replace('line_id', ''));
@@ -170,30 +230,27 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             {nullOK: true}
                         )
                         .then(open_lines => {
-                            console.log(open_lines);
                             if (open_lines && open_lines.length > 0) {
-                                let _results = fn.promise_results({results: results});
-                                if (_results.result) res.send({result: true, message: 'Lines actioned'});
-                                else res.send({result: false, message: result.reject_count + ' lines failed'});
+                                if (fn.promise_results(results)) res.send({result: true, message: 'Lines actioned'});
+                                else fn.send_error('Some actions failed', res);
                             } else {
                                 fn.update(
                                     m.requests,
                                     {_closed: 1},
                                     {request_id: req.params.id}
                                 )
-                                .then(result => {
-                                    let _results = fn.promise_results({results: results});
-                                    if (_results.result) res.send({result: true, message: 'Lines actioned, request closed'});
-                                    else res.send({result: false, message: result.reject_count + ' lines failed'});
+                                .then(_result => {
+                                    if (fn.promise_results(results)) res.send({result: true, message: 'Lines actioned, request closed'});
+                                    else fn.send_error('Some actions failed', res);
                                 })
-                                .catch(err => fn.send_error(err.message, res));
+                                .catch(err => fn.send_error(err, res));
                             };
                         })
-                        .catch(err => fn.send_error(err.message, res));
+                        .catch(err => fn.send_error(err, res));
                     })
-                    .catch(err => fn.send_error(err.message, res));
+                    .catch(err => fn.send_error(err, res));
                 })
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             };
         });
     });
@@ -247,7 +304,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     actions.push(issue_request_line(issue_id, line, user_id));
                 });
                 Promise.allSettled(actions)
-                .then(results => resolve(fn.promise_results({results: results})))
+                .then(results => resolve(fn.promise_results(results)))
                 .catch(err => reject(err))
             })
             .catch(err => reject(err));
@@ -290,53 +347,30 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => reject(err));
         });
     };
-    //COMPLETE
-    app.put('/stores/requests/:id',       isLoggedIn, allowed('request_edit',         {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.request_lines,
-            {
-                request_id: req.params.id,
-                _status:    {[op.not]: 'Cancelled'}
-            },
-            {nullOK: true}
-        )
-        .then(requests => {
-            if (requests && requests.length > 0) {
-                fn.update(
-                    m.requests,
-                    {_complete: 1},
-                    {request_id: req.params.id}
-                )
-                .then(result => {
-                    fn.create(
-                        m.notes,
-                        {
-                            _table:  'requests',
-                            _note:   'Request completed',
-                            _id:     req.params.id,
-                            user_id: req.user.user_id,
-                            _system: true
-                        }
-                    )
-                    .then(note => res.send({result: true, message: 'Request completed'}))
-                    .catch(err => fn.send_error(err.message, res));
-                })
-                .catch(err => fn.send_error(err.message, res));
-            } else fn.send_error('A request must have at least one line before you can complete it', res);
-        });
-    });
 
     //DELETE
-    app.delete('/stores/requests/:id',    isLoggedIn, allowed('request_delete',       {send: true}), (req, res) => {
+    app.delete('/stores/request_lines/:id', isLoggedIn, allowed('request_line_delete',  {send: true}),              (req, res) => {
         fn.delete(
-            'requests',
+            'request_lines',
+            {line_id: req.params.id}
+        )
+        .then(result => res.send({result: true, message: 'Line deleted'}))
+        .catch(err => fn.send_error(err, res));
+    });
+    app.delete('/stores/requests/:id',      isLoggedIn, allowed('request_delete',       {send: true}),              (req, res) => {
+        fn.delete(
+            'request_lines',
             {request_id: req.params.id},
-            {hasLines: true}
+            true
         )
         .then(result => {
-            req.flash(result.success, result.message);
-            res.redirect('/stores/requests');
+            fn.delete(
+                'requests',
+                {request_id: req.params.id}
+            )
+            .then(result => res.send({result: true, message: 'Request deleted'}))
+            .catch(err => fn.send_error(err, res));
         })
-        .catch(err => fn.error(err, '/stores/requests', req, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

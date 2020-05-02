@@ -165,12 +165,16 @@
 <script src='/js/addSize.js'></script>
 <script src="/js/specific/issues_show.js"></script>
 <script>
-    window.addEventListener( "load", function () {
-        addFormListener('deleteForm', 'DELETE', '/stores/issues/<%= issue.issue_id %>', {redirect: '/stores/issues'});
-    });
-    window.addEventListener( "load", function () {
-        addFormListener('completeForm', 'PUT', '/stores/issues/<%= issue.issue_id %>', {reload: true});
-    });
+    <% if (permissions.issue_delete && !issue._complete && !issue._closed) { %>
+        window.addEventListener( "load", function () {
+            addFormListener('deleteForm', 'DELETE', '/stores/issues/<%= issue.issue_id %>', {redirect: '/stores/issues'});
+        });
+    <% } %>
+    <% if (permissions.issue_edit && !issue._complete) { %>
+        window.addEventListener( "load", function () {
+            addFormListener('completeForm', 'PUT', '/stores/issues/<%= issue.issue_id %>', {reload: true});
+        });
+    <% } %>
     showTab('<%= show_tab %>');
 </script>
 <script async>getLines(<%= issue.issue_id %>, <%= issue._complete %>, <%= permissions.return_add %>, <%= permissions.issue_delete %>)</script>

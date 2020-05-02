@@ -28,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
     '_status': {
       type: DataTypes.STRING(15),
       allowNull: false,
-      defaultValue: 'Open',
+      defaultValue: 'Pending',
       comment: "null"
     },
     'demand_line_id': {

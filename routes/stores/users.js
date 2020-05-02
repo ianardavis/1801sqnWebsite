@@ -79,7 +79,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [m.ranks]}
         )
         .then(users => res.send({result: true, users: users}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST
@@ -98,9 +98,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {user_id: user.user_id}
             )
             .then(permission => res.send({result: true, message: 'User added'}))
-            .catch(err => fn.send_error(err.message, res))
+            .catch(err => fn.send_error(err, res))
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //PUT PASSWORD
@@ -114,7 +114,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {user_id: req.params.id}
             )
             .then(result => res.send({result: true, message: 'Password changed'}))
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         } else fn.send_error('Permission denied', res)
     });
     //PUT
@@ -145,9 +145,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     {user_id: req.params.id}
                 )
                 .then(result => res.send({result: true, message: 'User/Permissions deleted'}))
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             })
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         } else res.send_error('You can not delete your own account', res);       
     });
 };

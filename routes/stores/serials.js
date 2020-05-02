@@ -50,7 +50,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.query
         )
         .then(serials => res.send({result: true, serials: serials}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST
@@ -60,7 +60,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.body.serial
         )
         .then(serial => res.send({result: true, message: 'Serial added'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //PUT
@@ -71,7 +71,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {serial_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Serial # saved'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     
     //DELETE
@@ -81,6 +81,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {serial_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Serial deleted'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

@@ -10,21 +10,18 @@ function portInUseCheck () {
         console.log('Checking port 3000 is available');
         const execSync = require('child_process').execSync;
         try {
-            const output = execSync('ss -tnlp | grep :3000', { encoding: 'utf-8' });
+            const output = execSync('ss -tnlp | grep :3000', {encoding: 'utf-8'});
             let pid = output.substring(output.indexOf('pid=') + 4, output.indexOf(',', output.search('pid=')));
-            console.log('   In use by PID ' +  pid);
+            console.log('    In use by PID ' +  pid);
             try {
                 const kill_output = execSync('kill -9 ' + pid, { encoding: 'utf-8' });
-                resolve('   PID killed');
+                resolve('    PID killed');
             } catch (error) {
                 reject(error);
             };
         } catch (error) {
-            if (error.output[0]) {
-                reject(error);
-            } else {
-                resolve('   Not in use');
-            };
+            if (error.output[0]) reject(error)
+            else resolve('    Not in use');
         };
     });
 };
@@ -61,10 +58,12 @@ portInUseCheck()
     app.set('view engine', 'ejs');
     app.use(express.static(__dirname + '/public'));
 
-    let m = require('./db/models');
-    require('./routes/stores')(app, m);
-    require('./routes/canteen')(app, m);
-    require('./routes/site')(app, m);
+    let m  = require('./db/models'), fn = {};
+    require('./functions')(fn, m);
+    require('./routes/stores') (app, m, fn);
+    require('./routes/canteen')(app, m, fn);
+
+    require('./routes/site')   (app, m);
     require('./config/passport.js')(passport, m);
 
     app.listen(3000, err => {

@@ -4,7 +4,7 @@ const op = require('sequelize').Op,
       fs = require('fs'),
       ex = require('exceljs'),
       pd = require('pdfkit');
-module.exports = (fn, m, inc) => {
+module.exports = (fn, m) => {
     fn.getPermissions = user_id => new Promise((resolve, reject) => {
         fn.getAllWhere(
             m.permissions,
@@ -53,9 +53,23 @@ module.exports = (fn, m, inc) => {
         table.create(record)
         .then(created => resolve(created))
         .catch(err => {
+            console.log(err);
             if (err.parent && err.parent.code === 'ER_DUP_ENTRY') reject(new Error(err.parent.sqlMessage));
             else reject(err);
         });
+    });
+    fn.createNote = note => new Promise((resolve, reject) => {
+        if (note.table && note.id && note.note && note.user_id) {
+            m.notes.create({
+                _table:  note.table,
+                _id:     note.id,
+                _note:   note.note,
+                user_id: note.user_id,
+                _system: note.system || false
+            })
+            .then(new_note => resolve(new_note))
+            .catch(err => reject(err));
+        } else reject(err);
     });
     fn.update = (table, record, where, nullOk = false) => new Promise((resolve, reject) => {
         table.update(
@@ -69,13 +83,13 @@ module.exports = (fn, m, inc) => {
         })
         .catch(err => reject(err));
     });
-    fn.delete = (table, where, nullOk = false) => new Promise((resolve, reject) => {
+    fn.delete = (table, where, nullOK = false) => new Promise((resolve, reject) => {
         m[table].destroy(
             {where: where}
         )
         .then(result => {
             if (result)      resolve(true);
-            else if (nullOk) resolve(false)
+            else if (nullOK) resolve(false)
             else             reject(new Error(fn.singularise(table.tableName, true) + ' NOT deleted',));
         })
         .catch(err => reject(err));
@@ -128,9 +142,13 @@ module.exports = (fn, m, inc) => {
         req.flash('danger', err.message);
         res.redirect(redirect);
     };
-    fn.send_error = (err, res) => {
+    fn.send_error = (err, res, toLog = null) => {
+        let message = '';
+        if (typeof(err) === 'String') message = err
+        else message = err.message;
         console.log(err);
-        res.send({result: false, error: err});
+        if (toLog) console.log(toLog);
+        res.send({result: false, error: message});
     };
     fn.counter = () => {
         let count = 0;
@@ -149,16 +167,16 @@ module.exports = (fn, m, inc) => {
         return year + month + day + ' ' + hour + minute + second;
     };
 
-    fn.add_qty = (stock_id, qty, table = 'stock') => new Promise((resolve, reject) => {
-        m[table].findByPk(stock_id)
-        .then(stock => stock.increment('_qty', {by: qty}))
-        .then(stock => resolve(Number(stock._qty) + Number(qty)))
+    fn.increment = (_id, by, table = 'stock') => new Promise((resolve, reject) => {
+        m[table].findByPk(_id)
+        .then(stock => stock.increment('_qty', {by: by}))
+        .then(stock => resolve(Number(stock._qty) + Number(by)))
         .catch(err => reject(err));
     });
-    fn.subtractStock = (stock_id, qty, table = 'stock') => new Promise((resolve, reject) => {
-        m[table].findByPk(stock_id)
-        .then(stock => stock.decrement('_qty', {by: qty}))
-        .then(stock => resolve(Number(stock._qty) - Number(qty)))
+    fn.decrement = (_id, by, table = 'stock') => new Promise((resolve, reject) => {
+        m[table].findByPk(_id)
+        .then(stock => stock.decrement('_qty', {by: by}))
+        .then(stock => resolve(Number(stock._qty) - Number(by)))
         .catch(err => reject(err));
     });
 
@@ -171,20 +189,11 @@ module.exports = (fn, m, inc) => {
             };
         });
     };
-    fn.promise_results = options => {
-        let result = true, reject_count = 0;
-        options.results.forEach(_result => {
-            if (_result.status === 'rejected') {
-                result = false;
-                reject_count += 1;
-                console.log(_result.reason);
-            };
-        });
-        let _return = {
-            result:       result,
-            reject_count: reject_count
-        };
-        if (options.return_value) _return = {..._return, ...options.return_value}
-        return _return;
+    fn.promise_results = results => {
+        let result = true,
+            rejects = results.filter(e => e.status === 'rejected');
+        if (rejects.length > 0) result = false;
+        rejects.forEach(reject => console.log(_result.reason));
+        return result;
     };
 };

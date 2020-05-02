@@ -56,7 +56,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             [m.sizes]
         )
         .then(suppliers => res.send({result: true, suppliers: suppliers}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST
@@ -70,7 +70,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             if (req.body.default && req.body.default === '1') setDefault(supplier.supplier_id, res)
             else res.send({result: true, message: 'Supplier added'});
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     function setDefault (supplier_id, res) {
         fn.editSetting('default_supplier', supplier_id)
@@ -93,9 +93,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 if (result) res.send({result: true, message: 'Default supplier updated'})
                 else  res.send({result: false, message: 'Default supplier NOT updated'});
             })
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.put('/stores/suppliers/:id', isLoggedIn, allowed('supplier_edit', {send: true}), (req, res) => {
         if (req.body.supplier.account_id === '') {req.body.supplier.account_id = null};
@@ -105,7 +105,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {supplier_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Supplier saved'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //DELETE

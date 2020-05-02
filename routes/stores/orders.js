@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/orders', isLoggedIn, allowed('access_orders'), (req, res) => {
+    app.get('/stores/orders',            isLoggedIn, allowed('access_orders'),                                 (req, res) => {
         fn.getAllWhere(
             m.suppliers,
             {supplier_id: {[op.not]: 3}}
@@ -15,7 +15,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores', req, res));
     });
     //SHOW
-    app.get('/stores/orders/:id', isLoggedIn, allowed('access_orders'), (req, res) => {
+    app.get('/stores/orders/:id',        isLoggedIn, allowed('access_orders'),                                 (req, res) => {
         fn.getOne(
             m.orders,
             {order_id: req.params.id},
@@ -38,7 +38,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/orders', req, res));
     });
     //SHOW LINE
-    app.get('/stores/order_lines/:id', isLoggedIn, allowed('access_orders', {allow: true}), (req, res) => {
+    app.get('/stores/order_lines/:id',   isLoggedIn, allowed('access_orders',      {allow: true}),             (req, res) => {
         fn.getOne(
             m.order_lines,
             {line_id: req.params.id},
@@ -47,7 +47,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //ASYNC GET
-    app.get('/stores/getorders', isLoggedIn, allowed('access_orders', {send: true}), (req, res) => {
+    app.get('/stores/getorders',         isLoggedIn, allowed('access_orders',      {send: true}),              (req, res) => {
         fn.getAllWhere(
             m.orders,
             req.query,
@@ -57,10 +57,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.order_lines()
         ]})
         .then(orders => res.send({result: true, orders: orders}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
-    //ASYNC GET
-    app.get('/stores/getorderlines', isLoggedIn, allowed('access_order_lines', {send: true}), (req, res) => {
+    app.get('/stores/getorderlines',     isLoggedIn, allowed('access_order_lines', {send: true}),              (req, res) => {
         fn.getAllWhere(
             m.order_lines,
             req.query,
@@ -69,10 +68,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.orders()
         ]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
-    //ASYNC GET
-    app.get('/stores/getorderlinesbyuser/:id', isLoggedIn, allowed('access_order_lines', {send: true}), (req, res) => {
+    app.get('/stores/getorderlines/:id', isLoggedIn, allowed('access_order_lines', {send: true}),              (req, res) => {
         fn.getAllWhere(
             m.order_lines,
             req.query,
@@ -83,11 +81,11 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     required: true
         })]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     
     //POST
-    app.post('/stores/orders', isLoggedIn, allowed('order_add', {send: true}), (req, res) => {
+    app.post('/stores/orders',           isLoggedIn, allowed('order_add',          {send: true}),              (req, res) => {
         fn.createOrder({
             ordered_for: req.body.ordered_for,
             user_id: req.user.user_id
@@ -97,18 +95,18 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             if (!result.created) message = 'There is already an order open for this user: ';
             res.send({result: true, message: message + order_id})
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
-    app.post('/stores/order_lines/:id', isLoggedIn, allowed('order_line_add', {send: true}), (req, res) => {
+    app.post('/stores/order_lines/:id',  isLoggedIn, allowed('order_line_add',     {send: true}),              (req, res) => {
         req.body.line.order_id = req.params.id;
         req.body.line.user_id  = req.user.user_id;
         fn.createOrderLine(req.body.line)
         .then(line_id => res.send({result: true, message: 'Item added: ' + line_id}))
-        .catch(err => fn.send_error(err.message, res))
+        .catch(err => fn.send_error(err, res))
     });
 
     //PUT
-    app.put('/stores/orders/:id', isLoggedIn, allowed('order_edit', {send: true}), (req, res) => {
+    app.put('/stores/order_lines/:id',   isLoggedIn, allowed('order_edit',         {send: true}),              (req, res) => {
         if (req.body.selected) {
             if (req.body.action === 'demand') {
                 fn.demand_order_lines(
@@ -152,48 +150,63 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             res.redirect('/stores/orders/' + req.params.id);
         };
     });
-    //CLOSE
-    app.put('/stores/orders/:id/complete', isLoggedIn, allowed('order_edit', {allow: true, send: true}), (req, res) => {
-        fn.getOne(m.orders, {order_id: req.params.id})
+    //COMPLETE
+    app.put('/stores/orders/:id',        isLoggedIn, allowed('order_edit',         {allow: true, send: true}), (req, res) => {
+        fn.getOne(
+            m.orders,
+            {order_id: req.params.id},
+            {
+                include: [inc.order_lines({where: {_status: {[op.not]: 'Cancelled'}}})],
+                nullOK:  true
+            }
+        )
         .then(order => {
-            if (allowed || Number(order.ordered_for) === req.user.user_id) {
-                fn.getAllWhere(
-                    m.order_lines,
-                    {order_id: order.order_id},
-                    {nullOK: true}
-                )
-                .then(lines => {
-                    if (lines) {
-                        fn.update(
-                            m.orders,
-                            {_complete: 1},
-                            {order_id: order.order_id}
+            if (!order.lines || order.lines.length === 0) {
+                fn.send_error('An order must have at least one open line before you can complete it', res);
+            } else if (order._complete) {
+                fn.send_error('Order is already complete', res);
+            } else if (!req.allowed && req.user.user_id !== order.ordered_for) {
+                fn.send_error('Permission denied', res);
+            } else {
+                let actions = [];
+                actions.push(
+                    fn.update(
+                        m.orders,
+                        {_complete: 1},
+                        {order_id: req.params.id}
+                    )
+                );
+                actions.push(
+                    fn.update(
+                        m.order_lines,
+                        {_status: 'Open'},
+                        {order_id: req.params.id}
+                    )
+                );
+                Promise.allSettled(actions)
+                .then(result => {
+                    if (fn.promise_results(result)) {
+                        fn.createNote(
+                            {
+                                table:   'orders',
+                                note:    'Completed',
+                                id:      req.params.id,
+                                user_id: req.user.user_id,
+                                system: true
+                            }
                         )
-                        .then(result => {
-                            fn.create(
-                                m.notes,
-                                {
-                                    _table:  'orders',
-                                    _id:     order.order_id,
-                                    _note:   'Order complete',
-                                    _system: true,
-                                    user_id: req.user.user_id
-                                }
-                            )
-                            .then(note => res.send({result: true, message: 'Order marked complete'}))
-                            .catch(err => fn.send_error(err.message, res));
-                        })
-                        .catch(err => fn.send_error(err.message, res));
-                    } else fn.send_error('An order must have at least 1 line before you can complete it', res);
+                        .then(note => res.send({result: true, message: 'Order completed'}))
+                        .catch(err => fn.send_error(err, res));
+                    } else fn.send_error('Some actions have failed', res, result)
                 })
-                .catch(err => fn.send_error(err.message, res));
-            } else fn.send_error('Permission denied', res);
+                .catch(err => fn.send_error(err, res));
+            };
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //DELETE
-    app.delete('/stores/orders/:id', isLoggedIn, allowed('order_delete', {send: true}), (req, res) => {
+    app.delete('/stores/orders/:id',     isLoggedIn, allowed('order_delete',       {send: true}),              (req, res) => {
         if (req.query.user) {
             fn.delete(
                 'orders',
@@ -207,6 +220,4 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => fn.error(err, '/stores/issues', req, res));
         };
     });
-
-
 };

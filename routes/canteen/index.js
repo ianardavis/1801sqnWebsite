@@ -1,6 +1,6 @@
-const fn = {}, mw = {}, inc = {}, 
+const mw = {}, inc = {}, 
       op = require('sequelize').Op;
-module.exports = (app, m) => {
+module.exports = (app, m, fn) => {
     var allowed = require(process.env.ROOT + '/config/allowed.js');
     require('./includes') (inc, m);
     require('./functions')(fn, m);

@@ -17,15 +17,16 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
                     where:    {_orderable: 1},
                     required: true}))
         } else if (callType === 'issue') {
-            include.push({
-                model: m.sizes,
-                where: {_issueable: 1},
-                include: [
-                    inc.stock({
-                        require_locations: true,
-                        required: true}),
-                    inc.nsns({
-                        required: true})]})
+            include.push(
+                inc.sizes({
+                    as:      'sizes',
+                    where:   {_issueable: 1},
+                    include: [
+                        inc.stock({
+                            require_locations: true,
+                            required: true}),
+                        inc.nsns({
+                            required: true})]}))
         } else if (callType === 'request') {
             include.push(
                 inc.sizes({
@@ -93,7 +94,7 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
                 {include: include}
             )
             .then(sizes => res.send({result: true, sizes: sizes}))
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         } else fn.send_error('No Item Selected', res);
     });
 
@@ -116,7 +117,7 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
                 }                
             )
             .then(size => res.send({result: true, size: size}))
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         } else fn.send_error('No size selected', res);
     });
 };

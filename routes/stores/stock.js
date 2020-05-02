@@ -45,7 +45,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.locations({as: 'location'})]}
         )
         .then(stock => res.send({result: true, stock: stock}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     
     //POST
@@ -65,15 +65,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     req.body.stock.location_id = location.location_id;
                     createStock(req.body.stock, req, res);
                 })
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             };
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     function createStock(stock, req, res) {
         fn.create(m.stock,stock)
         .then(stock => res.send({result: true, message: 'Stock added'}))
-        .catch(err => fn.send_error(err.message, res));;
+        .catch(err => fn.send_error(err, res));;
     };
 
     //PUT
@@ -100,12 +100,12 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     .then(new_location => {
                         updateStockLocation(new_location.location_id, req.params.id, res)
                     })
-                    .catch(err => fn.send_error(err.message, res));
+                    .catch(err => fn.send_error(err, res));
                 };
             })
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
         
     });
     function updateStockLocation(location_id, stock_id, res) {
@@ -115,7 +115,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {stock_id: stock_id}
         )
         .then(result => res.send({result: true, message: 'Stock saved'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     };
 
     //DELETE
@@ -134,9 +134,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     if (result) res.send({result: true, message: 'Stock deleted'})
                     else fn.send_error('Stock NOT deleted', res);
                 })
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             } else fn.send_error('Cannot delete whilst stock is not 0', res)
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

@@ -65,7 +65,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.body.account
         )
         .then(account => res.send({result: true, message: 'Account created'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //PUT
@@ -76,7 +76,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {account_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Account saved'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //DELETE
@@ -92,8 +92,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {supplier_id: req.body.supplier_id}
             )
             .then(result => res.send({result: true, message: 'Account deleted and supplier updated'}))
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

@@ -6,7 +6,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.query
         )
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     //ASYNC GET
     app.get('/stores/getreturnlinesbysize', isLoggedIn, allowed('access_return_lines', {send: true}), (req, res) => {
@@ -18,7 +18,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 required: true
         })])
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     //ASYNC GET
     app.get('/stores/getreturns', isLoggedIn, allowed('access_returns', {send: true}), (req, res) => {
@@ -27,7 +27,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.query
         )
         .then(returns => res.send({result: true, returns: returns}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST

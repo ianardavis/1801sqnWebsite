@@ -5,7 +5,6 @@ const op = require('sequelize').Op,
       ex = require('exceljs'),
       pd = require('pdfkit');
 module.exports = (fn, m, inc) => {
-    require(process.env.ROOT + '/functions')(fn, m, inc);
     fn.summer = items => {
         if (items == null) return 0;
         return items.reduce((a, b) => {
@@ -785,14 +784,14 @@ module.exports = (fn, m, inc) => {
                     );
                 } else if (String(_type).toLowerCase() === 'scrap') {
                     actions.push(
-                        fn.subtractStock(
+                        fn.decrement(
                             adj.stock_id,
                             adj._qty
                         )
                     );
                 };
                 Promise.allSettled(actions)
-                .then(results => resolve(fn.promise_results({results: results})))
+                .then(results => resolve(fn.promise_results(results)))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -841,7 +840,7 @@ module.exports = (fn, m, inc) => {
                     )
                     .then(requestline => {
                         if (requestline) {
-                            fn.add_qty(requestline.line_id, line._qty, 'request_lines')
+                            fn.increment(requestline.line_id, line._qty, 'request_lines')
                             .then(new_qty => resolve(requestline.line_id))
                             .catch(err => reject(err));
                         } else {
@@ -875,7 +874,7 @@ module.exports = (fn, m, inc) => {
                 .catch(err => reject(err));
             };
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     fn.createOrderLine = line => new Promise((resolve, reject) => {
         fn.getOne(
@@ -883,36 +882,38 @@ module.exports = (fn, m, inc) => {
             {size_id: line.size_id}
         )
         .then(size => {
-            fn.getOne(
-                m.orders,
-                {order_id: line.order_id}
-            )
-            .then(order => {
-                if (order._complete) reject(new Error('Lines can not be added to completed orders'))
-                else {
-                    fn.getOne(
-                        m.order_lines,
-                        {
-                            order_id: order.order_id,
-                            size_id: size.size_id
-                        },
-                        {nullOK: true}
-                    )
-                    .then(orderline => {
-                        if (orderline) {
-                            fn.add_qty(orderline.line_id, line._qty, 'order_lines')
-                            .then(new_qty => resolve(orderline.line_id))
-                            .catch(err => reject(err));
-                        } else {
-                            fn.create(m.order_lines, line)
-                            .then(order_line => resolve(order_line.line_id))
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
-                };
-            })
-            .catch(err => reject(err));
+            if (size._orderable) {
+                fn.getOne(
+                    m.orders,
+                    {order_id: line.order_id}
+                )
+                .then(order => {
+                    if (order._complete) reject(new Error('Lines can not be added to completed orders'))
+                    else {
+                        fn.getOne(
+                            m.order_lines,
+                            {
+                                order_id: order.order_id,
+                                size_id: size.size_id
+                            },
+                            {nullOK: true}
+                        )
+                        .then(orderline => {
+                            if (orderline) {
+                                fn.increment(orderline.line_id, line._qty, 'order_lines')
+                                .then(new_qty => resolve(orderline.line_id))
+                                .catch(err => reject(err));
+                            } else {
+                                fn.create(m.order_lines, line)
+                                .then(order_line => resolve(order_line.line_id))
+                                .catch(err => reject(err));
+                            };
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            } else reject(new Error('This size can not be ordered'));
         })
         .catch(err => reject(err));
     });
@@ -969,7 +970,7 @@ module.exports = (fn, m, inc) => {
                     )
                     .then(demandline => {
                         if (demandline) {
-                            fn.add_qty(demandline.line_id, line._qty, 'demand_lines')
+                            fn.increment(demandline.line_id, line._qty, 'demand_lines')
                             .then(new_qty => resolve(demandline.line_id))
                             .catch(err => reject(err));
                         } else {
@@ -1029,7 +1030,7 @@ module.exports = (fn, m, inc) => {
                     )
                     .then(receipt_line => {
                         if (receipt_line) {
-                            fn.add_qty(receipt_line.line_id, line._qty, 'receipt_lines')
+                            fn.increment(receipt_line.line_id, line._qty, 'receipt_lines')
                             .then(new_qty => resolve(receipt_line.line_id))
                             .catch(err => reject(err));
                         } else {
@@ -1070,43 +1071,55 @@ module.exports = (fn, m, inc) => {
     });
     fn.createIssueLine = line => new Promise((resolve, reject) => {
         fn.getOne(
-            m.issues,
-            {issue_id: line.issue_id}
+            m.sizes,
+            {size_id: line.size_id}
         )
-        .then(issue => {
-            if (issue._complete) reject(new Error('Lines can not be added to completed issues'))
-            else {
-                fn.getAllWhere(
-                    m.issue_lines,
-                    {issue_id: issue.issue_id},
-                    {nullOK: true}
+        .then(size => {
+            if (size._issueable) {
+                fn.getOne(
+                    m.issues,
+                    {issue_id: line.issue_id}
                 )
-                .then(lines => {
-                    if (!line._line) line._line = lines.length + 1;
-                    fn.create(
-                        m.issue_lines,
-                        line
-                    )
-                    .then(issue_line => {
-                        let actions = [];
-                        actions.push(fn.subtractStock(issue_line.stock_id, issue_line.qty));
-                        if (line.serial_id) {
-                            actions.push(
-                                fn.update(
-                                    m.serials,
-                                    {issue_line_id: issue_line.line_id},
-                                    {serial_id: line.serial_id}
-                                )
-                            );
-                        };
-                        Promise.allSettled(actions)
-                        .then(result => resolve(fn.promise_results({results: result, return_value: {line_id: issue_line.line_id}})))
+                .then(issue => {
+                    if (issue._complete) reject(new Error('Lines can not be added to completed issues'));
+                    else {
+                        fn.getAllWhere(
+                            m.issue_lines,
+                            {issue_id: issue.issue_id},
+                            {nullOK: true}
+                        )
+                        .then(lines => {
+                            if (!line._line) line._line = lines.length + 1;
+                            fn.create(
+                                m.issue_lines,
+                                line
+                            )
+                            .then(issue_line => {
+                                let actions = [];
+                                actions.push(fn.decrement(issue_line.stock_id, issue_line.qty));
+                                if (line.serial_id) {
+                                    actions.push(
+                                        fn.update(
+                                            m.serials,
+                                            {issue_line_id: issue_line.line_id},
+                                            {serial_id: line.serial_id}
+                                        )
+                                    );
+                                };
+                                Promise.allSettled(actions)
+                                .then(result => {
+                                    if (fn.promise_results(result)) resolve(issue_line.line_id)
+                                    else reject(new Error('Some actions failed'));
+                                })
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        })
                         .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
+                    };
                 })
                 .catch(err => reject(err));
-            };
+            } else reject(new Error('This size can not be issued'));
         })
         .catch(err => reject(err));
     });
@@ -1161,7 +1174,10 @@ module.exports = (fn, m, inc) => {
                         );
                     };
                     Promise.allSettled(actions)
-                    .then(result => resolve(fn.promise_results({results: results, return_value: {line_id: return_line.line_id}})))
+                    .then(result => {
+                        if (fn.promise_results(result)) resolve(return_line.line_id)
+                        else reject(new Error('Some actions failed'));
+                    })
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));

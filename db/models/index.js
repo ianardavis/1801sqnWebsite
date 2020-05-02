@@ -69,6 +69,7 @@ db.issues.hasMany(db.issue_lines, {foreignKey: 'issue_id', targetKey: 'issue_id'
 db.issue_lines.hasOne(db.users,        {foreignKey: 'user_id',   sourceKey: 'user_id',        constraints: false});
 db.issue_lines.hasOne(db.nsns,         {foreignKey: 'nsn_id',    sourceKey: 'nsn_id',         constraints: false});
 db.issue_lines.hasOne(db.stock,        {foreignKey: 'stock_id',  sourceKey: 'stock_id',       constraints: false});
+db.issue_lines.hasOne(db.sizes,        {foreignKey: 'size_id',   sourceKey: 'size_id',        constraints: false});
 db.issue_lines.hasOne(db.return_lines, {foreignKey: 'line_id',   sourceKey: 'return_line_id', constraints: false, as: 'return'});
 db.issue_lines.hasOne(db.serials,      {foreignKey: 'serial_id', sourceKey: 'serial_id',      constraints: false});
 db.issue_lines.belongsTo(db.issues,    {foreignKey: 'issue_id',  targetKey: 'issue_id'})
@@ -78,6 +79,7 @@ db.returns.hasOne(db.users,         {foreignKey: 'user_id',   sourceKey: 'user_i
 db.returns.hasMany(db.return_lines, {foreignKey: 'return_id', targetKey: 'return_id',                   as: 'lines'});
 
 db.return_lines.hasOne(db.stock,      {foreignKey: 'stock_id',  sourceKey: 'stock_id', constraints: false});
+db.return_lines.hasOne(db.sizes,      {foreignKey: 'size_id',   sourceKey: 'size_id',  constraints: false});
 db.return_lines.belongsTo(db.returns, {foreignKey: 'return_id', targetKey: 'return_id'});
 
 db.notes.hasOne(db.users, {foreignKey: 'user_id', sourceKey: 'user_id', constraints: false});
@@ -107,6 +109,7 @@ db.receipts.hasMany(db.receipt_lines, {foreignKey: 'receipt_id',  targetKey: 're
 
 db.receipt_lines.hasOne(db.users,       {foreignKey: 'user_id',    sourceKey: 'user_id',  constraints: false});
 db.receipt_lines.hasOne(db.stock,       {foreignKey: 'stock_id',   sourceKey: 'stock_id', constraints: false});
+db.receipt_lines.hasOne(db.sizes,       {foreignKey: 'size_id',    sourceKey: 'size_id',  constraints: false});
 db.receipt_lines.belongsTo(db.receipts, {foreignKey: 'receipt_id', targetKey: 'receipt_id'});
 
 db.demands.belongsTo(db.suppliers,  {foreignKey: 'supplier_id', sourceKey: 'supplier_id'});

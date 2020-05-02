@@ -12,8 +12,12 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             m.notes,
             {note_id: req.params.id}
         )
-        .then(note => res.render('stores/notes/edit', {note: note}))
-        .catch(err => fn.error(err, 'back', req, res));
+        .then(note => {
+            if (note._system) {
+                fn.error(new Error('System notes can not be edited') , '/', req, res)
+            } else res.render('stores/notes/edit', {note: note});
+        })
+        .catch(err => fn.error(err, '/', req, res));
     });
     //ASYNC GET
     app.get('/stores/getnotes', isLoggedIn, allowed('access_notes', {send: true}), (req, res) => {
@@ -23,7 +27,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.users()]}
         )
         .then(notes => res.send({result: true, notes: notes}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST
@@ -60,9 +64,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     {note_id: req.params.id}
                 )
                 .then(result => res.send({result: true, message: 'Note deleted'}))
-                .catch(err =>fn.send_error(err.message, res));
+                .catch(err =>fn.send_error(err, res));
             } else fn.send_error('System generated notes can NOT be deleted');
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

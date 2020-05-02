@@ -62,7 +62,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.issue_lines()
         ]})
         .then(issues => res.send({result: true, issues: issues}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     //ASYNC GET
     app.get('/stores/getissuelinesbysize', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
@@ -77,7 +77,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     required: true})
         ])
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     //ASYNC GET
     app.get('/stores/getissuelinesbyuser/:id', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
@@ -92,7 +92,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     required: true
         })]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.get('/stores/getissuelines', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
         fn.getAllWhere(
@@ -101,24 +101,22 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [
                 m.nsns,
                 m.serials,
+                inc.sizes({
+                    include: [
+                        m.items,
+                        inc.stock()
+                ]}),
                 inc.return_lines({
                     as: 'return',
                     include: [
                         inc.stock({as: 'stock'}),
                         inc.returns()
-                    ]
-                }),
+                ]}),
                 inc.stock({
-                    as: 'stock',
-                    include: [
-                        m.locations,
-                        inc.sizes({
-                            include: [
-                                m.items,
-                                inc.stock()
-        ]})]})]})
+                    as: 'stock'
+        })]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     
     //PUT
@@ -137,10 +135,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         {issue_id: issue.issue_id}
                     )
                     .then(result => res.send({result: true, message: 'Issue updated'}))
-                    .catch(err => fn.send_error(err.message, res));
+                    .catch(err => fn.send_error(err, res));
                 } else fn.send_error('An issue must have at least 1 line to be completed', res);
             })
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         } else fn.send_error('No issue details', res);
     });
 
@@ -156,14 +154,14 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             if (!result.created) message = 'There is already an issue open for this user: ';
             res.send({result: true, message: message + issue_id})
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.post('/stores/issue_lines/:id', isLoggedIn, allowed('issue_line_add', {send: true}), (req, res) => {
-        req.body.line.user_id = req.user.user_id;
+        req.body.line.user_id  = req.user.user_id;
         req.body.line.issue_id = req.params.id;
         fn.createIssueLine(req.body.line)
         .then(line_id => res.send({result: true, message: 'Line added: ' + line_id}))
-        .catch(err => fn.send_error(err.message, res))
+        .catch(err => fn.send_error(err, res))
     });
 
     //DELETE
@@ -188,13 +186,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             {issue_id: req.params.id}
                         )
                         .then(result => res.send({result: true, message: 'Issue deleted'}))
-                        .catch(err => fn.send_error(err.message, res));
+                        .catch(err => fn.send_error(err, res));
                     })
-                    .catch(err => fn.send_error(err.message, res));
+                    .catch(err => fn.send_error(err, res));
                 } else fn.send_error('Returned issue lines can not be deleted');
             };
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.delete('/stores/issue_lines/:id', isLoggedIn, allowed('issue_line_delete', {send: true}), (req, res) => {
         fn.getOne(
@@ -206,9 +204,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             else {
                 fn.delete('issue_lines', {line_id: req.params.id})
                 .then(result => res.send({result: true, message: 'Line deleted'}))
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             };
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

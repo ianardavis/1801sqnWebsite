@@ -8,7 +8,7 @@
             <div class="input-group-prepend w-30">
                 <span class="input-group-text w-100">Issueable</span>
             </div>
-            <select class='form-control' name="supplier[_issueable]" required>
+            <select class='form-control' name="size[_issueable]" required>
                 <option value="0"<% if (!size._issueable) { %> selected<% } %>>No</option>
                 <option value="1"<% if (size._issueable) { %> selected<% } %>>Yes</option>
             </select>
@@ -17,7 +17,7 @@
             <div class="input-group-prepend w-30">
                 <span class="input-group-text w-100">Orderable</span>
             </div>
-            <select class='form-control' name="supplier[_orderable]" required>
+            <select class='form-control' name="size[_orderable]" required>
                 <option value="0"<% if (!size._orderable) { %> selected<% } %>>No</option>
                 <option value="1"<% if (size._orderable) { %> selected<% } %>>Yes</option>
             </select>
@@ -26,7 +26,7 @@
             <div class="input-group-prepend w-30">
                 <span class="input-group-text w-100">Has Serial #</span>
             </div>
-            <select class='form-control' name="supplier[_serials]" required>
+            <select class='form-control' name="size[_serials]" required>
                 <option value="0"<% if (!size._serials) { %> selected<% } %>>No</option>
                 <option value="1"<% if (size._serials) { %> selected<% } %>>Yes</option>
             </select>
@@ -35,7 +35,7 @@
             <div class="input-group-prepend w-30">
                 <span class="input-group-text w-100">Has NSNs</span>
             </div>
-            <select class='form-control' name="supplier[_nsns]" required>
+            <select class='form-control' name="size[_nsns]" required>
                 <option value="0"<% if (!size._nsns) { %> selected<% } %>>No</option>
                 <option value="1"<% if (size._nsns) { %> selected<% } %>>Yes</option>
             </select>

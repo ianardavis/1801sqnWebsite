@@ -21,7 +21,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {file_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'File details saved'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     
     //POST
@@ -48,9 +48,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             if (result) res.send({result: true, message: 'File uploaded'}) 
                             else fn.send_error('Error uploading demand file', res);
                         })
-                        .catch(err => fn.send_error(err.message, res));
+                        .catch(err => fn.send_error(err, res));
                     })
-                    .catch(err => fn.send_error(err.message, res));
+                    .catch(err => fn.send_error(err, res));
                 }
             );
         };
@@ -78,13 +78,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         fs.unlinkSync(process.env.ROOT + '/public/res/files/' + file._path)
                         res.send({result: true, message: 'File deleted'});
                     } catch(err) {
-                        fn.send_error(err.message, res);
+                        fn.send_error(err, res);
                     };
                 })
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             })
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

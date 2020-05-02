@@ -15,12 +15,17 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'issue_line_id': {
+    'size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
     'stock_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
+    'issue_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"

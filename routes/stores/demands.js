@@ -52,7 +52,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.suppliers({as: 'supplier'})
         ]})
         .then(demands => res.send({result: true, demands: demands}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });//ASYNC GET LINES
     app.get('/stores/getdemandlines', isLoggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
         fn.getAllWhere(
@@ -61,7 +61,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.sizes({stock: true})]}
         )
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST
@@ -75,14 +75,14 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             if (!result.created) message = 'There is already a demand open for this supplier: ';
             res.send({result: true, message: message + result.demand_id});
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.post('/stores/demand_lines/:id', isLoggedIn, allowed('demand_line_add', {send: true}), (req, res) => {
         req.body.line.demand_id = req.params.id;
         req.body.line.user_id   = req.user.user_id;
         fn.createDemandLine(req.body.line)
         .then(message => res.send({result: true, message: 'Item added: ' + message}))
-        .catch(err => fn.send_error(err.message, res))
+        .catch(err => fn.send_error(err, res))
     });
 
     //PUT
@@ -120,7 +120,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         items
                     )
                 })
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             } else {
                 fn.update(
                     m.demands,
@@ -128,10 +128,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     {demand_id: demand.demand_id}
                 )
                 .then(result => res.send({result: true, message: 'Demand completed'}))
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             };
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.put('/stores/demands/:id', isLoggedIn, allowed('receipt_add', {send: true}), (req, res) => {
         if (req.body.selected) {
@@ -172,13 +172,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {demand_id: req.params.id}
             )
             .then(result => res.send({result: true, message: 'Demand deleted'}))
-            .catch(err => fn.send_error(err.message, res));
+            .catch(err => fn.send_error(err, res));
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.delete('/stores/demand_lines/:id', isLoggedIn, allowed('demand_delete', {send: true}), (req, res) => {
         fn.delete('demand_lines', {line_id: req.params.id})
         .then(result => res.send({result: true, message: 'Line deleted'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

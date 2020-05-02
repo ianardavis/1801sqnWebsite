@@ -32,7 +32,7 @@ function getRequests(user_id) {
     let sel_requests = document.querySelector('#sel_requests'),
         query = [];
         if (sel_requests.value !== 'All') query.push('_status=' + sel_requests.value);
-    XHR.open('GET', '/stores/getrequestlinesbyuser/' + user_id + '?' + query.join('&'));
+    XHR.open('GET', '/stores/request_lines/' + user_id + '?' + query.join('&'));
     XHR.send();
 };
 function getOrders(user_id) {
@@ -75,7 +75,7 @@ function getOrders(user_id) {
     let sel_orders = document.querySelector('#sel_orders'),
         query = [];
     if (sel_orders.value !== 'All') query.push('_status=' + sel_orders.value);
-    XHR.open('GET', '/stores/getorderlinesbyuser/' + user_id + '?' + query.join('&'));
+    XHR.open('GET', '/stores/getorderlines/' + user_id + '?' + query.join('&'));
     XHR.send();
 };
 function getIssues(user_id) {

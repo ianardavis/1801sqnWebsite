@@ -27,14 +27,14 @@ function getLines(issue_id, complete, return_permission, delete_permission) {
                 if (line.serial) cell3.innerText = line.serial._serial;
                 if (line.serial) cell3.appendChild(link('javascript:show("serials",' + line.serial_id + ',{"height":200})'));
                 
-                if (line.stock && line.stock.size && line.stock.size.item) {
-                    cell4.innerText = line.stock.size.item._description;
-                    cell5.appendChild(link('/stores/items/' + line.stock.size.item_id));
+                if (line.size && line.size.item) {
+                    cell4.innerText = line.size.item._description;
+                    cell5.appendChild(link('/stores/items/' + line.size.item_id));
                 } else cell4.innerText = '?';
 
-                if (line.stock && line.stock.size) {
-                    cell5.innerText = line.stock.size._size;
-                    cell5.appendChild(link('/stores/sizes/' + line.stock.size_id));
+                if (line.size) {
+                    cell5.innerText = line.size._size;
+                    cell5.appendChild(link('/stores/sizes/' + line.size_id));
                 } else cell5.innerText = '?';
 
                 cell6.innerText = line._qty;

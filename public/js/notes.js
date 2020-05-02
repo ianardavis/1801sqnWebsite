@@ -21,7 +21,7 @@ function getNotes(table, id, delete_permission) {
                 if (note._system) cell2.innerHTML = _check();
                 cell3.innerText    = note._note;
                 cell4.innerText    = note.user.rank._rank + ' ' + note.user._name + ', ' + note.user._ini
-                cell5.appendChild(link('javascript:edit("notes",' + note.note_id + ',{"height":600})', false));
+                if (!note._system) cell5.appendChild(link('javascript:edit("notes",' + note.note_id + ',{"height":600})', false));
                 if (delete_permission) {
                     let cell6 = row.insertCell(-1);
                     if (!note._system) cell6.appendChild(deleteBtn('/stores/notes/' + note.note_id));

@@ -93,7 +93,7 @@
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
                 <% if (permissions.size_edit) { %> 
-                    <a class='float-left btn btn-success m-1' href='/stores/sizes/<%= size.size_id %>/edit'>
+                    <a class='float-left btn btn-success m-1' href='javascript:edit("sizes",<%= size.size_id %>,{"height":600})'>
                         <i class='fas fa-pencil-alt'></i>
                     </a>
                 <% } %>

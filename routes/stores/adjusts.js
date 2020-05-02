@@ -37,7 +37,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.stock({as: 'stock'})
         ]})
         .then(adjusts => res.send({result: true, adjusts: adjusts}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     //ASYNC GET
     app.get('/stores/getadjustsbysize', isLoggedIn, allowed('access_adjusts', {send: true}), (req, res) => {
@@ -51,7 +51,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     required: true
         })])
         .then(adjusts => res.send({result: true, adjusts: adjusts}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST

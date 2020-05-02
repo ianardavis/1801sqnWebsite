@@ -5,7 +5,6 @@ const op = require('sequelize').Op,
       ex = require('exceljs'),
       pd = require('pdfkit');
 module.exports = (fn, m, inc) => {
-    require(process.env.ROOT + '/functions')(fn, m, inc);
     fn.createCanteenSaleLine = (sale_id, lines) => new Promise((resolve, reject) => {
         let actions = [];
         for (let [_sale, line] of Object.entries(lines)) {

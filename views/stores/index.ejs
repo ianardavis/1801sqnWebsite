@@ -20,8 +20,8 @@
 	<% if (permissions.access_requests) cards.push({href: '/stores/requests', title: 'Requests', image: 'question'}) %>
 	<% if (permissions.access_orders)   cards.push({href: '/stores/orders',	  title: 'Orders',   image: 'list'}) %>
 	<% if (permissions.access_demands)  cards.push({href: '/stores/demands',  title: 'Demands',  image: 'stream'}) %>
-	<% if (permissions.access_issues)   cards.push({href: '/stores/issues',   title: 'Issues',   image: 'address-card'}) %>
 	<% if (permissions.access_receipts) cards.push({href: '/stores/receipts', title: 'Receipts', image: 'receipt'}) %>
+	<% if (permissions.access_issues)   cards.push({href: '/stores/issues',   title: 'Issues',   image: 'address-card'}) %>
 	<% if (permissions.access_reports) 	cards.push({href: '/stores/reports',  title: 'Reports',  image: 'chart-pie'}) %>
 	<% if (permissions.access_settings) cards.push({href: '/stores/settings', title: 'Settings', image: 'cog'}) %>
 	<div class="row container m-auto p-0 menu">

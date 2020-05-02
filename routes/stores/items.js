@@ -72,7 +72,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.query
         )
         .then(items => res.send({result: true, items: items}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST
@@ -83,7 +83,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.body.item
         )
         .then(item => res.send({result: true, message: 'Item added'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //PUT
@@ -95,7 +95,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {item_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Item saved'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //DELETE
@@ -112,9 +112,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     {item_id: req.params.id}
                 )
                 .then(result => res.send({result: true, message: 'Item deleted'}))
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             } else fn.send_error('Cannot delete item while it has sizes assigned', res);
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

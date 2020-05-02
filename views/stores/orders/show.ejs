@@ -16,27 +16,26 @@
                 	Options
                 </a>
                 <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-					<% console.log(order.ordered_for) %>
-					<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for)) && !order._complete && !order._closed) { %>
-						<!-- ////////////////////////////////// -->
-						<form id='completeForm'>
-							<button class="dropdown-item dropdown_button confirm">
-								Complete
-							</button>
-						</form>
-						<div class="dropdown-divider"></div>
-						<!-- ////////////////////////////////// -->
-						<a class="dropdown-item" href='javascript:addSize("order",<%= order.order_id %>)'>
-							Add Item
-						</a>
-						<div class="dropdown-divider"></div>
-					<% } %>
-					<% if (permissions.order_delete) { %>
-						<form id='deleteForm'>
-							<button class='dropdown-item dropdown_button confirm'>
-								Delete
-							</button>
-						</form>
+					<% if (!order._complete && !order._closed) { %>
+						<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for))) { %>
+							<form id='completeForm'>
+								<button class="dropdown-item dropdown_button confirm">
+									Complete
+								</button>
+							</form>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href='javascript:addSize("order",<%= order.order_id %>)'>
+								Add Item
+							</a>
+							<div class="dropdown-divider"></div>
+						<% } %>
+						<% if ((permissions.order_delete)) { %>
+							<form id='deleteForm'>
+								<button class='dropdown-item dropdown_button confirm'>
+									Delete
+								</button>
+							</form>
+						<% }; %>
 					<% }; %>
                 </div>
             </li>
@@ -114,7 +113,7 @@
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
-				<% if (permissions.order_edit && !order._complete) { %>
+				<% if (permissions.order_edit && order._complete && !order._closed) { %>
 					<form action='/stores/orders/<%= order.order_id %>?_method=PUT' method='POST'>
 						<div class="input-group mb-1">
 							<select class="custom-select" name='action'>
@@ -147,13 +146,15 @@
 				<table class='table table-sm table-hover mx-auto w-100'>
 					<thead class='thead-dark'>
 						<% let display_check = (permissions.order_line_edit && order._complete && !order._closed) %>
-						<th class='w-<% if (display_check) { %>20<% } else { %>25<% } %>' onclick='sortTable(0, "orderTable")'>Item</th>
-						<th class='w-15' onclick='sortTable(1, "orderTable")'>Size</th>
-						<th class='w-5'  onclick='sortTable(2, "orderTable")'>Qty</th>
-						<th class='w-10' onclick='sortTable(3, "orderTable")'>Status</th>
+						<th class='w-<% if (display_check) { %>20<% } else { %>40<% } %>' onclick='sortTable(0, "orderTable")'>Item</th>
+						<th class='w-<% if (order._complete) { %>15<% }else { %>30<% } %>' onclick='sortTable(1, "orderTable")'>Size</th>
+						<th class='w-<% if (order._complete) { %>5<% }else { %>10<% } %>'  onclick='sortTable(2, "orderTable")'>Qty</th>
+						<th class='w-<% if (order._complete) { %>10<% }else { %>20<% } %>' onclick='sortTable(3, "orderTable")'>Status</th>
+						<% if (order._complete) { %>
 						<th class='w-15' onclick='sortTable(4, "orderTable")'>Demand Date</th>
 						<th class='w-15' onclick='sortTable(5, "orderTable")'>Receipt Date</th>
 						<th class='w-15' onclick='sortTable(6, "orderTable")'>Issue Date</th>
+						<% } %>
 						<% if (display_check) { %>
 						<th class='w-5'><i class='fas fa-check'></i></th>
 						<% } %>
@@ -181,7 +182,7 @@
 			addFormListener('deleteForm', 'DELETE', '/stores/orders/<%= order.order_id %>',{redirect: '/stores/orders'});
 		<% } %>
 		<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for)) && !order._complete && !order._closed) { %>
-			addFormListener('completeForm', 'PUT', '/stores/orders/<%= order.order_id %>/complete', {reload: true});
+			addFormListener('completeForm', 'PUT', '/stores/orders/<%= order.order_id %>', {reload: true});
 		<% } %>
     });
     showTab('<%= show_tab %>');

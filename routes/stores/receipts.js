@@ -34,18 +34,19 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.users()
         ]})
         .then(receipts => res.send({result: true, receipts: receipts}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.get('/stores/getreceiptlines', isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.receipt_lines,
             req.query,
             {include: [
+                inc.sizes(),
                 inc.receipts(),
-                inc.stock({as: 'stock', size: true})
+                inc.stock({as: 'stock'})
         ]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.get('/stores/getreceiptlinesbysize', isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
         fn.getAll(
@@ -59,7 +60,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     required: true})
         ])
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     
     //POST
@@ -73,14 +74,14 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             if (!result.created) message = 'There is already an receipt open for this user: ';
             res.send({result: true, message: message + receipt_id})
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.post('/stores/receipt_lines/:id', isLoggedIn, allowed('receipt_line_add', {send: true}), (req, res) => {
         req.body.line.user_id    = req.user.user_id;
         req.body.line.receipt_id = req.params.id;
         fn.createReceiptLine(req.body.line)
         .then(receipt_id => res.send({result: true, message: 'Receipt raised: ' + receipt_id}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     
     //DELETE

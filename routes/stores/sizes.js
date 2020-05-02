@@ -25,7 +25,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.items()]}
         )
         .then(sizes => res.send({result: true, sizes: sizes}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     //SHOW
     app.get('/stores/sizes/:id', isLoggedIn, allowed('access_sizes'), (req, res) => {
@@ -51,9 +51,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             m.sizes,
             {size_id: req.params.id},
             {
-                include: [m.items, inc.suppliers()]
-            }
-        )
+                include: [
+                    m.items,
+                    inc.suppliers({as: 'supplier'})
+        ]})
         .then(size => {
             fn.getAll(m.suppliers)
             .then(suppliers => {
@@ -64,7 +65,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             })
             .catch(err => fn.error(err, '/stores/sizes/' + req.params.id, req, res));
         })
-        .catch(err => fn.error(err, 'stores/sizes/' + req.params.id, req, res));
+        .catch(err => fn.error(err, '/', req, res));
     });
     //ASYNC GET SIZES
     app.get('/stores/getsize/:id', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
@@ -77,7 +78,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.serials()
         ]})
         .then(size => res.send({result: true, size: size}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
     app.get('/stores/getsizes', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
         fn.getAllWhere(
@@ -89,7 +90,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             sizes.forEach(size => size.dataValues.locationStock = fn.summer(size.stocks));
             res.send({result: true, sizes: sizes})
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //POST
@@ -126,7 +127,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {size_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Size saved'}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //DELETE
@@ -152,13 +153,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             {size_id: req.params.id}
                         )
                         .then(result => res.send({result: true, message: 'Size deleted'}))
-                        .catch(err => fn.send_error(err.message, res));
+                        .catch(err => fn.send_error(err, res));
                     };
                 })
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             };
         })
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
 };

@@ -42,7 +42,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {user_id: req.params.id}
         )
         .then(permissions => res.send({result: true, permissions: permissions}))
-        .catch(err => fn.send_error(err.message, res));
+        .catch(err => fn.send_error(err, res));
     });
 
     //PUT
@@ -82,10 +82,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     if (actions.length > 0) {
                         Promise.allSettled(actions)
                         .then(result => res.send({result: true, message: 'Permissions saved'}))
-                        .catch(err => fn.send_error(err.message, res));
+                        .catch(err => fn.send_error(err, res));
                     } else res.send({result: true, message: 'No changes'});
                 })
-                .catch(err => fn.send_error(err.message, res));
+                .catch(err => fn.send_error(err, res));
             } else fn.send_error('You can not edit the Admin user permissions', res);
         } else fn.send_error('You can not edit your own permissions', res);
     });
