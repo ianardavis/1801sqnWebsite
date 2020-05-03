@@ -23,21 +23,23 @@
 	</nav>
 </section>
 <section class='container'>
-	<form class='mb-2' action='/stores/demands' method='POST'>
-		<div class="input-group">
-			<div class="input-group-prepend w-25">
-				<button class="btn btn-success w-100 confirm" type="button">Raise Demands For</button>
-			</div>
-			<select class="custom-select" name='supplier_id'>
-				<% suppliers.forEach(supplier => { %>
-					<option value='<%= supplier.supplier_id %>'><%= supplier._name %></option>
-				<% }); %>
-			</select>
-		</div>	
-	</form>
+	<% if (permissions.demand_line_add) { %>
+		<form class='mb-2' id='demandForm'>
+			<div class="input-group">
+				<div class="input-group-prepend w-25">
+					<button class="btn btn-success text-left w-100 confirm">Demand Orders for</button>
+				</div>
+				<select class="custom-select" name='supplier_id'>
+					<% suppliers.forEach(supplier => { %>
+						<option value='<%= supplier.supplier_id %>'><%= supplier._name %></option>
+					<% }); %>
+				</select>
+			</div>	
+		</form>
+	<% } %>
 	<div class="input-group mb-2">
 		<div class="input-group-prepend w-25">
-			<label class="input-group-text text-centre w-100" for="sel_complete">Completed Orders</label>
+			<label class="input-group-text w-100" for="sel_complete">Completed Orders</label>
 		</div>
 		<select class="custom-select" id='sel_complete' onchange=getOrders()>
 			<option value='1' selected>Include</option>
@@ -47,7 +49,7 @@
 	</div>
 	<div class="input-group mb-2">
 		<div class="input-group-prepend w-25">
-			<label class="input-group-text text-centre w-100" for="sel_closed">Closed Orders</label>
+			<label class="input-group-text w-100" for="sel_closed">Closed Orders</label>
 		</div>
 		<select class="custom-select" id='sel_closed' onchange=getOrders()>
 			<option value='1' selected>Include</option>
@@ -74,6 +76,9 @@
 <% include ../../partials/foot/full %>
 <script src="/js/specific/orders_index.js"></script>
 <script>
+	<% if (permissions.demand_line_add) { %>
+		addFormListener('demandForm', 'PUT', '/stores/orders/addtodemand',{reload: true});
+	<% } %>
 	<% if (download) { %>
 		download_file('<%= download %>');
 	<% } %>

@@ -1,4 +1,4 @@
-function getLines(order_id, complete, closed, edit_permission, delete_permission) {
+function getLines(order_id, complete, closed, delete_permission) {
     let spn_orders = document.querySelector('#spn_orders');
     spn_orders.style.display = 'block';
     const XHR = new XMLHttpRequest();
@@ -14,70 +14,86 @@ function getLines(order_id, complete, closed, edit_permission, delete_permission
                     cell1 = row.insertCell(-1),
                     cell2 = row.insertCell(-1),
                     cell3 = row.insertCell(-1),
-                    cell4 = row.insertCell(-1);
+                    cell4 = row.insertCell(-1),
+                    cell5 = row.insertCell(-1);
                 if (complete) {
-                    let cell5 = row.insertCell(-1),
-                        cell6 = row.insertCell(-1),
-                        cell7 = row.insertCell(-1);
-                    if (line.demand_line) {
-                        cell5.innerText = new Date(line.demand_line.demand._date).toDateString();
-                        cell5.appendChild(link('/stores/demands/' + line.demand_line.demand_id, false))
-                        };
-                    if (line.receipt_line) {
-                        cell6.innerText = new Date(line.receipt_line.receipt._date).toDateString();
-                        cell6.appendChild(link('/stores/receipts/' + line.receipt_line.receipt_id, false))
+                    let cell6 = row.insertCell(-1),
+                        cell7 = row.insertCell(-1),
+                        cell8 = row.insertCell(-1);
+                    if (line._status === 'Open') {
+                        var select  = _select({
+                            name: 'actions[line_id' + line.line_id + '][_status]'
+                        });
+                        select.appendChild(_option('',   '... Action'));
                     };
-                    if (Number(line.ordered_for) === -1) {
-                        cell7.innerText = 'N/A';
+                    if (line.demand_line_id) {
+                        if (line.demand_line) {
+                            cell6.innerText = new Date(line.demand_line.demand._date).toDateString();
+                            cell6.appendChild(link('/stores/demands/' + line.demand_line.demand_id));
+                        } else {
+                            cell6.innerText = 'N/A';
+                        };
+                    } else if (line._status === 'Open') {
+                        if (!line.receipt_line_id && !line.issue_line_id) {
+                            select.appendChild(_option('Demand', 'Demand'));
+                        };
+                    };
+                    if (line.receipt_line_id) {
+                        if (line.receipt_line) {
+                            cell7.innerText = new Date(line.receipt_line.receipt._date).toDateString();
+                            cell7.appendChild(link('/stores/receipts/' + line.receipt_line.receipt_id));
+                        } else {
+                            cell7.innerText = 'N/A';
+                        };
+                    } else if (line._status === 'Open') {
+                        if (!line.issue_line_id) {
+                            cell7.id = 'Receive' + line.line_id;
+                            select.appendChild(_option('Receive', 'Receive'));
+                        };
+                    };
+                    if (Number(line.order.ordered_for) === -1) {
+                        cell8.innerText = 'N/A';
                     } else {
-                        if (line.issue_line) {
-                            cell7.innerText = new Date(line.issue_line.issue._date).toDateString();
-                            cell7.appendChild(link('/stores/issues/' + line.issue_line.issue_id, false))
+                        if (line.issue_line_id) {
+                            if (line.issue_line) {
+                                cell8.innerText = new Date(line.issue_line.issue._date).toDateString();
+                                cell8.appendChild(link('/stores/issues/' + line.issue_line.issue_id));
+                            } else {
+                                cell8.innerText = 'N/A';
+                            };
+                        } else if (line._status === 'Open') {
+                            cell8.id = 'Issue' + line.line_id;
+                            select.appendChild(_option('Issue', 'Issue'));
                         };
                     };
-                    let _select  = document.createElement('select'),
-                        _demand  = document.createElement('option'),
-                        _receive = document.createElement('option'),
-                        _issue   = document.createElement('option'),
-                        _cancel  = document.createElement('option');
-                    _select.classList.add('form-control', 'form-control-sm');
-                    _demand.value      = 'Demand';
-                    _demand.innerText  = 'Demand';
-                    _receive.value     = 'Receive';
-                    _receive.innerText = 'Receive';
-                    _issue.value       = 'Issue';
-                    _issue.innerText   = 'Issue';
-                    _cancel.value      = 'Cancel';
-                    _cancel.innerText  = 'Cancel';
-                    _select.appendChild(_demand);
-                    _select.appendChild(_receive);
-                    _select.appendChild(_issue);
-                    _select.appendChild(_cancel);
-                    _select.addEventListener("change", function (event) {
-                        if (this.value === 'Receive' || this.value === 'Issue') getStock(line.line_id, this.value);
-                    });
-                    cell4.appendChild(_select);
-                } else {
-                    cell4.innerText = line._status;
-                };
-                cell1.innerText = line.size.item._description;
-                cell1.appendChild(link('/stores/items/' + line.size.item_id));
-                
-                cell2.innerText = line.size._size;
-                cell2.appendChild(link('/stores/sizes/' + line.size.size_id));
-
-                cell3.innerText = line._qty;
-
-                if (edit_permission && complete && !closed) {
-                    let cell8 = row.insertCell(-1);
-                    if (line._status !== 'Cancelled' && line._status !== 'Received') {
-                        cell8.appendChild(checkbox({id: line.line_id}));
+                    if (line._status === 'Open') {
+                        select.appendChild(_option('Cancel', 'Cancel'));
+                        select.addEventListener("change", function (event) {
+                            if (!line.issue_line)   cell8.innerText = '';
+                            if (!line.receipt_line) cell7.innerText = '';
+                            if (this.value === 'Receive' || this.value === 'Issue') getStock(line.size_id, line.line_id, this.value);
+                        });
+                        cell5.appendChild(select)
+                    } else {
+                        cell5.innerText = line._status;
                     };
+                } else {
+                    cell5.innerText = line._status;
                 };
+                cell1.innerText = line.line_id;
+
+                cell2.innerText = line.size.item._description;
+                cell2.appendChild(link('/stores/items/' + line.size.item_id));
+                
+                cell3.innerText = line.size._size;
+                cell3.appendChild(link('/stores/sizes/' + line.size.size_id));
+
+                cell4.innerText = line._qty;
+
                 if (delete_permission && !complete && !closed) {
-                    let cell9 = row.insertCell(-1);
+                    let cell10 = row.insertCell(-1);
                     if (line._status === 'Pending') {
-                        cell9.appendChild(deleteBtn('/stores/order_lines/' + line.line_id));
+                        cell10.appendChild(deleteBtn('/stores/order_lines/' + line.line_id));
                     };
                 };
             });
@@ -91,66 +107,70 @@ function getLines(order_id, complete, closed, edit_permission, delete_permission
     XHR.open('GET', '/stores/getorderlines?' + query.join('&'));
     XHR.send();
 };
-function getStock(line_id, _cell) {
-    alert(_cell);
-};
 
-function getStock1(size_id, line_id) {
-    let _cell = document.querySelector('#details_' + line_id);
+function getStock(size_id, line_id, action) {
+    let _cell = document.querySelector('#' + action + line_id);
     _cell.innerHTML = _spinner('line_' + line_id);
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", function(event) {
         let response = JSON.parse(event.target.responseText);
         if (response.result) {
-            let _locations = document.createElement('select'),
-                _blank  = document.createElement('option');
-            _locations.classList.add('form-control', 'form-control-sm');
-            _locations.name     = 'actions[line_id' + line_id + '][stock_id]';
+            let _locations = _select({
+                name: 'actions[line_id' + line_id + '][stock_id]',
+                required: true
+            });
             _locations.required = true;
-            _blank.value     = '';
-            _blank.innerText = '... Select Location';
-            _locations.appendChild(_blank);
+            _locations.appendChild(_option('', '... Select Location'));
             response.size.stocks.forEach(stock => {
-                let _location = document.createElement('option');
-                _location.value     = stock.stock_id;
-                _location.innerText = stock.location._location + ', Qty: ' + stock._qty;
-                _locations.appendChild(_location);
+                _locations.appendChild(_option(stock.stock_id, stock.location._location + ', Qty: ' + stock._qty));
             });
             _cell.innerHTML = '';
             _cell.appendChild(_locations);
-            if (response.size._nsns) {
-                let _nsns = document.createElement('select'),
-                    _blank_nsn  = document.createElement('option');
-                _nsns.classList.add('form-control', 'form-control-sm');
-                _nsns.name     = 'actions[line_id' + line_id + '][nsn_id]';
+            if (response.size._nsns && action === 'Issue') {
+                let _nsns = _select({
+                    name: 'actions[line_id' + line_id + '][nsn_id]',
+                    required: true
+                });
                 _nsns.required = true;
-                _blank_nsn.value     = '';
-                _blank_nsn.innerText = '... Select NSN';
-                _nsns.appendChild(_blank_nsn);
+                _nsns.appendChild(_option('', '... Select NSN'));
                 response.size.nsns.forEach(nsn => {
-                    let _nsn = document.createElement('option');
-                    _nsn.value     = nsn.nsn_id;
-                    _nsn.innerText = nsn._nsn;
-                    _nsns.appendChild(_nsn);
+                    _nsns.appendChild(_option(nsn.nsn_id, nsn._nsn));
                 });
                 _cell.appendChild(_nsns);
             };
             if (response.size._serials) {
-                let _serials = document.createElement('select'),
-                    _blank_serial  = document.createElement('option');
-                _serials.classList.add('form-control', 'form-control-sm');
-                _serials.name     = 'actions[line_id' + line_id + '][serial_id]';
-                _serials.required = true;
-                _blank_serial.value     = '';
-                _blank_serial.innerText = '... Select Serial';
-                _serials.appendChild(_blank_serial);
-                response.size.serials.forEach(serial => {
-                    let _serial = document.createElement('option');
-                    _serial.value     = serial.serial_id;
-                    _serial.innerText = serial._serial;
-                    _serials.appendChild(_serial);
-                });
+                let _serials = null
+                if (action === 'Receive') {
+                    _serials = _input({
+                        name: 'actions[line_id' + line_id + '][_serial]',
+                        placeholder: 'Enter Serial #'
+                    });
+                } else if (action === 'Issue') {
+                    _serials = _select({
+                        name: 'actions[line_id' + line_id + '][serial_id]',
+                        required: true
+                    });
+                    _serials.required = true;
+                    _serials.appendChild(_option('', '... Select Serial'));
+                    response.size.serials.forEach(serial => {
+                        _serials.appendChild(_option(serial.serial_id, serial._serial));
+                    });
+                };
                 _cell.appendChild(_serials);
+            };
+            if (action === 'Issue') {
+                let newDate = new Date(),
+                    dd = String(newDate.getDate()).padStart(2, '0'),
+                    MM = String(newDate.getMonth() + 1).padStart(2, '0'),
+                    yyyy = newDate.getFullYear() + 7;
+                _cell.appendChild(
+                    _input({
+                        name:        'actions[line_id' + line_id + '][_due_date]',
+                        type:        'date',
+                        placeholder: '... Select Due Date',
+                        value:       yyyy + '-' + MM + '-' + dd
+                    })
+                )
             };
         } else {
             _cell.innerHTML = '';

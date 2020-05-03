@@ -53,6 +53,19 @@
 	</nav>
 </section>
 <section class="container">
+	<% if (!request._complete) { %>
+		<div id='incompleteToast' role="alert" aria-live="assertive" aria-atomic="true" class="toast float-right" data-autohide="false">
+			<div class="toast-header">
+				<strong class="mr-auto">Incomplete Request</strong>
+				<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="toast-body toast-warn">
+				This request is still in progress, no items on this request will be actioned or considered until the request is marked as complete in the 'Options' menu
+			</div>
+		</div>
+	<% } %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item">
             <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
@@ -179,7 +192,10 @@
 			addFormListener('approveForm', 'PUT', '/stores/request_lines/<%= request.request_id %>', {reload: true});
 		<% } %>
 	});
-    showTab('<%= show_tab %>');
+	showTab('<%= show_tab %>');
+	<% if (!request._complete) { %>
+		$('#incompleteToast').toast('show')
+	<% } %>
 </script>
 <script async>getLines(<%= request.request_id %>, <%= request._complete %>, <% if (permissions.request_line_edit) { %>1<% } else { %>0<% } %>, <% if (permissions.request_line_delete) { %>1<% } else { %>0<% } %>)</script>
 <% include ../../partials/foot/htmlClose %>

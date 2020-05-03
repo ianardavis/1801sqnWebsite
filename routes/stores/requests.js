@@ -121,8 +121,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     )
                 );
                 Promise.allSettled(actions)
-                .then(result => {
-                    if (fn.promise_results(result).result === true) {
+                .then(_result => {
+                    if (fn.promise_results(_result)) {
                         fn.createNote(
                             {
                                 table:  'requests',
@@ -132,7 +132,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                                 system:  true
                             }
                         )
-                        .then(note => res.send({result: true, message: 'Request completed'}))
+                        .then(note => res.send({result: true, message: 'Request marked as complete'}))
                         .catch(err => fn.send_error(err, res));
                     } else fn.send_error('Some actions have failed', res)
                 })
@@ -166,11 +166,19 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                                 m.request_lines,
                                 {
                                     _status: 'Declined',
-                                    _date:   Date.now(),
-                                    user_id: req.user.user_id
+                                    _date:   Date.now()
                                 },
                                 {line_id: line.line_id}
                             )
+                        );
+                        actions.push(
+                            fn.createNote({
+                                id:     request.request_id,
+                                table:  'request_lines',
+                                note:   'Line ' + line.line_id + ' declined',
+                                user_id: req.user.user_id,
+                                system:  true
+                            })
                         );
                     };
                 };
@@ -225,7 +233,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             m.request_lines,
                             {
                                 request_id: req.params.id,
-                                _status:    'Pending'
+                                _status:    'Open'
                             },
                             {nullOK: true}
                         )

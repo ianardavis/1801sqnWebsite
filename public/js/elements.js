@@ -23,11 +23,35 @@ function deleteBtn (path, descriptor = 'line') {
     });
     return form;
 };
+function _input (options = {}) {
+    let _input = document.createElement('input');
+    _input.classList.add('form-control', 'form-control-sm');
+    _input.type        = options.type        || 'text';
+    _input.name        = options.name        || 'selected[]';
+    _input.value       = options.value       || '';
+    _input.id          = options.id          || '';
+    _input.placeholder = options.placeholder || '';
+    _input.required    = options.required    || true;
+    return _input
+};
 function checkbox (options = {}) {
-    let _checkbox = document.createElement('input');
+    let _checkbox   = document.createElement('input');
     _checkbox.type  = 'checkbox';
     _checkbox.name  = options.name || 'selected[]';
     _checkbox.value = options.id;
     _checkbox.classList.add('form-control', 'form-control-sm');
     return _checkbox
+};
+function _select (options = {}) {
+    let _select      = document.createElement('select');
+    _select.classList.add('form-control', 'form-control-sm');
+    _select.name     = options.name     || 'selected[]';
+    if (options.required) _select.required = true;
+    return _select
+};
+function _option(value, innerText) {
+    let _option = document.createElement('option');
+    _option.value     = value;
+    _option.innerText = innerText;
+    return _option
 };

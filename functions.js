@@ -144,7 +144,7 @@ module.exports = (fn, m) => {
     };
     fn.send_error = (err, res, toLog = null) => {
         let message = '';
-        if (typeof(err) === 'String') message = err
+        if (typeof(err) === 'string') message = err
         else message = err.message;
         console.log(err);
         if (toLog) console.log(toLog);
@@ -193,7 +193,7 @@ module.exports = (fn, m) => {
         let result = true,
             rejects = results.filter(e => e.status === 'rejected');
         if (rejects.length > 0) result = false;
-        rejects.forEach(reject => console.log(_result.reason));
+        rejects.forEach(reject => console.log(reject.reason));
         return result;
     };
 };

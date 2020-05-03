@@ -129,6 +129,7 @@ function sendData(form, method, _location, options = {reload: false, reload_open
           if (options.redirect)      window.location.replace(options.redirect);
       } else {
         alert('Error: ' + response.error);
+        window.location.reload();
       };
   });
   XHR.addEventListener("error", function(event) {

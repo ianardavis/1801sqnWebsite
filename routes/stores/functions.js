@@ -16,8 +16,7 @@ module.exports = (fn, m, inc) => {
         var dd = String(newDate.getDate()).padStart(2, '0');
         var MM = String(newDate.getMonth() + 1).padStart(2, '0');
         var yyyy = newDate.getFullYear() + addYears;
-        newDate = yyyy + '-' + MM + '-' + dd;
-        return newDate;
+        return yyyy + '-' + MM + '-' + dd;
     };
     fn.getOptions = (options, req) => new Promise((resolve, reject) => {
         let actions = [];
@@ -69,30 +68,6 @@ module.exports = (fn, m, inc) => {
         .catch(err => reject({ result: true, err: err }));
     });
 
-    fn.closeRequest = (request_id, user_id) => new Promise((resolve, reject) => {
-        closeIfNoLines({
-            table: 'requests', 
-            table_lines: 'request_lines', 
-            id: request_id, 
-            where_id: {request_id: request_id}, 
-            where_status: {_status: 'Pending'}, 
-            user_id: user_id
-        })
-        .then(close_result => resolve(close_result.closed))
-        .catch(err => reject(err))
-    });
-    fn.closeOrder = (order_id, user_id) => new Promise((resolve, reject) => {
-        closeIfNoLines({
-            table: 'orders', 
-            table_lines: 'order_lines', 
-            id: order_id, 
-            where_id: {order_id: order_id}, 
-            where_status: {_status: 'Open'}, 
-            user_id: user_id
-        })
-        .then(close_result => resolve(close_result.closed))
-        .catch(err => reject(err))
-    });
     function closeDemand (demand_id, user_id) {
         return new Promise((resolve, reject) => {
             closeIfNoLines({
@@ -107,18 +82,6 @@ module.exports = (fn, m, inc) => {
             .catch(err => reject(err))
         });
     };
-    fn.closeIssue = (issue_id, user_id) => new Promise((resolve, reject) => {
-        closeIfNoLines({
-            table: 'issues', 
-            table_lines: 'issue_lines', 
-            id: issue_id, 
-            where_id: {issue_id: issue_id}, 
-            where_status: {return_line_id: null}, 
-            user_id: user_id
-        })
-        .then(close_result => resolve(close_result.closed))
-        .catch(err => reject(err))
-    });
     function closeIfNoLines (options = null) { 
         return new Promise((resolve, reject) => {
             if (options.table && options.table_lines && options.id && options.where_id && options.where_status && options.user_id) {
@@ -173,248 +136,6 @@ module.exports = (fn, m, inc) => {
         });
     };
 
-    fn.demand_order_lines = (selected, user_id)  => new Promise((resolve, reject) => {
-        let actions = [];
-        selected.forEach(line_id => {
-            actions.push(
-                fn.getOne(
-                    m.order_lines,
-                    {line_id: line_id},
-                    {include: [
-                        inc.sizes({include: [
-                            inc.suppliers({include: [
-                                m.files, 
-                                {model: m.accounts, include: [inc.users()]}
-                            ]})
-                        ]}),
-                        inc.orders({include: [
-                            inc.users({as: '_for'})
-                        ]})
-                    ]}
-                )
-            );
-        });
-        Promise.allSettled(actions)
-        .then(order_lines => {
-            let suppliers = {};
-            order_lines.forEach(order_line => {
-                let line = order_line.value;
-                if (!line.demand_line_id) {
-                    let supplier_id = String(line.size.supplier_id);
-                    if (suppliers[supplier_id]) {
-                        let _index = suppliers[supplier_id].lines.findIndex(e => e.size_id === line.size_id);
-                        if (_index === -1) {
-                            suppliers[supplier_id].lines.push({
-                                size_id:     line.size_id,
-                                qty:         line._qty,
-                                order_lines: [line.line_id]
-                            })
-                        } else {
-                            suppliers[supplier_id].lines[_index].qty += Number(line._qty);
-                            suppliers[supplier_id].lines[_index].order_lines.push(line.line_id);
-                        };
-
-                    } else {
-                        suppliers[supplier_id] = {};
-                        suppliers[supplier_id].supplier = line.size.supplier;
-                        suppliers[supplier_id].lines = [{
-                            size_id:     line.size_id,
-                            qty:         line._qty,
-                            order_lines: [line.line_id]
-                        }]
-                    };
-                };
-            });
-            if (Object.entries(suppliers).length > 0) {
-                let demands = [];
-                for (let [supplier_id, supplier] of Object.entries(suppliers)) {
-                    if (supplier.supplier._raise_demand) {
-                        if (supplier.supplier.file) {
-                            demands.push(
-                                fn.raiseDemand(
-                                    order_lines,
-                                    supplier,
-                                    user_id
-                                )
-                            );
-                        } else {
-                            fn.update(
-                                m.suppliers,
-                                {_raise_demand: 0},
-                                {supplier_id: supplier_id}
-                            )
-                            reject(new Error(supplier.supplier._name + ': Raise demand flag is set, but there is no associated file. The raise demand flag has been removed'))
-                        };
-                    } else {
-                        demands.push(
-                            fn.createDemand(
-                                supplier_id,
-                                supplier.lines,
-                                user_id
-                            )
-                        );
-                    };
-                };
-                Promise.allSettled(demands)
-                .then(results => resolve(results))
-                .catch(err => reject(err));
-            } else {
-                reject(new Error('No lines that can be demanded'))
-            };
-        })
-        .catch(err => reject(err));
-    });
-    fn.receive_order_lines = selected  => new Promise((resolve, reject) => {
-        let actions = [];
-        selected.forEach(line_id => {
-            actions.push(
-                fn.getOne(
-                    m.order_lines,
-                    {
-                        line_id: line_id,
-                        demand_line_id: {[op.not]: null},
-                        receipt_line_id: null
-                    },
-                    {
-                        include: [
-                            inc.sizes({
-                                stock: true})
-                        ],
-                        nullOK: true
-                    }
-                )
-            );
-        });
-        Promise.allSettled(actions)
-        .then(order_lines => {
-            let items = [], supplier_id = -1;
-            order_lines.forEach(order_line => {
-                if (order_line.value) {
-                    let line = order_line.value;
-                    if (supplier_id === -1) supplier_id = Number(line.size.supplier_id)
-                    else if (supplier_id !== Number(line.size.supplier_id)) reject(new Error('Selected lines contain items from different suppliers'));
-                    let _index = items.findIndex(e => e.size_id === Number(line.size_id));
-                    if (_index === -1) {
-                        let stocks = [];
-                        line.size.stocks.forEach(stock => {
-                            stocks.push({
-                                stock_id:  stock.stock_id,
-                                _location: stock.location._location,
-                                qty:       stock._qty
-                            });
-                        });
-                        items.push({
-                            size_id:     Number(line.size_id),
-                            description: line.size.item._description,
-                            size:        line.size._size,
-                            stocks:      stocks,
-                            qty:         line._qty,
-                            order_lines: [line.line_id]
-                        });
-                    } else {
-                        items[_index].qty += Number(line._qty);
-                        items[_index].order_lines.push(line.line_id);
-                    };
-                };
-            });
-            fn.getOne(
-                m.suppliers,
-                {supplier_id: supplier_id}
-            )
-            .then(supplier => resolve({items: items, supplier: supplier}))
-            .catch(err => reject(err));
-        })
-        .catch(err => reject(err));
-    });
-    fn.issue_order_lines = selected  => new Promise((resolve, reject) => {
-        let actions = [];
-        selected.forEach(line_id => {
-            actions.push(
-                fn.getOne(
-                    m.order_lines,
-                    {
-                        line_id: line_id,
-                        receipt_line_id: {[op.not]: null},
-                        issue_line_id: null
-                    },
-                    {
-                        include: [
-                            inc.orders(),
-                            inc.sizes({
-                                stock: true,
-                                nsns: true,
-                                serials: true})
-                        ],
-                        nullOK: true
-                    }
-                )
-            );
-        });
-        Promise.allSettled(actions)
-        .then(orders => {
-            let items = [], user_id = -1;
-            orders.forEach(order_line => {
-                if (order_line.value) {
-                    let line = order_line.value;
-                    if (user_id === -1) user_id = Number(line.order.ordered_for)
-                    else if (user_id !== Number(line.order.ordered_for)) reject(new Error('Selected lines contain items for different users'));
-                    let _index = items.findIndex(e => e.size_id === Number(line.size_id));
-                    if (_index === -1) {
-                        let stocks = [];
-                        line.size.stocks.forEach(stock => {
-                            stocks.push({
-                                stock_id:  stock.stock_id,
-                                _location: stock.location._location,
-                                qty:       stock._qty
-                            });
-                        });
-                        items.push({
-                            size_id:     Number(line.size_id),
-                            description: line.size.item._description,
-                            size:        line.size._size,
-                            stocks:      stocks,
-                            nsns:        line.size.nsns,
-                            serials:     line.size.serials,
-                            qty:         line._qty,
-                            order_lines: [line.line_id]
-                        });
-                    } else {
-                        items[_index].qty += Number(line._qty);
-                        items[_index].order_lines.push(line.line_id);
-                    };
-                }
-            });
-            fn.getOne(
-                m.users,
-                {user_id: user_id},
-                {include: [m.ranks]}
-            )
-            .then(user => resolve({items: items, user: user}))
-            .catch(err => reject(err));
-        })
-        .catch(err => reject(err));
-    });
-    fn.cancel_order_lines = (selected, order_id, user_id)  => new Promise((resolve, reject) => {
-        let actions = [];
-        selected.forEach(line_id => {
-            actions.push(
-                fn.update(
-                    m.order_lines,
-                    {_status: 'Cancelled'},
-                    {line_id: line_id}
-                )
-            )
-        });
-        Promise.allSettled(actions)
-        .then(cancel_result => {
-            if (cancel_result.filter(e => e.value === [0]).length === 0) {
-                fn.closeOrder(order_id, user_id)
-                .then(close_result => resolve(close_result.closed))
-                .catch(err => reject(err))
-            } else reject(new Error('Some lines failed'));
-        })
-        .catch(err => reject(err));
-    });
     fn.receive_demand_lines = selected  => new Promise((resolve, reject) => {
         let actions = [];
         selected.forEach(line_id => {
@@ -1013,36 +734,62 @@ module.exports = (fn, m, inc) => {
         )
         .then(size => {
             fn.getOne(
-                m.receipts,
-                {receipt_id: line.receipt_id}
+                m.stock,
+                {stock_id: line.stock_id}
             )
-            .then(receipt => {
-                if (receipt._complete) reject(new Error('Lines can not be added to completed issues'))
-                else if (Number(size.supplier_id) !== Number(line.supplier_id)) reject(new Error('Size is not for this supplier'))
-                else {
-                    fn.getOne(
-                        m.receipt_lines,
-                        {
-                            receipt_id: receipt.receipt_id,
-                            size_id: size.size_id
-                        },
-                        {nullOK: true}
-                    )
-                    .then(receipt_line => {
-                        if (receipt_line) {
-                            fn.increment(receipt_line.line_id, line._qty, 'receipt_lines')
-                            .then(new_qty => resolve(receipt_line.line_id))
-                            .catch(err => reject(err));
-                        } else {
+            .then(stock => {
+                fn.getOne(
+                    m.receipts,
+                    {receipt_id: line.receipt_id}
+                )
+                .then(receipt => {
+                    if (receipt._complete) {
+                        reject(new Error('Lines can not be added to completed issues'))
+                    } else if (Number(size.supplier_id) !== Number(line.supplier_id)) {
+                        reject(new Error('Size is not for this supplier'))
+                    } else if (size._serials && !line._serial) {
+                        reject(new Error('You must specify a serial #'))
+                    } else if (size._serials) {
+                        fn.create(
+                            m.serials,
+                            {
+                                _serial: line._serial,
+                                size_id: size.size_id
+                            }
+                        )
+                        .then(serial => {
+                            line.serial_id = serial.serial_id;
                             fn.create(m.receipt_lines, line)
                             .then(receipt_line => resolve(receipt_line.line_id))
                             .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
-                };
+                        })
+                        .catch(err => reject(err));
+                    } else {
+                        fn.getOne(
+                            m.receipt_lines,
+                            {
+                                receipt_id: receipt.receipt_id,
+                                size_id: size.size_id
+                            },
+                            {nullOK: true}
+                        )
+                        .then(receipt_line => {
+                            if (receipt_line) {
+                                fn.increment(receipt_line.line_id, line._qty, 'receipt_lines')
+                                .then(new_qty => resolve(receipt_line.line_id))
+                                .catch(err => reject(err));
+                            } else {
+                                fn.create(m.receipt_lines, line)
+                                .then(receipt_line => resolve(receipt_line.line_id))
+                                .catch(err => reject(err));
+                            };
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
             })
-            .catch(err => reject(err));
+            .catch(err => reject(err))
         })
         .catch(err => reject(err));
     });
@@ -1081,39 +828,68 @@ module.exports = (fn, m, inc) => {
                     {issue_id: line.issue_id}
                 )
                 .then(issue => {
-                    if (issue._complete) reject(new Error('Lines can not be added to completed issues'));
-                    else {
+                    if (issue._complete) {
+                        reject(new Error('Lines can not be added to completed issues'));
+                    } else {
                         fn.getAllWhere(
                             m.issue_lines,
                             {issue_id: issue.issue_id},
                             {nullOK: true}
                         )
                         .then(lines => {
-                            if (!line._line) line._line = lines.length + 1;
-                            fn.create(
-                                m.issue_lines,
-                                line
-                            )
-                            .then(issue_line => {
-                                let actions = [];
-                                actions.push(fn.decrement(issue_line.stock_id, issue_line.qty));
-                                if (line.serial_id) {
-                                    actions.push(
-                                        fn.update(
+                            if (size._serials && !line.serial_id) {
+                                reject(new Error('You must specify a serial #'));
+                            } else {
+                                if (size._nsns && !line.nsn_id) {
+                                    reject(new Error('You must specify an NSN'));
+                                } else {
+                                    if (!line._line) line._line = lines.length + 1;
+                                    if (size._serials) {
+                                        fn.getOne(
                                             m.serials,
-                                            {issue_line_id: issue_line.line_id},
                                             {serial_id: line.serial_id}
                                         )
-                                    );
+                                        .then(serial => {
+                                            fn.create(
+                                                m.issue_lines,
+                                                line
+                                            )
+                                            .then(issue_line => {
+                                                let actions = [];
+                                                actions.push(fn.decrement(issue_line.stock_id, issue_line.qty));
+                                                if (line.serial_id) {
+                                                    actions.push(
+                                                        fn.update(
+                                                            m.serials,
+                                                            {issue_line_id: issue_line.line_id},
+                                                            {serial_id: line.serial_id}
+                                                        )
+                                                    );
+                                                };
+                                                Promise.allSettled(actions)
+                                                .then(result => {
+                                                    if (fn.promise_results(result)) resolve(issue_line.line_id)
+                                                    else reject(new Error('Some actions failed'));
+                                                })
+                                                .catch(err => reject(err));
+                                            })
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    } else {
+                                        fn.create(
+                                            m.issue_lines,
+                                            line
+                                        )
+                                        .then(issue_line => {
+                                            fn.decrement(issue_line.stock_id, issue_line.qty)
+                                            .then(result => resolve(issue_line.line_id))
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    };
                                 };
-                                Promise.allSettled(actions)
-                                .then(result => {
-                                    if (fn.promise_results(result)) resolve(issue_line.line_id)
-                                    else reject(new Error('Some actions failed'));
-                                })
-                                .catch(err => reject(err));
-                            })
-                            .catch(err => reject(err));
+                            };
                         })
                         .catch(err => reject(err));
                     };

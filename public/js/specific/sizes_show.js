@@ -117,7 +117,7 @@ function getRequestLines(size_id) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting requests'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getrequestlines?' + query.join('&'));
+    XHR.open('GET', '/stores/request_lines?' + query.join('&'));
     XHR.send();
 };
 function getOrderLines(size_id) {

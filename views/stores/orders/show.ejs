@@ -29,13 +29,17 @@
 							</a>
 							<div class="dropdown-divider"></div>
 						<% } %>
-						<% if ((permissions.order_delete)) { %>
+						<% if (permissions.order_delete) { %>
 							<form id='deleteForm'>
 								<button class='dropdown-item dropdown_button confirm'>
 									Delete
 								</button>
 							</form>
 						<% }; %>
+					<% } else if (permissions.order_line_edit &&order._complete && !order._closed) { %> %>
+						<button form='actionForm' class='dropdown-item dropdown_button confirm'>
+							Action Selected Lines
+						</button>
 					<% }; %>
                 </div>
             </li>
@@ -114,26 +118,13 @@
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
 				<% if (permissions.order_edit && order._complete && !order._closed) { %>
-					<form action='/stores/orders/<%= order.order_id %>?_method=PUT' method='POST'>
-						<div class="input-group mb-1">
-							<select class="custom-select" name='action'>
-								<option value='demand'>Demand Selected Lines</option>
-								<option value='receive'>Receive Selected Lines</option>
-								<option value='issue'>Issue Selected Lines</option>
-								<% if (permissions.order_delete) { %>
-									<option value='cancel'>Cancel Selected Lines</option>
-								<% } %>
-							</select>
-							<div class="input-group-append w-25">
-								  <button class="btn btn-success w-100 confirm" type="button">Go</button>
-							</div>
-						</div>
+					<form id='actionForm'>
 				<% } %>
 				<div class="input-group mb-2">
 					<div class="input-group-prepend w-20">
 						<label class="input-group-text w-100" for="sel_status">Status</label>
 					</div>
-					<select class="custom-select" id='sel_status' onchange='getLines(<%= order.order_id %>, <%= order._complete %>, <%= order._closed %>, <%= permissions.order_line_edit %>, <%= permissions.order_line_delete %>)'>
+					<select class="custom-select" id='sel_status' onchange='getLines(<%= order.order_id %>, <%= order._complete %>, <%= order._closed %>, <%= permissions.order_line_delete %>)'>
 						<option value='All' selected>All</option>
 						<option value='Open'>Open</option>
 						<option value='Received'>Received</option>
@@ -145,18 +136,15 @@
 				</div>
 				<table class='table table-sm table-hover mx-auto w-100'>
 					<thead class='thead-dark'>
-						<% let display_check = (permissions.order_line_edit && order._complete && !order._closed) %>
-						<th class='w-<% if (display_check) { %>20<% } else { %>40<% } %>' onclick='sortTable(0, "orderTable")'>Item</th>
-						<th class='w-<% if (order._complete) { %>15<% }else { %>30<% } %>' onclick='sortTable(1, "orderTable")'>Size</th>
-						<th class='w-<% if (order._complete) { %>5<% }else { %>10<% } %>'  onclick='sortTable(2, "orderTable")'>Qty</th>
-						<th class='w-<% if (order._complete) { %>10<% }else { %>20<% } %>' onclick='sortTable(3, "orderTable")'>Status</th>
+						<th class='w-5'  onclick='sortTable(0, "orderTable")'>ID</th>
+						<th class='w-<% if (order._complete) { %>15<% } else { %>35<% } %>' onclick='sortTable(1, "orderTable")'>Item</th>
+						<th class='w-<% if (order._complete) { %>15<% }else { %>30<% } %>' onclick='sortTable(2, "orderTable")'>Size</th>
+						<th class='w-<% if (order._complete) { %>5<% }else { %>10<% } %>'  onclick='sortTable(3, "orderTable")'>Qty</th>
+						<th class='w-<% if (order._complete) { %>15<% }else { %>20<% } %>' onclick='sortTable(4, "orderTable")'>Action</th>
 						<% if (order._complete) { %>
-						<th class='w-15' onclick='sortTable(4, "orderTable")'>Demand Date</th>
-						<th class='w-15' onclick='sortTable(5, "orderTable")'>Receipt Date</th>
-						<th class='w-15' onclick='sortTable(6, "orderTable")'>Issue Date</th>
-						<% } %>
-						<% if (display_check) { %>
-						<th class='w-5'><i class='fas fa-check'></i></th>
+						<th class='w-15' onclick='sortTable(5, "orderTable")'>Demand Date</th>
+						<th class='w-15' onclick='sortTable(6, "orderTable")'>Receipt Date</th>
+						<th class='w-15' onclick='sortTable(7, "orderTable")'>Issue Date</th>
 						<% } %>
 						<% if (permissions.order_line_delete && !order._complete && !order._closed) { %>
 						<th><i class='fas fa-trash-alt'></i></th>
@@ -178,8 +166,11 @@
 <script src="/js/addSize.js"></script>
 <script>
     window.addEventListener( "load", function () {
-		<% if (permissions.order_delete) { %>
+		<% if (permissions.order_delete && !order._complete && !order._closed) { %>
 			addFormListener('deleteForm', 'DELETE', '/stores/orders/<%= order.order_id %>',{redirect: '/stores/orders'});
+		<% } %>
+		<% if (permissions.order_line_edit && order._complete && !order._closed) { %>
+			addFormListener('actionForm', 'PUT', '/stores/order_lines/<%= order.order_id %>',{reload: true});
 		<% } %>
 		<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for)) && !order._complete && !order._closed) { %>
 			addFormListener('completeForm', 'PUT', '/stores/orders/<%= order.order_id %>', {reload: true});
@@ -187,5 +178,5 @@
     });
     showTab('<%= show_tab %>');
 </script>
-<script async>getLines(<%= order.order_id %>, <%= order._complete %>, <%= order._closed %>, <%= permissions.order_line_edit %>, <%= permissions.order_line_delete %>)</script>
+<script async>getLines(<%= order.order_id %>, <%= order._complete %>, <%= order._closed %>, <%= permissions.order_line_delete %>)</script>
 <% include ../../partials/foot/htmlClose %>

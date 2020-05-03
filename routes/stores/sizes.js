@@ -161,5 +161,4 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.send_error(err, res));
     });
-
 };

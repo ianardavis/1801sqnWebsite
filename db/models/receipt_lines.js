@@ -30,6 +30,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
+    '_status': {
+      type: DataTypes.STRING(15),
+      allowNull: false,
+      defaultValue: 'Pending',
+      comment: "null"
+    },
     'user_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
