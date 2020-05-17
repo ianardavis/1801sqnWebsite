@@ -110,53 +110,42 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
 
     //BULK ADD ORDERS TO DEMANDS
     app.put('/stores/orders/addtodemand', isLoggedIn, allowed('demand_line_add',    {send: true}),              (req, res) => {
-        fn.getOne(
-            m.suppliers,
-            {supplier_id: req.body.supplier_id}
-        )
-        .then(supplier => {
-            if (supplier._raise_demand) {
-                fn.getAllWhere(
-                    m.order_lines,
-                    {
-                        _status: 'Open',
-                        demand_line_id: null
-                    },{
-                        nullOK: true,
-                        attributes: ['line_id'],
-                        include: [
-                            inc.sizes({
-                                where: {
-                                    supplier_id: req.body.supplier_id,
-                                    _orderable: 1
-                                },
-                                required: true
-                })]})
-                .then(order_lines => {
-                     if (order_lines && order_lines.length > 0) {
-                        let actions = [];
-                        order_lines.forEach(line => {
-                            actions.push(
-                                demand_order_line(
-                                    line.line_id,
-                                    req.user.user_id
-                                )
-                            );
-                        });
-                        Promise.allSettled(actions)
-                        .then(results => {
-                            if (fn.promise_results(results)) {
-                                res.send({result: true, message: order_lines.length + ' lines added to demand'});
-                            } else fn.send_err(new Error('Some lines failed', res));
-                        })
-                        .catch(err => fn.send_error(err, res));
-                    } else {
-                        res.send({result: true, message: 'No order lines to demand'})
-                    };
+        fn.getAllWhere(
+            m.order_lines,
+            {
+                _status:        'Open',
+                demand_line_id: null
+            },{
+                nullOK:     true,
+                attributes: ['line_id'],
+                include: [
+                    inc.sizes({
+                        where: {
+                            supplier_id: req.body.supplier_id,
+                            _orderable: 1
+                        },
+                        required: true
+        })]})
+        .then(order_lines => {
+            if (order_lines && order_lines.length > 0) {
+                let actions = [];
+                order_lines.forEach(line => {
+                    actions.push(
+                        demand_order_line(
+                            line.line_id,
+                            req.user.user_id
+                        )
+                    );
+                });
+                Promise.allSettled(actions)
+                .then(results => {
+                    if (fn.promise_results(results)) {
+                        res.send({result: true, message: order_lines.length + ' lines added to demand'});
+                    } else fn.send_err(new Error('Some lines failed', res));
                 })
                 .catch(err => fn.send_error(err, res));
             } else {
-                fn.send_error('Demands are not raised for this supplier', res);
+                res.send({result: true, message: 'No order lines to demand'})
             };
         })
         .catch(err => fn.send_error(err, res));
@@ -191,7 +180,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     fn.update(
                         m.order_lines,
                         {_status: 'Open'},
-                        {order_id: req.params.id}
+                        {
+                            order_id: req.params.id,
+                            _status: 'Pending'
+                        }
                     )
                 );
                 Promise.allSettled(actions)
@@ -240,8 +232,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             req.user.user_id
                         )
                     );
-                } 
-                else if (line._status === 'Issue')   {
+                } else if (line._status === 'Issue')   {
                     line.offset = issues();
                     actions.push(
                         issue_order_line(
@@ -313,6 +304,51 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.send_error(err, res));
     });
+
+    //DELETE
+    app.delete('/stores/orders/:id',      isLoggedIn, allowed('order_delete',       {send: true}),              (req, res) => {
+        fn.delete(
+            m.order_lines,
+            {order_id: req.params.id},
+            true
+        )
+        .then(result => {
+            fn.delete(
+                m.orders,
+                {order_id: req.params.id}
+            )
+            .then(result => res.send({result: true, message: 'Order deleted'}))
+            .catch(err => fn.send_error(err, res));
+        })
+        .catch(err => fn.send_error(err, res));
+    });
+    app.delete('/stores/order_lines/:id', isLoggedIn, allowed('order_line_delete',  {send: true}),              (req, res) => {
+        fn.getOne(
+            m.order_lines,
+            {line_id: req.params.id}
+        )
+        .then(line => {
+            fn.update(
+                m.order_lines,
+                {_status: 'Cancelled'},
+                {line_id: req.params.id}
+            )
+            .then(result => {
+                fn.createNote({
+                    table:   'orders',
+                    note:    'Line ' + req.params.id + ' cancelled',
+                    id:      line.order_id,
+                    user_id: req.user.user_id,
+                    system:  true
+                })
+                .then(result => res.send({result: true, message: 'Line cancelled'}))
+                .catch(err => fn.send_error(err, res));
+            })
+            .catch(err => fn.send_error(err, res));
+        })
+        .catch(err => fn.send_error(err, res));
+    });
+    
     function demand_order_line (line_id, user_id) {
         return new Promise((resolve, reject) => {
             fn.getOne(
@@ -453,20 +489,4 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => reject(err));
         });
     };
-
-    //DELETE
-    app.delete('/stores/orders/:id',      isLoggedIn, allowed('order_delete',       {send: true}),              (req, res) => {
-        if (req.query.user) {
-            fn.delete(
-                'orders',
-                {order_id: req.params.id},
-                {hasLines: true}
-            )
-            .then(result => {
-                req.flash(result.success, result.message);
-                res.redirect('/stores/orders');
-            })
-            .catch(err => fn.error(err, '/stores/issues', req, res));
-        };
-    });
 };

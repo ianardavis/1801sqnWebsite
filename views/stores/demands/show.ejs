@@ -18,33 +18,40 @@
                 Options
                 </a>
                 <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-					<% if (demand._filename) { %>
-						<a class='dropdown-item' href='/stores/demands/<%= demand.demand_id %>/download'>
+					<% if (demand._complete && demand._filename) { %>
+						<a class='dropdown-item' href='javascript:download_file("<%= demand._filename %>")'>
 							Download
 						</a>
 						<div class="dropdown-divider"></div>
 					<% } %>
-					<% if (permissions.demand_edit && !demand._complete && !demand._closed) { %>
-						<!-- ////////////////////////////////// -->
-						<a class="dropdown-item" href='#'>
-							Complete
-						</a>
-					<% } %>
-					<% if (permissions.demand_line_add && !demand._complete && !demand._closed) { %>
-						<!-- ////////////////////////////////// -->
-						<a class="dropdown-item" href='javascript:addSize("demand",<%= demand.demand_id %>,"supplier_id=<%= demand.supplier_id%>")'>
-							Add Item
-						</a>
-					<% } %>
-					<div class="dropdown-divider"></div>
-					<% if (permissions.demand_delete && !demand._complete && !demand._closed) { %>
-						<form id='deleteForm'>
-							<button class='dropdown-item dropdown_button confirm'>
-								Delete
-							</button>
-						</form>
+					<% if (!demand._complete && !demand._closed) { %>
+						<% if (permissions.demand_edit) { %>
+							<!-- ////////////////////////////////// -->
+							<form id='completeForm'>
+								<button class='dropdown-item dropdown_button confirm'>
+									Complete
+								</button>
+							</form>
+						<% } %>
+						<% if (permissions.demand_line_add) { %>
+							<!-- ////////////////////////////////// -->
+							<a class="dropdown-item" href='javascript:addSize("demand",<%= demand.demand_id %>,"supplier_id=<%= demand.supplier_id %>")'>
+								Add Item
+							</a>
+						<% } %>
+						<div class="dropdown-divider"></div>
+						<% if (permissions.demand_delete) { %>
+							<form id='deleteForm'>
+								<button class='dropdown-item dropdown_button confirm'>
+									Delete
+								</button>
+							</form>
+						<% }; %>
+					<% } else if (demand._complete && !demand._closed && permissions.demand_line_edit) { %> %>
+						<button form='actionForm' class='dropdown-item dropdown_button confirm'>
+							Action Selected Lines
+						</button>
 					<% }; %>
-					
                 </div>
             </li>
 		</ul>
@@ -107,27 +114,21 @@
 					</div>
 					<p class="form-control"><% if (demand._complete) { %>Yes<% } else { %>No<% } %></p>
 				</div>
+				<div class="input-group mb-1">
+					<div class="input-group-prepend w-20">
+						<span class="input-group-text w-100">Filename</span>
+					</div>
+					<p class="form-control"><%= demand._filename %></p>
+				</div>
 			</div>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
-				<% if (demand._complete && !demand._closed) { %>
-				<form action='/stores/demands/<%= demand.demand_id %>?_method=PUT' method='POST'>
-					<div class="input-group mb-1">
-						<select class="custom-select" name='action'>
-							<option value="receive">Receive Selected Lines</option>
-							<option value="cancel">Cancel Selected Lines</option>
-						</select>
-						<div class="input-group-append w-25">
-							<button class="btn btn-success w-100 confirm" type="button">Go</button>
-						</div>
-					</div>
-				<% } %>
 				<div class="input-group mb-2">
 					<div class="input-group-prepend w-20">
 						<label class="input-group-text w-100" for="sel_status">Status</label>
 					</div>
-					<select class="custom-select" id='sel_status' onchange='getLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= demand._closed %>, <%= permissions.demand_line_delete %>)'>
+					<select class="custom-select" id='sel_status' onchange='getLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= permissions.demand_line_delete %>)'>
 						<option value='All' selected>All</option>
 						<option value='Pending'>Pending</option>
 						<option value='Received'>Received</option>
@@ -137,19 +138,28 @@
 				<div id='spn_demands' class="spinner-border text-primary" role="status">
 					<span class="sr-only">Loading...</span>
 				</div>
+				<% if (permissions.demand_line_edit && demand._complete && !demand._closed) { %>
+					<form id='actionForm'>
+				<% } %>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
-						<% if (demand._complete && !demand._closed) { %><th class="w-5"></th><% } %>
-						<th class='w-30' onclick="sortTable(0, 'demandTable')">Item</th>
-						<th class='w-30' onclick="sortTable(1, 'demandTable')">Size</th>
-						<th class='w-10' onclick="sortTable(2, 'demandTable')">Qty</th>
-						<th class='w-30' onclick="sortTable(3, 'demandTable')">Status</th>
-						<% if (permissions.demand_line_delete) { %><th><i class="fas fa-trash-alt"></i></th><% } %>
+						<th class="w-5" onclick="sortTable(0, 'demandTable')">Line</th>
+						<th class='w-25' onclick="sortTable(1, 'demandTable')">Item</th>
+						<th class='w-30' onclick="sortTable(2, 'demandTable')">Size</th>
+						<th class='w-10' onclick="sortTable(3, 'demandTable')">Qty</th>
+						<th class='w-<% if (demand._complete) { %>15<% } else { %>30<% } %>' onclick="sortTable(4, 'demandTable')">Status</th>
+						<% if (demand._complete) { %> 
+							<th class='w-15' onclick="sortTable(4, 'demandTable')">Received</th>
+						<% } else { %>
+							<% if (permissions.demand_line_delete) { %><th><i class="fas fa-trash-alt"></i></th><% } %>
+						<% } %>
 					</thead>
 					<tbody id='demandTable'>
 					</tbody>
 				</table>
-				<% if (demand._complete && !demand._closed) { %></form><% } %>
+				<% if (permissions.demand_line_edit && demand._complete && !demand._closed) { %>
+				</form>
+				<% } %>
 			</div>
 		</div>
 		<% include ../../partials/noteTable %>
@@ -161,11 +171,19 @@
 <script src="/js/specific/demands_show.js"></script>
 <script>
     window.addEventListener( "load", function () {
-		<% if (permissions.demand_delete && !demand._complete && !demand._closed) { %>
-			addFormListener('deleteForm', 'DELETE', '/stores/demands/<%= demand.demand_id %>', {redirect: '/stores/demands'})
+		<% if (!demand._complete && !demand._closed) { %>
+			<% if (permissions.demand_edit) { %>
+				addFormListener('completeForm', 'PUT', '/stores/demands/<%= demand.demand_id %>', {reload: true})
+			<% } %>
+			<% if (permissions.demand_delete) { %>
+				addFormListener('deleteForm', 'DELETE', '/stores/demands/<%= demand.demand_id %>', {redirect: '/stores/demands'})
+			<% } %>
+		<% } %>
+		<% if (permissions.demand_line_edit && demand._complete && !demand._closed) { %>
+			addFormListener('actionForm', 'PUT', '/stores/demand_lines/<%= demand.demand_id %>',{reload: true});
 		<% } %>
     });
 	showTab('<%= show_tab %>');
 </script>
-<script async>getLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= demand._closed %>, <%= permissions.demand_line_delete %>)</script>
+<script async>getLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= permissions.demand_line_delete %>)</script>
 <% include ../../partials/foot/htmlClose %>

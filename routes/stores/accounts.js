@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //NEW
-    app.get('/stores/accounts/new', isLoggedIn, allowed('account_add'), (req, res) => {
+    app.get('/stores/accounts/new',      isLoggedIn, allowed('account_add'),                  (req, res) => {
         fn.getAllWhere(
             m.users,
             {
@@ -14,7 +14,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //SHOW
-    app.get('/stores/accounts/:id', isLoggedIn, allowed('access_accounts'), (req, res) => {
+    app.get('/stores/accounts/:id',      isLoggedIn, allowed('access_accounts'),              (req, res) => {
         fn.getOne(
             m.accounts,
             {account_id: req.params.id},
@@ -32,7 +32,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //EDIT
-    app.get('/stores/accounts/:id/edit', isLoggedIn, allowed('account_edit'), (req, res) => {
+    app.get('/stores/accounts/:id/edit', isLoggedIn, allowed('account_edit'),                 (req, res) => {
         fn.getOne(
             m.accounts,
             {account_id: req.params.id},
@@ -59,7 +59,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/accounts', isLoggedIn, allowed('account_add', {send: true}), (req, res) => {
+    app.post('/stores/accounts',         isLoggedIn, allowed('account_add',    {send: true}), (req, res) => {
         fn.create(
             m.accounts,
             req.body.account
@@ -69,7 +69,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //PUT
-    app.put('/stores/accounts/:id', isLoggedIn, allowed('account_edit', {send: true}), (req, res) => {
+    app.put('/stores/accounts/:id',      isLoggedIn, allowed('account_edit',   {send: true}), (req, res) => {
         fn.update(
             m.accounts,
             req.body.account,
@@ -80,9 +80,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //DELETE
-    app.delete('/stores/accounts/:id', isLoggedIn, allowed('account_delete', {send: true}), (req, res) => {
+    app.delete('/stores/accounts/:id',   isLoggedIn, allowed('account_delete', {send: true}), (req, res) => {
         fn.delete(
-            'accounts',
+            m.accounts,
             {account_id: req.params.id}
         )
         .then(result => {

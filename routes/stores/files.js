@@ -1,7 +1,7 @@
 const fs = require('fs');
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //EDIT
-    app.get('/stores/files/:id/edit', isLoggedIn, allowed('file_edit'), (req, res) => {
+    app.get('/stores/files/:id/edit', isLoggedIn, allowed('file_edit'),                 (req, res) => {
         fn.getOne(
             m.files,
             {file_id: req.params.id}
@@ -14,7 +14,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     
     //PUT
-    app.put('/stores/files/:id', isLoggedIn, allowed('file_edit', {send: true}), (req, res) => {
+    app.put('/stores/files/:id',      isLoggedIn, allowed('file_edit',   {send: true}), (req, res) => {
         fn.update(
             m.files,
             req.body.file,
@@ -25,7 +25,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     
     //POST
-    app.post('/stores/files', isLoggedIn, allowed('file_add', {send: true}), (req, res) => {
+    app.post('/stores/files',         isLoggedIn, allowed('file_add',    {send: true}), (req, res) => {
         if (!req.files || Object.keys(req.files).length !== 1) fn.send_error('No file or multiple files selected', res)
         else {
             let uploaded = req.files.demandfile;
@@ -57,14 +57,14 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //DELETE
-    app.delete('/stores/files/:id', isLoggedIn, allowed('file_delete', {send: true}), (req, res) => {
+    app.delete('/stores/files/:id',   isLoggedIn, allowed('file_delete', {send: true}), (req, res) => {
         fn.getOne(
             m.files,
             {file_id: req.params.id}
         )
         .then(file => {
             fn.delete(
-                'files',
+                m.files,
                 {file_id: req.params.id}
             )
             .then(result => {

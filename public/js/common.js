@@ -103,7 +103,7 @@ function edit(table, id, options = {}) {
   if (options.height) height   = options.height;
   if (options.width) width     = options.width;
   editWindow = window.open('/stores/' + table + '/' + id + '/edit?' + queries,
-                          table + '_edit',
+                          table + '_edit_' + id,
                           'width=' + width + ',height=' + height + ',resizeable=no,location=no');
 };
 function show(table, id, options = {}) {
@@ -112,7 +112,7 @@ function show(table, id, options = {}) {
   if (options.height) height   = options.height;
   if (options.width) width     = options.width;
   showWindow = window.open('/stores/' + table + '/' + id + '?' + queries,
-                          table + '_show',
+                          table + '_show_' + id,
                           'width=' + width + ',height=' + height + ',resizeable=no,location=no');
 };
 

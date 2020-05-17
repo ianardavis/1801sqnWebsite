@@ -1,6 +1,6 @@
 module.exports = (app, fn, inc, isLoggedIn, m) => {
     //Display Items
-    app.get('/stores/itemSearch', isLoggedIn, (req, res) => {
+    app.get('/stores/itemSearch',       isLoggedIn, (req, res) => {
         let supplier_id = Number(req.query.supplier_id) || -1,
 			callType    = req.query.callType || 'issue',
             include		= [];
@@ -58,7 +58,7 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores', req, res));
     });
     //Display Sizes
-    app.post('/stores/itemSearch', isLoggedIn, (req, res) => {
+    app.post('/stores/itemSearch',      isLoggedIn, (req, res) => {
         let callType = req.body.callType || 'issue';
         if (req.body.item_id) {
             let search  = {item_id: req.body.item_id},

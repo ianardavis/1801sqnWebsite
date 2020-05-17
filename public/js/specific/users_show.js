@@ -78,7 +78,7 @@ function getOrders(user_id) {
     XHR.open('GET', '/stores/getorderlines/' + user_id + '?' + query.join('&'));
     XHR.send();
 };
-function getIssues(user_id) {
+function getIssues(user_id, return_permission) {
     let spn_issues = document.querySelector('#spn_issues');
     spn_issues.style.display = 'block';
     const XHR = new XMLHttpRequest();
@@ -99,12 +99,25 @@ function getIssues(user_id) {
                     cell6 = row.insertCell(-1);
                 cell1.dataset.sort = new Date(line.issue._date).getTime();
                 cell1.innerText = new Date(line.issue._date).toDateString();
-                if (line.stock) {
-                    cell2.innerText = line.stock.size.item._description;
-                    cell3.innerText = line.stock.size._size;
+                if (line.size) {
+                    cell2.innerText = line.size.item._description;
+                    cell2.append(link('/stores/items/' + line.size.item_id));
+                    cell3.innerText = line.size._size;
+                    cell3.append(link('/stores/sizes/' + line.size.size_id));
                 };
                 cell4.innerText = line._qty;
-                cell5.innerText = 'location';
+                if (line.return) {
+                    cell5.innerText = line.return.stock.location._location;
+                } else if (return_permission) {
+                    let select = _select({
+                        name: 'returns[line_id' + line.line_id + '][stock_id]'
+                    });
+                    select.appendChild(_option('', '... Select Location'))
+                    line.size.stocks.forEach(stock => {
+                        select.appendChild(_option(stock.stock_id, stock.location._location))
+                    });
+                    cell5.appendChild(select);
+                };
                 cell6.appendChild(link('/stores/issues/' + line.issue_id, false));
             });
         } else alert('Error: ' + response.error)
@@ -114,7 +127,7 @@ function getIssues(user_id) {
     let sel_issues = document.querySelector('#sel_issues'),
         query = [];
     // if (sel_issues.value !== 'All') query.push('_status=' + sel_issues.value);
-    XHR.open('GET', '/stores/getissuelinesbyuser/' + user_id + '?' + query.join('&'));
+    XHR.open('GET', '/stores/getissuelines/' + user_id + '?' + query.join('&'));
     XHR.send();
 };
 function getPermissions(user_id) {

@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //NEW
-    app.get('/stores/sizes/new', isLoggedIn, allowed('size_add'), (req, res) => {
+    app.get('/stores/sizes/new',         isLoggedIn, allowed('size_add'),                   (req, res) => {
         fn.getOne(m.items, {item_id: req.query.item_id})
         .then(item => {
             fn.getAll(m.suppliers)
@@ -28,7 +28,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.send_error(err, res));
     });
     //SHOW
-    app.get('/stores/sizes/:id', isLoggedIn, allowed('access_sizes'), (req, res) => {
+    app.get('/stores/sizes/:id',         isLoggedIn, allowed('access_sizes'),               (req, res) => {
         fn.getOne(
             m.sizes,
             {size_id: req.params.id},
@@ -46,7 +46,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
     //EDIT
-    app.get('/stores/sizes/:id/edit', isLoggedIn, allowed('size_edit'), (req, res) => {
+    app.get('/stores/sizes/:id/edit',    isLoggedIn, allowed('size_edit'),                  (req, res) => {
         fn.getOne(
             m.sizes,
             {size_id: req.params.id},
@@ -68,7 +68,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //ASYNC GET SIZES
-    app.get('/stores/getsize/:id', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
+    app.get('/stores/getsize/:id',       isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
         fn.getOne(
             m.sizes,
             {size_id: req.params.id},
@@ -80,7 +80,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(size => res.send({result: true, size: size}))
         .catch(err => fn.send_error(err, res));
     });
-    app.get('/stores/getsizes', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
+    app.get('/stores/getsizes',          isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.sizes,
             req.query,
@@ -94,7 +94,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/sizes', isLoggedIn, allowed('size_add', {send: true}), (req, res) => {
+    app.post('/stores/sizes',            isLoggedIn, allowed('size_add',     {send: true}), (req, res) => {
         if (req.body.sizes) {
             let lines = [];
             req.body.sizes.forEach(size => {
@@ -120,7 +120,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //PUT
-    app.put('/stores/sizes/:id', isLoggedIn, allowed('size_edit', {send: true}), (req, res) => {     
+    app.put('/stores/sizes/:id',         isLoggedIn, allowed('size_edit',    {send: true}), (req, res) => {     
         fn.update(
             m.sizes,
             req.body.size,
@@ -131,7 +131,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //DELETE
-    app.delete('/stores/sizes/:id', isLoggedIn, allowed('size_delete', {send: true}), (req, res) => {
+    app.delete('/stores/sizes/:id',      isLoggedIn, allowed('size_delete',  {send: true}), (req, res) => {
         fn.getOne(
             m.stock,
             {size_id: req.params.id},
@@ -149,7 +149,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     if (nsn) fn.send_error('Cannot delete a size whilst it has NSNs assigned', res)
                     else {
                         fn.delete(
-                            'sizes',
+                            m.sizes,
                             {size_id: req.params.id}
                         )
                         .then(result => res.send({result: true, message: 'Size deleted'}))

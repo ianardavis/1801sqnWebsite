@@ -116,8 +116,9 @@ db.demands.belongsTo(db.suppliers,  {foreignKey: 'supplier_id', sourceKey: 'supp
 db.demands.hasOne(db.users,         {foreignKey: 'user_id',     sourceKey: 'user_id',     constraints: false});
 db.demands.hasMany(db.demand_lines, {foreignKey: 'demand_id',   targetKey: 'demand_id',                           as: 'lines'});
 
-db.demand_lines.hasOne(db.users,        {foreignKey: 'user_id',        sourceKey: 'user_id', constraints: false});
-db.demand_lines.hasOne(db.sizes,        {foreignKey: 'size_id',        sourceKey: 'size_id', constraints: false});
+db.demand_lines.hasOne(db.users,        {foreignKey: 'user_id',        sourceKey: 'user_id',         constraints: false});
+db.demand_lines.hasOne(db.receipt_lines,{foreignKey: 'line_id',        sourceKey: 'receipt_line_id', constraints: false});
+db.demand_lines.hasOne(db.sizes,        {foreignKey: 'size_id',        sourceKey: 'size_id',         constraints: false});
 db.demand_lines.belongsTo(db.demands,   {foreignKey: 'demand_id',      targetKey: 'demand_id'});
 db.demand_lines.hasMany(db.order_lines, {foreignKey: 'demand_line_id', targetKey: 'line_id'});
 

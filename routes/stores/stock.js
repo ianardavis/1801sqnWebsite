@@ -1,6 +1,6 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //NEW
-    app.get('/stores/stock/new', isLoggedIn, allowed('stock_add'), (req, res) => {
+    app.get('/stores/stock/new',      isLoggedIn, allowed('stock_add'),                  (req, res) => {
         fn.getOne(
             m.sizes,
             {size_id: req.query.size_id},
@@ -10,7 +10,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //SHOW
-    app.get('/stores/stock/:id', isLoggedIn, allowed('access_stock'), (req, res) => {
+    app.get('/stores/stock/:id',      isLoggedIn, allowed('access_stock'),               (req, res) => {
         fn.getOne(
             m.stock,
             {stock_id: req.params.id},
@@ -28,7 +28,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //EDIT
-    app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'), (req, res) => {
+    app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'),                 (req, res) => {
         fn.getOne(
             m.stock,
             {stock_id: req.params.id},
@@ -38,7 +38,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //ASYNC GET
-    app.get('/stores/getstock', isLoggedIn, allowed('access_stock', {send: true}), (req, res) => {
+    app.get('/stores/getstock',       isLoggedIn, allowed('access_stock', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.stock,
             req.query,
@@ -49,7 +49,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     
     //POST
-    app.post('/stores/stock', isLoggedIn, allowed('stock_add', {send: true}), (req, res) => {
+    app.post('/stores/stock',         isLoggedIn, allowed('stock_add',    {send: true}), (req, res) => {
         fn.getOne(
             m.locations,
             {_location: req.body.location},
@@ -77,7 +77,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     };
 
     //PUT
-    app.put('/stores/stock/:id', isLoggedIn, allowed('stock_edit', {send: true}), (req, res) => {
+    app.put('/stores/stock/:id',      isLoggedIn, allowed('stock_edit',   {send: true}), (req, res) => {
         fn.getOne(
             m.stock,
             {stock_id: req.params.id}
@@ -108,18 +108,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.send_error(err, res));
         
     });
-    function updateStockLocation(location_id, stock_id, res) {
-        fn.update(
-            m.stock,
-            {location_id: location_id},
-            {stock_id: stock_id}
-        )
-        .then(result => res.send({result: true, message: 'Stock saved'}))
-        .catch(err => fn.send_error(err, res));
-    };
 
     //DELETE
-    app.delete('/stores/stock/:id', isLoggedIn, allowed('stock_delete', {send: true}), (req, res) => {
+    app.delete('/stores/stock/:id',   isLoggedIn, allowed('stock_delete', {send: true}), (req, res) => {
         fn.getOne(
             m.stock,
             {stock_id: req.params.id}
@@ -127,7 +118,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(stock => {
             if (stock._qty === 0) {
                 fn.delete(
-                    'stock',
+                    m.stock,
                     {stock_id: req.params.id}
                 )
                 .then(result => {
@@ -139,4 +130,14 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.send_error(err, res));
     });
+    
+    function updateStockLocation(location_id, stock_id, res) {
+        fn.update(
+            m.stock,
+            {location_id: location_id},
+            {stock_id: stock_id}
+        )
+        .then(result => res.send({result: true, message: 'Stock saved'}))
+        .catch(err => fn.send_error(err, res));
+    };
 };

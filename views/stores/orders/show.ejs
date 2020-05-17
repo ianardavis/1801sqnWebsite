@@ -36,7 +36,7 @@
 								</button>
 							</form>
 						<% }; %>
-					<% } else if (permissions.order_line_edit &&order._complete && !order._closed) { %> %>
+					<% } else if (permissions.order_line_edit && order._complete && !order._closed) { %> %>
 						<button form='actionForm' class='dropdown-item dropdown_button confirm'>
 							Action Selected Lines
 						</button>
@@ -117,9 +117,6 @@
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
-				<% if (permissions.order_edit && order._complete && !order._closed) { %>
-					<form id='actionForm'>
-				<% } %>
 				<div class="input-group mb-2">
 					<div class="input-group-prepend w-20">
 						<label class="input-group-text w-100" for="sel_status">Status</label>
@@ -134,6 +131,9 @@
 				<div id='spn_orders' class="spinner-border text-primary" role="status">
 					<span class="sr-only">Loading...</span>
 				</div>
+				<% if (permissions.order_line_edit && order._complete && !order._closed) { %>
+					<form id='actionForm'>
+				<% } %>
 				<table class='table table-sm table-hover mx-auto w-100'>
 					<thead class='thead-dark'>
 						<th class='w-5'  onclick='sortTable(0, "orderTable")'>ID</th>
@@ -153,7 +153,7 @@
 					<tbody id='orderTable'>
 					</tbody>
 				</table>
-				<% if (permissions.order_edit && !order._complete) { %>
+				<% if (permissions.order_line_edit && !order._complete) { %>
 				</form>
 				<% } %>
 			</div>
@@ -166,14 +166,16 @@
 <script src="/js/addSize.js"></script>
 <script>
     window.addEventListener( "load", function () {
-		<% if (permissions.order_delete && !order._complete && !order._closed) { %>
-			addFormListener('deleteForm', 'DELETE', '/stores/orders/<%= order.order_id %>',{redirect: '/stores/orders'});
+		<% if (!order._complete && !order._closed) { %>
+			<% if (permissions.order_delete) { %>
+				addFormListener('deleteForm', 'DELETE', '/stores/orders/<%= order.order_id %>',{redirect: '/stores/orders'});
+			<% } %>
+			<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for))) { %>
+				addFormListener('completeForm', 'PUT', '/stores/orders/<%= order.order_id %>', {reload: true});
+			<% } %>
 		<% } %>
 		<% if (permissions.order_line_edit && order._complete && !order._closed) { %>
 			addFormListener('actionForm', 'PUT', '/stores/order_lines/<%= order.order_id %>',{reload: true});
-		<% } %>
-		<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for)) && !order._complete && !order._closed) { %>
-			addFormListener('completeForm', 'PUT', '/stores/orders/<%= order.order_id %>', {reload: true});
 		<% } %>
     });
     showTab('<%= show_tab %>');

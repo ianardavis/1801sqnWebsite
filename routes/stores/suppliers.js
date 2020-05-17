@@ -1,15 +1,15 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/suppliers', isLoggedIn, allowed('access_suppliers'), (req, res) => {
+    app.get('/stores/suppliers',             isLoggedIn, allowed('access_suppliers'),               (req, res) => {
         fn.getSetting({setting: 'default_supplier', default: -1})
         .then(defaultSupplier => res.render('stores/suppliers/index', {_default: defaultSupplier}))
         .catch(err => fn.error(err, '/stores', req, res));
     });
     //NEW
-    app.get('/stores/suppliers/new', isLoggedIn, allowed('supplier_add'), (req, res) => res.render('stores/suppliers/new'));
+    app.get('/stores/suppliers/new',         isLoggedIn, allowed('supplier_add'), (req, res) => res.render('stores/suppliers/new'));
     //SHOW
-    app.get('/stores/suppliers/:id', isLoggedIn, allowed('access_suppliers'), (req, res) => {
+    app.get('/stores/suppliers/:id',         isLoggedIn, allowed('access_suppliers'),               (req, res) => {
         fn.getOne(
             m.suppliers,
             {supplier_id: req.params.id},
@@ -33,7 +33,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/suppliers', req, res));
     });
     //EDIT
-    app.get('/stores/suppliers/:id/edit', isLoggedIn, allowed('supplier_edit'), (req, res) => {
+    app.get('/stores/suppliers/:id/edit',    isLoggedIn, allowed('supplier_edit'),                  (req, res) => {
         fn.getSetting({setting: 'default_supplier', default: -1})
         .then(defaultSupplier => {
             fn.getAll(m.accounts)
@@ -50,7 +50,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         });
     });
     //ASYNC GET
-    app.get('/stores/getsuppliers', isLoggedIn, allowed('access_suppliers', {send: true}), (req, res) => {
+    app.get('/stores/getsuppliers',          isLoggedIn, allowed('access_suppliers', {send: true}), (req, res) => {
         fn.getAll(
             m.suppliers,
             [m.sizes]
@@ -60,7 +60,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/suppliers', isLoggedIn, allowed('supplier_add', {send: true}), (req, res) => {
+    app.post('/stores/suppliers',            isLoggedIn, allowed('supplier_add',     {send: true}), (req, res) => {
         if (!req.body.supplier._stores) {req.body.supplier._stores = 0};
         fn.create(
             m.suppliers,
@@ -72,17 +72,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.send_error(err, res));
     });
-    function setDefault (supplier_id, res) {
-        fn.editSetting('default_supplier', supplier_id)
-        .then(result => {
-            if (result) res.send({result: true, message: 'Default supplier updated'})
-            else res.send({result: true, message: 'Default supplier NOT updated'});
-        })
-        .catch(err => fn.send_error(err,message, res));
-    };
 
     //PUT
-    app.put('/stores/suppliers/:id/default', isLoggedIn, allowed('supplier_edit', {send: true}), (req, res) => {
+    app.put('/stores/suppliers/:id/default', isLoggedIn, allowed('supplier_edit',    {send: true}), (req, res) => {
         fn.getOne(
             m.suppliers,
             {supplier_id: req.params.id}
@@ -97,7 +89,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.send_error(err, res));
     });
-    app.put('/stores/suppliers/:id', isLoggedIn, allowed('supplier_edit', {send: true}), (req, res) => {
+    app.put('/stores/suppliers/:id',         isLoggedIn, allowed('supplier_edit',    {send: true}), (req, res) => {
         if (req.body.supplier.account_id === '') {req.body.supplier.account_id = null};
         fn.update(
             m.suppliers,
@@ -109,10 +101,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //DELETE
-    app.delete('/stores/suppliers/:id', isLoggedIn, allowed('supplier_delete', {send: true}), (req, res) => {
+    app.delete('/stores/suppliers/:id',      isLoggedIn, allowed('supplier_delete',  {send: true}), (req, res) => {
         if (req.params.id !== '1' && req.params.id !== '2') {
             fn.delete(
-                'suppliers',
+                m.suppliers,
                 {supplier_id: req.params.id}
             )
             .then(result => {
@@ -127,4 +119,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => fn.send_error(err,message, res));
         } else fn.send_error('This supplier can not be deleted!', res);
     });
+
+    function setDefault (supplier_id, res) {
+        fn.editSetting('default_supplier', supplier_id)
+        .then(result => {
+            if (result) res.send({result: true, message: 'Default supplier updated'})
+            else res.send({result: true, message: 'Default supplier NOT updated'});
+        })
+        .catch(err => fn.send_error(err,message, res));
+    };
 };

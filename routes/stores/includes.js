@@ -1,13 +1,15 @@
 module.exports = (inc, m) => {
     inc.users = (options = {}) => {
-        let include = options.include || [m.ranks];
+        let include = []
+        if (options.include) options.include;
+        include.push(m.ranks);
         return {
-            model:    m.users,
+            model:      m.users,
+            include:    include,
             attributes: options.attributes || null,
-            as:       options.as       || 'user',
-            include:  include,
-            where:    options.where    || null,
-            required: options.required || false
+            as:         options.as         || 'user',
+            where:      options.where      || null,
+            required:   options.required   || false
         };
     };
     inc.stock = (options = {}) => {
@@ -111,9 +113,32 @@ module.exports = (inc, m) => {
             where:    options.where    || null
         };
     };
+    inc.accounts = (options = {}) => {
+        let include = [];
+        include.push(inc.users())
+        return {
+            model:      m.accounts,
+            include:    include,
+            attributes: options.attributes || null,
+            as:         options.as         || 'account',
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
+    inc.files = (options = {}) => {
+        return {
+            model:      m.files,
+            attributes: options.attributes || null,
+            as:         options.as         || 'file',
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
     inc.suppliers = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
+        if (options.file)    include.push(inc.files())
+        if (options.account) include.push(inc.accounts())
         return {
             model:    m.suppliers,
             attributes: options.attributes || null,

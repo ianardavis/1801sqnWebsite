@@ -123,7 +123,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         let where = {};
         where[fn.singularise(table) + '_id'] = req.params.id;
         fn.delete(
-            table,
+            m[table],
             where
         )
         .then(result => {

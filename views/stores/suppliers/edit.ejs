@@ -77,15 +77,6 @@
                 <option value="1"<% if (supplier._stores) { %> selected<% } %>>Yes</option>
             </select>
         </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Create Demand File</span>
-            </div>
-            <select class='form-control' name="supplier[_raise_demand]" required>
-                <option value="0"<% if (!supplier._raise_demand) { %> selected<% } %>>No</option>
-                <option value="1"<% if (supplier._raise_demand) { %> selected<% } %>>Yes</option>
-            </select>
-        </div>
         <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
         <a class='float-left' href='javascript:close()'>Cancel</a>
     </form>

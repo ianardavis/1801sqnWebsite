@@ -262,6 +262,33 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             };
         });
     });
+
+    //DELETE
+    app.delete('/stores/request_lines/:id', isLoggedIn, allowed('request_line_delete',  {send: true}),              (req, res) => {
+        fn.delete(
+            m.request_lines,
+            {line_id: req.params.id}
+        )
+        .then(result => res.send({result: true, message: 'Line deleted'}))
+        .catch(err => fn.send_error(err, res));
+    });
+    app.delete('/stores/requests/:id',      isLoggedIn, allowed('request_delete',       {send: true}),              (req, res) => {
+        fn.delete(
+            m.request_lines,
+            {request_id: req.params.id},
+            true
+        )
+        .then(result => {
+            fn.delete(
+                m.requests,
+                {request_id: req.params.id}
+            )
+            .then(result => res.send({result: true, message: 'Request deleted'}))
+            .catch(err => fn.send_error(err, res));
+        })
+        .catch(err => fn.send_error(err, res));
+    });
+    
     function order_request_line  (order_id, line_id, user_id) {
         return new Promise((resolve, reject) => {
             fn.getOne(
@@ -355,30 +382,4 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .catch(err => reject(err));
         });
     };
-
-    //DELETE
-    app.delete('/stores/request_lines/:id', isLoggedIn, allowed('request_line_delete',  {send: true}),              (req, res) => {
-        fn.delete(
-            'request_lines',
-            {line_id: req.params.id}
-        )
-        .then(result => res.send({result: true, message: 'Line deleted'}))
-        .catch(err => fn.send_error(err, res));
-    });
-    app.delete('/stores/requests/:id',      isLoggedIn, allowed('request_delete',       {send: true}),              (req, res) => {
-        fn.delete(
-            'request_lines',
-            {request_id: req.params.id},
-            true
-        )
-        .then(result => {
-            fn.delete(
-                'requests',
-                {request_id: req.params.id}
-            )
-            .then(result => res.send({result: true, message: 'Request deleted'}))
-            .catch(err => fn.send_error(err, res));
-        })
-        .catch(err => fn.send_error(err, res));
-    });
 };

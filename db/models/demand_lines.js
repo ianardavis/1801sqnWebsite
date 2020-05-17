@@ -31,6 +31,11 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: 'Pending',
       comment: "null"
     },
+    'receipt_line_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
     'user_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,

@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/reports', isLoggedIn, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
+    app.get('/stores/reports',     isLoggedIn, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
 
     app.get('/stores/reports/:id', isLoggedIn, allowed('access_reports'), (req, res) => {
         if (Number(req.params.id) === 1) {
@@ -91,7 +91,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
 
-    app.post('/stores/reports/3', isLoggedIn, allowed('access_reports'), (req, res) => {
+    app.post('/stores/reports/3',  isLoggedIn, allowed('access_reports'), (req, res) => {
         let selected = []
         for (let [key, line] of Object.entries(req.body.selected)) {
             if (Number(line) > 0) selected.push({size_id: key, qty: line});
@@ -113,7 +113,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
 
-    app.post('/stores/reports/5', isLoggedIn, allowed('access_reports'), (req, res) => {
+    app.post('/stores/reports/5',  isLoggedIn, allowed('access_reports'), (req, res) => {
         let actions = [];
         for (let [key, value] of Object.entries(req.body.corrections)) {
             if (value) {

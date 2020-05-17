@@ -16,17 +16,17 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         return item;
     };
     //INDEX
-    app.get('/stores/items', isLoggedIn, allowed('access_items'), (req, res) => {
+    app.get('/stores/items',          isLoggedIn, allowed('access_items'),                (req, res) => {
         fn.getOptions(itemOptions(), req)
         .then(classes => res.render('stores/items/index', {classes: classes}));
     });
     //NEW
-    app.get('/stores/items/new', isLoggedIn, allowed('item_add'), (req, res) => {
+    app.get('/stores/items/new',      isLoggedIn, allowed('item_add'),                    (req, res) => {
         fn.getOptions(itemOptions(), req)
         .then(classes => res.render('stores/items/new', {classes: classes}))
     });
     //SHOW
-    app.get('/stores/items/:id', isLoggedIn, allowed('access_items'), (req, res) => {
+    app.get('/stores/items/:id',      isLoggedIn, allowed('access_items'),                (req, res) => {
         let include = [
             m.genders, 
             m.categories, 
@@ -49,7 +49,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
     //EDIT
-    app.get('/stores/items/:id/edit', isLoggedIn, allowed('item_edit'), (req, res) => {
+    app.get('/stores/items/:id/edit', isLoggedIn, allowed('item_edit'),                   (req, res) => {
         fn.getOne(
             m.items,
             {item_id: req.params.id}
@@ -66,7 +66,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, 'stores/items/' + req.params.id, req, res));
     });
     //ASYNC GET ITEMS
-    app.get('/stores/getitems', isLoggedIn, allowed('access_issues', {send: true}), (req, res) => {
+    app.get('/stores/getitems',       isLoggedIn, allowed('access_issues', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.items,
             req.query
@@ -76,7 +76,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/items', isLoggedIn, allowed('item_add', {send: true}), (req, res) => {
+    app.post('/stores/items',         isLoggedIn, allowed('item_add',      {send: true}), (req, res) => {
         req.body.item = nullify(req.body.item);
         fn.create(
             m.items,
@@ -87,7 +87,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //PUT
-    app.put('/stores/items/:id', isLoggedIn, allowed('item_edit', {send: true}), (req, res) => {
+    app.put('/stores/items/:id',      isLoggedIn, allowed('item_edit',     {send: true}), (req, res) => {
         req.body.item = nullify(req.body.item);
         fn.update(
             m.items,
@@ -99,7 +99,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //DELETE
-    app.delete('/stores/items/:id', isLoggedIn, allowed('item_delete', {send: true}), (req, res) => {
+    app.delete('/stores/items/:id',   isLoggedIn, allowed('item_delete',   {send: true}), (req, res) => {
         fn.getOne(
             m.sizes,
             {item_id: req.params.id},
@@ -108,7 +108,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(sizes => {
             if (!sizes) {
                 fn.delete(
-                    'items',
+                    m.items,
                     {item_id: req.params.id}
                 )
                 .then(result => res.send({result: true, message: 'Item deleted'}))

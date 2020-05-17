@@ -21,56 +21,55 @@
                             Edit User
                         </a>
                     <% } %>
-                    <div class="dropdown-divider"></div>
-                    <% if (permissions.user_edit || f_user.user_id === user.user_id) { %>
+                    <% if (permissions.user_edit || user.user_id === f_user.user_id) { %>
                         <a class="dropdown-item" href='javascript:changePassword(<%= f_user.user_id %>)'>
                             Change Password
                         </a>
                     <% } %>
-                    <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
-                        <form id='userDeleteForm'>
-                            <button class="dropdown-item dropdown_button confirm">
-                                Delete User
-                            </button>
-                        </form>
-                    <% } %>
-                    <div class="dropdown-divider"></div>
-                    <% if (permissions.permission_edit && f_user.user_id !== user.user_id) { %>
-                        <a class="dropdown-item" href='javascript:edit("permissions",<%= f_user.user_id %>,{"height":600})'>
-                            Edit Permissions
-                        </a>
-                    <% } %>
-                    <div class="dropdown-divider"></div>
-                    <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
-                        <form id="newRequestForm">
-                            <input type="hidden" name='requested_for' value='<%= f_user.user_id %>'>
-                            <button class='dropdown-item dropdown_button confirm'>
-                                New Request
-                            </button>
-                        </form>
-                    <% } %>
-                    <% if (user.user_id !== f_user.user_id && permissions.order_add) { %>
-                        <form id="newOrderForm">
-                            <input type="hidden" name='ordered_for' value='<%= f_user.user_id %>'>
-                            <button class='dropdown-item dropdown_button confirm'>
-                                New Order
-                            </button>
-                        </form>
-                    <% } %>
-                    <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
-                        <form id="newIssueForm">
-                            <input type="hidden" name='issued_to' value='<%= f_user.user_id %>'>
-                            <button class='dropdown-item dropdown_button confirm'>
-                                New Issue
-                            </button>
-                        </form>
-                    <% } %>
-                    <div class="dropdown-divider"></div>
                     <% if (permissions.user_edit) { %>
                         <form id='resetPasswordForm'>
                             <input type="hidden" name='user[_reset]' value='<% if (f_user._reset) { %>0<% } else{ %>1<% } %>'>
                             <button class='dropdown-item dropdown_button confirm'>
                                 Reset Password
+                            </button>
+                        </form>
+                    <% } %>
+                    <% if (user.user_id !== f_user.user_id) { %>
+                        <% if (permissions.permission_edit) { %>
+                            <a class="dropdown-item" href='javascript:edit("permissions",<%= f_user.user_id %>,{"height":600})'>
+                                Edit Permissions
+                            </a>
+                        <% } %>
+                        <% if (permissions.user_delete) { %>
+                            <form id='userDeleteForm'>
+                                <button class="dropdown-item dropdown_button confirm">
+                                    Delete User
+                                </button>
+                            </form>
+                        <% } %>
+                        <div class="dropdown-divider"></div>
+                        <% if (permissions.order_add) { %>
+                            <form id="newOrderForm">
+                                <input type="hidden" name='ordered_for' value='<%= f_user.user_id %>'>
+                                <button class='dropdown-item dropdown_button confirm'>
+                                    New Order
+                                </button>
+                            </form>
+                        <% } %>
+                        <% if (permissions.issue_add) { %>
+                            <form id="newIssueForm">
+                                <input type="hidden" name='issued_to' value='<%= f_user.user_id %>'>
+                                <button class='dropdown-item dropdown_button confirm'>
+                                    New Issue
+                                </button>
+                            </form>
+                        <% } %>
+                    <% } %>
+                    <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
+                        <form id="newRequestForm">
+                            <input type="hidden" name='requested_for' value='<%= f_user.user_id %>'>
+                            <button class='dropdown-item dropdown_button confirm'>
+                                New Request
                             </button>
                         </form>
                     <% } %>
@@ -254,15 +253,19 @@
                         <div class="input-group-prepend w-30">
                             <label class="input-group-text w-100" for="sel_issues">Returned Lines</label>
                         </div>
-                        <select class="custom-select" id='sel_issues' onchange='getIssues(<%= f_user.user_id %>)'>
-                            <option value="1" selected>Include</option>
-                            <option value="2">Exclude</option>
+                        <select class="custom-select" id='sel_issues' onchange='getIssues(<%= f_user.user_id %>, <% if (permissions.return_add) { %>1<% } else { %>0<% } %>)'>
+                            <option value="1">Include</option>
+                            <option value="2" selected>Exclude</option>
                             <option value="3">Only</option>
                         </select>
                     </div>
                     <div id='spn_issues' class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
+                    <% if (permissions.return_add && user.user_id !== f_user.user_id) { %>
+                        <form id='returnForm'>
+                            <input class="btn btn-sm btn-primary confirm mb-1" type="submit" value="Return Selected Lines">
+                    <% } %>
                     <table class='table table-sm table-hover'>
                         <thead class="thead-dark">
                             <th class="w-20" onclick="sortTable(0, 'tableIssues')">Date Due</th>
@@ -273,14 +276,9 @@
                             <th><i class="fas fa-search"></i></th>
                         </thead>
                         <tbody id="issueTable">
-                            <% if (permissions.return_add) { %>
-                                <form id='returnedLines' action="/stores/returns?src=/stores/users/<%= f_user.user_id %>" method='POST'>
-                                <input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines">
-                                <input type="hidden" name="from" value="<%= f_user.user_id %>">
-                            <% } %>
-                            <% if (permissions.return_add) { %></form><% } %>
                         </tbody>
                     </table>
+                    <% if (permissions.return_add) { %></form><% } %>
                 </div>
             </div>
         <% } %>
@@ -295,23 +293,28 @@
         <% if (permissions.user_edit) { %>
             addFormListener('resetPasswordForm', 'PUT', '/stores/users/<%= f_user.user_id %>', {reload: true});
         <% } %>
-        <% if (user.user_id !== f_user.user_id && permissions.issue_add) { %>
-            addFormListener('newIssueForm', 'POST', '/stores/issues', {reload: true});
-        <% } %>
         <% if (user.user_id === f_user.user_id || permissions.request_add) { %>
             addFormListener('newRequestForm', 'POST', '/stores/requests', {reload: true});
         <% } %>
-        <% if (user.user_id !== f_user.user_id && permissions.order_add) { %>
-            addFormListener('newOrderForm', 'POST', '/stores/orders', {reload: true});
-        <% } %>
-        <% if (user.user_id !== f_user.user_id && permissions.user_delete) { %>
-            addFormListener('userDeleteForm', 'DELETE', '/stores/users/<%= f_user.user_id %>', {redirect: '/stores/users'});
+        <% if (user.user_id !== f_user.user_id) { %>
+            <% if (permissions.return_add) { %>
+                addFormListener('returnForm', 'POST', '/stores/returns', {reload: true});
+            <% } %>
+            <% if (permissions.issue_add) { %>
+                addFormListener('newIssueForm', 'POST', '/stores/issues', {reload: true});
+            <% } %>
+            <% if (permissions.order_add) { %>
+                addFormListener('newOrderForm', 'POST', '/stores/orders', {reload: true});
+            <% } %>
+            <% if (permissions.user_delete) { %>
+                addFormListener('userDeleteForm', 'DELETE', '/stores/users/<%= f_user.user_id %>', {redirect: '/stores/users'});
+            <% } %>
         <% } %>
     });
     showTab('<%= show_tab %>');
 </script>
 <script async>getRequests(<%= f_user.user_id %>)</script>
 <script async>getOrders(<%= f_user.user_id %>)</script>
-<script async>getIssues(<%= f_user.user_id %>)</script>
+<script async>getIssues(<%= f_user.user_id %>, <% if (permissions.return_add) { %>1<% } else { %>0<% } %>)</script>
 <script async>getPermissions(<%= f_user.user_id %>)</script>
 <% include ../../partials/foot/htmlClose %>

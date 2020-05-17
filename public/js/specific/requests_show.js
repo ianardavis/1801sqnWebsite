@@ -35,22 +35,13 @@ function getLines(request_id, complete, edit_permission, delete_permission) {
                     } else {
                         cell5.id = 'action_' + line.line_id
                         cell6.id = 'details_' + line.line_id
-                        let _status   = document.createElement('select'),
-                            _approved = document.createElement('option'),
-                            _declined = document.createElement('option'),
-                            _open     = document.createElement('option');
-                        _status.classList.add('form-control', 'form-control-sm');
-                        _status.id          = 'sel_' + line.line_id;
-                        _status.name        = 'actions[line_id' + line.line_id + '][_status]';
-                        _approved.value     = 'Approved';
-                        _approved.innerText = 'Approved';
-                        _declined.value     = 'Declined';
-                        _declined.innerText = 'Declined';
-                        _open.value         = 'Open';
-                        _open.innerText     = 'Open';
-                        _status.appendChild(_open);
-                        _status.appendChild(_approved);
-                        _status.appendChild(_declined);
+                        let _status = _select({
+                                name: 'actions[line_id' + line.line_id + '][_status]',
+                                id:   'sel_' + line.line_id
+                            });
+                        _status.appendChild(_option('', 'Open'));
+                        _status.appendChild(_option('Approved', 'Approved'));
+                        _status.appendChild(_option('Declined', 'Declined'));
                         _status.addEventListener("change", function (event) {
                             if (this.value === 'Approved') showActions(line.size_id, line.line_id)
                             else {

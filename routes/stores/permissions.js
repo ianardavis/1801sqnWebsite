@@ -1,6 +1,6 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //EDIT
-    app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('permission_edit'), (req, res) => {
+    app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('permission_edit'),                  (req, res) => {
         if (Number(req.params.id) === req.user.user_id && Number(req.params.id) !== 2) {
             req.flash('danger', 'You can not edit your own permissions');
             res.redirect('/stores/users/' + req.params.id);
@@ -36,7 +36,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
     //ASYNC GET
-    app.get('/stores/getpermissions/:id', isLoggedIn, allowed('access_permissions', {send: true}), (req, res) => {
+    app.get('/stores/getpermissions/:id',   isLoggedIn, allowed('access_permissions', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.permissions,
             {user_id: req.params.id}
@@ -46,7 +46,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //PUT
-    app.put('/stores/permissions/:id', isLoggedIn, allowed('permission_edit', {send: true}), (req, res) => {
+    app.put('/stores/permissions/:id',      isLoggedIn, allowed('permission_edit',    {send: true}), (req, res) => {
         if (Number(req.params.id) !== req.user.user_id || Number(req.params.id) === 2) {
             if (Number(req.params.id) !== 1) {
                 fn.getAllWhere(
@@ -73,7 +73,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         if (req.body.permissions.filter(e => e === permission._permission).length === 0) {
                             actions.push(
                                 fn.delete(
-                                    'permissions',
+                                    m.permissions,
                                     {permission_id: permission.permission_id}
                                 )
                             );

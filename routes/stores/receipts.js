@@ -1,12 +1,12 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/receipts', isLoggedIn, allowed('access_receipts'), (req, res) => {
+    app.get('/stores/receipts',              isLoggedIn, allowed('access_receipts'),                    (req, res) => {
         fn.getAll(m.suppliers)
         .then(suppliers => res.render('stores/receipts/index', {suppliers: suppliers}))
         .catch(err => fn.error(err, '/stores', req, res));
     });
     //SHOW
-    app.get('/stores/receipts/:id', isLoggedIn, allowed('access_receipts'), (req, res) => {
+    app.get('/stores/receipts/:id',          isLoggedIn, allowed('access_receipts'),                    (req, res) => {
         fn.getOne(
             m.receipts,
             {receipt_id: req.params.id},
@@ -24,7 +24,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/receipts', req, res));
     });
     //ASYNC GET
-    app.get('/stores/getreceipts', isLoggedIn, allowed('access_receipts', {send: true}), (req, res) => {
+    app.get('/stores/getreceipts',           isLoggedIn, allowed('access_receipts',      {send: true}), (req, res) => {
         fn.getAllWhere(
             m.receipts,
             req.query,
@@ -36,7 +36,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(receipts => res.send({result: true, receipts: receipts}))
         .catch(err => fn.send_error(err, res));
     });
-    app.get('/stores/getreceiptlines', isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
+    app.get('/stores/getreceiptlines',       isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.receipt_lines,
             req.query,
@@ -64,7 +64,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     
     //POST
-    app.post('/stores/receipts', isLoggedIn, allowed('receipt_add', {send: true}), (req, res) => {
+    app.post('/stores/receipts',             isLoggedIn, allowed('receipt_add',          {send: true}), (req, res) => {
         fn.createReceipt({
             supplier_id: req.body.supplier_id,
             user_id: req.user.user_id
@@ -76,7 +76,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.send_error(err, res));
     });
-    app.post('/stores/receipt_lines/:id', isLoggedIn, allowed('receipt_line_add', {send: true}), (req, res) => {
+    app.post('/stores/receipt_lines/:id',    isLoggedIn, allowed('receipt_line_add',     {send: true}), (req, res) => {
         req.body.line.user_id    = req.user.user_id;
         req.body.line.receipt_id = req.params.id;
         fn.createReceiptLine(req.body.line)
@@ -85,16 +85,20 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     
     //DELETE
-    app.delete('/stores/receipts/:id', isLoggedIn, allowed('receipt_delete', {send: true}), (req, res) => {
+    app.delete('/stores/receipts/:id',       isLoggedIn, allowed('receipt_delete',       {send: true}), (req, res) => {
         fn.delete(
-            'receipts',
+            m.receipt_lines,
             {receipt_id: req.params.id},
-            {hasLines: true}
+            true
         )
         .then(result => {
-            req.flash(result.success, result.message);
-            res.redirect('/stores/receipts');
+            fn.delete(
+                m.receipts,
+                {receipt_id: req.params.id}
+            )
+            .then(result => res.send({result: true, message: 'Receipt deleted'}))
+            .catch(err => fn.send_error(err, res));
         })
-        .catch(err => fn.error(err, '/stores/receipts', req, res));
+        .catch(err => fn.send_error(err, res));
     });
 };

@@ -29,9 +29,9 @@ function _input (options = {}) {
     _input.type        = options.type        || 'text';
     _input.name        = options.name        || 'selected[]';
     _input.value       = options.value       || '';
-    _input.id          = options.id          || '';
-    _input.placeholder = options.placeholder || '';
     _input.required    = options.required    || true;
+    if (options.id)          _input.id          = options.id;
+    if (options.placeholder) _input.placeholder = options.placeholder;
     return _input
 };
 function checkbox (options = {}) {

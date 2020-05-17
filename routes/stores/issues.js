@@ -1,8 +1,8 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //INDEX
-    app.get('/stores/issues', isLoggedIn, allowed('access_issues'), (req, res) => res.render('stores/issues/index'));
+    app.get('/stores/issues',              isLoggedIn, allowed('access_issues'), (req, res) => res.render('stores/issues/index'));
     //SHOW
-    app.get('/stores/issues/:id', isLoggedIn, allowed('access_issues', {allow: true}), (req, res) => {
+    app.get('/stores/issues/:id',          isLoggedIn, allowed('access_issues',      {allow: true}), (req, res) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id},
@@ -26,7 +26,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //SHOW LINE
-    app.get('/stores/issue_lines/:id', isLoggedIn, allowed('access_issues', {allow: true}), (req, res) => {
+    app.get('/stores/issue_lines/:id',     isLoggedIn, allowed('access_issues',      {allow: true}), (req, res) => {
         fn.getOne(
             m.issue_lines,
             {line_id: req.params.id},
@@ -35,7 +35,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //DOWNLOAD
-    app.get('/stores/issues/:id/download', isLoggedIn, allowed('access_issues'), (req, res) => {
+    app.get('/stores/issues/:id/download', isLoggedIn, allowed('access_issues'),                     (req, res) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id}
@@ -52,7 +52,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/issues/' + req.params.id, req, res));
     });
     //ASYNC GET
-    app.get('/stores/getissues', isLoggedIn, allowed('access_issues', {send: true}), (req, res) => {
+    app.get('/stores/getissues',           isLoggedIn, allowed('access_issues',      {send: true}), (req, res) => {
         fn.getAllWhere(
             m.issues,
             req.query,
@@ -66,61 +66,54 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     //ASYNC GET
     app.get('/stores/getissuelinesbysize', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
-        fn.getAll(
+        fn.getAllWhere(
             m.issue_lines,
-            [
+            req.query,
+            {include: [
                 inc.issues(),
                 inc.users(),
-                inc.stock({
-                    as: 'stock',
-                    where: req.query,
-                    required: true})
-        ])
+                inc.stock({as: 'stock'})
+        ]})
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => fn.send_error(err, res));
     });
     //ASYNC GET
-    app.get('/stores/getissuelinesbyuser/:id', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
-        fn.getAllWhere(
+    app.get('/stores/getissuelines/:id',   isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
+        fn.getAll(
             m.issue_lines,
-            req.query,
-            {include: [
+            [
                 inc.users(),
-                inc.stock({as: 'stock', size: true}),
+                inc.sizes({stock: true}),
+                inc.stock({as: 'stock'}),
                 inc.issues({
                     where: {issued_to: req.params.id},
                     required: true
-        })]})
+        })])
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => fn.send_error(err, res));
     });
-    app.get('/stores/getissuelines', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
+    app.get('/stores/getissuelines',       isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.issue_lines,
             req.query,
             {include: [
-                m.nsns,
-                m.serials,
-                inc.sizes({
-                    include: [
-                        m.items,
-                        inc.stock()
-                ]}),
+                inc.nsns({as: 'nsn'}),
+                inc.serials({as: 'serial'}),
+                inc.users(),
+                inc.stock({as: 'stock'}),
+                inc.sizes({stock: true}),
                 inc.return_lines({
                     as: 'return',
                     include: [
                         inc.stock({as: 'stock'}),
                         inc.returns()
-                ]}),
-                inc.stock({
-                    as: 'stock'
-        })]})
+        ]})]})
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => fn.send_error(err, res));
     });
     
     //PUT
-    app.put('/stores/issues/:id', isLoggedIn, allowed('issue_edit', {send: true}), (req, res) => {
+    app.put('/stores/issues/:id',          isLoggedIn, allowed('issue_edit',         {send: true}), (req, res) => {
         if (req.body.issue) {
             fn.getOne(
                 m.issues,
@@ -143,7 +136,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/issues', isLoggedIn, allowed('issue_add', {send: true}), (req, res) => {
+    app.post('/stores/issues',             isLoggedIn, allowed('issue_add',          {send: true}), (req, res) => {
         fn.createIssue({
             issued_to: req.body.issued_to,
             user_id:   req.user.user_id,
@@ -156,7 +149,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.send_error(err, res));
     });
-    app.post('/stores/issue_lines/:id', isLoggedIn, allowed('issue_line_add', {send: true}), (req, res) => {
+    app.post('/stores/issue_lines/:id',    isLoggedIn, allowed('issue_line_add',     {send: true}), (req, res) => {
         req.body.line.user_id  = req.user.user_id;
         req.body.line.issue_id = req.params.id;
         fn.createIssueLine(req.body.line)
@@ -165,7 +158,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //DELETE
-    app.delete('/stores/issues/:id', isLoggedIn, allowed('issue_delete', {send: true}), (req, res) => {
+    app.delete('/stores/issues/:id',       isLoggedIn, allowed('issue_delete',       {send: true}), (req, res) => {
         fn.getOne(
             m.issues,
             {issue_id: req.params.id},
@@ -176,13 +169,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             else {
                 if (issue.lines.filter(e => e.return_line_id).length === 0) {
                     fn.delete(
-                        'issue_lines',
+                        m.issue_lines,
                         {issue_id: req.params.id},
                         true
                     )
                     .then(result => {
                         fn.delete(
-                            'issues',
+                            m.issues,
                             {issue_id: req.params.id}
                         )
                         .then(result => res.send({result: true, message: 'Issue deleted'}))
@@ -194,7 +187,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => fn.send_error(err, res));
     });
-    app.delete('/stores/issue_lines/:id', isLoggedIn, allowed('issue_line_delete', {send: true}), (req, res) => {
+    app.delete('/stores/issue_lines/:id',  isLoggedIn, allowed('issue_line_delete',  {send: true}), (req, res) => {
         fn.getOne(
             m.issue_lines,
             {line_id: req.params.id}
@@ -202,7 +195,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(line => {
             if (line.return_line_id) fn.send_error('Returned issue lines can not be deleted')
             else {
-                fn.delete('issue_lines', {line_id: req.params.id})
+                fn.delete(m.issue_lines, {line_id: req.params.id})
                 .then(result => res.send({result: true, message: 'Line deleted'}))
                 .catch(err => fn.send_error(err, res));
             };

@@ -1,6 +1,6 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //NEW
-    app.get('/stores/serials/new', isLoggedIn, allowed('serial_add'), (req, res) => {
+    app.get('/stores/serials/new',      isLoggedIn, allowed('serial_add'),                   (req, res) => {
         fn.getOne(
             m.sizes,
             {size_id: req.query.size_id},
@@ -10,7 +10,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/sizes/' + req.query.size_id, req, res));
     });
     //SHOW
-    app.get('/stores/serials/:id', isLoggedIn, allowed('serial_edit'), (req, res) => {
+    app.get('/stores/serials/:id',      isLoggedIn, allowed('serial_edit'),                  (req, res) => {
         fn.getOne(
             m.serials,
             {serial_id: req.params.id}
@@ -25,7 +25,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //EDIT
-    app.get('/stores/serials/:id/edit', isLoggedIn, allowed('serial_edit'), (req, res) => {
+    app.get('/stores/serials/:id/edit', isLoggedIn, allowed('serial_edit'),                  (req, res) => {
         fn.getOne(
             m.serials,
             {serial_id: req.params.id},
@@ -44,7 +44,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/items', req, res));
     });
     //ASYNC GET
-    app.get('/stores/getserials', isLoggedIn, allowed('access_serials', {send: true}), (req, res) => {
+    app.get('/stores/getserials',       isLoggedIn, allowed('access_serials', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.serials,
             req.query
@@ -54,7 +54,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/serials', isLoggedIn, allowed('serial_add', {send: true}), (req, res) => {
+    app.post('/stores/serials',         isLoggedIn, allowed('serial_add',     {send: true}), (req, res) => {
         fn.create(
             m.serials,
             req.body.serial
@@ -64,7 +64,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //PUT
-    app.put('/stores/serials/:id', isLoggedIn, allowed('serial_edit', {send: true}), (req, res) => {
+    app.put('/stores/serials/:id',      isLoggedIn, allowed('serial_edit',    {send: true}), (req, res) => {
         fn.update(
             m.serials,
             req.body.serial,
@@ -75,9 +75,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     
     //DELETE
-    app.delete('/stores/serials/:id', isLoggedIn, allowed('serial_delete', {send: true}), (req, res) => {
+    app.delete('/stores/serials/:id',   isLoggedIn, allowed('serial_delete',  {send: true}), (req, res) => {
         fn.delete(
-            'serials', 
+            m.serials, 
             {serial_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Serial deleted'}))

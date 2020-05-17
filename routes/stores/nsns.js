@@ -1,6 +1,6 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //NEW
-    app.get('/stores/nsns/new', isLoggedIn, allowed('nsn_add'), (req, res) => {
+    app.get('/stores/nsns/new',          isLoggedIn, allowed('nsn_add'),                   (req, res) => {
         fn.getOne(
             m.sizes,
             {size_id: req.query.size_id},
@@ -10,7 +10,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/stores/sizes/' + req.query.size_id, req, res));
     });
     //SHOW
-    app.get('/stores/nsns/:id', isLoggedIn, allowed('nsn_edit'), (req, res) => {
+    app.get('/stores/nsns/:id',          isLoggedIn, allowed('nsn_edit'),                  (req, res) => {
         fn.getOne(
             m.nsns,
             {nsn_id: req.params.id},
@@ -26,7 +26,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //EDIT
-    app.get('/stores/nsns/:id/edit', isLoggedIn, allowed('nsn_edit'), (req, res) => {
+    app.get('/stores/nsns/:id/edit',     isLoggedIn, allowed('nsn_edit'),                  (req, res) => {
         fn.getOne(
             m.nsns,
             {nsn_id: req.params.id},
@@ -36,7 +36,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //ASYNC GET
-    app.get('/stores/getnsns', isLoggedIn, allowed('access_nsns', {send: true}), (req, res) => {
+    app.get('/stores/getnsns',           isLoggedIn, allowed('access_nsns', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.nsns,
             req.query
@@ -55,7 +55,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     
     //POST
-    app.post('/stores/nsns', isLoggedIn, allowed('nsn_add', {send: true}), (req, res) => {
+    app.post('/stores/nsns',             isLoggedIn, allowed('nsn_add',     {send: true}), (req, res) => {
         fn.create(
             m.nsns,
             req.body.nsn
@@ -75,7 +75,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //PUT
-    app.put('/stores/nsns/:id', isLoggedIn, allowed('nsn_edit', {send: true}), (req, res) => {
+    app.put('/stores/nsns/:id',          isLoggedIn, allowed('nsn_edit',    {send: true}), (req, res) => {
         let actions = [];
         actions.push(
             fn.update(
@@ -107,9 +107,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //DELETE
-    app.delete('/stores/nsns/:id', isLoggedIn, allowed('nsn_delete', {send: true}), (req, res) => {
+    app.delete('/stores/nsns/:id',       isLoggedIn, allowed('nsn_delete',  {send: true}), (req, res) => {
         fn.delete(
-            'nsns', 
+            m.nsns, 
             {nsn_id: req.params.id}
         )
         .then(result => {

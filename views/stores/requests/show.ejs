@@ -27,25 +27,27 @@
 							Action Lines
 						</button>
 					<% } %>
-					<% if (permissions.request_edit &&!request._complete && !request._closed) { %>
-						<form id='completeForm'>
-							<button class="dropdown-item dropdown_button confirm">
-								Complete
-							</button>
-						</form>
-					<% }; %>
-					<% if (permissions.request_line_add && !request._complete && !request._closed) { %>
-						<a class="dropdown-item" href='javascript:addSize("request",<%= request.request_id %>)'>
-							Add Item
-						</a>
-					<% } %>
-					<div class="dropdown-divider"></div>
-					<% if (permissions.request_delete && !request._complete && !request._closed) { %>
-						<form id='deleteForm'>
-							<button class="dropdown-item dropdown_button confirm">
-								Delete
-							</button>
-						</form>
+					<% if (!request._complete && !request._closed) { %>
+						<% if (permissions.request_edit) { %>
+							<form id='completeForm'>
+								<button class="dropdown-item dropdown_button confirm">
+									Complete
+								</button>
+							</form>
+						<% }; %>
+						<% if (permissions.request_line_add) { %>
+							<a class="dropdown-item" href='javascript:addSize("request",<%= request.request_id %>)'>
+								Add Item
+							</a>
+						<% } %>
+						<div class="dropdown-divider"></div>
+						<% if (permissions.request_delete) { %>
+							<form id='deleteForm'>
+								<button class="dropdown-item dropdown_button confirm">
+									Delete
+								</button>
+							</form>
+						<% } %>
 					<% } %>
                 </div>
             </li>
@@ -182,11 +184,13 @@
 <script src="/js/specific/requests_show.js"></script>
 <script>
     window.addEventListener( "load", function () {
-		<% if (permissions.request_delete && !request._complete && !request._closed) { %>
-			addFormListener('deleteForm', 'DELETE', '/stores/requests/<%= request.request_id %>', {redirect: '/stores/requests'});
-		<% } %>
-		<% if (permissions.request_edit &&!request._complete && !request._closed) { %>
-    		addFormListener('completeForm', 'PUT', '/stores/requests/<%= request.request_id %>', {reload: true});
+		<% if (!request._complete && !request._closed) { %>
+			<% if (permissions.request_delete) { %>
+				addFormListener('deleteForm', 'DELETE', '/stores/requests/<%= request.request_id %>', {redirect: '/stores/requests'});
+			<% } %>
+			<% if (permissions.request_edit) { %>
+				addFormListener('completeForm', 'PUT', '/stores/requests/<%= request.request_id %>', {reload: true});
+			<% } %>
 		<% } %>
 		<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
 			addFormListener('approveForm', 'PUT', '/stores/request_lines/<%= request.request_id %>', {reload: true});

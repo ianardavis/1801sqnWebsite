@@ -16,43 +16,46 @@
                     Options
                 </a>
                 <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-                    <% if (permissions.issue_edit && !issue._complete) { %>
-                        <form id='completeForm'>
-                            <input type="hidden" name='issue[_complete]' value='1'>
-                            <button class='dropdown-item dropdown_button confirm'>
-                                Complete Issue
-                            </button>
-                        </form>
-                        <div class="dropdown-divider"></div>
-                    <% } %>
-                    <% if (!issue._complete && permissions.issue_line_add) { %>
-                        <a class='dropdown-item' href='javascript:addSize("issue",<%= issue.issue_id %>,{"height":600})'>
-                            Add Line
-                        </a>
-                        <div class="dropdown-divider"></div>
-                    <% } %>
-                    <% if (issue._complete && permissions.file_download) { %>
-                        <% if (issue._filename) { %>
-                            <a class='dropdown-item' href='javascript:download_file("<%= issue._filename %>")'>
-                                Download Loancard
-                            </a>
-                        <% } else { %>
-                            <a class='dropdown-item' href='javascript:download_file("<%= issue._filename %>")'>
-                                Generate Loancard
-                            </a>
+                    <% if (!issue._complete && !issue._closed) { %>
+                        <% if (permissions.issue_edit) { %>
+                            <form id='completeForm'>
+                                <input type="hidden" name='issue[_complete]' value='1'>
+                                <button class='dropdown-item dropdown_button confirm'>
+                                    Complete Issue
+                                </button>
+                            </form>
+                            <div class="dropdown-divider"></div>
                         <% } %>
-                        <div class="dropdown-divider"></div>
-                    <% } %>
-                    <% if (permissions.return_add && issue._complete) { %>
-                        <button class='dropdown-item dropdown_button confirm' form='issues'>Return Selected Lines</button>
-                        <div class="dropdown-divider"></div>
-                    <% } %>
-                    <% if (permissions.issue_delete && !issue._complete && !issue._closed) { %>
-                        <form id='deleteForm'>
-                            <button class='dropdown-item dropdown_button confirm'>
-                                Delete Issue
+                        <% if (permissions.issue_line_add) { %>
+                            <a class='dropdown-item' href='javascript:addSize("issue",<%= issue.issue_id %>,{"height":600})'>
+                                Add Line
+                            </a>
+                            <div class="dropdown-divider"></div>
+                        <% } %>
+                        <% if (permissions.issue_delete) { %>
+                            <form id='deleteForm'>
+                                <button class='dropdown-item dropdown_button confirm'>
+                                    Delete Issue
+                                </button>
+                            </form>
+                        <% } %>
+                    <% } else if (issue._complete) { %>
+                        <% if (permissions.file_download) { %>
+                            <% if (issue._filename) { %>
+                                <a class='dropdown-item' href='javascript:download_file("<%= issue._filename %>")'>
+                                    Download Loancard
+                                </a>
+                            <% } else { %>
+                                <a class='dropdown-item' href='javascript:download_file("<%= issue._filename %>")'>
+                                    Generate Loancard
+                                </a>
+                            <% } %>
+                        <% } %>
+                        <% if (permissions.return_line_add && !issue._closed) { %>
+                            <button class='dropdown-item dropdown_button confirm' form='returnForm'>
+                                Return Selected Lines
                             </button>
-                        </form>
+                        <% } %>
                     <% } %>
                 </div>
             </li>
@@ -132,30 +135,35 @@
         </div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
-                <% if (permissions.return_add) { %>
-                <form id='issues' action='/stores/returns?src=/stores/issues/<%= issue.issue_id %>' method='POST'>
-                    <input type='hidden' name='from' value='<%= issue.issued_to %>'>
-                <% } %>
 				<div id='spn_issues' class="spinner-border text-primary" role="status">
 					<span class="sr-only">Loading...</span>
-				</div>
-                <table class='table table-sm table-hover mx-auto w-100'>
-                    <thead class='thead-dark'>
-                        <th class='w-5' onclick='sortTable(0, "issueTable")'>Line</th>
-                        <th class='w-10' onclick='sortTable(1, "issueTable")'>NSN</th>
-                        <th class='w-10' onclick='sortTable(2, "issueTable")'>Serial</th>
-                        <th class='w-20' onclick='sortTable(3, "issueTable")'>Item</th>
-                        <th class='w-20' onclick='sortTable(4, "issueTable")'>Size</th>
-                        <th class='w-5'  onclick='sortTable(5, "issueTable")'>Qty</th>
-                        <th class='w-10' onclick='sortTable(6, "issueTable")'>Issue Location</th>
-                        <th class='w-10' onclick='sortTable(7, "issueTable")'>Return Location</th>
-                        <th class='w-10' onclick='sortTable(8, "issueTable")'>Date Returned</th>
-                        <% if (permissions.issue_line_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-                    </thead>
-                    <tbody id='issueTable'>
-                    </tbody>
-                </table>
-                <% if (permissions.return_add) { %></form><% } %>
+                </div>
+                <% if (issue._complete && !issue._closed && permissions.return_line_add) { %>
+                    <form id='returnForm'>
+                <% } %>
+                    <table class='table table-sm table-hover mx-auto w-100'>
+                        <thead class='thead-dark'>
+                            <th class='w-5'  onclick='sortTable(0, "issueTable")'>Line</th>
+                            <th class='w-15' onclick='sortTable(1, "issueTable")'>NSN/Serial</th>
+                            <th class='w-<% if (issue._complete && !issue._closed) { %>20<% } else { %>25<% } %>' onclick='sortTable(2, "issueTable")'>Item</th>
+                            <th class='w-20' onclick='sortTable(3, "issueTable")'>Size</th>
+                            <th class='w-5' onclick='sortTable(4, "issueTable")'>Qty</th>
+                            <% if (issue._complete && !issue._closed && permissions.return_line_add) { %>
+                                <th class='w-5' onclick='sortTable(4, "issueTable")'>Return Qty</th>
+                            <% } %>
+                            <th class='w-10' onclick='sortTable(5, "issueTable")'>Issue Location</th>
+                            <th class='w-10' onclick='sortTable(6, "issueTable")'>Return Location</th>
+                            <th class='w-10' onclick='sortTable(7, "issueTable")'>Date Returned</th>
+                            <% if (permissions.issue_line_delete && !issue._complete && !issue._closed) { %>
+                                <th><i class='fas fa-trash-alt'></i></th>
+                            <% } %>
+                        </thead>
+                        <tbody id='issueTable'>
+                        </tbody>
+                    </table>
+                <% if (issue._complete && !issue._closed && permissions.return_line_add) { %>
+                    </form>
+                <% } %>
             </div>
         </div>
         <% include ../../partials/noteTable %>
@@ -165,17 +173,25 @@
 <script src='/js/addSize.js'></script>
 <script src="/js/specific/issues_show.js"></script>
 <script>
-    <% if (permissions.issue_delete && !issue._complete && !issue._closed) { %>
-        window.addEventListener( "load", function () {
-            addFormListener('deleteForm', 'DELETE', '/stores/issues/<%= issue.issue_id %>', {redirect: '/stores/issues'});
-        });
-    <% } %>
-    <% if (permissions.issue_edit && !issue._complete) { %>
-        window.addEventListener( "load", function () {
-            addFormListener('completeForm', 'PUT', '/stores/issues/<%= issue.issue_id %>', {reload: true});
-        });
+    <% if (!issue._complete && !issue._closed) { %>
+        <% if (permissions.issue_delete) { %>
+            window.addEventListener( "load", function () {
+                addFormListener('deleteForm', 'DELETE', '/stores/issues/<%= issue.issue_id %>', {redirect: '/stores/issues'});
+            });
+        <% } %>
+        <% if (permissions.issue_edit) { %>
+            window.addEventListener( "load", function () {
+                addFormListener('completeForm', 'PUT', '/stores/issues/<%= issue.issue_id %>', {reload: true});
+            });
+        <% } %>
+    <% } else if (issue._complete && !issue._closed) { %>
+        <% if (permissions.return_line_add) { %>
+            window.addEventListener( "load", function () {
+                addFormListener('returnForm', 'POST', '/stores/returns', {reload: true});
+            });
+        <% } %>
     <% } %>
     showTab('<%= show_tab %>');
 </script>
-<script async>getLines(<%= issue.issue_id %>, <%= issue._complete %>, <%= permissions.return_add %>, <%= permissions.issue_delete %>)</script>
+<script async>getLines(<%= issue.issue_id %>, <%= issue._complete %>, <%= issue._closed %>, <%= permissions.return_line_add %>, <%= permissions.issue_delete %>)</script>
 <% include ../../partials/foot/htmlClose %>

@@ -1,6 +1,6 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //NEW
-    app.get('/stores/adjusts/new', isLoggedIn, allowed('adjust_add'), (req, res) => {
+    app.get('/stores/adjusts/new',      isLoggedIn, allowed('adjust_add'),                   (req, res) => {
         if (req.query.adjustType === 'Scrap' || 'Count') {
             if (req.query.stock_id) {
                 fn.getOne(
@@ -28,7 +28,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
     });
     //ASYNC GET
-    app.get('/stores/getadjusts', isLoggedIn, allowed('access_adjusts', {send: true}), (req, res) => {
+    app.get('/stores/getadjusts',       isLoggedIn, allowed('access_adjusts', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.adjusts,
             req.query,
@@ -55,7 +55,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/adjusts', isLoggedIn, allowed('adjust_add', {send: true}), (req, res) => {
+    app.post('/stores/adjusts',         isLoggedIn, allowed('adjust_add',     {send: true}), (req, res) => {
         if (req.body.adjust) {
             req.body.adjust.user_id = req.user.user_id;
             fn.adjustStock(req.body.adjust)

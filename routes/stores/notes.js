@@ -1,13 +1,13 @@
 module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     //NEW
-    app.get('/stores/notes/new', isLoggedIn, allowed('note_add'), (req, res) => {
+    app.get('/stores/notes/new',      isLoggedIn, allowed('note_add'),                   (req, res) => {
         res.render('stores/notes/new', {
             table: req.query.table,
             id:    req.query.id
         });
     });
     //EDIT
-    app.get('/stores/notes/:id/edit', isLoggedIn, allowed('note_add'), (req, res) => {
+    app.get('/stores/notes/:id/edit', isLoggedIn, allowed('note_add'),                   (req, res) => {
         fn.getOne(
             m.notes,
             {note_id: req.params.id}
@@ -20,7 +20,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => fn.error(err, '/', req, res));
     });
     //ASYNC GET
-    app.get('/stores/getnotes', isLoggedIn, allowed('access_notes', {send: true}), (req, res) => {
+    app.get('/stores/getnotes',       isLoggedIn, allowed('access_notes', {send: true}), (req, res) => {
         fn.getAllWhere(
             m.notes,
             req.query,
@@ -31,7 +31,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //POST
-    app.post('/stores/notes', isLoggedIn, allowed('note_add', {send: true}), (req, res) => {
+    app.post('/stores/notes',         isLoggedIn, allowed('note_add',     {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         fn.create(m.notes, req.body.note)
         .then(note => res.send({result: true, message: 'Note added'}))
@@ -39,7 +39,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
 
     //PUT
-    app.put('/stores/notes/:id', isLoggedIn, allowed('note_edit', {send: true}), (req, res) => {
+    app.put('/stores/notes/:id',      isLoggedIn, allowed('note_edit',    {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         req.body.note._date = Date.now();
         fn.update(
@@ -52,7 +52,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     });
     
     //DELETE
-    app.delete('/stores/notes/:id', isLoggedIn, allowed('note_delete', {send: true}), (req, res) => {
+    app.delete('/stores/notes/:id',   isLoggedIn, allowed('note_delete',  {send: true}), (req, res) => {
         fn.getOne(
             m.notes,
             {note_id: req.params.id}
@@ -60,7 +60,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(note => {
             if (!note._system) {
                 fn.delete(
-                    'notes',
+                    m.notes,
                     {note_id: req.params.id}
                 )
                 .then(result => res.send({result: true, message: 'Note deleted'}))

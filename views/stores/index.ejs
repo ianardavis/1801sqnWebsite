@@ -30,9 +30,8 @@
 				<div class="card m-3">
 					<a href="<%= card.href %>">
 						<div class="card-header">
-							<h3 id='title<%= card.title %>'>
-								<%= card.title %>
-							</h3>
+							<h3><%= card.title %></h3>
+							<p id='subtitle<%= card.title %>'></p>
 						</div>
 						<div class="card-body">
 							<i class="fas fa-<%= card.image %> fa-5x"></i>
@@ -44,8 +43,23 @@
 	</div>
 </section>
 <% include ../partials/foot/full %>
+<script src="/js/specific/index_show.js"></script>
 <% if (permissions.access_requests) { %>
-	<script src="/js/specific/index_show.js"></script>
-	<script async>getRequests()</script>
+	<script async>getCount('requests', ['_complete=1', '_closed=0'], {text: 'Open', 	  colour: 'warning', float: 'left'})</script>
+	<script async>getCount('requests', ['_complete=0', '_closed=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+<% } %>
+<% if (permissions.access_orders) { %>
+	<script async>getCount('orders',   ['_complete=1', '_closed=0'], {text: 'Open', 	  colour: 'warning', float: 'left'})</script>
+	<script async>getCount('orders',   ['_complete=0', '_closed=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+<% } %>
+<% if (permissions.access_demands) { %>
+	<script async>getCount('demands',  ['_complete=1', '_closed=0'], {text: 'Open', 	  colour: 'warning', float: 'left'})</script>
+	<script async>getCount('demands',  ['_complete=0', '_closed=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+<% } %>
+<% if (permissions.access_issues) { %>
+	<script async>getCount('issues',   ['_complete=0', '_closed=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+<% } %>
+<% if (permissions.access_receipts) { %>
+	<script async>getCount('receipts', ['_complete=0'],  			 {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
 <% } %>
 <% include ../partials/foot/htmlClose %>
