@@ -76,9 +76,11 @@
 <% include ../../partials/foot/full %>
 <script src="/js/specific/orders_index.js"></script>
 <script>
-	<% if (permissions.demand_line_add) { %>
-		addFormListener('demandForm', 'PUT', '/stores/orders/addtodemand',{reload: true});
-	<% } %>
+    window.addEventListener( "load", function () {
+		<% if (permissions.demand_line_add) { %>
+			addFormListener('demandForm', 'PUT', '/stores/orders/addtodemand',{reload: true});
+		<% } %>
+	<% }) %>
 	<% if (download) { %>
 		download_file('<%= download %>');
 	<% } %>

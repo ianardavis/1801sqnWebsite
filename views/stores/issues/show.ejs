@@ -173,24 +173,20 @@
 <script src='/js/addSize.js'></script>
 <script src="/js/specific/issues_show.js"></script>
 <script>
-    <% if (!issue._complete && !issue._closed) { %>
-        <% if (permissions.issue_delete) { %>
-            window.addEventListener( "load", function () {
-                addFormListener('deleteForm', 'DELETE', '/stores/issues/<%= issue.issue_id %>', {redirect: '/stores/issues'});
-            });
+    window.addEventListener( "load", function () {
+        <% if (!issue._complete && !issue._closed) { %>
+            <% if (permissions.issue_delete) { %>
+                    addFormListener('deleteForm', 'DELETE', '/stores/issues/<%= issue.issue_id %>', {redirect: '/stores/issues'});
+            <% } %>
+            <% if (permissions.issue_edit) { %>
+                    addFormListener('completeForm', 'PUT', '/stores/issues/<%= issue.issue_id %>', {reload: true});
+            <% } %>
+        <% } else if (issue._complete && !issue._closed) { %>
+            <% if (permissions.return_line_add) { %>
+                    addFormListener('returnForm', 'POST', '/stores/returns', {reload: true});
+            <% } %>
         <% } %>
-        <% if (permissions.issue_edit) { %>
-            window.addEventListener( "load", function () {
-                addFormListener('completeForm', 'PUT', '/stores/issues/<%= issue.issue_id %>', {reload: true});
-            });
-        <% } %>
-    <% } else if (issue._complete && !issue._closed) { %>
-        <% if (permissions.return_line_add) { %>
-            window.addEventListener( "load", function () {
-                addFormListener('returnForm', 'POST', '/stores/returns', {reload: true});
-            });
-        <% } %>
-    <% } %>
+    });
     showTab('<%= show_tab %>');
 </script>
 <script async>getLines(<%= issue.issue_id %>, <%= issue._complete %>, <%= issue._closed %>, <%= permissions.return_line_add %>, <%= permissions.issue_delete %>)</script>
