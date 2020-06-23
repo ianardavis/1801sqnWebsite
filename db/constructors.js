@@ -106,7 +106,7 @@ cn.Adjustment = function (stock_id, _type, qty, stock, user_id) {
     this.stock_id        = stock_id;
     this._type           = _type;
     this._qty            = qty;
-    this._qty_difference = qty - stock;
+    this._variance = qty - stock;
     this._date           = Date.now();
     this.user_id         = user_id;
 };

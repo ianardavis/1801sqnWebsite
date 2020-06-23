@@ -9,7 +9,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             ]
         )
         .then(receipts => res.render('canteen/receipts/index', {receipts: receipts}))
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/canteen/receipts/new', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.getOne(
@@ -30,13 +30,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     req.flash('success', 'Receipt created: ' + new_receipt.receipt_id);
                     res.redirect('/canteen/receipts');
                 })
-                .catch(err => fn.error(err, '/canteen/receipts', req, res));
+                .catch(err => res.error.redirect(err, req, res));
             } else {
                 req.flash('success', 'Receipt already open: ' + receipt.receipt_id);
                 res.redirect('/canteen/receipts');
             };
         })
-        .catch(err => fn.error(err, '/canteen/receipts', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/canteen/receipts/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.getOne(
@@ -45,7 +45,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.canteen_receipt_lines()]}
         )
         .then(receipt => res.render('canteen/receipts/show', {receipt: receipt}))
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     app.post('/canteen/receipt_lines', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
@@ -67,7 +67,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     req.flash('success', 'Item added');
                     res.redirect('/canteen/items/' + req.body.line.item_id);
                 })
-                .catch(err => fn.error(err, '/canteen', req, res));
+                .catch(err => res.error.redirect(err, req, res));
             } else {
                 req.flash('danger', 'Item already on receipt');
                 res.redirect('/canteen/items/' + req.body.line.item_id);
@@ -86,7 +86,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Line updated');
             res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/canteen/receipts/:id/complete', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.getAllWhere(
@@ -116,9 +116,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 req.flash('success', 'Receipt completed');
                 res.redirect('/canteen/receipts/' + req.params.id);
             })
-            .catch(err => fn.error(err, '/canteen/receipts', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
-        .catch(err => fn.error(err, '/canteen/receipts', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.put('/canteen/receipts/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.update(
@@ -130,7 +130,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Receipt updated');
             res.redirect('/canteen/receipts/' + req.params.id);
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     app.delete('/canteen/receipt_lines/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
@@ -142,7 +142,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Line removed');
             res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.delete('/canteen/receipts/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.delete(
@@ -153,6 +153,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Receipt deleted');
             res.redirect('/canteen');
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 };

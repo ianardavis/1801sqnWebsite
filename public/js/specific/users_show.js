@@ -75,7 +75,7 @@ function getOrders(user_id) {
     let sel_orders = document.querySelector('#sel_orders'),
         query = [];
     if (sel_orders.value !== 'All') query.push('_status=' + sel_orders.value);
-    XHR.open('GET', '/stores/getorderlines/' + user_id + '?' + query.join('&'));
+    XHR.open('GET', '/stores/get/orderlines/' + user_id + '?' + query.join('&'));
     XHR.send();
 };
 function getIssues(user_id, return_permission) {
@@ -127,7 +127,7 @@ function getIssues(user_id, return_permission) {
     let sel_issues = document.querySelector('#sel_issues'),
         query = [];
     // if (sel_issues.value !== 'All') query.push('_status=' + sel_issues.value);
-    XHR.open('GET', '/stores/getissuelines/' + user_id + '?' + query.join('&'));
+    XHR.open('GET', '/stores/get/issuelines/' + user_id + '?' + query.join('&'));
     XHR.send();
 };
 function getPermissions(user_id) {
@@ -150,6 +150,6 @@ function getPermissions(user_id) {
         spn_permissions.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting issues'));
-    XHR.open('GET', '/stores/getpermissions/' + user_id);
+    XHR.open('GET', '/stores/get/permissions/' + user_id);
     XHR.send();
 };

@@ -9,7 +9,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             ]
         )
         .then(writeoffs => res.render('canteen/writeoffs/index', {writeoffs: writeoffs}))
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/canteen/writeoffs/new/:reason', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.getOne(
@@ -33,13 +33,13 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     req.flash('success', 'Writeoff created: ' + new_writeoff.writeoff_id);
                     res.redirect('/canteen/writeoffs');
                 })
-                .catch(err => fn.error(err, '/canteen/writeoffs', req, res));
+                .catch(err => res.error.redirect(err, req, res));
             } else {
                 req.flash('success', 'Writeoff already open: ' + writeoff.writeoff_id);
                 res.redirect('/canteen/writeoffs');
             };
         })
-        .catch(err => fn.error(err, '/canteen/writeoffs', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/canteen/writeoffs/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.getOne(
@@ -48,7 +48,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.canteen_writeoff_lines()]}
         )
         .then(writeoff => res.render('canteen/writeoffs/show', {writeoff: writeoff}))
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     app.post('/canteen/writeoff_lines', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
@@ -70,7 +70,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     req.flash('success', 'Item added');
                     res.redirect('/canteen/items/' + req.body.line.item_id);
                 })
-                .catch(err => fn.error(err, '/canteen', req, res));
+                .catch(err => res.error.redirect(err, req, res));
             } else {
                 req.flash('danger', 'Item already on writeoff');
                 res.redirect('/canteen/items/' + req.body.line.item_id);
@@ -88,7 +88,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Line updated');
             res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/canteen/writeoffs/:id/complete', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.getAllWhere(
@@ -118,9 +118,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 req.flash('success', 'Writeoff completed');
                 res.redirect('/canteen/writeoffs/' + req.params.id);
             })
-            .catch(err => fn.error(err, '/canteen/writeoffs', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
-        .catch(err => fn.error(err, '/canteen/writeoffs', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.put('/canteen/writeoffs/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.update(
@@ -132,7 +132,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Writeoff updated');
             res.redirect('/canteen/writeoffs/' + req.params.id);
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     app.delete('/canteen/writeoff_lines/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
@@ -144,7 +144,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Line removed');
             res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.delete('/canteen/writeoffs/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.delete(
@@ -155,6 +155,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Writeoff deleted');
             res.redirect('/canteen');
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 };

@@ -35,7 +35,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     show_tab: req.query.tab || 'details'
                 });
             })
-            .catch(err => fn.error(err, '/stores/users', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         } else {
             req.flash('danger', 'Permission denied!')
             res.redirect('/stores/users');
@@ -50,8 +50,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {include: [m.ranks]}
             )
             .then(user => res.render('stores/users/password', {user: user}))
-            .catch(err => fn.error(err, '/', req, res));
-        } else fn.error(new Error('Permission denied'), '/', req, res);
+            .catch(err => res.error.redirect(err, req, res));
+        } else res.error.redirect(new Error('Permission denied'), '/', req, res);
     });
     //EDIT
     app.get('/stores/users/:id/edit',     isLoggedIn, allowed('user_edit'),                                (req, res) => {
@@ -79,7 +79,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [m.ranks]}
         )
         .then(users => res.send({result: true, users: users}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 
     //POST
@@ -98,9 +98,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {user_id: user.user_id}
             )
             .then(permission => res.send({result: true, message: 'User added'}))
-            .catch(err => fn.send_error(err, res))
+            .catch(err => res.error.send(err, res))
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 
     //PUT PASSWORD
@@ -114,8 +114,8 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {user_id: req.params.id}
             )
             .then(result => res.send({result: true, message: 'Password changed'}))
-            .catch(err => fn.send_error(err, res));
-        } else fn.send_error('Permission denied', res)
+            .catch(err => res.error.send(err, res));
+        } else res.error.send('Permission denied', res)
     });
     //PUT
     app.put('/stores/users/:id',          isLoggedIn, allowed('user_edit',     {send: true}),              (req, res) => {
@@ -127,7 +127,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {user_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'User saved'}))
-        .catch(err => fn.send_error(err,message, res));
+        .catch(err => res.error.send(err,message, res));
     });
 
     //DELETE
@@ -143,9 +143,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     {user_id: req.params.id}
                 )
                 .then(result => res.send({result: true, message: 'User/Permissions deleted'}))
-                .catch(err => fn.send_error(err, res));
+                .catch(err => res.error.send(err, res));
             })
-            .catch(err => fn.send_error(err, res));
+            .catch(err => res.error.send(err, res));
         } else res.send_error('You can not delete your own account', res);       
     });
 };

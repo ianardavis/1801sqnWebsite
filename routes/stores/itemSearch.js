@@ -1,4 +1,5 @@
-module.exports = (app, fn, inc, isLoggedIn, m) => {
+module.exports = (app, inc, isLoggedIn, m) => {
+    let db = require(process.env.ROOT + '/fn/db');
     //Display Items
     app.get('/stores/itemSearch',       isLoggedIn, (req, res) => {
         let supplier_id = Number(req.query.supplier_id) || -1,
@@ -43,10 +44,7 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
                     },
                     required: true}))
         };
-        fn.getAll(
-            m.items,
-			include
-        )
+        m.items.findAll({include: include})
         .then(items => {
             res.render('stores/itemSearch/details', {
                 items:       items,
@@ -55,7 +53,7 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
                 supplier_id: supplier_id
             });
         })
-        .catch(err => fn.error(err, '/stores', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //Display Sizes
     app.post('/stores/itemSearch',      isLoggedIn, (req, res) => {
@@ -88,14 +86,13 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
                 search._orderable  = 1;
                 search.supplier_id = req.body.supplier_id
             };
-            fn.getAllWhere(
-                m.sizes,
-                search,
-                {include: include}
-            )
+            m.sizes.findAll({
+                where: search,
+                include: include
+            })
             .then(sizes => res.send({result: true, sizes: sizes}))
-            .catch(err => fn.send_error(err, res));
-        } else fn.send_error('No Item Selected', res);
+            .catch(err => res.error.send(err, res));
+        } else res.error.send('No Item Selected', res);
     });
 
     //Display Size
@@ -107,17 +104,16 @@ module.exports = (app, fn, inc, isLoggedIn, m) => {
             include_options.serials.issued = false;
         };
         if (req.body.size_id) {
-            fn.getOne(
-                m.sizes,
-                {
+            db.findOne({
+                table: m.sizes,
+                where: {
                     size_id: req.body.size_id,
                     _issueable: 1
-                },{
-                    include: [m.items, inc.nsns(), inc.stock(), inc.serials()]
-                }                
-            )
+                },
+                include: [m.items, inc.nsns(), inc.stock(), inc.serials()]
+            })
             .then(size => res.send({result: true, size: size}))
-            .catch(err => fn.send_error(err, res));
-        } else fn.send_error('No size selected', res);
+            .catch(err => res.error.send(err, res));
+        } else res.error.send('No size selected', res);
     });
 };

@@ -1,16 +1,16 @@
-module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //INDEX
-    app.get('/stores/receipts',              isLoggedIn, allowed('access_receipts'),                    (req, res) => {
-        fn.getAll(m.suppliers)
+module.exports = (app, allowed, inc, isLoggedIn, m) => {
+    let db       = require(process.env.ROOT + '/fn/db'),
+        receipts = require(process.env.ROOT + '/fn/receipts');;
+    app.get('/stores/receipts',                isLoggedIn, allowed('access_receipts'),                    (req, res) => {
+        m.suppliers.findAll()
         .then(suppliers => res.render('stores/receipts/index', {suppliers: suppliers}))
-        .catch(err => fn.error(err, '/stores', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
-    //SHOW
-    app.get('/stores/receipts/:id',          isLoggedIn, allowed('access_receipts'),                    (req, res) => {
-        fn.getOne(
-            m.receipts,
-            {receipt_id: req.params.id},
-            {include: [
+    app.get('/stores/receipts/:id',            isLoggedIn, allowed('access_receipts'),                    (req, res) => {
+        db.findOne({
+            table: m.receipts,
+            where: {receipt_id: req.params.id},
+            include: [
                 inc.users(),
                 inc.suppliers({as: 'supplier'})
         ]})
@@ -21,84 +21,84 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 show_tab: req.query.tab || 'details'
             });
         })
-        .catch(err => fn.error(err, '/stores/receipts', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
-    //ASYNC GET
-    app.get('/stores/getreceipts',           isLoggedIn, allowed('access_receipts',      {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.receipts,
-            req.query,
-            {include: [
+    app.get('/stores/get/receipts',            isLoggedIn, allowed('access_receipts',      {send: true}), (req, res) => {
+        m.receipts.findAll({
+            where: req.query,
+            include: [
                 inc.suppliers({as: 'supplier'}),
                 inc.receipt_lines(),
                 inc.users()
         ]})
         .then(receipts => res.send({result: true, receipts: receipts}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/getreceiptlines',       isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.receipt_lines,
-            req.query,
-            {include: [
+    app.get('/stores/get/receiptlines',        isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
+        m.receipt_lines.findAll({
+            where: req.query,
+            include: [
                 inc.sizes(),
                 inc.receipts(),
                 inc.stock({as: 'stock'})
         ]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/getreceiptlinesbysize', isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
-        fn.getAll(
-            m.receipt_lines,
-            [
+    app.get('/stores/get/receiptlines/bysize', isLoggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
+        m.receipt_lines.findAll({
+            include: [
                 inc.receipts(),
                 inc.users(),
                 inc.stock({
                     as: 'stock',
                     where: {size_id: req.query.size_id},
                     required: true})
-        ])
+        ]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
-    
-    //POST
-    app.post('/stores/receipts',             isLoggedIn, allowed('receipt_add',          {send: true}), (req, res) => {
-        fn.createReceipt({
-            supplier_id: req.body.supplier_id,
-            user_id: req.user.user_id
+    app.post('/stores/receipts',               isLoggedIn, allowed('receipt_add',          {send: true}), (req, res) => {
+        receipts.create({
+            m: {receipts: m.receipts},
+            receipt: {
+                supplier_id: req.body.supplier_id,
+                user_id:     req.user.user_id
+            }
         })
-        .then(receipt_id => {
+        .then(result => {
             let message = 'Receipt raised: ';
             if (!result.created) message = 'There is already an receipt open for this user: ';
             res.send({result: true, message: message + receipt_id})
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/receipt_lines/:id',    isLoggedIn, allowed('receipt_line_add',     {send: true}), (req, res) => {
+    app.post('/stores/receipt_lines/:id',      isLoggedIn, allowed('receipt_line_add',     {send: true}), (req, res) => {
         req.body.line.user_id    = req.user.user_id;
         req.body.line.receipt_id = req.params.id;
-        fn.createReceiptLine(req.body.line)
-        .then(receipt_id => res.send({result: true, message: 'Receipt raised: ' + receipt_id}))
-        .catch(err => fn.send_error(err, res));
-    });
-    
-    //DELETE
-    app.delete('/stores/receipts/:id',       isLoggedIn, allowed('receipt_delete',       {send: true}), (req, res) => {
-        fn.delete(
-            m.receipt_lines,
-            {receipt_id: req.params.id},
-            true
-        )
-        .then(result => {
-            fn.delete(
-                m.receipts,
-                {receipt_id: req.params.id}
-            )
-            .then(result => res.send({result: true, message: 'Receipt deleted'}))
-            .catch(err => fn.send_error(err, res));
+        receipts.createLine({
+            m: {
+                sizes: m.sizes,
+                stock: m.stock,
+                receipts: m.receipts,
+                receipt_lines: m.receipt_lines,
+                serials: m.serials
+            },
+            line: req.body.line
         })
-        .catch(err => fn.send_error(err, res));
+        .then(receipt_id => res.send({result: true, message: 'Receipt raised: ' + receipt_id}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.delete('/stores/receipts/:id',         isLoggedIn, allowed('receipt_delete',       {send: true}), (req, res) => {
+        m.receipt_lines.destroy({where: {receipt_id: req.params.id}})
+        .then(result => {
+            db.destroy({
+                table: m.receipts,
+                where: {receipt_id: req.params.id}
+            })
+            .then(result => res.send({result: true, message: 'Receipt deleted'}))
+            .catch(err => res.error.send(err, res));
+        })
+        .catch(err => res.error.send(err, res));
     });
 };

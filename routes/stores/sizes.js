@@ -11,9 +11,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     suppliers: suppliers
                 });
             })
-            .catch(err => fn.error(err, '/stores/items', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
-        .catch(err => fn.error(err, '/stores/items', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //ASYNC GET
     app.get('/stores/getsizes/:key/:id', isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
@@ -25,7 +25,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.items()]}
         )
         .then(sizes => res.send({result: true, sizes: sizes}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     //SHOW
     app.get('/stores/sizes/:id',         isLoggedIn, allowed('access_sizes'),               (req, res) => {
@@ -43,7 +43,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 show_tab: req.query.tab || 'details'
             });
         })
-        .catch(err => fn.error(err, '/stores/items', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //EDIT
     app.get('/stores/sizes/:id/edit',    isLoggedIn, allowed('size_edit'),                  (req, res) => {
@@ -63,9 +63,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     suppliers: suppliers
                 });
             })
-            .catch(err => fn.error(err, '/stores/sizes/' + req.params.id, req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
-        .catch(err => fn.error(err, '/', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //ASYNC GET SIZES
     app.get('/stores/getsize/:id',       isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
@@ -78,7 +78,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 inc.serials()
         ]})
         .then(size => res.send({result: true, size: size}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     app.get('/stores/getsizes',          isLoggedIn, allowed('access_sizes', {send: true}), (req, res) => {
         fn.getAllWhere(
@@ -90,7 +90,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             sizes.forEach(size => size.dataValues.locationStock = fn.summer(size.stocks));
             res.send({result: true, sizes: sizes})
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 
     //POST
@@ -111,7 +111,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         };
                     });
                     res.redirect('/stores/items/' + req.body.details.item_id);
-                }).catch((err) => fn.error(err, '/stores/items/' + req.body.details.item_id, req, res));
+                }).catch((err) => res.error.redirect(err, req, res));
             } else res.redirect('/stores/items/' + req.body.details.item_id);
         } else {
             req.flash('info', 'No sizes selected!');
@@ -127,7 +127,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {size_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Size saved'}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 
     //DELETE
@@ -138,7 +138,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {nullOK: true}
         )
         .then(stock => {
-            if (stock) fn.send_error('Cannot delete a size whilst it has stock', res)
+            if (stock) res.error.send('Cannot delete a size whilst it has stock', res)
             else {
                 fn.getOne(
                     m.nsns,
@@ -146,19 +146,19 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     {nullOK: true}
                 )
                 .then(nsn => {
-                    if (nsn) fn.send_error('Cannot delete a size whilst it has NSNs assigned', res)
+                    if (nsn) res.error.send('Cannot delete a size whilst it has NSNs assigned', res)
                     else {
                         fn.delete(
                             m.sizes,
                             {size_id: req.params.id}
                         )
                         .then(result => res.send({result: true, message: 'Size deleted'}))
-                        .catch(err => fn.send_error(err, res));
+                        .catch(err => res.error.send(err, res));
                     };
                 })
-                .catch(err => fn.send_error(err, res));
+                .catch(err => res.error.send(err, res));
             };
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 };

@@ -7,7 +7,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: inc.sizes()}
         )
         .then(item => res.render('stores/stock/new', {item: item}))
-        .catch(err => fn.error(err, '/', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //SHOW
     app.get('/stores/stock/:id',      isLoggedIn, allowed('access_stock'),               (req, res) => {
@@ -25,7 +25,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 show_tab: req.query.tab || 'details'
             });
         })
-        .catch(err => fn.error(err, '/', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //EDIT
     app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'),                 (req, res) => {
@@ -35,7 +35,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [m.locations]}
         )
         .then(stock => res.render('stores/stock/edit', {stock: stock}))
-        .catch(err => fn.error(err, '/', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //ASYNC GET
     app.get('/stores/getstock',       isLoggedIn, allowed('access_stock', {send: true}), (req, res) => {
@@ -45,7 +45,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [inc.locations({as: 'location'})]}
         )
         .then(stock => res.send({result: true, stock: stock}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     
     //POST
@@ -65,15 +65,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     req.body.stock.location_id = location.location_id;
                     createStock(req.body.stock, req, res);
                 })
-                .catch(err => fn.send_error(err, res));
+                .catch(err => res.error.send(err, res));
             };
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     function createStock(stock, req, res) {
         fn.create(m.stock,stock)
         .then(stock => res.send({result: true, message: 'Stock added'}))
-        .catch(err => fn.send_error(err, res));;
+        .catch(err => res.error.send(err, res));;
     };
 
     //PUT
@@ -91,7 +91,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 if (location) {
                     if (Number(location.location_id) !== Number(stock.location_id)) {
                         updateStockLocation(location.location_id, req.params.id, res)
-                    } else fn.send_error('No changes', res);
+                    } else res.error.send('No changes', res);
                 } else {
                     fn.create(
                         m.locations,
@@ -100,12 +100,12 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     .then(new_location => {
                         updateStockLocation(new_location.location_id, req.params.id, res)
                     })
-                    .catch(err => fn.send_error(err, res));
+                    .catch(err => res.error.send(err, res));
                 };
             })
-            .catch(err => fn.send_error(err, res));
+            .catch(err => res.error.send(err, res));
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
         
     });
 
@@ -123,12 +123,12 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 )
                 .then(result => {
                     if (result) res.send({result: true, message: 'Stock deleted'})
-                    else fn.send_error('Stock NOT deleted', res);
+                    else res.error.send('Stock NOT deleted', res);
                 })
-                .catch(err => fn.send_error(err, res));
-            } else fn.send_error('Cannot delete whilst stock is not 0', res)
+                .catch(err => res.error.send(err, res));
+            } else res.error.send('Cannot delete whilst stock is not 0', res)
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     
     function updateStockLocation(location_id, stock_id, res) {
@@ -138,6 +138,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {stock_id: stock_id}
         )
         .then(result => res.send({result: true, message: 'Stock saved'}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     };
 };

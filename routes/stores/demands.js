@@ -1,22 +1,22 @@
 const op = require('sequelize').Op;
-
-module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //INDEX
+module.exports = (app, allowed, inc, isLoggedIn, m) => {
+    let db        = require(process.env.ROOT + '/fn/db'),
+        demands   = require(process.env.ROOT + '/fn/demands'),
+        receipts  = require(process.env.ROOT + '/fn/receipts'),
+        utils     = require(process.env.ROOT + '/fn/utils');
     app.get('/stores/demands',              isLoggedIn, allowed('access_demands'),                    (req, res) => {
-        fn.getAll(m.suppliers)
+        m.suppliers.findAll()
         .then(suppliers => res.render('stores/demands/index', {suppliers: suppliers}))
-        .catch(err => fn.error(err, '/stores', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
-    //SHOW
     app.get('/stores/demands/:id',          isLoggedIn, allowed('access_demands'),                    (req, res) => {
-        fn.getOne(
-            m.demands,
-            {demand_id: req.params.id},
-            {include: [
+        db.findOne({
+            table: m.demands,
+            where: {demand_id: req.params.id},
+            include: [
                 inc.users(),
                 m.suppliers
-            ]}
-        )
+        ]})
         .then(demand => {
             res.render('stores/demands/show', {
                 demand: demand,
@@ -24,130 +24,122 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 show_tab: req.query.tab || 'details'
             });
         })
-        .catch(err => fn.error(err, '/stores/demands', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
-    //DOWNLOAD
     app.get('/stores/demands/:id/download', isLoggedIn, allowed('access_demands'),                    (req, res) => {
-        fn.getOne(
-            m.demands,
-            {demand_id: req.params.id}
-        )
-        .then(demand => {
-            if (demand && demand._filename && demand._filename !== '') fn.downloadFile(demand._filename, res);
-            else {
-                req.flash('danger', 'No file found');
-                res.redirect('/stores/demands/' + req.params.id);
-            };
+        db.findOne({
+            table: m.demands,
+            where: {demand_id: req.params.id}
         })
-        .catch(err => fn.error(err, '/stores/demands', req, res));
+        .then(demand => {
+            if (demand._filename && demand._filename !== '') utils.download(demand._filename, req, res);
+            else res.error.redirect(new Error('No file found'), req, res);
+        })
+        .catch(err => res.error.redirect(err, req, res));
     });
-    //ASYNC GET DEMAND
-    app.get('/stores/getdemands',           isLoggedIn, allowed('access_demands',      {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.demands,
-            req.query,
-            {include: [
+    
+    app.get('/stores/get/demands',          isLoggedIn, allowed('access_demands',      {send: true}), (req, res) => {
+        m.demands.findAll({
+            where: req.query,
+            include: [
                 inc.demand_lines(),
                 inc.users(),
                 inc.suppliers({as: 'supplier'})
         ]})
         .then(demands => res.send({result: true, demands: demands}))
-        .catch(err => fn.send_error(err, res));
-    });//ASYNC GET LINES
-    app.get('/stores/getdemandlines',       isLoggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.demand_lines,
-            req.query,
-            {include: [
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/demandlines',      isLoggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
+        m.demand_lines.findAll({
+            where: req.query,
+            include: [
                 inc.sizes({stock: true}),
                 inc.receipt_lines({as: 'receipt_line', receipts: true})
         ]})
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 
-    //POST
     app.post('/stores/demands',             isLoggedIn, allowed('demand_add',          {send: true}), (req, res) => {
-        fn.createDemand({
-            supplier_id: req.body.supplier_id,
-            user_id: req.user.user_id
+        demands.create({
+            m: {suppliers: m.suppliers, demands: m.demands},
+            demand: {
+                supplier_id: req.body.supplier_id,
+                user_id: req.user.user_id
+            }
         })
         .then(result => {
             let message = 'Demand raised: ';
             if (!result.created) message = 'There is already a demand open for this supplier: ';
             res.send({result: true, message: message + result.demand_id});
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     app.post('/stores/demand_lines/:id',    isLoggedIn, allowed('demand_line_add',     {send: true}), (req, res) => {
         req.body.line.demand_id = req.params.id;
         req.body.line.user_id   = req.user.user_id;
-        fn.createDemandLine(req.body.line)
+        demands.createLine({
+            m: {sizes: m.sizes, demands: m.demands, demand_lines: m.demand_lines},
+            line: req.body.line
+        })
         .then(message => res.send({result: true, message: 'Item added: ' + message}))
-        .catch(err => fn.send_error(err, res))
+        .catch(err => res.error.send(err, res))
     });
 
-    //COMPLETE
     app.put('/stores/demands/:id',          isLoggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
-        fn.getOne(
-            m.demands,
-            {demand_id: req.params.id},
-            {include: [
+        db.findOne({
+            table: m.demands,
+            where: {demand_id: req.params.id},
+            include: [
                 inc.suppliers({as: 'supplier', file: true})
         ]})
         .then(demand => {
-            if (demand._complete) {
-                res.send_error('This demand is already complete', res);
-            } else {
+            if (demand._complete) res.send_error('This demand is already complete', res);
+            else {
                 let actions = [];
                 actions.push(
-                    fn.update(
-                        m.demands,
+                    m.demands.update(
                         {_complete: 1},
-                        {demand_id: demand.demand_id}
+                        {where: {demand_id: demand.demand_id}}
                     )
                 );
                 actions.push(
-                    fn.update(
-                        m.demand_lines,
+                    m.demand_lines.update(
                         {_status: 'Open'},
-                        {
+                        {where: {
                             demand_id: demand.demand_id,
                             _status:   'Pending'
-                        }
+                        }}
                     )
                 );
                 Promise.allSettled(actions)
                 .then(result => {
-                    fn.createNote({
-                        table: 'demands',
-                        id:    demand.demand_id,
-                        note:  'Completed',
+                    m.notes.create({
+                        _table:  'demands',
+                        _id:     demand.demand_id,
+                        _note:   'Completed',
                         user_id: req.user.user_id,
-                        system: true
+                        system:  1
                     })
                     .then(result => {
                         if (demand.supplier.file) {
                             raiseDemandFile(demand.demand_id, req.user.user_id)
                             .then(filename => res.send({result: true, message: 'Demand completed, filename: ' + filename}))
-                            .catch(err => fn.send_error(err, res));
-                        } else {
-                            res.send({result: true, message: 'Demand completed'})
-                        };
+                            .catch(err => res.error.send(err, res));
+                        } else res.send({result: true, message: 'Demand completed'});
                     })
-                    .catch(err => fn.send_error(err, res));
+                    .catch(err => res.error.send(err, res));
                 })
-                .catch(err => fn.send_error(err, res));
+                .catch(err => res.error.send(err, res));
             };
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
-    //ACTION LINES
     app.put('/stores/demand_lines/:id',     isLoggedIn, allowed('receipt_add',         {send: true}), (req, res) => {
-        fn.getOne(
-            m.demands,
-            {demand_id: req.params.id}
-        )
+        db.findOne({
+            table: m.demands,
+            where: {demand_id: req.params.id}
+        })
         .then(demand => {
             let actions = [], receives = [];
             for (let [lineID, line] of Object.entries(req.body.actions)) {
@@ -156,26 +148,24 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     receives.push(line);
                 } else if (line._status === 'Cancel') {
                     actions.push(
-                        fn.update(
-                            m.demand_lines,
+                        m.demand_lines.update(
                             {_status: 'Cancelled'},
-                            {line_id: line.line_id}
+                            {where: {line_id: line.line_id}}
                         )
                     );
                     actions.push(
-                        fn.update(
-                            m.order_lines,
+                        m.order_lines.update(
                             {demand_line_id: null},
-                            {demand_line_id: line.line_id}
+                            {where: {demand_line_id: line.line_id}}
                         )
                     );
                     actions.push(
-                        fn.createNote({
-                            id:     demand.demand_id,
-                            table:  'demands',
-                            note:   'Line ' + line.line_id + ' cancelled',
+                        m.notes.create({
+                            _id:     demand.demand_id,
+                            _table:  'demands',
+                            _note:   'Line ' + line.line_id + ' cancelled',
                             user_id: req.user.user_id,
-                            system:  true
+                            system:  1
                         })
                     );
                 };
@@ -184,9 +174,12 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             .then(cancel_results => {
                 if (receives.length > 0) {
                     actions = [];
-                    fn.createReceipt({
-                        supplier_id: demand.supplier_id,
-                        user_id:     req.user.user_id
+                    receipts.create({
+                        m: {receipts: m.receipts},
+                        receipt: {
+                            supplier_id: demand.supplier_id,
+                            user_id:     req.user.user_id
+                        }
                     })
                     .then(result => {
                         receives.forEach(line => {
@@ -200,77 +193,75 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         });
                         Promise.allSettled(actions)
                         .then(receive_results => {
-                            if (fn.promise_results(cancel_results.concat(receive_results))) {
+                            if (utils.promiseResults(cancel_results.concat(receive_results))) {
                                 res.send({result: true, message: 'Lines actioned'}); /////////////////
                             } else {
-                                fn.send_error('Some actions failed', res); ////////////////
+                                res.error.send('Some actions failed', res); ////////////////
                             };
                         })
-                        .catch(err => fn.send_error(err, res));
+                        .catch(err => res.error.send(err, res));
                         
                     })
-                    .catch(err => fn.send_error(err, res));
-                } else if (fn.promise_results(cancel_results)) {
+                    .catch(err => res.error.send(err, res));
+                } else if (utils.promiseResults(cancel_results)) {
                     res.send({result: true, message: 'Lines actioned'}); ///////////////////////
                 } else {
-                    fn.send_error('Some actions failed', res); ////////////////
+                    res.error.send('Some actions failed', res); ////////////////
                 };
             })
-            .catch(err => fn.send_error(err, res));
+            .catch(err => res.error.send(err, res));
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     
-    //DELETE
     app.delete('/stores/demands/:id',       isLoggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
-        fn.delete(
-            m.demand_lines,
-            {demand_id: req.params.id},
-            true
-        )
-        .then(result => {
-            fn.delete(
-                m.demands,
-                {demand_id: req.params.id}
-            )
-            .then(result => res.send({result: true, message: 'Demand deleted'}))
-            .catch(err => fn.send_error(err, res));
+        db.destroy({
+            table: m.demand_lines,
+            where: {demand_id: req.params.id}
         })
-        .catch(err => fn.send_error(err, res));
+        .then(result => {
+            db.destroy({
+                table: m.demands,
+                where: {demand_id: req.params.id}
+            })
+            .then(result => res.send({result: true, message: 'Demand deleted'}))
+            .catch(err => res.error.send(err, res));
+        })
+        .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/demand_lines/:id',  isLoggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => {
-        fn.getOne(
-            m.demand_lines,
-            {line_id: req.params.id}
-        )
+        db.findOne({
+            table: m.demand_lines,
+            where: {line_id: req.params.id}
+        })
         .then(line => {
-            fn.update(
-                m.demand_lines,
-                {_status: 'Cancelled'},
-                {line_id: req.params.id}
-            )
+            db.update({
+                table: m.demand_lines,
+                where: {line_id: req.params.id},
+                record: {_status: 'Cancelled'}
+            })
             .then(result => {
-                fn.createNote({
-                    table:   'demands',
-                    note:    'Line ' + req.params.id + ' cancelled',
-                    id:      line.demand_id,
+                m.notes.create({
+                    _table:   'demands',
+                    _note:    'Line ' + req.params.id + ' cancelled',
+                    _id:      line.demand_id,
                     user_id: req.user.user_id,
-                    system:  true
+                    system:  1
                 })
                 .then(result => res.send({result: true, message: 'Line cancelled'}))
-                .catch(err => fn.send_error(err, res));
+                .catch(err => res.error.send(err, res));
             })
-            .catch(err => fn.send_error(err, res));
+            .catch(err => res.error.send(err, res));
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     
     function raiseDemandFile (demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.getOne(
-                m.demands,
-                {demand_id: demand_id},
-                {include: [
+            db.findOne({
+                table: m.demands,
+                where: {demand_id: demand_id},
+                include: [
                     inc.suppliers({
                         as: 'supplier',
                         file: true,
@@ -322,18 +313,18 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                                 users
                             )
                             .then(results2 => {
-                                fn.update(
-                                    m.demands,
-                                    {_filename: demandFile},
-                                    {demand_id: demand_id}
-                                )
+                                db.update({
+                                    table: m.demands,
+                                    where: {demand_id: demand_id},
+                                    record: {_filename: demandFile}
+                                })
                                 .then(result => {
-                                    fn.createNote({
-                                        table: 'demands',
-                                        id: demand_id,
-                                        note: 'File created',
+                                    m.notes.create({
+                                        _table: 'demands',
+                                        _id: demand_id,
+                                        _note: 'File created',
                                         user_id: user_id,
-                                        system: true
+                                        system: 1
                                     })
                                     .then(result => resolve({fails: writeItemsResult.fails, filename: demandFile}))
                                     .catch(err => reject(err));
@@ -355,7 +346,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             let fs = require('fs');
             if (file._path) {
                 let path = process.env.ROOT + '/public/res/',
-                    newDemand = 'demands/' + fn.timestamp() + ' demand - ' + demand_id + '.xlsx',
+                    newDemand = 'demands/' + utils.timestamp() + ' demand - ' + demand_id + '.xlsx',
                     demandFile = path + 'files/' + file._path;
                 fs.copyFile(demandFile, path + newDemand, err => {
                     if (!err) resolve(newDemand)
@@ -388,7 +379,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
 
                     let cell = worksheet.getCell(supplier.file._date),
                         now = new Date(),
-                        line = fn.counter();
+                        line = utils.counter();
                     cell.value = now.toDateString();
 
                     if (users) {
@@ -445,10 +436,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     
     function receive_demand_line (line, receipt_id, user_id) {
         return new Promise((resolve, reject) => {
-            fn.getOne(
-                m.demand_lines,
-                {line_id: line.line_id},
-            )
+            db.findOne({
+                table: m.demand_lines,
+                where: {line_id: line.line_id}
+            })
             .then(demand_line => {
                 let new_receipt_line = {
                     receipt_id: receipt_id,
@@ -458,29 +449,38 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     user_id:    user_id
                 };
                 if (line._serial) new_receipt_line._serial = line._serial
-                fn.createReceiptLine(new_receipt_line)
+                receipts.createLine({
+                    m: {
+                        receipt_lines: m.receipt_lines,
+                        receipts:      m.receipts,
+                        serials:       m.serials,
+                        sizes:         m.sizes,
+                        stock:         m.stock
+                    },
+                    line: new_receipt_line
+                })
                 .then(receipt_line_id => {
                     let actions = [];
                     actions.push(
-                        fn.update(
-                            m.demand_lines,
-                            {
+                        db.update({
+                            table: m.demand_lines,
+                            where: {line_id: line.line_id},
+                            record: {
                                 receipt_line_id: receipt_line_id,
                                 _status:         'Received'
-                            },
-                            {line_id: line.line_id}
-                        )
+                            }
+                        })
                     );
                     actions.push(
-                        fn.update(
-                            m.order_lines,
-                            {receipt_line_id: receipt_line_id},
-                            {demand_line_id: line.line_id}
-                        )
+                        db.update({
+                            table: m.order_lines,
+                            where: {demand_line_id: line.line_id},
+                            record: {receipt_line_id: receipt_line_id}
+                        })
                     );
                     Promise.allSettled(actions)
                     .then(results => {
-                        if (fn.promise_results(results)) {
+                        if (utils.promiseResults(results)) {
                             resolve(receipt_line_id);
                         } else {
                             reject(new Error('Receipt created: ' + receipt_line_id + ', some lines failed updating order and demand lines'));

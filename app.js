@@ -58,6 +58,22 @@ portInUseCheck()
     app.set('view engine', 'ejs');
     app.use(express.static(__dirname + '/public'));
 
+    app.use((req, res, next) => {
+        res.error = require(process.env.ROOT + '/fn/error');
+        req.singularise = str => {
+            if (str.endsWith('lines')) {
+                return str.substring(0, str.length - 1);
+            } else if (str.endsWith('ies')) {
+                return str.substring(0, str.length - 3) + 'y';
+            } else if (str.endsWith('es')) {
+                return str.substring(0, str.length - 2);
+            } else {
+               return str.substring(0, str.length - 1);
+            };
+        };
+        next();
+    });
+
     let m  = require('./db/models'), fn = {};
     require('./functions')(fn, m);
     require('./routes/stores') (app, m, fn);

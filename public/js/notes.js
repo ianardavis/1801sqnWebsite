@@ -35,6 +35,6 @@ function getNotes(table, id, delete_permission) {
         query     = ['_table=' + table, '_id=' + id];
     if      (Number(sel_notes.value) === 2) query.push('_system=0')
     else if (Number(sel_notes.value) === 3) query.push('_system=1');
-    XHR.open('GET', '/stores/getnotes?' + query.join('&'));
+    XHR.open('GET', '/stores/get/notes?' + query.join('&'));
     XHR.send();
 };

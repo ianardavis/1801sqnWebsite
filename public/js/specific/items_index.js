@@ -29,6 +29,6 @@ function getItems() {
     if (sel_type.value !== '')     query.push('type_id=' +     sel_type.value);
     if (sel_subtype.value !== '')  query.push('subtype_id=' +  sel_subtype.value);
     if (sel_gender.value !== '')   query.push('gender_id=' +   sel_gender.value);
-    XHR.open('GET', '/stores/getitems?' + query.join('&'));
+    XHR.open('GET', '/stores/get/items?' + query.join('&'));
     XHR.send();
 };

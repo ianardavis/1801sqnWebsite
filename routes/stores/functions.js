@@ -315,7 +315,7 @@ module.exports = (fn, m, inc) => {
                 .catch(err => reject(err));
             };
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     fn.createOrderLine = line => new Promise((resolve, reject) => {
         fn.getOne(

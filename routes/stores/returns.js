@@ -6,7 +6,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.query
         )
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     app.get('/stores/getreturnlinesbysize', isLoggedIn, allowed('access_return_lines', {send: true}), (req, res) => {
         fn.getAll(
@@ -17,7 +17,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 required: true
         })])
         .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     app.get('/stores/getreturns',           isLoggedIn, allowed('access_returns',      {send: true}), (req, res) => {
         fn.getAllWhere(
@@ -25,7 +25,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.query
         )
         .then(returns => res.send({result: true, returns: returns}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 
     //POST
@@ -40,9 +40,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         Promise.allSettled(actions)
         .then(results => {
             if (fn.promise_results(results)) res.send({result: true, message: 'Lines returned'})
-            else fn.send_error('Some lines failed', res);
+            else res.error.send('Some lines failed', res);
         })
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     function return_issue_line(line, user_id) {
         return new Promise((resolve, reject) => {

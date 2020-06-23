@@ -4,7 +4,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
     app.get('/canteen/items', isLoggedIn, allowed('access_canteen'), (req, res) => {
         fn.getAllWhere(m.canteen_items, {item_id: {[op.not]: 0}})
         .then(items => res.render('canteen/items/index', {items: items}))
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     // New
@@ -18,7 +18,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Item added');
             res.redirect('/canteen/items');
         })
-        .catch(err => fn.error(err, '/canteen/items', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     //Edit
@@ -28,7 +28,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {item_id: req.params.id}
         )
         .then(item => res.render('canteen/items/edit', {item: item}))
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     app.put('/canteen/items/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         fn.update(
@@ -39,7 +39,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .then(result => {
             req.flash('success', 'Item updated');
             res.redirect('/canteen/items/' + req.params.id);
-        }).catch(err => fn.error(err, '/canteen/items', req, res));
+        }).catch(err => res.error.redirect(err, req, res));
     });
 
     //Show
@@ -78,11 +78,11 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         writeoff: writeoff
                     });
                 })
-                .catch(err => fn.error(err, '/canteen', req, res));
+                .catch(err => res.error.redirect(err, req, res));
             })
-            .catch(err => fn.error(err, '/canteen', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     // Delete
@@ -96,7 +96,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 req.flash('success', 'Item deleted');
                 res.redirect('/canteen/items');
             })
-            .catch(err => fn.error(err, '/canteen/items', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         } else {
             req.flash('danger', 'This item can not be deleted');
             res.redirect('/canteen/items');

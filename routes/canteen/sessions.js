@@ -15,7 +15,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 });
             });
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     // New
     app.post('/canteen/sessions', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
@@ -32,11 +32,11 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             fn.editSetting('canteen_session', new_session.session_id)
             .then(result => {
                 if (result) res.redirect('/canteen/pos');
-                else fn.error(new Error('Session not saved to settings'), '/', req, res);
+                else res.error.redirect(new Error('Session not saved to settings'), '/', req, res);
             })
-            .catch(err => fn.error(err, '/canteen/sessions', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
-        .catch(err => fn.error(err, '/canteen/sessions', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //Show
     app.get('/canteen/sessions/:id', isLoggedIn, allowed('access_canteen'), (req, res) => {
@@ -81,9 +81,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     items: items
                 });
             })
-            .catch(err => fn.error(err, '/canteen', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     // Close session
     app.put('/canteen/sessions/:id', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
@@ -96,7 +96,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Session updated');
             res.redirect('/canteen/sessions/' + req.params.id);
         })
-        .catch(err => fn.error(err, '/canteen/sessions/' + req.params.id, req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     // Close session
     app.put('/canteen/sessions/:id/close', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
@@ -156,20 +156,20 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                                         req.flash('success', 'Session closed. Takings: £'+ takings.toFixed(2));
                                         res.redirect('/canteen/sessions');
                                     })
-                                    .catch(err => fn.error(err, '/canteen/sessions', req, res));
+                                    .catch(err => res.error.redirect(err, req, res));
                                 })
-                                .catch(err => fn.error(err, '/canteen/sessions', req, res));
+                                .catch(err => res.error.redirect(err, req, res));
                             })
-                            .catch(err => fn.error(err, '/canteen/sessions', req, res));
+                            .catch(err => res.error.redirect(err, req, res));
                         })
-                        .catch(err => fn.error(err, '/canteen/sessions', req, res));
+                        .catch(err => res.error.redirect(err, req, res));
                     })
-                    .catch(err => fn.error(err, '/canteen/sessions', req, res));
+                    .catch(err => res.error.redirect(err, req, res));
                 })
-                .catch(err => fn.error(err, '/canteen/sessions', req, res));
+                .catch(err => res.error.redirect(err, req, res));
             })
-            .catch(err => fn.error(err, '/canteen/sessions', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
-        .catch(err => fn.error(err, '/canteen/sessions', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 };

@@ -20,15 +20,14 @@ function getAdjusts(size_id) {
                 cell1.innerText    = new Date(adjust._date).toDateString();
                 cell2.innerText = adjust._type;
                 cell3.innerText = adjust._qty;
-                cell4.innerText = adjust._qty_difference;
+                cell4.innerText = adjust._variance;
                 cell5.innerText = adjust.user.rank._rank + ' ' + adjust.user._name + ', ' + adjust.user._ini;
             });
         } else alert('Error: ' + response.error)
         spn_adjusts.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting adjustments'));
-    let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getadjustsbysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/adjusts/' + size_id);
     XHR.send();
 };
 function getReceipts(size_id) {

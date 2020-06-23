@@ -17,9 +17,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         sale_id:    sale_id
                     })
                 })
-                .catch(err => fn.error(err, '/canteen', req, res));
+                .catch(err => res.error.redirect(err, req, res));
             })
-            .catch(err => fn.error(err, '/canteen', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         })
     });
     app.post('/canteen/sale_lines', isLoggedIn, allowed('access_canteen'), (req, res) => {
@@ -47,15 +47,15 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                                 req.body.sale_line
                             )
                             .then(sale_line => res.redirect('/canteen/pos'))
-                            .catch(err =>fn.error(err, '/canteen/pos', req, res));
+                            .catch(err =>res.error.redirect(err, req, res));
                         })
-                        .catch(err => fn.error(err, '/canteen/pos', req, res));
+                        .catch(err => res.error.redirect(err, req, res));
                     } else {
                         let newQty = Number(line._qty) + Number(req.body.sale_line._qty)
                         if (newQty === 0) {
                             fn.delete('canteen_sale_lines', {line_id: line.line_id})
                             .then(result => res.redirect('/canteen/pos'))
-                            .catch(err =>fn.error(err, '/canteen/pos', req, res));
+                            .catch(err =>res.error.redirect(err, req, res));
                         } else {
                             fn.update(
                                 m.canteen_sale_lines,
@@ -63,11 +63,11 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                                 {line_id: line.line_id}
                             )
                             .then(result => res.redirect('/canteen/pos'))
-                            .catch(err =>fn.error(err, '/canteen/pos', req, res));
+                            .catch(err =>res.error.redirect(err, req, res));
                         };
                     };
                 })
-                .catch(err =>fn.error(err, '/canteen/pos', req, res));
+                .catch(err =>res.error.redirect(err, req, res));
             });
         } else {
             req.flash('danger', 'No items specified');
@@ -87,7 +87,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     if (newQty <= 0) {
                         fn.delete('canteen_sale_lines', {line_id: line.line_id})
                         .then(result => res.redirect('/canteen/pos'))
-                        .catch(err =>fn.error(err, '/canteen/pos', req, res));
+                        .catch(err =>res.error.redirect(err, req, res));
                     } else {
                         fn.update(
                             m.canteen_sale_lines,
@@ -95,10 +95,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             {line_id: line.line_id}
                         )
                         .then(result => res.redirect('/canteen/pos'))
-                        .catch(err =>fn.error(err, '/canteen/pos', req, res));
+                        .catch(err =>res.error.redirect(err, req, res));
                     };
                 })
-                .catch(err =>fn.error(err, '/canteen/pos', req, res));
+                .catch(err =>res.error.redirect(err, req, res));
             });
         } else {
             req.flash('danger', 'No items specified');
@@ -139,9 +139,9 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             res.redirect('/canteen/pos');
                         })
                     })
-                    .catch(err => fn.error(err, '/canteen', req, res));
+                    .catch(err => res.error.redirect(err, req, res));
                 })
-                .catch(err => fn.error(err, '/canteen/pos'))
+                .catch(err => res.error.redirect(err, req, res))
             })
             .catch();
         } else {
@@ -160,6 +160,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             ]}
         )
         .then(sale => res.render('canteen/sales/show', {sale: sale}))
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 };

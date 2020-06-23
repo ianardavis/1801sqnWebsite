@@ -1,42 +1,35 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //INDEX
+module.exports = (app, allowed, inc, isLoggedIn, m) => {
+    let orders = require(process.env.ROOT + '/fn/orders'),
+        stock  = require(process.env.ROOT + '/fn/stock');
     app.get('/stores/reports',     isLoggedIn, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
 
     app.get('/stores/reports/:id', isLoggedIn, allowed('access_reports'), (req, res) => {
         if (Number(req.params.id) === 1) {
-            fn.getAllWhere(
-                m.stock,
-                {_qty: {[op.lt]: 0}},
-                {include: [
+            m.stock.findAll({
+                where: {_qty: {[op.lt]: 0}},
+                include: [
                     m.locations,
                     inc.sizes()
-                ],
-                nullOk: true}
-            )
+            ]})
             .then(stock => res.render('stores/reports/show/1', {stock: stock}))
-            .catch(err => fn.error(err, '/stores/reports', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         } else if (Number(req.params.id) === 2) {
-            fn.getAllWhere(
-                m.issues,
-                {
+            m.issues.findAll({
+                where: {
                     _date_due: {[op.lte]: Date.now()},
                     _complete: 0
                 },
-                {
-                    include: [
+                include: [
                         inc.issue_lines(),
                         inc.users({as: '_to'})
-                    ],
-                    nullOk: true
-                }
-            )
+                    ]
+            })
             .then(issues => res.render('stores/reports/show/2', {issues: issues}))
-            .catch(err => fn.error(err, '/stores/reports', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         } else if (Number(req.params.id) === 3) {
-            fn.getAll(
-                m.items,
-                [{
+            m.items.findAll({
+                include: [{
                     model: m.sizes,
                     where: {_orderable: 1},
                     include: [
@@ -44,30 +37,26 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                         inc.suppliers({where: {supplier_id: Number(req.query.supplier_id) || 1}}),
                         inc.order_lines({as: 'orders', where: {demand_line_id: null}}),
                         inc.request_lines({as: 'requests', where: {_status: 'Pending'}})
-                    ]
-                }]
-            )
+            ]}]})
             .then(items => {
-                fn.getAllWhere(m.suppliers, {supplier_id: {[op.not]: 3}})
+                m.suppliers.findAll()
                 .then(suppliers => res.render('stores/reports/show/3', {items: items, suppliers: suppliers, supplier_id: req.query.supplier_id || 1}))
-                .catch(err => fn.error(err, '/stores/reports', req, res));
+                .catch(err => res.error.redirect(err, req, res));
             })
-            .catch(err => fn.error(err, '/stores/reports', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         } else if (Number(req.params.id) === 4) {
-            fn.getAll(
-                m.items,
-                [{
+            m.items.findAll({
+                include: [{
                     model: m.sizes,
                     include: [inc.stock({size: true})]
-                }]                
-            )
+                }]
+            })
             .then(items => res.render('stores/reports/show/4', {items: items}))
-            .catch(err => fn.error(err, '/stores/reports', req, res));
+            .catch(err => res.error.redirect(err, req, res));
         } else if (Number(req.params.id) === 5) {
-            fn.getAll(
-                m.locations,
-                [inc.stock({size: true})]
-            )
+            m.locations.findAll({
+                include: [inc.stock({size: true})]
+            })
             .then(locations => {
                 locations.sort(function(a, b) {
                     var locationA = a._location.toUpperCase(); // ignore upper and lowercase
@@ -84,29 +73,42 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                   });
                 res.render('stores/reports/show/5', {locations: locations})
             })
-            .catch(err => fn.error(err, '/stores/reports', req, res));
-        } else {
-            req.flash('danger', 'Invalid report');
-            res.redirect('/stores/reports');
-        };
+            .catch(err => res.error.redirect(err, req, res));
+        } else res.error.redirect(new Error('Invalid report'), req, res);
     });
 
     app.post('/stores/reports/3',  isLoggedIn, allowed('access_reports'), (req, res) => {
         let selected = []
         for (let [key, line] of Object.entries(req.body.selected)) {
-            if (Number(line) > 0) selected.push({size_id: key, qty: line});
+            if (Number(line) > 0) selected.push({size_id: key, _qty: line});
         };
         if (selected.length > 0) {
-            fn.createOrder(
-                req.body.ordered_for,
-                selected,
-                req.user.user_id
-            )
-            .then(order_id => {
-                if (Number(req.body.ordered_for) === -1) res.redirect('/stores/reports/3')
-                else res.redirect('/stores/reports/3');
+            orders.create({
+                m: {orders: m.orders},
+                order: {
+                    ordered_for: req.body.ordered_for,
+                    user_id: req.user.user_id
+                }
             })
-            .catch(err => fn.error(err, '/stores/reports/3', req, res));
+            .then(result => {
+                let actions = [];
+                selected.forEach(line => {
+                    line.order_id = result.order_id
+                    actions.push(orders.createLine({
+                        m: {
+                            sizes: m.sizes,
+                            orders: m.orders,
+                            order_lines: m.order_lines,
+
+                        },
+                        line: line
+                    }))
+                })
+                Promise.allSettled(actions)
+                .then(results => res.redirect('/stores/reports/3'))
+                .catch(err => res.error.redirect(err, req, res));
+            })
+            .catch(err => res.error.redirect(err, req, res));
         } else {
             req.flash('info', 'No items selected');
             res.redirect('/stores/reports/3');
@@ -119,12 +121,19 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             if (value) {
                 let stock_id = Number(String(key).replace('stock_id_', ''));
                 actions.push(
-                    fn.adjustStock(
-                        'Count',
-                        stock_id,
-                        Number(value),
-                        req.user.user_id
-                    )
+                    stock.adjust({
+                        m: {
+                            stock: m.stock,
+                            adjusts: m.adjusts
+                        },
+                        adjustment: {
+                            stock_id: stock_id,
+                            _type:    'Count',
+                            _qty:     Number(value),
+                            _date:    Date.now(),
+                            user_id:  req.user.user_id
+                        }
+                    })
                 );
             };
         };

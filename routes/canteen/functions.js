@@ -38,7 +38,7 @@ module.exports = (fn, m, inc) => {
             } else resolve(session_id);
         })
         .catch(err => {
-            fn.error(err, '/canteen', req, res)
+            res.error.redirect(err, req, res)
         })
     });
     fn.getSale = (req, res) => new Promise(resolve => {
@@ -58,15 +58,15 @@ module.exports = (fn, m, inc) => {
                         fn.editSetting('sale_' + req.user.user_id, sale.sale_id)
                         .then(result => {
                             if (result) resolve(sale.sale_id)
-                            else fn.error(new error('User sale not saved to setting'), '/canteen', req, res);
+                            else res.error.redirect(new error('User sale not saved to setting'), req, res);
                         })
-                        .catch(err => fn.error(err, '/canteen', req, res));
+                        .catch(err => res.error.redirect(err, req, res));
                     })
-                    .catch(err => fn.error(err, '/canteen', req, res));
+                    .catch(err => res.error.redirect(err, req, res));
                 });
             } else resolve(sale_id);
         })
-        .catch(err => fn.error(err, '/canteen', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     fn.completeCanteenMovement = (action, line, table) => new Promise((resolve, reject) => {

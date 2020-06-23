@@ -1,6 +1,6 @@
 module.exports = (inc, m) => {
     inc.users = (options = {}) => {
-        let include = []
+        let include = [];
         if (options.include) options.include;
         include.push(m.ranks);
         return {

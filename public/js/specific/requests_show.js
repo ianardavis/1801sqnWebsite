@@ -223,7 +223,7 @@ function getNSNs(stock_id, size_id, line_id) {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/getnsnsbysize/' + size_id);
+    XHR.open('GET', '/stores/get/nsns/bysize/' + size_id);
     XHR.send();
 };
 function getSerials(stock_id, size_id, line_id) {
@@ -258,6 +258,6 @@ function getSerials(stock_id, size_id, line_id) {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/getnsnsbysize/' + size_id);
+    XHR.open('GET', '/stores/get/nsns/bysize/' + size_id);
     XHR.send();
 };

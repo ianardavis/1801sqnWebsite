@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_qty_difference': {
+    '_variance': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"

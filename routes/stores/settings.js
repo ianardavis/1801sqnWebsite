@@ -23,7 +23,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 });
             });
         })
-        .catch(err => fn.error(err, '/stores', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
 
     //POST
@@ -43,7 +43,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Record added to ' + table);
             res.redirect('/stores/settings?show=' + table)
         })
-        .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
+        .catch(err => res.error.redirect(err, req, res));
     };
     
     //PUT
@@ -66,7 +66,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.flash('success', 'Record updated in ' + table);
             res.redirect('/stores/settings?show=' + table);
         })
-        .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
+        .catch(err => res.error.redirect(err, req, res));
     };
     
     //DELETE
@@ -91,10 +91,10 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 {nullOK: true}
             )
             .then(result => {
-                if (result) fn.error(new Error('Can not delete ' + fn.singularise(table) + ' whilst it has sub options'), '/stores/settings?show=item-classes', req, res);
+                if (result) res.error.redirect(new Error('Can not delete ' + fn.singularise(table) + ' whilst it has sub options'), '/stores/settings?show=item-classes', req, res);
                 else _delete(table, req, res);
             })
-            .catch(err => fn.error(err, '/stores/settings?show=item-classes', req, res))
+            .catch(err => res.error.redirect(err, req, res))
         } else _delete(table, req, res);
     };
     function deleteSetting(table, req, res) {
@@ -116,7 +116,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                     res.redirect('/stores/settings?show=' + table);
                 };
             })
-            .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
+            .catch(err => res.error.redirect(err, req, res));
         };
     };
     function _delete (table, req, res) {
@@ -130,7 +130,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             if (result) req.flash('success', 'Record deleted from ' + table);
             res.redirect('/stores/settings?show=' + table);
         })
-        .catch(err => fn.error(err, '/stores/settings?show=' + table, req, res));
+        .catch(err => res.error.redirect(err, req, res));
     };
 
 };

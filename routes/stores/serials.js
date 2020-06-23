@@ -7,7 +7,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {include: [m.items]}
         )
         .then(itemsize => res.render('stores/serials/new', {itemsize: itemsize}))
-        .catch(err => fn.error(err, '/stores/sizes/' + req.query.size_id, req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //SHOW
     app.get('/stores/serials/:id',      isLoggedIn, allowed('serial_edit'),                  (req, res) => {
@@ -22,7 +22,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 show_tab: req.query.tab || 'details'
             });
         })
-        .catch(err => fn.error(err, '/', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //EDIT
     app.get('/stores/serials/:id/edit', isLoggedIn, allowed('serial_edit'),                  (req, res) => {
@@ -41,7 +41,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                 });
             });
         })
-        .catch(err => fn.error(err, '/stores/items', req, res));
+        .catch(err => res.error.redirect(err, req, res));
     });
     //ASYNC GET
     app.get('/stores/getserials',       isLoggedIn, allowed('access_serials', {send: true}), (req, res) => {
@@ -50,7 +50,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.query
         )
         .then(serials => res.send({result: true, serials: serials}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 
     //POST
@@ -60,7 +60,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             req.body.serial
         )
         .then(serial => res.send({result: true, message: 'Serial added'}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 
     //PUT
@@ -71,7 +71,7 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {serial_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Serial # saved'}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
     
     //DELETE
@@ -81,6 +81,6 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             {serial_id: req.params.id}
         )
         .then(result => res.send({result: true, message: 'Serial deleted'}))
-        .catch(err => fn.send_error(err, res));
+        .catch(err => res.error.send(err, res));
     });
 };
