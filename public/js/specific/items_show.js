@@ -23,6 +23,6 @@ function getSizes(item_id) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting sizes'));
     let query = ['item_id=' + item_id];
-    XHR.open('GET', '/stores/getsizes?' + query.join('&'));
+    XHR.open('GET', '/stores/get/sizes?' + query.join('&'));
     XHR.send();
 };

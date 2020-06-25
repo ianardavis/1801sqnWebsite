@@ -294,7 +294,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/orders/:id',      isLoggedIn, allowed('order_delete',       {send: true}),              (req, res) => {
-        m.order_lines.destroy(where: {order_id: req.params.id})
+        m.order_lines.destroy({where: {order_id: req.params.id}})
         .then(result => {
             db.destroy({
                 table: m.orders,

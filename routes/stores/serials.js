@@ -1,20 +1,19 @@
-module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //NEW
+module.exports = (app, allowed, inc, isLoggedIn, m) => {
+    let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/serials/new',      isLoggedIn, allowed('serial_add'),                   (req, res) => {
-        fn.getOne(
-            m.sizes,
-            {size_id: req.query.size_id},
-            {include: [m.items]}
-        )
+        db.findOne({
+            table: m.sizes,
+            where: {size_id: req.query.size_id},
+            include: [m.items]
+        })
         .then(itemsize => res.render('stores/serials/new', {itemsize: itemsize}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    //SHOW
     app.get('/stores/serials/:id',      isLoggedIn, allowed('serial_edit'),                  (req, res) => {
-        fn.getOne(
-            m.serials,
-            {serial_id: req.params.id}
-        )
+        db.findOne({
+            table: m.serials,
+            where: {serial_id: req.params.id}
+        })
         .then(serial => {
             res.render('stores/serials/show', {
                 serial:   serial,
@@ -24,62 +23,40 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    //EDIT
     app.get('/stores/serials/:id/edit', isLoggedIn, allowed('serial_edit'),                  (req, res) => {
-        fn.getOne(
-            m.serials,
-            {serial_id: req.params.id},
-            {include: [inc.sizes()]}
-        )
-        .then(serial => {
-            fn.getNotes('serials', req.params.id, req)
-            .then(notes => {
-                res.render('stores/serials/edit', {
-                    serial: serial,
-                    notes:  notes,
-                    query:  {system: req.query.system || 2}
-                });
-            });
+        db.findOne({
+            table: m.serials,
+            where: {serial_id: req.params.id},
+            include: [inc.sizes()]
         })
+        .then(serial => res.render('stores/serials/edit', {serial: serial}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    //ASYNC GET
-    app.get('/stores/getserials',       isLoggedIn, allowed('access_serials', {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.serials,
-            req.query
-        )
+
+    app.get('/stores/get/serials',      isLoggedIn, allowed('access_serials', {send: true}), (req, res) => {
+        m.serials.findAll({where: req.query})
         .then(serials => res.send({result: true, serials: serials}))
         .catch(err => res.error.send(err, res));
     });
-
-    //POST
     app.post('/stores/serials',         isLoggedIn, allowed('serial_add',     {send: true}), (req, res) => {
-        fn.create(
-            m.serials,
-            req.body.serial
-        )
+        m.serials.create(req.body.serial)
         .then(serial => res.send({result: true, message: 'Serial added'}))
         .catch(err => res.error.send(err, res));
     });
-
-    //PUT
     app.put('/stores/serials/:id',      isLoggedIn, allowed('serial_edit',    {send: true}), (req, res) => {
-        fn.update(
-            m.serials,
-            req.body.serial,
-            {serial_id: req.params.id}
-        )
+        db.update({
+            table: m.serials,
+            where: {serial_id: req.params.id},
+            record: req.body.serial
+        })
         .then(result => res.send({result: true, message: 'Serial # saved'}))
         .catch(err => res.error.send(err, res));
     });
-    
-    //DELETE
     app.delete('/stores/serials/:id',   isLoggedIn, allowed('serial_delete',  {send: true}), (req, res) => {
-        fn.delete(
-            m.serials, 
-            {serial_id: req.params.id}
-        )
+        db.destroy({
+            table: m.serials,
+            where: {serial_id: req.params.id}
+        })
         .then(result => res.send({result: true, message: 'Serial deleted'}))
         .catch(err => res.error.send(err, res));
     });

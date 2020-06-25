@@ -22,7 +22,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(result => res.send({result: true, message: 'File details saved'}))
         .catch(err => res.error.send(err, res));
     });
-    
     app.post('/stores/files',         isLoggedIn, allowed('file_add',    {send: true}), (req, res) => {
         if (!req.files || Object.keys(req.files).length !== 1) res.error.send('No file or multiple files selected', res)
         else {
@@ -50,7 +49,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             );
         };
     });
-
     app.delete('/stores/files/:id',   isLoggedIn, allowed('file_delete', {send: true}), (req, res) => {
         db.findOne({
             table: m.files,

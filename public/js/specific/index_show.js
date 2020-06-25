@@ -17,6 +17,6 @@ function getCount(table, query, options) {
         } else alert('Error: ' + response.error)
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting '+ table));
-    XHR.open('GET', '/stores/get' + table + '?' + query.join('&'));
+    XHR.open('GET', '/stores/get/' + table + '?' + query.join('&'));
     XHR.send();
 };

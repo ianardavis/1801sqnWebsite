@@ -168,7 +168,7 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/addSize.js"></script>
-<script src="/js/specific/demands_show.js"></script>
+<script src="/js/get/demand_lines.js"></script>
 <script>
     window.addEventListener( "load", function () {
 		<% if (!demand._complete && !demand._closed) { %>
@@ -185,5 +185,5 @@
     });
 	showTab('<%= show_tab %>');
 </script>
-<script async>getLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= permissions.demand_line_delete %>)</script>
+<script async>getDemandLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= permissions.demand_line_delete || false %>)</script>
 <% include ../../partials/foot/htmlClose %>

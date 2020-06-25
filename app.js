@@ -5,38 +5,25 @@ var express  = require('express'),
     bb       = require('express-busboy'),
     flash    = require('connect-flash'),
     memStore = require('memorystore')(session);
-function portInUseCheck () {
-    return new Promise((resolve, reject) => {
-        console.log('Checking port 3000 is available');
-        const execSync = require('child_process').execSync;
-        try {
-            const output = execSync('ss -tnlp | grep :3000', {encoding: 'utf-8'});
-            let pid = output.substring(output.indexOf('pid=') + 4, output.indexOf(',', output.search('pid=')));
-            console.log('    In use by PID ' +  pid);
-            try {
-                const kill_output = execSync('kill -9 ' + pid, { encoding: 'utf-8' });
-                resolve('    PID killed');
-            } catch (error) {
-                reject(error);
-            };
-        } catch (error) {
-            if (error.output[0]) reject(error)
-            else resolve('    Not in use');
-        };
-    });
-};
-portInUseCheck()
+process.env.ROOT = __dirname;
+let port = require(process.env.ROOT + '/fn/port'),
+   _port = 3000;
+port.check(_port)
 .then(result => {
     console.log(result);
-    process.env.ROOT = __dirname;
     if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
     console.log('environment: ' + process.env.NODE_ENV);
+
+    console.log('Busboy:');
     bb.extend(app, {
         arrayLimit: 200,
         upload: true,
         path: process.env.ROOT + '/public/uploads',
         allowedPath: /./
     });
+    console.log('   Loaded');
+
+    console.log('Session:');
     app.use(
         session({
             secret: '1801 (Alnwick) Squadron Air Training Corps',
@@ -45,8 +32,14 @@ portInUseCheck()
             saveUninitialized: true
         })
     );
+    console.log('   Setup');
+
+    console.log('Passport:');
     app.use(passport.initialize());
     app.use(passport.session());
+    console.log('   Setup');
+
+    console.log('Flash:');
     app.use(flash());
     app.use((req, res, next) => {
         res.locals.user    = req.user;
@@ -55,36 +48,41 @@ portInUseCheck()
         res.locals.success = req.flash('success');
         next();
     });
-    app.set('view engine', 'ejs');
-    app.use(express.static(__dirname + '/public'));
+    console.log('   Setup');
 
+    console.log('Engine:');
+    app.set('view engine', 'ejs');
+    console.log('   Set');
+
+    console.log('Public folder:');
+    app.use(express.static(__dirname + '/public'));
+    console.log('   Set');
+
+    console.log('Error handling:');
     app.use((req, res, next) => {
         res.error = require(process.env.ROOT + '/fn/error');
-        req.singularise = str => {
-            if (str.endsWith('lines')) {
-                return str.substring(0, str.length - 1);
-            } else if (str.endsWith('ies')) {
-                return str.substring(0, str.length - 3) + 'y';
-            } else if (str.endsWith('es')) {
-                return str.substring(0, str.length - 2);
-            } else {
-               return str.substring(0, str.length - 1);
-            };
-        };
         next();
     });
+    console.log('   Set');
 
-    let m  = require('./db/models'), fn = {};
-    require('./functions')(fn, m);
-    require('./routes/stores') (app, m, fn);
-    require('./routes/canteen')(app, m, fn);
+    console.log('Models:');
+    let m           = require(process.env.ROOT + '/db/models'),
+        permissions = require(process.env.ROOT + '/fn/permissions');
+    console.log('   Loaded');
 
+    console.log('Routes:');
+    require('./routes/stores') (app, m, permissions.get);
+    require('./routes/canteen')(app, m, permissions.get);
     require('./routes/site')   (app, m);
+    console.log('   Loaded');
+    
+    console.log('Configuring Passport:');
     require('./config/passport.js')(passport, m);
+    console.log('   Done');
 
-    app.listen(3000, err => {
+    app.listen(_port, err => {
         if (err) console.log(err);
-        else console.log('Server listening');
+        else console.log('Server listening on port: ' + _port);
     });
 })
 .catch(err => console.log(err));

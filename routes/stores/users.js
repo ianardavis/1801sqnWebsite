@@ -1,33 +1,32 @@
 const op     = require('sequelize').Op,
       bCrypt = require('bcrypt');
-function options() {
+_options = () => {
     return [
         {table: 'ranks'},
         {table: 'statuses'}
     ]
 };
-module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //INDEX
+module.exports = (app, allowed, inc, isLoggedIn, m) => {
+    let db      = require(process.env.ROOT + '/fn/db'),
+        options = require(process.env.ROOT + '/fn/options');
     app.get('/stores/users',              isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
         if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id);
         else {
-            fn.getAll(m.statuses)
+            m.statuses.findAll()
             .then(statuses => res.render('stores/users/index', {statuses: statuses}));
         };
     });
-    //NEW
     app.get('/stores/users/new',          isLoggedIn, allowed('user_add'),                                 (req, res) => {
-        fn.getOptions(options(), req)
+        options.get(_options())
         .then(classes => res.render('stores/users/new', {classes: classes}))
     });
-    //SHOW
     app.get('/stores/users/:id',          isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            fn.getOne(
-                m.users,
-                {user_id: req.params.id},
-                {include: [m.ranks, m.statuses]}
-            )
+            db.findOne({
+                table: m.users,
+                where: {user_id: req.params.id},
+                include: [m.ranks, m.statuses]
+            })
             .then(user => {
                 res.render('stores/users/show', {
                     f_user:   user,
@@ -41,107 +40,82 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
             res.redirect('/stores/users');
         };
     });
-    //EDIT PASSWORD
     app.get('/stores/users/:id/password', isLoggedIn, allowed('user_password', {allow: true}),             (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            fn.getOne(
-                m.users,
-                {user_id: req.params.id},
-                {include: [m.ranks]}
-            )
+            db.findOne({
+                table: m.users,
+                where: {user_id: req.params.id},
+                include: [m.ranks]
+            })
             .then(user => res.render('stores/users/password', {user: user}))
             .catch(err => res.error.redirect(err, req, res));
         } else res.error.redirect(new Error('Permission denied'), '/', req, res);
     });
-    //EDIT
     app.get('/stores/users/:id/edit',     isLoggedIn, allowed('user_edit'),                                (req, res) => {
-        fn.getOptions(options(), req)
+        options.get(_options())
         .then(classes => {
-            fn.getOne(
-                m.users,
-                {user_id: req.params.id},
-                {include: [m.ranks]}
-            )
+            db.findOne({
+                table: m.users,
+                where: {user_id: req.params.id},
+                include: [m.ranks]
+            })
             .then(user => {
                 res.render('stores/users/edit', {
                     user:    user,
                     classes: classes
                 });
             })
-            .catch(err => fn.error(err, '/stores/users/' + req.params.id, req, res));
+            .catch(err => res.error.redirect(err, req, res));
         });
     });
-    //ASYNC GET
-    app.get('/stores/getusers',           isLoggedIn, allowed('access_users',  {send: true}),              (req, res) => {
-        fn.getAllWhere(
-            m.users,
-            req.query,
-            {include: [m.ranks]}
-        )
+    
+    app.get('/stores/get/users',          isLoggedIn, allowed('access_users',  {send: true}),              (req, res) => {
+        m.users.findAll({include: [m.ranks]})
         .then(users => res.send({result: true, users: users}))
         .catch(err => res.error.send(err, res));
     });
-
-    //POST
+    
     app.post('/stores/users',             isLoggedIn, allowed('user_add',      {send: true}),              (req, res) => {
         let salt = bCrypt.genSaltSync(10);
         req.body.user._salt = salt;
         req.body.user._password = bCrypt.hashSync(req.body._password, salt);
         req.body.user._reset = 0
-        fn.create(
-            m.users,
-            req.body.user
-        )
-        .then(user => {
-            fn.create(
-                m.permissions,
-                {user_id: user.user_id}
-            )
-            .then(permission => res.send({result: true, message: 'User added'}))
-            .catch(err => res.error.send(err, res))
-        })
+        m.users.create(req.body.user)
+        .then(user => res.send({result: true, message: 'User added'}))
         .catch(err => res.error.send(err, res));
     });
-
-    //PUT PASSWORD
     app.put('/stores/password/:id',       isLoggedIn, allowed('user_password', {send: true, allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             req.body.user._salt = bCrypt.genSaltSync(10)
             req.body.user._password = bCrypt.hashSync(req.body._password, req.body.user._salt);
-            fn.update(
-                m.users,
-                req.body.user,
-                {user_id: req.params.id}
-            )
+            db.update({
+                table: m.users,
+                where: {user_id: req.params.id},
+                record: req.body.user
+            })
             .then(result => res.send({result: true, message: 'Password changed'}))
             .catch(err => res.error.send(err, res));
         } else res.error.send('Permission denied', res)
     });
-    //PUT
     app.put('/stores/users/:id',          isLoggedIn, allowed('user_edit',     {send: true}),              (req, res) => {
         if (!req.body.user)        req.body.user = {};
         if (!req.body.user._reset) req.body.user._reset = 0;
-        fn.update(
-            m.users,
-            req.body.user,
-            {user_id: req.params.id}
-        )
+        db.update({
+            table: m.users,
+            where: {user_id: req.params.id},
+            record: req.body.user
+        })
         .then(result => res.send({result: true, message: 'User saved'}))
         .catch(err => res.error.send(err,message, res));
     });
-
-    //DELETE
     app.delete('/stores/users/:id',       isLoggedIn, allowed('user_delete',   {send: true}),              (req, res) => {
         if (Number(req.user.user_id) !== Number(req.params.id)) {
-            fn.delete(
-                m.users,
-                {user_id: req.params.id}
-            )
+            m.permissions.destroy({where: {user_id: req.params.id}})
             .then(result => {
-                fn.delete(
-                    m.permissions,
-                    {user_id: req.params.id}
-                )
+                db.destroy({
+                    table: m.users,
+                    where: {user_id: req.params.id}
+                })
                 .then(result => res.send({result: true, message: 'User/Permissions deleted'}))
                 .catch(err => res.error.send(err, res));
             })

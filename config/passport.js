@@ -1,20 +1,22 @@
 module.exports = (passport, m) => {
     var bCrypt = require('bcrypt'),
-        local  = require('passport-local').Strategy,
-        fn     = {};
-        require(process.env.ROOT + '/functions')(fn, m);
-
+        local  = require('passport-local').Strategy;
     passport.serializeUser((user, done) => done(null, user._login_id));
 
     passport.deserializeUser((_login_id, done) => {
-        fn.getOne(
-            m.users,
-            {_login_id: _login_id},
-            {attributes: ['_login_id', 'user_id', '_reset']}
-        )
+        m.users.findOne({
+            where: {_login_id: _login_id},
+            attributes: ['_login_id', 'user_id', '_reset']
+        })
         .then(user => {
-            done(null, user.get());
-            return null;
+            if (user) {
+                done(null, user.get());
+                return null;
+            } else {
+                console.log(err);
+                done(err, null);
+                return null;
+            };
         })
         .catch(err => {
             console.log(err);
@@ -30,19 +32,15 @@ module.exports = (passport, m) => {
             passReqToCallback: true
         },(req, _login_id, _password, done) => {
             var isValidPassword = (userpass, password) => {return bCrypt.compareSync(password, userpass)};
-            fn.getOne(
-                m.users,
-                {_login_id: _login_id},
-                {
-                    include: [{
-                        model: m.permissions,
-                        where: {_permission: 'account_enabled'},
-                        required: false
-                    }],
-                    attributes: ['_login_id', 'user_id', '_reset', '_password'],
-                    nullOK: true
-                }
-            )
+            m.users.findOne({
+                where: {_login_id: _login_id},
+                include: [{
+                    model: m.permissions,
+                    where: {_permission: 'account_enabled'},
+                    required: false
+                }],
+                attributes: ['_login_id', 'user_id', '_reset', '_password']
+            })
             .then(user => {
                 if (!user) {
                     req.flash('danger', 'Invalid username or password!');

@@ -27,6 +27,6 @@ function getUsers() {
     let sel_status = document.querySelector('#sel_status'),
         query      = [];
     query.push('status_id=' +   sel_status.value);
-    XHR.open('GET', '/stores/getusers?' + query.join('&'));
+    XHR.open('GET', '/stores/get/users?' + query.join('&'));
     XHR.send();
 };

@@ -119,7 +119,7 @@ function showActions(size_id, line_id) {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/getsize/' + size_id);
+    XHR.open('GET', '/stores/get/size/' + size_id);
     XHR.send();
 };
 function getStock(size_id, line_id) {
@@ -188,7 +188,7 @@ function getStock(size_id, line_id) {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/getsize/' + size_id);
+    XHR.open('GET', '/stores/get/size/' + size_id);
     XHR.send();
 };
 function getNSNs(stock_id, size_id, line_id) {

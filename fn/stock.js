@@ -1,14 +1,14 @@
 module.exports = {
-    add: (options = {}) => new Promise((resolve, reject) => {
+    increment: (options = {}) => new Promise((resolve, reject) => {
         options.table.findByPk(options.id)
-        .then(stock => stock.increment('_qty', {by: options.qty}))
-        .then(stock => resolve(stock.qty))
+        .then(stock => stock.increment(options.column || '_qty', {by: options.by}))
+        .then(stock => resolve(stock.qty - options.by))
         .catch(err => reject(err));
     }),
-    subtract: (options = {}) => new Promise((resolve, reject) => {
+    decrement: (options = {}) => new Promise((resolve, reject) => {
         options.table.findByPk(options.id)
-        .then(stock => stock.decrement('_qty', {by: options.qty}))
-        .then(stock => resolve(stock.qty))
+        .then(stock => stock.decrement(options.column || '_qty', {by: options.by}))
+        .then(stock => resolve(stock.qty - options.by))
         .catch(err => reject(err));
     }),
     adjust: (options = {}) => new Promise((resolve, reject) => {

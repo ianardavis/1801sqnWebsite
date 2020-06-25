@@ -1,29 +1,25 @@
-module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //ASYNC GET
-    app.get('/stores/getreturnlines',       isLoggedIn, allowed('access_return_lines', {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.return_lines,
-            req.query
-        )
+module.exports = (app, allowed, inc, isLoggedIn, m) => {
+    let db      = require(process.env.ROOT + '/fn/db'),
+        utils   = require(process.env.ROOT + '/fn/utils'),
+        returns = require(process.env.ROOT + '/fn/returns'),
+        stock   = require(process.env.ROOT + '/fn/stock');
+    app.get('/stores/get/returnlines',       isLoggedIn, allowed('access_return_lines', {send: true}), (req, res) => {
+        m.return_lines.findAll({where: req.query})
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/getreturnlinesbysize', isLoggedIn, allowed('access_return_lines', {send: true}), (req, res) => {
-        fn.getAll(
-            m.return_lines,
-            [inc.stock({
+    app.get('/stores/get/returnlines/bysize', isLoggedIn, allowed('access_return_lines', {send: true}), (req, res) => {
+        m.return_lines.findAll({
+            include: [inc.stock({
                 as: 'stock',
                 where: req.query,
                 required: true
-        })])
+        })]})
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/getreturns',           isLoggedIn, allowed('access_returns',      {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.returns,
-            req.query
-        )
+    app.get('/stores/get/returns',           isLoggedIn, allowed('access_returns',      {send: true}), (req, res) => {
+        m.returns.findAll({where: req.query})
         .then(returns => res.send({result: true, returns: returns}))
         .catch(err => res.error.send(err, res));
     });
@@ -39,30 +35,37 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         };
         Promise.allSettled(actions)
         .then(results => {
-            if (fn.promise_results(results)) res.send({result: true, message: 'Lines returned'})
+            if (utils.promiseResults(results)) res.send({result: true, message: 'Lines returned'})
             else res.error.send('Some lines failed', res);
         })
         .catch(err => res.error.send(err, res));
     });
-    function return_issue_line(line, user_id) {
-        return new Promise((resolve, reject) => {
-            fn.getOne(
-                m.issue_lines,
-                {line_id: line.line_id},
-                {include: [inc.issues()]}
-            )
-            .then(issue_line => {
-                if (Number(line._qty) > Number(issue_line._qty)) {
-                    reject(new Error('Returned quantity greater than issued quantity'));
-                } else {
-                    fn.createReturn(
-                        {
-                            from: issue_line.issue.issued_to,
-                            user_id: user_id
-                        }
-                    )
-                    .then(_return => {
-                        fn.createReturnLine({
+    return_issue_line = (line, user_id) => new Promise((resolve, reject) => {
+        db.findOne({
+            table: m.issue_lines,
+            where: {line_id: line.line_id},
+            include: [inc.issues()]
+        })
+        .then(issue_line => {
+            if (Number(line._qty) > Number(issue_line._qty)) {
+                reject(new Error('Returned quantity greater than issued quantity'));
+            } else {
+                returns.create({
+                    m: {returns: m.returns},
+                    return: {
+                        from: issue_line.issue.issued_to,
+                        user_id: user_id
+                    }
+                })
+                .then(_return => {
+                    returns.createLine({
+                        m: {
+                            returns: m.returns,
+                            return_lines: m.return_lines,
+                            stock: m.stock,
+                            serials: m.serials
+                        },
+                        line: {
                             return_id: _return.return_id,
                             size_id: issue_line.size_id,
                             stock_id: line.stock_id,
@@ -70,65 +73,60 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
                             _qty: line._qty,
                             user_id: user_id,
                             serial_id: issue_line.serial_id
-                        })
-                        .then(return_line_id => {
-                            if (Number(line._qty) === Number(issue_line._qty)) {
-                                fn.update(
-                                    m.issue_lines,
-                                    {return_line_id: return_line_id},/////////////////////////
-                                    {line_id: issue_line.line_id}
-                                )
-                                .then(result => resolve(true))
-                                .catch(err => reject(err));
-                            } else {
-                                let actions = [];
-                                actions.push(
-                                    fn.decrement(
-                                        issue_line.line_id,
-                                        line._qty,
-                                        'issue_lines'
-                                    )
-                                );
-                                actions.push(
-                                    fn.createNote({
-                                        table: 'issues',
-                                        id: issue_line.issue_id,
-                                        note: 'Line partially returned: ' + issue_line._line,
-                                        user_id: user_id,
-                                        system: true
-                                    })
-                                )
-                                let new_issue_line = {
-                                    issue_id:       issue_line.issue_id,
-                                    size_id:        issue_line.size_id,
-                                    stock_id:       issue_line.stock_id,
-                                    _line:          issue_line._line,
-                                    nsn_id:         issue_line.nsn_id,
-                                    _qty:           line._qty,
-                                    serial_id:      issue_line.serial_id,
-                                    return_line_id: return_line_id,
-                                    user_id:        user_id
-                                };
-                                actions.push(
-                                    fn.create(
-                                        m.issue_lines,
-                                        new_issue_line
-                                    )
-                                );
-                                Promise.allSettled(actions)
-                                .then(results => {
-                                    if (fn.promise_results(results)) resolve(return_line_id)
-                                    else reject(new Error('Some actions failed'));
-                                })
-                                .catch(err => reject(err));
-                            };
-                        })
-                        .catch(err => reject(err));
+                        }
                     })
-                    .catch(err => reject(err))
-                };
-            })
-            .catch(err => reject(err))
-        });
-    };
+                    .then(return_line_id => {
+                        if (Number(line._qty) === Number(issue_line._qty)) {
+                            db.update({
+                                table: m.issue_lines,
+                                where: {line_id: issue_line.line_id},
+                                record: {return_line_id: return_line_id}
+                            })
+                            .then(result => resolve(true))
+                            .catch(err => reject(err));
+                        } else {
+                            let actions = [];
+                            actions.push(
+                                stock.decrement({
+                                    table: m.issue_lines,
+                                    id: issue_line.line_id,
+                                    by: line._qty
+                                })
+                            );
+                            actions.push(
+                                m.notes.create({
+                                    _table: 'issues',
+                                    _id: issue_line.issue_id,
+                                    _note: 'Line partially returned: ' + issue_line._line,
+                                    user_id: user_id,
+                                    system: 1
+                                })
+                            )
+                            let new_issue_line = {
+                                issue_id:       issue_line.issue_id,
+                                size_id:        issue_line.size_id,
+                                stock_id:       issue_line.stock_id,
+                                _line:          issue_line._line,
+                                nsn_id:         issue_line.nsn_id,
+                                _qty:           line._qty,
+                                serial_id:      issue_line.serial_id,
+                                return_line_id: return_line_id,
+                                user_id:        user_id
+                            };
+                            actions.push(m.issue_lines.create(new_issue_line));
+                            Promise.allSettled(actions)
+                            .then(results => {
+                                if (utils.promiseResults(results)) resolve(return_line_id)
+                                else reject(new Error('Some actions failed'));
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err))
+            };
+        })
+        .catch(err => reject(err))
+    });
 };

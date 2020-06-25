@@ -58,7 +58,7 @@ function getReceipts(size_id) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting receipts'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getreceiptlinesbysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/receiptlines/bysize?' + query.join('&'));
     XHR.send();
 };
 function getIssues(size_id) {
@@ -91,7 +91,7 @@ function getIssues(size_id) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting issues'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getissuelinesbysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/issuelines/bysize?' + query.join('&'));
     XHR.send();
 };
 function getReturns(size_id) {
@@ -122,6 +122,6 @@ function getReturns(size_id) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting returns'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getreturnlinesbysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/returnlines/bysize?' + query.join('&'));
     XHR.send();
 };

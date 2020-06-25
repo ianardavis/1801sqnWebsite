@@ -1,10 +1,13 @@
-module.exports = (mw, getPermissions) => {
+module.exports = (mw, m, getPermissions) => {
     mw.isLoggedIn = (req, res, next) => {
         if (req.isAuthenticated()) {
             if ('/stores/users/' + req.user.user_id + '/password' ||
                 !req.user._reset
                 ) {
-                getPermissions(req.user.user_id)
+                getPermissions({
+                    m: {permissions: m.permissions},
+                    user_id: req.user.user_id
+                })
                 .then(permissions => {
                     res.locals.permissions = permissions;
                     return next();

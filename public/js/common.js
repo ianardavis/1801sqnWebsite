@@ -115,31 +115,41 @@ function show(table, id, options = {}) {
                           table + '_show_' + id,
                           'width=' + width + ',height=' + height + ',resizeable=no,location=no');
 };
-
-function sendData(form, method, _location, options = {reload: false, reload_opener: true, _close: true}) {
+sendData = (form, method, _location, options = {reload: false, reload_opener: true, _close: true}) => {
   const XHR = new XMLHttpRequest();
   const FD = new FormData(form);
-  XHR.addEventListener("load", function(event) {
+  XHR.addEventListener("load", event => {
       let response = JSON.parse(event.target.responseText);
       if (response.result) {
-          alert('Success: ' + response.message);
+          alert(response.message);
+          if (!options.args) options.args = [];
+          if (options.onComplete)    options.onComplete(...options.args);
           if (options.reload_opener) window.opener.location.reload();
           if (options.reload)        window.location.reload();
-          if (options._close)        close();
-          if (options.redirect)      window.location.replace(options.redirect);
-      } else {
-        alert('Error: ' + response.error);
-        window.location.reload();
-      };
+          else if (options._close)   close();
+          else if (options.redirect) window.location.replace(options.redirect);
+      } else alert('Error: ' + response.error);
   });
-  XHR.addEventListener("error", function(event) {
-      alert('Oops! Something went wrong.');
-      window.location.reload();
-  });
+  XHR.addEventListener("error", event => alert('Oops! Something went wrong.'));
   XHR.open(method, _location);
   XHR.send(FD);
 };
-
+XHR_send = (XHR, table, location, method = 'GET') => {
+    XHR.addEventListener("error", event => {
+        alert('Oops! Something went wrong getting ' + table)
+        hide_spinner(table);
+    });
+    XHR.open(method, location);
+    XHR.send();
+};
+show_spinner = id => {
+  let spn_results = document.querySelector('#spn_' + id);
+  spn_results.style.display = 'block';
+};
+hide_spinner = id => {
+  let spn_results = document.querySelector('#spn_' + id);
+  spn_results.style.display = 'none';
+};
 function removeID(id) {
   if (typeof(id) === 'string') document.querySelector('#' + id).remove();
   else id.remove();

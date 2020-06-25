@@ -42,6 +42,6 @@ function getSuppliers(_default) {
         spn_suppliers.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting suppliers'));
-    XHR.open('GET', '/stores/getsuppliers');
+    XHR.open('GET', '/stores/get/suppliers');
     XHR.send();
 };

@@ -38,5 +38,22 @@ module.exports = {
         var yyyy = newDate.getFullYear() + addYears;
         newDate = yyyy + '-' + MM + '-' + dd;
         return newDate;
+    },
+    summer: items => {
+        if (items == null) return 0;
+        return items.reduce((a, b) => {
+            return b['_qty'] == null ? a : a + b['_qty'];
+        }, 0);
+    },
+    singularise: str => {
+        if (str.endsWith('lines')) {
+            return str.substring(0, str.length - 1);
+        } else if (str.endsWith('ies')) {
+            return str.substring(0, str.length - 3) + 'y';
+        } else if (str.endsWith('es')) {
+            return str.substring(0, str.length - 2);
+        } else {
+           return str.substring(0, str.length - 1);
+        };
     }
 };

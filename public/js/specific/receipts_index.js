@@ -39,6 +39,6 @@ function getReceipts() {
     if      (Number(sel_supplier.value) !== -1) query.push('supplier_id=' + sel_supplier.value);
     if      (Number(sel_complete.value) === 2)  query.push('_complete=0')
     else if (Number(sel_complete.value) === 3)  query.push('_complete=1');
-    XHR.open('GET', '/stores/getreceipts?' + query.join('&'));
+    XHR.open('GET', '/stores/get/receipts?' + query.join('&'));
     XHR.send();
 };

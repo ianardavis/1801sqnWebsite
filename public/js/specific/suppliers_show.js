@@ -22,7 +22,7 @@ function getItems(supplier_id) {
         spn_items.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting items'));
-    XHR.open('GET', '/stores/getsizes/supplier_id/' + supplier_id);
+    XHR.open('GET', '/stores/get/sizes/supplier_id/' + supplier_id);
     XHR.send();
 };
 function getDemands(supplier_id) {
@@ -63,7 +63,7 @@ function getDemands(supplier_id) {
     else if (Number(sel_complete.value) === 3) query.push('_complete=1');
     if      (Number(sel_closed.value) === 2)   query.push('_closed=0')
     else if (Number(sel_closed.value) === 3)   query.push('_closed=1');
-    XHR.open('GET', '/stores/getdemands?' + query.join('&'));
+    XHR.open('GET', '/stores/get/demands?' + query.join('&'));
     XHR.send();
 };
 function getReceipts(supplier_id) {
@@ -100,7 +100,7 @@ function getReceipts(supplier_id) {
     if      (Number(sel_complete.value) === 2) query.push('_complete=0')
     else if (Number(sel_complete.value) === 3) query.push('_complete=1');
     
-    XHR.open('GET', '/stores/getreceipts?' + query.join('&'));
+    XHR.open('GET', '/stores/get/receipts?' + query.join('&'));
     XHR.send();
 };
 function goToItemSize() {

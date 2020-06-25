@@ -88,6 +88,6 @@ function getLines(issue_id, complete, closed, return_permission, delete_permissi
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting lines'));
     let query = ['issue_id=' + issue_id];
-    XHR.open('GET', '/stores/getissuelines?' + query.join('&'));
+    XHR.open('GET', '/stores/get/issuelines?' + query.join('&'));
     XHR.send();
 };

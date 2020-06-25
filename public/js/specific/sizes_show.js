@@ -27,7 +27,7 @@ function getNSNs(size_id, _default, delete_permission) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting NSNs'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getnsns?' + query.join('&'));
+    XHR.open('GET', '/stores/get/nsns?' + query.join('&'));
     XHR.send();
 };
 function getSerials(size_id, delete_permission) {
@@ -57,7 +57,7 @@ function getSerials(size_id, delete_permission) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting serials'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getserials?' + query.join('&'));
+    XHR.open('GET', '/stores/get/serials?' + query.join('&'));
     XHR.send();
 };
 function getStock(size_id, delete_permission) {
@@ -89,7 +89,7 @@ function getStock(size_id, delete_permission) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting stock'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getstock?' + query.join('&'));
+    XHR.open('GET', '/stores/get/stock?' + query.join('&'));
     XHR.send();
 };
 function getRequestLines(size_id) {
@@ -146,7 +146,7 @@ function getOrderLines(size_id) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting orders'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getorderlines?' + query.join('&'));
+    XHR.open('GET', '/stores/get/orderlines?' + query.join('&'));
     XHR.send();
 };
 function getReceiptLines(size_id) {
@@ -177,7 +177,7 @@ function getReceiptLines(size_id) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting receipts'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getreceiptlinesbysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/receiptlines/bysize?' + query.join('&'));
     XHR.send();
 };
 function getIssueLines(size_id) {
@@ -207,6 +207,6 @@ function getIssueLines(size_id) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting issues'));
     let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/getissuelinesbysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/issuelines/bysize?' + query.join('&'));
     XHR.send();
 };

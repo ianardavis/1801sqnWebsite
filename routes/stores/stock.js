@@ -1,20 +1,19 @@
-module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
-    //NEW
+module.exports = (app, allowed, inc, isLoggedIn, m) => {
+    let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/stock/new',      isLoggedIn, allowed('stock_add'),                  (req, res) => {
-        fn.getOne(
-            m.sizes,
-            {size_id: req.query.size_id},
-            {include: inc.sizes()}
-        )
+        db.findOne({
+            table: m.sizes,
+            where: {size_id: req.query.size_id},
+            include: [inc.sizes()]
+        })
         .then(item => res.render('stores/stock/new', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    //SHOW
     app.get('/stores/stock/:id',      isLoggedIn, allowed('access_stock'),               (req, res) => {
-        fn.getOne(
-            m.stock,
-            {stock_id: req.params.id},
-            {include: [
+        db.findOne({
+            table: m.stock,
+            where: {stock_id: req.params.id},
+            include: [
                 inc.sizes(),
                 m.locations
         ]})
@@ -27,79 +26,60 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    //EDIT
     app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'),                 (req, res) => {
-        fn.getOne(
-            m.stock,
-            {stock_id: req.params.id},
-            {include: [m.locations]}
-        )
+        db.findOne({
+            table: m.stock,
+            where: {stock_id: req.params.id},
+            include: [m.locations]
+        })
         .then(stock => res.render('stores/stock/edit', {stock: stock}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    //ASYNC GET
-    app.get('/stores/getstock',       isLoggedIn, allowed('access_stock', {send: true}), (req, res) => {
-        fn.getAllWhere(
-            m.stock,
-            req.query,
-            {include: [inc.locations({as: 'location'})]}
-        )
+    
+    app.get('/stores/get/stock',      isLoggedIn, allowed('access_stock', {send: true}), (req, res) => {
+        m.stock.findAll({
+            where: req.query,
+            include: [inc.locations({as: 'location'})]
+        })
         .then(stock => res.send({result: true, stock: stock}))
         .catch(err => res.error.send(err, res));
     });
     
-    //POST
     app.post('/stores/stock',         isLoggedIn, allowed('stock_add',    {send: true}), (req, res) => {
-        fn.getOne(
-            m.locations,
-            {_location: req.body.location},
-            {nullOK: true}
-        )
+        m.locations.findOne({where: {_location: req.body.location}})
         .then(location => {
             if (location) {
                 req.body.stock.location_id = location.location_id;
-                createStock(req.body.stock, req, res);
+                createStock(req.body.stock, res);
             } else {
-                fn.create(m.locations, {_location: req.body.location})
+                m.locations.create({_location: req.body.location})
                 .then(location => {
                     req.body.stock.location_id = location.location_id;
-                    createStock(req.body.stock, req, res);
+                    createStock(req.body.stock, res);
                 })
                 .catch(err => res.error.send(err, res));
             };
         })
         .catch(err => res.error.send(err, res));
     });
-    function createStock(stock, req, res) {
-        fn.create(m.stock,stock)
-        .then(stock => res.send({result: true, message: 'Stock added'}))
-        .catch(err => res.error.send(err, res));;
-    };
-
-    //PUT
     app.put('/stores/stock/:id',      isLoggedIn, allowed('stock_edit',   {send: true}), (req, res) => {
-        fn.getOne(
-            m.stock,
-            {stock_id: req.params.id}
-        )
+        db.findOne({
+            table: m.stock,
+            where: {stock_id: req.params.id}
+        })
         .then(stock => {
-            fn.getOne(
-                m.locations,
-                {_location: req.body._location}
-            )
+            db.findOne({
+                table: m.locations,
+                where: {_location: req.body._location}
+            })
             .then(location => {
                 if (location) {
                     if (Number(location.location_id) !== Number(stock.location_id)) {
                         updateStockLocation(location.location_id, req.params.id, res)
                     } else res.error.send('No changes', res);
                 } else {
-                    fn.create(
-                        m.locations,
-                        {_location: req.body._location}
-                    )
-                    .then(new_location => {
-                        updateStockLocation(new_location.location_id, req.params.id, res)
-                    })
+                    m.locations.create({_location: req.body._location})
+                    .then(new_location => updateStockLocation(new_location.location_id, req.params.id, res))
                     .catch(err => res.error.send(err, res));
                 };
             })
@@ -108,19 +88,17 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
         
     });
-
-    //DELETE
     app.delete('/stores/stock/:id',   isLoggedIn, allowed('stock_delete', {send: true}), (req, res) => {
-        fn.getOne(
-            m.stock,
-            {stock_id: req.params.id}
-        )
+        db.findOne({
+            table: m.stock,
+            where: {stock_id: req.params.id}
+        })
         .then(stock => {
             if (stock._qty === 0) {
-                fn.delete(
-                    m.stock,
-                    {stock_id: req.params.id}
-                )
+                db.destroy({
+                    table: m.stock,
+                    where: {stock_id: req.params.id}
+                })
                 .then(result => {
                     if (result) res.send({result: true, message: 'Stock deleted'})
                     else res.error.send('Stock NOT deleted', res);
@@ -131,12 +109,17 @@ module.exports = (app, allowed, fn, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    function updateStockLocation(location_id, stock_id, res) {
-        fn.update(
-            m.stock,
-            {location_id: location_id},
-            {stock_id: stock_id}
-        )
+    createStock = (stock, res) => {
+        m.stock.create(stock)
+        .then(stock => res.send({result: true, message: 'Stock added'}))
+        .catch(err => res.error.send(err, res));;
+    };
+    updateStockLocation = (location_id, stock_id, res) => {
+        db.update({
+            tbale: m.stock,
+            where: {stock_id: stock_id},
+            record: {location_id: location_id}
+        })
         .then(result => res.send({result: true, message: 'Stock saved'}))
         .catch(err => res.error.send(err, res));
     };

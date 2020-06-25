@@ -35,6 +35,6 @@ function getOrders() {
     else if (Number(sel_complete.value) === 3) query.push('_complete=1');
     if      (Number(sel_closed.value) === 2)   query.push('_closed=0')
     else if (Number(sel_closed.value) === 3)   query.push('_closed=1');
-    XHR.open('GET', '/stores/getorders?' + query.join('&'));
+    XHR.open('GET', '/stores/get/orders?' + query.join('&'));
     XHR.send();
 };

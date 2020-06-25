@@ -104,7 +104,7 @@ function getLines(order_id, complete, closed, delete_permission) {
     let sel_status = document.querySelector('#sel_status'),
         query      = ['order_id=' + order_id];
     if (sel_status.value !== 'All') query.push('_status=' + sel_status.value);
-    XHR.open('GET', '/stores/getorderlines?' + query.join('&'));
+    XHR.open('GET', '/stores/get/orderlines?' + query.join('&'));
     XHR.send();
 };
 
@@ -181,6 +181,6 @@ function getStock(size_id, line_id, action) {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/getsize/' + size_id);
+    XHR.open('GET', '/stores/get/size/' + size_id);
     XHR.send();
 };

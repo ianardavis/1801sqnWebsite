@@ -1,6 +1,5 @@
-function getDemands() {
-    let spn_demands = document.querySelector('#spn_demands');
-    spn_demands.style.display = 'block';
+getDemands = () => {
+    show_spinner('demands');
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {
         let response   = JSON.parse(event.target.responseText),
@@ -22,13 +21,12 @@ function getDemands() {
                 cell3.innerText    = demand.user.rank._rank + ' ' + demand.user._name + ', ' + demand.user._ini
                 cell4.innerText    = demand.lines.length;
                 if (demand._complete) cell5.innerHTML = _check();
-                if (demand._closed) cell6.innerHTML = _check();
+                if (demand._closed)   cell6.innerHTML = _check();
                 cell7.appendChild(link('/stores/demands/' + demand.demand_id, false));
             });
-        } else alert('Error: ' + response.error)
-        spn_demands.style.display = 'none';
+        } else alert('Error: ' + response.error);
+        hide_spinner('demands');
     });
-    XHR.addEventListener("error", event => alert('Oops! Something went wrong getting demands'));
     let sel_closed   = document.querySelector('#sel_closed'),
         sel_complete = document.querySelector('#sel_complete'),
         sel_supplier = document.querySelector('#sel_supplier'),
@@ -38,6 +36,5 @@ function getDemands() {
     else if (Number(sel_complete.value) === 3)  query.push('_complete=1');
     if      (Number(sel_closed.value) === 2)    query.push('_closed=0')
     else if (Number(sel_closed.value) === 3)    query.push('_closed=1');
-    XHR.open('GET', '/stores/getdemands?' + query.join('&'));
-    XHR.send();
+    XHR_send(XHR, 'demands', '/stores/get/demands?' + query.join('&'));
 };

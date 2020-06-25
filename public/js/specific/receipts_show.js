@@ -37,6 +37,6 @@ function getLines(receipt_id, complete, delete_permission) {
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting lines'));
     let query = ['receipt_id=' + receipt_id];
-    XHR.open('GET', '/stores/getreceiptlines?' + query.join('&'));
+    XHR.open('GET', '/stores/get/receiptlines?' + query.join('&'));
     XHR.send();
 };
