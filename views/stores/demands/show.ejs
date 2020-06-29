@@ -81,7 +81,7 @@
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
 				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
+					<div class="input-group-prepend w-30">
 						<span class="input-group-text w-100">Supplier</span>
 					</div>
 					<p class="form-control"><%= demand.supplier._name %></p>
@@ -92,52 +92,40 @@
 					</div>
 				</div>
 				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
+					<div class="input-group-prepend w-30">
 						<span class="input-group-text w-100">Raised By</span>
 					</div>
-					<p class="form-control"><%= demand.user.rank._rank %> <%= demand.user._name %>, <%= demand.user._ini %></p>
+					<p class="form-control"><%= demand.user.rank._rank %> <%= demand.user.full_name %></p>
 					<div class="input-group-append">
 						<a class="float-right btn btn-primary" href='/stores/users/<%= demand.user_id %>'>
 							<i class='fas fa-search'></i>
 						</a>
 					</div>
 				</div>
+				<%- include('../../partials/inputs/display', {title: 'Date', text: demand._date.toDateString()}) %>
 				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
-						<span class="input-group-text w-100">Date</span>
-					</div>
-					<p class="form-control"><%= demand._date.toDateString() %></p>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
+					<div class="input-group-prepend w-30">
 						<span class="input-group-text w-100">Complete</span>
 					</div>
 					<p class="form-control"><% if (demand._complete) { %>Yes<% } else { %>No<% } %></p>
 				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
-						<span class="input-group-text w-100">Filename</span>
-					</div>
-					<p class="form-control"><%= demand._filename %></p>
-				</div>
+				<%- include('../../partials/inputs/display', {title: 'Filename', text: demand._filename}) %>
 			</div>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
 				<div class="input-group mb-2">
-					<div class="input-group-prepend w-20">
+					<div class="input-group-prepend w-30">
 						<label class="input-group-text w-100" for="sel_status">Status</label>
 					</div>
-					<select class="custom-select" id='sel_status' onchange='getLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= permissions.demand_line_delete %>)'>
+					<select class="custom-select" id='sel_status' onchange='getLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= permissions.demand_line_delete || false %>)'>
 						<option value='All' selected>All</option>
 						<option value='Pending'>Pending</option>
 						<option value='Received'>Received</option>
 						<option value='Cancelled'>Cancelled</option>
 					</select>
 				</div>
-				<div id='spn_demands' class="spinner-border text-primary" role="status">
-					<span class="sr-only">Loading...</span>
-				</div>
+				<%- include('../../partials/spinner', {id: 'demands'}) %>
 				<% if (permissions.demand_line_edit && demand._complete && !demand._closed) { %>
 					<form id='actionForm'>
 				<% } %>

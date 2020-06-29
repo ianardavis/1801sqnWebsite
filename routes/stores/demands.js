@@ -4,11 +4,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         demands   = require(process.env.ROOT + '/fn/demands'),
         receipts  = require(process.env.ROOT + '/fn/receipts'),
         utils     = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/demands',              isLoggedIn, allowed('access_demands'),                    (req, res) => {
-        m.suppliers.findAll()
-        .then(suppliers => res.render('stores/demands/index', {suppliers: suppliers}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/stores/demands',              isLoggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/index'));
     app.get('/stores/demands/:id',          isLoggedIn, allowed('access_demands'),                    (req, res) => {
         db.findOne({
             table: m.demands,
@@ -20,7 +16,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(demand => {
             res.render('stores/demands/show', {
                 demand: demand,
-                notes:  {table: 'demands', id: demand.demand_id},
                 show_tab: req.query.tab || 'details'
             });
         })

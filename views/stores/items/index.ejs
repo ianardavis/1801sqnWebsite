@@ -10,7 +10,7 @@
             </li>
 			<% if (permissions.item_add) { %>
 				<li class='nav-item'>
-					<a class='nav-link stores_nav cardGreen' href='javascript:add("items",{"height":440})'>
+					<a class='nav-link stores_nav' href='javascript:add("items",{"height":440})'>
 						<i class='fas fa-plus'></i>
 					</a>
 				</li>
@@ -19,105 +19,34 @@
     </nav>
 </section>
 <section class='container'>
-	<div class='row'>
-		<div class='col-12'>
-			<div class="input-group mb-1">
-				<div class="input-group-prepend w-20">
-					<label class="input-group-text w-100" for="sel_category">Category</label>
-				</div>
-				<select class="custom-select" id='sel_category' onchange=changeCategory()>
-					<option value='' data-tag='<blank>' selected></option>
-					<% classes.categories.forEach(category => { %>
-						<option value='<%= category.category_id %>'>
-							<%= category._category %>
-						</option>
-					<% }) %>
-				</select>
-			</div>
-			<div class="input-group mb-1">
-				<div class="input-group-prepend w-20">
-					<label class="input-group-text w-100" for="sel_group">Group</label>
-				</div>
-				<select class="custom-select" id='sel_group' onchange=changeGroup()>
-					<option value='' data-tag='<blank>' selected></option>
-					<% classes.groups.forEach(group => { %>
-						<option value='<%= group.group_id %>' data-tag='<%= group.category_id %>' style='display: none;'>
-							<%= group._group %>
-						</option>
-					<% }) %>
-				</select>
-			</div>
-			<div class="input-group mb-1">
-				<div class="input-group-prepend w-20">
-					<label class="input-group-text w-100" for="sel_type">Type</label>
-				</div>
-				<select class="custom-select" id='sel_type' onchange=changeType()>
-					<option value='' data-tag='<blank>' selected></option>
-					<% classes.types.forEach(typ => { %>
-						<option value='<%= typ.type_id %>' data-tag='<%= typ.group_id %>' style='display: none;'>
-							<%= typ._type %>
-						</option>
-					<% }) %>
-				</select>
-			</div>
-			<div class="input-group mb-1">
-				<div class="input-group-prepend w-20">
-					<label class="input-group-text w-100" for="sel_subtype">Sub Type</label>
-				</div>
-				<select class="custom-select" id='sel_subtype' onchange=getItems()>
-					<option value='' data-tag='<blank>' selected></option>
-					<% classes.subtypes.forEach(sub => { %>
-						<option value='<%= sub.subtype_id %>' data-tag='<%= sub.type_id %>' style='display: none;'>
-							<%= sub._subtype %>
-						</option>
-					<% }) %>
-				</select>
-			</div>
-			<div class="input-group mb-1">
-				<div class="input-group-prepend w-20">
-					<label class="input-group-text w-100" for="sel_gender">Gender</label>
-				</div>
-				<select class="custom-select" id='sel_gender' onchange=getItems()>
-					<option value='' data-tag='<blank>' selected></option>
-					<% classes.genders.forEach(gen => { %>
-						<option value='<%= gen.gender_id %>'>
-							<%= gen._gender %>
-						</option>
-					<% }) %>
-				</select>
-			</div>
-			<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable("itemTable", "itemSearch")' placeholder='Search for item...'>
-			<div id='spn_items' class="spinner-border text-primary" role="status">
-				<span class="sr-only">Loading...</span>
-			</div>
-			<table class='table table-sm table-hover'>
-				<thead class='thead-dark'>
-					<th class='w-100' onclick='sortTable(0, "itemTable")'>Description</th>
-					<th><i class='fas fa-search'></i></th>
-				</thead>
-				<tbody id='itemTable'>
-				</tbody>
-			</table>
-		</div>
-	</div>
+	<%- include('../../partials/spinner', {id: 'categories'}) %>
+	<%- include('../../partials/spinner', {id: 'groups'}) %>
+	<%- include('../../partials/spinner', {id: 'types'}) %>
+	<%- include('../../partials/spinner', {id: 'subtypes'}) %>
+	<%- include('../../partials/spinner', {id: 'genders'}) %>
+	<% include ../../partials/itemOptions %>
+	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable("itemTable", "itemSearch")' placeholder='Search by description...'>
+	<%- include('../../partials/spinner', {id: 'items'}) %>
+	<table class='table table-sm table-hover'>
+		<thead class='thead-dark'>
+			<th class='w-100' onclick='sortTable(0, "itemTable")'>Description</th>
+			<th><i class='fas fa-search'></i></th>
+		</thead>
+		<tbody id='itemTable'>
+		</tbody>
+	</table>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/specific/items_index.js"></script>
-<script src='/js/itemClasses.js'></script>
+<script src="/js/get/items.js"></script>
 <script>
-	function changeCategory () {
-		setGroup();
-		getItems();
-	};
-	function changeGroup () {
-		setType();
-		getItems();
-	};
-	function changeType () {
-		setSubtype();
-		getItems();
-	};
+	window.addEventListener( "load", () => {
+		['genders', 'categories', 'groups', 'types', 'subtypes'].forEach(table => {
+			let _select = document.querySelector('#' + table + 'Select');
+			_select.addEventListener("change", event => {
+				getItems()
+			});
+		});
+	});
 </script>
-<script src='/js/addSize.js'></script>
 <script async>getItems()</script>
 <% include ../../partials/foot/htmlClose %>

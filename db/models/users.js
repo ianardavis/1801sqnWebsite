@@ -26,6 +26,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
+    'full_name': {
+      type: DataTypes.STRING(57),
+      allowNull: true,
+      comment: "null"
+    },
     'rank_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,

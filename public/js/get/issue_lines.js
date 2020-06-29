@@ -1,6 +1,5 @@
-function getLines(issue_id, complete, closed, return_permission, delete_permission) {
-    let spn_issues = document.querySelector('#spn_issues');
-    spn_issues.style.display = 'block';
+function getIssueLines(issue_id, complete, closed, return_permission, delete_permission) {
+    show_spinner('issues');
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {
         let response   = JSON.parse(event.target.responseText),
@@ -10,25 +9,17 @@ function getLines(issue_id, complete, closed, return_permission, delete_permissi
         table_body.innerHTML = '';
         if (response.result) {
             response.lines.forEach(line => {
-                let row = table_body.insertRow(-1),
-                    cell_line   = row.insertCell(-1),
-                    cell_nsn    = row.insertCell(-1),
-                    cell_item   = row.insertCell(-1),
-                    cell_size   = row.insertCell(-1),
-                    cell_qty    = row.insertCell(-1);
-                if (complete && !closed) var cell_qty_return = row.insertCell(-1);
-                let cell_issue  = row.insertCell(-1),
-                    cell_return = row.insertCell(-1),
-                    cell_date   = row.insertCell(-1);
-
-                cell_line.innerText = String(line._line).padStart(2, '0');
+                let row = table_body.insertRow(-1);
+                add_cell(row, {text: String(line._line).padStart(2, '0')});
+                let cell_nsn = row.insertCell(-1)
                 if (line.nsn || line.serial) {
                     if (line.nsn) {
                         let nsn_link       = document.createElement('a');
                         nsn_link.href      = 'javascript:show("nsns",' + line.nsn_id + ',{"height":200})';
                         nsn_link.innerText = line.nsn._nsn;
-                        cell_nsn.appendChild(nsn_link);
-                    };
+                        add_cell(row, {append: nsn_link})
+                        cell_nsn.appendChild();
+                    }
                     if (line.serial) {
                         cell_nsn.appendChild('<br>');
                         let serial_link       = document.createElement('a');
@@ -39,17 +30,25 @@ function getLines(issue_id, complete, closed, return_permission, delete_permissi
                 };
                 
                 if (line.size && line.size.item) {
-                    cell_item.innerText = line.size.item._description;
-                    cell_item.appendChild(link('/stores/items/' + line.size.item_id));
-                } else cell_item.innerText = '?';
+                    add_cell(row, {
+                        text: line.size.item._description,
+                        append: link('/stores/items/' + line.size.item_id)
+                    });
+                } else add_cell(row, {text: '?'});
 
                 if (line.size) {
-                    cell_size.innerText = line.size._size;
-                    cell_size.appendChild(link('/stores/sizes/' + line.size_id));
-                } else cell_size.innerText = '?';
+                    add_cell(row, {
+                        text: line.size._size,
+                        append: link('/stores/sizes/' + line.size_id)
+                    })
+                } else add_cell(row, {text: '?'});
 
-                cell_qty.innerText = line._qty;
+                add_cell(row, {text: line._qty});
 
+                if (complete && !closed) var cell_qty_return = row.insertCell(-1);
+                let cell_issue  = row.insertCell(-1),
+                    cell_return = row.insertCell(-1);
+                    
                 if (line.stock) {
                     cell_issue.innerText = line.stock.location._location;
                     cell_issue.appendChild(link('javascript:show("stock",' + line.stock_id + ',{"height":202})'))
@@ -72,22 +71,21 @@ function getLines(issue_id, complete, closed, return_permission, delete_permissi
                 };
 
                 if (line.return) {
-                    cell_date.innerText = new Date(line.return.return._date).toDateString();
-                    cell_date.appendChild(link('/stores/return_lines/' + line.return_line_id));
-                };
+                    add_cell(row, {
+                        text: new Date(line.return.return._date).toDateString(),
+                        append: link('/stores/return_lines/' + line.return_line_id)
+                    });
+                } add_cell(row);
 
                 if (delete_permission && !complete && !closed) {
-                    let cell_delete = row.insertCell(-1);
                     if (line._status === 'Pending') {
-                        cell_delete.appendChild(deleteBtn('/stores/issue_lines/' + line.line_id));
-                    };
+                        add_cell(row, {append: deleteBtn('/stores/issue_lines/' + line.line_id)});
+                    } else add_cell(row);
                 };
             });
         } else alert('Error: ' + response.error)
-        spn_issues.style.display = 'none';
+        hide_spinner('issues');
     });
-    XHR.addEventListener("error", event => alert('Oops! Something went wrong getting lines'));
     let query = ['issue_id=' + issue_id];
-    XHR.open('GET', '/stores/get/issuelines?' + query.join('&'));
-    XHR.send();
+    XHR_send(XHR, 'issues', '/stores/get/issuelines?' + query.join('&'));
 };

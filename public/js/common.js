@@ -161,3 +161,5 @@ function addFormListener (form_id, method, location, options = {reload: false, r
     sendData(form, method, location, options);
   });
 };
+
+let path = window.location.pathname.toString().split('/');

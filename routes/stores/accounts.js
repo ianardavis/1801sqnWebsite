@@ -1,28 +1,16 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
     let db = require(process.env.ROOT + '/fn/db');
-    app.get('/stores/accounts/new',      isLoggedIn, allowed('account_add'),                  (req, res) => {
-        m.users.findAll({
-            where: {
-                user_id: {[op.not]: 1},
-                status_id: 2
-            },
-            include: [m.ranks]
-        })
-        .then(users => res.render('stores/accounts/new', {users: users}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/stores/accounts/new',      isLoggedIn, allowed('account_add'),                  (req, res) => res.render('stores/accounts/new'));
     app.get('/stores/accounts/:id',      isLoggedIn, allowed('access_accounts'),              (req, res) => {
         db.findOne({
-            table: m.accounts,
-            where: {account_id: req.params.id},
+            table:    m.accounts,
+            where:   {account_id: req.params.id},
             include: [m.suppliers, inc.users()]
         })
         .then(account => {
             res.render('stores/accounts/show', {
                 account:  account,
-                notes:    {table: 'accounts', id: account.account_id},
-                query:    req.query,
                 show_tab: req.query.tab || 'details'
 
             });
@@ -31,26 +19,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     app.get('/stores/accounts/:id/edit', isLoggedIn, allowed('account_edit'),                 (req, res) => {
         db.findOne({
-            table: m.accounts,
-            where: {account_id: req.params.id},
-            include: [m.suppliers, inc.users()]
+            table:    m.accounts,
+            where:   {account_id: req.params.id},
+            include: [m.suppliers]
         })
-        .then(account => {
-            m.users.findAll({
-                where: {
-                    user_id: {[op.not]: 1},
-                    status_id: 2
-                },
-                include: [m.ranks]
-            })
-            .then(users => {
-                res.render('stores/accounts/edit', {
-                    users:   users,
-                    account: account
-                });
-            })
-            .catch(err => res.error.redirect(err, req, res));
-        })
+        .then(account => res.render('stores/accounts/edit', {account: account}))
         .catch(err => res.error.redirect(err, req, res));
     });
 

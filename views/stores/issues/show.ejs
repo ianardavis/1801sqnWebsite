@@ -57,6 +57,7 @@
                             </button>
                         <% } %>
                     <% } %>
+                    <% include ../../partials/notes/menu_add %>
                 </div>
             </li>
         </ul>
@@ -74,13 +75,7 @@
                 Lines (<span id='line_count'></span>)
             </a>
         </li>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -89,7 +84,7 @@
                     <div class="input-group-prepend w-20">
                         <span class="input-group-text w-100">To</span>
                     </div>
-                    <p class="form-control"><%= issue._to.rank._rank %> <%= issue._to._name %>, <%= issue._to._ini %></p>
+                    <p class="form-control"><%= issue._to.rank._rank %> <%= issue._to.full_name %></p>
                     <div class="input-group-append">
                         <a class='btn btn-primary' href="/stores/users/<%= issue.issued_to %>">
                             <i class='fas fa-search'></i>
@@ -100,7 +95,7 @@
                     <div class="input-group-prepend w-20">
                         <span class="input-group-text w-100">By</span>
                     </div>
-                    <p class="form-control"><%= issue._by.rank._rank %> <%= issue._by._name %>, <%= issue._by._ini %></p>
+                    <p class="form-control"><%= issue._by.rank._rank %> <%= issue._by.full_name %></p>
                     <div class="input-group-append">
                         <a class='btn btn-primary' href="/stores/users/<%= issue.user_id %>">
                             <i class='fas fa-search'></i>
@@ -166,14 +161,14 @@
                 <% } %>
             </div>
         </div>
-        <% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script src='/js/addSize.js'></script>
-<script src="/js/specific/issues_show.js"></script>
+<script src="/js/get/issue_lines.js"></script>
 <script>
-    window.addEventListener( "load", function () {
+    window.addEventListener( "load", () => {
         <% if (!issue._complete && !issue._closed) { %>
             <% if (permissions.issue_delete) { %>
                     addFormListener('deleteForm', 'DELETE', '/stores/issues/<%= issue.issue_id %>', {redirect: '/stores/issues'});
@@ -189,5 +184,5 @@
     });
     showTab('<%= show_tab %>');
 </script>
-<script async>getLines(<%= issue.issue_id %>, <%= issue._complete %>, <%= issue._closed %>, <%= permissions.return_line_add %>, <%= permissions.issue_delete %>)</script>
+<script async>getIssueLines(<%= issue.issue_id %>, <%= issue._complete %>, <%= issue._closed %>, <%= permissions.return_line_add || false %>, <%= permissions.issue_delete || false %>)</script>
 <% include ../../partials/foot/htmlClose %>

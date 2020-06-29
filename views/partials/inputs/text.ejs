@@ -1,0 +1,16 @@
+<div class="input-group mb-1">
+    <div class="input-group-prepend w-30">
+        <span class="input-group-text w-100"><%= title %></span>
+    </div>
+    <input
+        class="form-control"
+        <% if (locals.id) { %>id=<%= id %><% } %>
+        name=<%= name %>
+        type="text"
+        <% if (locals.value) { %>      value=<%= value || null %><% } %>
+        <% if (locals.maxLength) { %>  maxlength="<%= maxLength || 45 %>"<% } %>
+        <% if (locals.placeholder) { %>placeholder=<%= placeholder %><% } %>
+        <% if (locals.required) { %>   required<% } %>
+        <% if (locals.readonly) { %>   readonly<% } %>
+    >
+</div>

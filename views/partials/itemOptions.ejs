@@ -1,0 +1,42 @@
+<div class="input-group mb-1">
+    <div class="input-group-prepend w-30">
+        <label class="input-group-text w-100" for="categoriesSelect">Category</label>
+    </div>
+    <select class="custom-select" id='categoriesSelect' onchange=getGroups()>
+    </select>
+</div>
+<div class="input-group mb-1">
+    <div class="input-group-prepend w-30">
+        <label class="input-group-text w-100" for="groupsSelect">Group</label>
+    </div>
+    <select class="custom-select" id='groupsSelect' onchange=getTypes()>
+    </select>
+</div>
+<div class="input-group mb-1">
+    <div class="input-group-prepend w-30">
+        <label class="input-group-text w-100" for="typesSelect">Type</label>
+    </div>
+    <select class="custom-select" id='typesSelect' onchange=getSubTypes()>
+    </select>
+</div>
+<div class="input-group mb-1">
+    <div class="input-group-prepend w-30">
+        <label class="input-group-text w-100" for="subtypesSelect">Sub Type</label>
+    </div>
+    <select class="custom-select" id='subtypesSelect'>
+    </select>
+</div>
+<div class="input-group mb-1">
+    <div class="input-group-prepend w-30">
+        <label class="input-group-text w-100" for="gendersSelect">Gender</label>
+    </div>
+    <select class="custom-select" id='gendersSelect'>
+    </select>
+</div>
+<script src="/js/get/genders.js"></script>
+<script async>getGenders()</script>
+<script src="/js/get/categories.js"></script>
+<script async>getCategories()</script>
+<script src="/js/get/groups.js"></script>
+<script src="/js/get/types.js"></script>
+<script src="/js/get/subtypes.js"></script>

@@ -13,7 +13,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             {table: 'statuses'}
         ]
     };
-    app.get('/stores/settings', isLoggedIn, allowed('access_settings'), (req, res) => {
+    app.get('/stores/settings',                isLoggedIn, allowed('access_settings'),               (req, res) => {
         m.settings.findAll()
         .then(settings => {
             options.get(_options())
@@ -27,68 +27,59 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-
-    app.post('/stores/settings/ranks',      isLoggedIn, allowed('rank_add'),     (req, res) => createSetting('ranks',      req, res));
-    app.post('/stores/settings/genders',    isLoggedIn, allowed('gender_add'),   (req, res) => createSetting('genders',    req, res));
-    app.post('/stores/settings/statuses',   isLoggedIn, allowed('status_add'),   (req, res) => createSetting('statuses',   req, res));
-    app.post('/stores/settings/categories', isLoggedIn, allowed('category_add'), (req, res) => createSetting('categories', req, res));
-    app.post('/stores/settings/groups',     isLoggedIn, allowed('group_add'),    (req, res) => createSetting('groups',     req, res));
-    app.post('/stores/settings/types',      isLoggedIn, allowed('type_add'),     (req, res) => createSetting('types',      req, res));
-    app.post('/stores/settings/subtypes',   isLoggedIn, allowed('subtype_add'),  (req, res) => createSetting('subtypes',   req, res));
-    createSetting = (table, req, res) => {
-        m[table].create(req.body[table])
+    
+    app.get('/stores/get/options/:table',      isLoggedIn, allowed('access_options', {send: true}), (req, res) => {
+        let allowed_tables = ['ranks', 'genders', 'statuses', 'categories', 'groups', 'types', 'subtypes']
+        if (allowed_tables.includes(req.params.table)) {
+            m[req.params.table].findAll({where: req.query})
+            .then(results => res.send({result: true, results: results}))
+            .catch(err => res.error.send(err, res));
+        } else res.error.send(new Error('Invalid request', res));
+    });
+    
+    app.post('/stores/options/:table',         isLoggedIn, allowed('option_add',      {send: true}), (req, res) => {
+        m[req.params.table].create(req.body[req.params.table])
         .then(record => {
-            req.flash('success', 'Record added to ' + table);
-            res.redirect('/stores/settings?show=' + table)
+            req.flash('success', 'Record added to ' + req.params.table);
+            res.redirect('/stores/settings?show=' + req.params.table)
         })
         .catch(err => res.error.redirect(err, req, res));
-    };
-    
-    app.put('/stores/settings/ranks/:id',      isLoggedIn, allowed('rank_edit'),     (req, res) => updateSetting('ranks',      req, res));
-    app.put('/stores/settings/genders/:id',    isLoggedIn, allowed('gender_edit'),   (req, res) => updateSetting('genders',    req, res));
-    app.put('/stores/settings/statuses/:id',   isLoggedIn, allowed('status_edit'),   (req, res) => updateSetting('statuses',   req, res));
-    app.put('/stores/settings/categories/:id', isLoggedIn, allowed('category_edit'), (req, res) => updateSetting('categories', req, res));
-    app.put('/stores/settings/groups/:id',     isLoggedIn, allowed('group_edit'),    (req, res) => updateSetting('groups',     req, res));
-    app.put('/stores/settings/types/:id',      isLoggedIn, allowed('type_edit'),     (req, res) => updateSetting('types',      req, res));
-    app.put('/stores/settings/subtypes/:id',   isLoggedIn, allowed('subtype_edit'),  (req, res) => updateSetting('subtypes',   req, res));
-    updateSetting = (table, req, res) => {
+    });
+
+    app.put('/stores/options/:table/:id',      isLoggedIn, allowed('option_edit',     {send: true}), (req, res) => {
         let id_field = {};
-        id_field[singularise(table) + '_id'] = req.params.id;
+        id_field[singularise(req.params.table) + '_id'] = req.params.id;
         db.update({
-            table: m[table],
+            table: m[req.params.table],
             where: id_field,
-            record: req.body[table]
+            record: req.body[req.params.table]
         })
         .then(result => {
-            req.flash('success', 'Record updated in ' + table);
-            res.redirect('/stores/settings?show=' + table);
+            req.flash('success', 'Record updated in ' + req.params.table);
+            res.redirect('/stores/settings?show=' + req.params.table);
         })
         .catch(err => res.error.redirect(err, req, res));
-    };
+    });
     
-    app.delete('/stores/settings/genders/:id',    isLoggedIn, allowed('gender_delete'),   (req, res) => _delete('genders', req, res));
-    app.delete('/stores/settings/ranks/:id',      isLoggedIn, allowed('rank_delete'),     (req, res) => deleteSetting('ranks', req, res));
-    app.delete('/stores/settings/statuses/:id',   isLoggedIn, allowed('status_delete'),   (req, res) => deleteSetting('statuses', req, res));
-    app.delete('/stores/settings/categories/:id', isLoggedIn, allowed('category_delete'), (req, res) => checkDelete('categories', req, res));
-    app.delete('/stores/settings/groups/:id',     isLoggedIn, allowed('group_delete'),    (req, res) => checkDelete('groups',     req, res));
-    app.delete('/stores/settings/types/:id',      isLoggedIn, allowed('type_delete'),     (req, res) => checkDelete('types',      req, res));
-    app.delete('/stores/settings/subtypes/:id',   isLoggedIn, allowed('subtype_delete'),  (req, res) => checkDelete('subtypes',   req, res));
-    checkDelete = (table, req, res) => {
+    app.delete('/stores/options/genders/:id',  isLoggedIn, allowed('option_delete', {send: true}),   (req, res) => _delete('genders', req, res));
+    app.delete('/stores/options/ranks/:id',    isLoggedIn, allowed('option_delete', {send: true}),   (req, res) => deleteSetting('ranks', req, res));
+    app.delete('/stores/options/statuses/:id', isLoggedIn, allowed('option_delete', {send: true}),   (req, res) => deleteSetting('statuses', req, res));
+    app.delete('/stores/options/:table/:id',   isLoggedIn, allowed('option_delete', {send: true}),   (req, res) => {
         let check_table;
-        if (table === 'categories')  check_table = m.groups
-        else if (table === 'groups') check_table = m.types
-        else if (table === 'types')  check_table = m.subtypes;
-        if (table !== 'subtypes') {
+        if (req.params.table === 'categories')  check_table = m.groups
+        else if (req.params.table === 'groups') check_table = m.types
+        else if (req.params.table === 'types')  check_table = m.subtypes;
+        if (req.params.table !== 'subtypes') {
             let where = {};
-            where[req.singularise(table) + '_id'] = req.params.id;
+            where[req.singularise(req.params.table) + '_id'] = req.params.id;
             check_table.findOne({where: where})
             .then(result => {
-                if (result) res.error.redirect(new Error('Can not delete ' + singularise(table) + ' whilst it has sub options'), req, res);
-                else _delete(table, req, res);
+                if (result) res.error.redirect(new Error('Can not delete ' + singularise(req.params.table) + ' whilst it has sub options'), req, res);
+                else _delete(req.params.table, req, res);
             })
             .catch(err => res.error.redirect(err, req, res))
         } else _delete(table, req, res);
-    };
+    });
     deleteSetting = (table, req, res) => {
         if (table === 'statuses' && req.params.id <= 5) {
             req.flash('danger', 'This status can not be deleted');

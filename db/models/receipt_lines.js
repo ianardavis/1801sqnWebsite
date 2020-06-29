@@ -25,15 +25,20 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_qty': {
+    'serial_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     '_status': {
       type: DataTypes.STRING(15),
       allowNull: false,
       defaultValue: 'Pending',
+      comment: "null"
+    },
+    '_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     'user_id': {

@@ -49,9 +49,25 @@ function _select (options = {}) {
     if (options.required) _select.required = true;
     return _select
 };
-function _option(value, innerText) {
-    let _option = document.createElement('option');
-    _option.value     = value;
-    _option.innerText = innerText;
+function _option(options = {}) {
+    let _option = document.createElement('option'),
+        _text = '';
+    if (options.selected === true) _text = '***';
+    _option.value     = options.value;
+    _option.innerText = _text + ' ' + options.text + ' ' + _text;
+    if (options.selected === true) _option.setAttribute('selected', true);
     return _option
+};
+
+add_cell = (row, options = {}) => {
+    let cell = row.insertCell();
+    if (options.sort) cell.dataset.sort = options.sort;
+    if (options.text) {
+        cell.innerText    = options.text || '';
+    } else if (options.html) {
+        cell.innerHTML    = options.html || '';
+    };
+    if (options.classes) options.classes.forEach(_class => cell.classList.add(_class));
+    if (options.append)  cell.appendChild(options.append);
+    if (options.id)      cell.id = option.id;
 };

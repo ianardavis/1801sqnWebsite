@@ -2,7 +2,6 @@
 <body>
 <%- include('../../partials/head/flash') %>
 <section id='body'>
-<section class='container'>
     <form id='itemForm'>
         <div class="input-group mb-1">
             <div class="input-group-prepend w-30">
@@ -10,72 +9,22 @@
             </div>
             <input class='form-control' type='text' name='item[_description]' value='<%= item._description %>' maxlength='45'>
         </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Category</span>
-            </div>
-            <select class='form-control' name='item[category_id]' id='category_id' type='text' onchange=setGroup()>
-                <% classes.categories.forEach(category => { %>
-                    <option value='<%= category.category_id %>'<% if (category.category_id === item.category_id) { %> selected <% } %>><%= category._category %></option>
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Group</span>
-            </div>
-            <select class='form-control' name='item[group_id]' id='group_id' type='text' onchange=setType()>
-                <option value='' data-tag='<blank>'></option> 
-                <% classes.groups.forEach(group => { %>
-                    <option value='<%= group.group_id %>' data-tag='<%= group.category_id %>'<% if (group.group_id === item.group_id) { %> selected <% } %>><%= group._group %></option>
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Type</span>
-            </div>
-            <select class='form-control' name='item[type_id]' id='type_id' type='text' onchange=setSubtype()>
-                <option value='' data-tag='<blank>'></option> 
-                <% classes.types.forEach(type => { %>
-                    <option value='<%= type.type_id %>' data-tag='<%= type.group_id %>'<% if (type.type_id === item.type_id) { %> selected <% } %>><%= type._type %></option>
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Sub Type</span>
-            </div>
-            <select class='form-control' name='item[subtype_id]' id='subtype_id' type='text'>
-                <option value='' data-tag='<blank>'></option> 
-                <% classes.subtypes.forEach(subtype => { %>
-                    <option value='<%= subtype.subtype_id %>' data-tag='<%= subtype.type_id %>'<% if (subtype.subtype_id === item.subtype_id) { %> selected <% } %>><%= subtype._subtype %></option>         
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Gender</span>
-            </div>
-            <select class='form-control' name='item[gender_id]' id='gender_id' type='text'>
-                <option value='' data-tag='<blank>'></option> 
-                <% classes.genders.forEach(gender => { %>
-                    <option value='<%= gender.gender_id %>'<% if (gender.gender_id === item.gender_id) { %> selected <% } %>><%= gender._gender %></option>         
-                <% }) %>
-            </select>
-        </div>
+        <%- include('../../partials/spinner', {id: 'categories'}) %>
+        <%- include('../../partials/spinner', {id: 'groups'}) %>
+        <%- include('../../partials/spinner', {id: 'types'}) %>
+        <%- include('../../partials/spinner', {id: 'subtypes'}) %>
+        <%- include('../../partials/spinner', {id: 'genders'}) %>
+        <% include ../../partials/itemOptions %>
         <div class="input-group mb-1">
             <div class="input-group-prepend w-30">
                 <span class="input-group-text w-100">Size Text</span>
             </div>
             <input class='form-control' type='text' name='item[_size_text]' value='<%= item._size_text %>' maxlength='45'>
         </div>
-        <input class='btn btn-success btn-lg col-12 confirm' type='submit' value='Save'>
+        <input class='btn btn-success w-100 confirm' type='submit' value='Save'>
         <a class='float-left' href='javascript:close()'>Cancel</a>
     </form>
-</section>
 <% include ../../partials/foot/noNav %>
-<script src='/js/itemClasses.js'></script>
 <script>
     window.addEventListener( "load", function () {
         addFormListener('itemForm', 'PUT', '/stores/items/<%= item.item_id %>');

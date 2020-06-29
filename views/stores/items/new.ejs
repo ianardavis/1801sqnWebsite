@@ -2,124 +2,32 @@
 <body>
 <%- include('../../partials/head/flash') %>
 <section id='body'>
-<section class='container'>
     <form id='itemForm'>
         <div class="input-group mb-1">
-            <div class="input-group-prepend w-20">
+            <div class="input-group-prepend w-30">
                 <span class="input-group-text w-100">Description</span>
             </div>
-            <input class='form-control' type='text' name='item[_description]' placeholder='Description' maxlength='45'>
+            <input class='form-control' type='text' name='item[_description]' maxlength='45'>
         </div>
+        <%- include('../../partials/spinner', {id: 'categories'}) %>
+        <%- include('../../partials/spinner', {id: 'groups'}) %>
+        <%- include('../../partials/spinner', {id: 'types'}) %>
+        <%- include('../../partials/spinner', {id: 'subtypes'}) %>
+        <%- include('../../partials/spinner', {id: 'genders'}) %>
+        <% include ../../partials/itemOptions %>
         <div class="input-group mb-1">
-            <div class="input-group-prepend w-20">
-                <span class="input-group-text w-100">Category</span>
-            </div>
-            <select class='form-control' name='item[category_id]' id='_category' type='text'>
-                <% classes.categories.forEach(category => { %>
-                    <option value='<%= category.category_id %>'><%= category._category %></option>         
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-20">
-                <span class="input-group-text w-100">Group</span>
-            </div>
-            <select class='form-control' name='item[group_id]' id='_group' type='text'>
-                <option value='' data-tag='<blank>'></option> 
-                <% classes.groups.forEach(group => { %>
-                    <option value='<%= group.group_id %>' data-tag='<%= group.category_id %>'><%= group._group %></option>         
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-20">
-                <span class="input-group-text w-100">Type</span>
-            </div>
-            <select class='form-control' name='item[type_id]' id='_type' type='text'>
-                <option value='' data-tag='<blank>'></option> 
-                <% classes.types.forEach(type => { %>
-                    <option value='<%= type.type_id %>' data-tag='<%= type.group_id %>'><%= type._type %></option>         
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-20">
-                <span class="input-group-text w-100">Sub Type</span>
-            </div>
-            <select class='form-control' name='item[subtype_id]' id='_subtype' type='text'>
-                <option value='' data-tag='<blank>'></option> 
-                <% classes.subtypes.forEach(subtype => { %>
-                    <option value='<%= subtype.subtype_id %>' data-tag='<%= subtype.type_id %>'><%= subtype._subtype %></option>         
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-20">
-                <span class="input-group-text w-100">Gender</span>
-            </div>
-            <select class='form-control' name='item[gender_id]' id='_gender' type='text'>
-                <option value='' data-tag='<blank>'></option> 
-                <% classes.genders.forEach(gender => { %>
-                    <option value='<%= gender.gender_id %>'><%= gender._gender %></option>         
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-20">
+            <div class="input-group-prepend w-30">
                 <span class="input-group-text w-100">Size Text</span>
             </div>
-            <input class='form-control' type='text' name='item[_size_text]' placeholder='Size Text' maxlength='45'>
+            <input class='form-control' type='text' name='item[_size_text]' maxlength='45'>
         </div>
-        <div class='row'>
-            <div class="col-12">
-                <input class='btn btn-success col-12 confirm' type='submit' value='Save'>
-                <a class='float-left' href='javascript:close()'>Cancel</a>
-            </div>
-        </div>
+        <input class='btn btn-success w-100 confirm' type='submit' value='Save'>
+        <a class='float-left' href='javascript:close()'>Cancel</a>
     </form>
-</section>
 <% include ../../partials/foot/noNav %>
 <script>
     window.addEventListener( "load", function () {
         addFormListener('itemForm', 'POST', '/stores/items');
     });
-	$('#_category').on('change', setGroup);	
-	$('#_group').on('change', setType);	
-	$('#_type').on('change', setSubtype);
-
-	function setGroup() {
-		hideSome('_group', $(this).val());
-		$('#_group').val($('#_group option:visible:first').val());
-		$('#_type').val($('#_type option:visible:first').val());
-		$('#_subtype').val($('#_subtype option:visible:first').val());
-		hideAll('_type')
-		hideAll('_subtype')
-	}
-	function setType() {
-		hideSome('_type', $(this).val());
-		$('#_type').val($('#_type option:visible:first').val());
-		$('#_subtype').val($('#_subtype option:visible:first').val());
-		hideAll('_subtype')
-	}
-	function setSubtype() {
-		hideSome('_subtype', $(this).val());
-		$('#_subtype').val($('#_subtype option:visible:first').val());
-	}
-	function hideSome(select, selected) {
-		$('#' + select + ' option').each(function(item){
-			var element =  $(this) ; 
-			if (element.data('tag') != selected && element.data('tag') != '<blank>'){
-				element.hide() ; 
-			} else {
-				element.show();
-			}
-		}) ; 
-	}
-	function hideAll(select) {
-		$('#' + select + ' option').each(function(item){
-			var element =  $(this) ; 
-			element.hide() ; 
-		}) ; 
-	}
 </script>
 <% include ../../partials/foot/htmlClose %>

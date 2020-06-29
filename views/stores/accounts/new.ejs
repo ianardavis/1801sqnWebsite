@@ -1,36 +1,17 @@
-<%- include('../../partials/head/head') %>
+<% include ../../partials/head/head %>
 <body>
-<%- include('../../partials/head/flash') %>
+<% include ../../partials/head/flash %>
 <section id='body'>
-<section class="container">
     <form id='accountForm'>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Name</span>
-            </div>
-            <input class="form-control" id="_name" name="account[_name]" type="text" placeholder="Required" maxlength="45" required>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Number</span>
-            </div>
-            <input class="form-control" id="_name" name="account[_number]" type="text" placeholder="Required" maxlength="255" required>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Owner</span>
-            </div>
-            <select class='form-control' name="account[user_id]" required>
-                <% users.forEach(user => { %>
-                    <option value="<%= user.user_id %>" ><%= user.rank._rank %> <%= user._name %>, <%= user._ini %></option>
-                <% }) %>
-            </select>
-        </div>
-        <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
-        <a class='float-left' href='javascript:close()'>Cancel</a>
+        <%- include('../../partials/inputs/text',   {title: 'Name',   name: 'account[_name]',   maxLength: 45,  placeholder: 'Required', required: true}) %>
+        <%- include('../../partials/inputs/text',   {title: 'Number', name: 'account[_number]', maxLength: 255, placeholder: 'Required', required: true}) %>
+        <%- include('../../partials/spinner',       {id: 'users'}) %>
+        <%- include('../../partials/inputs/select', {title: 'Owner',  name: 'account[user_id]', id: 'usersSelect', required: true}) %>
+        <% include ../../partials/save_cancel %>
     </form>
-</section>
 <% include ../../partials/foot/noNav %>
+<script src="/js/get/users.js"></script>
+<script async>getUsers(['status_id=2'])</script>
 <script>
     window.addEventListener( "load", function () {
         addFormListener('accountForm', 'POST', '/stores/accounts');

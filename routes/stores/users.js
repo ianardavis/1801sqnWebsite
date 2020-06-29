@@ -70,7 +70,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     
     app.get('/stores/get/users',          isLoggedIn, allowed('access_users',  {send: true}),              (req, res) => {
-        m.users.findAll({include: [m.ranks]})
+        m.users.findAll({
+            where: req.query,
+            include: [m.ranks],
+            attributes: ['user_id', 'full_name']
+        })
         .then(users => res.send({result: true, users: users}))
         .catch(err => res.error.send(err, res));
     });

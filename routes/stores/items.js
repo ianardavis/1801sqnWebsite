@@ -1,15 +1,6 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
     let db      = require(process.env.ROOT + '/fn/db'),
         options = require(process.env.ROOT + '/fn/options');
-    itemOptions = () => {
-        return [
-            {table: m.categories}, 
-            {table: m.groups, include: m.categories}, 
-            {table: m.types, include: m.groups}, 
-            {table: m.subtypes, include: m.types}, 
-            {table: m.genders}
-        ]
-    };
     nullify = item => {
         if (item.subtype_id === '') item.subtype_id = null;
         if (item.gender_id === '')  item.gender_id  = null;
@@ -18,14 +9,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         return item;
     };
     
-    app.get('/stores/items',          isLoggedIn, allowed('access_items'),                (req, res) => {
-        options.get(itemOptions())
-        .then(classes => res.render('stores/items/index', {classes: classes}));
-    });
-    app.get('/stores/items/new',      isLoggedIn, allowed('item_add'),                    (req, res) => {
-        options.get(itemOptions())
-        .then(classes => res.render('stores/items/new', {classes: classes}))
-    });
+    app.get('/stores/items',          isLoggedIn, allowed('access_items'),                (req, res) => res.render('stores/items/index'));
+    app.get('/stores/items/new',      isLoggedIn, allowed('item_add'),                    (req, res) => res.render('stores/items/new'));
     app.get('/stores/items/:id',      isLoggedIn, allowed('access_items'),                (req, res) => {
         let include = [
             m.genders, 
@@ -53,15 +38,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             table: m.items,
             where: {item_id: req.params.id}
         })
-        .then(item => {
-            options.get(itemOptions())
-            .then(classes => {
-                res.render('stores/items/edit', {
-                    item:    item, 
-                    classes: classes
-                });
-            });
-        })
+        .then(item => res.render('stores/items/edit', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
     
