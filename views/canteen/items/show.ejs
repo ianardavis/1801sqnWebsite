@@ -144,7 +144,7 @@
                                     <%= sale.sale._date.toDateString() %>
                                 </td>
                                 <td>
-                                    <%= sale.sale.user.rank._rank %> <%= sale.sale.user._name %>, <%= sale.sale.user._ini %>
+                                    <%= sale.sale.user.rank._rank %> <%= sale.sale.user.full_name %>
                                 </td>
                                 <td>
                                     Sale
@@ -172,7 +172,7 @@
                                     <%= receipt.receipt._date.toDateString() %>
                                 </td>
                                 <td>
-                                    <%= receipt.receipt.user.rank._rank %> <%= receipt.receipt.user._name %>, <%= receipt.receipt.user._ini %>
+                                    <%= receipt.receipt.user.rank._rank %> <%= receipt.receipt.user.full_name %>
                                 </td>
                                 <td>
                                     Receipt
@@ -208,7 +208,7 @@
                                     <%= writeoff.writeoff._date.toDateString() %>
                                 </td>
                                 <td>
-                                    <%= writeoff.writeoff.user.rank._rank %> <%= writeoff.writeoff.user._name %>, <%= writeoff.writeoff.user._ini %>
+                                    <%= writeoff.writeoff.user.rank._rank %> <%= writeoff.writeoff.user.full_name %>
                                 </td>
                                 <td>
                                     Writeoff: <%= writeoff.writeoff._reason %>

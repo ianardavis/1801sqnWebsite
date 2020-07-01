@@ -9,19 +9,13 @@
                 Details
             </a>
         </li>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
                 <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
+                    <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">NSN</span>
                     </div>
 					<p class="form-control"><%= nsn._nsn %></p>
@@ -32,18 +26,17 @@
 					</div>
                 </div>
                 <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
+                    <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Default?</span>
                     </div>
                     <p class="form-control"><% if (Number(nsn.size.nsn_id) === Number(nsn.nsn_id)) { %>Yes<% } else { %>No<% } %></p>
                 </div>
 			</div>
 		</div>
-        <% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
     </div>
 </section>
 <% include ../../partials/foot/noNav %>
 <script>
-    showTab('<%= show_tab %>');
 </script>
 <% include ../../partials/foot/htmlClose %>

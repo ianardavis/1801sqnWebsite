@@ -2,19 +2,11 @@
 <body>
 <%- include('../../partials/head/flash') %>
 <section id='body'>
-<section class='container'>
 	<form id='nsnForm'>
-		<input type='hidden' name='nsn[nsn_id]' value='<%= nsn.nsn_id %>' readonly>
-		<input type='hidden' name='size_id' value='<%= nsn.size_id %>' readonly>
-		<input type='hidden' name='currentDefault' value='<%= nsn.size.nsn_id %>' readonly>
+		<input type='hidden' name='size_id'	value='<%= nsn.size_id %>' readonly>
+        <%- include('../../partials/inputs/text', {title: 'NSN', name: 'nsn[_nsn]', value: nsn._nsn, placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
 		<div class="input-group mb-1">
-			<div class="input-group-prepend w-20">
-				<span class="input-group-text w-100">NSN</span>
-			</div>
-			<input class='form-control' type='text' inputmode='numeric' name='nsn[_nsn]' maxlength='20' value='<%= nsn._nsn %>' placeholder='NSN' required>
-		</div>
-		<div class="input-group mb-1">
-			<div class="input-group-prepend w-20">
+			<div class="input-group-prepend w-30">
 				<span class="input-group-text w-100">Default?</span>
 			</div>
 			<select class='form-control' name="default">
@@ -22,14 +14,16 @@
 				<option value="1"<% if (Number(nsn.size.nsn_id) === Number(nsn.nsn_id)) { %> selected<% } %>>Yes</option>
 			</select>
 		</div>
-		<input class='btn btn-success confirm w-100' type='submit' value='Save'>
-		<a class='float-left' href="javascript:close()">Cancel</a>
+		<% include ../../partials/save_cancel %>
 	</form>
-</section>
 <% include ../../partials/foot/noNav %>
 <script>
-    window.addEventListener( "load", function () {
-		addFormListener('nsnForm', 'PUT', '/stores/nsns/<%= nsn.nsn_id %>');
+    window.addEventListener( "load", () => {
+		addFormListener(
+			'nsnForm',
+			'PUT',
+			'/stores/nsns/<%= nsn.nsn_id %>'
+		);
     });
 </script>
 <% include ../../partials/foot/htmlClose %>

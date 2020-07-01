@@ -27,7 +27,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(item => {
             res.render('stores/items/show', {
                 item:  item,
-                notes: {table: 'items', id: item.item_id},
                 show_tab: req.query.tab || 'details'
             });
         })
@@ -43,9 +42,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     
     app.get('/stores/get/items',      isLoggedIn, allowed('access_issues', {send: true}), (req, res) => {
-        m.items.findAll({
-            where: req.query
-        })
+        m.items.findAll({where: req.query})
         .then(items => res.send({result: true, items: items}))
         .catch(err => res.error.send(err, res));
     });

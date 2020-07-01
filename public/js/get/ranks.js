@@ -6,8 +6,15 @@ getRanks = () => {
             _select  = document.querySelector('#ranksSelect');
         _select.innerHTML = '';
         if (response.result) {
-            _select.appendChild(_option('', ''));
-            response.results.forEach(rank => _select.appendChild(_option(rank.rank_id, rank._rank)));
+            _select.appendChild(_option({value: '', text: ''}));
+            response.results.forEach(rank => {
+                _select.appendChild(
+                    _option({
+                        value: rank.rank_id,
+                        text: rank._rank
+                    })
+                )
+            });
         } else alert('Error: ' + response.error);
         hide_spinner('items');
     });

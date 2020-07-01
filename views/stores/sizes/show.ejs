@@ -81,13 +81,7 @@
                 </a>
             </li>
         <% } %>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -317,7 +311,7 @@
                                 <% if (stock.issues) stock.issues.forEach(issue => { %>
                                     <tr>
                                         <td>
-                                            <%= issue.issue._to.rank._rank %> <%= issue.issue._to._name %>, <%= issue.issue._to._ini %>
+                                            <%= issue.issue._to.rank._rank %> <%= issue.issue._to.full_name %>
                                         </td>
                                         <td>
                                             <%= issue._qty %>
@@ -335,7 +329,7 @@
                 </div>
             </div>
         <% } %>
-        <% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
@@ -346,7 +340,6 @@
             addFormListener('sizeDeleteForm', 'DELETE', '/stores/sizes/<%= size.size_id %>', {redirect: '/stores/items'});
         });
     <% } %>
-    showTab('<%= show_tab %>');
 </script>
 <% let default_nsn = -1; %>
 <% if (size.nsn_id) default_nsn = size.nsn_id; %>

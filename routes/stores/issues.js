@@ -16,7 +16,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             if (req.allowed || issue.issuedTo.user_id === req.user.user_id) {
                 res.render('stores/issues/show', {
                     issue: issue,
-                    notes: {table: 'issues', id: issue.issue_id},
                     download: req.query.download || null,
                     show_tab: req.query.tab || 'details'
                 })
@@ -24,7 +23,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/issue_lines/:id',      isLoggedIn, allowed('access_issues',      {allow: true}), (req, res) => {
+    app.get('/stores/issuelines/:id',      isLoggedIn, allowed('access_issues',      {allow: true}), (req, res) => {
         db.findOne({
             table: m.issue_lines,
             where: {line_id: req.params.id}
@@ -63,7 +62,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(issues => res.send({result: true, issues: issues}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/issuelinesbysize', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
+    app.get('/stores/get/issuelines/bysize', isLoggedIn, allowed('access_issue_lines', {send: true}), (req, res) => {
         m.issue_lines.findAll({
             where: req.query,
             include: [

@@ -21,7 +21,7 @@ function getAdjusts(size_id) {
                 cell2.innerText = adjust._type;
                 cell3.innerText = adjust._qty;
                 cell4.innerText = adjust._variance;
-                cell5.innerText = adjust.user.rank._rank + ' ' + adjust.user._name + ', ' + adjust.user._ini;
+                cell5.innerText = adjust.user.rank._rank + ' ' + adjust.user.full_name;
             });
         } else alert('Error: ' + response.error)
         spn_adjusts.style.display = 'none';
@@ -50,7 +50,7 @@ function getReceipts(size_id) {
                 cell1.dataset.sort = new Date(line.receipt._date).getTime();
                 cell1.innerText    = new Date(line.receipt._date).toDateString();
                 cell2.innerText = line._qty;
-                cell3.innerText = line.receipt.user.rank._rank + ' ' + line.receipt.user._name + ', ' + line.receipt.user._ini;
+                cell3.innerText = line.receipt.user.rank._rank + ' ' + line.receipt.user.full_name;
                 cell4.appendChild(link('/stores/receipts/' + line.receipt_id, false));
             });
         } else alert('Error: ' + response.error)
@@ -81,7 +81,7 @@ function getIssues(size_id) {
                     cell5 = row.insertCell(-1);
                 cell1.dataset.sort = new Date(line.issue._date).getTime();
                 cell1.innerText    = new Date(line.issue._date).toDateString();
-                cell2.innerText = line.issue._to.rank._rank + ' ' + line.issue._to._name + ', ' + line.issue._to._ini;
+                cell2.innerText = line.issue._to.rank._rank + ' ' + line.issue._to.full_name;
                 cell3.innerText = line._qty;
                 if (line.return_line_id !== null) cell4.innerHTML = _check();
                 cell5.appendChild(link('/stores/issues/' + line.issue_id, false));
@@ -113,7 +113,7 @@ function getReturns(size_id) {
                     cell4 = row.insertCell(-1);
                 cell1.dataset.sort = new Date(line.return._date).getTime();
                 cell1.innerText    = new Date(line.return._date).toDateString();
-                cell2.innerText = line.return._from.rank._rank + ' ' + line.return._from._name + ', ' + line.return._from._ini;
+                cell2.innerText = line.return._from.rank._rank + ' ' + line.return._from.full_name;
                 cell3.innerText = line._qty;
                 cell4.appendChild(link('/stores/returns/' + line.return_id, false));
             });

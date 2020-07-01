@@ -16,6 +16,7 @@
                 	Options
                 </a>
                 <div class="dropdown-menu" aria-labelledby="optionsDropdown">
+					<% include ../../partials/notes/menu_add %>
 					<% if (!order._complete && !order._closed) { %>
 						<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for))) { %>
 							<form id='completeForm'>
@@ -58,13 +59,7 @@
                 Lines (<span id='line_count'></span>)
             </a>
         </li>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -73,7 +68,7 @@
 					<div class="input-group-prepend w-30">
 						<span class="input-group-text w-100">For</span>
 					</div>
-					<p class="form-control"><% if (order.ordered_for !== -1) { %><%= order._for.rank._rank %> <%= order._for._name %>, <%= order._for._ini %><% } else { %>Backing Stock<% } %></p>
+					<p class="form-control"><% if (order.ordered_for !== -1) { %><%= order._for.rank._rank %> <%= order._for.full_name %><% } else { %>Backing Stock<% } %></p>
 					<% if (order.ordered_for !== -1) { %>
 						<div class="input-group-append">
 							<a class='btn btn-primary' href="/stores/users/<%= order.ordered_for %>">
@@ -86,7 +81,7 @@
 					<div class="input-group-prepend w-30">
 						<span class="input-group-text w-100">By</span>
 					</div>
-					<p class="form-control"><%= order._by.rank._rank %> <%= order._by._name %>, <%= order._by._ini %></p>
+					<p class="form-control"><%= order._by.rank._rank %> <%= order._by.full_name %></p>
 					<% if (order.ordered_for !== -1) { %>
 						<div class="input-group-append">
 							<a class='btn btn-primary' href="/stores/users/<%= order.user_id %>">
@@ -158,11 +153,12 @@
 				<% } %>
 			</div>
 		</div>
-        <% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/specific/orders_show.js"></script>
+<script src="/js/get/order_lines.js"></script>
+<script src="/js/get/select/stock.js"></script>
 <script src="/js/addSize.js"></script>
 <script>
     window.addEventListener( "load", function () {
@@ -178,7 +174,6 @@
 			addFormListener('actionForm', 'PUT', '/stores/order_lines/<%= order.order_id %>',{reload: true});
 		<% } %>
     });
-    showTab('<%= show_tab %>');
 </script>
-<script async>getLines(<%= order.order_id %>, <%= order._complete %>, <%= order._closed %>, <%= permissions.order_line_delete %>)</script>
+<script async>getOrderLines(<%= order.order_id %>, <%= order._complete %>, <%= order._closed %>, <%= permissions.order_line_delete %>)</script>
 <% include ../../partials/foot/htmlClose %>

@@ -19,11 +19,6 @@
     </nav>
 </section>
 <section class='container'>
-	<%- include('../../partials/spinner', {id: 'categories'}) %>
-	<%- include('../../partials/spinner', {id: 'groups'}) %>
-	<%- include('../../partials/spinner', {id: 'types'}) %>
-	<%- include('../../partials/spinner', {id: 'subtypes'}) %>
-	<%- include('../../partials/spinner', {id: 'genders'}) %>
 	<% include ../../partials/itemOptions %>
 	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable("itemTable", "itemSearch")' placeholder='Search by description...'>
 	<%- include('../../partials/spinner', {id: 'items'}) %>

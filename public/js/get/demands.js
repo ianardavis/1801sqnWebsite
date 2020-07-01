@@ -24,14 +24,14 @@ getDemands = () => {
         } else alert('Error: ' + response.error);
         hide_spinner('demands');
     });
-    let sel_closed   = document.querySelector('#sel_closed'),
-        sel_complete = document.querySelector('#sel_complete'),
+    let closedSelect    = document.querySelector('#closedSelect'),
+        completeSelect  = document.querySelector('#completeSelect'),
         suppliersSelect = document.querySelector('#suppliersSelect'),
         query        = [];
     if      (Number(suppliersSelect.value) !== -1) query.push('supplier_id=' + suppliersSelect.value);
-    if      (Number(sel_complete.value) === 2)  query.push('_complete=0')
-    else if (Number(sel_complete.value) === 3)  query.push('_complete=1');
-    if      (Number(sel_closed.value) === 2)    query.push('_closed=0')
-    else if (Number(sel_closed.value) === 3)    query.push('_closed=1');
+    if      (Number(completeSelect.value) === 2)   query.push('_complete=0')
+    else if (Number(completeSelect.value) === 3)   query.push('_complete=1');
+    if      (Number(closedSelect.value) === 2)     query.push('_closed=0')
+    else if (Number(closedSelect.value) === 3)     query.push('_closed=1');
     XHR_send(XHR, 'demands', '/stores/get/demands?' + query.join('&'));
 };

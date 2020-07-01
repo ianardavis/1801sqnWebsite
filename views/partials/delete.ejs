@@ -1,0 +1,16 @@
+<div class="dropdown-divider"></div>
+<form id='deleteForm'>
+    <button class="dropdown-item dropdown_button confirm">
+        Delete
+    </button>
+</form>
+<script>
+    window.addEventListener( "load", () => {
+        addFormListener(
+            'deleteForm',
+            'DELETE',
+            '/' + path[2] + '/' + path[3],
+            {redirect: '/' + path[2]}
+        );
+    });
+</script>

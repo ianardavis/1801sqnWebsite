@@ -13,32 +13,9 @@
 </section>
 <section>
 	<div class="container">
-		<div class="input-group mb-2">
-			<div class="input-group-prepend w-20">
-				<label class="input-group-text w-100" for="sel_supplier">Suppliers</label>
-			</div>
-			<select class="custom-select" id='sel_supplier' onchange=getReceipts()>
-				<option value='-1' selected>All</option>
-				<% suppliers.forEach(supplier => { %>
-					<option value='<%= supplier.supplier_id %>'>
-						<%= supplier._name %>
-					</option>
-				<% }); %>
-			</select>
-		</div>
-		<div class="input-group mb-2">
-			<div class="input-group-prepend w-20">
-				<label class="input-group-text w-100" for="sel_complete">Completed Receipts</label>
-			</div>
-			<select class="custom-select" id='sel_complete' onchange=getReceipts()>
-				<option value='1' selected>Include</option>
-				<option value='2'>Exclude</option>
-				<option value='3'>Only</option>
-			</select>
-		</div>
-		<div id='spn_receipts' class="spinner-border text-primary" role="status">
-			<span class="sr-only">Loading...</span>
-		</div>
+		<%- include('../../partials/inputs/select', 		{id: 'suppliersSelect'. title: 'Suppliers', 		 onchange: 'getReceipts()'}) %>
+		<%- include('../../partials/inputs/include_select', {id: 'completeSelect',  title: 'Completed Receipts', onChange: 'getReceipts()', _default: 1}) %>
+		<%- include('../../partials/spinner', 				{id: 'receipts'}) %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
 				<th class="w-25" onclick="sortTable(0, 'receiptTable')">Supplier</th>
@@ -54,6 +31,6 @@
 	</div>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/specific/receipts_index.js"></script>
+<script src="/js/get/receipts.js"></script>
 <script async>getReceipts()</script>
 <% include ../../partials/foot/htmlClose %>

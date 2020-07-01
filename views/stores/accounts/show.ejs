@@ -8,13 +8,7 @@
                 Details
             </a>
         </li>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
         <li class="nav-item dropdown ml-auto">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Options
@@ -23,6 +17,7 @@
                 <a class='dropdown-item' href='javascript:edit("accounts",<%= account.account_id %>,{"height":236})'>
                     Edit
                 </a>
+                <% include ../../partials/notes/menu_add %>
             </div>
         </li>
     </ul>
@@ -32,7 +27,7 @@
             <%- include('../../partials/inputs/display', {title: 'Number', text: account._number}) %>
             <%- include('../../partials/inputs/display', {title: 'Owner',  text: account.user.rank._rank + ' ' + account.user.full_name}) %>
         </div>
-        <% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
     </div>
 <% include ../../partials/foot/noNav %>
 <% include ../../partials/foot/htmlClose %>

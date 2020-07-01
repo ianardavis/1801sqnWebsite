@@ -17,7 +17,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(serial => {
             res.render('stores/serials/show', {
                 serial:   serial,
-                notes:    {table: 'serials', id: serial.serial_id},
                 show_tab: req.query.tab || 'details'
             });
         })

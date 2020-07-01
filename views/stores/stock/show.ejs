@@ -37,13 +37,7 @@
                 </a>
             </li>
         <% } %>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -148,7 +142,7 @@
 										<%= _return.return._date.toDateString() %>
 									</td>
 									<td>
-										<%= _return._from.user.rank._rank %> <%= _return._from.user._name %>, <%= _return._from.user._ini %>
+										<%= _return._from.user.rank._rank %> <%= _return._from.user.full_name %>
 									</td>
 									<td>
 										<%= _return._qty %>
@@ -163,14 +157,11 @@
 				</table>
 			</div>
         <% } %>
-		<% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
 	</div>
 </section>
 <% include ../../partials/foot/noNav %>
 <script src="/js/specific/stock_show.js"></script>
-<script>
-    showTab('<%= show_tab %>');
-</script>
 <script async>getAdjusts(<%= stock.size_id %>)</script>
 <script async>getReceipts(<%= stock.size_id %>)</script>
 <script async>getIssues(<%= stock.size_id %>)</script>

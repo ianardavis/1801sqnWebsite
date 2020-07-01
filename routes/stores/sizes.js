@@ -41,7 +41,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(size => {
             res.render('stores/sizes/show', {
                 size:  size,
-                notes: {table: 'sizes', id: size.size_id},
                 show_tab: req.query.tab || 'details'
             });
         })

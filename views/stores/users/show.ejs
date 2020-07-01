@@ -34,6 +34,7 @@
                             </button>
                         </form>
                     <% } %>
+                    <% include ../../partials/notes/menu_add %>
                     <% if (user.user_id !== f_user.user_id) { %>
                         <% if (permissions.permission_edit) { %>
                             <a class="dropdown-item" href='javascript:edit("permissions",<%= f_user.user_id %>,{"height":600})'>
@@ -111,13 +112,7 @@
                 </a>
             </li>
         <% } %>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -282,7 +277,7 @@
                 </div>
             </div>
         <% } %>
-        <% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
@@ -311,7 +306,6 @@
             <% } %>
         <% } %>
     });
-    showTab('<%= show_tab %>');
 </script>
 <script async>getRequests(<%= f_user.user_id %>)</script>
 <script async>getOrders(<%= f_user.user_id %>)</script>

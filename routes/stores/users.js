@@ -30,7 +30,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             .then(user => {
                 res.render('stores/users/show', {
                     f_user:   user,
-                    notes:    {table: 'users', id: user.user_id},
                     show_tab: req.query.tab || 'details'
                 });
             })

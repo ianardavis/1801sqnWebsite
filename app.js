@@ -14,6 +14,11 @@ port.check(_port)
     if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
     console.log('environment: ' + process.env.NODE_ENV);
 
+    console.log('Models:');
+    let m           = require(process.env.ROOT + '/db/models'),
+        permissions = require(process.env.ROOT + '/fn/permissions');
+    console.log('   Loaded');
+
     console.log('Busboy:');
     bb.extend(app, {
         arrayLimit: 200,
@@ -37,6 +42,7 @@ port.check(_port)
     console.log('Passport:');
     app.use(passport.initialize());
     app.use(passport.session());
+    require('./config/passport.js')(passport, m);
     console.log('   Setup');
 
     console.log('Flash:');
@@ -65,20 +71,11 @@ port.check(_port)
     });
     console.log('   Set');
 
-    console.log('Models:');
-    let m           = require(process.env.ROOT + '/db/models'),
-        permissions = require(process.env.ROOT + '/fn/permissions');
-    console.log('   Loaded');
-
     console.log('Routes:');
     require('./routes/stores') (app, m, permissions.get);
     require('./routes/canteen')(app, m, permissions.get);
     require('./routes/site')   (app, m);
     console.log('   Loaded');
-    
-    console.log('Configuring Passport:');
-    require('./config/passport.js')(passport, m);
-    console.log('   Done');
 
     app.listen(_port, err => {
         if (err) console.log(err);

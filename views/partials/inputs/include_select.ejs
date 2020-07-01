@@ -1,0 +1,10 @@
+<div class="input-group mb-2">
+    <div class="input-group-prepend w-30">
+        <label class="input-group-text w-100" for="<%= id %>"><%= title %></label>
+    </div>
+    <select class="custom-select" id='<%= id %>' onchange=<%= onChange %>>
+        <option value='1'<% if (_default === 1) { %> selected<% } %>>Include</option>
+        <option value='2'<% if (_default === 2) { %> selected<% } %>>Exclude</option>
+        <option value='3'<% if (_default === 3) { %> selected<% } %>>Only</option>
+    </select>
+</div>

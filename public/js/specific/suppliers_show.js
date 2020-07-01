@@ -49,7 +49,7 @@ function getDemands(supplier_id) {
                 cell2.innerText    = demand.lines.length;
                 if (demand._complete) cell3.innerHTML = _check();
                 if (demand._closed) cell4.innerHTML = _check();
-                cell5.innerText    = demand.user.rank._rank + ' ' + demand.user._name + ', ' + demand.user._ini
+                cell5.innerText    = demand.user.rank._rank + ' ' + demand.user.full_name;
                 cell6.appendChild(link('/stores/demands/' + demand.demand_id, false));
             });
         } else alert('Error: ' + response.error)
@@ -88,7 +88,7 @@ function getReceipts(supplier_id) {
                 cell1.innerText    = new Date(receipt._date).toDateString();
                 cell2.innerText    = receipt.lines.length;
                 if (receipt._complete) cell3.innerHTML = _check();
-                cell4.innerText    = receipt.user.rank._rank + ' ' + receipt.user._name + ', ' + receipt.user._ini
+                cell4.innerText    = receipt.user.rank._rank + ' ' + receipt.user.full_name;
                 cell5.appendChild(link('/stores/receipts/' + receipt.receipt_id, false));
             });
         } else alert('Error: ' + response.error)

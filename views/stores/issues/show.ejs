@@ -32,13 +32,7 @@
                             </a>
                             <div class="dropdown-divider"></div>
                         <% } %>
-                        <% if (permissions.issue_delete) { %>
-                            <form id='deleteForm'>
-                                <button class='dropdown-item dropdown_button confirm'>
-                                    Delete Issue
-                                </button>
-                            </form>
-                        <% } %>
+                        <% if (permissions.issue_delete) { %><% include ../../partials/delete %><% } %>
                     <% } else if (issue._complete) { %>
                         <% if (permissions.file_download) { %>
                             <% if (issue._filename) { %>
@@ -102,19 +96,9 @@
                         </a>
                     </div>
                 </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">Date</span>
-                    </div>
-                    <p class="form-control"><%= issue._date.toDateString() %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">Due Back</span>
-                    </div>
-                    <p class="form-control"><%= issue._date_due.toDateString() %></p>
-                </div>
-                <div class="input-group mb-1">
+                <%- include('../../partials/inputs/display', {title: 'Date',     text: issue._date.toDateString()}) %>
+				<%- include('../../partials/inputs/display', {title: 'Due Back', text: issue._date_due.toDateString()}) %>
+				<div class="input-group mb-1">
                     <div class="input-group-prepend w-20">
                         <span class="input-group-text w-100">Complete</span>
                     </div>
@@ -130,9 +114,7 @@
         </div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <div class="container">
-				<div id='spn_issues' class="spinner-border text-primary" role="status">
-					<span class="sr-only">Loading...</span>
-                </div>
+                <%- include('../../partials/spinner', {id: 'issues'}) %>
                 <% if (issue._complete && !issue._closed && permissions.return_line_add) { %>
                     <form id='returnForm'>
                 <% } %>
@@ -182,7 +164,14 @@
             <% } %>
         <% } %>
     });
-    showTab('<%= show_tab %>');
 </script>
-<script async>getIssueLines(<%= issue.issue_id %>, <%= issue._complete %>, <%= issue._closed %>, <%= permissions.return_line_add || false %>, <%= permissions.issue_delete || false %>)</script>
+<script async>
+    getIssueLines(
+        <%= issue.issue_id %>,
+        <%= issue._complete %>,
+        <%= issue._closed %>,
+        <%= permissions.return_line_add || false %>,
+        <%= permissions.issue_delete    || false %>
+    );
+</script>
 <% include ../../partials/foot/htmlClose %>

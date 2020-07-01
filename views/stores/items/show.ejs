@@ -17,6 +17,21 @@
                     <%= item._description %>
                 </a>
             </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle stores_nav" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Options
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <% if (permissions.item_edit) { %><%- include('../../partials/edit') %><% } %>
+                    <% include ../../partials/notes/menu_add %>
+                    <% if (permissions.item_delete) { %><%- include('../../partials/delete') %><% } %>
+                    <% if (permissions.size_add) { %>
+                        <a class='dropdown-item' href='javascript:add("sizes",{"queries":"item_id=<%= item.item_id %>","height":600})'>
+                            Add Size
+                        </a>
+                    <% } %>
+                </div>
+            </li>
         </ul>
     </nav>
 </section>
@@ -32,77 +47,42 @@
                 Sizes (<span id='size_count'></span>)
             </a>
         </li>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <div class="container">
-                <% if (permissions.item_edit) { %>
-                    <a class='float-left btn btn-success m-1' href='javascript:edit("items",<%= item.item_id %>,{"height":413})'>
-                        <i class='fas fa-pencil-alt'></i>
-                    </a>
-                <% } %>
-                <% if (permissions.item_delete) { %>
-                    <form id='deleteForm'>
-                        <button class='float-left m-1 btn btn-danger confirm'>
-                            <i class='fas fa-trash-alt'></i>
-                        </button>
-                    </form>
-                <% } %>
+                <%- include('../../partials/inputs/display', {title: 'Description', text: item._description}) %>
+                <%- include('../../partials/inputs/display', {title: 'Category',    text: item.category._category}) %>
                 <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">Description</span>
-                    </div>
-                    <p class="form-control"><%= item._description %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">Category</span>
-                    </div>
-                    <p class="form-control"><% if(item.category) { %><%= item.category._category %><% } %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
+                    <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Group</span>
                     </div>
-                    <p class="form-control"><% if(item.group) { %><%= item.group._group %><% } %></p>
+                    <p class="form-control"><% if (item.group) { %><%= item.group._group %><% } %></p>
                 </div>
                 <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
+                    <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Type</span>
                     </div>
-                    <p class="form-control"><% if(item.type) { %><%= item.type._type %><% } %></p>
+                    <p class="form-control"><% if (item.type) { %><%= item.type._type %><% } %></p>
                 </div>
                 <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
+                    <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Sub Type</span>
                     </div>
-                    <p class="form-control"><% if(item.subtype) { %><%= item.subtype._subtype %><% } %></p>
+                    <p class="form-control"><% if (item.subtype) { %><%= item.subtype._subtype %><% } %></p>
                 </div>
                 <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
+                    <div class="input-group-prepend w-30">
                         <span class="input-group-text w-100">Gender</span>
                     </div>
-                    <p class="form-control"><% if(item.gender) { %><%= item.gender._gender %><% } %></p>
+                    <p class="form-control"><% if (item.gender) { %><%= item.gender._gender %><% } %></p>
                 </div>
             </div>
         </div>
         <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
             <div class="container">
-                <% if (permissions.size_add) { %>
-                    <a class='float-left btn btn-success m-1' href='javascript:add("sizes",{"queries":"item_id=<%= item.item_id %>","height":600})'>
-                        <i class='fas fa-plus'></i>
-                    </a>
-                <% } %>
-                <div id='spn_items' class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
+                <%- include('../../partials/spinner', {id: 'items'}) %>
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
                         <th class='w-50' onclick='sortTable(0, "sizeTable")'><%= item._size_text %></th>
@@ -114,16 +94,20 @@
                 </table>
             </div>
         </div>
-        <% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
-<script src='/js/specific/items_show.js'></script>
+<script src='/js/get/sizes.js'></script>
 <script>
     window.addEventListener( "load", function () {
-        addFormListener('deleteForm', 'DELETE', '/stores/items/<%= item.item_id %>', {redirect: '/stores/items'});
+        addFormListener(
+            'deleteForm',
+            'DELETE',
+            '/stores/items/<%= item.item_id %>',
+            {redirect: '/stores/items'}
+        );
     });
-    showTab('<%= show_tab %>');
 </script>
 <script async>getSizes(<%= item.item_id %>)</script>
 <% include ../../partials/foot/htmlClose %>

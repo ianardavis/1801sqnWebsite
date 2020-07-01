@@ -17,17 +17,17 @@
         <p class="form-control"><%= f_user._ini %></p>
         <p class="form-control"><%= f_user._name %></p>
     </div>
-    <button class="btn btn-success confirm col-12" form="permissionForm" type="submit" id="_submit">Save</button>
+    <button class="btn btn-success confirm w-100" form="permissionForm" type="submit" id="_submit">Save</button>
     <a class='float-left' href="javascript:close()">Cancel</a>
     <div class="form-group">
-        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_disabled()>Disabled</button>
-        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_user()>User - Basic access and requests</button>
-        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_issuer()>Issuer - As User with issuing and returns</button>
-        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_storeman()>Storeman - As Issuer with stores related permissions</button>
-        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_admin()>Admin - As Storeman with settings and suppliers</button>
-        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_super()>Superuser - All permissions</button>
-        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen()>Canteen</button>
-        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen_supervisor()>Canteen Supervisor</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_disabled()   >Disabled</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_user()       >User - Basic access and requests</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_issuer()     >Issuer - As User with issuing and returns</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_storeman()   >Storeman - As Issuer with stores related permissions</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_admin()      >Admin - As Storeman with settings and suppliers</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_super()      >Superuser - All permissions</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen()    >Canteen</button>
+        <button class="btn btn-sm btn-primary w-100 mb-1" onclick=p_canteen_sup()>Canteen Supervisor</button>
         <div id='spn_permissions' class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
         </div>
@@ -178,7 +178,7 @@
         document.querySelector('#access_canteen').checked = true;
         document.querySelector('#canteen_supervisor').checked = false;
     };
-    function p_canteen_supervisor() {
+    function p_canteen_sup() {
         document.querySelector('#access_canteen').checked = true;
         document.querySelector('#canteen_supervisor').checked = true;
     };

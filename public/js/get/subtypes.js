@@ -6,8 +6,15 @@ getSubTypes = () => {
             _select  = document.querySelector('#subtypesSelect');
         _select.innerHTML = '';
         if (response.result) {
-            _select.appendChild(_option('', ''));
-            response.results.forEach(subtypes => _select.appendChild(_option(subtypes.subtype_id, subtypes._subtype)));
+            _select.appendChild(_option({value: '', text: ''}));
+            response.results.forEach(subtypes => {
+                _select.appendChild(
+                    _option({
+                        value: subtypes.subtype_id,
+                        text: subtypes._subtype
+                    })
+                )
+            });
         } else alert('Error: ' + response.error);
         hide_spinner('subtypes');
     });

@@ -1,4 +1,4 @@
-function getIssueLines(issue_id, complete, closed, return_permission, delete_permission) {
+getIssueLines = (issue_id, complete, closed, return_permission, delete_permission) => {
     show_spinner('issues');
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {

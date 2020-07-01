@@ -1,77 +1,4 @@
-function getLines(request_id, complete, edit_permission, delete_permission) {
-    let spn_requests = document.querySelector('#spn_requests');
-    spn_requests.style.display = 'block';
-    const XHR = new XMLHttpRequest();
-    XHR.addEventListener("load", event => {
-        let response   = JSON.parse(event.target.responseText),
-            table_body = document.querySelector('#requestTable'),
-            line_count = document.querySelector('#line_count');
-        if (response.lines) line_count.innerText = response.lines.length || '0';
-        table_body.innerHTML = '';
-        if (response.result) {
-            response.lines.forEach(line => {
-                let row   = table_body.insertRow(-1),
-                    cell1 = row.insertCell(-1),
-                    cell2 = row.insertCell(-1),
-                    cell3 = row.insertCell(-1),
-                    cell4 = row.insertCell(-1);
-                cell1.innerText = line.size.item._description;
-                cell2.innerText = line.size._size;
-                cell3.innerText = line._qty;
-                cell1.appendChild(link('/stores/items/' + line.size.item_id));
-                cell2.appendChild(link('/stores/sizes/' + line.size_id));
-                if (complete) {
-                    let cell5 = row.insertCell(-1),
-                        cell6 = row.insertCell(-1);
-                    if (line._status === 'Approved') {
-                        cell4.innerText = line._status + ' - ' + line._action;
-                        cell5.innerText = new Date(line._date).toDateString();
-                        cell6.innerText = line.user.rank._rank + ' ' + line.user._name + ', ' + line.user._ini;
-                        cell4.appendChild(link('/stores/' + String(line._action).toLowerCase() + '_lines/' + line._id));
-                    } else if (line._status === 'Declined' || !edit_permission) {
-                        cell4.innerText = line._status
-                        if (line._date) cell5.innerText = new Date(line._date).toDateString();
-                        if (line.user)  cell6.innerText = line.user.rank._rank + ' ' + line.user._name + ', ' + line.user._ini;
-                    } else {
-                        cell5.id = 'action_' + line.line_id
-                        cell6.id = 'details_' + line.line_id
-                        let _status = _select({
-                                name: 'actions[line_id' + line.line_id + '][_status]',
-                                id:   'sel_' + line.line_id
-                            });
-                        _status.appendChild(_option('', 'Open'));
-                        _status.appendChild(_option('Approved', 'Approved'));
-                        _status.appendChild(_option('Declined', 'Declined'));
-                        _status.addEventListener("change", function (event) {
-                            if (this.value === 'Approved') showActions(line.size_id, line.line_id)
-                            else {
-                                let _cell  = document.querySelector('#action_' + line.line_id),
-                                    _cell2 = document.querySelector('#details_' + line.line_id);
-                                _cell.innerHTML  = '';
-                                _cell2.innerHTML = '';
-                            }
-                        });
-                        cell4.appendChild(_status);
-                    };
-                } else {
-                    cell4.innerText = line._status
-                    if (delete_permission) {
-                        let cellDelete = row.insertCell(-1);
-                        cellDelete.appendChild(deleteBtn('/stores/request_lines/' + line.line_id));
-                    };
-                };
-            });
-        } else alert('Error: ' + response.error)
-        spn_requests.style.display = 'none';
-    });
-    XHR.addEventListener("error", event => alert('Oops! Something went wrong getting lines'));
-    let sel_status = document.querySelector('#sel_status'),
-        query      = ['request_id=' + request_id];
-    if (complete && sel_status.value !== 'All') query.push('_status=' + sel_status.value);
-    XHR.open('GET', '/stores/request_lines?' + query.join('&'));
-    XHR.send();
-};
-function showActions(size_id, line_id) {
+showActions = (size_id, line_id) => {
     let _cell = document.querySelector('#action_' + line_id);
     _cell.innerHTML = _spinner('line_' + line_id);
     const XHR = new XMLHttpRequest();
@@ -122,7 +49,7 @@ function showActions(size_id, line_id) {
     XHR.open('GET', '/stores/get/size/' + size_id);
     XHR.send();
 };
-function getStock(size_id, line_id) {
+getStock = (size_id, line_id) => {
     let _cell = document.querySelector('#details_' + line_id);
     _cell.innerHTML = _spinner('line_' + line_id);
     const XHR = new XMLHttpRequest();
@@ -191,7 +118,7 @@ function getStock(size_id, line_id) {
     XHR.open('GET', '/stores/get/size/' + size_id);
     XHR.send();
 };
-function getNSNs(stock_id, size_id, line_id) {
+getNSNs = (stock_id, size_id, line_id) => {
     let _cell = document.querySelector('#details_' + line_id);
     _cell.innerHTML = _spinner('line_' + line_id);
     const XHR = new XMLHttpRequest();
@@ -226,7 +153,7 @@ function getNSNs(stock_id, size_id, line_id) {
     XHR.open('GET', '/stores/get/nsns/bysize/' + size_id);
     XHR.send();
 };
-function getSerials(stock_id, size_id, line_id) {
+getSerials = (stock_id, size_id, line_id) => {
     let _cell = document.querySelector('#details_' + line_id);
     _cell.innerHTML = _spinner('line_' + line_id);
     const XHR = new XMLHttpRequest();

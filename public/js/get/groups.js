@@ -6,8 +6,15 @@ getGroups = () => {
             _select  = document.querySelector('#groupsSelect');
         _select.innerHTML = '';
         if (response.result) {
-            _select.appendChild(_option('', ''));
-            response.results.forEach(group => _select.appendChild(_option(group.group_id, group._group)));
+            _select.appendChild(_option({value: '', text: ''}));
+            response.results.forEach(group => {
+                _select.appendChild(
+                    _option({
+                        value: group.group_id,
+                        text: group._group
+                    })
+                )
+            });
         } else alert('Error: ' + response.error);
         hide_spinner('groups');
     });

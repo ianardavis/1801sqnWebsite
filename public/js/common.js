@@ -161,5 +161,19 @@ function addFormListener (form_id, method, location, options = {reload: false, r
     sendData(form, method, location, options);
   });
 };
+alert = message => {
+    if (window.opener) {
+        window.opener.alert(message);
+    } else {
+        let notification = document.querySelector('#alert');
+        if (notification) {
+            notification.setAttribute('data-content', message);
+            let _date = new Date();
+            notification.setAttribute('data-original-title', _date.toLocaleDateString() + ' ' + _date.toLocaleTimeString());
+            $('#alert').popover('show');
+            setTimeout(() => {$('#alert').popover('hide')}, 5000);
+        };
+    };
+};
 
 let path = window.location.pathname.toString().split('/');

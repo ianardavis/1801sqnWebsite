@@ -20,7 +20,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(stock => {
             res.render('stores/stock/show', {
                 stock: stock,
-                notes: {table: 'stock', id: stock.stock_id},
                 show_tab: req.query.tab || 'details'
             });
         })

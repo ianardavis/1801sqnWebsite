@@ -29,9 +29,9 @@
         <script async>
             let select = document.querySelector('#sel_system');
             select.addEventListener('change', event => {
-                getNotes(path[1], path[2], <%= permissions.note_delete || false %>)
+                getNotes(path[2], path[3], <%= permissions.note_delete || false %>)
             })
-            getNotes(path[1], path[2], <%= permissions.note_delete || false %>)
+            getNotes(path[2], path[3], <%= permissions.note_delete || false %>)
         </script>
     </div>
 <% } %>

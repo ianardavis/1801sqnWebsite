@@ -12,9 +12,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             where: {note_id: req.params.id}
         })
         .then(note => {
-            if (note._system) {
-                res.error.redirect(new Error('System generated notes can not be edited') , '/', req, res)
-            } else res.render('stores/notes/edit', {note: note});
+            if (note._system) res.error.redirect(new Error('System generated notes can not be edited') , '/', req, res)
+            else res.render('stores/notes/edit', {note: note});
         })
         .catch(err => res.error.redirect(err, req, res));
     });

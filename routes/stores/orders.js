@@ -28,7 +28,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             if (req.allowed || order.orderedFor.user_id === req.user.user_id) {
                 res.render('stores/orders/show',{
                     order: order,
-                    notes: {table: 'orders', id: order.order_id},
                     show_tab: req.query.tab || 'details'
                 });
             } else res.error.redirect(new Error('Permission Denied'), req, res);

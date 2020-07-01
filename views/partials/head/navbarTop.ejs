@@ -28,6 +28,20 @@
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
+            <a
+                id='alert'
+                tabindex="0"
+                class="btn btn-danger"
+                role="button"
+                data-toggle="popover"
+                data-placement="bottom"
+                data-trigger="focus"
+                data-original-title=''
+                title="Notification"
+                data-content=""
+            >
+            <i class='fas fa-bell'></i>
+        </a>
             <% if (!user) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="/login"><strong>Login</strong></a>

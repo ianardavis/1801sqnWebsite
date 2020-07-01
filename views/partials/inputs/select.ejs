@@ -1,12 +1,13 @@
 <div class="input-group mb-1">
     <div class="input-group-prepend w-30">
-        <label class="input-group-text w-100"><%= title %></label>
+        <label class="input-group-text w-100" for='<%= id %>'><%= title %></label>
     </div>
     <select
         class="custom-select"
-        id=<%= id %>
-        name=<%= name %>
+        <% if (locals.id) { %>id='<%= id %>'<% } %>
+        <% if (locals.name) { %>name=<%= name %><% } %>
         <% if (locals.required) { %>required<% } %>
+        <% if (locals.onchange) { %>onchange='<%= onchange %>'<% } %>
     >
     </select>
 </div>

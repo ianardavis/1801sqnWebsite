@@ -12,29 +12,9 @@
     </nav>
 </section>
 <section class='container'>
-	<div class="input-group mb-2">
-		<div class="input-group-prepend w-25">
-			<label class="input-group-text w-100" for="sel_complete">Complete Issues</label>
-		</div>
-		<select class="custom-select" id='sel_complete' onchange=getIssues()>
-			<option value='1'>Include</option>
-			<option value='2' selected>Exclude</option>
-			<option value='3'>Only</option>
-		</select>
-	</div>
-	<div class="input-group mb-2">
-		<div class="input-group-prepend w-25">
-			<label class="input-group-text w-100" for="sel_closed">Closed Issues</label>
-		</div>
-		<select class="custom-select" id='sel_closed' onchange=getIssues()>
-			<option value='1'>Include</option>
-			<option value='2' selected>Exclude</option>
-			<option value='3'>Only</option>
-		</select>
-	</div>
-	<div id='spn_issues' class="spinner-border text-primary" role="status">
-		<span class="sr-only">Loading...</span>
-	</div>
+	<%- include('../../partials/inputs/include_select', {id: 'completeSelect', title: 'Completed Issues', onChange: 'getIssues()', _default: 2}) %>
+	<%- include('../../partials/inputs/include_select', {id: 'closedSelect',   title: 'Closed Issues', 	  onChange: 'getIssues()', _default: 2}) %>
+	<%- include('../../partials/spinner', {id: 'issues'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-40" onclick="sortTable(0, 'issueTable')">Issued To</th>

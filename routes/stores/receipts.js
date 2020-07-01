@@ -17,7 +17,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(receipt => {
             res.render('stores/receipts/show', {
                 receipt: receipt,
-                notes:   {table: 'receipts', id: receipt.receipt_id},
                 show_tab: req.query.tab || 'details'
             });
         })

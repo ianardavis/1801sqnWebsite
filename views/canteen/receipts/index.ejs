@@ -37,7 +37,7 @@
                                 <%= receipt._date.toDateString() %>
                             </td>
                             <td>
-                                <%= receipt.user.rank._rank %> <%= receipt.user._name %>, <%= receipt.user._ini %>
+                                <%= receipt.user.rank._rank %> <%= receipt.user.full_name %>
                             </td>
                             <td>
                                 <% if (receipt._complete) { %><i class='fas fa-check'></i><% } %>

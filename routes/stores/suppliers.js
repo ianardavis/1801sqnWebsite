@@ -30,7 +30,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 res.render('stores/suppliers/show', {
                     _default: defaultSupplier,
                     supplier: supplier,
-                    notes:    {table: 'suppliers', id: supplier.supplier_id},
                     show_tab: req.query.tab || 'details'
                 });
             })

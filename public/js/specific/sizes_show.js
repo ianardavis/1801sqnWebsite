@@ -108,7 +108,7 @@ function getRequestLines(size_id) {
                     cell1 = row.insertCell(-1),
                     cell2 = row.insertCell(-1),
                     cell3 = row.insertCell(-1);
-                cell1.innerText = line.request._for.rank._rank + ' ' + line.request._for._name + ', ' + line.request._for._ini;
+                cell1.innerText = line.request._for.rank._rank + ' ' + line.request._for.full_name;
                 cell2.innerHTML = line._qty;
                 cell3.appendChild(link('/stores/requests/' + line.request_id, false));
             });
@@ -137,7 +137,7 @@ function getOrderLines(size_id) {
                     cell2 = row.insertCell(-1),
                     cell3 = row.insertCell(-1);
                 if (Number(line.order.ordered_for) === -1) cell1.innerText = 'Backing Stock'
-                else cell1.innerText = line.order._for.rank._rank + ' ' + line.order._for._name + ', ' + line.order._for._ini;
+                else cell1.innerText = line.order._for.rank._rank + ' ' + line.order._for.full_name;
                 cell2.innerHTML = line._qty;
                 cell3.appendChild(link('/stores/orders/' + line.order_id, false));
             });
@@ -194,11 +194,11 @@ function getIssueLines(size_id) {
             response.lines.forEach(line => {
                 let row   = table_body.insertRow(-1),
                     cell1 = row.insertCell(-1),
-                    cell2 = row.insertCell(-1),
+                    cell2 = row.insertCell(-1),ll
                     cell3 = row.insertCell(-1),
-                    cell4 = row.insertCell(-1);
+                    cell4 = row.insertCell(-1);ull
                 cell1.innerText = new Date(line.issue._date).toDateString();
-                cell2.innerHTML = line.issue._to.rank._rank + ' ' + line.issue._to._name + ' ' + line.issue._to._ini;
+                cell2.innerHTML = line.issue._to.rank._rank + ' ' + line.issue._to.full_name;
                 cell3.innerHTML = line._qty;
                 cell4.appendChild(link('/stores/issues/' + line.issue_id, false));
             });

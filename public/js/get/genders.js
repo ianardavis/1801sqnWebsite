@@ -6,8 +6,15 @@ getGenders = () => {
             _select  = document.querySelector('#gendersSelect');
         _select.innerHTML = '';
         if (response.result) {
-            _select.appendChild(_option('', ''));
-            response.results.forEach(gender => _select.appendChild(_option(gender.gender_id, gender._gender)));
+            _select.appendChild(_option({value: '', text: ''}));
+            response.results.forEach(gender => {
+                _select.appendChild(
+                    _option({
+                        value: gender.gender_id,
+                        text: gender._gender
+                    })
+                )
+            });
         } else alert('Error: ' + response.error);
         hide_spinner('genders');
     });

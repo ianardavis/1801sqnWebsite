@@ -20,26 +20,8 @@
 		<select class="custom-select" id='suppliersSelect' onchange=getDemands()>
 		</select>
 	</div>
-	<div class="input-group mb-2">
-		<div class="input-group-prepend w-20">
-			<label class="input-group-text w-100" for="sel_complete">Completed Demands</label>
-		</div>
-		<select class="custom-select" id='sel_complete' onchange=getDemands()>
-			<option value='1' selected>Include</option>
-			<option value='2'>Exclude</option>
-			<option value='3'>Only</option>
-		</select>
-	</div>
-	<div class="input-group mb-2">
-		<div class="input-group-prepend w-20">
-			<label class="input-group-text w-100" for="sel_closed">Closed Demands</label>
-		</div>
-		<select class="custom-select" id='sel_closed' onchange=getDemands()>
-			<option value='1'>Include</option>
-			<option value='2' selected>Exclude</option>
-			<option value='3'>Only</option>
-		</select>
-	</div>
+	<%- include('../../partials/inputs/include_select', {id: 'completeSelect', title: 'Completed Demands', onChange: 'getDemands()', _default: 1}) %>
+	<%- include('../../partials/inputs/include_select', {id: 'closedSelect',   title: 'Closed Demands',    onChange: 'getDemands()', _default: 2}) %>
 	<%- include('../../partials/spinner', {id: 'demands'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">

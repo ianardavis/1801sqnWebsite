@@ -27,6 +27,7 @@
 							Action Lines
 						</button>
 					<% } %>
+					<% include ../../partials/notes/menu_add %>
 					<% if (!request._complete && !request._closed) { %>
 						<% if (permissions.request_edit) { %>
 							<form id='completeForm'>
@@ -79,13 +80,7 @@
                 Lines (<span id='line_count'></span>)
             </a>
         </li>
-        <% if (permissions.access_notes) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
-                    Notes (<span id='note_count'></span>)
-                </a>
-            </li>
-        <% } %>
+        <% include ../../partials/notes/tab_head %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -94,7 +89,7 @@
 					<div class="input-group-prepend w-20">
 						<span class="input-group-text w-100">For</span>
 					</div>
-					<p class="form-control"><%= request._for.rank._rank %> <%= request._for._name %>, <%= request._for._ini %></p>
+					<p class="form-control"><%= request._for.rank._rank %> <%= request._for.full_name %></p>
 					<div class="input-group-append">
 						<a class='btn btn-primary' href="/stores/users/<%= request._for.user_id %>">
 							<i class='fas fa-search'></i>
@@ -105,7 +100,7 @@
 					<div class="input-group-prepend w-20">
 						<span class="input-group-text w-100">By</span>
 					</div>
-					<p class="form-control"><%= request._by.rank._rank %> <%= request._by._name %>, <%= request._by._ini %></p>
+					<p class="form-control"><%= request._by.rank._rank %> <%= request._by.full_name %></p>
 					<div class="input-group-append">
 						<a class='btn btn-primary' href="/stores/users/<%= request._by.user_id %>">
 							<i class='fas fa-search'></i>
@@ -176,12 +171,13 @@
 				<% } %>
 			</div>
 		</div>
-		<% include ../../partials/noteTable %>
+        <% include ../../partials/notes/tab_body %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/addSize.js"></script>
 <script src="/js/specific/requests_show.js"></script>
+<script src="/js/get/request_lines.js"></script>
 <script>
     window.addEventListener( "load", function () {
 		<% if (!request._complete && !request._closed) { %>
@@ -196,10 +192,9 @@
 			addFormListener('approveForm', 'PUT', '/stores/request_lines/<%= request.request_id %>', {reload: true});
 		<% } %>
 	});
-	showTab('<%= show_tab %>');
 	<% if (!request._complete) { %>
 		$('#incompleteToast').toast('show')
 	<% } %>
 </script>
-<script async>getLines(<%= request.request_id %>, <%= request._complete %>, <% if (permissions.request_line_edit) { %>1<% } else { %>0<% } %>, <% if (permissions.request_line_delete) { %>1<% } else { %>0<% } %>)</script>
+<script async>getRequestLines(<%= request.request_id %>, <%= request._complete %>, <% if (permissions.request_line_edit) { %>1<% } else { %>0<% } %>, <% if (permissions.request_line_delete) { %>1<% } else { %>0<% } %>)</script>
 <% include ../../partials/foot/htmlClose %>

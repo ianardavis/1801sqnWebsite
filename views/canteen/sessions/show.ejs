@@ -89,7 +89,7 @@
                     <label class='col-form-label'>Opened By</label>
                 </div>
                 <div class="col-6">
-                    <input class='form-control' type="text" value='<%= session._opened_by.rank._rank %> <%= session._opened_by._name %>, <%= session._opened_by._ini %>' readonly>
+                    <input class='form-control' type="text" value='<%= session._opened_by.rank._rank %> <%= session._opened_by.full_name %>' readonly>
                 </div>
             </div>
             <% if (session._closed_by) { %>
@@ -98,7 +98,7 @@
                         <label class='col-form-label'>Closed By</label>
                     </div>
                     <div class="col-6">
-                        <input class='form-control' type="text" value='<%= session._closed_by.rank._rank %> <%= session._closed_by._name %>, <%= session._closed_by._ini %>' readonly>
+                        <input class='form-control' type="text" value='<%= session._closed_by.rank._rank %> <%= session._closed_by.full_name %>' readonly>
                     </div>
                 </div>
             <% } %>
@@ -123,7 +123,7 @@
                                     <%= sale._date.toLocaleTimeString() %>
                                 </td>
                                 <td>
-                                    <%= sale.user.rank._rank %> <%= sale.user._name %>, <%= sale.user._ini %>
+                                    <%= sale.user.rank._rank %> <%= sale.user.full_name %>
                                 </td>
                                 <td>
                                     <% if (sale.lines) { %>
@@ -131,7 +131,7 @@
                                     <% } %>
                                 </td>
                                 <td>
-                                    <% if (sale._complete) { %> <i class='fas fa-check'></i> <% } %>
+                                    <% if (sale._complete) { %><i class='fas fa-check'></i><% } %>
                                 </td>
                                 <td>
                                     <a class='btn btn-sm btn-primary' href="/canteen/sales/<%= sale.sale_id %>">

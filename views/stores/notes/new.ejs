@@ -1,6 +1,6 @@
-<%- include('../../partials/head/head') %>
+<% include ../../partials/head/head %>
 <body>
-<%- include('../../partials/head/flash') %>
+<% include ../../partials/head/flash %>
 <section id='body'><section class="container">
     <div class="row">
         <div class="col-12 col-lg-6 mx-auto bordered">
@@ -8,16 +8,15 @@
                 <input type="hidden" name="note[_table]" value="<%= table %>">
                 <input type="hidden" name="note[_id]"    value="<%= id %>">
                 <textarea class="form-control" name="note[_note]" rows="19" maxlength="1000" required></textarea>
-                <input class=" btn btn-success confirm" type="submit" value="Save">
-                <a class="float-left" href="javascript:close()">Cancel</a>
+                <% include ../../partials/save_cancel %>
             </form>
         </div>
     </div>
 </section>
-<%- include('../../partials/foot/noNav') %>
+<% include ../../partials/foot/noNav %>
 <script>
     window.addEventListener( "load", function () {
         addFormListener('noteForm', 'POST', '/stores/notes');
     });
 </script>
-<%- include('../../partials/foot/htmlClose') %>
+<% include ../../partials/foot/htmlClose %>

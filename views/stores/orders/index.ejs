@@ -23,10 +23,10 @@
 	</nav>
 </section>
 <section class='container'>
-	<% if (permissions.demand_line_add) { %>
+	<% if (permissions.demand_line_add) { %> 
 		<form class='mb-2' id='demandForm'>
 			<div class="input-group">
-				<div class="input-group-prepend w-25">
+				<div class="input-group-prepend w-30">
 					<button class="btn btn-success text-left w-100 confirm">Demand Orders for</button>
 				</div>
 				<select class="custom-select" name='supplier_id'>
@@ -37,29 +37,9 @@
 			</div>	
 		</form>
 	<% } %>
-	<div class="input-group mb-2">
-		<div class="input-group-prepend w-25">
-			<label class="input-group-text w-100" for="sel_complete">Completed Orders</label>
-		</div>
-		<select class="custom-select" id='sel_complete' onchange=getOrders()>
-			<option value='1' selected>Include</option>
-			<option value='2'>Exclude</option>
-			<option value='3'>Only</option>
-		</select>
-	</div>
-	<div class="input-group mb-2">
-		<div class="input-group-prepend w-25">
-			<label class="input-group-text w-100" for="sel_closed">Closed Orders</label>
-		</div>
-		<select class="custom-select" id='sel_closed' onchange=getOrders()>
-			<option value='1'>Include</option>
-			<option value='2' selected>Exclude</option>
-			<option value='3'>Only</option>
-		</select>
-	</div>
-	<div id='spn_orders' class="spinner-border text-primary" role="status">
-		<span class="sr-only">Loading...</span>
-	</div>
+	<%- include('../../partials/inputs/include_select', {id: 'completeSelect', title: 'Completed Orders', onChange: 'getOrders()', _default: 1}) %>
+	<%- include('../../partials/inputs/include_select', {id: 'closedSelect', title: 'Closed Orders', 	  onChange: 'getOrders()', _default: 2}) %>
+	<%- include('../../partials/spinner', {id: 'orders'}) %>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
 			<th class='w-35' onclick='sortTable(0, "orderTable")'>Ordered For</th>
@@ -74,13 +54,13 @@
 	</table>
 </section>
 <% include ../../partials/foot/full %>
-<script src="/js/specific/orders_index.js"></script>
+<script src="/js/get/orders.js"></script>
 <script>
-    window.addEventListener( "load", function () {
+    window.addEventListener( "load", () => {
 		<% if (permissions.demand_line_add) { %>
 			addFormListener('demandForm', 'PUT', '/stores/orders/addtodemand',{reload: true});
 		<% } %>
-	<% }) %>
+	})
 	<% if (download) { %>
 		download_file('<%= download %>');
 	<% } %>

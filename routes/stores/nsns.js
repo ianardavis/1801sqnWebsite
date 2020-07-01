@@ -13,12 +13,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         db.findOne({
             table: m.nsns,
             where: {nsn_id: req.params.id},
-            include: [inc.sizes()]
+            include: [inc.sizes({attributes: ['nsn_id']})]
         })
         .then(nsn => {
             res.render('stores/nsns/show', {
                 nsn:   nsn,
-                notes: {table: 'nsns', id: nsn.nsn_id},
                 show_tab: req.query.tab || 'details'
             });
         })
@@ -28,7 +27,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         db.findOne({
             table: m.nsns,
             where: {nsn_id: req.params.id},
-            include: [inc.sizes()]
+            include: [inc.sizes({attributes: ['nsn_id']})]
         })
         .then(nsn => res.render('stores/nsns/edit', {nsn: nsn}))
         .catch(err => res.error.redirect(err, req, res));
@@ -64,33 +63,40 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/nsns/:id',            isLoggedIn, allowed('nsn_edit',    {send: true}), (req, res) => {
-        let actions = [];
-        actions.push(
-            db.update({
-                table: m.nsns,
-                where: {nsn_id: req.params.id},
-                record: req.body.nsn
-            })
-        );
-        if (req.body.default && Number(req.body.currentDefault) !== Number(req.params.id)) {
+        m.sizes.findOne({
+            attributes: ['nsn_id'],
+            where: {size_id: req.body.size_id}
+        })
+        .then(currentDefault => {
+            let actions = [];
             actions.push(
                 db.update({
-                    table: m.sizes,
-                    where: {size_id: req.body.size_id},
-                    record: {nsn_id: req.params.id}
+                    table: m.nsns,
+                    where: {nsn_id: req.params.id},
+                    record: req.body.nsn
                 })
             );
-        } else if (Number(req.body.currentDefault) === Number(req.params.id)) {
-            actions.push(
-                db.update({
-                    table: m.sizes,
-                    where: {size_id: req.body.size_id},
-                    record: {nsn_id: null}
-                })
-            );
-        };
-        Promise.allSettled(actions)
-        .then(result => res.send({result: true, message: 'NSN saved'}))
+            if (req.body.default && Number(currentDefault.nsn_id) !== Number(req.params.id)) {
+                actions.push(
+                    db.update({
+                        table: m.sizes,
+                        where: {size_id: req.body.size_id},
+                        record: {nsn_id: req.params.id}
+                    })
+                );
+            } else if (Number(currentDefault.nsn_id) === Number(req.params.id)) {
+                actions.push(
+                    db.update({
+                        table: m.sizes,
+                        where: {size_id: req.body.size_id},
+                        record: {nsn_id: null}
+                    })
+                );
+            };
+            Promise.allSettled(actions)
+            .then(result => res.send({result: true, message: 'NSN saved'}))
+            .catch(err => res.error.send(err, res));
+        })
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/nsns/:id',         isLoggedIn, allowed('nsn_delete',  {send: true}), (req, res) => {
