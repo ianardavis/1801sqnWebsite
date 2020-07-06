@@ -1,0 +1,7 @@
+<% if (!locals.permission || permissions[locals.permission]) { %>
+    <li class="nav-item">
+        <a class="nav-link" id="<%= id %>-tab" data-toggle="tab" href="#<%= id %>" role="tab" aria-controls="<%= id %>" aria-selected="true">
+            <%= title %><% if (locals.count_id) { %> (<span id='<%= count_id %>'></span>)<% } %>
+        </a>
+    </li>
+<% } %>

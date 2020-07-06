@@ -150,6 +150,6 @@ function getPermissions(user_id) {
         spn_permissions.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting issues'));
-    XHR.open('GET', '/stores/get/permissions/' + user_id);
+    XHR.open('GET', '/stores/get/permissions?user_id=' + user_id);
     XHR.send();
 };

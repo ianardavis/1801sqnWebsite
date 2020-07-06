@@ -34,5 +34,5 @@ getReceiptLines = (receipt_id, complete, delete_permission) => {
         } else alert('Error: ' + response.error);
         hide_spinner('receipts');
     });
-    XHR_send(XHR, 'receipts', '/stores/get/receiptlines?receipt_id=' + receipt_id);
+    XHR_send(XHR, 'receipts', '/stores/get/receipt_lines?receipt_id=' + receipt_id);
 };

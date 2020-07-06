@@ -9,7 +9,13 @@ module.exports = (app, m) => {
     
     app.get("/resources", (req, res) => res.render("resources"));
     
-    app.get('/login', (req, res) => res.render('login', {redirect: req.query.redirect}));
+    app.get('/login', (req, res) => {
+        if (req.isAuthenticated()) {
+            req.flash('info', 'You are already logged in');
+            res.redirect(req.query.redirect || '/stores');
+        } else res.render('login', {redirect: req.query.redirect});
+        
+    });
 
     app.get('/logout', (req, res) => {
         req.logout();

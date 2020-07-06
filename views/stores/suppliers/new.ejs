@@ -2,82 +2,40 @@
 <body>
 <%- include('../../partials/head/flash') %>
 <section id='body'>
-<section class="container">
     <form id='supplierForm'>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Supplier Name</span>
-            </div>
-            <input class="form-control" id="_name" name="supplier[_name]" type="text" placeholder="Required" maxlength="20" required>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Address</span>
-            </div>
-            <input class="form-control" id="_address1" name="supplier[_address1]" type="text" placeholder="Required" maxlength="45" required>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100"></span>
-            </div>
-            <input class="form-control" name="supplier[_address2]" type="text" maxlength="45">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100"></span>
-            </div>
-            <input class="form-control" name="supplier[_address3]" type="text" maxlength="45">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100"></span>
-            </div>
-            <input class="form-control" name="supplier[_address4]" type="text" maxlength="45">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100"></span>
-            </div>
-            <input class="form-control" name="supplier[_address5]" type="text" maxlength="45">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Telephone</span>
-            </div>
-            <input class="form-control" id="_telephone" name="supplier[_telephone]" type="text" placeholder="Telephone" maxlength="20">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Email</span>
-            </div>
-            <input class="form-control" id="_email" name="supplier[_email]" type="text" placeholder="address@domain.com" maxlength="255">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">RAF Stores?</span>
-            </div>
-            <select name="supplier[_stores]" class="form-control">
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Make default?</span>
-            </div>
-            <select name="default" class="form-control">
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-            </select>
-        </div>
-        <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
-        <a class='float-left' href='javascript:close()'>Cancel</a>
+        <%- include('../../partials/inputs/text',          {title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20,  placeholder: 'Required', required: true}) %>
+        <%- include('../../partials/inputs/text',          {title: 'Address',       name: 'supplier[_address1]',  maxLength: 45,  placeholder: 'Required', required: true}) %>
+        <%- include('../../partials/inputs/text',          {title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
+        <%- include('../../partials/inputs/text',          {title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
+        <%- include('../../partials/spinner',              {id: 'accounts'}) %>
+        <%- include('../../partials/inputs/select',        {id: 'accountsSelect',   title: 'Account/Inventory',   name: 'supplier[account_id]', append: {a: {type: 'success', href: 'javascript:add("accounts")', text: '<i class="fas fa-plus"></i>'}}}) %>
+        <%- include('../../partials/inputs/select_yes_no', {title: 'RAF Stores?',   name: 'supplier[_stores]',    selected: 0}) %>
+        <% include ../../partials/save_cancel %>
     </form>
-</section>
 <% include ../../partials/foot/noNav %>
+<script src="/js/spinner.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/get.js"></script>
+<script src="/js/specific/listAccounts.js"></script>
+<script async>get(listAccounts, {table: 'accounts', query: []})</script>
 <script>
-    window.addEventListener( "load", function () {
-        addFormListener('supplierForm', 'POST', '/stores/suppliers');
+    window.addEventListener( "load", () => {
+        addFormListener(
+            'supplierForm',
+            'POST',
+            '/stores/suppliers',
+            {
+                onComplete: window.opener.get,
+                args: [window.opener.asCards, {table: 'suppliers', query: []}],
+                _close: true
+            }
+        );
     });
 </script>
 <% include ../../partials/foot/htmlClose %>

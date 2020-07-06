@@ -27,7 +27,7 @@ function getAdjusts(size_id) {
         spn_adjusts.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting adjustments'));
-    XHR.open('GET', '/stores/get/adjusts/' + size_id);
+    XHR.open('GET', '/stores/get/adjusts?size_id=' + size_id);
     XHR.send();
 };
 function getReceipts(size_id) {
@@ -57,8 +57,7 @@ function getReceipts(size_id) {
         spn_receipts.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting receipts'));
-    let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/get/receiptlines/bysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/receipt_lines?size_id=' + size_id);
     XHR.send();
 };
 function getIssues(size_id) {
@@ -90,8 +89,7 @@ function getIssues(size_id) {
         spn_issues.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting issues'));
-    let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/get/issuelines/bysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/issuelines?size_id=' + size_id);
     XHR.send();
 };
 function getReturns(size_id) {
@@ -121,7 +119,6 @@ function getReturns(size_id) {
         spn_returns.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting returns'));
-    let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/get/returnlines/bysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/return_lines?size_id=' + size_id);
     XHR.send();
 };

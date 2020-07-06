@@ -6,7 +6,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         receipts = require(process.env.ROOT + '/fn/receipts'),
         issues   = require(process.env.ROOT + '/fn/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/orders',             isLoggedIn, allowed('access_orders'),                                 (req, res) => {
+    app.get('/stores/orders',             isLoggedIn, allowed('access_orders'),                              (req, res) => {
         m.suppliers.findAll()
         .then(suppliers => {
             res.render('stores/orders/index',{
@@ -16,7 +16,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/orders/:id',         isLoggedIn, allowed('access_orders'),                                 (req, res) => {
+    app.get('/stores/orders/:id',         isLoggedIn, allowed('access_orders'),                              (req, res) => {
         db.findOne({
             table: m.orders,
             where: {order_id: req.params.id},
@@ -34,7 +34,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/order_lines/:id',    isLoggedIn, allowed('access_orders',      {allow: true}),             (req, res) => {
+    app.get('/stores/order_lines/:id',    isLoggedIn, allowed('access_orders',   {allow: true}),             (req, res) => {
         db.findOne({
             table: m.order_lines,
             where: {line_id: req.params.id}
@@ -43,43 +43,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.get('/stores/get/orders',         isLoggedIn, allowed('access_orders',      {send: true}),              (req, res) => {
-        m.orders.findAll({
-            where: req.query,
-            include: [
-                inc.users({as: '_for'}),
-                inc.users({as: '_by'}),
-                inc.order_lines()
-        ]})
-        .then(orders => res.send({result: true, orders: orders}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/orderlines',     isLoggedIn, allowed('access_order_lines', {send: true}),              (req, res) => {
-        m.order_lines.findAll({
-            where: req.query,
-            include: [
-                inc.sizes(),
-                inc.orders(),
-                inc.demand_lines( {as: 'demand_line',  demands: true}),
-                inc.receipt_lines({as: 'receipt_line', receipts: true}),
-                inc.issue_lines(  {as: 'issue_line',   issues: true})
-        ]})
-        .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/orderlines/:id', isLoggedIn, allowed('access_order_lines', {send: true}),              (req, res) => {
-        m.order_lines.findAll({
-            where: req.query,
-            include: [
-                inc.sizes(),
-                inc.orders({
-                    where: {ordered_for: req.params.id},
-                    required: true
-        })]})
-        .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.post('/stores/orders',            isLoggedIn, allowed('order_add',          {send: true}),              (req, res) => {
+    app.post('/stores/orders',            isLoggedIn, allowed('order_add',       {send: true}),              (req, res) => {
         orders.create({
             m: {orders: m.orders},
             order: {
@@ -94,7 +58,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/order_lines/:id',   isLoggedIn, allowed('order_line_add',     {send: true}),              (req, res) => {
+    app.post('/stores/order_lines/:id',   isLoggedIn, allowed('order_line_add',  {send: true}),              (req, res) => {
         req.body.line.order_id = req.params.id;
         req.body.line.user_id  = req.user.user_id;
         orders.createLine({
@@ -109,7 +73,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.put('/stores/orders/addtodemand', isLoggedIn, allowed('demand_line_add',    {send: true}),              (req, res) => {
+    app.put('/stores/orders/addtodemand', isLoggedIn, allowed('demand_line_add', {send: true}),              (req, res) => {
         m.order_lines.findAll({
             where: {
                 _status:        'Open',
@@ -148,7 +112,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/orders/:id',         isLoggedIn, allowed('order_edit',         {allow: true, send: true}), (req, res) => {
+    app.put('/stores/orders/:id',         isLoggedIn, allowed('order_edit',      {allow: true, send: true}), (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.order_lines({where: {_status: {[op.not]: 'Cancelled'}}})]
@@ -198,7 +162,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/order_lines/:id',    isLoggedIn, allowed('order_edit',         {send: true}),              (req, res) => {
+    app.put('/stores/order_lines/:id',    isLoggedIn, allowed('order_edit',      {send: true}),              (req, res) => {
         db.findOne({
             table: m.orders,
             where: {order_id: req.params.id}
@@ -286,44 +250,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                         .catch(err => res.error.send(err, res));
                     };
                 })
-                .catch(err => res.error.send(err, res));
-            })
-            .catch(err => res.error.send(err, res));
-        })
-        .catch(err => res.error.send(err, res));
-    });
-    app.delete('/stores/orders/:id',      isLoggedIn, allowed('order_delete',       {send: true}),              (req, res) => {
-        m.order_lines.destroy({where: {order_id: req.params.id}})
-        .then(result => {
-            db.destroy({
-                table: m.orders,
-                where: {order_id: req.params.id}
-            })
-            .then(result => res.send({result: true, message: 'Order deleted'}))
-            .catch(err => res.error.send(err, res));
-        })
-        .catch(err => res.error.send(err, res));
-    });
-    app.delete('/stores/order_lines/:id', isLoggedIn, allowed('order_line_delete',  {send: true}),              (req, res) => {
-        db.findOne({
-            table: m.order_lines,
-            where: {line_id: req.params.id}
-        })
-        .then(line => {
-            db.update({
-                table: m.order_lines,
-                where: {line_id: req.params.id},
-                record: {_status: 'Cancelled'}
-            })
-            .then(result => {
-                m.notes.create({
-                    _table:  'orders',
-                    _note:   'Line ' + req.params.id + ' cancelled',
-                    _id:     line.order_id,
-                    user_id: req.user.user_id,
-                    system:  true
-                })
-                .then(result => res.send({result: true, message: 'Line cancelled'}))
                 .catch(err => res.error.send(err, res));
             })
             .catch(err => res.error.send(err, res));

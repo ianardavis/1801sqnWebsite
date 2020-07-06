@@ -109,5 +109,5 @@
         );
     });
 </script>
-<script async>getSizes(<%= item.item_id %>)</script>
+<script async>getSizes(['item_id=<%= item.item_id %>'])</script>
 <% include ../../partials/foot/htmlClose %>

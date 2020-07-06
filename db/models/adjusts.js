@@ -2,13 +2,18 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('adjusts', {
-    'count_id': {
+    'adjust_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       primaryKey: true,
       comment: "null",
       autoIncrement: true
+    },
+    'size_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
     },
     'stock_id': {
       type: DataTypes.INTEGER(11),

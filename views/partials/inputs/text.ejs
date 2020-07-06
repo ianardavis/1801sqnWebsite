@@ -4,9 +4,9 @@
     </div>
     <input
         class="form-control"
-        <% if (locals.id) { %>id='<%= id %>'<% } %>
-        name=<%= name %>
         type="text"
+        <% if (locals.id) { %>         id='<%= id %>'<% } %>
+        <% if (locals.name) { %>       name='<%= name %>'<% } %>
         <% if (locals.value) { %>      value='<%= value %>'<% } %>
         <% if (locals.maxLength) { %>  maxlength='<%= maxLength %>'<% } %>
         <% if (locals.placeholder) { %>placeholder='<%= placeholder %>'<% } %>

@@ -1,47 +1,45 @@
-function getSuppliers(_default) {
-    let spn_suppliers = document.querySelector('#spn_suppliers');
-    spn_suppliers.style.display = 'block';
-    const XHR = new XMLHttpRequest();
-    XHR.addEventListener("load", event => {
-        let response   = JSON.parse(event.target.responseText),
-            supplier_container = document.querySelector('#suppliers');
-        supplier_container.innerHTML = '';
-        if (response.result) {
-            response.suppliers.forEach(supplier => {
-                let _div     = document.createElement('div'),
-                    card     = document.createElement('div'),
-                    _a       = document.createElement('a'),
-                    header   = document.createElement('div'),
-                    title    = document.createElement('h3'),
-                    body     = document.createElement('div'),
-                    body_p   = document.createElement('p');
-                _div.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3')
-                card.classList.add('card', 'm-3', 'text-left');
-                _a.href = '/stores/suppliers/' + supplier.supplier_id;
-                header.classList.add('card-header');
-                title.classList.add('card-title');
-                title.innerText = supplier._name;
-                body.classList.add('card-body');
-                body_p.classList.add('f-10');
-                body_p.innerText = 'Items: ' + supplier.sizes.length;
-                header.appendChild(title);
-                if (Number(_default) === Number(supplier.supplier_id)) {
-                    let subTitle = document.createElement('p');
-                    subTitle.classList.add('card-subtitle', 'text-muted', 'f-10');
-                    subTitle.innerText = 'Default';
-                    header.appendChild(subTitle);
-                };
-                body.appendChild(body_p);
-                _a.appendChild(header);
-                _a.appendChild(body);
-                card.appendChild(_a);
-                _div.appendChild(card);
-                supplier_container.appendChild(_div);
-            });
-        } else alert('Error: ' + response.error)
-        spn_suppliers.style.display = 'none';
+asCards = suppliers => {
+    let _suppliers = document.querySelector('#suppliers');
+    _suppliers.innerHTML = '';
+    suppliers.forEach(supplier => {
+        _suppliers.appendChild(new Card({
+            href:   `/stores/suppliers/${supplier.supplier_id}`,
+            id:     `supplier_${supplier.supplier_id}`,
+            search: supplier._name,
+            title:  supplier._name,
+            body:   ''
+        }).div);
     });
-    XHR.addEventListener("error", event => alert('Oops! Something went wrong getting suppliers'));
-    XHR.open('GET', '/stores/get/suppliers');
-    XHR.send();
+    getCounts();
+    getSettings('default_supplier', setDefault, 'suppliers');
+};
+getCounts = () => {
+    let cards = document.querySelectorAll('.search');
+    cards.forEach(card => {
+        let supplier_id = String(card.id).replace('supplier_', '');
+        show_spinner('suppliers');
+        const XHR = new XMLHttpRequest();
+        XHR.addEventListener("load", event => {
+            let response = JSON.parse(event.target.responseText);
+            if (response.result) {
+                let _body = document.querySelector(`#supplier_${supplier_id} .card-body p`);
+                _body.innerText = `Items: ${response.count}`;
+            } else alert(`Error: ${response.error}`);
+            hide_spinner('suppliers');
+        });
+        XHR_send(XHR, 'suppliers', `/stores/count/sizes?supplier_id=${supplier_id}`);
+    });
+};
+setDefault = results => {
+    if (results.length === 1) {
+        let card = document.querySelector(`#supplier_${results[0]._value} .card-header`);
+        if (card) {
+            let subtitle = document.createElement('p');
+            subtitle.innerText = 'Default';
+            subtitle.classList.add('card-subtitle', 'text-muted', 'f-10');
+            card.appendChild(subtitle);
+        };
+    } else {
+        alert(`Error: ${results.length} default suppliers found`);
+    };
 };

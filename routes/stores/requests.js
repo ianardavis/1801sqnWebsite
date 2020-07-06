@@ -5,8 +5,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         orders   = require(process.env.ROOT + '/fn/orders'),
         issues   = require(process.env.ROOT + '/fn/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/requests',             isLoggedIn, allowed('access_requests',      {allow: true}),             (req, res) => res.render('stores/requests/index'));
-    app.get('/stores/requests/:id',         isLoggedIn, allowed('access_requests',      {allow: true}),             (req, res) => {
+    app.get('/stores/requests',           isLoggedIn, allowed('access_requests',      {allow: true}),             (req, res) => res.render('stores/requests/index'));
+    app.get('/stores/requests/:id',       isLoggedIn, allowed('access_requests',      {allow: true}),             (req, res) => {
         db.findOne({
             table: m.requests,
             where: {request_id: req.params.id},
@@ -25,19 +25,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.get('/stores/get/requests',         isLoggedIn, allowed('access_requests',      {allow: true, send: true}), (req, res) => {
-        if (!allowed) req.query.requested_for = req.user.user_id;
-        m.requests.findAll({
-            where: req.query,
-            include: [
-                inc.request_lines(),
-                inc.users({as: '_for'}),
-                inc.users({as: '_by'})
-        ]})
-        .then(requests => res.send({result: true, requests: requests}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/request_lines',        isLoggedIn, allowed('access_request_lines', {send: true}),              (req, res) => {
+    app.get('/stores/request_lines',      isLoggedIn, allowed('access_request_lines', {send: true}),              (req, res) => {
         m.request_lines.findAll({
             where: req.query,
             include: [
@@ -48,7 +36,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/request_lines/:id',    isLoggedIn, allowed('access_request_lines', {send: true}),              (req, res) => {
+    app.get('/stores/request_lines/:id',  isLoggedIn, allowed('access_request_lines', {send: true}),              (req, res) => {
         m.request_lines.findAll({
             where:req.query,
             include:[
@@ -62,7 +50,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/requests',            isLoggedIn, allowed('request_add',          {send: true}),              (req, res) => {
+    app.post('/stores/requests',          isLoggedIn, allowed('request_add',          {send: true}),              (req, res) => {
         requests.create({
             m: {requests: m.request},
             request: {
@@ -77,7 +65,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/request_lines/:id',   isLoggedIn, allowed('request_line_add',     {send: true}),              (req, res) => {
+    app.post('/stores/request_lines/:id', isLoggedIn, allowed('request_line_add',     {send: true}),              (req, res) => {
         req.body.line.request_id = req.params.id;
         req.body.line.user_id  = req.user.user_id;
         request.createLine({
@@ -91,7 +79,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(line_id => res.send({result: true, message: 'Item added: ' + line_id}))
         .catch(err => res.error.send(err, res))
     });
-    app.put('/stores/requests/:id',         isLoggedIn, allowed('request_edit',         {send: true, allow: true}), (req, res) => {
+    app.put('/stores/requests/:id',       isLoggedIn, allowed('request_edit',         {send: true, allow: true}), (req, res) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
             include: [inc.request_lines({where: {_status: {[op.not]: 'Cancelled'}}})]
@@ -138,7 +126,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/request_lines/:id',    isLoggedIn, allowed('request_edit',         {send: true}),              (req, res) => {
+    app.put('/stores/request_lines/:id',  isLoggedIn, allowed('request_edit',         {send: true}),              (req, res) => {
         db.findOne({
             table: m.requests,
             where: {request_id: req.params.id},
@@ -261,26 +249,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 .catch(err => res.error.send(err, res));
             };
         });
-    });
-    app.delete('/stores/request_lines/:id', isLoggedIn, allowed('request_line_delete',  {send: true}),              (req, res) => {
-        db.destroy({
-            table: m.request_lines,
-            where: {line_id: req.params.id}
-        })
-        .then(result => res.send({result: true, message: 'Line deleted'}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.delete('/stores/requests/:id',      isLoggedIn, allowed('request_delete',       {send: true}),              (req, res) => {
-        m.request_lines.destroy({where: {request_id: req.params.id}})
-        .then(result => {
-            db.destroy({
-                table: m.requests,
-                where: {request_id: req.params.id}
-            })
-            .then(result => res.send({result: true, message: 'Request deleted'}))
-            .catch(err => res.error.send(err, res));
-        })
-        .catch(err => res.error.send(err, res));
     });
     
     order_request_line = (order_id, line_id, user_id) => new Promise((resolve, reject) => {

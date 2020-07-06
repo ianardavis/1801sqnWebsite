@@ -46,7 +46,7 @@ showActions = (size_id, line_id) => {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/get/size/' + size_id);
+    XHR.open('GET', '/stores/get/sizes?size_id=' + size_id);
     XHR.send();
 };
 getStock = (size_id, line_id) => {
@@ -115,7 +115,7 @@ getStock = (size_id, line_id) => {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/get/size/' + size_id);
+    XHR.open('GET', '/stores/get/sizes?size_id=' + size_id);
     XHR.send();
 };
 getNSNs = (stock_id, size_id, line_id) => {
@@ -150,7 +150,7 @@ getNSNs = (stock_id, size_id, line_id) => {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/get/nsns/bysize/' + size_id);
+    XHR.open('GET', '/stores/get/nsns?size_id=' + size_id);
     XHR.send();
 };
 getSerials = (stock_id, size_id, line_id) => {
@@ -185,6 +185,6 @@ getSerials = (stock_id, size_id, line_id) => {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/get/nsns/bysize/' + size_id);
+    XHR.open('GET', '/stores/get/nsns?size_id=' + size_id);
     XHR.send();
 };

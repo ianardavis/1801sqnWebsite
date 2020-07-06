@@ -10,9 +10,9 @@ getStock_select = (size_id, line_id, action) => {
                 required: true
             });
             _locations.required = true;
-            _locations.appendChild(_option('', '... Select Location'));
+            _locations.appendChild(new Option({value: '', text: '... Select Location'}).option);
             response.size.stocks.forEach(stock => {
-                _locations.appendChild(_option(stock.stock_id, stock.location._location + ', Qty: ' + stock._qty));
+                _locations.appendChild(new Option({value: stock.stock_id, text: stock.location._location + ', Qty: ' + stock._qty}).option);
             });
             _cell.innerHTML = '';
             _cell.appendChild(_locations);
@@ -22,9 +22,9 @@ getStock_select = (size_id, line_id, action) => {
                     required: true
                 });
                 _nsns.required = true;
-                _nsns.appendChild(_option('', '... Select NSN'));
+                _nsns.appendChild(new Option({value: '', text: '... Select NSN'}).option);
                 response.size.nsns.forEach(nsn => {
-                    _nsns.appendChild(_option(nsn.nsn_id, nsn._nsn));
+                    _nsns.appendChild(new Option({value: nsn.nsn_id, text: nsn._nsn}).option);
                 });
                 _cell.appendChild(_nsns);
             };
@@ -41,9 +41,9 @@ getStock_select = (size_id, line_id, action) => {
                         required: true
                     });
                     _serials.required = true;
-                    _serials.appendChild(_option('', '... Select Serial'));
+                    _serials.appendChild(new Option({value: '', text: '... Select Serial'}).option);
                     response.size.serials.forEach(serial => {
-                        _serials.appendChild(_option(serial.serial_id, serial._serial));
+                        _serials.appendChild(new Option({value: serial.serial_id, text: serial._serial}).option);
                     });
                 };
                 _cell.appendChild(_serials);
@@ -71,6 +71,6 @@ getStock_select = (size_id, line_id, action) => {
         _cell.innerHTML = '';
         alert('Oops! Something went wrong.');
     });
-    XHR.open('GET', '/stores/get/size/' + size_id);
+    XHR.open('GET', '/stores/get/sizes?size_id=' + size_id);
     XHR.send();
 };

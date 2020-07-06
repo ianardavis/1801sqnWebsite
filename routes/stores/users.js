@@ -68,16 +68,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         });
     });
     
-    app.get('/stores/get/users',          isLoggedIn, allowed('access_users',  {send: true}),              (req, res) => {
-        m.users.findAll({
-            where: req.query,
-            include: [m.ranks],
-            attributes: ['user_id', 'full_name']
-        })
-        .then(users => res.send({result: true, users: users}))
-        .catch(err => res.error.send(err, res));
-    });
-    
     app.post('/stores/users',             isLoggedIn, allowed('user_add',      {send: true}),              (req, res) => {
         let salt = bCrypt.genSaltSync(10);
         req.body.user._salt = salt;
@@ -109,20 +99,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             record: req.body.user
         })
         .then(result => res.send({result: true, message: 'User saved'}))
-        .catch(err => res.error.send(err,message, res));
-    });
-    app.delete('/stores/users/:id',       isLoggedIn, allowed('user_delete',   {send: true}),              (req, res) => {
-        if (Number(req.user.user_id) !== Number(req.params.id)) {
-            m.permissions.destroy({where: {user_id: req.params.id}})
-            .then(result => {
-                db.destroy({
-                    table: m.users,
-                    where: {user_id: req.params.id}
-                })
-                .then(result => res.send({result: true, message: 'User/Permissions deleted'}))
-                .catch(err => res.error.send(err, res));
-            })
-            .catch(err => res.error.send(err, res));
-        } else res.send_error('You can not delete your own account', res);       
+        .catch(err => res.error.send(err.message, res));
     });
 };

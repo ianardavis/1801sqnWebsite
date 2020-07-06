@@ -1,6 +1,11 @@
 <div class="input-group mb-1">
-    <div class="input-group-prepend w-30">
-        <label class="input-group-text w-100" for='<%= id %>'><%= title %></label>
+    <div class="input-group-prepend w-<%= locals.size || 30 %>">
+        <label
+            class="input-group-text w-100"
+            <% if (locals.id) { %>for="<%= id %>"<% } %>
+        >
+            <%= title %>
+        </label>
     </div>
     <select
         class="custom-select"
@@ -10,4 +15,7 @@
         <% if (locals.onchange) { %>onchange='<%= onchange %>'<% } %>
     >
     </select>
+    <% if (locals.append) { %>
+        <%- include('append', {append: locals.append}) %>
+    <% } %>
 </div>

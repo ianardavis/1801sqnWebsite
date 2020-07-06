@@ -13,7 +13,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             {table: 'statuses'}
         ]
     };
-    app.get('/stores/settings',                isLoggedIn, allowed('access_settings'),               (req, res) => {
+    app.get('/stores/settings',                isLoggedIn, allowed('access_settings'),              (req, res) => {
         m.settings.findAll()
         .then(settings => {
             options.get(_options())
@@ -27,6 +27,25 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
+
+    app.put('/stores/settings',                isLoggedIn, allowed('setting_edit',   {send: true}), (req, res) => {
+        console.log(req.body);
+        console.log(req.query);
+        if (!req.query) res.send({result: false, message: 'No query specified'})
+        else {
+            m.settings.update(
+                req.body.setting,
+                {where: req.query}
+            )
+            .then(result => {
+                let message = '';
+                if (result) message = 'Setting updated'
+                else message = 'Setting not updated';
+                res.send({result: true, message: message})
+            })
+            .catch(err => res.error.redirect(err, req, res));
+        };
+    });
     
     app.get('/stores/get/options/:table',      isLoggedIn, allowed('access_options', {send: true}), (req, res) => {
         let allowed_tables = ['ranks', 'genders', 'statuses', 'categories', 'groups', 'types', 'subtypes']
@@ -37,7 +56,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         } else res.error.send(new Error('Invalid request', res));
     });
     
-    app.post('/stores/options/:table',         isLoggedIn, allowed('option_add',      {send: true}), (req, res) => {
+    app.post('/stores/options/:table',         isLoggedIn, allowed('option_add',     {send: true}), (req, res) => {
         m[req.params.table].create(req.body[req.params.table])
         .then(record => {
             req.flash('success', 'Record added to ' + req.params.table);
@@ -46,7 +65,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.put('/stores/options/:table/:id',      isLoggedIn, allowed('option_edit',     {send: true}), (req, res) => {
+    app.put('/stores/options/:table/:id',      isLoggedIn, allowed('option_edit',    {send: true}), (req, res) => {
         let id_field = {};
         id_field[singularise(req.params.table) + '_id'] = req.params.id;
         db.update({
@@ -61,10 +80,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.delete('/stores/options/genders/:id',  isLoggedIn, allowed('option_delete', {send: true}),   (req, res) => _delete('genders', req, res));
-    app.delete('/stores/options/ranks/:id',    isLoggedIn, allowed('option_delete', {send: true}),   (req, res) => deleteSetting('ranks', req, res));
-    app.delete('/stores/options/statuses/:id', isLoggedIn, allowed('option_delete', {send: true}),   (req, res) => deleteSetting('statuses', req, res));
-    app.delete('/stores/options/:table/:id',   isLoggedIn, allowed('option_delete', {send: true}),   (req, res) => {
+    app.delete('/stores/options/genders/:id',  isLoggedIn, allowed('option_delete',  {send: true}),   (req, res) => _delete('genders', req, res));
+    app.delete('/stores/options/ranks/:id',    isLoggedIn, allowed('option_delete',  {send: true}),   (req, res) => deleteSetting('ranks', req, res));
+    app.delete('/stores/options/statuses/:id', isLoggedIn, allowed('option_delete',  {send: true}),   (req, res) => deleteSetting('statuses', req, res));
+    app.delete('/stores/options/:table/:id',   isLoggedIn, allowed('option_delete',  {send: true}),   (req, res) => {
         let check_table;
         if (req.params.table === 'categories')  check_table = m.groups
         else if (req.params.table === 'groups') check_table = m.types

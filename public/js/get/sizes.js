@@ -1,5 +1,5 @@
-getSizes = (item_id) => {
-    show_spinner('items');
+getSizes = (query = [], part = false) => {
+    show_spinner('sizes');
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {
         let response   = JSON.parse(event.target.responseText),
@@ -10,12 +10,17 @@ getSizes = (item_id) => {
         if (response.result) {
             response.sizes.forEach(size => {
                 let row = table_body.insertRow(-1);
+                if (part) add_cell(row, {text: size.item._description, ellipsis: true})
                 add_cell(row, {text: size._size});
                 add_cell(row, {text: size.locationStock});
-                add_cell(row, {append: link('/stores/sizes/' + size.size_id, false)});
+                add_cell(row, {append: new Link({
+                    href: '/stores/sizes/' + size.size_id,
+                    type: 'show',
+                    small: true
+                }).link});
             });
         } else alert('Error: ' + response.error);
-        hide_spinner('items');
+        hide_spinner('sizes');
     });
-    XHR_send(XHR, 'items', '/stores/get/sizes?item_id=' + item_id);
+    XHR_send(XHR, 'sizes', '/stores/get/sizes?' + query.join('&'));
 };

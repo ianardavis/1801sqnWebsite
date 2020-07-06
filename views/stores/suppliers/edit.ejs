@@ -2,89 +2,44 @@
 <body>
 <%- include('../../partials/head/flash') %>
 <section id='body'>
-<section class="container">
     <form id='supplierForm'>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Supplier Name</span>
-            </div>
-            <input class="form-control" id="_name" name="supplier[_name]" type="text" value="<%= supplier._name %>" maxlength="20" required>
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Address</span>
-            </div>
-            <input class="form-control" id="_name" name="supplier[_address1]" type="text" value="<%= supplier._address1 %>" maxlength="45">
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100"></span>
-            </div>
-            <input class="form-control" id="_name" name="supplier[_address2]" type="text" value="<%= supplier._address2 %>" maxlength="45">
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100"></span>
-            </div>
-            <input class="form-control" id="_name" name="supplier[_address3]" type="text" value="<%= supplier._address3 %>" maxlength="45">
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100"></span>
-            </div>
-            <input class="form-control" id="_name" name="supplier[_address4]" type="text" value="<%= supplier._address4 %>" maxlength="45">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100"></span>
-            </div>
-            <input class="form-control" id="_name" name="supplier[_address5]" type="text" value="<%= supplier._address5 %>" maxlength="45">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Telephone</span>
-            </div>
-            <input class="form-control" id="_telephone" name="supplier[_telephone]" type="text" value="<%= supplier._telephone %>" maxlength="20">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Email</span>
-            </div>
-            <input class="form-control" id="_email" name="supplier[_email]" type="text" value="<%= supplier._email %>" maxlength="255">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">Account/Inventory</span>
-            </div>
-            <select class='form-control' name="supplier[account_id]">
-                <option value=""></option>
-                <% accounts.forEach(account => { %>
-                    <option value="<%= account.account_id %>" <% if (Number(account.account_id) === Number(supplier.account_id)) { %> selected <% } %>><%= account._number %>: <%= account._name %></option>
-                <% }) %>
-            </select>
-            <div class="input-group-append">
-                <a class='btn btn-success' href='javascript:add("accounts",{"height":235})'>
-                    <i class='fas fa-plus'></i>
-                </a>
-            </div>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-35">
-                <span class="input-group-text w-100">RAF Stores</span>
-            </div>
-            <select class='form-control' name="supplier[_stores]" required>
-                <option value="0"<% if (!supplier._stores) { %> selected<% } %>>No</option>
-                <option value="1"<% if (supplier._stores) { %> selected<% } %>>Yes</option>
-            </select>
-        </div>
-        <input class="btn btn-success w-100 confirm" type="submit" value='Save'>
-        <a class='float-left' href='javascript:close()'>Cancel</a>
+        <%- include('../../partials/spinner', {id: 'suppliers'}) %>
+        <%- include('../../partials/inputs/text',          {id: '_name',          title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20, required: true}) %>
+        <%- include('../../partials/inputs/text',          {id: '_address1',      title: 'Address',       name: 'supplier[_address1]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {id: '_address2',      title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {id: '_address3',      title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {id: '_address4',      title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {id: '_address5',      title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
+        <%- include('../../partials/inputs/text',          {id: '_telephone',     title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
+        <%- include('../../partials/inputs/text',          {id: '_email',         title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
+        <%- include('../../partials/spinner',              {id: 'accounts'}) %>
+        <%- include('../../partials/inputs/select',        {id: 'accountsSelect', title: 'Account',       name: 'supplier[account_id]', append: {a: {id: 'account_link', type: 'success', href: 'javascript:add("accounts")', text: '<i class="fas fa-plus"></i>'}}}) %>
+        <%- include('../../partials/inputs/select_yes_no', {id: '_stores',        title: 'RAF Stores?',   name: 'supplier[_stores]'}) %>
+        <% include ../../partials/save_cancel %>
     </form>
-</section>
 <% include ../../partials/foot/noNav %>
+<script src="/js/spinner.js"></script>
+<script src="/js/add.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/data/send.js"></script>
+<script src="/js/get/accounts.js"></script>
+<script src="/js/get.js"></script>
+<script src="/js/specific/suppliers_edit.js"></script>
+<script src="/js/specific/listAccounts.js"></script>
+<script async>get(showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]})</script>
 <script>
-    window.addEventListener( "load", function () {
-        addFormListener('supplierForm', 'PUT', '/stores/suppliers/<%=supplier.supplier_id %>');
+    window.addEventListener("load", () => {
+        addFormListener(
+            'supplierForm',
+            'PUT',
+            '/stores/suppliers/' + path[3],
+            {
+                onComplete: window.opener.get,
+                args: [window.opener.showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]}],
+                _close: true
+            }
+        );
     });
 </script>
 <% include ../../partials/foot/htmlClose %>

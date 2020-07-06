@@ -9,36 +9,33 @@
                 <a class="nav-link stores_nav" href="/stores/suppliers">Suppliers</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers/<%= supplier.supplier_id %>"><%= supplier._name %></a>
+                <a class="nav-link stores_nav" id='supplier_breadcrumb'></a>
             </li>
-            <li class="nav-item dropdown ml-auto">
-                <a class="nav-link dropdown-toggle stores_nav" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Options
+        </ul>
+    </nav>
+</section>
+<section class="container">
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Menu
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <% if (permissions.supplier_edit) { %>
-                        <a class="dropdown-item" href='javascript:edit("suppliers",<%= supplier.supplier_id %>,{"height":555})'>
+                        <a class="dropdown-item" id='edit_link'>
                             Edit
                         </a>
-                        <% if (_default != supplier.supplier_id) { %>
-                            <form id='defaultForm'>
-                                <button class="dropdown-item dropdown_button confirm">
-                                    Make Default
-                                </button>
-                            </form>
-                        <% } %>
-                    <% } %>
-                    <% include ../../partials/notes/menu_add %>
-                    <% if (permissions.supplier_delete) { %>
-                        <form id='deleteForm'>
-                            <button class="dropdown-item dropdown_button confirm">
-                            Delete
+                        <form id='defaultForm'>
+                            <input type="hidden" name='setting[_value]' id='default_supplier_id'>
+                            <button id='default_button' class="dropdown-item dropdown_button confirm">
+                                Make Default
                             </button>
                         </form>
                     <% } %>
+                    <% include ../../partials/notes/menu_add %>
                     <% if (permissions.demand_add) { %>
                         <form id='newDemandForm'>
-                            <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
+                            <input class='supplier_id' type="hidden" name='supplier_id'>
                             <button class="dropdown-item dropdown_button confirm">
                                 New Demand
                             </button>
@@ -46,226 +43,95 @@
                     <% } %>
                     <% if (permissions.receipt_add) { %>
                         <form id='newReceiptForm'>
-                            <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
+                            <input class='supplier_id' type="hidden" name='supplier_id'>
                             <button class="dropdown-item dropdown_button confirm">
                                 New Receipt
                             </button>
                         </form>
                     <% } %>
+                    <% if (permissions.supplier_delete) { %>
+                        <% include ../../partials/delete %>
+                    <% } %>
                 </div>
             </li>
-        </ul>
-    </nav>
-</section>
-<section class="container">
-    <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
-                Details
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="items-tab" data-toggle="tab" href="#items" role="tab" aria-controls="items" aria-selected="true">
-                Items (<span id='item_count'></span>)
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="demands-tab" data-toggle="tab" href="#demands" role="tab" aria-controls="demands" aria-selected="true">
-                Demands (<span id='demand_count'></span>)
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="receipts-tab" data-toggle="tab" href="#receipts" role="tab" aria-controls="receipts" aria-selected="true">
-                Receipts (<span id='receipt_count'></span>)
-            </a>
-        </li>
-        <% include ../../partials/notes/tab_head %>
+        <%- include('../../partials/tab_head', {id: 'details',  title: 'Details'}) %>
+        <%- include('../../partials/tab_head', {id: 'items',    title: 'Items',    count_id: 'size_count',    permission: 'access_sizes'}) %>
+        <%- include('../../partials/tab_head', {id: 'demands',  title: 'Demands',  count_id: 'demand_count',  permission: 'access_demands'}) %>
+        <%- include('../../partials/tab_head', {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', permission: 'access_receipts'}) %>
+        <%- include('../../partials/tab_head', {id: 'notes',    title: 'Notes',    count_id: 'note_count',    permission: 'access_notes'}) %>
+        <% include ../../partials/reload %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="container">
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Supplier Name</span>
-                    </div>
-                    <p class="form-control"><%= supplier._name %></p>
-                </div>
-                <div class="input-group">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Address</span>
-                    </div>
-                    <p class="form-control"><%= supplier._address1 %></p>
-                </div>
-                <div class="input-group">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100"></span>
-                    </div>
-                    <p class="form-control"><%= supplier._address2 %></p>
-                </div>
-                <div class="input-group">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100"></span>
-                    </div>
-                    <p class="form-control"><%= supplier._address3 %></p>
-                </div>
-                <div class="input-group">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100"></span>
-                    </div>
-                    <p class="form-control"><%= supplier._address4 %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100"></span>
-                    </div>
-                    <p class="form-control"><%= supplier._address5 %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Telephone</span>
-                    </div>
-                    <p class="form-control"><%= supplier._telephone %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Email</span>
-                    </div>
-                    <p class="form-control"><%= supplier._email %></p>
-                </div>
-                <% if (supplier.account) { %>
-                    <div class="input-group mb-1">
-                        <div class="input-group-prepend w-35">
-                            <span class="input-group-text w-100">Account</span>
-                        </div>
-                        <p class="form-control"><%= supplier.account._number %></p>
-                        <div class="input-group-append">
-                            <a class="btn btn-primary" href='javascript:show("accounts",<%= supplier.account_id %>,{"height":300})'>
-                                <i class='fas fa-search'></i>
-                            </a>
-                        </div>
-                    </div>
-                <% } %>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">RAF Stores</span>
-                    </div>
-                    <p class="form-control"><% if (supplier._stores) { %>Yes<% } else { %>No<% } %></p>
-                </div>
-                <% if (supplier.file) { %>
-                    <div class="input-group mb-1">
-                        <div class="input-group-prepend w-35">
-                            <span class="input-group-text w-100">Demand File</span>
-                        </div>
-                        <p class="form-control"><%= supplier.file._path %></p>
-                        <div class="input-group-append">
-                            <a class="btn btn-primary" href='javascript:edit("files",<%= supplier.file_id %>,{"height":708})'>
-                                <i class='fas fa-pencil-alt'></i>
-                            </a>
+            <%- include('../../partials/spinner', {id: 'suppliers'}) %>
+            <%- include('../../partials/inputs/display', {id: '_name',      title: 'Name'}) %>
+            <%- include('../../partials/inputs/display', {id: '_address1',  title: 'Address'}) %>
+            <%- include('../../partials/inputs/display', {id: '_address2',  title: ''}) %>
+            <%- include('../../partials/inputs/display', {id: '_address3',  title: ''}) %>
+            <%- include('../../partials/inputs/display', {id: '_address4',  title: ''}) %>
+            <%- include('../../partials/inputs/display', {id: '_address5',  title: ''}) %>
+            <%- include('../../partials/inputs/display', {id: '_telephone', title: 'Telephone'}) %>
+            <%- include('../../partials/inputs/display', {id: '_email',     title: 'Email'}) %>
+            <%- include('../../partials/inputs/display', {id: '_account',   title: 'Account',     append: {a: {id: 'account_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+            <%- include('../../partials/inputs/display', {id: '_stores',    title: 'RAF Stores'}) %>
+            <%- include('../../partials/inputs/display', {id: '_default',   title: 'Default Supplier'}) %>
+            <%- include('../../partials/inputs/display', {id: '_file',      title: 'Demand File', append: {a: {id: 'file_link',    type: 'primary', text: '<i class="fas fa-pencil-alt"></i>'}}}) %>
+            <% if (permissions.file_add) { %>
+                <form id="fileForm" encType="multipart/form-data">
+                    <input class='supplier_id' type="hidden" name='supplier_id'>
+                    <div class="input-group">
+                        <div class="custom-file w-25">
+                            <input type="file" class="custom-file-input" name="demandfile" id="file_upload">
+                            <label class="custom-file-label" for="file_upload">Choose file</label>
                         </div>
                         <div class="input-group-append">
-                            <form id='fileDeleteForm'>
-                                <button class='btn btn-danger confirm'>
-                                    <i class='fas fa-trash-alt'></i>
-                                </button>
-                            </form>
+                            <button class="btn btn-success confirm">
+                                <i class='fas fa-file-upload'></i>
+                            </button>
                         </div>
                     </div>
-                <% } else if (supplier._raise_demand && permissions.file_add) { %>
-                    <form id="fileForm" encType="multipart/form-data">
-                        <input type="hidden" name='supplier_id' value='<%= supplier.supplier_id %>'>
-                        <div class="input-group">
-                            <div class="custom-file w-25">
-                                <input type="file" class="custom-file-input" name="demandfile" id="file_upload">
-                                <label class="custom-file-label" for="file_upload">Choose file</label>
-                            </div>
-                            <div class="input-group-append">
-                                <button class="btn btn-success confirm">
-                                    <i class='fas fa-file-upload'></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                <% }; %>
-            </div>
+                </form>
+            <% }; %>
         </div>
-        <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-            <div class="container">
-                <div id='spn_items' class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
+        <% if (permissions.access_sizes) { %>
+            <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+                <%- include('../../partials/spinner', {id: 'sizes'}) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-50" onclick="sortTable(0, 'sizeTable')">Item</th>
-                        <th class="w-50" onclick="sortTable(1, 'sizeTable')">Size</th>
+                        <th class="w-45" onclick="sortTable(0, 'sizeTable')">Item</th>
+                        <th class="w-45" onclick="sortTable(1, 'sizeTable')">Size</th>
+                        <th class="w-10" onclick="sortTable(2, 'sizeTable')">Stock</th>
+                        <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id="sizeTable">
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
-            <div class="container">
-                <div id='spn_demands' class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="input-group mb-2">
-                            <div class="input-group-prepend w-20">
-                                <label class="input-group-text w-100" for="sel_complete_demands">Completed Demands</label>
-                            </div>
-                            <select class="custom-select" id='sel_complete_demands' onchange=getDemands(<%= supplier.supplier_id %>)>
-                                <option value='1' selected>Include</option>
-                                <option value='2'>Exclude</option>
-                                <option value='3'>Only</option>
-                            </select>
-                        </div>
-                        <div class="input-group mb-2">
-                            <div class="input-group-prepend w-20">
-                                <label class="input-group-text w-100" for="sel_closed">Closed Demands</label>
-                            </div>
-                            <select class="custom-select" id='sel_closed' onchange=getDemands(<%= supplier.supplier_id %>)>
-                                <option value='1' selected>Include</option>
-                                <option value='2'>Exclude</option>
-                                <option value='3'>Only</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+        <% } %>
+        <% if (permissions.access_demands) { %>
+            <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
+                <%- include('../../partials/spinner', {id: 'demands'}) %>
+                <%- include('../../partials/inputs/select_include', {id: 'demandsCompleteSelect', title: 'Completed Demands', selected: 1}) %>
+                <%- include('../../partials/inputs/select_include', {id: 'demandsClosedSelect',   title: 'Closed Demands',    selected: 1}) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-35" onclick="sortTable(0, 'demandTable')">Date</th>
+                        <th class="w-30" onclick="sortTable(0, 'demandTable')">Date</th>
                         <th class="w-10" onclick="sortTable(1, 'demandTable')">Lines</th>
                         <th class="w-10" onclick="sortTable(2, 'demandTable')">Complete</th>
                         <th class="w-10" onclick="sortTable(3, 'demandTable')">Closed</th>
-                        <th class="w-35" onclick="sortTable(4, 'demandTable')">User</th>
+                        <th class="w-30" onclick="sortTable(4, 'demandTable')">User</th>
                         <th><i class="fas fa-search"></i></th>
                     </thead>
                     <tbody id="demandTable">
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
-            <div class="container">
-                <div id='spn_receipts' class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="input-group mb-2">
-                            <div class="input-group-prepend w-20">
-                                <label class="input-group-text w-100" for="sel_complete_receipts">Completed Receipts</label>
-                            </div>
-                            <select class="custom-select" id='sel_complete_receipts' onchange=getReceipts(<%= supplier.supplier_id %>)>
-                                <option value='1' selected>Include</option>
-                                <option value='2'>Exclude</option>
-                                <option value='3'>Only</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <table class="table table-sm table-hover smallFont07 limit-height-200 w-100">
+        <% } %>
+        <% if (permissions.access_receipts) { %>
+            <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
+                <%- include('../../partials/spinner', {id: 'receipts'}) %>
+                <%- include('../../partials/inputs/select_include', {id: 'receiptsCompleteSelect', title: 'Completed Receipts', selected: 1}) %>
+                <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-40" onclick="sortTable(0, 'receiptTable')">Date</th>
                         <th class="w-10" onclick="sortTable(1, 'receiptTable')">Lines</th>
@@ -277,34 +143,97 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        <% } %>
         <% include ../../partials/notes/tab_body %>
     </div>
 </section>
 <% include ../../partials/foot/full %>
+<script src='/js/spinner.js'></script>
+<script src='/js/add.js'></script>
+<script src='/js/show.js'></script>
+<script src='/js/edit.js'></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('<%= tab %>');</script>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/XHRsend.js'></script>
+<script src='/js/data/send.js'></script>
 <script src="/js/specific/suppliers_show.js"></script>
+<script src='/js/get/settings.js'></script>
+<script src="/js/get.js"></script>
+<script async>get(showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]})</script>
 <script>
-    window.addEventListener( "load", function () {
-        <% if (_default != supplier.supplier_id) { %>
-            addFormListener('defaultForm', 'PUT', '/stores/suppliers/<%= supplier.supplier_id %>/default', {reload: true});
-        <% } %>
-        <% if (permissions.supplier_delete) { %>
-            addFormListener('deleteForm', 'DELETE', '/stores/suppliers/<%= supplier.supplier_id %>', {redirect: '/stores/suppliers'});
-        <% } %>
+    document.querySelector('#reload').addEventListener('click', () => {
+        get(showSupplier, {query: ['supplier_id=' + path[3]]})
+    })
+    <% if (permissions.access_sizes) { %>
+        document.querySelector('#reload').addEventListener('click', () => {
+            getSizes(   ['supplier_id=' + path[3]], true)
+        })
+    <% } %>
+    <% if (permissions.access_demands) { %>
+        document.querySelector('#reload').addEventListener('click', () => {
+            getDemands( ['supplier_id=' + path[3]])
+        })
+    <% } %>
+    <% if (permissions.access_receipts) { %>
+        document.querySelector('#reload').addEventListener('click', () => {
+            getReceipts(['supplier_id=' + path[3]])
+        })
+    <% } %>
+</script>
+<% if (permissions.access_sizes) { %>
+    <script src="/js/get/sizes.js"></script>
+    <script async>getSizes(   ['supplier_id=' + path[3]], true)</script>
+<% } %>
+<% if (permissions.access_demands) { %>
+    <script src="/js/get/demands.js"></script>
+    <script async>getDemands( ['supplier_id=' + path[3]])</script>
+<% } %>
+<% if (permissions.access_receipts) { %>
+    <script src="/js/get/receipts.js"></script>
+    <script async>getReceipts(['supplier_id=' + path[3]])</script>
+<% } %>
+<script>
+    window.addEventListener("load", () => {
+        addFormListener(
+            'defaultForm',
+            'PUT',
+            '/stores/settings?_name=default_supplier',
+            {
+                onComplete: getSettings,
+                args: ['default_supplier', setDefault, 'suppliers']
+            }
+        );
         <% if (permissions.demand_add) { %>
-            addFormListener('newDemandForm', 'POST', '/stores/demands', {reload: true});
+            addFormListener(
+                'newDemandForm',
+                'POST',
+                '/stores/demands',
+                {
+                    onComplete: getDemands,
+                    args: [['supplier_id=' + path[3]]]
+                }
+            );
         <% } %>
         <% if (permissions.receipt_add) { %>
-            addFormListener('newReceiptForm', 'POST', '/stores/receipts', {reload: true});
+            addFormListener(
+                'newReceiptForm',
+                'POST',
+                '/stores/receipts',
+                {
+                    onComplete: getReceipts,
+                    args: [['supplier_id=' + path[3]]]
+                }
+            );
         <% } %>
-        <% if (supplier.file) { %>
-            addFormListener('fileDeleteForm', 'DELETE', '/stores/files/<%= supplier.file_id %>', {redirect: '/stores/suppliers'});
-        <% } else if (supplier._raise_demand && permissions.file_add) { %>
-            addFormListener('fileForm', 'POST', '/stores/files', {reload: true});
+        <% if (permissions.file_add) { %>
+            addFormListener(
+                'fileForm',
+                'POST',
+                '/stores/files',
+                {reload: true}
+            );
         <% } %>
     });
 </script>
-<script async>getItems(<%= supplier.supplier_id %>)</script>
-<script async>getDemands(<%= supplier.supplier_id %>)</script>
-<script async>getReceipts(<%= supplier.supplier_id %>)</script>
 <% include ../../partials/foot/htmlClose %>

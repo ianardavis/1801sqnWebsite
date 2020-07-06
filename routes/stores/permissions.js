@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
     let db = require(process.env.ROOT + '/fn/db');
-    app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('permission_edit'),                  (req, res) => {
+    app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('permission_edit'),               (req, res) => {
         if (Number(req.params.id) === req.user.user_id && Number(req.params.id) !== 2) {
             res.error.redirect(new Error('You can not edit your own permissions'), req, res);
         } else if (Number(req.params.id) === 1) {
@@ -32,12 +32,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         };
     });
     
-    app.get('/stores/get/permissions/:id',  isLoggedIn, allowed('access_permissions', {send: true}), (req, res) => {
-        m.permissions.findAll({where: {user_id: req.params.id}})
-        .then(permissions => res.send({result: true, permissions: permissions}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.put('/stores/permissions/:id',      isLoggedIn, allowed('permission_edit',    {send: true}), (req, res) => {
+    app.put('/stores/permissions/:id',      isLoggedIn, allowed('permission_edit', {send: true}), (req, res) => {
         if (Number(req.params.id) !== req.user.user_id || Number(req.params.id) === 2) {
             if (Number(req.params.id) !== 1) {
                 m.permissions.findAll({

@@ -3,18 +3,34 @@
 <% include ../../partials/head/flash %>
 <section id='body'>
     <form id='accountForm'>
-        <%- include('../../partials/inputs/text',   {title: 'Name',   name: 'account[_name]',   value: account._name,   maxLength: 45,  required: true}) %>
-        <%- include('../../partials/inputs/text',   {title: 'Number', name: 'account[_number]', value: account._number, maxLength: 255, required: true}) %>
-        <%- include('../../partials/spinner',       {id: 'users'}) %>
-        <%- include('../../partials/inputs/select', {title: 'Owner',  name: 'account[user_id]', id: 'usersSelect', required: true}) %>
+        <%- include('../../partials/spinner', {id: 'accounts'}) %>
+        <%- include('../../partials/inputs/text',   {id: '_name',   title: 'Name',   name: 'account[_name]',   maxLength: 45,  required: true}) %>
+        <%- include('../../partials/inputs/text',   {id: '_number', title: 'Number', name: 'account[_number]', maxLength: 255, required: true}) %>
+        <%- include('../../partials/spinner', {id: 'users'}) %>
+        <%- include('../../partials/inputs/select', {id: '_users',  title: 'Owner',  name: 'account[user_id]', id: 'usersSelect', required: true}) %>
         <% include ../../partials/save_cancel %>
     </form>
 <% include ../../partials/foot/noNav %>
 <script src="/js/get/users.js"></script>
-<script async>getUsers(['status_id=2'], <%= account.user_id %>)</script>
+<script src="/js/get.js"></script>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/data/send.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/specific/accounts_edit.js"></script>
+<script src='/js/spinner.js'></script>
+<script async>get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]})</script>
 <script>
     window.addEventListener( "load", function () {
-        addFormListener('accountForm', 'PUT', '/stores/accounts/<%= account.account_id %>');
+        addFormListener(
+            'accountForm',
+            'PUT',
+            `/stores/accounts/${path[3]}`,
+            {
+                onComplete: window.opener.get,
+                args: [window.opener.showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]}],
+                _close: true
+            }
+        );
     });
 </script>
 <% include ../../partials/foot/htmlClose %>

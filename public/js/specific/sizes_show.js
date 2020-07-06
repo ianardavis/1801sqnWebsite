@@ -176,8 +176,7 @@ function getReceiptLines(size_id) {
         spn_receipts.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting receipts'));
-    let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/get/receiptlines/bysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/receipt_lines?size_id=' + size_id);
     XHR.send();
 };
 function getIssueLines(size_id) {
@@ -206,7 +205,6 @@ function getIssueLines(size_id) {
         spn_issues.style.display = 'none';
     });
     XHR.addEventListener("error", event => alert('Oops! Something went wrong getting issues'));
-    let query = ['size_id=' + size_id];
-    XHR.open('GET', '/stores/get/issuelines/bysize?' + query.join('&'));
+    XHR.open('GET', '/stores/get/issue_lines?size_id=' + size_id);
     XHR.send();
 };

@@ -10,22 +10,24 @@ function getNotes(table, id, delete_permission) {
             let note_count = document.querySelector('#note_count');
             note_count.innerText = response.notes.length;
             response.notes.forEach(note => {
-                let row   = table_body.insertRow(-1),
-                    cell1 = row.insertCell(-1),
-                    cell2 = row.insertCell(-1),
-                    cell3 = row.insertCell(-1),
-                    cell4 = row.insertCell(-1),
-                    cell5 = row.insertCell(-1);
-                cell1.dataset.sort = new Date(note._date).getTime();
-                cell1.innerText    = new Date(note._date).toDateString();
-                if (note._system) cell2.innerHTML = _check();
-                cell3.innerText    = note._note;
-                cell4.innerText    = note.user.rank._rank + ' ' + note.user.full_name
-                if (!note._system) cell5.appendChild(link('javascript:edit("notes",' + note.note_id + ',{"height":600})', false));
-                if (delete_permission) {
-                    let cell6 = row.insertCell(-1);
-                    if (!note._system) cell6.appendChild(deleteBtn('/stores/notes/' + note.note_id));
-                };
+                let row = table_body.insertRow(-1);
+                add_cell(row, {
+                    sort: new Date(note._date).getTime(),
+                    text: new Date(note._date).toDateString()
+                });
+                if (note._system) add_cell(row, {html: _check()})
+                else add_cell(row);
+                add_cell(row, {text: note._note, ellipsis: true});
+                add_cell(row, {text: note.user.rank._rank + ' ' + note.user.full_name});
+                if (!note._system) add_cell(row, {append: new Link({
+                    href: 'javascript:edit("notes",' + note.note_id + ')',
+                    small: true
+                }).link})
+                else add_cell(row);
+                if (delete_permission) add_cell(row, {append: new DeleteButton({
+                    path: '/stores/notes/' + note.note_id,
+                    small: true
+                }).form});
             });
         } else alert('Error: ' + response.error)
         spn_notes.style.display = 'none';

@@ -3,31 +3,47 @@
 <% include ../../partials/head/flash %>
 <section id='body'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class='dropdown-item' id='edit_link'>
+                    Edit
+                </a>
+                <% include ../../partials/notes/menu_add %>
+            </div>
+        </li>
         <li class="nav-item">
             <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
                 Details
             </a>
         </li>
         <% include ../../partials/notes/tab_head %>
-        <li class="nav-item dropdown ml-auto">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Options
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class='dropdown-item' href='javascript:edit("accounts",<%= account.account_id %>,{"height":236})'>
-                    Edit
-                </a>
-                <% include ../../partials/notes/menu_add %>
-            </div>
-        </li>
+        <% include ../../partials/reload %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include('../../partials/inputs/display', {title: 'Name',   text: account._name}) %>
-            <%- include('../../partials/inputs/display', {title: 'Number', text: account._number}) %>
-            <%- include('../../partials/inputs/display', {title: 'Owner',  text: account.user.rank._rank + ' ' + account.user.full_name}) %>
+            <%- include('../../partials/spinner', {id: 'accounts'}) %>
+            <%- include('../../partials/inputs/display', {id:'_name',   title: 'Name'}) %>
+            <%- include('../../partials/inputs/display', {id:'_number', title: 'Number'}) %>
+            <%- include('../../partials/inputs/display', {id:'_user',   title: 'Owner'}) %>
         </div>
         <% include ../../partials/notes/tab_body %>
     </div>
 <% include ../../partials/foot/noNav %>
+<script src='/js/data/XHRsend.js'></script>
+<script src='/js/spinner.js'></script>
+<script src='/js/edit.js'></script>
+<script src='/js/add.js'></script>
+<script src='/js/tabs.js'></script>
+<script src='/js/get.js'></script>
+<script src='/js/specific/accounts_show.js'></script>
+<script async>get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]})</script>
+<script>
+    document.querySelector('#reload').addEventListener('click', () => {
+        get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]})
+    });
+</script>
+<script>showTab('<%= tab %>');</script>
 <% include ../../partials/foot/htmlClose %>

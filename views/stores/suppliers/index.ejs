@@ -1,31 +1,33 @@
 <% include ../../partials/head/full %>
-<section class="mb-2">
-	<nav class="navbar navbar-expand navbar-light bg-nav">
-		<ul class="navbar-nav mr-auto">
+<nav class="navbar navbar-expand navbar-light bg-nav">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item">
+			<a class="nav-link stores_nav" href="/stores">Stores</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link stores_nav" href="/stores/suppliers">Suppliers</a>
+		</li>
+		<% if (permissions.supplier_add) { %>
 			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores">Stores</a>
+				<a class="nav-link stores_nav cardGreen" href='javascript:add("suppliers")'>
+					<i class='fas fa-plus'></i>
+				</a>
 			</li>
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/suppliers">Suppliers</a>
-			</li>
-			<% if (permissions.supplier_add) { %>
-				<li class="nav-item">
-					<a class="nav-link stores_nav cardGreen" href='javascript:add("suppliers",{"height":572})'>
-						<i class='fas fa-plus'></i>
-					</a>
-				</li>
-			<% } %>
-		</ul>
-	</nav>
-</section>
+		<% } %>
+	</ul>
+</nav>
 <section class="container">
-	<div id='spn_suppliers' class="spinner-border text-primary" role="status">
-		<span class="sr-only">Loading...</span>
-	</div>
+	<%- include('../../partials/spinner', {id: 'suppliers'}) %>
 	<div class='menu row' id="suppliers">
 	</div>
 	</section>
 <% include ../../partials/foot/full %>
+<script src='/js/add.js'></script>
+<script src='/js/spinner.js'></script>
+<script src='/js/data/XHRsend.js'></script>
+<script src='/js/data/send.js'></script>
+<script src='/js/get.js'></script>
+<script src='/js/get/settings.js'></script>
 <script src='/js/specific/suppliers_index.js'></script>
-<script async>getSuppliers(<%= _default %>)</script>
+<script async>get(asCards, {table: 'suppliers', query: []})</script>
 <% include ../../partials/foot/htmlClose %>

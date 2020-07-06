@@ -4,6 +4,8 @@ module.exports = (app, m, getPermissions) => {
         utils = require(process.env.ROOT + '/fn/utils');
     require('./includes') (inc, m);
     require(process.env.ROOT + '/config/middleware')(mw, {permissions: m.permissions}, getPermissions);
+    require('./async')      (app, al, inc, mw.isLoggedIn, m);
+    require('./delete')     (app, al, inc, mw.isLoggedIn, m);
     require('./accounts')   (app, al, inc, mw.isLoggedIn, m);
     require('./adjusts')    (app, al, inc, mw.isLoggedIn, m);
     require('./demands')    (app, al, inc, mw.isLoggedIn, m);

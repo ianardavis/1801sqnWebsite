@@ -76,7 +76,6 @@ port.check(_port)
     require('./routes/canteen')(app, m, permissions.get);
     require('./routes/site')   (app, m);
     console.log('   Loaded');
-
     app.listen(_port, err => {
         if (err) console.log(err);
         else console.log('Server listening on port: ' + _port);

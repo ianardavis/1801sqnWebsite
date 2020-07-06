@@ -6,14 +6,14 @@ getUsers = (query = [], selected = -1) => {
             _select  = document.querySelector('#usersSelect');
         _select.innerHTML = '';
         if (response.result) {
-            _select.appendChild(_option('', ''));
+            _select.appendChild(new Option({value: '', text: ''}).option);
             response.users.forEach(user => {
                 _select.appendChild(
-                    _option({
+                    new Option({
                         value:     user.user_id, 
                         text:      user.rank._rank + ' ' + user.full_name,
                         selected: (user.user_id === selected)
-                    })
+                    }).option
                 );
             });
         } else alert('Error: ' + response.error);

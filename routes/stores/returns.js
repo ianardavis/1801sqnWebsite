@@ -3,29 +3,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         utils   = require(process.env.ROOT + '/fn/utils'),
         returns = require(process.env.ROOT + '/fn/returns'),
         stock   = require(process.env.ROOT + '/fn/stock');
-    app.get('/stores/get/returnlines',       isLoggedIn, allowed('access_return_lines', {send: true}), (req, res) => {
-        m.return_lines.findAll({where: req.query})
-        .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/returnlines/bysize', isLoggedIn, allowed('access_return_lines', {send: true}), (req, res) => {
-        m.return_lines.findAll({
-            include: [inc.stock({
-                as: 'stock',
-                where: req.query,
-                required: true
-        })]})
-        .then(lines => res.send({result: true, lines: lines}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/returns',           isLoggedIn, allowed('access_returns',      {send: true}), (req, res) => {
-        m.returns.findAll({where: req.query})
-        .then(returns => res.send({result: true, returns: returns}))
-        .catch(err => res.error.send(err, res));
-    });
-
-    //POST
-    app.post('/stores/returns',             isLoggedIn, allowed('return_line_add',          {send: true}), (req, res) => {
+    app.post('/stores/returns', isLoggedIn, allowed('return_line_add', {send: true}), (req, res) => {
         let actions = [];
         for (let [lineID, line] of Object.entries(req.body.return)) {
             if (line.stock_id !== '') {

@@ -13,8 +13,8 @@
 </section>
 <section>
 	<div class="container">
-		<%- include('../../partials/inputs/select', 		{id: 'suppliersSelect'. title: 'Suppliers', 		 onchange: 'getReceipts()'}) %>
-		<%- include('../../partials/inputs/include_select', {id: 'completeSelect',  title: 'Completed Receipts', onChange: 'getReceipts()', _default: 1}) %>
+		<%- include('../../partials/inputs/select', 		{id: 'suppliersSelect'. title: 'Suppliers', 		 onchange: 'getReceipts(true)'}) %>
+		<%- include('../../partials/inputs/include_select', {id: 'completeSelect',  title: 'Completed Receipts', onChange: 'getReceipts(true)', _default: 1}) %>
 		<%- include('../../partials/spinner', 				{id: 'receipts'}) %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
@@ -32,5 +32,5 @@
 </section>
 <% include ../../partials/foot/full %>
 <script src="/js/get/receipts.js"></script>
-<script async>getReceipts()</script>
+<script async>getReceipts(true)</script>
 <% include ../../partials/foot/htmlClose %>

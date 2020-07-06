@@ -9,17 +9,17 @@
         </div>
         <div class="form-group">
             <h4>Cells</h4>
-            <%- include('../../partials/inputs/text', {title: 'Account',        name: 'file[_code]',          value: file._code,          maxLength: 20}) %>
-            <%- include('../../partials/inputs/text', {title: 'Holder Rank',    name: 'file[_rank]',          value: file._rank,          maxLength: 4}) %>
-            <%- include('../../partials/inputs/text', {title: 'Holder Name',    name: 'file[_name]',          value: file._name,          maxLength: 4}) %>
-            <%- include('../../partials/inputs/text', {title: 'Squadron',       name: 'file[_sqn]',           value: file._sqn,           maxLength: 4}) %>
-            <%- include('../../partials/inputs/text', {title: 'Cover Sheet',    name: 'file[_cover_sheet]',   value: file._cover_sheet,   maxLength: 20}) %>
-            <%- include('../../partials/inputs/text', {title: 'Items Sheet',    name: 'file[_items_sheet]',   value: file._items_sheet,   maxLength: 20}) %>
-            <%- include('../../partials/inputs/text', {title: 'Rank Column',    name: 'file[_rank_column]',   value: file._rank_column,   maxLength: 2}) %>
-            <%- include('../../partials/inputs/text', {title: 'Name Column',    name: 'file[_name_column]',   value: file._name_column,   maxLength: 2}) %>
-            <%- include('../../partials/inputs/text', {title: 'Name Start Row', name: 'file[_request_start]', value: file._request_start, maxLength: 2}) %>
-            <%- include('../../partials/inputs/text', {title: 'Name End Row',   name: 'file[_request_end]',   value: file._request_end,   maxLength: 2}) %>
-            <%- include('../../partials/inputs/text', {title: 'Date',           name: 'file[_date]',          value: file._date,          maxLength: 4}) %>
+            <%- include('../../partials/inputs/text', {id: '_code',          title: 'Account',        name: 'file[_code]',          value: file._code,          maxLength: 20}) %>
+            <%- include('../../partials/inputs/text', {id: '_rank',          title: 'Holder Rank',    name: 'file[_rank]',          value: file._rank,          maxLength: 4}) %>
+            <%- include('../../partials/inputs/text', {id: '_name',          title: 'Holder Name',    name: 'file[_name]',          value: file._name,          maxLength: 4}) %>
+            <%- include('../../partials/inputs/text', {id: '_sqn',           title: 'Squadron',       name: 'file[_sqn]',           value: file._sqn,           maxLength: 4}) %>
+            <%- include('../../partials/inputs/text', {id: '_cover_sheet',   title: 'Cover Sheet',    name: 'file[_cover_sheet]',   value: file._cover_sheet,   maxLength: 20}) %>
+            <%- include('../../partials/inputs/text', {id: '_items_sheet',   title: 'Items Sheet',    name: 'file[_items_sheet]',   value: file._items_sheet,   maxLength: 20}) %>
+            <%- include('../../partials/inputs/text', {id: '_rank_column',   title: 'Rank Column',    name: 'file[_rank_column]',   value: file._rank_column,   maxLength: 2}) %>
+            <%- include('../../partials/inputs/text', {id: '_name_column',   title: 'Name Column',    name: 'file[_name_column]',   value: file._name_column,   maxLength: 2}) %>
+            <%- include('../../partials/inputs/text', {id: '_request_start', title: 'Name Start Row', name: 'file[_request_start]', value: file._request_start, maxLength: 2}) %>
+            <%- include('../../partials/inputs/text', {id: '_request_end',   title: 'Name End Row',   name: 'file[_request_end]',   value: file._request_end,   maxLength: 2}) %>
+            <%- include('../../partials/inputs/text', {id: '_date',          title: 'Date',           name: 'file[_date]',          value: file._date,          maxLength: 4}) %>
         </div>
         <% include ../../partials/save_cancel %>
     </form>

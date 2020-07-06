@@ -1,64 +1,111 @@
-function _check () {return '<i class="fas fa-check"></i>'}
+function _check ()  {return '<i class="fas fa-check"></i>'}
 function _search () {return '<i class="fas fa-search"></i>'}
-function _spinner (id) {return '<div id="' + id + '" class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>'}
-function link (href, _float = true) {
-    let link       = document.createElement('a');
-    link.href      = href;
-    link.innerHTML = _search();
-    link.classList.add('btn', 'btn-sm', 'btn-primary');
-    if (_float) link.classList.add('float-right');
-    return link;
+function _globe ()  {return '<i class="fas fa-globe-europe"></i>'}
+function _edit ()   {return '<i class="fas fa-pencil-alt"></i>'}
+function _save ()   {return '<i class="fas fa-save"></i>'}
+function _copy ()   {return '<i class="fas fa-clipboard"></i>'}
+function _delete () {return '<i class="fas fa-trash-alt"></i>'}
+function Link (options = {}) {
+    this.link      = document.createElement('a');
+    this.link.href = options.href;
+    this.link.classList.add('btn');
+    if (options.type === 'edit') {
+        this.link.classList.add('btn-success');
+        this.link.innerHTML = _edit();
+    } else if (options.type === 'copy') {
+        this.link.classList.add('btn-info');
+        this.link.innerHTML = _copy();
+    } else {
+        this.link.classList.add('btn-primary');
+        this.link.innerHTML = _search();
+    };
+    if (options.margin) this.link.classList.add('m-1');
+    if (options.small)  this.link.classList.add('btn-sm');
+    if (options.float)  this.link.classList.add('float-right');
+    if (options.id)     this.link.id = options.id;
 };
-function deleteBtn (path, descriptor = 'line') {
-    let form   = document.createElement('form'),
-        button = document.createElement('button');
-    button.classList.add('btn', 'btn-sm', 'btn-danger');
-    button.innerHTML = '<i class="fas fa-trash-alt"></i>';
-    form.appendChild(button);
-    form.addEventListener("submit", function (event) {
+function DeleteButton (options = {}) {
+    this.form = document.createElement('form');
+    let btn   = document.createElement('button');
+    btn.classList.add('btn', 'btn-danger');
+    btn.innerHTML = _delete();
+    if (options.margin) btn.classList.add('m-1');
+    if (options.small)  btn.classList.add('btn-sm');
+    if (options.float)  btn.classList.add('float-right');
+    this.form.appendChild(btn);
+    this.form.addEventListener("submit", event => {
         event.preventDefault();
-        if (confirm('Delete ' + descriptor + '?')){
-            sendData(form, 'DELETE', path, {reload: true});
+        if (confirm('Delete ' + options.descriptor || 'line' + '?')){
+            sendData(this.form, 'DELETE', options.path, options.options || {reload: true});
         };
     });
-    return form;
 };
-function _input (options = {}) {
-    let _input = document.createElement('input');
-    _input.classList.add('form-control', 'form-control-sm');
-    _input.type        = options.type        || 'text';
-    _input.name        = options.name        || 'selected[]';
-    _input.value       = options.value       || '';
-    _input.required    = options.required    || true;
-    if (options.id)          _input.id          = options.id;
-    if (options.placeholder) _input.placeholder = options.placeholder;
-    return _input
+function Input (options = {}) {
+    this.input = document.createElement('input');
+    this.input.classList.add('form-control');
+    this.input.type  = options.type  || 'text';
+    this.input.name  = options.name  || 'selected[]';
+    if (options.value)       this.input.value = options.value;
+    if (options.small)       this.input.classList.add('form-control-sm')
+    if (options.id)          this.input.id          = options.id;
+    if (options.placeholder) this.input.placeholder = options.placeholder;
+    if (options.required)    this.input.required    = true;
+    if (options.onChange)    this.input.addEventListener('change', event => options.onChange());
 };
-function checkbox (options = {}) {
-    let _checkbox   = document.createElement('input');
-    _checkbox.type  = 'checkbox';
-    _checkbox.name  = options.name || 'selected[]';
-    _checkbox.value = options.id;
-    _checkbox.classList.add('form-control', 'form-control-sm');
-    return _checkbox
+function Select (options = {}) {
+    this.select  = document.createElement('select');
+    this.select.classList.add('form-control');
+    this.select.name = options.name || 'selected[]';
+    if (options.small)    this.select.classList.add('form-control-sm');
+    if (options.required) this.select.required = true;
+    if (options.id)       this.select.id = options.id;
 };
-function _select (options = {}) {
-    let _select      = document.createElement('select');
-    _select.classList.add('form-control', 'form-control-sm');
-    _select.name     = options.name     || 'selected[]';
-    if (options.required) _select.required = true;
-    return _select
+function Option (options = {}) {
+    this.option = document.createElement('option');
+    let _text = '';
+    if (options.selected === true) {
+        this.option.setAttribute('selected', true);
+        _text = '***';
+    };
+    this.option.value     = options.value;
+    this.option.innerText = _text + options.text + _text;
 };
-function _option(options = {}) {
-    let _option = document.createElement('option'),
-        _text = '';
-    if (options.selected === true) _text = '***';
-    _option.value     = options.value;
-    _option.innerText = _text + ' ' + options.text + ' ' + _text;
-    if (options.selected === true) _option.setAttribute('selected', true);
-    return _option
+function Card (options = {}) {
+    this.div = document.createElement('div');
+    let _a        = document.createElement('a'),
+        _header   = document.createElement('div'),
+        _title    = document.createElement('h3'),
+        _body     = document.createElement('div'),
+        _body_p   = document.createElement('p');
+    if (options.search) this.div.dataset.search = options.search;
+    this.div.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3', 'search');
+    if (options.id) this.div.id = options.id;
+    _a.href = options.href;
+    _a.classList.add('card', 'm-3', 'text-left');
+    _header.classList.add('card-header');
+    _title.classList.add('card-title');
+    _title.innerText = options.title;
+    _header.appendChild(_title);
+    if (options.subtitle) {
+        let _subtitle = document.createElement('p');
+        _subtitle.innerText = options.subtitle;
+        _subtitle.classList.add('card-subtitle', 'text-muted');
+        _header.appendChild(_subtitle);
+    };
+    _body.classList.add('card-body');
+    _body_p.classList.add('text-left', 'f-10');
+    if (options.body_ellipsis) _body_p.classList.add('ellipsis1');
+    _body_p.innerHTML = options.body;
+    _body.appendChild(_body_p);
+    _a.appendChild(_header);
+    _a.appendChild(_body);
+    this.div.appendChild(_a);
 };
-
+boolean_to_yesno = boolean => {
+    if (boolean === 1      || boolean === true)  return 'Yes'
+    else if (boolean === 0 || boolean === false) return 'No'
+    else return 'No'
+};
 add_cell = (row, options = {}) => {
     let cell = row.insertCell();
     if (options.sort) cell.dataset.sort = options.sort;
@@ -67,7 +114,8 @@ add_cell = (row, options = {}) => {
     } else if (options.html) {
         cell.innerHTML    = options.html || '';
     };
-    if (options.classes) options.classes.forEach(_class => cell.classList.add(_class));
-    if (options.append)  cell.appendChild(options.append);
-    if (options.id)      cell.id = option.id;
+    if (options.classes)  options.classes.forEach(_class => cell.classList.add(_class));
+    if (options.append)   cell.appendChild(options.append);
+    if (options.id)       cell.id = option.id;
+    if (options.ellipsis) cell.classList.add('ellipsis1');
 };
