@@ -35,30 +35,6 @@ sortTable = (n, tableName) => {
     };
 };
 
-searchCards = inputfield => {
-    // Declare variables
-    var input, filter, cards;
-    input = document.getElementById(inputfield);
-    filter = input.value.toUpperCase();
-    cards = document.querySelectorAll('.search');
-    // Loop through all table rows, and hide those who don't match the search query
-    cards.forEach(card => {
-        if ((card.dataset.search.toUpperCase().indexOf(filter) > -1) || filter === '') card.style.display = "";
-        else card.style.display = "none";
-    });
-};
-
-searchTable = (tableName, inputField) => {
-    let filter = document.querySelector('#' + inputField).value.toUpperCase(),
-        table = document.querySelector('#' + tableName),
-        tr = table.querySelectorAll("tr");
-    for (let i = 0; i < tr.length; i++) {
-        let txtValue = tr[i].dataset.search;
-        if ((txtValue.toUpperCase().indexOf(filter) > -1) || filter === '') tr[i].style.display = "";
-        else tr[i].style.display = "none";
-    };
-}; 
-
 removeID = id => {
     if (typeof(id) === 'string') document.querySelector('#' + id).remove();
     else id.remove();

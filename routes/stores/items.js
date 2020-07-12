@@ -1,6 +1,5 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db      = require(process.env.ROOT + '/fn/db'),
-        options = require(process.env.ROOT + '/fn/options');
+    let db = require(process.env.ROOT + '/fn/db');
     nullify = item => {
         if (item.subtype_id === '') item.subtype_id = null;
         if (item.gender_id === '')  item.gender_id  = null;
@@ -11,27 +10,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     
     app.get('/stores/items',          isLoggedIn, allowed('access_items'),            (req, res) => res.render('stores/items/index'));
     app.get('/stores/items/new',      isLoggedIn, allowed('item_add'),                (req, res) => res.render('stores/items/new'));
-    app.get('/stores/items/:id',      isLoggedIn, allowed('access_items'),            (req, res) => {
-        let include = [
-            m.genders, 
-            m.categories, 
-            m.groups, 
-            m.types, 
-            m.subtypes
-        ];
-        db.findOne({
-            table: m.items,
-            where: {item_id: req.params.id},
-            include: include
-        })
-        .then(item => {
-            res.render('stores/items/show', {
-                item:  item,
-                show_tab: req.query.tab || 'details'
-            });
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/stores/items/:id',      isLoggedIn, allowed('access_items'),            (req, res) => res.render('stores/items/show', {tab: req.query.tab || 'details'}));
     app.get('/stores/items/:id/edit', isLoggedIn, allowed('item_edit'),               (req, res) => {
         db.findOne({
             table: m.items,

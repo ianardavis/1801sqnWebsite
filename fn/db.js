@@ -7,25 +7,27 @@ module.exports = {
         })
         .then(result => {
             if (result) resolve(result)
-            else reject(new Error('No record found in ' + options.table.tableName))
+            else reject(new Error('No record found in ' + options.table.tableName));
         })
-        .catch(err => res.error.redirect(err, req, res));
+        .catch(err => reject(err));
     }),
     update: (options = {}) => new Promise((resolve, reject) => {
         options.table.update(options.record, {where: options.where})
         .then(result => {
             if (result) resolve(result)
-            else reject(new Error('Record not updated in ' + options.table))
+            else reject(new Error('Record not updated in ' + options.table));
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => reject(err));
     }),
     destroy: (options = {}) => new Promise((resolve, reject) => {
+        console.log(options);
         options.table.destroy({where: options.where})
         .then(result => {
+            console.log(result);
             if (result) resolve(true)
-            else reject(new Error('Record not deleted from ' + options.table));
+            else reject(new Error('Record not deleted from ' + options.table.tableName));
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => reject(err));
     }),
     preDeleteCheck: (table, query) => new Promise((resolve, reject) => {
         table.findOne({where: query})
@@ -41,4 +43,4 @@ module.exports = {
         };
         return record;
     }
-}
+};

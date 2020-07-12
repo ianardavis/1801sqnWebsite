@@ -1,7 +1,11 @@
 add = (table, options = {}) => {
     let heights = {
             suppliers: '572',
-            accounts: '235'
+            accounts: '235',
+            items: '440',
+            sizes: '629',
+            nsns: '210',
+            serials: '151'
         },
         widths = {},
         queries = '',

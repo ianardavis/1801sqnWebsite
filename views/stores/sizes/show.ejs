@@ -1,353 +1,252 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>
-                    Stores
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items'>
-                    Items
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items/<%= size.item_id %>'>
-                    <%= size.item._description %>
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/sizes/<%= size.size_id %>'>
-                    Size: <%= size._size %>
-                </a>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {id: '_item'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
-                Details
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
             </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <% if (permissions.size_edit) { %>
+                    <%- include(`${process.env.PARTIALS}/edit`) %>
+                <% } %>
+                <div class="dropdown-divider"></div>
+                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <% if (permissions.nsn_add) { %> 
+                    <a class='dropdown-item' id='add_nsn'>
+                        Add NSN
+                    </a> 
+                <% } %>
+                <% if (permissions.serial_add) { %> 
+                    <a class='dropdown-item' id='add_serial'>
+                        Add Serial
+                    </a> 
+                <% } %>
+                <% if (permissions.stock_add) { %>
+                    <a class='dropdown-item' id='add_stock'>
+                        Add Stock Location
+                    </a>
+                <% } %>
+                <% if (permissions.order_add) { %>
+                    <a class='dropdown-item' id='add_order'>Add Order</a>
+                <% } %>
+                <% if (permissions.size_delete) { %>
+                    <%- include(`${process.env.PARTIALS}/delete`, {redirect: '/stores/items'}) %>
+                <% } %>
+            </div>
         </li>
-        <% if (permissions.access_nsns) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="nsns-tab" data-toggle="tab" href="#nsns" role="tab" aria-controls="nsns" aria-selected="true">
-                    NSNs (<span id='nsn_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (size._serials && permissions.access_serials) {%>
-            <li class="nav-item">
-                <a class="nav-link" id="serials-tab" data-toggle="tab" href="#serials" role="tab" aria-controls="serials" aria-selected="true">
-                    Serial # (<span id='serial_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (permissions.access_stock) {%>
-            <li class="nav-item">
-                <a class="nav-link" id="stock-tab" data-toggle="tab" href="#stock" role="tab" aria-controls="stock" aria-selected="true">
-                    Stock (<span id='stock_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (size._issueable && permissions.access_requests) {%>
-            <li class="nav-item">
-                <a class="nav-link" id="requests-tab" data-toggle="tab" href="#requests" role="tab" aria-controls="requests" aria-selected="true">
-                    Requests (<span id='request_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (size._orderable && permissions.access_orders) {%>
-            <li class="nav-item">
-                <a class="nav-link" id="orders-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="true">
-                    Orders (<span id='order_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (permissions.access_receipts) {%>
-            <li class="nav-item">
-                <a class="nav-link" id="receipts-tab" data-toggle="tab" href="#receipts" role="tab" aria-controls="receipts" aria-selected="true">
-                    Receipts (<span id='receipt_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (size._issueable && permissions.access_issues) {%>
-            <li class="nav-item">
-                <a class="nav-link" id="issues-tab" data-toggle="tab" href="#issues" role="tab" aria-controls="issues" aria-selected="true">
-                    Issues (<span id='issue_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% include ../../partials/notes/tab_head %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',  title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'nsns',     title: 'NSNs',     count_id: 'nsn_count',     permission: 'access_nsns',     _class: '_nsns_element'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'serials',  title: 'Serials',  count_id: 'serial_count',  permission: 'access_serials',  _class: '_serials_element'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock_count',   permission: 'access_stock'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'requests', title: 'Requests', count_id: 'request_count', permission: 'access_requests', _class: '_issueable_element'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'orders',   title: 'Orders',   count_id: 'order_count',   permission: 'access_orders',   _class: '_orderable_element'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', permission: 'access_receipts', _class: '_orderable_element'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'issues',   title: 'Issues',   count_id: 'issue_count',   permission: 'access_issues',   _class: '_issueable_element'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',    title: 'Notes',    count_id: 'note_count',    permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="container">
-                <% if (permissions.size_edit) { %> 
-                    <a class='float-left btn btn-success m-1' href='javascript:edit("sizes",<%= size.size_id %>,{"height":600})'>
-                        <i class='fas fa-pencil-alt'></i>
-                    </a>
-                <% } %>
-                <% if (permissions.size_delete) { %>
-                    <form id='sizeDeleteForm'>
-                        <button class='float-left btn btn-danger m-1 confirm'>
-                            <i class='fas fa-trash-alt'></i>
-                        </button>
-                    </form>
-                <% } %>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Issueable</span>
-                    </div>
-                    <p class="form-control"><% if (size._issueable) { %>Yes<% } else { %>No<% } %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Orderable</span>
-                    </div>
-                    <p class="form-control"><% if (size._orderable) { %>Yes<% } else { %>No<% } %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Has Serial #</span>
-                    </div>
-                    <p class="form-control"><% if (size._serials) { %>Yes<% } else { %>No<% } %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Has NSNs</span>
-                    </div>
-                    <p class="form-control"><% if (size._nsns) { %>Yes<% } else { %>No<% } %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Supplier</span>
-                    </div>
-                    <p class='form-control'><% if (size.supplier) { %><%= size.supplier._name %><% } %></p>
-                    <% if (size.supplier) { %>
-                        <div class="input-group-append">
-                            <a class='btn btn-primary' href='/stores/suppliers/<%= size.supplier_id %>'>
-                                <i class='fas fa-search'></i>
-                            </a>
-                        </div>
-                    <% } %>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Demand Page</span>
-                    </div>
-                    <p class="form-control"><%= size._demand_page %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Demand Cell</span>
-                    </div>
-                    <p class="form-control"><%= size._demand_cell %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-35">
-                        <span class="input-group-text w-100">Ordering Details</span>
-                    </div>
-                    <textarea class="form-control" maxlength='1000' aria-label="Ordering details" readonly><%= size._ordering_details %></textarea>
-                </div>
-            </div>
+            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'sizes'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_issueable',        title: 'Issueable'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_orderable',        title: 'Orderable'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_serials',          title: 'Has Serials'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_nsns',             title: 'Has NSNs'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: 'supplier',         title: 'Supplier', append: {a: {id: 'supplier_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_demand_page',      title: 'Demand Page'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_demand_cell',      title: 'Demand Cell'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/textarea`, {id: '_ordering_details', title: 'Ordering Details', rows: 5, readonly: true}) %>
         </div>
-        <% if (size._nsns && permissions.access_nsns) {%>
+        <% if (permissions.access_nsns) { %>
             <div class="tab-pane fade" id="nsns" role="tabpanel" aria-labelledby="nsns-tab">
-                <div class="container">
-                    <% if (permissions.nsn_add) { %> 
-                        <a class='float-left btn btn-success m-1' href='javascript:add("nsns",{"queries":"size_id=<%= size.size_id %>","height":210})'>
-                            <i class='fas fa-plus'></i>
-                        </a> 
-                    <% } %>
-                    <div id='spn_nsns' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th class='w-80' onclick='sortTable(0, "nsnTable")' >NSN</th>
-                            <th class='w-20'>Default</th>
-                            <th><i class='fas fa-search'></i></th>
-                            <% if (permissions.nsn_delete) { %>
-                                <th><i class='fas fa-trash-alt'></i></th>
-                            <% } %>
-                        </thead>
-                        <tbody id='nsnTable'>
-                        </tbody>
-                    </table>
-                </div>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'nsns'}) %>
+                <table class='table table-sm table-hover'>
+                    <thead class='thead-dark'>
+                        <th class='w-80' onclick='sortTable(0, "nsnTable")' >NSN</th>
+                        <th class='w-20'>Default</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='nsnTable'>
+                    </tbody>
+                </table>
             </div>
         <% } %>
-        <% if (size._serials && permissions.access_serials) {%>
+        <% if (permissions.access_serials) { %>
             <div class="tab-pane fade" id="serials" role="tabpanel" aria-labelledby="serials-tab">
-                <div class="container">
-                    <% if (permissions.serial_add) { %> 
-                        <a class='float-left btn btn-success m-1' href='javascript:add("serials", {"queries":"size_id=<%= size.size_id %>","height":151})'>
-                            <i class='fas fa-plus'></i>
-                        </a> 
-                    <% } %>
-                    <div id='spn_serials' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th class='w-100' onclick='sortTable(0, "serialTable")' >Serial #</th>
-                            <th><i class='fas fa-pencil-alt'></i></th>
-                            <% if (permissions.serial_delete) { %>
-                                <th><i class='fas fa-trash-alt'></i></th>
-                            <% } %>
-                        </thead>
-                        <tbody id='serialTable'>
-                        </tbody>
-                    </table>
-                </div>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'serials'}) %>
+                <table class='table table-sm table-hover'>
+                    <thead class='thead-dark'>
+                        <th class='w-100' onclick='sortTable(0, "serialTable")' >Serial #</th>
+                        <th><i class='fas fa-pencil-alt'></i></th>
+                    </thead>
+                    <tbody id='serialTable'>
+                    </tbody>
+                </table>
             </div>
         <% } %>
-        <% if (permissions.access_stock) {%>
+        <% if (permissions.access_stock) { %>
             <div class="tab-pane fade" id="stock" role="tabpanel" aria-labelledby="stock-tab">
-                <div class="container">
-                    <% if (permissions.stock_add) { %>
-                        <a class='float-left btn btn-success m-1' href='/stores/stock/new?size_id=<%= size.size_id %>'>
-                            <i class='fas fa-plus'></i>
-                        </a>
-                    <% } %>
-                    <div id='spn_stock' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "stockTable")' class='w-80'>Location</th>
-                            <th onclick='sortTable(1, "stockTable")' class='w-20'>Qty</th>
-                            <th><i class='fas fa-search'></i></th>
-                            <% if (permissions.stock_delete) { %>
-                                <th><i class='fas fa-trash-alt'></i></th>
-                            <% } %>
-                        </thead>
-                        <tbody id='stockTable'>
-                        </tbody>
-                    </table>
-                </div>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'stock'}) %>
+                <table class='table table-sm table-hover'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "stockTable")' class='w-80'>Location</th>
+                        <th onclick='sortTable(1, "stockTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='stockTable'>
+                    </tbody>
+                </table>
             </div>
         <% } %>
-        <% if (size._issueable && permissions.access_requests) {%>
+        <% if (permissions.access_requests) { %>
             <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
-                <div class="container">
-                    <div id='spn_requests' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "requestTable")' class='w-80'>For</th>
-                            <th onclick='sortTable(1, "requestTable")' class='w-20'>Qty</th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id='requestTable'>
-                        </tbody>
-                    </table>
-                </div>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines'}) %>
+                <table class='table table-sm table-hover'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "requestTable")' class='w-80'>For</th>
+                        <th onclick='sortTable(1, "requestTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='requestTable'>
+                    </tbody>
+                </table>
             </div>
         <% } %>
-        <% if (size._orderable && permissions.access_orders) {%>
+        <% if (permissions.access_orders) { %>
             <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-                <div class="container">
-                    <% if (permissions.order_add) { %> 
-                        <a class='float-left btn btn-success m-1' href='/stores/orders/new?user=-1'><i class='fas fa-plus'></i></a>
-                    <% } %>
-                    <div id='spn_orders' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "orderTable")' class='w-80'>For</th>
-                            <th onclick='sortTable(1, "orderTable")' class='w-20'>Qty</th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id='orderTable'>
-                        </tbody>
-                    </table>
-                </div>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'order_lines'}) %>
+                <table class='table table-sm table-hover'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "orderTable")' class='w-80'>For</th>
+                        <th onclick='sortTable(1, "orderTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='orderTable'>
+                    </tbody>
+                </table>
             </div>
         <% } %>
-        <% if (permissions.access_receipts) {%>
+        <% if (permissions.access_receipts) { %>
             <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
-                <div class="container">
-                    <% if (permissions.receipt_add) { %> 
-                        <a class='float-left btn btn-success m-1' href='/stores/receipts/new?supplier_id=<%= size.supplier_id %>'><i class='fas fa-plus'></i></a>
-                    <% } %>
-                    <div id='spn_receipts' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "receiptTable")' class='w-80'>Date</th>
-                            <th onclick='sortTable(1, "receiptTable")' class='w-20'>Location</th>
-                            <th onclick='sortTable(2, "receiptTable")' class='w-20'>Qty</th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id='receiptTable'>
-                        </tbody>
-                    </table>
-                </div>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipt_lines'}) %>
+                <table class='table table-sm table-hover'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "receiptTable")' class='w-80'>Date</th>
+                        <th onclick='sortTable(1, "receiptTable")' class='w-20'>Location</th>
+                        <th onclick='sortTable(2, "receiptTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='receiptTable'>
+                    </tbody>
+                </table>
             </div>
         <% } %>
-        <% if (size._issueable && permissions.access_issues) {%>
+        <% if (permissions.access_issues) { %>
             <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-                <div class="container">
-                    <div id='spn_issues' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th onclick='sortTable(0, "issueTable")' class='w-20'>Date</th>
-                            <th onclick='sortTable(1, "issueTable")' class='w-60'>To</th>
-                            <th onclick='sortTable(2, "issueTable")' class='w-20'>Qty</th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id='issueTable'>
-                            <% if (size.stocks) size.stocks.forEach(stock => { %>
-                                <% if (stock.issues) stock.issues.forEach(issue => { %>
-                                    <tr>
-                                        <td>
-                                            <%= issue.issue._to.rank._rank %> <%= issue.issue._to.full_name %>
-                                        </td>
-                                        <td>
-                                            <%= issue._qty %>
-                                        </td>
-                                        <td>
-                                            <a class='btn btn-sm btn-primary' href='/stores/issues/<%= issue.issue_id %>'>
-                                                <i class='fas fa-search'></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'issue_lines'}) %>
+                <table class='table table-sm table-hover'>
+                    <thead class='thead-dark'>
+                        <th onclick='sortTable(0, "issueTable")' class='w-20'>Date</th>
+                        <th onclick='sortTable(1, "issueTable")' class='w-60'>To</th>
+                        <th onclick='sortTable(2, "issueTable")' class='w-20'>Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='issueTable'>
+                    </tbody>
+                </table>
             </div>
         <% } %>
-        <% include ../../partials/notes/tab_body %>
+        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<script src="/js/specific/sizes_show.js"></script>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<!-- get/spinner/XHRsend/send from notes include -->
+<script src="/js/data/addFormListener.js"></script>
+<script src='/js/tabs.js'></script>
+<script src='/js/add.js'></script>
+<script src='/js/edit.js'></script>
+<script src='/js/show.js'></script>
+<script src="/js/sizes/show/showSize.js"></script>
+<script>showTab('<%= tab %>');</script>
+<script async>get(showSize, {table: 'sizes', query: [`size_id=${path[3]}`]})</script>
 <script>
-    <% if (permissions.size_delete) { %>
-        window.addEventListener( "load", function () {
-            addFormListener('sizeDeleteForm', 'DELETE', '/stores/sizes/<%= size.size_id %>', {redirect: '/stores/items'});
-        });
-    <% } %>
+    document.querySelector('#reload').addEventListener('click', () => {
+        get(showSize, {table: 'sizes', query: [`size_id=${path[3]}`]})
+    });
+    document.querySelector('#reload').addEventListener('click', () => getNotes());
 </script>
-<% let default_nsn = -1; %>
-<% if (size.nsn_id) default_nsn = size.nsn_id; %>
-<% if (permissions.access_nsns && size._nsns) {%>         <script async>getNSNs(<%= size.size_id %>, <%= default_nsn %>, <%= permissions.nsn_delete %>)</script><% } %>
-<% if (permissions.access_serials && size._serials) {%>   <script async>getSerials(<%= size.size_id %>, <%= permissions.serial_delete %>)</script><% } %>
-<% if (permissions.access_stock) {%>                      <script async>getStock(<%= size.size_id %>, <%= permissions.stock_delete %>)</script><% } %>
-<% if (permissions.access_requests && size._issueable) {%><script async>getRequestLines(<%= size.size_id %>)</script><% } %>
-<% if (permissions.access_orders && size._orderable) {%>  <script async>getOrderLines(<%= size.size_id %>)</script><% } %>
-<% if (permissions.access_receipts) {%>                   <script async>getReceiptLines(<%= size.size_id %>)</script><% } %>
-<% if (permissions.access_issues && size._issueable) {%>  <script async>getIssueLines(<%= size.size_id %>)</script><% } %>
-<% include ../../partials/foot/htmlClose %>
+<% if (permissions.access_nsns) {%>
+    <script src="/js/sizes/show/showNSNs.js"></script>
+    <script>
+        getNSNs = () => get(showNSNs, {table: 'nsns', query: [`size_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => {
+            getNSNs();
+        });
+    </script>
+    <script async>getNSNs()</script>
+<% } %>
+<% if (permissions.access_serials) {%>
+    <script src="/js/sizes/show/showSerials.js"></script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showSerials, {table: 'serials', query: [`size_id=${path[3]}`]});
+        });
+    </script>
+    <script async>get(showSerials, {table: 'serials', query: [`size_id=${path[3]}`]})</script>
+<% } %>
+<% if (permissions.access_stock) {%>
+    <script src="/js/sizes/show/showStock.js"></script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showStock, {table: 'stock', query: [`size_id=${path[3]}`]});
+        });
+    </script>
+    <script async>get(showStock, {table: 'stock', query: [`size_id=${path[3]}`]})</script>
+<% } %>
+<% if (permissions.access_requests) {%>
+    <script src="/js/sizes/show/showRequests.js"></script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showRequests, {table: 'request_lines', query: [`size_id=${path[3]}`]});
+        });
+    </script>
+    <script async>get(showRequests, {table: 'request_lines', query: [`size_id=${path[3]}`]})</script>
+<% } %>
+<% if (permissions.access_orders) {%>
+    <script src="/js/sizes/show/showOrders.js"></script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showOrders, {table: 'order_lines', query: [`size_id=${path[3]}`]});
+        });
+    </script>
+    <script async>get(showOrders, {table: 'order_lines', query: [`size_id=${path[3]}`]})</script>
+<% } %>
+<% if (permissions.access_receipts) {%>
+    <script src="/js/sizes/show/showReceipts.js"></script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showReceipts, {table: 'receipt_lines', query: [`size_id=${path[3]}`]});
+        });
+    </script>
+    <script async>get(showReceipts, {table: 'receipt_lines', query: [`size_id=${path[3]}`]})</script>
+<% } %>
+<% if (permissions.access_issues) {%>
+    <script src="/js/sizes/show/showIssues.js"></script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showIssues, {table: 'issue_lines', query: [`size_id=${path[3]}`]});
+        });
+    </script>
+    <script async>get(showIssues, {table: 'issue_lines', query: [`size_id=${path[3]}`]})</script>
+<% } %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

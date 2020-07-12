@@ -6,6 +6,7 @@ var express  = require('express'),
     flash    = require('connect-flash'),
     memStore = require('memorystore')(session);
 process.env.ROOT = __dirname;
+process.env.PARTIALS = __dirname + '/views/partials';
 let port = require(process.env.ROOT + '/fn/port'),
    _port = 3000;
 port.check(_port)

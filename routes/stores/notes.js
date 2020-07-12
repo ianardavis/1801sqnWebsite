@@ -9,12 +9,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     app.get('/stores/notes/:id/edit', isLoggedIn, allowed('note_add'),                (req, res) => {
         db.findOne({
             table: m.notes,
-            where: {note_id: req.params.id}
+            attributes: ['note_id'],
+            where: {note_id: req.params.id, _system: 0}
         })
-        .then(note => {
-            if (note._system) res.error.redirect(new Error('System generated notes can not be edited') , '/', req, res)
-            else res.render('stores/notes/edit', {note: note});
-        })
+        .then(note => res.render('stores/notes/edit'))
         .catch(err => res.error.redirect(err, req, res));
     });
 

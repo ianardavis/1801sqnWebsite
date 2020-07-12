@@ -2,7 +2,7 @@ module.exports = (inc, m) => {
     inc.users = (options = {}) => {
         let include = [];
         if (options.include) options.include;
-        include.push(m.ranks);
+        include.push(inc.ranks());
         return {
             model:      m.users,
             include:    include,
@@ -130,6 +130,66 @@ module.exports = (inc, m) => {
             model:      m.files,
             attributes: options.attributes || null,
             as:         options.as         || 'file',
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
+    inc.categories = (options = {}) => {
+        return {
+            model:      m.categories,
+            attributes: options.attributes || ['category_id', '_category'],
+            as:         options.as         || 'category',
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
+    inc.groups = (options = {}) => {
+        return {
+            model:      m.groups,
+            attributes: options.attributes || ['group_id', '_group'],
+            as:         options.as         || 'group',
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
+    inc.types = (options = {}) => {
+        return {
+            model:      m.types,
+            attributes: options.attributes || ['type_id', '_type'],
+            as:         options.as         || 'type',
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
+    inc.subtypes = (options = {}) => {
+        return {
+            model:      m.subtypes,
+            attributes: options.attributes || ['subtype_id', '_subtype'],
+            as:         options.as         || 'subtype',
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
+    inc.genders = (options = {}) => {
+        return {
+            model:      m.genders,
+            attributes: options.attributes || ['gender_id', '_gender'],
+            as:         options.as         || 'gender',
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
+    inc.ranks = (options = {}) => {
+        return {
+            model:      m.ranks,
+            attributes: options.attributes || ['rank_id', '_rank'],
+            as:         options.as         || 'rank',
+            include:    options.include    || [],
             required:   options.required   || false,
             where:      options.where      || null
         };

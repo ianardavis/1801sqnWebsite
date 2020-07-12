@@ -1,6 +1,9 @@
 show = (table, id, options = {}) => {
     let heights = {
-            accounts: '300'
+            accounts: '300',
+            files: '708',
+            nsns: '206',
+            serials: '206'
         },
         widths = {},
         queries = '',

@@ -1,27 +1,19 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>Stores</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/items'>Items</a>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		 text: 'Stores'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
 			<% if (permissions.item_add) { %>
-				<li class='nav-item'>
-					<a class='nav-link stores_nav' href='javascript:add("items",{"height":440})'>
-						<i class='fas fa-plus'></i>
-					</a>
-				</li>
+				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("items")', text: '<i class="fas fa-plus"></i>'}) %>
 			<% } %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-	<% include ../../partials/itemOptions %>
-	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable("itemTable", "itemSearch")' placeholder='Search by description...'>
-	<%- include('../../partials/spinner', {id: 'items'}) %>
+	<%- include(`${process.env.PARTIALS}/itemOptions`) %>
+	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
+	<%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
 			<th class='w-100' onclick='sortTable(0, "itemTable")'>Description</th>
@@ -31,17 +23,21 @@
 		</tbody>
 	</table>
 </section>
-<% include ../../partials/foot/full %>
-<script src="/js/get/items.js"></script>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<!-- get, XHRsend and spinner from item options -->
+<script src="/js/get.js"></script>
+<script src="/js/add.js"></script>
+<script src="/js/search/table.js"></script>
+<script src="/js/items/index/showItems.js"></script>
 <script>
 	window.addEventListener( "load", () => {
 		['genders', 'categories', 'groups', 'types', 'subtypes'].forEach(table => {
-			let _select = document.querySelector('#' + table + 'Select');
+			let _select = document.querySelector(`#${table}Select`);
 			_select.addEventListener("change", event => {
-				getItems()
+				get(showItems, {table: 'items', query: item_query()})
 			});
 		});
 	});
 </script>
-<script async>getItems()</script>
-<% include ../../partials/foot/htmlClose %>
+<script async>get(showItems, {table: 'items', query: item_query()})</script>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

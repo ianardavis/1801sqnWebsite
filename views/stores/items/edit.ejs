@@ -1,17 +1,27 @@
-<%- include('../../partials/head/head') %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
 <body>
-<%- include('../../partials/head/flash') %>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
     <form id='itemForm'>
-        <%- include('../../partials/inputs/text', {title: 'Description', name: 'item[_description]', value: item._description, maxLength: 45}) %>
-        <% include ../../partials/itemOptions %>
-        <%- include('../../partials/inputs/text', {title: 'Size Text', name: 'item[_size_text]', value: item._size_text, maxLength: 45}) %>
-        <% include ../../partials/save_cancel %>
+        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_description', title: 'Description', name: 'item[_description]', maxLength: 45}) %>
+        <%- include(`${process.env.PARTIALS}/itemOptions`, {inhibit: true}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`, {id:'_size_text',    title: 'Size Text',   name: 'item[_size_text]',   maxLength: 45}) %>
+        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <a class="float-right" id='reload'>
+            <i class='fas fa-redo'></i>
+        </a>
     </form>
-<% include ../../partials/foot/noNav %>
+<% include(`${process.env.PARTIALS}/foot/noNav`) %>
+<script src="/js/get.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/items/edit/showItem.js"></script>
+<script async>get(showItem, {table: 'items', query: [`item_id=${path[3]}`]})</script>
 <script>
+    let reload = document.querySelector('#reload');
+    reload.addEventListener('click', () => get(showItem, {table: 'items', query: [`item_id=${path[3]}`]}))
     window.addEventListener( "load", function () {
         addFormListener('itemForm', 'PUT', '/stores/items/<%= item.item_id %>');
     });
 </Script>
-<% include ../../partials/foot/htmlClose %>
+<% include(`${process.env.PARTIALS}/foot/htmlClose`) %>

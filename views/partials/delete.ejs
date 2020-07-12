@@ -5,12 +5,17 @@
     </button>
 </form>
 <script>
-    window.addEventListener( "load", () => {
+    window.onload = () => {
         addFormListener(
             'deleteForm',
             'DELETE',
             '/stores/' + path[2] + '/' + path[3],
-            {redirect: '/stores/' + path[2]}
+            {<% if (locals.close) { %>
+                onComplete: window.opener['<%- onComplete %>'],
+                _close: true
+            <% } else { %>
+                redirect: <% if (locals.redirect) { %>'<%= redirect %>'<% } else { %>'/stores/' + path[2]<% } %>
+            <% } %>}
         );
-    });
+    };
 </script>

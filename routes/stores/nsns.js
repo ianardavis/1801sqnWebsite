@@ -4,34 +4,13 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         db.findOne({
             table: m.sizes,
             where: {size_id: req.query.size_id},
-            include: [m.items]
+            include: [inc.items()]
         })
-        .then(itemsize => res.render('stores/nsns/new', {itemsize: itemsize}))
+        .then(size => res.render('stores/nsns/new', {size: size}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/nsns/:id',      isLoggedIn, allowed('nsn_edit'),               (req, res) => {
-        db.findOne({
-            table: m.nsns,
-            where: {nsn_id: req.params.id},
-            include: [inc.sizes({attributes: ['nsn_id']})]
-        })
-        .then(nsn => {
-            res.render('stores/nsns/show', {
-                nsn:   nsn,
-                show_tab: req.query.tab || 'details'
-            });
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/stores/nsns/:id/edit', isLoggedIn, allowed('nsn_edit'),               (req, res) => {
-        db.findOne({
-            table: m.nsns,
-            where: {nsn_id: req.params.id},
-            include: [inc.sizes({attributes: ['nsn_id']})]
-        })
-        .then(nsn => res.render('stores/nsns/edit', {nsn: nsn}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/stores/nsns/:id',      isLoggedIn, allowed('nsn_edit'),               (req, res) => res.render('stores/nsns/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/nsns/:id/edit', isLoggedIn, allowed('nsn_edit'),               (req, res) => res.render('stores/nsns/edit'));
     
     app.post('/stores/nsns',         isLoggedIn, allowed('nsn_add',  {send: true}), (req, res) => {
         m.nsns.create(req.body.nsn)

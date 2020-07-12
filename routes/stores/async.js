@@ -36,6 +36,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     ]
                 })
             ],
+            items: [inc.categories(), inc.groups(), inc.types(), inc.subtypes(), inc.genders()],
             notes: [inc.users()],
             orders: [
                 inc.users({as: '_for'}),
@@ -59,6 +60,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 inc.receipts(),
                 inc.users(),
                 inc.stock({as: 'stock'})
+            ],
+            request_lines: [
+                inc.sizes(),
+                inc.requests(),
+                inc.users()
             ],
             stock: [inc.locations({as: 'location'})],
             suppliers: [m.accounts, m.files],
@@ -108,12 +114,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     app.get('/stores/get/sizes',           isLoggedIn, allowed('', {send: true}),              (req, res) => {
         m.sizes.findAll({
             where: req.query,
-            include: [
-                inc.items(),
-                inc.stock(),
-                inc.serials(),
-                inc.nsns()
-        ]})
+            attributes: {exclude: ['createdAt', 'updatedAt']},
+            include: [inc.items(), inc.suppliers({as: 'supplier'})]
+        })
         .then(sizes => {
             sizes.forEach(size => size.dataValues.locationStock = utils.summer(size.stocks));
             res.send({result: true, sizes: sizes})

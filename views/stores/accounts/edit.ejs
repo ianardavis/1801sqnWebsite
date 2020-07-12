@@ -1,24 +1,25 @@
-<% include ../../partials/head/head %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
 <body>
-<% include ../../partials/head/flash %>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
     <form id='accountForm'>
-        <%- include('../../partials/spinner', {id: 'accounts'}) %>
-        <%- include('../../partials/inputs/text',   {id: '_name',   title: 'Name',   name: 'account[_name]',   maxLength: 45,  required: true}) %>
-        <%- include('../../partials/inputs/text',   {id: '_number', title: 'Number', name: 'account[_number]', maxLength: 255, required: true}) %>
-        <%- include('../../partials/spinner', {id: 'users'}) %>
-        <%- include('../../partials/inputs/select', {id: '_users',  title: 'Owner',  name: 'account[user_id]', id: 'usersSelect', required: true}) %>
-        <% include ../../partials/save_cancel %>
+        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'accounts'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,   {id: '_name',   title: 'Name',   name: 'account[_name]',   maxLength: 45,  required: true}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,   {id: '_number', title: 'Number', name: 'account[_number]', maxLength: 255, required: true}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'users'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/select`, {id: '_users',  title: 'Owner',  name: 'account[user_id]', id: 'usersSelect', required: true}) %>
+        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
     </form>
-<% include ../../partials/foot/noNav %>
-<script src="/js/get/users.js"></script>
+<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<script src='/js/spinner.js'></script>
 <script src="/js/get.js"></script>
 <script src="/js/data/XHRsend.js"></script>
 <script src="/js/data/send.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src="/js/specific/accounts_edit.js"></script>
-<script src='/js/spinner.js'></script>
+<script src='/js/accounts/edit/showAccount.js'></script>
+<script src='/js/accounts/showUsers.js'></script>
 <script async>get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]})</script>
+<script async>get(showUsers, {table: 'users', query:['status_id=2']})</script>
 <script>
     window.addEventListener( "load", function () {
         addFormListener(
@@ -33,4 +34,4 @@
         );
     });
 </script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

@@ -35,7 +35,7 @@ function DeleteButton (options = {}) {
     this.form.appendChild(btn);
     this.form.addEventListener("submit", event => {
         event.preventDefault();
-        if (confirm('Delete ' + options.descriptor || 'line' + '?')){
+        if (confirm(`Delete ${options.descriptor || `line`}?`)){
             sendData(this.form, 'DELETE', options.path, options.options || {reload: true});
         };
     });
@@ -78,12 +78,13 @@ function Card (options = {}) {
         _body     = document.createElement('div'),
         _body_p   = document.createElement('p');
     if (options.search) this.div.dataset.search = options.search;
-    this.div.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3', 'search');
+    this.div.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3', 'card_div');
     if (options.id) this.div.id = options.id;
     _a.href = options.href;
     _a.classList.add('card', 'm-3', 'text-left');
     _header.classList.add('card-header');
     _title.classList.add('card-title');
+    if (options.search_title) _title.classList.add('search');
     _title.innerText = options.title;
     _header.appendChild(_title);
     if (options.subtitle) {
@@ -94,6 +95,7 @@ function Card (options = {}) {
     };
     _body.classList.add('card-body');
     _body_p.classList.add('text-left', 'f-10');
+    if (options.search_body) _body_p.classList.add('search');
     if (options.body_ellipsis) _body_p.classList.add('ellipsis1');
     _body_p.innerHTML = options.body;
     _body.appendChild(_body_p);
@@ -110,9 +112,9 @@ add_cell = (row, options = {}) => {
     let cell = row.insertCell();
     if (options.sort) cell.dataset.sort = options.sort;
     if (options.text) {
-        cell.innerText    = options.text || '';
+        cell.innerText = options.text || '';
     } else if (options.html) {
-        cell.innerHTML    = options.html || '';
+        cell.innerHTML = options.html || '';
     };
     if (options.classes)  options.classes.forEach(_class => cell.classList.add(_class));
     if (options.append)   cell.appendChild(options.append);

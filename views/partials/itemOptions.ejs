@@ -1,32 +1,35 @@
-<%- include('../../partials/spinner', {id: 'categories'}) %>
-<%- include('../../partials/spinner', {id: 'groups'}) %>
-<%- include('../../partials/spinner', {id: 'types'}) %>
-<%- include('../../partials/spinner', {id: 'subtypes'}) %>
-<%- include('../../partials/spinner', {id: 'genders'}) %>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/spinner.js"></script>
+<script src="/js/get.js"></script>
+<script src="/js/options/showOptions.js"></script>
 <div class="input-group mb-1">
     <div class="input-group-prepend w-30">
         <label class="input-group-text w-100" for="categoriesSelect">Category</label>
+        <%- include(`spinner`, {id: 'categories'}) %>
     </div>
-    <select class="custom-select" id='categoriesSelect' onchange=getGroups()>
+    <select class="custom-select" id='categoriesSelect' onchange='get(showOptions,{table:"groups",query:group_query(),singular:"group"})'>
     </select>
 </div>
 <div class="input-group mb-1">
     <div class="input-group-prepend w-30">
         <label class="input-group-text w-100" for="groupsSelect">Group</label>
+        <%- include(`spinner`, {id: 'groups'}) %>
     </div>
-    <select class="custom-select" id='groupsSelect' onchange=getTypes()>
+    <select class="custom-select" id='groupsSelect' onchange='get(showOptions,{table:"types",query:type_query(),singular:"type"})'>
     </select>
 </div>
 <div class="input-group mb-1">
     <div class="input-group-prepend w-30">
         <label class="input-group-text w-100" for="typesSelect">Type</label>
+        <%- include(`spinner`, {id: 'types'}) %>
     </div>
-    <select class="custom-select" id='typesSelect' onchange=getSubTypes()>
+    <select class="custom-select" id='typesSelect' onchange='get(showOptions,{table:"subtypes",query:subtype_query(),singular:"subtype"})'>
     </select>
 </div>
 <div class="input-group mb-1">
     <div class="input-group-prepend w-30">
         <label class="input-group-text w-100" for="subtypesSelect">Sub Type</label>
+        <%- include(`spinner`, {id: 'subtypes'}) %>
     </div>
     <select class="custom-select" id='subtypesSelect'>
     </select>
@@ -34,14 +37,12 @@
 <div class="input-group mb-1">
     <div class="input-group-prepend w-30">
         <label class="input-group-text w-100" for="gendersSelect">Gender</label>
+        <%- include(`spinner`, {id: 'genders'}) %>
     </div>
     <select class="custom-select" id='gendersSelect'>
     </select>
 </div>
-<script src="/js/get/genders.js"></script>
-<script async>getGenders()</script>
-<script src="/js/get/categories.js"></script>
-<script async>getCategories()</script>
-<script src="/js/get/groups.js"></script>
-<script src="/js/get/types.js"></script>
-<script src="/js/get/subtypes.js"></script>
+<% if (!locals.inhibit === true) { %>
+    <script async>get(showOptions, {table: 'genders',    query: [], singular:"gender"})</script>
+    <script async>get(showOptions, {table: 'categories', query: [], singular:"category"})</script>
+<% } %>

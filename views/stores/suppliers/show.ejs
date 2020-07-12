@@ -1,88 +1,80 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class="mb-2">
     <nav class="navbar navbar-expand navbar-light bg-nav">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/suppliers">Suppliers</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" id='supplier_breadcrumb'></a>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',           text: 'Stores'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/suppliers', text: 'Suppliers'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`) %>
         </ul>
     </nav>
 </section>
 <section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Menu
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <% if (permissions.supplier_edit) { %>
-                        <a class="dropdown-item" id='edit_link'>
-                            Edit
-                        </a>
-                        <form id='defaultForm'>
-                            <input type="hidden" name='setting[_value]' id='default_supplier_id'>
-                            <button id='default_button' class="dropdown-item dropdown_button confirm">
-                                Make Default
-                            </button>
-                        </form>
-                    <% } %>
-                    <% include ../../partials/notes/menu_add %>
-                    <% if (permissions.demand_add) { %>
-                        <form id='newDemandForm'>
-                            <input class='supplier_id' type="hidden" name='supplier_id'>
-                            <button class="dropdown-item dropdown_button confirm">
-                                New Demand
-                            </button>
-                        </form>
-                    <% } %>
-                    <% if (permissions.receipt_add) { %>
-                        <form id='newReceiptForm'>
-                            <input class='supplier_id' type="hidden" name='supplier_id'>
-                            <button class="dropdown-item dropdown_button confirm">
-                                New Receipt
-                            </button>
-                        </form>
-                    <% } %>
-                    <% if (permissions.supplier_delete) { %>
-                        <% include ../../partials/delete %>
-                    <% } %>
-                </div>
-            </li>
-        <%- include('../../partials/tab_head', {id: 'details',  title: 'Details'}) %>
-        <%- include('../../partials/tab_head', {id: 'items',    title: 'Items',    count_id: 'size_count',    permission: 'access_sizes'}) %>
-        <%- include('../../partials/tab_head', {id: 'demands',  title: 'Demands',  count_id: 'demand_count',  permission: 'access_demands'}) %>
-        <%- include('../../partials/tab_head', {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', permission: 'access_receipts'}) %>
-        <%- include('../../partials/tab_head', {id: 'notes',    title: 'Notes',    count_id: 'note_count',    permission: 'access_notes'}) %>
-        <% include ../../partials/reload %>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <% if (permissions.supplier_edit) { %>
+                    <%- include(`${process.env.PARTIALS}/edit`) %>
+                    <form id='defaultForm'>
+                        <input class='supplier_id' type="hidden" name='setting[_value]'>
+                        <button id='default_button' class="dropdown-item dropdown_button confirm">
+                            Make Default
+                        </button>
+                    </form>
+                <% } %>
+                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <% if (permissions.demand_add) { %>
+                    <form id='newDemandForm'>
+                        <input class='supplier_id' type="hidden" name='supplier_id'>
+                        <button class="dropdown-item dropdown_button confirm">
+                            New Demand
+                        </button>
+                    </form>
+                <% } %>
+                <% if (permissions.receipt_add) { %>
+                    <form id='newReceiptForm'>
+                        <input class='supplier_id' type="hidden" name='supplier_id'>
+                        <button class="dropdown-item dropdown_button confirm">
+                            New Receipt
+                        </button>
+                    </form>
+                <% } %>
+                <% if (permissions.supplier_delete) { %>
+                    <%- include(`${process.env.PARTIALS}/delete`) %>
+                <% } %>
+            </div>
+        </li>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',  title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'items',    title: 'Items',    count_id: 'size_count',    permission: 'access_sizes'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'demands',  title: 'Demands',  count_id: 'demand_count',  permission: 'access_demands'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', permission: 'access_receipts'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',    title: 'Notes',    count_id: 'note_count',    permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include('../../partials/spinner', {id: 'suppliers'}) %>
-            <%- include('../../partials/inputs/display', {id: '_name',      title: 'Name'}) %>
-            <%- include('../../partials/inputs/display', {id: '_address1',  title: 'Address'}) %>
-            <%- include('../../partials/inputs/display', {id: '_address2',  title: ''}) %>
-            <%- include('../../partials/inputs/display', {id: '_address3',  title: ''}) %>
-            <%- include('../../partials/inputs/display', {id: '_address4',  title: ''}) %>
-            <%- include('../../partials/inputs/display', {id: '_address5',  title: ''}) %>
-            <%- include('../../partials/inputs/display', {id: '_telephone', title: 'Telephone'}) %>
-            <%- include('../../partials/inputs/display', {id: '_email',     title: 'Email'}) %>
-            <%- include('../../partials/inputs/display', {id: '_account',   title: 'Account',     append: {a: {id: 'account_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-            <%- include('../../partials/inputs/display', {id: '_stores',    title: 'RAF Stores'}) %>
-            <%- include('../../partials/inputs/display', {id: '_default',   title: 'Default Supplier'}) %>
-            <%- include('../../partials/inputs/display', {id: '_file',      title: 'Demand File', append: {a: {id: 'file_link',    type: 'primary', text: '<i class="fas fa-pencil-alt"></i>'}}}) %>
+            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'suppliers'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_name',      title: 'Name'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_address1',  title: 'Address'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_address2',  title: ''}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_address3',  title: ''}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_address4',  title: ''}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_address5',  title: ''}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_telephone', title: 'Telephone'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_email',     title: 'Email'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_account',   title: 'Account',     append: {a: {id: 'account_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_stores',    title: 'RAF Stores'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_default',   title: 'Default Supplier'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_file',      title: 'Demand File', append: {a: {id: 'file_link',    type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
             <% if (permissions.file_add) { %>
                 <form id="fileForm" encType="multipart/form-data">
                     <input class='supplier_id' type="hidden" name='supplier_id'>
                     <div class="input-group">
-                        <div class="custom-file w-25">
-                            <input type="file" class="custom-file-input" name="demandfile" id="file_upload">
+                        <div class="custom-file">
                             <label class="custom-file-label" for="file_upload">Choose file</label>
+                            <input type="file" class="custom-file-input" name="demandfile" id="file_upload">
                         </div>
                         <div class="input-group-append">
                             <button class="btn btn-success confirm">
@@ -95,7 +87,7 @@
         </div>
         <% if (permissions.access_sizes) { %>
             <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-                <%- include('../../partials/spinner', {id: 'sizes'}) %>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'sizes'}) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-45" onclick="sortTable(0, 'sizeTable')">Item</th>
@@ -110,9 +102,9 @@
         <% } %>
         <% if (permissions.access_demands) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
-                <%- include('../../partials/spinner', {id: 'demands'}) %>
-                <%- include('../../partials/inputs/select_include', {id: 'demandsCompleteSelect', title: 'Completed Demands', selected: 1}) %>
-                <%- include('../../partials/inputs/select_include', {id: 'demandsClosedSelect',   title: 'Closed Demands',    selected: 1}) %>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'demands'}) %>
+                <%- include(`${process.env.PARTIALS}/inputs/select_include`, {id: 'demandsCompleteSelect', title: 'Completed Demands', selected: 1}) %>
+                <%- include(`${process.env.PARTIALS}/inputs/select_include`, {id: 'demandsClosedSelect',   title: 'Closed Demands',    selected: 1}) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-30" onclick="sortTable(0, 'demandTable')">Date</th>
@@ -129,8 +121,8 @@
         <% } %>
         <% if (permissions.access_receipts) { %>
             <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
-                <%- include('../../partials/spinner', {id: 'receipts'}) %>
-                <%- include('../../partials/inputs/select_include', {id: 'receiptsCompleteSelect', title: 'Completed Receipts', selected: 1}) %>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipts'}) %>
+                <%- include(`${process.env.PARTIALS}/inputs/select_include`, {id: 'receiptsCompleteSelect', title: 'Completed Receipts', selected: 1}) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-40" onclick="sortTable(0, 'receiptTable')">Date</th>
@@ -144,54 +136,61 @@
                 </table>
             </div>
         <% } %>
-        <% include ../../partials/notes/tab_body %>
+        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<script src='/js/spinner.js'></script>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<!-- Get/spinner/XHRsend/send from notes include -->
 <script src='/js/add.js'></script>
 <script src='/js/show.js'></script>
 <script src='/js/edit.js'></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/data/addFormListener.js'></script>
-<script src='/js/data/XHRsend.js'></script>
-<script src='/js/data/send.js'></script>
-<script src="/js/specific/suppliers_show.js"></script>
 <script src='/js/get/settings.js'></script>
-<script src="/js/get.js"></script>
+<script src='/js/suppliers/show/showSupplier.js'></script>
+<script src='/js/suppliers/show/setDefault.js'></script>
 <script async>get(showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]})</script>
 <script>
     document.querySelector('#reload').addEventListener('click', () => {
-        get(showSupplier, {query: ['supplier_id=' + path[3]]})
-    })
-    <% if (permissions.access_sizes) { %>
-        document.querySelector('#reload').addEventListener('click', () => {
-            getSizes(   ['supplier_id=' + path[3]], true)
-        })
-    <% } %>
-    <% if (permissions.access_demands) { %>
-        document.querySelector('#reload').addEventListener('click', () => {
-            getDemands( ['supplier_id=' + path[3]])
-        })
-    <% } %>
-    <% if (permissions.access_receipts) { %>
-        document.querySelector('#reload').addEventListener('click', () => {
-            getReceipts(['supplier_id=' + path[3]])
-        })
-    <% } %>
+        get(showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]})
+    });
+    document.querySelector('#reload').addEventListener('click', () => {
+        getNotes()
+    });
 </script>
 <% if (permissions.access_sizes) { %>
-    <script src="/js/get/sizes.js"></script>
-    <script async>getSizes(   ['supplier_id=' + path[3]], true)</script>
+    <script src="/js/suppliers/show/showSizes.js"></script>
+    <script async>get(showSizes, {table: 'sizes', query: ['supplier_id=' + path[3]]})</script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showSizes, {table: 'sizes', query: ['supplier_id=' + path[3]]})
+        })
+    </script>
 <% } %>
 <% if (permissions.access_demands) { %>
-    <script src="/js/get/demands.js"></script>
-    <script async>getDemands( ['supplier_id=' + path[3]])</script>
+    <script src="/js/suppliers/show/showDemands.js"></script>
+    <script async>get(showDemands, {table: 'demands', query: demand_query()})</script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showDemands, {table: 'demands', query: ['supplier_id=' + path[3]]})
+        });
+        let demandsComplete = document.querySelector('#demandsCompleteSelect'),
+            demandsClosed   = document.querySelector('#demandsClosedSelect');
+        demandsComplete.addEventListener('change', () => get(showDemands, {table: 'demands', query: demand_query()}));
+        demandsClosed.addEventListener('change', () => get(showDemands, {table: 'demands', query: demand_query()}));
+    </script>
 <% } %>
 <% if (permissions.access_receipts) { %>
-    <script src="/js/get/receipts.js"></script>
-    <script async>getReceipts(['supplier_id=' + path[3]])</script>
+    <script src="/js/suppliers/show/showReceipts.js"></script>
+    <script async>get(showReceipts, {table: 'receipts', query: receipt_query()})</script>
+    <script>
+        document.querySelector('#reload').addEventListener('click', () => {
+            get(showReceipts, {table: 'receipts', query: receipt_query()})
+        });
+        let receiptselect = document.querySelector('#receiptsCompleteSelect');
+        if (receiptselect) receiptselect.addEventListener('change', () => get(showReceipts, {table: 'receipts', query: receipt_query()}));
+    </script>
 <% } %>
 <script>
     window.addEventListener("load", () => {
@@ -210,8 +209,8 @@
                 'POST',
                 '/stores/demands',
                 {
-                    onComplete: getDemands,
-                    args: [['supplier_id=' + path[3]]]
+                    onComplete: get,
+                    args: [showDemands, {table: 'demands', query: demand_query()}]
                 }
             );
         <% } %>
@@ -221,8 +220,8 @@
                 'POST',
                 '/stores/receipts',
                 {
-                    onComplete: getReceipts,
-                    args: [['supplier_id=' + path[3]]]
+                    onComplete: get,
+                    args: [showReceipts, {table: 'receipts', query: receipt_query()}]
                 }
             );
         <% } %>
@@ -231,9 +230,12 @@
                 'fileForm',
                 'POST',
                 '/stores/files',
-                {reload: true}
+                {
+                    onComplete: get,
+                    args: [showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]}]
+                }
             );
         <% } %>
     });
 </script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

@@ -1,0 +1,18 @@
+<div class="input-group mb-1">
+    <div class="input-group-prepend w-<%= locals.size || 30 %>">
+        <label
+            class="input-group-text w-100"
+            <% if (locals.id) { %>for="<%= id %>"<% } %>
+        >
+            <%= title %>
+        </label>
+    </div>
+    <textarea
+        class='form-control'
+        <% if (locals.id) { %>        id='<%= id %>'<% } %>
+        <% if (locals.name) { %>      name='<%= name %>'<% } %>
+        <% if (locals.rows) { %>      rows='<%= rows %>'<% } %>
+        <% if (locals.maxLength) { %> maxlength='<%= maxLength %>'<% } %>
+        <% if (locals.readonly){ %>readonly<% } %>
+    ><% if (locals.value) { %><%=  value %><% } %></textarea>
+</div>

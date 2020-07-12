@@ -1,0 +1,5 @@
+<li class='nav-item'>
+    <a class='nav-link stores_nav'<% if (locals.href) { %> href='<%= href %>'<% } else { %> id='<%= locals.id || 'breadcrumb' %>'<% }%>>
+        <% if (locals.text) { %><%- text %><% } %>
+    </a>
+</li>

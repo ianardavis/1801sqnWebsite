@@ -2,7 +2,10 @@ edit = (table, id, options = {}) => {
     let heights = {
             files: '708',
             suppliers: '555',
-            accounts: '236'
+            accounts: '236',
+            items: '405',
+            sizes: '629',
+            nsns: '200'
         },
         widths = {},
         queries = '',

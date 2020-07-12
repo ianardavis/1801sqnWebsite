@@ -1,29 +1,24 @@
-<%- include('../../partials/head/head') %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
 <body>
-<%- include('../../partials/head/flash') %>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
     <form id='nsnForm'>
-        <input type='hidden' name='nsn[size_id]' value='<%= itemsize.size_id %>'>
-        <%- include('../../partials/inputs/text', {title: 'NSN', name: 'nsn[_nsn]', value: nsn._nsn, placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
-		<div class="input-group mb-1">
-			<div class="input-group-prepend w-30">
-				<span class="input-group-text w-100">Default?</span>
-			</div>
-			<select class='form-control' name="default">
-				<option value="0" selected>No</option>
-				<option value="1">Yes</option>
-			</select>
-		</div>
-        <% include ../../partials/save_cancel %>
+        <input type='hidden' name='nsn[size_id]' value='<%= size.size_id %>'>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: 'NSN',      name: 'nsn[_nsn]', placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/select_yes_no`, {title: 'Default?', name: 'default',   selected: 0}) %>
+        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
     </form>
-<% include ../../partials/foot/noNav %>
+<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
 <script>
     window.addEventListener( "load", () => {
         addFormListener(
             'nsnForm',
             'POST',
-            '/stores/nsns'
+            '/stores/nsns',
+            {onComplete: window.opener.getNSNs}
         );
     });
 </script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
