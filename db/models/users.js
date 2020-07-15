@@ -49,7 +49,7 @@ module.exports = function(sequelize, DataTypes) {
       unique: true
     },
     '_password': {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(512),
       allowNull: false,
       comment: "null"
     },

@@ -1,5 +1,5 @@
-const op     = require('sequelize').Op,
-      bCrypt = require('bcrypt');
+const op = require('sequelize').Op,
+      { scryptSync, randomBytes } = require("crypto");;
 _options = () => {
     return [
         {table: 'ranks'},
@@ -25,7 +25,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             db.findOne({
                 table: m.users,
                 where: {user_id: req.params.id},
-                include: [m.ranks, m.statuses]
+                include: [inc.ranks(), m.statuses]
             })
             .then(user => {
                 res.render('stores/users/show', {
@@ -44,7 +44,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             db.findOne({
                 table: m.users,
                 where: {user_id: req.params.id},
-                include: [m.ranks]
+                include: [inc.ranks()]
             })
             .then(user => res.render('stores/users/password', {user: user}))
             .catch(err => res.error.redirect(err, req, res));
@@ -56,7 +56,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             db.findOne({
                 table: m.users,
                 where: {user_id: req.params.id},
-                include: [m.ranks]
+                include: [inc.ranks()]
             })
             .then(user => {
                 res.render('stores/users/edit', {
@@ -69,9 +69,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     
     app.post('/stores/users',             isLoggedIn, allowed('user_add',      {send: true}),              (req, res) => {
-        let salt = bCrypt.genSaltSync(10);
+        let salt = randomBytes(16).toString("hex");
         req.body.user._salt = salt;
-        req.body.user._password = bCrypt.hashSync(req.body._password, salt);
+        req.body.user._password = scryptSync(req.body._password, salt, 32).toString("hex");
         req.body.user._reset = 0
         m.users.create(req.body.user)
         .then(user => res.send({result: true, message: 'User added'}))
@@ -79,8 +79,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     app.put('/stores/password/:id',       isLoggedIn, allowed('user_password', {send: true, allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            req.body.user._salt = bCrypt.genSaltSync(10)
-            req.body.user._password = bCrypt.hashSync(req.body._password, req.body.user._salt);
+            req.body.user._salt = randomBytes(16).toString("hex");
+            req.body.user._password = scryptSync(req.body._password, salt, 32).toString("hex");
             db.update({
                 table: m.users,
                 where: {user_id: req.params.id},

@@ -1,6 +1,6 @@
 module.exports = (passport, m) => {
-    var bCrypt = require('bcrypt'),
-        local  = require('passport-local').Strategy;
+    var local  = require('passport-local').Strategy,
+        { scryptSync, randomBytes } = require("crypto");
     passport.serializeUser((user, done) => done(null, user._login_id));
 
     passport.deserializeUser((_login_id, done) => {
@@ -31,7 +31,6 @@ module.exports = (passport, m) => {
             passwordField: '_password',
             passReqToCallback: true
         },(req, _login_id, _password, done) => {
-            var isValidPassword = (userpass, password) => {return bCrypt.compareSync(password, userpass)};
             m.users.findOne({
                 where: {_login_id: _login_id},
                 include: [{
@@ -39,7 +38,7 @@ module.exports = (passport, m) => {
                     where: {_permission: 'account_enabled'},
                     required: false
                 }],
-                attributes: ['_login_id', 'user_id', '_reset', '_password']
+                attributes: ['_login_id', 'user_id', '_reset', '_password', '_salt']
             })
             .then(user => {
                 if (!user) {
@@ -49,7 +48,7 @@ module.exports = (passport, m) => {
                         false, 
                         {message: 'Invalid username or password!'}
                     );
-                } else if (!isValidPassword(user._password, _password)) {
+                } else if (scryptSync(_password, user._salt, 128).toString('hex') !== user._password) {
                     req.flash('danger', 'Invalid username or password!');
                     return done(
                         null, 
@@ -63,7 +62,11 @@ module.exports = (passport, m) => {
                         false, 
                         {message: 'Your account is disabled!'}
                     );
-                } else return done(null, user.get());
+                } else {
+                    delete user._password;
+                    delete user._salt;
+                    return done(null, user.get())
+                };
             })
             .catch(err => {
                 console.log(err);
