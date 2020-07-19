@@ -27,12 +27,12 @@
                     </a> 
                 <% } %>
                 <% if (permissions.serial_add) { %> 
-                    <a class='dropdown-item' id='add_serial'>
+                    <a class='dropdown-item _serials_element' id='add_serial'>
                         Add Serial
                     </a> 
                 <% } %>
                 <% if (permissions.stock_add) { %>
-                    <a class='dropdown-item' id='add_stock'>
+                    <a class='dropdown-item _stock_element' id='add_stock'>
                         Add Stock Location
                     </a>
                 <% } %>
@@ -47,7 +47,7 @@
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',  title: 'Details'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'nsns',     title: 'NSNs',     count_id: 'nsn_count',     permission: 'access_nsns',     _class: '_nsns_element'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'serials',  title: 'Serials',  count_id: 'serial_count',  permission: 'access_serials',  _class: '_serials_element'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock_count',   permission: 'access_stock'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock_count',   permission: 'access_stock',    _class: '_stock_element'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'requests', title: 'Requests', count_id: 'request_count', permission: 'access_requests', _class: '_issueable_element'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'orders',   title: 'Orders',   count_id: 'order_count',   permission: 'access_orders',   _class: '_orderable_element'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', permission: 'access_receipts', _class: '_orderable_element'}) %>
@@ -62,7 +62,7 @@
             <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_orderable',        title: 'Orderable'}) %>
             <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_serials',          title: 'Has Serials'}) %>
             <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_nsns',             title: 'Has NSNs'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: 'supplier',         title: 'Supplier', append: {a: {id: 'supplier_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: 'supplier',          title: 'Supplier', append: {a: {id: 'supplier_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
             <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_demand_page',      title: 'Demand Page'}) %>
             <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_demand_cell',      title: 'Demand Cell'}) %>
             <%- include(`${process.env.PARTIALS}/inputs/textarea`, {id: '_ordering_details', title: 'Ordering Details', rows: 5, readonly: true}) %>
@@ -82,12 +82,13 @@
             </div>
         <% } %>
         <% if (permissions.access_serials) { %>
-            <div class="tab-pane fade" id="serials" role="tabpanel" aria-labelledby="serials-tab">
+            <div class="tab-pane fade serial_element" id="serials" role="tabpanel" aria-labelledby="serials-tab">
                 <%- include(`${process.env.PARTIALS}/spinner`, {id: 'serials'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-100' onclick='sortTable(0, "serialTable")' >Serial #</th>
-                        <th><i class='fas fa-pencil-alt'></i></th>
+                        <th class='w-50' onclick='sortTable(0, "serialTable")' >Serial #</th>
+                        <th class='w-50' onclick='sortTable(1, "serialTable")'>Location</th>
+                        <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='serialTable'>
                     </tbody>
@@ -178,75 +179,66 @@
 <script src='/js/show.js'></script>
 <script src="/js/sizes/show/showSize.js"></script>
 <script>showTab('<%= tab %>');</script>
-<script async>get(showSize, {table: 'sizes', query: [`size_id=${path[3]}`]})</script>
 <script>
-    document.querySelector('#reload').addEventListener('click', () => {
-        get(showSize, {table: 'sizes', query: [`size_id=${path[3]}`]})
-    });
+    getSize = () => get(showSize, {table: 'sizes', query: [`size_id=${path[3]}`]})
+    document.querySelector('#reload').addEventListener('click', () => getSize());
     document.querySelector('#reload').addEventListener('click', () => getNotes());
 </script>
+<script async>getSize()</script>
 <% if (permissions.access_nsns) {%>
     <script src="/js/sizes/show/showNSNs.js"></script>
     <script>
         getNSNs = () => get(showNSNs, {table: 'nsns', query: [`size_id=${path[3]}`]});
-        document.querySelector('#reload').addEventListener('click', () => {
-            getNSNs();
-        });
+        document.querySelector('#reload').addEventListener('click', () => getNSNs());
     </script>
     <script async>getNSNs()</script>
 <% } %>
 <% if (permissions.access_serials) {%>
     <script src="/js/sizes/show/showSerials.js"></script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showSerials, {table: 'serials', query: [`size_id=${path[3]}`]});
-        });
+        getSerials = () => get(showSerials, {table: 'serials', query: [`size_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getSerials());
     </script>
-    <script async>get(showSerials, {table: 'serials', query: [`size_id=${path[3]}`]})</script>
+    <script async>getSerials()</script>
 <% } %>
 <% if (permissions.access_stock) {%>
     <script src="/js/sizes/show/showStock.js"></script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showStock, {table: 'stock', query: [`size_id=${path[3]}`]});
-        });
+        getStock = () => get(showStock, {table: 'stock', query: [`size_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getStock());
     </script>
-    <script async>get(showStock, {table: 'stock', query: [`size_id=${path[3]}`]})</script>
+    <script async>getStock()</script>
 <% } %>
 <% if (permissions.access_requests) {%>
     <script src="/js/sizes/show/showRequests.js"></script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showRequests, {table: 'request_lines', query: [`size_id=${path[3]}`]});
-        });
+        getRequests = () => get(showRequests, {table: 'request_lines', query: [`size_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getRequests());
     </script>
-    <script async>get(showRequests, {table: 'request_lines', query: [`size_id=${path[3]}`]})</script>
+    <script async>getRequests()</script>
 <% } %>
 <% if (permissions.access_orders) {%>
     <script src="/js/sizes/show/showOrders.js"></script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showOrders, {table: 'order_lines', query: [`size_id=${path[3]}`]});
-        });
+        getOrders = () => get(showOrders, {table: 'order_lines', query: [`size_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getOrders());
     </script>
-    <script async>get(showOrders, {table: 'order_lines', query: [`size_id=${path[3]}`]})</script>
+    <script async>getOrders()</script>
 <% } %>
 <% if (permissions.access_receipts) {%>
     <script src="/js/sizes/show/showReceipts.js"></script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showReceipts, {table: 'receipt_lines', query: [`size_id=${path[3]}`]});
-        });
+        getReceipts = () => get(showReceipts, {table: 'receipt_lines', query: [`size_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getReceipts());
     </script>
-    <script async>get(showReceipts, {table: 'receipt_lines', query: [`size_id=${path[3]}`]})</script>
+    <script async>getReceipts()</script>
 <% } %>
 <% if (permissions.access_issues) {%>
     <script src="/js/sizes/show/showIssues.js"></script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showIssues, {table: 'issue_lines', query: [`size_id=${path[3]}`]});
-        });
+        getIssues = () => get(showIssues, {table: 'issue_lines', query: [`size_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getIssues());
     </script>
-    <script async>get(showIssues, {table: 'issue_lines', query: [`size_id=${path[3]}`]})</script>
+    <script async>getIssues()</script>
 <% } %>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

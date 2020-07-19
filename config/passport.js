@@ -41,6 +41,7 @@ module.exports = (passport, m) => {
                 attributes: ['_login_id', 'user_id', '_reset', '_password', '_salt']
             })
             .then(user => {
+                // console.log(scryptSync(_password, user._salt, 128).toString('hex'));
                 if (!user) {
                     req.flash('danger', 'Invalid username or password!');
                     return done(

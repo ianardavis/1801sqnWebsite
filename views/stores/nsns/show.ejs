@@ -2,7 +2,6 @@
 <body>
 <%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
-<section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -26,12 +25,10 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${process.env.PARTIALS}/spinner`, {id: 'nsns'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_nsn',     title: 'NSN'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`,  {id: '_default', title: 'Default?'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_nsn', title: 'NSN'}) %>
 		</div>
         <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
-</section>
 <%- include(`${process.env.PARTIALS}/foot/noNav`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
@@ -40,11 +37,10 @@
 <script src='/js/edit.js'></script>
 <script src='/js/add.js'></script>
 <script>showTab('<%= tab %>');</script>
-<script async>get(showNSN, {table: 'nsns', query: [`nsn_id=${path[3]}`]})</script>
 <script>
-    document.querySelector('#reload').addEventListener('click', () => {
-        get(showNSN, {table: 'nsns', query: [`nsn_id=${path[3]}`]})
-    });
+    getNSN = () => get(showNSN, {table: 'nsns', query: [`nsn_id=${path[3]}`]});
+    document.querySelector('#reload').addEventListener('click', () => getNSN());
     document.querySelector('#reload').addEventListener('click', () => getNotes());
 </script>
+<script async>getNSN()</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

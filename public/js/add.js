@@ -5,7 +5,7 @@ add = (table, options = {}) => {
             items: '440',
             sizes: '629',
             nsns: '210',
-            serials: '151'
+            serials: '192'
         },
         widths = {},
         queries = '',

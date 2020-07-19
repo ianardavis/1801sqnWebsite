@@ -7,9 +7,10 @@ showSerials = (serials, options) => {
         serials.forEach(serial => {
             let row = table_body.insertRow(-1);
             add_cell(row, {text: serial._serial});
+            add_cell(row, {text: serial.location._location});
             add_cell(row, {append: new Link({
                 href: `javascript:show("serials",${serial.serial_id})`,
-                mall: true}).link});
+                small: true}).link});
         });
         hide_spinner('serials');
     } catch (error) {

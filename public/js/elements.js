@@ -104,20 +104,16 @@ function Card (options = {}) {
     this.div.appendChild(_a);
 };
 boolean_to_yesno = boolean => {
-    if (boolean === 1      || boolean === true)  return 'Yes'
-    else if (boolean === 0 || boolean === false) return 'No'
+    if (boolean === 1 || boolean === true) return 'Yes'
     else return 'No'
 };
 add_cell = (row, options = {}) => {
     let cell = row.insertCell();
-    if (options.sort) cell.dataset.sort = options.sort;
-    if (options.text) {
-        cell.innerText = options.text || '';
-    } else if (options.html) {
-        cell.innerHTML = options.html || '';
-    };
-    if (options.classes)  options.classes.forEach(_class => cell.classList.add(_class));
-    if (options.append)   cell.appendChild(options.append);
-    if (options.id)       cell.id = option.id;
-    if (options.ellipsis) cell.classList.add('ellipsis1');
+    if (options.sort)      cell.dataset.sort = options.sort;
+    if (options.text)      cell.innerText = options.text || '';
+    else if (options.html) cell.innerHTML = options.html || '';
+    if (options.classes)   options.classes.forEach(_class => cell.classList.add(_class));
+    if (options.append)    cell.appendChild(options.append);
+    if (options.id)        cell.id = options.id;
+    if (options.ellipsis)  cell.classList.add('ellipsis1');
 };

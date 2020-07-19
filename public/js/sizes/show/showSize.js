@@ -4,12 +4,16 @@ showSize = (sizes, options) => {
             try {
                 let element = document.querySelector('#' + id);
                 if (['_issueable', '_orderable', '_nsns', '_serials'].includes(id)) {
+                    if (id === '_serials') {
+                        let stock_elements = document.querySelectorAll('._stock_element');
+                        if (value === 1) stock_elements.forEach(e => e.style.display = 'none');
+                        else stock_elements.forEach(e => e.style.display = 'in-line block');
+                    };
+                    let to_hide = document.querySelectorAll(`.${id}_element`);
                     if (value === 1) {
-                        let to_hide = document.querySelectorAll(`.${id}_element`);
                         to_hide.forEach(e => e.style.display = 'block');
                         element.innerText = 'Yes';
                     } else if (value === 0) {
-                        let to_hide = document.querySelectorAll(`.${id}_element`);
                         to_hide.forEach(e => e.style.display = 'none');
                         element.innerText = 'No';
                     };

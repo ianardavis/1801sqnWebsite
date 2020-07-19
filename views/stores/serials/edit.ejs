@@ -1,24 +1,36 @@
-<%- include('../../partials/head/head') %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
 <body>
-<%- include('../../partials/head/flash') %>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
-<section class="container">
 	<form id='serialForm'>
-		<input type="hidden" name="serial[serial_id]" value="<%= serial.serial_id %>">
-		<div class="input-group mb-1">
-			<div class="input-group-prepend w-20">
-				<span class="input-group-text w-100">Serial #</span>
-			</div>
-			<input class="form-control" type="text" name="serial[_serial]" maxlength="20" value="<%= serial._serial %>" required>
-		</div>
-		<input class="btn btn-success w-100 confirm" type="submit" value='Save'>
-		<a class='float-left' href="javascript:close()">Cancel</a>
+		<%- include(`${process.env.PARTIALS}/spinner`, {id: 'serials'}) %>
+		<%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_serial', 	 name: 'serial[_serial]', title: 'Serial #', maxlength: 20, required: true}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'locations'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_location', name: '_location',       title: 'Location', maxlength: 20, required: true, list: true}) %>
+        <%- include('../../partials/save_cancel') %>
 	</form>
-</section>
-<% include ../../partials/foot/noNav %>
+<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<script src="/js/getLocations.js"></script>
+<script src="/js/serials/edit/showSerial.js"></script>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/send.js'></script>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/spinner.js"></script>
+<script src="/js/get.js"></script>
+<script async>get(getLocations, {table: 'locations', query: []})</script>
+<script async>get(showSerial, {table: 'serials', query: [`serial_id=${path[3]}`]})</script>
 <script>
     window.addEventListener( "load", function () {
-		addFormListener('serialForm', 'PUT', '/stores/serials/<%= serial.serial_id %>');
+		addFormListener(
+			'serialForm',
+			'PUT',
+			`/stores/serials/${path[3]}`,
+			{
+				onComplete: window.opener.get,
+				args: [window.opener.showSerial, {table: 'serials', query: [`serial_id=${path[3]}`]}],
+				_close: true
+			}
+		);
     });
 </script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

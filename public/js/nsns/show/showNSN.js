@@ -6,7 +6,7 @@ showNSN = (nsns, options) => {
                 if (element) element.innerText = value;
             } catch (error) {console.log(error)};
         };
-        let _edit  = document.querySelector('#edit_link');
-        if (_edit) _edit.href      = `javascript:edit("nsns",${nsns[0].nsn_id})`;
-    } else alert(`${nsns.length} matching nsns found`);
+        let _edit = document.querySelector('#edit_link');
+        if (_edit) _edit.href = `javascript:edit("nsns",${nsns[0].nsn_id})`;
+    } else alert(`${nsns.length} matching NSNs found`);
 };

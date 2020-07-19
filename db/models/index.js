@@ -126,8 +126,9 @@ db.groups.belongsTo(db.categories, {foreignKey: 'category_id', targetKey: 'categ
 db.types.belongsTo(db.groups,      {foreignKey: 'group_id',    targetKey: 'group_id'});
 db.subtypes.belongsTo(db.types,    {foreignKey: 'type_id',     targetKey: 'type_id'});
 
-db.serials.belongsTo(db.sizes,    {foreignKey: 'size_id', targetKey: 'size_id'});
-db.serials.hasOne(db.issue_lines, {foreignKey: 'line_id', sourceKey: 'issue_line_id', as: 'issue', constraints: false});
+db.serials.belongsTo(db.sizes,    {foreignKey: 'size_id',     targetKey: 'size_id'});
+db.serials.hasOne(db.issue_lines, {foreignKey: 'line_id',     sourceKey: 'issue_line_id', as: 'issue', constraints: false});
+db.serials.hasOne(db.locations,   {foreignKey: 'location_id', sourceKey: 'location_id',   constraints: false});
 
 db.canteen_sessions.hasMany(db.canteen_sales, {foreignKey: 'session_id', targetKey: 'session_id', as: 'sales'});
 db.canteen_sessions.hasOne(db.users,          {foreignKey: 'user_id',    sourceKey: 'opened_by',  as: '_opened_by', constraints: false});

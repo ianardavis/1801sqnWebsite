@@ -5,7 +5,8 @@ edit = (table, id, options = {}) => {
             accounts: '236',
             items: '405',
             sizes: '629',
-            nsns: '200'
+            nsns: '200',
+            serials: '192'
         },
         widths = {},
         queries = '',

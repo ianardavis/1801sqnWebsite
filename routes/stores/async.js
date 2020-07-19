@@ -66,6 +66,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 inc.requests(),
                 inc.users()
             ],
+            serials: [inc.locations({as: 'location'})],
             stock: [inc.locations({as: 'location'})],
             suppliers: [m.accounts, m.files],
             users: [m.ranks]

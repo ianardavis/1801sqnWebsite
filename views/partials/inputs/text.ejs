@@ -13,5 +13,12 @@
         <% if (locals.required) { %>   required<% } %>
         <% if (locals.readonly) { %>   readonly<% } %>
         <% if (locals.inputmode) { %>  inputMode='<%= inputmode %>'<% } %>
+        <% if (locals.list) { %>       
+            list='<%= id %>_list'
+            autocomplete='off'
+        <% } %>
     >
+    <% if (locals.list) { %>
+        <datalist id='<%= id %>_list'></datalist>
+    <% } %>
 </div>
