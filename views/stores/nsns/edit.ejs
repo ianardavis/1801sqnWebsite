@@ -3,18 +3,28 @@
 <%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
 	<form id='nsnForm'>
-        <%- include(`${process.env.PARTIALS}/inputs/text`, {title: 'NSN', name: 'nsn[_nsn]', value: nsn._nsn, placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
-		<%- include(`${process.env.PARTIALS}/inputs/select_yes_no`, {title: 'Default?', name: 'default',   selected: 0}) %>
+		<%- include(`${process.env.PARTIALS}/spinner`, {id: 'nsns'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_nsn', title: 'NSN', name: 'nsn[_nsn]', placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
 		<%- include(`${process.env.PARTIALS}/save_cancel`) %>
 	</form>
-	<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<script src="/js/nsns/edit/showNSN.js"></script>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/send.js'></script>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/spinner.js"></script>
+<script src="/js/get.js"></script>
+<script async>get(showNSN, {table: 'nsns', query: [`nsn_id=${path[3]}`]})</script>
 <script>
     window.addEventListener( "load", () => {
 		addFormListener(
 			'nsnForm',
 			'PUT',
 			`/stores/nsns/${path[3]}`,
-			{_close: true}
+			{
+				onComplete: window.opener.getNSN,
+				_close: true
+			}
 		);
     });
 </script>

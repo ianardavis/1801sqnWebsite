@@ -3,7 +3,7 @@
 <%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
     <form id='serialForm'>
-        <input type="hidden" name="serial[size_id]" value="<%= itemsize.size_id %>">
+        <input type="hidden" name="serial[size_id]" value="<%= size.size_id %>">
         <%- include(`${process.env.PARTIALS}/spinner`, {id: 'serials'}) %>
 		<%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_serial',   name: 'serial[_serial]', title: 'Serial #', maxlength: 20, required: true}) %>
         <%- include(`${process.env.PARTIALS}/spinner`, {id: 'locations'}) %>
@@ -25,9 +25,8 @@
             'POST',
             '/stores/serials',
             {
-                onComplete: window.opener.get,
-                args: [window.opener.showSerials, {table: 'serials', query: [`size_id=<%= itemsize.size_id %>`]}],
-                // _close: true
+                onComplete: window.opener.getSerials,
+                _close: true
             }
         );
     });

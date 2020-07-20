@@ -17,7 +17,10 @@
             'nsnForm',
             'POST',
             '/stores/nsns',
-            {onComplete: window.opener.getNSNs}
+            {
+                onComplete: window.opener.getNSNs,
+                _close: true
+            }
         );
     });
 </script>

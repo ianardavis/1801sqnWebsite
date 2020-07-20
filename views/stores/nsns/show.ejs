@@ -25,7 +25,11 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${process.env.PARTIALS}/spinner`, {id: 'nsns'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_nsn', title: 'NSN'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_nsn',            title: 'NSN'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_group',          title: 'Group'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_classification', title: 'Classification'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_country',        title: 'Country'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_item_number',    title: 'Item #'}) %>
 		</div>
         <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
@@ -38,7 +42,10 @@
 <script src='/js/add.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script>
-    getNSN = () => get(showNSN, {table: 'nsns', query: [`nsn_id=${path[3]}`]});
+    getNSN = () => {
+        get(showNSN, {table: 'nsns', query: [`nsn_id=${path[3]}`]});
+        window.opener.getNSNs();
+    };
     document.querySelector('#reload').addEventListener('click', () => getNSN());
     document.querySelector('#reload').addEventListener('click', () => getNotes());
 </script>

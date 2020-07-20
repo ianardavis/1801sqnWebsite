@@ -86,6 +86,42 @@ module.exports = (inc, m) => {
             where:    options.where    || null
         };
     };
+    inc.nsn_groups = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        return {
+            model:    m.nsn_groups,
+            attributes: options.attributes || null,
+            as:       options.as       || 'group',
+            include:  include,
+            required: options.required || false,
+            where:    options.where    || null
+        };
+    };
+    inc.nsn_classifications = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        return {
+            model:    m.nsn_classifications,
+            attributes: options.attributes || null,
+            as:       options.as       || 'classification',
+            include:  include,
+            required: options.required || false,
+            where:    options.where    || null
+        };
+    };
+    inc.nsn_countries = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        return {
+            model:    m.nsn_countries,
+            attributes: options.attributes || null,
+            as:       options.as       || 'country',
+            include:  include,
+            required: options.required || false,
+            where:    options.where    || null
+        };
+    };
     inc.adjusts = (options = {}) => {
         let include = [];
         if (options.include) include = options.include

@@ -69,7 +69,12 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             serials: [inc.locations({as: 'location'})],
             stock: [inc.locations({as: 'location'})],
             suppliers: [m.accounts, m.files],
-            users: [m.ranks]
+            users: [m.ranks],
+            nsns: [
+                inc.nsn_groups(),
+                inc.nsn_classifications(),
+                inc.nsn_countries()
+            ]
         },
         attributes = {
             users: ['user_id', 'full_name'],

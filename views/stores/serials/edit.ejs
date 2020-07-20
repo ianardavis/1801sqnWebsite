@@ -26,8 +26,7 @@
 			'PUT',
 			`/stores/serials/${path[3]}`,
 			{
-				onComplete: window.opener.get,
-				args: [window.opener.showSerial, {table: 'serials', query: [`serial_id=${path[3]}`]}],
+				onComplete: window.opener.getSerial,
 				_close: true
 			}
 		);

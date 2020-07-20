@@ -6,7 +6,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             where: {size_id: req.query.size_id},
             include: [m.items]
         })
-        .then(itemsize => res.render('stores/serials/new', {itemsize: itemsize}))
+        .then(size => res.render('stores/serials/new', {size: size}))
         .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/stores/serials/:id',      isLoggedIn, allowed('access_serials'),            (req, res) => res.render('stores/serials/show', {tab: req.query.tab || 'details'}));

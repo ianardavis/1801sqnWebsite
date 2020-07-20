@@ -1,34 +1,20 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('receipts', {
-    'receipt_id': {
+  return sequelize.define('nsn_countries', {
+    'nsn_country_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
-      primaryKey: true,
-      comment: "null",
-      autoIncrement: true
+      comment: "null"
     },
-    'supplier_id': {
-      type: DataTypes.INTEGER(11),
+    '_code': {
+      type: DataTypes.INTEGER(2),
       allowNull: false,
       comment: "null"
     },
-    '_date': {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-      comment: "null"
-    },
-    '_complete': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
-      comment: "null"
-    },
-    'user_id': {
-      type: DataTypes.STRING(128),
+    '_country': {
+      type: DataTypes.STRING(45),
       allowNull: false,
       comment: "null"
     },
@@ -45,6 +31,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'receipts'
+    tableName: 'nsn_countries'
   });
 };

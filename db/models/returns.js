@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     '_date': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.fn('current_timestamp'),
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       comment: "null"
     },
     '_complete': {
@@ -35,13 +35,13 @@ module.exports = function(sequelize, DataTypes) {
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.fn('current_timestamp'),
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.fn('current_timestamp'),
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       comment: "null"
     }
   }, {

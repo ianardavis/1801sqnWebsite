@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('nsns', {
-    'nsn_id': {
+  return sequelize.define('nsn_classsifications', {
+    'nsn_classsification_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,36 +10,20 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'size_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     'nsn_group_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'nsn_classification_id': {
-      type: DataTypes.INTEGER(11),
+    '_code': {
+      type: DataTypes.INTEGER(2),
       allowNull: false,
       comment: "null"
     },
-    'nsn_country_id': {
-      type: DataTypes.INTEGER(11),
+    '_classification': {
+      type: DataTypes.STRING(100),
       allowNull: false,
       comment: "null"
-    },
-    '_item_number': {
-      type: DataTypes.STRING(7),
-      allowNull: false,
-      comment: "null"
-    },
-    '_nsn': {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      comment: "null",
-      unique: true
     },
     'createdAt': {
       type: DataTypes.DATE,
@@ -54,6 +38,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'nsns'
+    tableName: 'nsn_classsifications'
   });
 };

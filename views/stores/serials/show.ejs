@@ -38,11 +38,13 @@
 <script src='/js/edit.js'></script>
 <script src="/js/serials/show/showSerial.js"></script>
 <script>showTab('<%= tab %>');</script>
-<script async>get(showSerial, {table: 'serials', query: [`serial_id=${path[3]}`]})</script>
 <script>
-    document.querySelector('#reload').addEventListener('click', () => {
-        get(showSerial, {table: 'serials', query: [`serial_id=${path[3]}`]})
-    });
+    getSerial = () => {
+        get(showSerial, {table: 'serials', query: [`serial_id=${path[3]}`]});
+        window.opener.getSerials();
+    };
+    document.querySelector('#reload').addEventListener('click', () => getSerial());
     document.querySelector('#reload').addEventListener('click', () => getNotes());
 </script>
+<script async>getSerial()</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
