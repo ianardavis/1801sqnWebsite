@@ -114,7 +114,7 @@ db.receipt_lines.belongsTo(db.receipts, {foreignKey: 'receipt_id', targetKey: 'r
 
 db.demands.belongsTo(db.suppliers,    {foreignKey: 'supplier_id', sourceKey: 'supplier_id'});
 db.demands.hasOne(   db.users,        {foreignKey: 'user_id',     sourceKey: 'user_id',     constraints: false});
-db.demands.hasMany(  db.demand_lines, {foreignKey: 'demand_id',   targetKey: 'demand_id',                           as: 'lines'});
+db.demands.hasMany(  db.demand_lines, {foreignKey: 'demand_id',   targetKey: 'demand_id',   as: 'lines'});
 
 db.demand_lines.hasOne(   db.users,        {foreignKey: 'user_id',        sourceKey: 'user_id',         constraints: false});
 db.demand_lines.hasOne(   db.receipt_lines,{foreignKey: 'line_id',        sourceKey: 'receipt_line_id', constraints: false});
@@ -153,14 +153,18 @@ db.canteen_receipt_lines.belongsTo(db.canteen_receipts, {foreignKey: 'receipt_id
 db.canteen_writeoffs.hasOne( db.users,                  {foreignKey: 'user_id',     sourceKey: 'user_id',      constraints: false});
 db.canteen_writeoffs.hasMany(db.canteen_writeoff_lines, {foreignKey: 'writeoff_id', targetKey: 'writeoff_id', as: 'lines'});
 
-db.canteen_writeoff_lines.hasOne(   db.canteen_items,     {foreignKey: 'item_id',     sourceKey: 'item_id',      as: 'item', constraints: false});
+db.canteen_writeoff_lines.hasOne(   db.canteen_items,     {foreignKey: 'item_id',     sourceKey: 'item_id',     as: 'item', constraints: false});
 db.canteen_writeoff_lines.belongsTo(db.canteen_writeoffs, {foreignKey: 'writeoff_id', targetKey: 'writeoff_id', as: 'writeoff'});
 
 db.nsn_groups.hasMany(           db.nsn_classifications, {foreignKey: 'nsn_group_id',          targetKey: 'nsn_group_id',          as: 'classifications'});
-db.nsn_classifications.belongsTo(db.nsn_groups,          {foreignKey: 'nsn_group_id',          targetKey: 'nsn_group_id',          as: 'classification'});
+db.nsn_classifications.belongsTo(db.nsn_groups,          {foreignKey: 'nsn_group_id',          targetKey: 'nsn_group_id',          as: 'group'});
 db.nsn_classifications.belongsTo(db.nsns,                {foreignKey: 'nsn_classification_id', targetKey: 'nsn_classification_id', as: 'classification'});
 db.nsn_groups.belongsTo(         db.nsns,                {foreignKey: 'nsn_group_id',          targetKey: 'nsn_group_id',          as: 'group'});
 db.nsn_countries.belongsTo(      db.nsns,                {foreignKey: 'nsn_country_id',        targetKey: 'nsn_country_id',        as: 'country'});
+db.nsns.hasOne(                  db.nsn_groups,          {foreignKey: 'nsn_group_id',          sourceKey: 'nsn_group_id',          as: 'group',          constraints: false});
+db.nsns.hasOne(                  db.nsn_classifications, {foreignKey: 'nsn_classification_id', sourceKey: 'nsn_classification_id', as: 'classification', constraints: false});
+db.nsns.hasOne(                  db.nsn_countries,       {foreignKey: 'nsn_country_id',        sourceKey: 'nsn_country_id',        as: 'country',        constraints: false});
+
 db.sequelize = seq;
 db.Sequelize = Seq;
  

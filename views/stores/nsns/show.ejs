@@ -25,11 +25,20 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${process.env.PARTIALS}/spinner`, {id: 'nsns'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_nsn',            title: 'NSN'}) %>
+            <div class="input-group mb-1">
+                <div class="input-group-prepend w-30">
+                    <span class="input-group-text w-100">NSN</span>
+                </div>
+                <p class="form-control" id='group'></p>
+                <p class="form-control" id='classification'></p>
+                <p class="form-control">-</p>
+                <p class="form-control" id='country'></p>
+                <p class="form-control">-</p>
+                <p class="form-control w-25" id='_item_number'></p>
+            </div>
             <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_group',          title: 'Group'}) %>
             <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_classification', title: 'Classification'}) %>
             <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_country',        title: 'Country'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_item_number',    title: 'Item #'}) %>
 		</div>
         <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>

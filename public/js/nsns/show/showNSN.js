@@ -3,7 +3,11 @@ showNSN = (nsns, options) => {
         for (let [id, value] of Object.entries(nsns[0])) {
             try {
                 let element = document.querySelector('#' + id);
-                if (element) element.innerText = value;
+                if (['group', 'classification', 'country'].includes(id)) {
+                    element.innerText = String(value._code).padStart(2, '0');
+                    let descriptor = document.querySelector(`#_${id}`)
+                    if (descriptor) descriptor.innerText = value[`_${id}`];
+                } else if (element) element.innerText = value;
             } catch (error) {console.log(error)};
         };
         let _edit = document.querySelector('#edit_link');

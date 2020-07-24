@@ -17,7 +17,7 @@ showNSNs = (nsns, options) => {
             d_button.innerText = 'Make Default';
             d_button.classList.add('btn', 'btn-sm', 'btn-success', 'confirm');
             d_form.appendChild(d_button);
-            add_cell(row, {text: nsn._nsn});
+            add_cell(row, {text: `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`});
             add_cell(row, {id: `default${nsn.nsn_id}`, append: d_form});
             addFormListener(
                 `defaultForm${nsn.nsn_id}`,

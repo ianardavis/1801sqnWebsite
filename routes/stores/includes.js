@@ -1,4 +1,14 @@
 module.exports = (inc, m) => {
+    template = (options) => {
+        return {
+            model:      options.table,
+            as:         options.as         || options.table.tablename,
+            attributes: options.attributes || {exclude: ['createdAt', 'updatedAt']},
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
+        };
+    };
     inc.users = (options = {}) => {
         let include = [];
         if (options.include) options.include;
@@ -75,51 +85,46 @@ module.exports = (inc, m) => {
     };
 
     inc.nsns = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
-        return {
-            model:    m.nsns,
-            attributes: options.attributes || null,
-            as:       options.as       || 'nsns',
-            include:  include,
-            required: options.required || false,
-            where:    options.where    || null
-        };
+        return template({
+            table:      m.nsns,
+            attributes: options.attributes,
+            include:    [
+                inc.nsn_groups(),
+                inc.nsn_classifications(),
+                inc.nsn_countries()
+            ],
+            required:   options.required || false,
+            where:      options.where    || null
+        });
     };
     inc.nsn_groups = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
         return {
-            model:    m.nsn_groups,
-            attributes: options.attributes || null,
-            as:       options.as       || 'group',
-            include:  include,
-            required: options.required || false,
-            where:    options.where    || null
+            model:      m.nsn_groups,
+            attributes: options.attributes || {exclude: ['createdAt', 'updatedAt']},
+            as:         options.as         || 'group',
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
         };
     };
     inc.nsn_classifications = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
         return {
-            model:    m.nsn_classifications,
-            attributes: options.attributes || null,
-            as:       options.as       || 'classification',
-            include:  include,
-            required: options.required || false,
-            where:    options.where    || null
+            model:      m.nsn_classifications,
+            attributes: options.attributes || {exclude: ['createdAt', 'updatedAt']},
+            as:         options.as         || 'classification',
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
         };
     };
     inc.nsn_countries = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
         return {
-            model:    m.nsn_countries,
-            attributes: options.attributes || null,
-            as:       options.as       || 'country',
-            include:  include,
-            required: options.required || false,
-            where:    options.where    || null
+            model:      m.nsn_countries,
+            attributes: options.attributes || {exclude: ['createdAt', 'updatedAt']},
+            as:         options.as         || 'country',
+            include:    options.include    || [],
+            required:   options.required   || false,
+            where:      options.where      || null
         };
     };
     inc.adjusts = (options = {}) => {

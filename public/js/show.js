@@ -2,7 +2,7 @@ show = (table, id, options = {}) => {
     let heights = {
             accounts: '300',
             files: '708',
-            nsns: '206',
+            nsns: '291',
             serials: '206'
         },
         widths = {},
