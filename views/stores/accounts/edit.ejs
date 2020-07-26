@@ -27,8 +27,7 @@
             'PUT',
             `/stores/accounts/${path[3]}`,
             {
-                onComplete: window.opener.get,
-                args: [window.opener.showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]}],
+                onComplete: window.opener.getAccount,
                 _close: true
             }
         );

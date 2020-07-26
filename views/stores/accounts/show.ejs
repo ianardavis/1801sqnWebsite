@@ -33,11 +33,10 @@
 <script src='/js/add.js'></script>
 <script src='/js/tabs.js'></script>
 <script src='/js/accounts/show/showAccount.js'></script>
-<script async>get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]})</script>
 <script>
-    document.querySelector('#reload').addEventListener('click', () => {
-        get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]})
-    });
+    getAccount = () => get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]});
+    document.querySelector('#reload').addEventListener('click', () => getAccount());
 </script>
+<script async>getAccount()</script>
 <script>showTab('<%= tab %>');</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

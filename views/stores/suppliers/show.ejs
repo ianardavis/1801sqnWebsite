@@ -150,47 +150,40 @@
 <script src='/js/get/settings.js'></script>
 <script src='/js/suppliers/show/showSupplier.js'></script>
 <script src='/js/suppliers/show/setDefault.js'></script>
-<script async>get(showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]})</script>
 <script>
-    document.querySelector('#reload').addEventListener('click', () => {
-        get(showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]})
-    });
-    document.querySelector('#reload').addEventListener('click', () => {
-        getNotes()
-    });
+    getSupplier = () => get(showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]});
+    document.querySelector('#reload').addEventListener('click', () => getSupplier());
 </script>
+<script async>getSupplier()</script>
 <% if (permissions.access_sizes) { %>
     <script src="/js/suppliers/show/showSizes.js"></script>
-    <script async>get(showSizes, {table: 'sizes', query: ['supplier_id=' + path[3]]})</script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showSizes, {table: 'sizes', query: ['supplier_id=' + path[3]]})
-        })
+        getSizes = () => get(showSizes, {table: 'sizes', query: ['supplier_id=' + path[3]]});
+        document.querySelector('#reload').addEventListener('click', () => getSizes());
     </script>
+    <script async>getSizes()</script>
 <% } %>
 <% if (permissions.access_demands) { %>
     <script src="/js/suppliers/show/showDemands.js"></script>
-    <script async>get(showDemands, {table: 'demands', query: demand_query()})</script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showDemands, {table: 'demands', query: ['supplier_id=' + path[3]]})
-        });
+        getDemands = () => get(showDemands, {table: 'demands', query: demand_query()});
+        document.querySelector('#reload').addEventListener('click', () => getDemands());
         let demandsComplete = document.querySelector('#demandsCompleteSelect'),
             demandsClosed   = document.querySelector('#demandsClosedSelect');
-        demandsComplete.addEventListener('change', () => get(showDemands, {table: 'demands', query: demand_query()}));
-        demandsClosed.addEventListener('change', () => get(showDemands, {table: 'demands', query: demand_query()}));
+        demandsComplete.addEventListener('change', () => getDemands());
+        demandsClosed.addEventListener('change', () => getDemands());
     </script>
+    <script async>getDemands()</script>
 <% } %>
 <% if (permissions.access_receipts) { %>
     <script src="/js/suppliers/show/showReceipts.js"></script>
-    <script async>get(showReceipts, {table: 'receipts', query: receipt_query()})</script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showReceipts, {table: 'receipts', query: receipt_query()})
-        });
+        getReceipts = () => get(showReceipts, {table: 'receipts', query: receipt_query()});
+        document.querySelector('#reload').addEventListener('click', () => getReceipts());
         let receiptselect = document.querySelector('#receiptsCompleteSelect');
-        if (receiptselect) receiptselect.addEventListener('change', () => get(showReceipts, {table: 'receipts', query: receipt_query()}));
+        if (receiptselect) receiptselect.addEventListener('change', () => getReceipts());
     </script>
+    <script async>getReceipts()</script>
 <% } %>
 <script>
     window.addEventListener("load", () => {
@@ -208,10 +201,7 @@
                 'newDemandForm',
                 'POST',
                 '/stores/demands',
-                {
-                    onComplete: get,
-                    args: [showDemands, {table: 'demands', query: demand_query()}]
-                }
+                {onComplete: getDemands}
             );
         <% } %>
         <% if (permissions.receipt_add) { %>
@@ -219,10 +209,7 @@
                 'newReceiptForm',
                 'POST',
                 '/stores/receipts',
-                {
-                    onComplete: get,
-                    args: [showReceipts, {table: 'receipts', query: receipt_query()}]
-                }
+                {onComplete: getReceipts}
             );
         <% } %>
         <% if (permissions.file_add) { %>
@@ -230,10 +217,7 @@
                 'fileForm',
                 'POST',
                 '/stores/files',
-                {
-                    onComplete: get,
-                    args: [showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]}]
-                }
+                {onComplete: getSupplier}
             );
         <% } %>
     });
