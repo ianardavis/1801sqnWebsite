@@ -182,7 +182,6 @@
 <script>
     getSize = () => get(showSize, {table: 'sizes', query: [`size_id=${path[3]}`]})
     document.querySelector('#reload').addEventListener('click', () => getSize());
-    document.querySelector('#reload').addEventListener('click', () => getNotes());
 </script>
 <script async>getSize()</script>
 <% if (permissions.access_nsns) {%>

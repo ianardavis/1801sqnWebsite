@@ -4,7 +4,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         db.findOne({
             table: m.sizes,
             where: {size_id: req.query.size_id},
-            include: [inc.sizes()]
+            include: []
         })
         .then(item => res.render('stores/stock/new', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
@@ -20,7 +20,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(stock => {
             res.render('stores/stock/show', {
                 stock: stock,
-                show_tab: req.query.tab || 'details'
+                tab: req.query.tab || 'details'
             });
         })
         .catch(err => res.error.redirect(err, req, res));

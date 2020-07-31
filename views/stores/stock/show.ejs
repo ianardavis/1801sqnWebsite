@@ -1,132 +1,102 @@
-<%- include('../../partials/head/head') %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
 <body>
-<%- include('../../partials/head/flash') %>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
-<section class="container">
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
-                Details
+		<li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
             </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <% if (permissions.stock_edit) { %>
+                    <%- include(`${process.env.PARTIALS}/edit`) %>
+                <% } %>
+                <div class="dropdown-divider"></div>
+                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <% if (permissions.stock_delete) { %>
+                    <%- include(`${process.env.PARTIALS}/delete`, {close: true, onComplete: 'getSerials'}) %>
+                <% } %>
+            </div>
         </li>
-        <% if (permissions.access_adjusts) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="adjusts-tab" data-toggle="tab" href="#adjusts" role="tab" aria-controls="adjusts" aria-selected="true">
-                    Adjustments (<span id='adjust_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (permissions.access_receipts) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="receipts-tab" data-toggle="tab" href="#receipts" role="tab" aria-controls="receipts" aria-selected="true">
-                    Receipts (<span id='receipt_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (permissions.access_issues) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="issues-tab" data-toggle="tab" href="#issues" role="tab" aria-controls="issues" aria-selected="true">
-                    Issues (<span id='issue_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% if (permissions.access_returns) { %>
-            <li class="nav-item">
-                <a class="nav-link" id="returns-tab" data-toggle="tab" href="#returns" role="tab" aria-controls="returns" aria-selected="true">
-                    Returns (<span id='return_count'></span>)
-                </a>
-            </li>
-        <% } %>
-        <% include ../../partials/notes/tab_head %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',  title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'adjusts',  title: 'Adjustments', count_id: 'adjust_count',  permission: 'access_adjusts'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts', title: 'Receipts',    count_id: 'receipt_count', permission: 'access_receipts'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'issues',   title: 'Issues', 	   count_id: 'issue_count',   permission: 'access_issues'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'returns',  title: 'Returns', 	   count_id: 'return_count',  permission: 'access_return'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',    title: 'Notes',       count_id: 'note_count',    permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="container">
-				<div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">Location</span>
-                    </div>
-					<p class="form-control"><%= stock.location._location %></p>
-					<div class="input-group-append">
-						<a class='btn btn-warning' href='javascript:edit("stock",<%= stock.stock_id %>,{height:190})'>
-							<i class='fas fa-pencil-alt'></i>
-						</a>
-					</div>
-                </div>
+			<div class="input-group mb-1">
+				<div class="input-group-prepend w-20">
+					<span class="input-group-text w-100">Location</span>
+				</div>
+				<p class="form-control"><%= stock.location._location %></p>
+				<div class="input-group-append">
+					<a class='btn btn-warning' href='javascript:edit("stock",<%= stock.stock_id %>)'>
+						<i class='fas fa-pencil-alt'></i>
+					</a>
+				</div>
 			</div>
 		</div>
         <% if (permissions.access_adjusts) { %>
 			<div class="tab-pane fade" id="adjusts" role="tabpanel" aria-labelledby="adjusts-tab">
-				<div class="container">
-					<% if (permissions.adjust_add) { %> 
-						<a class="float-left btn btn-primary mr-1" href='javascript:add("adjusts",{"height":361,"queries":"stock_id=<%= stock.stock_id %>&adjustType=Count"})'>
-							<i class='fas fa-pencil-alt'></i>
-						</a>
-						<a class="float-left btn btn-danger mr-1" href='javascript:add("adjusts",{"height":361,"queries":"stock_id=<%= stock.stock_id %>&adjustType=Scrap"})'>
-							<i class='fas fa-trash-alt'></i>
-						</a>
-					<% } %>
-                    <div id='spn_adjusts' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-					<table class="table table-sm table-hover">
-						<thead class="thead-dark">
-							<th class="w-25" onclick="sortTable(0, 'adjustsTable')">Date</th>
-							<th class="w-10" onclick="sortTable(1, 'adjustsTable')">Type</th>
-							<th class="w-10" onclick="sortTable(2, 'adjustsTable')">Qty</th>
-							<th class="w-10" onclick="sortTable(3, 'adjustsTable')">Variance</th>
-							<th class="w-45" onclick="sortTable(4, 'adjustsTable')">User</th>
-						</thead>
-						<tbody id="adjustTable">
-						</tbody>
-					</table>
-				</div>
+				<% if (permissions.adjust_add) { %> 
+					<a class="float-left btn btn-primary mr-1" href='javascript:add("adjusts",{"height":361,"queries":"stock_id=<%= stock.stock_id %>&adjustType=Count"})'>
+						<i class='fas fa-pencil-alt'></i>
+					</a>
+					<a class="float-left btn btn-danger mr-1" href='javascript:add("adjusts",{"height":361,"queries":"stock_id=<%= stock.stock_id %>&adjustType=Scrap"})'>
+						<i class='fas fa-trash-alt'></i>
+					</a>
+				<% } %>
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'adjusts'}) %>
+				<table class="table table-sm table-hover">
+					<thead class="thead-dark">
+						<th class="w-25" onclick="sortTable(0, 'adjustsTable')">Date</th>
+						<th class="w-10" onclick="sortTable(1, 'adjustsTable')">Type</th>
+						<th class="w-10" onclick="sortTable(2, 'adjustsTable')">Qty</th>
+						<th class="w-10" onclick="sortTable(3, 'adjustsTable')">Variance</th>
+						<th class="w-45" onclick="sortTable(4, 'adjustsTable')">User</th>
+					</thead>
+					<tbody id="adjustTable">
+					</tbody>
+				</table>
 			</div>
         <% } %>
         <% if (permissions.access_receipts) { %>
 			<div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
-				<div class="container">
-                    <div id='spn_receipts' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-					<table class="table table-sm table-hover">
-						<thead class="thead-dark">
-							<th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
-							<th class="w-10" onclick="sortTable(1, 'receiptTable')">Qty</th>
-							<th class="w-45" onclick="sortTable(2, 'receiptTable')">User</th>
-							<th><i class="fas fa-search"></i></th>
-						</thead>
-						<tbody id="receiptTable">
-						</tbody>
-					</table>
-				</div>
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipts'}) %>
+				<table class="table table-sm table-hover">
+					<thead class="thead-dark">
+						<th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
+						<th class="w-10" onclick="sortTable(1, 'receiptTable')">Qty</th>
+						<th class="w-45" onclick="sortTable(2, 'receiptTable')">User</th>
+						<th><i class="fas fa-search"></i></th>
+					</thead>
+					<tbody id="receiptTable">
+					</tbody>
+				</table>
 			</div>
         <% } %>
         <% if (permissions.access_issues) { %>
 			<div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-				<div class="container">
-                    <div id='spn_issues' class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-					<table class="table table-sm table-hover">
-						<thead class="thead-dark">
-							<th class="w-40" onclick="sortTable(0, 'issueTable')">Date</th>
-							<th class="w-40" onclick="sortTable(1, 'issueTable')">To</th>
-							<th class="w-10" onclick="sortTable(2, 'issueTable')">Qty</th>
-							<th class="w-10" onclick="sortTable(3, 'issueTable')">Returned?</th>
-							<th><i class="fas fa-search"></i></th>
-						</thead>
-						<tbody id="issueTable">
-						</tbody>
-					</table>
-				</div>
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'issues'}) %>
+				<table class="table table-sm table-hover">
+					<thead class="thead-dark">
+						<th class="w-40" onclick="sortTable(0, 'issueTable')">Date</th>
+						<th class="w-40" onclick="sortTable(1, 'issueTable')">To</th>
+						<th class="w-10" onclick="sortTable(2, 'issueTable')">Qty</th>
+						<th class="w-10" onclick="sortTable(3, 'issueTable')">Returned?</th>
+						<th><i class="fas fa-search"></i></th>
+					</thead>
+					<tbody id="issueTable">
+					</tbody>
+				</table>
 			</div>
         <% } %>
         <% if (permissions.access_returns) { %>
 			<div class="tab-pane fade" id="returns" role="tabpanel" aria-labelledby="returns-tab">
-				<div id='spn_returns' class="spinner-border text-primary" role="status">
-					<span class="sr-only">Loading...</span>
-				</div>
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'returns'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-45" onclick="sortTable(0, 'returnTable')">Date</th>
@@ -159,11 +129,10 @@
         <% } %>
         <% include ../../partials/notes/tab_body %>
 	</div>
-</section>
-<% include ../../partials/foot/noNav %>
+<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
 <script src="/js/specific/stock_show.js"></script>
 <script async>getAdjusts(<%= stock.size_id %>)</script>
 <script async>getReceipts(<%= stock.size_id %>)</script>
 <script async>getIssues(<%= stock.size_id %>)</script>
 <script async>getReturns(<%= stock.size_id %>)</script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

@@ -1,56 +1,35 @@
-<% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores">Stores</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items">Items</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/items/<%= item.item_id %>"><%= item.item._description %></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/sizes/<%= item.size_id %>">Size: <%= item._size %></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/locations/new">Add Location</a>
-            </li>
-        </ul>
-    </nav>
-</section>
-<nav class="navbar navbar-expand navbar-dark bg-dark stores">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Options
-			</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" href="/stores/sizes/<%= item.size_id %>">Back to <%= item.item._description %>/Size: <%= item._size %></a>
-			</div>
-		</li>
-	</ul>
-</nav>
-<section class="container pt-3">
-	<div class="row">
-		<div class="col-12 col-lg-3 mx-auto mb-3 bordered">
-			<h4>Location</h4>
-			<form action="/stores/stock" method="POST">
-				<div class="">
-					<input type="hidden" name="stock[size_id]" value="<%= item.size_id %>" readonly>
-					<p><input class="form-control" type="text" name="location" maxlength="10" placeholder="Location" required></p>
-				</div>
-				<% if (permissions.adjust_add) { %>
-					<h4>Quantity</h4>
-					<div class="">
-						<p><input type="text" name="stock[_qty]" maxlength="11" placeholder="Quantity" value="0"></p>
-					</div>
-				<% } %>
-				<p><button class="btn btn-success confirm">Save</button></p>
-			</form>
-		</div>
-    </div>
-</section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
+<body>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<section id='body'>
+	<form id='stockForm' action="/stores/stock" method="POST">
+        <input type="hidden" name="stock[size_id]" value="<%= item.size_id %>">
+		<%- include(`${process.env.PARTIALS}/spinner`, {id: 'locations'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_location', name: 'location', title: 'Location', maxlength: 10, required: true, list: true}) %>
+        <% if (permissions.adjust_add) { %>
+			<%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_location', name: 'stock[_qty]', title: 'Quantity', value: 0, maxlength: 11}) %>
+		<% } %>
+		<%- include(`${process.env.PARTIALS}/save_cancel`) %>
+	</form>
+<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/send.js'></script>
+<script src='/js/data/XHRsend.js'></script>
+<script src='/js/get.js'></script>
+<script src='/js/spinner.js'></script>
+<script src='/js/getLocations.js'></script>
+<script async>get(getLocations, {table: 'locations', query: []})</script>
+<script>
+    window.addEventListener( "load", function () {
+        addFormListener(
+            'stockForm',
+            'POST',
+            '/stores/stock',
+            {
+                onComplete: window.opener.getStock,
+                _close: true
+            }
+        );
+    });
+</script>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

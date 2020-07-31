@@ -35,8 +35,7 @@
             'PUT',
             '/stores/suppliers/' + path[3],
             {
-                onComplete: window.opener.get,
-                args: [window.opener.showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]}],
+                onComplete: window.opener.getSupplier,
                 _close: true
             }
         );

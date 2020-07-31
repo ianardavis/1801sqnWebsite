@@ -4,7 +4,7 @@
     </div>
     <input
         class="form-control"
-        type="text"
+        type="<%= locals.type || 'text' %>"
         <% if (locals.id) { %>         id='<%= id %>'<% } %>
         <% if (locals.name) { %>       name='<%= name %>'<% } %>
         <% if (locals.value) { %>      value='<%= value %>'<% } %>

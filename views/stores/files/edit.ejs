@@ -39,8 +39,7 @@
             'PUT',
             `/stores/files/${path[3]}`,
             {
-                onComplete: window.opener.get,
-                args: [window.opener.showFile, {table: 'files', query:[`file_id=${path[3]}`]}],
+                onComplete: window.opener.getFile,
                 _close: true
             }
         );

@@ -38,8 +38,7 @@
             'PUT',
             `/stores/sizes/${path[3]}`,
             {
-                onComplete: window.opener.get,
-                args: [window.opener.showSize, {table: 'sizes', query: [`size_id=${path[3]}`]}],
+                onComplete: window.opener.getSize,
                 _close: true
             }
         );

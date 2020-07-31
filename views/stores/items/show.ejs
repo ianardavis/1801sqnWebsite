@@ -74,22 +74,17 @@
 <script src='/js/add.js'></script>
 <script src='/js/items/show/showItem.js'></script>
 <script>showTab('<%= tab %>');</script>
-<script async>get(showItem, {table: 'items', query: [`item_id=${path[3]}`]})</script>
 <script>
-    document.querySelector('#reload').addEventListener('click', () => {
-        get(showItem, {table: 'items', query: [`item_id=${path[3]}`]})
-    });
-    document.querySelector('#reload').addEventListener('click', () => {
-        getNotes()
-    });
+    getItem = () => get(showItem, {table: 'items', query: [`item_id=${path[3]}`]})
+    document.querySelector('#reload').addEventListener('click', () => getItem());
 </script>
+<script async>getItem()</script>
 <% if (permissions.access_sizes) { %>
     <script src='/js/items/show/showSizes.js'></script>
-    <script async>get(showSizes, {table: 'sizes', query: [`item_id=${path[3]}`]})</script>
     <script>
-        document.querySelector('#reload').addEventListener('click', () => {
-            get(showSizes, {table: 'sizes', query: [`item_id=${path[3]}`]})
-        });
+        getSizes = () => get(showSizes, {table: 'sizes', query: [`item_id=${path[3]}`]})
+        document.querySelector('#reload').addEventListener('click', () => getSizes());
     </script>
+    <script async>getSizes()</script>
 <% } %>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

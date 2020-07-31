@@ -42,11 +42,9 @@
 <script src='/js/add.js'></script>
 <script src='/js/tabs.js'></script>
 <script src="/js/files/show/showFile.js"></script>
-<script async>get(showFile, {table: 'files', query:[`file_id=${path[3]}`]})</script>
-<script>
-    document.querySelector('#reload').addEventListener('click', () => {
-        get(showFile, {table: 'files', query:[`file_id=${path[3]}`]})
-    });
+<script>getFile = () => get(showFile, {table: 'files', query:[`file_id=${path[3]}`]})
+    document.querySelector('#reload').addEventListener('click', () => getFile());
 </script>
+<script async>getFile()</script>
 <script>showTab('<%= tab %>');</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
