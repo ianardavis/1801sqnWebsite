@@ -100,8 +100,8 @@
                 <%- include(`${process.env.PARTIALS}/spinner`, {id: 'stock'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th onclick='sortTable(0, "stockTable")' class='w-80'>Location</th>
-                        <th onclick='sortTable(1, "stockTable")' class='w-20'>Qty</th>
+                        <th class='w-80' onclick='sortTable(0, "stockTable")'>Location</th>
+                        <th class='w-20' onclick='sortTable(1, "stockTable")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='stockTable'>
@@ -114,8 +114,8 @@
                 <%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th onclick='sortTable(0, "requestTable")' class='w-80'>For</th>
-                        <th onclick='sortTable(1, "requestTable")' class='w-20'>Qty</th>
+                        <th class='w-80' onclick='sortTable(0, "requestTable")'>For</th>
+                        <th class='w-20' onclick='sortTable(1, "requestTable")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='requestTable'>
@@ -128,8 +128,8 @@
                 <%- include(`${process.env.PARTIALS}/spinner`, {id: 'order_lines'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th onclick='sortTable(0, "orderTable")' class='w-80'>For</th>
-                        <th onclick='sortTable(1, "orderTable")' class='w-20'>Qty</th>
+                        <th class='w-80' onclick='sortTable(0, "orderTable")'>For</th>
+                        <th class='w-20' onclick='sortTable(1, "orderTable")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='orderTable'>
@@ -142,9 +142,9 @@
                 <%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipt_lines'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th onclick='sortTable(0, "receiptTable")' class='w-80'>Date</th>
-                        <th onclick='sortTable(1, "receiptTable")' class='w-20'>Location</th>
-                        <th onclick='sortTable(2, "receiptTable")' class='w-20'>Qty</th>
+                        <th class='w-80' onclick='sortTable(0, "receiptTable")'>Date</th>
+                        <th class='w-20' onclick='sortTable(1, "receiptTable")'>Location</th>
+                        <th class='w-20' onclick='sortTable(2, "receiptTable")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='receiptTable'>
@@ -157,9 +157,9 @@
                 <%- include(`${process.env.PARTIALS}/spinner`, {id: 'issue_lines'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th onclick='sortTable(0, "issueTable")' class='w-20'>Date</th>
-                        <th onclick='sortTable(1, "issueTable")' class='w-60'>To</th>
-                        <th onclick='sortTable(2, "issueTable")' class='w-20'>Qty</th>
+                        <th class='w-20' onclick='sortTable(0, "issueTable")'>Date</th>
+                        <th class='w-60' onclick='sortTable(1, "issueTable")'>To</th>
+                        <th class='w-20' onclick='sortTable(2, "issueTable")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='issueTable'>

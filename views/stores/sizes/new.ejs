@@ -32,9 +32,7 @@
             _save = document.querySelector('#_save');
         _size.value = '';
         _save.value = 'Size Saved';
-        window.setTimeout(() => {
-            _save.value = 'Save';
-        }, 5000);
+        window.setTimeout(() => _save.value = 'Save', 5000);
     };
     window.addEventListener( "load", () => {
         addFormListener(

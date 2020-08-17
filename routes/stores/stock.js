@@ -9,22 +9,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(item => res.render('stores/stock/new', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/stock/:id',      isLoggedIn, allowed('access_stock'),             (req, res) => {
-        db.findOne({
-            table: m.stock,
-            where: {stock_id: req.params.id},
-            include: [
-                inc.sizes(),
-                m.locations
-        ]})
-        .then(stock => {
-            res.render('stores/stock/show', {
-                stock: stock,
-                tab: req.query.tab || 'details'
-            });
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/stores/stock/:id',      isLoggedIn, allowed('access_stock'),             (req, res) => res.render('stores/stock/show', {tab: req.query.tab || 'details'}));
     app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'),               (req, res) => {
         db.findOne({
             table: m.stock,
