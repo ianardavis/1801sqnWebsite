@@ -130,26 +130,3 @@ function getIssues(user_id, return_permission) {
     XHR.open('GET', '/stores/get/issuelines/' + user_id + '?' + query.join('&'));
     XHR.send();
 };
-function getPermissions(user_id) {
-    let spn_permissions = document.querySelector('#spn_permissions');
-    spn_permissions.style.display = 'block';
-    const XHR = new XMLHttpRequest();
-    XHR.addEventListener("load", event => {
-        let response    = JSON.parse(event.target.responseText),
-            _select  = document.querySelector('#permissionSelect'),
-            permission_count = document.querySelector('#permission_count');
-        if (response.permissions) permission_count.innerText = response.permissions.length || '0';
-        _select.innerHTML = '';
-        if (response.result) {
-            response.permissions.forEach(permission => {
-                let _option = document.createElement('option');
-                _option.innerText = permission._permission;
-                _select.appendChild(_option);
-            });
-        } else alert('Error: ' + response.error)
-        spn_permissions.style.display = 'none';
-    });
-    XHR.addEventListener("error", event => alert('Oops! Something went wrong getting issues'));
-    XHR.open('GET', '/stores/get/permissions?user_id=' + user_id);
-    XHR.send();
-};

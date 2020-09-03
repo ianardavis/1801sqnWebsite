@@ -1,78 +1,43 @@
-<%- include('../../partials/head/head') %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
 <body>
-<%- include('../../partials/head/flash') %>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
-<section class="container">
     <form id='userForm'>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Bader #</span>
-            </div>
-            <input class="form-control" id="_bader" name="user[_bader]" type="text" placeholder="Required" maxlength="20" required>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Rank</span>
-            </div>
-            <select class="form-control" name="user[rank_id]" type="text">
-                <% classes.ranks.forEach(rank => { %>
-                    <option value="<%= rank.rank_id %>"><%= rank._rank %></option>         
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Surname</span>
-            </div>
-            <input class="form-control" id="_name" name="user[_name]" type="text" placeholder="Required" maxlength="50" required>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Initials</span>
-            </div>
-            <input class="form-control" id="_ini" name="user[_ini]" type="text" maxlength="5">
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Status</span>
-            </div>
-            <select class="form-control" name="user[status_id]" type="text" >
-                <% classes.statuses.forEach((status) => { %>
-                    <% if (status.status_id !== 4) { %>
-                        <option value="<%= status.status_id %>"><%= status._status %></option>
-                    <% } %>
-                <% }) %>
-            </select>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Login ID</span>
-            </div>
-            <input class="form-control" id="_login_id" name="user[_login_id]" type="text" maxlength="30" required>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Password</span>
-            </div>
-            <input class="form-control" id="_password" name="_password" type="password" password minlength="8" required>
-        </div>
-        <div class="input-group mb-1">
-            <div class="input-group-prepend w-30">
-                <span class="input-group-text w-100">Confirm Password</span>
-            </div>
-            <input class="form-control" id="_confirm" type="password" password minlength="8" required>
-        </div>
-            <input class="btn btn-primary w-100 confirm" id='_submit' type="submit" value='Save'>
-            <a class='float-left' href='javascript:close()'>Cancel</a>
-        </div>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Bader #',  name: 'user[_bader]',    placeholder: 'Required', maxLength: 20, required: true, id: '_bader'}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'ranks'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Rank',     name: 'user[rank_id]',   required: true, id: 'ranks'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Surname',  name: 'user[_name]',     placeholder: 'Required', maxLength: 50, required: true, id: '_name'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Initials', name: 'user[_ini]',      placeholder: 'Required', maxLength: 5,  required: true, id: '_ini'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status',   name: 'user[status_id]', required: true, id: 'statuses'}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'statuses'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Login ID', name: 'user[_login_id]', placeholder: 'Required', maxLength: 30, required: true, id: '_login_id'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Password', name: '_password',       placeholder: 'Required', minLength: 8,  required: true, type: 'password', id: '_password'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Confirm Password',                  placeholder: 'Required', minLength: 8,  required: true, type: 'password', id: '_confirm'}) %>
+        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
     </form>
-</section>
-<% include ../../partials/foot/noNav %>
+    <%- include(`${process.env.PARTIALS}/foot/noNav`) %>
 <script src="/js/loginBaderMirror.js"></script>
 <script src="/js/newUserFieldCheck.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/get.js"></script>
+<script src="/js/spinner.js"></script>
+<script src="/js/ranks/list.js"></script>
+<script src="/js/statuses/list.js"></script>
+<script async>get(listRanks,       {table: 'ranks',    query: []})</script>
+<script async>get(statuses_select, {table: 'statuses', query: []})</script>
 <script>
     window.addEventListener( "load", function () {
-        addFormListener('userForm', 'POST', '/stores/users');
+        addFormListener(
+            'userForm',
+            'POST',
+            '/stores/users',
+            {
+                onComplete: window.opener.getUsers,
+                _close: true
+            }
+        );
+        checkFilled();
     });
 </script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

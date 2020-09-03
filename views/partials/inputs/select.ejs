@@ -5,6 +5,7 @@
             <% if (locals.id) { %>for="<%= id %>"<% } %>
         >
             <%= title %>
+            <% if (locals.spinner === true) { %><%- include(`${process.env.PARTIALS}/spinner`, {id: locals.id}) %><% } %>
         </label>
     </div>
     <select
@@ -13,7 +14,13 @@
         <% if (locals.name) { %>name=<%= name %><% } %>
         <% if (locals.required) { %>required<% } %>
         <% if (locals.onchange) { %>onchange='<%= onchange %>'<% } %>
+        <% if (locals.size) { %>size='<%= size %>'<% } %>
     >
+    <% if (locals.options) { %>
+        <% options.forEach(option => { %>
+            <option value="<%= option.value %>"<% if (option.selected === true) { %> selected<% } %>><%= option.text %></option>
+        <% }) %>
+    <% } %>
     </select>
     <% if (locals.append) { %>
         <%- include('append', {append: locals.append}) %>

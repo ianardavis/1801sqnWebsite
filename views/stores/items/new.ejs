@@ -18,8 +18,7 @@
             'POST',
             '/stores/items',
             {
-                onComplete: window.opener.get,
-                args: [window.opener.showItems, {table: 'items', query: window.opener.item_query()}],
+                onComplete: window.opener.getItems,
                 _close: true
             }
         );

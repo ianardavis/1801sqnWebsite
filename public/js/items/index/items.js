@@ -1,4 +1,4 @@
-showItems = (items, na) => {
+showItems = (items, options) => {
     let table_body = document.querySelector('#itemTable');
     table_body.innerHTML = '';
     items.forEach(item => {

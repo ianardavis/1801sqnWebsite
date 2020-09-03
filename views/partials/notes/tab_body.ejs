@@ -12,17 +12,18 @@
         </div>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
-                <th class="w-25" onclick="sortTable(0, 'notesTable')">Date</th>
+                <th class="w-25" onclick="sortTable(0, 'notesTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'notes', spinner_sm: true, spinner_float_left: true}) %>Date</th>
                 <th class="w-10" onclick="sortTable(1, 'notesTable')">Sys</th>
                 <th class="w-45" onclick="sortTable(2, 'notesTable')">Note</th>
                 <th class="w-20" onclick="sortTable(3, 'notesTable')">User</th>
                 <th><i class="fas fa-pencil-alt"></i></th>
                 <% if (permissions.note_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
             </thead>
-            <%- include('../../partials/spinner', {id: 'notes'}) %>
             <tbody id="notesTable">
             </tbody>
         </table>
+        <script src='/js/add.js'></script>
+        <script src='/js/edit.js'></script>
         <script src="/js/get.js"></script>
         <script src="/js/spinner.js"></script>
         <script src="/js/data/XHRsend.js"></script>
@@ -31,8 +32,6 @@
         <script>
             getNotes = () => get(showNotes, {table: 'notes', query: note_query(), delete_permission: <%= permissions.note_delete || false %>});
             document.querySelector('#reload').addEventListener('click', () => getNotes());
-            // let select = document.querySelector('#sel_system');
-            // select.addEventListener('change', event => getNotes())
         </script>
         <script async>getNotes()</script>
     </div>

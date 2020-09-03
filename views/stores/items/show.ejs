@@ -36,31 +36,27 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="container">
-                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
-                <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_description', title: 'Description'}) %>
-                <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_category',    title: 'Category'}) %>
-                <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_group',       title: 'Group'}) %>
-                <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_type',        title: 'Type'}) %>
-                <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_subtype',     title: 'Subtype'}) %>
-                <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_gender',      title: 'Gender'}) %>
-                <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_size_text',   title: 'Size Text'}) %>
-            </div>
+            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_description', title: 'Description'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_category',    title: 'Category'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_group',       title: 'Group'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_type',        title: 'Type'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_subtype',     title: 'Subtype'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_gender',      title: 'Gender'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_size_text',   title: 'Size Text'}) %>
         </div>
         <% if (permissions.access_sizes) { %>
             <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
-                <div class="container">
-                    <%- include(`${process.env.PARTIALS}/spinner`, {id: 'sizes'}) %>
-                    <table class='table table-sm table-hover w-100'>
-                        <thead class='thead-dark'>
-                            <th class='w-50' onclick='sortTable(0, "sizeTable")' id='size_text'></th>
-                            <th class='w-50' onclick='sortTable(1, "sizeTable")'>Stock</th>
-                            <th><i class='fas fa-search'></i></th>
-                        </thead>
-                        <tbody id='sizeTable'>
-                        </tbody>
-                    </table>
-                </div>
+                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'sizes'}) %>
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-50' onclick='sortTable(0, "sizeTable")' id='size_text'></th>
+                        <th class='w-50' onclick='sortTable(1, "sizeTable")'>Stock</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='sizeTable'>
+                    </tbody>
+                </table>
             </div>
         <% } %>
         <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
@@ -70,9 +66,7 @@
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
-<script src='/js/edit.js'></script>
-<script src='/js/add.js'></script>
-<script src='/js/items/show/showItem.js'></script>
+<script src='/js/items/show/item.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script>
     getItem = () => get(showItem, {table: 'items', query: [`item_id=${path[3]}`]})
@@ -80,7 +74,7 @@
 </script>
 <script async>getItem()</script>
 <% if (permissions.access_sizes) { %>
-    <script src='/js/items/show/showSizes.js'></script>
+    <script src='/js/items/show/sizes.js'></script>
     <script>
         getSizes = () => get(showSizes, {table: 'sizes', query: [`item_id=${path[3]}`]})
         document.querySelector('#reload').addEventListener('click', () => getSizes());

@@ -15,7 +15,7 @@
 <% include(`${process.env.PARTIALS}/foot/noNav`) %>
 <script src="/js/get.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src="/js/items/edit/showItem.js"></script>
+<script src="/js/items/edit/item.js"></script>
 <script async>get(showItem, {table: 'items', query: [`item_id=${path[3]}`]})</script>
 <script>
     let reload = document.querySelector('#reload');

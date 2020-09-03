@@ -23,7 +23,8 @@ showNotes = (notes, options = {}) => {
             add_cell(row, {append: new DeleteButton({
                 path: `/stores/notes/${note.note_id}`,
                 small: true,
-                descriptor: 'note'
+                descriptor: 'note',
+                options: {onComplete: getNotes, args: []}
             }).form});
         } else add_cell(row);
     });

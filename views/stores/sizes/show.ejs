@@ -174,10 +174,8 @@
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
-<script src='/js/add.js'></script>
-<script src='/js/edit.js'></script>
 <script src='/js/show.js'></script>
-<script src="/js/sizes/show/showSize.js"></script>
+<script src="/js/sizes/show/size.js"></script>
 <script>showTab('<%= tab %>');</script>
 <script>
     getSize = () => get(showSize, {table: 'sizes', query: [`size_id=${path[3]}`]})
@@ -185,7 +183,7 @@
 </script>
 <script async>getSize()</script>
 <% if (permissions.access_nsns) {%>
-    <script src="/js/sizes/show/showNSNs.js"></script>
+    <script src="/js/sizes/show/nsns.js"></script>
     <script>
         getNSNs = () => get(showNSNs, {table: 'nsns', query: [`size_id=${path[3]}`]});
         document.querySelector('#reload').addEventListener('click', () => getNSNs());
@@ -193,7 +191,7 @@
     <script async>getNSNs()</script>
 <% } %>
 <% if (permissions.access_serials) {%>
-    <script src="/js/sizes/show/showSerials.js"></script>
+    <script src="/js/sizes/show/serials.js"></script>
     <script>
         getSerials = () => get(showSerials, {table: 'serials', query: [`size_id=${path[3]}`]});
         document.querySelector('#reload').addEventListener('click', () => getSerials());
@@ -201,7 +199,7 @@
     <script async>getSerials()</script>
 <% } %>
 <% if (permissions.access_stock) {%>
-    <script src="/js/sizes/show/showStock.js"></script>
+    <script src="/js/sizes/show/stock.js"></script>
     <script>
         getStock = () => get(showStock, {table: 'stock', query: [`size_id=${path[3]}`]});
         document.querySelector('#reload').addEventListener('click', () => getStock());
@@ -209,7 +207,7 @@
     <script async>getStock()</script>
 <% } %>
 <% if (permissions.access_requests) {%>
-    <script src="/js/sizes/show/showRequests.js"></script>
+    <script src="/js/sizes/show/requests.js"></script>
     <script>
         getRequests = () => get(showRequests, {table: 'request_lines', query: [`size_id=${path[3]}`]});
         document.querySelector('#reload').addEventListener('click', () => getRequests());
@@ -217,7 +215,7 @@
     <script async>getRequests()</script>
 <% } %>
 <% if (permissions.access_orders) {%>
-    <script src="/js/sizes/show/showOrders.js"></script>
+    <script src="/js/sizes/show/orders.js"></script>
     <script>
         getOrders = () => get(showOrders, {table: 'order_lines', query: [`size_id=${path[3]}`]});
         document.querySelector('#reload').addEventListener('click', () => getOrders());
@@ -225,7 +223,7 @@
     <script async>getOrders()</script>
 <% } %>
 <% if (permissions.access_receipts) {%>
-    <script src="/js/sizes/show/showReceipts.js"></script>
+    <script src="/js/sizes/show/receipts.js"></script>
     <script>
         getReceipts = () => get(showReceipts, {table: 'receipt_lines', query: [`size_id=${path[3]}`]});
         document.querySelector('#reload').addEventListener('click', () => getReceipts());
@@ -233,7 +231,7 @@
     <script async>getReceipts()</script>
 <% } %>
 <% if (permissions.access_issues) {%>
-    <script src="/js/sizes/show/showIssues.js"></script>
+    <script src="/js/sizes/show/issues.js"></script>
     <script>
         getIssues = () => get(showIssues, {table: 'issue_lines', query: [`size_id=${path[3]}`]});
         document.querySelector('#reload').addEventListener('click', () => getIssues());

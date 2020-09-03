@@ -7,7 +7,8 @@ edit = (table, id, options = {}) => {
             sizes: '629',
             nsns: '200',
             serials: '192',
-            stock: '192'
+            stock: '192',
+            users: '361'
         },
         widths = {},
         queries = '',

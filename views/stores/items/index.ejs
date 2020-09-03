@@ -2,11 +2,12 @@
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		 text: 'Stores'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
 			<% if (permissions.item_add) { %>
 				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("items")', text: '<i class="fas fa-plus"></i>'}) %>
 			<% } %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {text: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
         </ul>
     </nav>
 </section>
@@ -28,14 +29,17 @@
 <script src="/js/get.js"></script>
 <script src="/js/add.js"></script>
 <script src="/js/search/table.js"></script>
-<script src="/js/items/index/showItems.js"></script>
+<script src="/js/items/index/items.js"></script>
+<script>
+	getItems = () => get(showItems, {table: 'items', query: item_query()})
+	document.querySelector('#reload').addEventListener('click', () => getItems());
+</script>
+<script async>getItems()</script>
 <script>
 	window.addEventListener( "load", () => {
 		['genders', 'categories', 'groups', 'types', 'subtypes'].forEach(table => {
 			let _select = document.querySelector(`#${table}Select`);
-			_select.addEventListener("change", event => {
-				get(showItems, {table: 'items', query: item_query()})
-			});
+			_select.addEventListener("change", event => getItems());
 		});
 	});
 </script>

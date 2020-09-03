@@ -30,7 +30,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             .then(user => {
                 res.render('stores/users/show', {
                     f_user:   user,
-                    show_tab: req.query.tab || 'details'
+                    tab: req.query.tab || 'details'
                 });
             })
             .catch(err => res.error.redirect(err, req, res));

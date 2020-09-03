@@ -16,39 +16,29 @@
                 <% if (permissions.stock_delete) { %>
                     <%- include(`${process.env.PARTIALS}/delete`, {close: true, onComplete: 'getSerials'}) %>
                 <% } %>
+				<% if (permissions.adjust_add) { %>
+					<div class="dropdown-divider"></div>
+                    <a class='dropdown-item' id='_count'>Count</a>
+                    <a class='dropdown-item' id='_scrap'>Scrap</a>
+				<% } %>
             </div>
         </li>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',  title: 'Details'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'adjusts',  title: 'Adjustments', count_id: 'adjust_count',  permission: 'access_adjusts'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts', title: 'Receipts',    count_id: 'receipt_count', permission: 'access_receipts'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'issues',   title: 'Issues', 	   count_id: 'issue_count',   permission: 'access_issues'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'returns',  title: 'Returns', 	   count_id: 'return_count',  permission: 'access_return'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'returns',  title: 'Returns', 	   count_id: 'return_count',  permission: 'access_returns'}) %>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',    title: 'Notes',       count_id: 'note_count',    permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<div class="input-group mb-1">
-				<div class="input-group-prepend w-20">
-					<span class="input-group-text w-100">Location</span>
-				</div>
-				<p class="form-control"><%= stock.location._location %></p>
-				<div class="input-group-append">
-					<a class='btn btn-warning' href='javascript:edit("stock",<%= stock.stock_id %>)'>
-						<i class='fas fa-pencil-alt'></i>
-					</a>
-				</div>
-			</div>
+			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'stock'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'location', title: 'Location'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_qty', title: 'Quantity'}) %>
 		</div>
         <% if (permissions.access_adjusts) { %>
 			<div class="tab-pane fade" id="adjusts" role="tabpanel" aria-labelledby="adjusts-tab">
-				<% if (permissions.adjust_add) { %> 
-					<a class="float-left btn btn-primary mr-1" href='javascript:add("adjusts",{"height":361,"queries":"stock_id=<%= stock.stock_id %>&adjustType=Count"})'>
-						<i class='fas fa-pencil-alt'></i>
-					</a>
-					<a class="float-left btn btn-danger mr-1" href='javascript:add("adjusts",{"height":361,"queries":"stock_id=<%= stock.stock_id %>&adjustType=Scrap"})'>
-						<i class='fas fa-trash-alt'></i>
-					</a>
-				<% } %>
 				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'adjusts'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
@@ -65,7 +55,7 @@
         <% } %>
         <% if (permissions.access_receipts) { %>
 			<div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
-				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipts'}) %>
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipt_lines'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
@@ -80,7 +70,7 @@
         <% } %>
         <% if (permissions.access_issues) { %>
 			<div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'issues'}) %>
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'issue_lines'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-40" onclick="sortTable(0, 'issueTable')">Date</th>
@@ -96,7 +86,7 @@
         <% } %>
         <% if (permissions.access_returns) { %>
 			<div class="tab-pane fade" id="returns" role="tabpanel" aria-labelledby="returns-tab">
-				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'returns'}) %>
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'return_lines'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-45" onclick="sortTable(0, 'returnTable')">Date</th>
@@ -105,24 +95,6 @@
 						<th><i class="fas fa-search"></i></th>
 					</thead>
 					<tbody id="returnTable">
-						<% if (stock.returns && stock.returns.length > 0) { %>
-							<% stock.returns.forEach(_return => { %>
-								<tr>
-									<td data-sort="<%= _return.return._date.getTime() %>">
-										<%= _return.return._date.toDateString() %>
-									</td>
-									<td>
-										<%= _return._from.user.rank._rank %> <%= _return._from.user.full_name %>
-									</td>
-									<td>
-										<%= _return._qty %>
-									</td>
-									<td>
-										<a class='btn btn-sm btn-primary' href="/stores/returns/<%= _return.return_id %>"><i class="fas fa-search"></i></a>
-									</td>
-								</tr>
-							<% }) %>
-						<% } %>
 					</tbody>
 				</table>
 			</div>
@@ -130,9 +102,49 @@
         <% include ../../partials/notes/tab_body %>
 	</div>
 <%- include(`${process.env.PARTIALS}/foot/noNav`) %>
-<script src="/js/specific/stock_show.js"></script>
-<script async>getAdjusts(<%= stock.size_id %>)</script>
-<script async>getReceipts(<%= stock.size_id %>)</script>
-<script async>getIssues(<%= stock.size_id %>)</script>
-<script async>getReturns(<%= stock.size_id %>)</script>
+<script src="/js/data/addFormListener.js"></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('<%= tab %>');</script>
+<script src="/js/stock/show/stock.js"></script>
+<script>
+    getStock = () => {
+        get(showStock, {table: 'stock', query: [`stock_id=${path[3]}`]});
+        window.opener.getStock();
+    };
+    document.querySelector('#reload').addEventListener('click', () => getStock());
+</script>
+<script async>getStock()</script>
+<% if (permissions.access_adjusts) { %>
+	<script src="/js/stock/show/adjusts.js"></script>
+    <script>
+        getAdjusts = () => get(showAdjusts, {table: 'adjusts', query: [`stock_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getAdjusts());
+    </script>
+    <script async>getAdjusts()</script>
+<% } %>
+
+<% if (permissions.access_receipts) {%>
+    <script src="/js/stock/show/receipts.js"></script>
+    <script>
+        getReceipts = () => get(showReceipts, {table: 'receipt_lines', query: [`stock_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getReceipts());
+    </script>
+    <script async>getReceipts()</script>
+<% } %>
+<% if (permissions.access_issues) {%>
+    <script src="/js/stock/show/issues.js"></script>
+    <script>
+        getIssues = () => get(showIssues, {table: 'issue_lines', query: [`stock_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getIssues());
+    </script>
+    <script async>getIssues()</script>
+<% } %>
+<% if (permissions.access_returns) { %>
+    <script src="/js/stock/show/returns.js"></script>
+    <script>
+        getReturns = () => get(showReturns, {table: 'return_lines', query: [`stock_id=${path[3]}`]});
+        document.querySelector('#reload').addEventListener('click', () => getReturns());
+    </script>
+    <script async>getReturns()</script>
+<% } %>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

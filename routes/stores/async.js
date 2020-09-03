@@ -77,7 +77,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             ]
         },
         attributes = {
-            users: ['user_id', 'full_name'],
+            users: ['user_id', 'full_name', '_bader', '_name', '_ini'],
             settings: ['_name', '_value']
         };
     app.get('/stores/get/issue_lines/:id', isLoggedIn, allowed('', {send: true}),              (req, res) => {
