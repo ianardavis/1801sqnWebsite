@@ -16,7 +16,7 @@ module.exports = (inc, m) => {
         return {
             model:      m.users,
             include:    include,
-            attributes: options.attributes || null,
+            attributes: options.attributes || {exclude: ['_password', '_salt']},
             as:         options.as         || 'user',
             where:      options.where      || null,
             required:   options.required   || false

@@ -9,4 +9,5 @@ statuses_select = (statuses, options) => {
         }).option);
     });
     hide_spinner('statuses');
+    getUsers();
 };

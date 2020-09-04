@@ -69,7 +69,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             serials: [inc.locations({as: 'location'})],
             stock: [inc.locations({as: 'location'})],
             suppliers: [m.accounts, m.files],
-            users: [m.ranks],
+            users: [m.ranks, m.statuses],
             nsns: [
                 inc.nsn_groups(),
                 inc.nsn_classifications(),
@@ -77,7 +77,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             ]
         },
         attributes = {
-            users: ['user_id', 'full_name', '_bader', '_name', '_ini'],
+            users: ['user_id', 'full_name', '_bader', '_name', '_ini', 'status_id', 'rank_id', '_login_id', '_reset', '_last_login'],
             settings: ['_name', '_value']
         };
     app.get('/stores/get/issue_lines/:id', isLoggedIn, allowed('', {send: true}),              (req, res) => {
@@ -90,7 +90,19 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     where: {issued_to: req.params.id},
                     required: true
         })]})
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({result: true, issue_lines: lines}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/request_lines/:id', isLoggedIn, allowed('', {send: true}),            (req, res) => {
+        m.request_lines.findAll({
+            where: req.query,
+            include: [
+                inc.sizes(),
+                inc.requests({
+                    where: {requested_for: req.params.id},
+                    required: true
+        })]})
+        .then(lines => res.send({result: true, request_lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/order_lines/:id', isLoggedIn, allowed('', {send: true}),              (req, res) => {
@@ -102,7 +114,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     where: {ordered_for: req.params.id},
                     required: true
         })]})
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({result: true, order_lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/requests',        isLoggedIn, allowed('', {allow: true, send: true}), (req, res) => {

@@ -3,11 +3,8 @@
     <nav class="navbar navbar-expand navbar-light bg-nav">
         <ul class="navbar-nav mr-auto">
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/items', text: 'Users'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/users', text: 'Users'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`) %>
-            <!-- <li class="nav-item">
-                <a class="nav-link stores_nav" href="/stores/users/<%= f_user.user_id %>"><%= f_user.rank._rank %> <%= f_user.full_name %></a>
-            </li> -->
         </ul>
     </nav>
 </section>
@@ -89,19 +86,21 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_bader',    title: 'Bader #'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_rank',     title: 'Rank'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_name',     title: 'Name'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_ini',      title: 'Initials'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',   title: 'Status'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_login_id', title: 'Login ID'}) %>
+            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'users'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_bader',      title: 'Bader #'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'rank',        title: 'Rank'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_name',       title: 'Name'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_ini',        title: 'Initials'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'status',      title: 'Status'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_login_id',   title: 'Login ID'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_last_login', title: 'Last Login'}) %>
             <div class="input-group mb-1">
                 <div class="input-group-prepend w-75">
                     <span class="input-group-text w-100">Change password on next login</span>
                 </div>
                 <p class='form-control'>
                     <!-- <input class="form-control form-control-sm" type="checkbox" disabled<% if (f_user._reset) { %> checked<% } %>> -->
-                    <input class="form-control form-control-sm" type="checkbox" disabled>
+                    <input class="form-control form-control-sm" type="checkbox" id='_reset' disabled>
                 </p>
             </div>
         </div>
@@ -115,7 +114,7 @@
                 <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'request_status', options: [{value: 'All', text: 'All'}, {value: 'Pending', text: 'Pending'}, {value: 'Approved', text: 'Approved'}, {value: 'Declined', text: 'Declined'}], spinner: true, spinner_sm: true, spinner_float_right: true}) %>
                 <table class='table table-sm table-hover'>
                     <thead class="thead-dark">
-                        <th class="w-20" onclick="sortTable(0, 'requestTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests', spinner_sm: true, spinner_float_left: true}) %>Date</th>
+                        <th class="w-20" onclick="sortTable(0, 'requestTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true}) %>Date</th>
                         <th class="w-30" onclick="sortTable(1, 'requestTable')">Item</th>
                         <th class="w-20" onclick="sortTable(2, 'requestTable')">Size</th>
                         <th class="w-10" onclick="sortTable(3, 'requestTable')">Qty</th>
@@ -132,7 +131,7 @@
                 <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'order_status', options: [{value: 'All', text: 'All'}, {value: 'Open', text: 'Open'}, {value: 'Demanded', text: 'Demanded'}, {value: 'Received', text: 'Received'}, {value: 'Complete', text: 'Complete'}, {value: 'Cancelled', text: 'Cancelled'}], spinner: true, spinner_sm: true, spinner_float_right: true}) %>
                 <table class='table table-sm table-hover'>
                     <thead class="thead-dark">
-                        <th class="w-25" onclick="sortTable(0, 'tableOrders')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'orders', spinner_sm: true, spinner_float_left: true}) %>Date</th>
+                        <th class="w-25" onclick="sortTable(0, 'tableOrders')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'order_lines', spinner_sm: true, spinner_float_left: true}) %>Date</th>
                         <th class="w-25" onclick="sortTable(1, 'tableOrders')">Item</th>
                         <th class="w-20" onclick="sortTable(2, 'tableOrders')">Size</th>
                         <th class="w-10" onclick="sortTable(3, 'tableOrders')">Qty</th>
@@ -156,7 +155,7 @@
                 <% } %>
                 <table class='table table-sm table-hover'>
                     <thead class="thead-dark">
-                        <th class="w-20" onclick="sortTable(0, 'tableIssues')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'issues', spinner_sm: true, spinner_float_left: true}) %>Date Due</th>
+                        <th class="w-20" onclick="sortTable(0, 'tableIssues')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'issue_lines', spinner_sm: true, spinner_float_left: true}) %>Date Due</th>
                         <th class="w-30" onclick="sortTable(1, 'tableIssues')">Item</th>
                         <th class="w-20" onclick="sortTable(2, 'tableIssues')">Size</th>
                         <th class="w-10" onclick="sortTable(3, 'tableIssues')">Qty</th>
@@ -178,9 +177,16 @@
 <script src='/js/users/show/requests.js'></script>
 <script src='/js/users/show/orders.js'></script>
 <script src='/js/users/show/issues.js'></script>
+<script src='/js/users/show/user.js'></script>
+<script src="/js/getByUser.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
+<script>
+    getUser = () => get(showUser, {table: 'users', query: [`user_id=${path[3]}`]})
+    document.querySelector('#reload').addEventListener('click', () => getUser());
+</script>
+<script async>getUser()</script>
 <% if (permissions.access_permissions || user.user_id === f_user.user_id) { %>
     <script>
         getPermissions = () => get(showPermissions, {table: 'permissions', query: [`user_id=${path[3]}`]})
@@ -190,21 +196,21 @@
 <% } %>
 <% if (permissions.access_requests || user.user_id === f_user.user_id) { %>
     <script>
-        getRequests = () => get(showRequests, {table: 'requests', query: [`user_id=${path[3]}`]})
+        getRequests = () => getByUser(showRequests, {table: 'request_lines', user_id: path[3], query: []})
         document.querySelector('#reload').addEventListener('click', () => getRequests());
     </script>
     <script async>getRequests()</script>
 <% } %>
 <% if (permissions.access_orders || user.user_id === f_user.user_id) { %>
     <script>
-        getOrders = () => get(showOrders, {table: 'orders', query: [`user_id=${path[3]}`]})
+        getOrders = () => getByUser(showOrders, {table: 'order_lines', user_id: path[3], query: []})
         document.querySelector('#reload').addEventListener('click', () => getOrders());
     </script>
     <script async>getOrders()</script>
 <% } %>
 <% if (permissions.access_issues || user.user_id === f_user.user_id) { %>
     <script>
-        getIssues = () => get(showIssues, {table: 'issues', query: [`user_id=${path[3]}`]})
+        getIssues = () => getByUser(showIssues, {table: 'issue_lines', user_id: path[3], query: []})
         document.querySelector('#reload').addEventListener('click', () => getIssues());
     </script>
     <script async>getIssues()</script>
