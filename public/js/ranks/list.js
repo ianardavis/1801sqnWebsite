@@ -7,5 +7,6 @@ listRanks = (ranks, options) => {
             text: rank._rank
         }).option);
     });
+    ranks_loaded = true;
     hide_spinner('ranks');
 };

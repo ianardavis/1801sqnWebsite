@@ -8,6 +8,6 @@ statuses_select = (statuses, options) => {
             text: status._status
         }).option);
     });
+    statuses_loaded = true;
     hide_spinner('statuses');
-    getUsers();
 };

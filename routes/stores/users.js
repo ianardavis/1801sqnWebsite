@@ -4,36 +4,22 @@ _options = () => {
     return [
         {table: 'ranks'},
         {table: 'statuses'}
-    ]
+    ];
 };
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
     let db      = require(process.env.ROOT + '/fn/db'),
         options = require(process.env.ROOT + '/fn/options');
     app.get('/stores/users',              isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
-        if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id);
-        else {
-            m.statuses.findAll()
-            .then(statuses => res.render('stores/users/index', {statuses: statuses}));
-        };
+        if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id)
+        else res.render('stores/users/index');
     });
-    app.get('/stores/users/new',          isLoggedIn, allowed('user_add'),                                 (req, res) => {
-        options.get(_options())
-        .then(classes => res.render('stores/users/new', {classes: classes}))
-    });
+    app.get('/stores/users/new',          isLoggedIn, allowed('user_add'),                                 (req, res) => res.render('stores/users/new'));
     app.get('/stores/users/:id',          isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            db.findOne({
-                table: m.users,
-                where: {user_id: req.params.id},
-                include: [inc.ranks(), m.statuses]
-            })
-            .then(user => {
-                res.render('stores/users/show', {
-                    f_user:   user,
-                    tab: req.query.tab || 'details'
-                });
-            })
-            .catch(err => res.error.redirect(err, req, res));
+            res.render('stores/users/show', {
+                user_id: req.params.id,
+                tab: req.query.tab || 'details'
+            });
         } else {
             req.flash('danger', 'Permission denied!')
             res.redirect('/stores/users');
@@ -72,7 +58,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         let salt = randomBytes(16).toString("hex");
         req.body.user._salt = salt;
         req.body.user._password = scryptSync(req.body._password, salt, 32).toString("hex");
-        req.body.user._reset = 0
+        req.body.user._reset = 0;
         m.users.create(req.body.user)
         .then(user => res.send({result: true, message: 'User added'}))
         .catch(err => res.error.send(err, res));

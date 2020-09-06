@@ -25,6 +25,9 @@ input {
 table {
 	overflow-x: auto;
 }
+select {
+	text-align-last: center;
+}
 
 /* /////////////////////////////////////////////////////////////////// */
 #title {
