@@ -19,15 +19,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         };
     });
     app.get('/stores/users/:id/password', isLoggedIn, allowed('user_password', {allow: true}),             (req, res) => {
-        if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            db.findOne({
-                table: m.users,
-                where: {user_id: req.params.id},
-                include: [inc.ranks()]
-            })
-            .then(user => res.render('stores/users/password', {user: user}))
-            .catch(err => res.error.redirect(err, req, res));
-        } else res.error.redirect(new Error('Permission denied'), '/', req, res);
+        if (req.allowed || req.user.user_id === Number(req.params.id)) res.render('stores/users/password', {user_id: req.params.id})
+        else res.error.redirect(new Error('Permission denied'), '/', req, res);
     });
     app.get('/stores/users/:id/edit',     isLoggedIn, allowed('user_edit'),                                (req, res) => res.render('stores/users/edit', {user_id: req.params.id}));
     
