@@ -43,7 +43,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     app.put('/stores/password/:id',       isLoggedIn, allowed('user_password', {send: true, allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             req.body.user._salt = randomBytes(16).toString("hex");
-            req.body.user._password = scryptSync(req.body._password, salt, 32).toString("hex");
+            req.body.user._password = scryptSync(req.body._password, req.body.user._salt, 32).toString("hex");
             db.update({
                 table: m.users,
                 where: {user_id: req.params.id},
