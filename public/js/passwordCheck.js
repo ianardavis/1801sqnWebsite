@@ -1,7 +1,3 @@
-let _password  = document.querySelector("#_password"),
-    _confirm   = document.querySelector("#_confirm");
-_password.addEventListener('input', pwd_compare);
-_confirm.addEventListener( 'input', pwd_compare);
 password_ok = () => {
     let _password = document.querySelector("#_password"),
         _confirm  = document.querySelector("#_confirm");
