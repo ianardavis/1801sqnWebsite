@@ -12,7 +12,7 @@
 	</nav>
 </section>
 <section class='container'>
-	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Displaying', id: 'statuses', spinner: true, spinner_sm: true, spinner_float_right: true}) %>
+	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Displaying', id: 'status_id', spinner: true, spinner_sm: true, spinner_float_right: true}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-40" onclick="sortTable(0, 'userTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'users', spinner_sm: true, spinner_float_left: true}) %>Bader/Service #</th>
