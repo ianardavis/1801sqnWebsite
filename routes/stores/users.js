@@ -44,7 +44,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             })
             .then(result => res.send({result: true, message: 'Password changed'}))
             .catch(err => res.error.send(err, res));
-        } else res.error.send('Permission denied', res)
+        } else res.error.send('Permission denied', res);
     });
     app.put('/stores/users/:id',          isLoggedIn, allowed('user_edit',     {send: true}),              (req, res) => {
         if (!req.body.user)        req.body.user = {};
