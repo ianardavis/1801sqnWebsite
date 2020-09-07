@@ -1,18 +1,21 @@
-var input_password = document.querySelector("#_password"),
-    input_confirm  = document.querySelector("#_confirm"),
-    btn_submit     = document.querySelector("#_submit");
-
-input_password.addEventListener('input', pwd_compare);
-input_confirm.addEventListener('input', pwd_compare);
-
-function pwd_compare() {
-    if (input_password.value !== input_confirm.value || input_password.value === '') {
-        input_password.classList.add('pwd_warn');
-        input_confirm.classList.add('pwd_warn');
-        btn_submit.disabled= true;
+password_ok = () => {
+    let _password = document.querySelector("#_password"),
+        _confirm  = document.querySelector("#_confirm");
+    if (_password.value === _confirm.value) {
+        let re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+        if (re.test(_password.value)) return true
+        else return false;
+    } else return false;
+};
+pwd_compare = () => {
+    let _save = document.querySelector("#_save");
+    if (password_ok) {
+        _password.classList.add('pwd_warn');
+        _confirm.classList.add( 'pwd_warn');
+        _save.disabled = true;
     } else {
-        input_password.classList.remove('pwd_warn');
-        input_confirm.classList.remove('pwd_warn');
-        btn_submit.disabled= false;
-    }
-}
+        _password.classList.remove('pwd_warn');
+        _confirm.classList.remove( 'pwd_warn');
+        _save.disabled = false;
+    };
+};

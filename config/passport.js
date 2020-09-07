@@ -66,7 +66,18 @@ module.exports = (passport, m) => {
                 } else {
                     delete user._password;
                     delete user._salt;
-                    return done(null, user.get())
+                    m.users.update({_last_login: Date.now()}, {where: {user_id: user.user_id}})
+                    .then(result => {
+                        console.log(user.get());
+                        return done(null, user.get());
+                    })
+                    .catch(err => {
+                        return done(
+                            null, 
+                            false, 
+                            {message: 'Error setting last login'}
+                        );
+                    });
                 };
             })
             .catch(err => {

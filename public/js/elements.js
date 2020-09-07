@@ -59,6 +59,7 @@ function Select (options = {}) {
     if (options.small)    this.select.classList.add('form-control-sm');
     if (options.required) this.select.required = true;
     if (options.id)       this.select.id = options.id;
+    if (options.options)  options.options.forEach(e => this.select.appendChild(new Option(e).option));
 };
 function Option (options = {}) {
     this.option = document.createElement('option');
@@ -112,7 +113,7 @@ add_cell = (row, options = {}) => {
     if (options.sort)      cell.dataset.sort = options.sort;
     if (options.text)      cell.innerText = options.text || '';
     else if (options.html) cell.innerHTML = options.html || '';
-    if (options.classes)   options.classes.forEach(_class => cell.classList.add(_class));
+    if (options.classes)   options.classes.forEach(e => cell.classList.add(e));
     if (options.append)    cell.appendChild(options.append);
     if (options.id)        cell.id = options.id;
     if (options.ellipsis)  cell.classList.add('ellipsis1');
