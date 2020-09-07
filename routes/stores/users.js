@@ -1,14 +1,7 @@
 const op = require('sequelize').Op,
-      { scryptSync, randomBytes } = require("crypto");;
-_options = () => {
-    return [
-        {table: 'ranks'},
-        {table: 'statuses'}
-    ];
-};
+      { scryptSync, randomBytes } = require("crypto");
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db      = require(process.env.ROOT + '/fn/db'),
-        options = require(process.env.ROOT + '/fn/options');
+    let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/users',              isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
         if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id)
         else res.render('stores/users/index');
@@ -36,23 +29,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             .catch(err => res.error.redirect(err, req, res));
         } else res.error.redirect(new Error('Permission denied'), '/', req, res);
     });
-    app.get('/stores/users/:id/edit',     isLoggedIn, allowed('user_edit'),                                (req, res) => {
-        options.get(_options())
-        .then(classes => {
-            db.findOne({
-                table: m.users,
-                where: {user_id: req.params.id},
-                include: [inc.ranks()]
-            })
-            .then(user => {
-                res.render('stores/users/edit', {
-                    user:    user,
-                    classes: classes
-                });
-            })
-            .catch(err => res.error.redirect(err, req, res));
-        });
-    });
+    app.get('/stores/users/:id/edit',     isLoggedIn, allowed('user_edit'),                                (req, res) => res.render('stores/users/edit', {user_id: req.params.id}));
     
     app.post('/stores/users',             isLoggedIn, allowed('user_add',      {send: true}),              (req, res) => {
         let salt = randomBytes(16).toString("hex");
