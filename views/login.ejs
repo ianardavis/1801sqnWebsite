@@ -4,8 +4,8 @@
 	<div class="col-12 col-md-6 bordered mx-auto">
 		<h3>Login:</h3>
 		<form action="/login?redirect=<%= redirect %>" method="post">
-			<p><input class="form-control" id="username" type="text" name="_login_id" placeholder="Username" required></p>
-			<p><input class="form-control" id="password" type="password" name="_password" placeholder="Password" required></p>
+			<p><input class="form-control" id="username" type="text" name="_login_id" placeholder="Username" required autocomplete="username"></p>
+			<p><input class="form-control" id="password" type="password" name="_password" placeholder="Password" required autocomplete="current-password"></p>
 			<p><button class="btn btn-success w-100">Log In</button></p>
 		</form>
 	</div>

@@ -1,6 +1,6 @@
 statuses_select = (statuses, options) => {
     show_spinner('statuses');
-    let select = document.querySelector('#statuses');
+    let select = document.querySelector('#status_id');
     select.innerHTML = '';
     statuses.forEach(status => {
         select.appendChild(new Option({
@@ -8,5 +8,6 @@ statuses_select = (statuses, options) => {
             text: status._status
         }).option);
     });
+    statuses_loaded = true;
     hide_spinner('statuses');
 };

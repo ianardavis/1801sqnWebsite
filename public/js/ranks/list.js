@@ -1,5 +1,5 @@
 listRanks = (ranks, options) => {
-    let select = document.querySelector('#ranks');
+    let select = document.querySelector('#rank_id');
     select.innerHTML = '';
     ranks.forEach(rank => {
         select.appendChild(new Option({
@@ -7,5 +7,6 @@ listRanks = (ranks, options) => {
             text: rank._rank
         }).option);
     });
+    ranks_loaded = true;
     hide_spinner('ranks');
 };

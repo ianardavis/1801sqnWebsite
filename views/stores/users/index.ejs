@@ -12,7 +12,7 @@
 	</nav>
 </section>
 <section class='container'>
-	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Displaying', id: 'statuses', spinner: true, spinner_sm: true, spinner_float_right: true}) %>
+	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Displaying', id: 'status_id', spinner: true, spinner_sm: true, spinner_float_right: true}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-40" onclick="sortTable(0, 'userTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'users', spinner_sm: true, spinner_float_left: true}) %>Bader/Service #</th>
@@ -32,19 +32,26 @@
 <script src="/js/add.js"></script>
 <script src="/js/users/index/users.js"></script>
 <script src="/js/statuses/list.js"></script>
-<script>listStatuses = () => get(statuses_select, {table: 'statuses', query: []})</script>
-<script async>listStatuses()</script>
 <script>
 	getUsers = () => get(showUsers, {table: 'users', query: user_query()})
-	document.querySelector('#reload').addEventListener('click', () => listStatuses());
 	document.querySelector('#reload').addEventListener('click', () => getUsers());
+    var statuses_loaded = false;
+    let int_load_users = window.setInterval(
+        () => {
+            if (statuses_loaded === true) {
+                window.clearInterval(int_load_users);
+                getUsers();
+            }
+        },
+        100
+	);
 </script>
-<script async>getUsers()</script>
+<script>listStatuses = () => get(statuses_select, {table: 'statuses', query: []})</script>
+<script async>listStatuses()</script>
 <script>
 	window.addEventListener( "load", () => {
 		let _select = document.querySelector(`#statuses`);
 		_select.addEventListener("change", event => getUsers());
 	});
 </script>
-<script async>get(showUsers, {table: 'users', query: user_query()})</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
