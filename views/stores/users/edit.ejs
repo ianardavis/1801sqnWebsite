@@ -3,15 +3,17 @@
 <%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
     <form id='userForm'>
-        <%- include(`${process.env.PARTIALS}/spinner`,       {id: 'users'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,   {id: '_bader',    title: 'Bader #',  name: 'user[_bader]',    required: true, maxLength: 20, placeholder: 'Required'}) %>
-        <%- include(`${process.env.PARTIALS}/spinner`,       {id: 'ranks'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select`, {id: 'ranks',     title: 'Rank',     name: 'user[rank_id]',   required: true}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,   {id: '_name',     title: 'Name',     name: 'user[_name]',     required: true, maxLength: 50, placeholder: 'Required'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,   {id: '_ini',      title: 'Initials', name: 'user[_ini]',      required: true, maxLength: 5,  placeholder: 'Required'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select`, {id: 'statuses',  title: 'Status',   name: 'user[status_id]', required: true}) %>
-        <%- include(`${process.env.PARTIALS}/spinner`,       {id: 'statuses'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,   {id: '_login_id', title: 'Login ID', name: 'user[_login_id]', required: true, maxLength: 30, placeholder: 'Required'}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`,         {id: 'users'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,     {id: '_bader',    title: 'Bader #',  name: 'user[_bader]',    required: true, maxLength: 20, placeholder: 'Required'}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`,         {id: 'ranks'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/select`,   {id: 'rank_id',   title: 'Rank',     name: 'user[rank_id]',   required: true}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,     {id: '_name',     title: 'Name',     name: 'user[_name]',     required: true, maxLength: 50, placeholder: 'Required'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/text`,     {id: '_ini',      title: 'Initials', name: 'user[_ini]',      required: true, maxLength: 5,  placeholder: 'Required'}) %>
+        <%- include(`${process.env.PARTIALS}/inputs/select`,   {id: 'status_id', title: 'Status',   name: 'user[status_id]', required: true}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`,         {id: 'statuses'}) %>
+        <% if (user_id !== user.user_id) { %>
+            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_login_id', title: 'Login ID', name: 'user[_login_id]', required: true, maxLength: 30, placeholder: 'Required'}) %>
+        <% } %>
         <%- include(`${process.env.PARTIALS}/save_cancel`) %>
     </form>
 <%- include(`${process.env.PARTIALS}/foot/noNav`) %>
