@@ -15,8 +15,8 @@ showUsers = (users, options) => {
     hide_spinner('users');
 };
 user_query = () => {
-    let status = document.querySelector('#statuses'),
+    let status = document.querySelector('#status_id'),
         query        = [];
-    if (statuses.value !== '') query.push('status_id=' +   status.value);
+    if (status.value !== '') query.push('status_id=' +   status.value);
     return query;
 };

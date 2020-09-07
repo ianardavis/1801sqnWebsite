@@ -1,5 +1,5 @@
 statuses_select = (statuses, options) => {
-    show_spinner('statuses');
+    show_spinner('status_id');
     let select = document.querySelector('#status_id');
     select.innerHTML = '';
     statuses.forEach(status => {
@@ -9,5 +9,5 @@ statuses_select = (statuses, options) => {
         }).option);
     });
     statuses_loaded = true;
-    hide_spinner('statuses');
+    hide_spinner('status_id');
 };

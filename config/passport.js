@@ -68,7 +68,6 @@ module.exports = (passport, m) => {
                     delete user._salt;
                     m.users.update({_last_login: Date.now()}, {where: {user_id: user.user_id}})
                     .then(result => {
-                        console.log(user.get());
                         return done(null, user.get());
                     })
                     .catch(err => {
