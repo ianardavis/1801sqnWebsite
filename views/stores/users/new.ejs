@@ -17,7 +17,8 @@
     </form>
     <%- include(`${process.env.PARTIALS}/foot/noNav`) %>
 <script src="/js/loginBaderMirror.js"></script>
-<script src="/js/newUserFieldCheck.js"></script>
+<script src="/js/passwordCheck.js"></script>
+<script src="/js/userFieldCheck.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/XHRsend.js"></script>
 <script src="/js/get.js"></script>
@@ -38,7 +39,6 @@
                 _close: true
             }
         );
-        checkFilled();
     });
 </script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
