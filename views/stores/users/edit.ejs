@@ -47,9 +47,10 @@
         addFormListener(
             'userForm',
             'PUT',
-            '/stores/users/<%= user.user_id %>',
+            '/stores/users/<%= user_id %>',
             {
-                onComplete: window.opener.getUser
+                onComplete: window.opener.getUser,
+                _close: true
             }
         );
     });

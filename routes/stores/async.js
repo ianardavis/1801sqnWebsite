@@ -147,6 +147,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/:table',          isLoggedIn, allowed('', {send: true}),              (req, res) => {
+        console.log(req.query);
         m[req.params.table].findAll({
             where:      req.query,
             include:    includes[req.params.table]   || [],

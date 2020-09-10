@@ -3,8 +3,8 @@ const op = require('sequelize').Op,
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
     let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/users',              isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
-        if (!req.allowed) res.redirect('/stores/users/' + req.user.user_id)
-        else res.render('stores/users/index');
+        if (req.allowed) res.render('stores/users/index')
+        else res.redirect('/stores/users/' + req.user.user_id);
     });
     app.get('/stores/users/new',          isLoggedIn, allowed('user_add'),                                 (req, res) => res.render('stores/users/new'));
     app.get('/stores/users/:id',          isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
@@ -13,10 +13,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 user_id: req.params.id,
                 tab: req.query.tab || 'details'
             });
-        } else {
-            req.flash('danger', 'Permission denied!')
-            res.redirect('/stores/users');
-        };
+        } else res.error.redirect(new Error('Permission denied'), req, res);
     });
     app.get('/stores/users/:id/password', isLoggedIn, allowed('user_password', {allow: true}),             (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) res.render('stores/users/password', {user_id: req.params.id})

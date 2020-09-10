@@ -18,7 +18,7 @@ showUser = (users, options) => {
             perm_edit  = document.querySelector('#btn_perm_edit'),
             user_ids   = document.querySelectorAll('.user_id'),
             _edit      = document.querySelector('#edit_link');
-        breadcrumb.innerText = `Size: ${users[0].rank._rank} ${users[0].full_name}`;
+        breadcrumb.innerText = `${users[0].rank._rank} ${users[0].full_name}`;
         breadcrumb.href      = `/stores/users/${users[0].user_id}`;
         user_ids.forEach(e => e.value = users[0].user_id);
         if (pwd_rst) {

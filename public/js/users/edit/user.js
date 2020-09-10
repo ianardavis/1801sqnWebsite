@@ -4,10 +4,10 @@ showUser = (users, options) => {
             try {
                 let element = document.querySelector('#' + id);
                 if (id === 'rank_id') {
-                    let _ranks = document.querySelector('#ranks');
+                    let _ranks = document.querySelector('#rank_id');
                     _ranks.value = value;
                 } else if (id === 'status_id') {
-                    let _statuses = document.querySelector('#statuses');
+                    let _statuses = document.querySelector('#status_id');
                     _statuses.value = value;
                 } else if (element) element.value = value;
             } catch (error) {console.log(error)};
