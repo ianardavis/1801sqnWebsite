@@ -20,10 +20,8 @@ module.exports = {
         .catch(err => reject(err));
     }),
     destroy: (options = {}) => new Promise((resolve, reject) => {
-        console.log(options);
         options.table.destroy({where: options.where})
         .then(result => {
-            console.log(result);
             if (result) resolve(true)
             else reject(new Error('Record not deleted from ' + options.table.tableName));
         })
