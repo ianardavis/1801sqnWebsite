@@ -22,22 +22,24 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     app.get('/stores/users/:id/edit',     isLoggedIn, allowed('user_edit'),                                (req, res) => res.render('stores/users/edit', {user_id: req.params.id}));
     
     app.post('/stores/users',             isLoggedIn, allowed('user_add',      {send: true}),              (req, res) => {
-        let salt = randomBytes(16).toString("hex");
-        req.body.user._salt = salt;
-        req.body.user._password = scryptSync(req.body._password, salt, 32).toString("hex");
-        req.body.user._reset = 0;
-        m.users.create(req.body.user)
-        .then(user => res.send({result: true, message: 'User added'}))
-        .catch(err => res.error.send(err, res));
+        let user = req.body.user;
+        if (
+            (user._bader    && user._bader !== '')    &&
+            (user._name     && user._name !== '')     &&
+            (user.status_id && user.status_id !== '') &&
+            (user._login_id && user._login_id !== '')
+        ) {
+            m.users.create({...user, ...{_reset: 0}, ...encryptPassword(req.body._password)})
+            .then(user => res.send({result: true, message: 'User added'}))
+            .catch(err => res.error.send(err, res));
+        } else res.error.send(new Error('Not all required information has been submitted'), res)
     });
     app.put('/stores/password/:id',       isLoggedIn, allowed('user_password', {send: true, allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            req.body.user._salt = randomBytes(16).toString("hex");
-            req.body.user._password = scryptSync(req.body._password, req.body.user._salt, 32).toString("hex");
             db.update({
                 table: m.users,
                 where: {user_id: req.params.id},
-                record: req.body.user
+                record: {...req.body.user, ...encryptPassword(req.body._password)}
             })
             .then(result => res.send({result: true, message: 'Password changed'}))
             .catch(err => res.error.send(err, res));
@@ -54,4 +56,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(result => res.send({result: true, message: 'User saved'}))
         .catch(err => res.error.send(err.message, res));
     });
+    encryptPassword = plainText => {
+        let _salt     = randomBytes(16).toString("hex"),
+            _password = scryptSync(plainText, salt, 32).toString("hex");
+        return {_salt: _salt, _password: _password};
+    };
 };
