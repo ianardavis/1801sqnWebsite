@@ -1,57 +1,15 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class="mb-2">
 	<nav class="navbar navbar-expand navbar-light bg-nav">
 		<ul class="navbar-nav mr-auto">
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores">
-					Stores
-				</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/requests">
-					Requests
-				</a>
-			</li>
-			<li class="nav-item">
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
+			<!-- <li class="nav-item">
 				<a class="nav-link stores_nav" href="/stores/requests/<%= request.request_id %>">
 					<%= request.request_id %>
 				</a>
-			</li>
-			<li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle stores_nav" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Options
-                </a>
-                <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-					<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
-						<button form='approveForm' class="dropdown-item dropdown_button confirm">
-							Action Lines
-						</button>
-					<% } %>
-					<% include ../../partials/notes/menu_add %>
-					<% if (!request._complete && !request._closed) { %>
-						<% if (permissions.request_edit) { %>
-							<form id='completeForm'>
-								<button class="dropdown-item dropdown_button confirm">
-									Complete
-								</button>
-							</form>
-						<% }; %>
-						<% if (permissions.request_line_add) { %>
-							<a class="dropdown-item" href='javascript:addSize("request",<%= request.request_id %>)'>
-								Add Item
-							</a>
-						<% } %>
-						<div class="dropdown-divider"></div>
-						<% if (permissions.request_delete) { %>
-							<form id='deleteForm'>
-								<button class="dropdown-item dropdown_button confirm">
-									Delete
-								</button>
-							</form>
-						<% } %>
-					<% } %>
-                </div>
-            </li>
+			</li> -->
 		</ul>
 	</nav>
 </section>
@@ -65,121 +23,108 @@
 				</button>
 			</div>
 			<div class="toast-body toast-warn">
-				This request is still in progress, no items on this request will be actioned or considered until the request is marked as complete in the 'Options' menu
+				This request is still in progress, no items on this request will be actioned or considered until the request is marked as 'Complete'
 			</div>
 		</div>
 	<% } %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
-                Details
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
             </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
+					<button form='approveForm' class="dropdown-item dropdown_button confirm">
+						Action Lines
+					</button>
+				<% } %>
+                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+				<% if (!request._complete && !request._closed) { %>
+					<% if (permissions.request_edit) { %>
+						<form id='completeForm'>
+							<button class="dropdown-item dropdown_button confirm">
+								Complete
+							</button>
+						</form>
+					<% }; %>
+					<% if (permissions.request_line_add) { %>
+						<a class="dropdown-item" href='javascript:addSize("request",<%= request.request_id %>)'>
+							Add Item
+						</a>
+					<% } %>
+					<div class="dropdown-divider"></div>
+					<% if (permissions.request_delete) { %>
+						<form id='deleteForm'>
+							<button class="dropdown-item dropdown_button confirm">
+								Delete
+							</button>
+						</form>
+					<% } %>
+				<% } %>
+            </div>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
-                Lines (<span id='line_count'></span>)
-            </a>
-        </li>
-        <% include ../../partials/notes/tab_head %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="container">
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
-						<span class="input-group-text w-100">For</span>
-					</div>
-					<p class="form-control"><%= request._for.rank._rank %> <%= request._for.full_name %></p>
-					<div class="input-group-append">
-						<a class='btn btn-primary' href="/stores/users/<%= request._for.user_id %>">
-							<i class='fas fa-search'></i>
-						</a>
-					</div>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
-						<span class="input-group-text w-100">By</span>
-					</div>
-					<p class="form-control"><%= request._by.rank._rank %> <%= request._by.full_name %></p>
-					<div class="input-group-append">
-						<a class='btn btn-primary' href="/stores/users/<%= request._by.user_id %>">
-							<i class='fas fa-search'></i>
-						</a>
-					</div>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
-						<span class="input-group-text w-100">Date</span>
-					</div>
-					<p class="form-control"><%= request._date.toDateString() %></p>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
-						<span class="input-group-text w-100">Complete</span>
-					</div>
-					<p class="form-control"><% if (request._complete) { %>Yes<% } else { %>No<% } %></p>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-20">
-						<span class="input-group-text w-100">Closed</span>
-					</div>
-					<p class="form-control"><% if (request._closed) { %>Yes<% } else { %>No<% } %></p>
-				</div>
-			</div>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_for',  	title: 'For'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_by',   	title: 'By'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_date', 	title: 'Date'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_complete', title: 'Complete'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_closed',   title: 'Closed'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-            <div class="container">
-				<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
-					<form id='approveForm'>
-				<% } %>
-				<% if (request._complete) { %>
-					<div class="input-group mb-2">
-						<div class="input-group-prepend w-20">
-							<label class="input-group-text w-100" for="sel_status">Status</label>
-						</div>
-						<select class="custom-select" id='sel_status' onchange='getLines(<%= request.request_id %>, <%= request._complete %>, <% if (permissions.request_line_edit) { %>1<% } else { %>0<% } %>, <% if (permissions.request_line_delete) { %>1<% } else { %>0<% } %>)'>
-							<option value='All' selected>All</option>
-							<option value='Open'>Open</option>
-							<option value='Approved'>Approved</option>
-							<option value='Declined'>Declined</option>
-							<option value='Cancelled'>Cancelled</option>
-						</select>
-					</div>
-				<% } %>
-				<div id="spn_requests" class="spinner-border text-primary" role="status">
-					<span class="sr-only">Loading...</span>
-				</div>
-				<table class="table table-sm table-hover mx-auto w-100">
-					<thead class="thead-dark">
-					<th class="w-<% if (request._complete) { %>20<% } else { %>30<% } %>" onclick="sortTable(0, 'requestTable')">Item</th>
-						<th class="w-<% if (request._complete) { %>20<% } else { %>30<% } %>" onclick="sortTable(1, 'requestTable')">Size</th>
-						<th class="w-<% if (request._complete) { %>5<% } else { %>15<% } %>"  onclick="sortTable(2, 'requestTable')">Qty</th>
-						<th class="w-<% if (request._complete) { %>15<% } else { %>25<% } %>" onclick="sortTable(3, 'requestTable')">Status</th>
-						<% if (request._complete) { %>
-						<th class="w-20" onclick="sortTable(4, 'requestTable')">Date Approved</th>
-						<th class="w-20" onclick="sortTable(5, 'requestTable')">Approved By</th>
-						<% } %>
-						<% if (permissions.request_line_delete && !request._complete) { %>
-						<th><i class="fas fa-trash-alt"></i></th>
-						<% } %>
-					</thead>
-					<tbody id="requestTable">
-					</tbody>
-				</table>
-				<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
-					</form>
-				<% } %>
-			</div>
+			<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
+				<form id='approveForm'>
+			<% } %>
+			<% if (request._complete) { %>
+				<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=Open', text: 'Open'}, {value: '_status=Approved', text: 'Approved'}, {value: '_status=Declined', text: 'Declined'}, {value: '_status=Cancelled', text: 'Cancelled'}]}) %>
+			<% } %>
+			<table class="table table-sm table-hover mx-auto w-100">
+				<thead class="thead-dark">
+					<th class="w-<% if (request._complete) { %>20<% } else { %>30<% } %>" onclick="sortTable(0, 'requestTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true}) %>Item</th>
+					<th class="w-<% if (request._complete) { %>20<% } else { %>30<% } %>" onclick="sortTable(1, 'requestTable')">Size</th>
+					<th class="w-<% if (request._complete) { %>5<% } else { %>15<% } %>"  onclick="sortTable(2, 'requestTable')">Qty</th>
+					<th class="w-<% if (request._complete) { %>15<% } else { %>25<% } %>" onclick="sortTable(3, 'requestTable')">Status</th>
+					<% if (request._complete) { %>
+					<th class="w-20" onclick="sortTable(4, 'requestTable')">Date Approved</th>
+					<th class="w-20" onclick="sortTable(5, 'requestTable')">Approved By</th>
+					<% } %>
+					<% if (permissions.request_line_delete && !request._complete) { %>
+					<th><i class="fas fa-trash-alt"></i></th>
+					<% } %>
+				</thead>
+				<tbody id="linesTable">
+				</tbody>
+			</table>
+			<% if (permissions.request_edit && request._complete && !request._closed && user.user_id !== request._for.user_id) { %>
+				</form>
+			<% } %>
 		</div>
-        <% include ../../partials/notes/tab_body %>
+        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<script src="/js/addSize.js"></script>
-<script src="/js/specific/requests_show.js"></script>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<!-- get/spinner/XHRsend/send from notes include -->
+<script src='/js/tabs.js'></script>
+<script src="/js/requests/show/request.js"></script>
+<script src="/js/requests/show/lines.js"></script>
 <script src="/js/get/request_lines.js"></script>
+<script>showTab('<%= tab %>');</script>
 <script>
-    window.addEventListener( "load", function () {
+	let sel_status = document.querySelector('#sel_status');
+    getLines = () => {
+		get(showLines, {table: 'request_lines', query: [`request_id=${path[3]}`, sel_status.value]});
+	};
+    document.querySelector('#reload').addEventListener('click', () => getLines());
+    document.querySelector('#sel_status').addEventListener('change', () => getLines());
+</script>
+<script async>getLines()</script>
+<script>
+    window.addEventListener( "load", () => {
 		<% if (!request._complete && !request._closed) { %>
 			<% if (permissions.request_delete) { %>
 				addFormListener('deleteForm', 'DELETE', '/stores/requests/<%= request.request_id %>', {redirect: '/stores/requests'});
@@ -196,5 +141,5 @@
 		$('#incompleteToast').toast('show')
 	<% } %>
 </script>
-<script async>getRequestLines(<%= request.request_id %>, <%= request._complete %>, <% if (permissions.request_line_edit) { %>1<% } else { %>0<% } %>, <% if (permissions.request_line_delete) { %>1<% } else { %>0<% } %>)</script>
-<% include ../../partials/foot/htmlClose %>
+<!-- <script async>getRequestLines(<%= request.request_id %>, <%= request._complete %>, <% if (permissions.request_line_edit) { %>1<% } else { %>0<% } %>, <% if (permissions.request_line_delete) { %>1<% } else { %>0<% } %>)</script> -->
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

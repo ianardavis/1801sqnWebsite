@@ -4,12 +4,12 @@
 <section id='body'>
     <form id='userForm'>
         <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Bader #',  name: 'user[_bader]',    placeholder: 'Required', maxLength: 20, required: true, id: '_bader'}) %>
-        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'ranks'}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'rank_id'}) %>
         <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Rank',     name: 'user[rank_id]',   required: true, id: 'rank_id'}) %>
         <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Surname',  name: 'user[_name]',     placeholder: 'Required', maxLength: 50, required: true, id: '_name'}) %>
         <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Initials', name: 'user[_ini]',      placeholder: 'Required', maxLength: 5,  required: true, id: '_ini'}) %>
         <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status',   name: 'user[status_id]', required: true, id: 'status_id'}) %>
-        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'statuses'}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'status_id'}) %>
         <%- include(`${process.env.PARTIALS}/inputs/text`,   {title: 'Login ID', name: 'user[_login_id]', placeholder: 'Required', maxLength: 30, required: true, id: '_login_id'}) %>
         <%- include(`${process.env.PARTIALS}/save_cancel`) %>
     </form>
@@ -18,13 +18,14 @@
 <script src="/js/userFieldCheck.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/XHRsend.js"></script>
+<script src="/js/data/send.js"></script>
 <script src="/js/get.js"></script>
 <script src="/js/spinner.js"></script>
 <script src="/js/ranks/list.js"></script>
 <script src="/js/statuses/list.js"></script>
-<script>var ranks_loaded = false, statuses_loaded = false;</script>
+<!-- <script>var ranks_loaded = false, statuses_loaded = false;</script> -->
 <script async>get(listRanks,    {table: 'ranks',    query: []})</script>
-<script async>get(listStatuses, {table: 'statuses', query: []})</script>
+<script async>get(statuses_select, {table: 'statuses', query: []})</script>
 <script>
     window.addEventListener( "load", function () {
         addFormListener(

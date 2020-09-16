@@ -31,7 +31,7 @@
 <script src="/js/search/table.js"></script>
 <script src="/js/items/index/items.js"></script>
 <script>
-	getItems = () => get(showItems, {table: 'items', query: item_query()})
+	getItems = () => get(showItems, {table: 'items', query: item_query()});
 	document.querySelector('#reload').addEventListener('click', () => getItems());
 </script>
 <script async>getItems()</script>

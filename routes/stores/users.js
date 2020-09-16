@@ -29,8 +29,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             (user.status_id && user.status_id !== '') &&
             (user._login_id && user._login_id !== '')
         ) {
-            m.users.create({...user, ...{_reset: 0}, ...encryptPassword(req.body._password)})
-            .then(user => res.send({result: true, message: 'User added'}))
+            let _password = generatePassword();
+            m.users.create({...user, ...{_reset: 1}, ...encryptPassword(_password.plain)})
+            .then(user => res.send({result: true, message: `User added. Password: ${_password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
             .catch(err => res.error.send(err, res));
         } else res.error.send(new Error('Not all required information has been submitted'), res)
     });
@@ -56,9 +57,27 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(result => res.send({result: true, message: 'User saved'}))
         .catch(err => res.error.send(err.message, res));
     });
+    generatePassword = () => {
+        let consenants = ['b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','z'],
+            vowels     = ['a','e','i','o','u','y'],
+            plain      = '',
+            readable   = '';
+        ['C','V','C','-','C','V','C','-','C','V','C'].forEach(l => {
+            let rand = Math.random(), letter = '-';
+            if (l === 'C') {
+                letter = consenants[Math.floor(rand*20)];
+                plain += letter;
+            } else if (l === 'V'){
+                letter = vowels[Math.floor(rand*6)];
+                plain += letter;
+            };
+            readable += letter.toUpperCase();
+        });
+        return {plain: plain, readable: readable};
+    };
     encryptPassword = plainText => {
         let _salt     = randomBytes(16).toString("hex"),
-            _password = scryptSync(plainText, salt, 32).toString("hex");
+            _password = scryptSync(plainText, _salt, 128).toString("hex");
         return {_salt: _salt, _password: _password};
     };
 };

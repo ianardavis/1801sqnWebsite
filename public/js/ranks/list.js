@@ -8,5 +8,5 @@ listRanks = (ranks, options) => {
         }).option);
     });
     ranks_loaded = true;
-    hide_spinner('ranks');
+    hide_spinner('rank_id');
 };
