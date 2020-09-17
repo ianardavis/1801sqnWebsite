@@ -4,12 +4,7 @@
 		<ul class="navbar-nav mr-auto">
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
 			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
-			<!-- <li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/requests/<%= request.request_id %>">
-					<%= request.request_id %>
-				</a>
-			</li> -->
+			<%- include(`${process.env.PARTIALS}/breadcrumb`) %> 
 		</ul>
 	</nav>
 </section>
@@ -70,6 +65,7 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests'}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_for',  	title: 'For'}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_by',   	title: 'By'}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_date', 	title: 'Date'}) %>
@@ -112,14 +108,36 @@
 <script src='/js/tabs.js'></script>
 <script src="/js/requests/show/request.js"></script>
 <script src="/js/requests/show/lines.js"></script>
-<script src="/js/get/request_lines.js"></script>
 <script>showTab('<%= tab %>');</script>
+<script>
+	getRequest = () => {
+		get(
+			showRequest,
+			{
+				table: 'requests',
+				query: [`request_id=${path[3]}`]
+			}
+		);
+	};
+</script>
+<script async>getRequest()</script>
 <script>
 	let sel_status = document.querySelector('#sel_status');
     getLines = () => {
-		get(showLines, {table: 'request_lines', query: [`request_id=${path[3]}`, sel_status.value]});
+		get(
+			showLines,
+			{
+				table: 'request_lines',
+				query: [`request_id=${path[3]}`, sel_status.value],
+				permissions: {
+					edit: <%= permissions.request_line_edit || false %>,
+					delete: <%= permissions.request_line_delete || false %>
+				}
+			}
+		);
 	};
     document.querySelector('#reload').addEventListener('click', () => getLines());
+    document.querySelector('#reload').addEventListener('click', () => getRequest());
     document.querySelector('#sel_status').addEventListener('change', () => getLines());
 </script>
 <script async>getLines()</script>

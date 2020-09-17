@@ -2,21 +2,18 @@ showRequest = requests => {
     if (requests.length === 1) {
         for (let [id, value] of Object.entries(requests[0])) {
             try {
-                let element = document.querySelector('#' + id);
-                if (id === '_for') {
-                    let _element = document.querySelector(`#_${id}`);
-                    _element.innerText = value[`_${id}`];
-                } else if (element) {
-                    element.innerText = value;
-                    if (id === '_size_text') {
-                        let size_text = document.querySelector('#size_text');
-                        size_text.innerText = value;
-                    };
+                let element = document.querySelector(`#${id}`);
+                if (id === '_for') element.innerText = `${value.rank._rank} ${value.full_name}`
+                else if (id === '_by') element.innerText = `${value.rank._rank} ${value.full_name}`
+                else if (id === '_date') element.innerText = new Date(value).toDateString()
+                else if (id === '_complete' || id === '_closed') {
+                    if (value === 0) element.innerText = 'Yes'
+                    else element.innerText = 'No';
                 };
             } catch (error) {console.log(error)};
         };
         let breadcrumb = document.querySelector('#breadcrumb');
-        breadcrumb.innerText = requests[0]._description;
+        breadcrumb.innerText = requests[0].request_id;
         breadcrumb.href = `/stores/requests/${requests[0].request_id}`;
 
         // let _edit = document.querySelector('#edit_link');
