@@ -88,7 +88,6 @@ db.orders.hasOne( db.users,       {foreignKey: 'user_id',  sourceKey: 'ordered_f
 db.orders.hasOne( db.users,       {foreignKey: 'user_id',  sourceKey: 'user_id',     constraints: false, as: '_by'});
 db.orders.hasMany(db.order_lines, {foreignKey: 'order_id', targetKey: 'order_id',                        as: 'lines'});
 
-db.order_lines.hasOne(   db.users,         {foreignKey: 'user_id',  sourceKey: 'user_id',         constraints: false});
 db.order_lines.hasOne(   db.sizes,         {foreignKey: 'size_id',  sourceKey: 'size_id',         constraints: false});
 db.order_lines.hasOne(   db.demand_lines,  {foreignKey: 'line_id',  sourceKey: 'demand_line_id',  constraints: false});
 db.order_lines.hasOne(   db.receipt_lines, {foreignKey: 'line_id',  sourceKey: 'receipt_line_id', constraints: false});

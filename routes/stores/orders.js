@@ -20,16 +20,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         db.findOne({
             table: m.orders,
             where: {order_id: req.params.id},
-            include: [
-                inc.users({as: '_for'}),
-                inc.users({as: '_by'})
-        ]})
+            include: [inc.users({as: '_for'})]
+        })
         .then(order => {
-            if (req.allowed || order.orderedFor.user_id === req.user.user_id) {
-                res.render('stores/orders/show',{
-                    order: order,
-                    show_tab: req.query.tab || 'details'
-                });
+            if (req.allowed || order._for.user_id === req.user.user_id) {
+                res.render('stores/orders/show', {tab: req.query.tab || 'details'});
             } else res.error.redirect(new Error('Permission Denied'), req, res);
         })
         .catch(err => res.error.redirect(err, req, res));

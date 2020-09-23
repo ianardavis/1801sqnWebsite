@@ -49,7 +49,7 @@
             <% } else { %>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <%= user._login_id %>
+                        <%= user.rank._rank %> <%= user.full_name %>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/stores/users/<%= user.user_id %>">Profile</a>

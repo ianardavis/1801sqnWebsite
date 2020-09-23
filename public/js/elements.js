@@ -5,6 +5,9 @@ function _edit ()   {return '<i class="fas fa-pencil-alt"></i>'}
 function _save ()   {return '<i class="fas fa-save"></i>'}
 function _copy ()   {return '<i class="fas fa-clipboard"></i>'}
 function _delete () {return '<i class="fas fa-trash-alt"></i>'}
+random_id = () => {
+    return Math.floor(Math.random()*10000)
+};
 function Link (options = {}) {
     this.link      = document.createElement('a');
     this.link.href = options.href;
@@ -103,6 +106,48 @@ function Card (options = {}) {
     _a.appendChild(_header);
     _a.appendChild(_body);
     this.div.appendChild(_a);
+};
+function Toast (options = {}) {
+    this.toast = document.createElement('div');
+    this.toast.id = options.id || `toast_${random_id}`;
+    this.toast.setAttribute('role', 'alert');
+    this.toast.setAttribute('aria-live', 'assertive');
+    this.toast.setAttribute('aria-atomic', 'true');
+    this.toast.classList.add('toast', 'float-right');
+    this.toast.setAttribute('data-autohide', 'false');
+    let header = document.createElement('div'),
+        title  = document.createElement('strong'),
+        close_button = document.createElement('button'),
+        body   = document.createElement('div');
+    header.classList.add('toast-header');
+    title.innerText = options.title;
+    title.classList.add('mr-auto')
+    header.appendChild(title);
+    close_button.setAttribute('type', 'button');
+    close_button.classList.add('ml-2', 'mb-1', 'close');
+    close_button.setAttribute('data-dismiss', 'toast');
+    close_button.setAttribute('aria-label', 'Close');
+    close_button.innerHTML = '<span aria-hidden="true">&times;</span>';
+    header.appendChild(close_button);
+    this.toast.appendChild(header);
+    body.classList.add('toast-body', 'toast-warn');
+    body.innerText = options.text || '';
+    this.toast.appendChild(body);
+};
+function Column (options = {}) {
+    this.th = document.createElement('th');
+    this.th.id = options.id || `th_${random_id}`;
+    if (options.classes) options.classes.forEach(e => this.th.classList.add(e));
+    if (options.onclick) this.th.setAttribute('onclick', options.onclick);
+    if (options.html) this.th.innerHTML = options.html
+    else this.th.innerText = options.text || '';
+};
+function Spinner (options = {}) {
+    this.spinner = document.createElement('div');
+    this.spinner.id = `spn_${options.id || random_id}`;
+    this.spinner.classList.add('spinner-border', 'text-primary');
+    this.spinner.setAttribute('role', 'status');
+    this.spinner.innerHTML = '<span class="sr-only">Loading...</span>';
 };
 boolean_to_yesno = boolean => {
     if (boolean === 1 || boolean === true) return 'Yes'

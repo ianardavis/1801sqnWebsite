@@ -11,7 +11,7 @@
 	<% if (permissions.access_suppliers) cards.push({href: 'stores/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
 	<% if (permissions.access_items)	 cards.push({href: 'stores/items', 	   title: 'Items', 	   image: 'tshirt'}) %>
 	<% if (permissions.access_users) { %>
-		<% cards.push({href: 'stores/users', title: 'Users', image: 'user'}) %>
+		<% cards.push({href: 'stores/users', title: 'Users', image: 'users'}) %>
 	<% } else { %>
 		<% cards.push({href: 'stores/users/' + user.user_id, title: 'Your Account', image: 'user'}) %>
 	<% } %>
@@ -43,21 +43,21 @@
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
 <script src="/js/specific/index_show.js"></script>
 <% if (permissions.access_requests) { %>
-	<script async>getCount('requests', ['_complete=1', '_closed=0'], {text: 'Open', 	  colour: 'warning', float: 'left'})</script>
-	<script async>getCount('requests', ['_complete=0', '_closed=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+	<script async>getCount('requests', ['_status=1'],   {text: 'Draft', colour: 'warning', float: 'left'})</script>
+	<script async>getCount('requests', ['_status=2'],   {text: 'Open',  colour: 'danger',  float: 'right'})</script>
 <% } %>
 <% if (permissions.access_orders) { %>
-	<script async>getCount('orders',   ['_complete=1', '_closed=0'], {text: 'Open', 	  colour: 'warning', float: 'left'})</script>
-	<script async>getCount('orders',   ['_complete=0', '_closed=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+	<script async>getCount('orders',   ['_status=1'],   {text: 'Draft', colour: 'warning', float: 'left'})</script>
+	<script async>getCount('orders',   ['_status=2'],   {text: 'Open',  colour: 'danger',  float: 'right'})</script>
 <% } %>
 <% if (permissions.access_demands) { %>
-	<script async>getCount('demands',  ['_complete=1', '_closed=0'], {text: 'Open', 	  colour: 'warning', float: 'left'})</script>
-	<script async>getCount('demands',  ['_complete=0', '_closed=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+	<script async>getCount('demands',  ['_status=1'],   {text: 'Open', 	   colour: 'warning', float: 'left'})</script>
+	<script async>getCount('demands',  ['_status=2'],   {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
 <% } %>
 <% if (permissions.access_issues) { %>
-	<script async>getCount('issues',   ['_complete=0', '_closed=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+	<script async>getCount('issues',   ['_status=1'],   {text: 'Draft', colour: 'danger',  float: 'right'})</script>
 <% } %>
 <% if (permissions.access_receipts) { %>
-	<script async>getCount('receipts', ['_complete=0'],  			 {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
+	<script async>getCount('receipts', ['_complete=0'], {text: 'Incomplete', colour: 'danger',  float: 'right'})</script>
 <% } %>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
