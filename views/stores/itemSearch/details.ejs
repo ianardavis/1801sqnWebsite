@@ -1,8 +1,7 @@
-<% include ../../partials/head/head %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
 <body>
-<% include ../../partials/head/flash %>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
-<div class='container'>
     <div id="itemDiv" class='mb-2 bordered'>
         <h3><%= callType.substring(0, 1).toUpperCase() + callType.substring(1, callType.length) %></h3>
         <h5>Items</h5>
@@ -38,7 +37,6 @@
             </div>
         </form>
     </div>
-
     <div id='detailDiv' style='display:none;' class='mb-2 bordered'>
         <form id="addForm">
             <input type="hidden" name='line[size_id]' id='size_id' value=''>
@@ -96,8 +94,9 @@
             </div>
         </form>
     </div>
-</div>
-<% include ../../partials/foot/noNav %>
+<% include(`${process.env.PARTIALS}/foot/noNav`) %>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
 <script>
     function getSizes() {
         const XHR = new XMLHttpRequest();
@@ -191,19 +190,17 @@
         XHR.send(FD);
     };
     window.addEventListener( "load", function () {
-        addFormListener('addForm', 'POST', '/stores/<%= callType %>_lines/<%= id %>', {reload_opener: true});
-
+        addFormListener('addForm', 'POST', '/stores/<%= callType %>_lines/<%= id %>', {onComplete: window.opener.get<%= callType %>lines});
         let itemForm = document.querySelector("#itemForm"),
             sizeForm = document.querySelector("#sizeForm");
         itemForm.addEventListener("submit", function (event) {
             event.preventDefault();
             getSizes();
         });
-
         sizeForm.addEventListener("submit", function (event) {
             event.preventDefault();
             getSize();
         });
     });
 </script>
-<% include ../../partials/foot/htmlClose %>
+<% include(`${process.env.PARTIALS}/foot/htmlClose`) %>

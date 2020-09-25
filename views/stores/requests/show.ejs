@@ -18,16 +18,19 @@
                 <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
 				<input id='btn_action' form='form_approve' class='dropdown-item dropdown_button confirm' type="submit" value='Action Lines' disabled>
 				<form id='form_complete'>
-					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
+					<input type="hidden" name='_status' value='2'>
+					<input id='btn_complete' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Complete' disabled>
+				</form>
+				<form id='form_cancel'>
+					<input type="hidden" name='_status' value='0'>
+					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Cancel' disabled>
 				</form>
 				<form id='form_addSize'>
 					<input id='btn_addSize' class='dropdown-item dropdown_button' type="submit" value='Add Item' disabled>
 				</form>
 				<div class="dropdown-divider"></div>
 				<form id='form_delete'>
-					<button id='btn_delete' class="dropdown-item dropdown_button confirm" disabled>
-						Delete
-					</button>
+					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Delete' disabled>
 				</form>
             </div>
         </li>
@@ -39,26 +42,27 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
 			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_for',    title: 'For'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_by',     title: 'By'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_for', 	  title: 'For', append: {a: {id: 'for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_by', 	  title: 'By',  append: {a: {id: 'by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_date',	  title: 'Date'}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status', title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-			<% if (permissions.request_edit) { %>
+			<% if (permissions.request_line_edit) { %>
 				<form id='form_approve'>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Pending'}, {value: '_status=1', text: 'Approved'}, {value: '_status=2', text: 'Declined'}]}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=2', text: 'Declined'}]}) %>
 			<table class="table table-sm table-hover mx-auto w-100">
 				<thead id='table_header_lines' class="thead-dark">
-					<th id='col_item' class="w-40" onclick="sortTable(0,'linesTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true}) %>Item</th>
-					<th id='col_size' class="w-40" onclick="sortTable(1,'linesTable')">Size</th>
-					<th id='col_qty'  class="w-20" onclick="sortTable(2,'linesTable')">Qty</th>
+					<th id='line_id'  onclick="sortTable(0,'linesTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true}) %>Line ID</th>
+					<th id='col_item' onclick="sortTable(1,'linesTable')">Item</th>
+					<th id='col_size' onclick="sortTable(2,'linesTable')">Size</th>
+					<th id='col_qty'  onclick="sortTable(3,'linesTable')">Qty</th>
 				</thead>
 				<tbody id="linesTable">
 				</tbody>
 			</table>
-			<% if (permissions.request_edit) { %>
+			<% if (permissions.request_line_edit) { %>
 				</form>
 			<% } %>
 		</div>
@@ -69,6 +73,9 @@
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
 <script src='/js/addSize.js'></script>
+<script src="/js/nsns/list.js"></script>
+<script src="/js/stock/list.js"></script>
+<script src="/js/serials/list.js"></script>
 <script src="/js/requests/show/request.js"></script>
 <script src="/js/requests/show/lines.js"></script>
 <script src='/js/data/addFormListener.js'></script>
@@ -92,8 +99,8 @@
 </script>
 <script async>getRequest()</script>
 <script>
-	let sel_status = document.querySelector('#sel_status');
     getLines = () => {
+		let sel_status = document.querySelector('#sel_status');
 		get(
 			showLines,
 			{
@@ -106,6 +113,7 @@
 			}
 		);
 	};
+	getrequestlines = getLines;
     document.querySelector('#reload').addEventListener('click', () => getLines());
     document.querySelector('#reload').addEventListener('click', () => getRequest());
     document.querySelector('#sel_status').addEventListener('change', () => getLines());
@@ -117,8 +125,9 @@
 			addFormListener('form_delete', 'DELETE', `/stores/requests/${path[3]}`, {redirect: '/stores/requests'});
 		<% } %>
 		<% if (permissions.request_edit) { %>
-			addFormListener('form_complete', 'PUT', `/stores/requests/${path[3]}`,		{onComplete: getRequest});
-			addFormListener('form_approve', 'PUT',  `/stores/request_lines/${path[3]}`, {onComplete: getLines});
+			addFormListener('form_complete', 'PUT', `/stores/requests/${path[3]}`,		{onComplete: [getRequest, getLines]});
+			addFormListener('form_cancel',   'PUT', `/stores/requests/${path[3]}`,		{onComplete: [getRequest, getLines]});
+			addFormListener('form_approve',  'PUT', `/stores/request_lines/${path[3]}`, {onComplete: getLines});
 		<% } %>
 	});
 </script>

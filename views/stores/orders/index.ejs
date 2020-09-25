@@ -4,42 +4,31 @@
 		<ul class='navbar-nav mr-auto'>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
 			<% if (permissions.order_add) { %>
 				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/orders/new?user=-1', html: '<i class="fas fa-plus"></i>'}) %>
-				<!-- <li class='nav-item'>
-					<a class='nav-link stores_nav cardGreen' href='/stores/orders/new?user=-1'>
-						<i class='fas fa-plus'></i>
-					</a>
-				</li> -->
 			<% } %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
 		</ul>
 	</nav>
 </section>
 <section class='container'>
-	<% if (permissions.demand_line_add) { %> 
-		<form class='mb-2' id='demandForm'>
+	<% if (permissions.demand_line_add) { %>
+		<form class='mb-1' id='demandForm'>
 			<div class="input-group">
 				<div class="input-group-prepend w-30">
-					<button class="btn btn-success text-left w-100 confirm">Demand Orders for</button>
+					<button class="btn btn-success text-left w-100 confirm"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'suppliers', spinner_sm: true, spinner_float_left: true}) %>Demand Orders for</button>
 				</div>
-				<select class="custom-select" name='supplier_id'>
-					<% suppliers.forEach(supplier => { %>
-						<option value='<%= supplier.supplier_id %>'><%= supplier._name %></option>
-					<% }); %>
-				</select>
+				<select class="custom-select" id='sel_suppliers' name='supplier_id'></select>
 			</div>	
 		</form>
 	<% } %>
-	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Completed Requests', id: 'sel_complete', options: [{value: '', text: 'Include'}, {value: '_complete=0', text: 'Exclude'}, {value: '_complete=1', text: 'Only', selected: true}]}) %>
-	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Closed Requests',    id: 'sel_closed',   options: [{value: '', text: 'Include'}, {value: '_closed=0', text: 'Exclude', selected: true}, {value: '_closed=1', text: 'Only'}]}) %>
+	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
-			<th class='w-35' onclick='sortTable(0, "orderTable")'><%- include(`${process.env.PARTIALS}/spinner`, {id: 'orders', spinner_sm: true, spinner_float_left: true}) %>Ordered For</th>
-			<th class='w-35' onclick='sortTable(1, "orderTable")'>Order Date</th>
+			<th class='w-40' onclick='sortTable(0, "orderTable")'><%- include(`${process.env.PARTIALS}/spinner`, {id: 'orders', spinner_sm: true, spinner_float_left: true}) %>Ordered For</th>
+			<th class='w-40' onclick='sortTable(1, "orderTable")'>Order Date</th>
 			<th class='w-10' onclick='sortTable(2, "orderTable")'>Lines</th>
-			<th class='w-10'>Complete</th>
-			<th class='w-10'>Closed</th>
+			<th class='w-10' onclick='sortTable(3, "orderTable")'>Status</th>
 			<th><i class='fas fa-search'></i></th>
 		</thead>
 		<tbody id='orderTable'>
@@ -53,10 +42,16 @@
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/XHRsend.js'></script>
 <script src='/js/data/send.js'></script>
+<% if (permissions.demand_line_add) { %>
+	<script src='/js/suppliers/list.js'></script>
+	<script>
+		getSuppliers = () => get(listSuppliers, {table: 'suppliers', query: []});
+	</script>
+	<script async>getSuppliers()</script>
+<% } %>
 <script>
-	let sel_complete = document.querySelector('#sel_complete'),
-		sel_closed	 = document.querySelector('#sel_closed');
-	getOrders = () => get(showOrders, {table: 'orders', query: [sel_complete.value, sel_closed.value]});
+	let sel_status = document.querySelector('#sel_status');
+	getOrders = () => get(showOrders, {table: 'orders', query: [sel_status.value]});
 </script>
 <script async>getOrders()</script>
 <script>
@@ -69,7 +64,7 @@
 		download_file('<%= download %>');
 	<% } %>
 </script>
-<script>document.querySelector('#reload').addEventListener('click', () => getOrders());</script>	
-<script>document.querySelector('#sel_complete').addEventListener('click', () => getOrders());</script>	
-<script>document.querySelector('#sel_closed').addEventListener('click', () => getOrders());</script>
+<script>document.querySelector('#reload').addEventListener('click', () => getOrders());</script>
+<script>document.querySelector('#reload').addEventListener('click', () => getSuppliers());</script>
+<script>document.querySelector('#sel_status').addEventListener('change', () => getOrders());</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

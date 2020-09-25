@@ -1,66 +1,77 @@
 module.exports = {
     create: (options = {}) => new Promise((resolve, reject) => {
-        options.m.suppliers.findOne({
-            where: {supplier_id: options.demand.supplier_id}
+        return options.m.suppliers.findOne({
+            where: {supplier_id: options.supplier_id},
+            attributes: ['supplier_id']
         })
         .then(supplier => {
-            if (supplier) {
-                options.m.demands.findOne({
+            if (!supplier) return reject(new Error('Supplier not found'))
+            else {
+                return options.m.demands.findOrCreate({
                     where: {
                         supplier_id: supplier.supplier_id,
-                        _complete: 0
-                    }
+                        _status: 1
+                    },
+                    defaults: {user_id: options.user_id}
                 })
-                .then(demand => {
-                    if (demand) resolve({demand_id: demand.demand_id, created: false})
-                    else {
-                        options.m.demands.create(options.demand)
-                        .then(new_demand => resolve({demand_id: new_demand.demand_id, created: true}))
-                        .catch(err => reject(err));
-                    };
-                })
+                .then(([demand, created]) => resolve({demand_id: demand.demand_id, created: created}))
                 .catch(err => reject(err));
-            } else reject(new Error('Supplier not found'));
+            };
         })
         .catch(err => reject(err));
     }),
     createLine: (options = {}) => new Promise((resolve, reject) => {
         options.m.sizes.findOne({
-            where: {size_id: options.line.size_id}
+            where: {size_id: options.size_id},
+            attributes: ['size_id', 'supplier_id']
         })
         .then(size => {
-            if (size) {
+            if (!size) reject(new Error('Size not found'))
+            else {
                 options.m.demands.findOne({
-                    where: {demand_id: options.line.demand_id}
+                    where: {demand_id: options.demand_id},
+                    attributes: ['demand_id', 'supplier_id', '_status']
                 })
                 .then(demand => {
                     if (!demand) reject(new Error('Demand not found'))
-                    else if (demand._complete) reject(new Error('Lines can not be added to completed demands'))
-                    else if (size.supplier_id !== demand.supplier_id) reject(new Error('Size is not for this supplier'))
+                    else if (demand._status !== 1) reject(new Error('Lines can only be added to draft demands'))
+                    else if (size.supplier_id !== demand.supplier_id) reject(new Error('Size is not from this supplier'))
                     else {
-                        options.m.demand_lines.findOne({
+                        options.m.demand_lines.findOrCreate({
                             where: {
                                 demand_id: demand.demand_id,
                                 size_id: size.size_id
+                            },
+                            defaults: {
+                                _qty: options._qty,
+                                user_id: options.user_id
                             }
                         })
-                        .then(demandline => {
-                            if (demandline) {
-                                options.m.demand_lines.findByPk(demandline.line_id)
-                                .then(line => line.increment('_qty', {by: options.line._qty}))
-                                .then(line => resolve(demandline.line_id))
-                                .catch(err => reject(err));
-                            } else {
-                                options.m.demand_lines.create(options.line)
-                                .then(line => resolve(line.line_id))
-                                .catch(err => reject(err));
+                        .then(([line, created]) => {
+                            let _note = `Line ${line.line_id} `, actions = [];;
+                            if (created) _note += `created${options.note_addition || ''}`
+                            else {
+                                actions.push(line.increment('_qty', {by: options._qty}));
+                                _note += `incremented by ${request_line._qty}${options.note_addition || ''}`;
                             };
+                            actions.push(
+                                m.notes.create({
+                                    _id: demand.demand_id,
+                                    _table: 'demands',
+                                    _note: _note,
+                                    user_id: options.user_id,
+                                    _system: 1
+                                })
+                            );
+                            return Promise.all(actions)
+                            .then(note => resolve({line_id: line.line_id, created: created}))
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     };
                 })
                 .catch(err => reject(err));
-            } else reject(new Error('Size not found'));
+            };
         })
         .catch(err => reject(err));
     })

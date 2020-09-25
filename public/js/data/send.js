@@ -7,7 +7,11 @@ sendData = (form, method, _location, options = {reload: false, reload_opener: tr
             if (response.result) {
                 alert(response.message);
                 if (!options.args) options.args = [];
-                if (options.onComplete)    options.onComplete(...options.args);
+                if (options.onComplete) {
+                    if (Array.isArray(options.onComplete)) {
+                        options.onComplete.forEach(func => func())
+                    } else options.onComplete(...options.args);
+                };
                 if (options.reload_opener) window.opener.location.reload();
                 if (options.reload)        window.location.reload();
                 else if (options._close)   close();

@@ -2,7 +2,7 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
     let db = require(process.env.ROOT + '/fn/db'), settings = {};
     require(process.env.ROOT + '/fn/settings')(m.settings, settings);
-    app.delete('/stores/accounts/:id',      isLoggedIn, allowed('account_delete',      {send: true}), (req, res) => {
+    app.delete('/stores/accounts/:id',     isLoggedIn, allowed('account_delete',      {send: true}), (req, res) => {
         db.destroy({
             table: m.accounts,
             where: {account_id: req.params.id}
@@ -18,7 +18,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/demands/:id',       isLoggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
+    app.delete('/stores/demands/:id',      isLoggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
         db.destroy({
             table: m.demand_lines,
             where: {demand_id: req.params.id}
@@ -33,16 +33,17 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/files/:id',         isLoggedIn, allowed('file_delete',         {send: true}), (req, res) => {
+    app.delete('/stores/files/:id',        isLoggedIn, allowed('file_delete',         {send: true}), (req, res) => {
         db.findOne({
             table: m.files,
             where: {file_id: req.params.id}
         })
         .then(file => {
-            db.destroy({
-                table: m.files,
-                where: {file_id: req.params.id}
-            })
+            file.destroy()
+            // db.destroy({
+            //     table: m.files,
+            //     where: {file_id: req.params.id}
+            // })
             .then(result => {
                 db.update({
                     table: m.suppliers,
@@ -63,7 +64,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/issues/:id',        isLoggedIn, allowed('issue_delete',        {send: true}), (req, res) => {
+    app.delete('/stores/issues/:id',       isLoggedIn, allowed('issue_delete',        {send: true}), (req, res) => {
         db.findOne({
             table: m.issues,
             where: {issue_id: req.params.id},
@@ -91,7 +92,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/items/:id',         isLoggedIn, allowed('item_delete',         {send: true}), (req, res) => {
+    app.delete('/stores/items/:id',        isLoggedIn, allowed('item_delete',         {send: true}), (req, res) => {
         m.sizes.findOne({where: {item_id: req.params.id}})
         .then(sizes => {
             if (!sizes) {
@@ -105,7 +106,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/notes/:id',         isLoggedIn, allowed('note_delete',         {send: true}), (req, res) => {
+    app.delete('/stores/notes/:id',        isLoggedIn, allowed('note_delete',         {send: true}), (req, res) => {
         db.destroy({
             table: m.notes,
             where: {
@@ -116,7 +117,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(result => res.send({result: true, message: 'Note deleted'}))
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/nsns/:id',          isLoggedIn, allowed('nsn_delete',          {send: true}), (req, res) => {
+    app.delete('/stores/nsns/:id',         isLoggedIn, allowed('nsn_delete',          {send: true}), (req, res) => {
         db.destroy({
             table: m.nsns,
             where: {nsn_id: req.params.id}
@@ -131,19 +132,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/orders/:id',        isLoggedIn, allowed('order_delete',        {send: true}), (req, res) => {
-        m.order_lines.destroy({where: {order_id: req.params.id}})
-        .then(result => {
-            db.destroy({
-                table: m.orders,
-                where: {order_id: req.params.id}
-            })
-            .then(result => res.send({result: true, message: 'Order deleted'}))
-            .catch(err => res.error.send(err, res));
-        })
-        .catch(err => res.error.send(err, res));
-    });
-    app.delete('/stores/receipts/:id',      isLoggedIn, allowed('receipt_delete',      {send: true}), (req, res) => {
+    app.delete('/stores/receipts/:id',     isLoggedIn, allowed('receipt_delete',      {send: true}), (req, res) => {
         m.receipt_lines.destroy({where: {receipt_id: req.params.id}})
         .then(result => {
             db.destroy({
@@ -155,19 +144,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/requests/:id',      isLoggedIn, allowed('request_delete',      {send: true}), (req, res) => {
-        m.request_lines.destroy({where: {request_id: req.params.id}})
-        .then(result => {
-            db.destroy({
-                table: m.requests,
-                where: {request_id: req.params.id}
-            })
-            .then(result => res.send({result: true, message: 'Request deleted'}))
-            .catch(err => res.error.send(err, res));
-        })
-        .catch(err => res.error.send(err, res));
-    });
-    app.delete('/stores/sizes/:id',         isLoggedIn, allowed('size_delete',         {send: true}), (req, res) => {
+    app.delete('/stores/sizes/:id',        isLoggedIn, allowed('size_delete',         {send: true}), (req, res) => {
         m.stock.findOne({where: {size_id: req.params.id}})
         .then(stock => {
             if (stock) res.error.send('Cannot delete a size whilst it has stock', res)
@@ -189,7 +166,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/stock/:id',         isLoggedIn, allowed('stock_delete',        {send: true}), (req, res) => {
+    app.delete('/stores/stock/:id',        isLoggedIn, allowed('stock_delete',        {send: true}), (req, res) => {
         db.findOne({
             table: m.stock,
             where: {stock_id: req.params.id}
@@ -209,7 +186,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/suppliers/:id',     isLoggedIn, allowed('supplier_delete',     {send: true}), (req, res) => {
+    app.delete('/stores/suppliers/:id',    isLoggedIn, allowed('supplier_delete',     {send: true}), (req, res) => {
         if (req.params.id !== '1' && req.params.id !== '2') {
             db.destroy({
                 table: m.suppliers,
@@ -238,7 +215,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             .catch(err => res.error.send(err.message, res));
         } else res.error.send('This supplier can not be deleted!', res);
     });
-    app.delete('/stores/users/:id',         isLoggedIn, allowed('user_delete',         {send: true}), (req, res) => {
+    app.delete('/stores/users/:id',        isLoggedIn, allowed('user_delete',         {send: true}), (req, res) => {
         if (Number(req.user.user_id) !== Number(req.params.id)) {
             m.permissions.destroy({where: {user_id: req.params.id}})
             .then(result => {
@@ -253,7 +230,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         } else res.send_error('You can not delete your own account', res);       
     });
 
-    app.delete('/stores/issue_lines/:id',   isLoggedIn, allowed('issue_line_delete',   {send: true}), (req, res) => { //
+    app.delete('/stores/issue_lines/:id',  isLoggedIn, allowed('issue_line_delete',   {send: true}), (req, res) => { //
         db.findOne({
             table: m.issue_lines,
             where: {line_id: req.params.id}
@@ -271,33 +248,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/order_lines/:id',   isLoggedIn, allowed('order_line_delete',   {send: true}), (req, res) => { //
-        db.findOne({
-            table: m.order_lines,
-            where: {line_id: req.params.id}
-        })
-        .then(line => {
-            db.update({
-                table: m.order_lines,
-                where: {line_id: req.params.id},
-                record: {_status: 'Cancelled'}
-            })
-            .then(result => {
-                m.notes.create({
-                    _table:  'orders',
-                    _note:   'Line ' + req.params.id + ' cancelled',
-                    _id:     line.order_id,
-                    user_id: req.user.user_id,
-                    system:  true
-                })
-                .then(result => res.send({result: true, message: 'Line cancelled'}))
-                .catch(err => res.error.send(err, res));
-            })
-            .catch(err => res.error.send(err, res));
-        })
-        .catch(err => res.error.send(err, res));
-    });
-    app.delete('/stores/demand_lines/:id',  isLoggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => { //
+    app.delete('/stores/demand_lines/:id', isLoggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => { //
         db.findOne({
             table: m.demand_lines,
             where: {line_id: req.params.id}
@@ -324,15 +275,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.delete('/stores/request_lines/:id', isLoggedIn, allowed('request_line_delete', {send: true}), (req, res) => { //////
-        db.destroy({
-            table: m.request_lines,
-            where: {line_id: req.params.id}
-        })
-        .then(result => res.send({result: true, message: 'Line deleted'}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.delete('/stores/serials/:id',       isLoggedIn, allowed('serial_delete',       {send: true}), (req, res) => { //////
+    app.delete('/stores/serials/:id',      isLoggedIn, allowed('serial_delete',       {send: true}), (req, res) => { //////
         db.destroy({
             table: m.serials,
             where: {serial_id: req.params.id}
@@ -340,7 +283,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(result => res.send({result: true, message: 'Serial deleted'}))
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/:table/:id',        isLoggedIn, allowed('',                    {send: true}), (req, res) => { //////
+    app.delete('/stores/:table/:id',       isLoggedIn, allowed('',                    {send: true}), (req, res) => { //////
         db.destroy({
             table: m[req.params.table],
             where: {serial_id: req.params.id}

@@ -46,13 +46,14 @@ function DeleteButton (options = {}) {
 function Input (options = {}) {
     this.input = document.createElement('input');
     this.input.classList.add('form-control');
-    this.input.type  = options.type  || 'text';
-    this.input.name  = options.name  || 'selected[]';
-    if (options.value)       this.input.value = options.value;
-    if (options.small)       this.input.classList.add('form-control-sm')
-    if (options.id)          this.input.id          = options.id;
-    if (options.placeholder) this.input.placeholder = options.placeholder;
-    if (options.required)    this.input.required    = true;
+    this.input.setAttribute('type', options.type  || 'text');
+    this.input.setAttribute('name', options.name  || 'selected[]');
+    if (options.small)       this.input.classList.add('form-control-sm');
+    if (options.value)       this.input.setAttribute('value', options.value);
+    if (options.maxlength)   this.input.setAttribute('maxlength', options.maxlength);
+    if (options.id)          this.input.setAttribute('id', options.id);
+    if (options.placeholder) this.input.setAttribute('placeholder', options.placeholder);
+    if (options.required)    this.input.setAttribute('required', true);
     if (options.onChange)    this.input.addEventListener('change', event => options.onChange());
 };
 function Select (options = {}) {
