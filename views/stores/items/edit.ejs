@@ -3,7 +3,7 @@
 <%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
     <form id='itemForm'>
-        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
+        <%- include(`${process.env.PARTIALS}/spinner`,     {id: 'items'}) %>
         <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_description', title: 'Description', name: 'item[_description]', maxLength: 45}) %>
         <%- include(`${process.env.PARTIALS}/itemOptions`, {inhibit: true}) %>
         <%- include(`${process.env.PARTIALS}/inputs/text`, {id:'_size_text',    title: 'Size Text',   name: 'item[_size_text]',   maxLength: 45}) %>

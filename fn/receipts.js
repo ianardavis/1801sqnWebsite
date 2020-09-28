@@ -1,93 +1,111 @@
 module.exports = {
     create: (options = {}) => new Promise((resolve, reject) => {
-        options.m.receipts.findOne({
-            where: {
-                supplier_id: options.receipt.supplier_id,
-                _complete: 0
-            }
+        return options.m.suppliers.findOne({
+            where: {supplier_id: options.supplier_id},
+            attributes: ['supplier_id']
         })
-        .then(_receipt => {
-            if (_receipt) resolve({receipt_id: _receipt.receipt_id, created: false})
+        .then(supplier => {
+            if (!supplier) return reject(new Error('Supplier not found'))
             else {
-                options.m.receipts.create(options.receipt)
-                .then(new_receipt => resolve({receipt_id: new_receipt.receipt_id, created: true}))
-                 .catch(err => reject(err));
-            }
+                return options.m.receipts.findOrCreate({
+                    where: {
+                        supplier_id: supplier.supplier_id,
+                        _status: 1
+                    },
+                    defaults: {user_id: options.user_id}
+                })
+                .then(([receipt, created]) => resolve({receipt_id: receipt.receipt_id, created: created}))
+                .catch(err => reject(err));
+            };
         })
         .catch(err => reject(err));
     }),
     createLine: (options = {}) => new Promise((resolve, reject) => {
-        options.m.sizes.findOne({where: {size_id: options.line.size_id}})
+        options.m.sizes.findOne({
+            where: {size_id: options.size_id},
+            attributes: ['size_id', 'supplier_id']
+        })
         .then(size => {
-            if (size) {
-                options.m.stock.findOne({where: {stock_id: options.line.stock_id}})
-                .then(stock => {
-                    if (stock) {
-                        options.m.receipts.findOne({where: {receipt_id: options.line.receipt_id}})
-                        .then(receipt => {
-                            if (!receipt) {
-                                reject(new Error('Receipt not found'))
-                            } else if (receipt._complete) {
-                                reject(new Error('Lines can not be added to completed receipts'))
-                            } else if (Number(size.supplier_id) !== Number(receipt.supplier_id)) {
-                                reject(new Error('Size is not for this supplier'))
-                            } else if (size._serials && !options.line._serial) {
-                                reject(new Error('You must specify a serial #'))
-                            } else if (size._serials) {
-                                options.m.serials.create({
-                                    _serial: options.line._serial,
-                                    size_id: size.size_id
+            if (!size) reject(new Error('Size not found'))
+            else {
+                options.m.receipts.findOne({
+                    where: {receipt_id: options.receipt_id},
+                    attributes: ['receipt_id', 'supplier_id', '_status']
+                })
+                .then(receipt => {
+                    if (!receipt)                                                          reject(new Error('Receipt not found'))
+                    else if (receipt._status !== 1)                                        reject(new Error('Lines can only be added to draft receipts'))
+                    else if (size.supplier_id !== receipt.supplier_id)                     reject(new Error('Size is not from this supplier'))
+                    else if (size._serials  && (!line._serial   || line._serial === ''))   reject(new Error('No Serial # submitted'))
+                    else if (size._serials  && (!line._location || line._location === '')) reject(new Error('No location submitted'))
+                    else if (!size._serials && (!line.stock_id  || line.stock_id === ''))  reject(new Error('No Stock submitted'))
+                    else {
+                        let actions = [];
+                        if (size._serials) {
+                            actions.push(new Promise((resolve, reject) => {
+                                return options.m.locations.findOrCreate({
+                                    where: {_location: line._location}
                                 })
-                                .then(serial => {
-                                    options.line.serial_id = serial.serial_id;
-                                    options.m.receipt_lines.create(options.line)
-                                    .then(receipt_line => {
-                                        options.m.stock.findByPk(receipt_line.stock_id)
-                                        .then(stock => stock.increment('_qty', {by: receipt_line._qty}))
-                                        .then(stock => resolve(receipt_line.line_id))
-                                        .catch(err => reject(err));
+                                .then(([location, created]) => {
+                                    return options.m.serials.findOrCreate({
+                                        where: {
+                                            _serial: line._serial,
+                                            size_id: size.size_id
+                                        },
+                                        defaults: {location_id: location.location_id}
                                     })
-                                    .catch(err => reject(err));
+                                    .then(([serial, created]) => {
+                                        if (!created) reject(new Error('Serial # already exists for this size'))
+                                        else {
+                                            options.line.serial_id = serial.serial_id;
+                                            resolve(true);
+                                        };
+                                    })
+                                    .catch(er => reject(err));
                                 })
+                                .catch(er => reject(err));
+                            }));   
+                        };
+                        Promise.all(actions)
+                        .then(result => {
+                            return options.m.receipt_lines.findOrCreate({
+                                where: {
+                                    receipt_id: receipt.receipt_id,
+                                    size_id: size.size_id,
+                                    _status: 1
+                                },
+                                defaults: {
+                                    _qty: options._qty,
+                                    user_id: options.user_id
+                                }
+                            })
+                            .then(([line, created]) => {
+                                let _note = `Line ${line.line_id} `, actions = [];;
+                                if (created) _note += `created${options.note_addition || ''}`
+                                else {
+                                    actions.push(line.increment('_qty', {by: options._qty}));
+                                    _note += `incremented by ${request_line._qty}${options.note_addition || ''}`;
+                                };
+                                actions.push(
+                                    m.notes.create({
+                                        _id: receipt.receipt_id,
+                                        _table: 'receipts',
+                                        _note: _note,
+                                        user_id: options.user_id,
+                                        _system: 1
+                                    })
+                                );
+                                return Promise.all(actions)
+                                .then(note => resolve({line_id: line.line_id, created: created}))
                                 .catch(err => reject(err));
-                            } else {
-                                options.m.receipt_lines.findOne({
-                                    where: {
-                                        receipt_id: receipt.receipt_id,
-                                        size_id:    size.size_id,
-                                        stock_id:   options.line.stock_id
-                                    }
-                                })
-                                .then(receipt_line => {
-                                    if (receipt_line) {
-                                        options.m.receipt_lines.findByPk(receipt_line.line_id)
-                                        .then(stock => stock.increment('_qty', {by: options.line._qty}))
-                                        .then(stock => {
-                                            resolve(Number(stock._qty) + Number(by))
-                                            options.m.stock.findByPk(receipt_line.stock_id)
-                                            .then(stock => stock.increment('_qty', {by: options.line._qty}))
-                                            .then(result => resolve(receipt_line.line_id))
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    } else {
-                                        options.m.receipt_lines.create(options.line)
-                                        .then(receipt_line => {
-                                            options.m.stock.findByPk(receipt_line.stock_id)
-                                            .then(stock => stock.increment('_qty', {by: receipt_line._qty}))
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    };
-                                })
-                                .catch(err => reject(err));
-                            };
+                            })
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
-                    } else reject(new Error('Stock not found'));
+                    };
                 })
-                .catch(err => reject(err))
-            } else reject(new Error('Size not found'))
+                .catch(err => reject(err));
+            };
         })
         .catch(err => reject(err));
     })

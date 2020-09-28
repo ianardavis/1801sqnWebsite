@@ -1,20 +1,21 @@
 module.exports = (passport, m) => {
     var local  = require('passport-local').Strategy,
-        { scryptSync, randomBytes } = require("crypto");
+        { scryptSync } = require("crypto");
     passport.serializeUser((user, done) => done(null, user._login_id));
 
     passport.deserializeUser((_login_id, done) => {
         m.users.findOne({
             where: {_login_id: _login_id},
-            attributes: ['_login_id', 'user_id', '_reset']
+            include: [{model: m.ranks, attributes: ['_rank']}],
+            attributes: ['_login_id', 'user_id', '_reset', 'full_name']
         })
         .then(user => {
             if (user) {
                 done(null, user.get());
                 return null;
             } else {
-                console.log(err);
-                done(err, null);
+                console.log(new Error('User not found'));
+                done(new Error('User not found'), null);
                 return null;
             };
         })
@@ -64,19 +65,19 @@ module.exports = (passport, m) => {
                         {message: 'Your account is disabled!'}
                     );
                 } else {
-                    delete user._password;
-                    delete user._salt;
-                    m.users.update({_last_login: Date.now()}, {where: {user_id: user.user_id}})
-                    .then(result => {
-                        return done(null, user.get());
-                    })
+                    delete user.dataValues._password;
+                    delete user.dataValues._salt;
+                    m.users.update({_last_login: Date.now()},{where: {user_id: user.user_id}})
+                    .then(function(result) {
+                        return done(null, user.get())})
                     .catch(err => {
                         return done(
                             null, 
                             false, 
-                            {message: 'Error setting last login'}
+                            {message: `Error setting last login: ${err.message}`}
                         );
                     });
+                    return null; //to prevent promise not returned error
                 };
             })
             .catch(err => {

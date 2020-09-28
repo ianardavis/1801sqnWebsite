@@ -1,179 +1,141 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
 	<nav class='navbar navbar-expand navbar-light bg-nav'>
 		<ul class='navbar-nav mr-auto'>
-			<li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores'>Stores</a>
-			</li>
-			<li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/orders'>Orders</a>
-			</li>
-			<li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/orders/<%= order.order_id %>'><%= order.order_id %></a>
-			</li>
-			<li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle stores_nav" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                	Options
-                </a>
-                <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-					<% include ../../partials/notes/menu_add %>
-					<% if (!order._complete && !order._closed) { %>
-						<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for))) { %>
-							<form id='completeForm'>
-								<button class="dropdown-item dropdown_button confirm">
-									Complete
-								</button>
-							</form>
-							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" href='javascript:addSize("order",<%= order.order_id %>)'>
-								Add Item
-							</a>
-							<div class="dropdown-divider"></div>
-						<% } %>
-						<% if (permissions.order_delete) { %>
-							<form id='deleteForm'>
-								<button class='dropdown-item dropdown_button confirm'>
-									Delete
-								</button>
-							</form>
-						<% }; %>
-					<% } else if (permissions.order_line_edit && order._complete && !order._closed) { %> %>
-						<button form='actionForm' class='dropdown-item dropdown_button confirm'>
-							Action Selected Lines
-						</button>
-					<% }; %>
-                </div>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
 		</ul>
 	</nav>
 </section>
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
-                Details
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
-                Lines (<span id='line_count'></span>)
-            </a>
-        </li>
-        <% include ../../partials/notes/tab_head %>
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle stores_nav" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Menu
+			</a>
+			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
+				<%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+				<% if (permissions.order_edit) { %><form id='form_complete'><% } %>
+					<input type="hidden" name='_status' value='2'>
+					<input id='btn_complete' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Complete' disabled>
+				<% if (permissions.order_edit) { %></form>
+				<form id='form_cancel'><% } %>
+					<input type="hidden" name='_status' value='0'>
+					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Cancel' disabled>
+				<% if (permissions.order_edit) { %></form><% } %>
+				<div class="dropdown-divider"></div>
+				<form id='form_addSize'>
+					<input id='btn_addSize' class='dropdown-item dropdown_button' type="submit" value='Add Item' disabled>
+				</form>
+				<div class="dropdown-divider"></div>
+				<% if (permissions.order_delete) { %><form id='form_delete'><% } %>
+					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Delete' disabled>
+				<% if (permissions.order_edit) { %></form><% } %>
+				<input id='btn_action' form='form_action' class='dropdown-item dropdown_button confirm' type="submit" value='Action Lines' disabled>
+			</div>
+		</li>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="container">
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-30">
-						<span class="input-group-text w-100">For</span>
-					</div>
-					<p class="form-control"><% if (order.ordered_for !== -1) { %><%= order._for.rank._rank %> <%= order._for.full_name %><% } else { %>Backing Stock<% } %></p>
-					<% if (order.ordered_for !== -1) { %>
-						<div class="input-group-append">
-							<a class='btn btn-primary' href="/stores/users/<%= order.ordered_for %>">
-								<i class='fas fa-search'></i>
-							</a>
-						</div>
-					<% } %>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-30">
-						<span class="input-group-text w-100">By</span>
-					</div>
-					<p class="form-control"><%= order._by.rank._rank %> <%= order._by.full_name %></p>
-					<% if (order.ordered_for !== -1) { %>
-						<div class="input-group-append">
-							<a class='btn btn-primary' href="/stores/users/<%= order.user_id %>">
-								<i class='fas fa-search'></i>
-							</a>
-						</div>
-					<% } %>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-30">
-						<span class="input-group-text w-100">Ordered</span>
-					</div>
-					<p class="form-control"><%= order._date.toDateString() %></p>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-30">
-						<span class="input-group-text w-100">Complete</span>
-					</div>
-					<p class="form-control"><% if (order._complete) { %>Yes<% } else { %>No<% } %></p>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-30">
-						<span class="input-group-text w-100">Closed</span>
-					</div>
-					<p class="form-control"><% if (order._closed) { %>Yes<% } else { %>No<% } %></p>
-				</div>
-			</div>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_for', 	  title: 'For', append: {a: {id: 'for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_by', 	  title: 'By',  append: {a: {id: 'by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_date',	  title: 'Date'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status', title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-            <div class="container">
-				<div class="input-group mb-2">
-					<div class="input-group-prepend w-20">
-						<label class="input-group-text w-100" for="sel_status">Status</label>
-					</div>
-					<select class="custom-select" id='sel_status' onchange='getLines(<%= order.order_id %>, <%= order._complete %>, <%= order._closed %>, <%= permissions.order_line_delete %>)'>
-						<option value='All' selected>All</option>
-						<option value='Open'>Open</option>
-						<option value='Received'>Received</option>
-						<option value='Cancelled'>Cancelled</option>
-					</select>
-				</div>
-				<div id='spn_orders' class="spinner-border text-primary" role="status">
-					<span class="sr-only">Loading...</span>
-				</div>
-				<% if (permissions.order_line_edit && order._complete && !order._closed) { %>
-					<form id='actionForm'>
-				<% } %>
-				<table class='table table-sm table-hover mx-auto w-100'>
-					<thead class='thead-dark'>
-						<th class='w-5'  onclick='sortTable(0, "orderTable")'>ID</th>
-						<th class='w-<% if (order._complete) { %>15<% } else { %>35<% } %>' onclick='sortTable(1, "orderTable")'>Item</th>
-						<th class='w-<% if (order._complete) { %>15<% }else { %>30<% } %>' onclick='sortTable(2, "orderTable")'>Size</th>
-						<th class='w-<% if (order._complete) { %>5<% }else { %>10<% } %>'  onclick='sortTable(3, "orderTable")'>Qty</th>
-						<th class='w-<% if (order._complete) { %>15<% }else { %>20<% } %>' onclick='sortTable(4, "orderTable")'>Action</th>
-						<% if (order._complete) { %>
-						<th class='w-15' onclick='sortTable(5, "orderTable")'>Demand Date</th>
-						<th class='w-15' onclick='sortTable(6, "orderTable")'>Receipt Date</th>
-						<th class='w-15' onclick='sortTable(7, "orderTable")'>Issue Date</th>
-						<% } %>
-						<% if (permissions.order_line_delete && !order._complete && !order._closed) { %>
-						<th><i class='fas fa-trash-alt'></i></th>
-						<% } %>
-					</thead>
-					<tbody id='orderTable'>
-					</tbody>
-				</table>
-				<% if (permissions.order_line_edit && !order._complete) { %>
-				</form>
-				<% } %>
+			<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=2', text: 'Declined'}]}) %>
+			<div id='spn_orders' class="spinner-border text-primary" role="status">
+				<span class="sr-only">Loading...</span>
 			</div>
+			<% if (permissions.order_line_edit) { %>
+				<form id='form_action'>
+			<% } %>
+			<table class='table table-sm table-hover mx-auto w-100'>
+				<thead id='table_header_lines' class='thead-dark'>
+					<th id='line_id'  onclick='sortTable(0, "orderTable")'><%- include(`${process.env.PARTIALS}/spinner`, {id: 'order_lines', spinner_sm: true, spinner_float_left: true}) %>Line ID</th>
+					<th id='col_item' onclick='sortTable(1, "orderTable")'>Item</th>
+					<th id='col_size' onclick='sortTable(2, "orderTable")'>Size</th>
+					<th id='col_qty'  onclick='sortTable(3, "orderTable")'>Qty</th>
+				</thead>
+				<tbody id='orderTable'>
+				</tbody>
+			</table>
+			<% if (permissions.order_line_edit) { %>
+			</form>
+			<% } %>
 		</div>
-        <% include ../../partials/notes/tab_body %>
+        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
 </section>
-<% include ../../partials/foot/full %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<!-- get/spinner/XHRsend/send from notes include -->
+<script src='/js/tabs.js'></script>
+<script src="/js/orders/show/order.js"></script>
+<script src="/js/orders/show/lines.js"></script>
+<script src="/js/nsns/list.js"></script>
+<script src="/js/stock/list.js"></script>
+<script src="/js/serials/list.js"></script>
 <script src="/js/get/order_lines.js"></script>
 <script src="/js/get/select/stock.js"></script>
 <script src="/js/addSize.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script>showTab('<%= tab %>');</script>
+<script>
+	getOrder = () => {
+		get(
+			showOrder,
+			{
+				table: 'orders',
+				query: [`order_id=${path[3]}`],
+				permissions: {
+					edit: 	     <%= permissions.order_edit  	   || false %>,
+					delete:		 <%= permissions.order_delete	   || false %>,
+					line_add:	 <%= permissions.order_line_add	   || false %>,
+					line_delete: <%= permissions.order_line_delete || false %>
+				}
+			}
+		);
+	};
+</script>
+<script async>getOrder()</script>
+<script>
+    getLines = () => {
+		let sel_status = document.querySelector('#sel_status');
+		get(
+			showLines,
+			{
+				table: 'order_lines',
+				query: [`order_id=${path[3]}`, sel_status.value],
+				permissions: {
+					edit:	<%= permissions.order_line_edit   || false %>,
+					delete: <%= permissions.order_line_delete || false %>
+				}
+			}
+		);
+	};
+    document.querySelector('#reload').addEventListener('click', () => getLines());
+    document.querySelector('#reload').addEventListener('click', () => getOrder());
+    document.querySelector('#sel_status').addEventListener('change', () => getLines());
+</script>
+<script async>getLines()</script>
+
 <script>
     window.addEventListener( "load", function () {
-		<% if (!order._complete && !order._closed) { %>
-			<% if (permissions.order_delete) { %>
-				addFormListener('deleteForm', 'DELETE', '/stores/orders/<%= order.order_id %>',{redirect: '/stores/orders'});
-			<% } %>
-			<% if ((permissions.order_edit || Number(user.user_id) === Number(order.ordered_for))) { %>
-				addFormListener('completeForm', 'PUT', '/stores/orders/<%= order.order_id %>', {reload: true});
-			<% } %>
+		<% if (permissions.order_delete) { %>
+			addFormListener('form_delete', 'DELETE', `/stores/orders/${path[3]}`,{redirect: '/stores/orders'});
 		<% } %>
-		<% if (permissions.order_line_edit && order._complete && !order._closed) { %>
-			addFormListener('actionForm', 'PUT', '/stores/order_lines/<%= order.order_id %>',{reload: true});
+		<% if (permissions.order_edit) { %>
+			addFormListener('form_complete', 'PUT', `/stores/orders/${path[3]}`, {onComplete: [getOrder, getLines]});
+			addFormListener('form_cancel',	 'PUT', `/stores/orders/${path[3]}`, {onComplete: [getOrder, getLines]});
+		<% } %>
+		<% if (permissions.order_line_edit) { %>
+			addFormListener('form_action', 'PUT', `/stores/order_lines/${path[3]}`,{onComplete: getLines});
 		<% } %>
     });
 </script>
-<script async>getOrderLines(<%= order.order_id %>, <%= order._complete %>, <%= order._closed %>, <%= permissions.order_line_delete %>)</script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

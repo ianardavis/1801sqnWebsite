@@ -31,16 +31,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    '_complete': {
-      type: DataTypes.INTEGER(4),
+    '_status': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: '0',
-      comment: "null"
-    },
-    '_closed': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '0',
+      defaultValue: 1,
       comment: "null"
     },
     'user_id': {

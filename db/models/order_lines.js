@@ -26,9 +26,9 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_status': {
-      type: DataTypes.STRING(15),
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: 'Pending',
+      defaultValue: 0,
       comment: "null"
     },
     'demand_line_id': {
@@ -44,11 +44,6 @@ module.exports = function(sequelize, DataTypes) {
     'issue_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
-      comment: "null"
-    },
-    'user_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
       comment: "null"
     },
     'createdAt': {

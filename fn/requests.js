@@ -1,42 +1,65 @@
 module.exports = {
     create: (options = {}) => new Promise((resolve, reject) => {
-        options.m.requests.findOrCreate({
-            where: {
-                requested_for: options.request.requested_for,
-                _complete: 0
-            },
-            defaults: {
-                user_id: options.user_id,
-                _date: Date.now()
-            }
+        return options.m.users.findOne(
+            {where: {user_id: options.requested_for}},
+            {attributes: ['user_id']}
+        )
+        .then(user => {
+            if (!user) reject(new Error('User not found'))
+            else {
+                return options.m.requests.findOrCreate({
+                    where: {
+                        requested_for: user.user_id,
+                        _status: 1
+                    },
+                    defaults: {user_id: options.user_id}
+                })
+                .then(([request, created]) => resolve({request_id: request.request_id, created: created}))
+                .catch(err => reject(err));
+            };
         })
-        .then(result => resolve({request_id: result[0].request_id, created: result[1]}))
         .catch(err => reject(err));
     }),
     createLine: (options = {}) => new Promise((resolve, reject) => {
-        options.m.sizes.findOne({where: {size_id: options.line.size_id}})
+        return options.m.sizes.findOne({
+            where: {size_id: options.line.size_id},
+            attributes: ['size_id']
+        })
         .then(size => {
             if (size) {
-                options.m.request.findOne({where: {request_id: options.line.request_id}})
+                return options.m.requests.findOne({
+                    where: {request_id: options.line.request_id},
+                    attributes: ['_status', 'request_id']
+                })
                 .then(request => {
                     if (!request) reject(new Error('Request not found'))
-                    else if (request._complete) reject(new Error('Lines can not be added to completed requests'))
+                    else if (request._status !== 1) reject(new Error('Lines can only be added to draft requests'))
                     else {
-                        options.m.request_lines.findOne({
+                        return options.m.request_lines.findOrCreate({
                             where: {
                                 request_id: request.request_id,
                                 size_id: size.size_id
+                            },
+                            defaults: {
+                                _qty: options.line._qty
                             }
                         })
-                        .then(requestline => {
-                            if (requestline) {
-                                options.m.request_lines.findByPk(requestline.line_id)
-                                .then(stock => stock.increment('_qty', {by: options.line._qty}))
-                                .then(new_qty => resolve(requestline.line_id))
-                                .catch(err => reject(err));
-                            } else {
-                                options.m.request_lines.create(options.line)
-                                .then(request_line => resolve(request_line.line_id))
+                        .then(([line, created]) => {
+                            if (created) resolve(line.line_id)
+                            else {
+                                return line.increment('_qty', {by: options.line._qty})
+                                .then(result => {
+                                    return options.m.notes.create({
+                                        _id: request.request_id,
+                                        _table: 'requests',
+                                        _system: 1,
+                                        _note: `Line ${line.line_id} incremented by ${options.line._qty}`,
+                                        user_id: options.user_id
+                                    })
+                                    .then(result => resolve(line.line_id))
+                                    .catch(err => reject(err));
+                                    
+                                })
                                 .catch(err => reject(err));
                             };
                         })
