@@ -146,11 +146,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(count => res.send({result: true, count: count}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/:table',          isLoggedIn, allowed('', {send: true}),              (req, res) => {``
+    app.get('/stores/get/:table',          isLoggedIn, allowed('', {send: true}),              (req, res) => {
         m[req.params.table].findAll({
             where:      req.query,
             include:    includes[req.params.table]   || [],
-            attributes: attributes[req.params.table] || {exclude: ['createdAt', 'updatedAt']}
+            attributes: attributes[req.params.table] || {exclude: ['updatedAt']}
         })
         .then(results => {
             let _return = {result: true};
