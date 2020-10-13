@@ -150,6 +150,30 @@ function Spinner (options = {}) {
     this.spinner.setAttribute('role', 'status');
     this.spinner.innerHTML = '<span class="sr-only">Loading...</span>';
 };
+<<<<<<< HEAD
+=======
+function Notification (options = {}) {
+    this.notification = document.createElement('li');
+    this.notification.classList.add('alert', 'my-1', 'p-1', 'notification');
+    if (options.urgency === 1) this.notification.classList.add('alert-success')
+    else if (options.urgency === 2) this.notification.classList.add('alert-warning')
+    else if (options.urgency === 3) this.notification.classList.add('alert-danger')
+    else this.notification.classList.add('alert-info')
+    this.notification.setAttribute('role', 'alert', 'my-1', 'p-1', 'notification');
+    let heading = document.createElement('h4'),
+        date = document.createElement('span'),
+        body = document.createElement('p');
+    heading.classList.add('alert-heading');
+    heading.innerText = options.title || '';
+    date.classList.add('float-right', 'f-10');
+    date.innerText = options.date || '';
+    heading.appendChild(date);
+    body.classList.add('f-09', 'm-0');
+    body.innerText = options.text || '';
+    this.notification.appendChild(heading);
+    this.notification.appendChild(body);
+};
+>>>>>>> 5937bb909a9770fae4706124d4fcf7f050a032b0
 boolean_to_yesno = boolean => {
     if (boolean === 1 || boolean === true) return 'Yes'
     else return 'No'

@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     '_date': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     '_date_due': {
@@ -34,7 +34,11 @@ module.exports = function(sequelize, DataTypes) {
     '_status': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
+<<<<<<< HEAD
       defaultValue: 1,
+=======
+      defaultValue: '1',
+>>>>>>> 5937bb909a9770fae4706124d4fcf7f050a032b0
       comment: "null"
     },
     'user_id': {
@@ -45,13 +49,13 @@ module.exports = function(sequelize, DataTypes) {
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {

@@ -18,13 +18,17 @@ module.exports = function(sequelize, DataTypes) {
     '_date': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     '_status': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
+<<<<<<< HEAD
       defaultValue: 1,
+=======
+      defaultValue: '1',
+>>>>>>> 5937bb909a9770fae4706124d4fcf7f050a032b0
       comment: "null"
     },
     '_filename': {
@@ -40,13 +44,13 @@ module.exports = function(sequelize, DataTypes) {
     'updatedAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {
