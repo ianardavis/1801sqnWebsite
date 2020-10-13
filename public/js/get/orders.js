@@ -25,8 +25,8 @@ getOrders = () => {
         hide_spinner('orders');
     });
     let closedSelect   = document.querySelector('#closedSelect'),
-    completeSelect = document.querySelector('#completeSelect'),
-        query        = [];
+        completeSelect = document.querySelector('#completeSelect'),
+        query          = [];
     if      (Number(completeSelect.value) === 2) query.push('_complete=0')
     else if (Number(completeSelect.value) === 3) query.push('_complete=1');
     if      (Number(closedSelect.value) === 2)   query.push('_closed=0')

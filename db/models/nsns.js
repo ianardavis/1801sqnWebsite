@@ -31,7 +31,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     },
     '_item_number': {
-      type: DataTypes.STRING(7),
+      type: DataTypes.STRING(8),
       allowNull: false,
       comment: "null"
     },
@@ -44,13 +44,13 @@ module.exports = function(sequelize, DataTypes) {
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {
