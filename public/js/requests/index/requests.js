@@ -1,12 +1,12 @@
 showRequests = (requests, options = {}) => {
-    let table_body = document.querySelector('#requestTable');
+    let table_body = document.querySelector('#tbl_requests');
     table_body.innerHTML = '';
     requests.forEach(request => {
         let row = table_body.insertRow(-1);
-        add_cell(row, {text: request._for.rank._rank + ' ' + request._for.full_name});
+        add_cell(row, {text: `${request.user_for.rank._rank} ${request.user_for.full_name}`});
         add_cell(row, {
-            sort: new Date(request._date).getTime(),
-            text: new Date(request._date).toDateString()
+            sort: new Date(request.createdAt).getTime(),
+            text: new Date(request.createdAt).toDateString()
         });
         add_cell(row, {text: request.lines.length});
         if (request._status === 0) {

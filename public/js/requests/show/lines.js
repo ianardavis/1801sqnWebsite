@@ -42,8 +42,8 @@ showLines = (lines, options) => {
                         _status.addEventListener("change", function () {
                             if (this.value === '2') showActions(line.size_id, line.line_id)
                             else {
-                                document.querySelector('#action_' + line.line_id).innerHTML  = '';
-                                document.querySelector('#details_' + line.line_id).innerHTML = '';
+                                document.querySelector(`#action_${line.line_id}`).innerHTML  = '';
+                                document.querySelector(`#details_${line.line_id}`).innerHTML = '';
                             };
                         });
                         add_cell(row, {append: _status});
@@ -56,18 +56,17 @@ showLines = (lines, options) => {
                     };
                 } else if (line._status === 2) {
                     add_cell(row, {
-                        text: 'Approved - ' + line._action,
+                        text: `Approved - ${line._action}`,
                         append: new Link({
                             href: `/stores/${String(line._action).toLowerCase()}_lines/${line._id}`,
                             small: true,
                             float: true
                         }).link
                     });
-                    add_user_date(line, row);
                 } else if (line._status === 3) {
                     add_cell(row, {text: 'Declined'});
-                    add_user_date(line, row);
                 };
+                add_modal(line, row);
             } else if (line.request._status === 3) { //If closed
                 if (line._status === 1) add_cell(row, {text: 'Pending'})
                 else if (line._status === 2) {
@@ -80,7 +79,7 @@ showLines = (lines, options) => {
                         }).link
                     })
                 } else if (line._status === 3) add_cell(row, {text: 'Declined'});
-                add_user_date(line, row);
+                add_modal(line, row);
             };
         } catch (error) {
             console.log(`Error loading line ${line.line_id}: ${error}`)
@@ -88,11 +87,27 @@ showLines = (lines, options) => {
     });
     hide_spinner('requests');
 };
-add_user_date = (line, row) => {
-    if (line._date) add_cell(row, {text: new Date(line._date).toDateString(), sort: new Date(line._date).getTime()})
-    else add_cell(row);
-    if (line.user) add_cell(row, {text: line.user.rank._rank + ' ' + line.user.full_name})
-    else add_cell(row);
+add_modal = (line, row) => {
+    let btn_show = document.createElement('button');
+    btn_show.setAttribute('type', 'button');
+    btn_show.setAttribute('data-toggle', 'modal');
+    btn_show.setAttribute('data-target', `mdl_${line.line_id}`);
+    btn_show.classList.add('btn', 'btn-sm', 'btn-success');
+    btn_show.innerHTML = '<i class="fas fa-search"></i>';
+    btn_show.addEventListener('click', () => {$(`#mdl_${line.line_id}`).modal('show')});
+    add_cell(row, {append: btn_show});
+
+    row.appendChild(new Modal({id: line.line_id}).modal);
+    let mdl_title = document.querySelector(`#mdl_${line.line_id}_title`);
+    mdl_title.innerText = `${line.size.item._description} | Size: ${line.size._size}`;
+    let mdl_body = document.querySelector(`#mdl_${line.line_id}_body`)
+    mdl_body.appendChild(new Input_Group({title: 'Qty', text: line._qty}).group);
+    mdl_body.appendChild(new Input_Group({title: 'Added', text: new Date(line.createdAt).toDateString()}).group);
+    mdl_body.appendChild(new Input_Group({title: 'Approved', text: new Date(line._date).toDateString()}).group);
+    if (line.user_add) mdl_body.appendChild(new Input_Group({title: 'Created By', text: `${line.user_add.rank._rank } ${line.user_add.full_name}`}).group)
+    else mdl_body.appendChild(new Input_Group({title: 'Created By', text: ''}).group);
+    if (line.user_approve) mdl_body.appendChild(new Input_Group({title: 'Approved By', text: `${line.user_approve.rank._rank } ${line.user_approve.full_name}`}).group)
+    else mdl_body.appendChild(new Input_Group({title: 'Approved By', text: ''}).group);
 };
 showActions = (size_id, line_id) => {
     let _cell = document.querySelector(`#action_${line_id}`);

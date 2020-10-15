@@ -51,7 +51,7 @@
             <% } else { %>
                 <li class="nav-item dropleft">
                     <a class="nav-link dropdown-toggle" href="#" id="dd_notification" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'notifications'}) %>
+                        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'notifications', float_left: true}) %>
                         <i class='fas fa-bell'></i>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dd_notification" id='notifications'></ul>
@@ -67,6 +67,7 @@
                             query: ['user_id=<%- user.user_id %>','_active=1']
                         }
                     );
+                    // window.setInterval(getNotifications, 2000);
                 </script>
                 <script async>getNotifications()</script>
                 <li class="nav-item dropdown">

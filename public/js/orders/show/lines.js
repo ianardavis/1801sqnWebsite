@@ -43,6 +43,7 @@ showLines = (lines, options) => {
                         append: new Select({
                             name: `actions[line_id${line.line_id}][_status]`,
                             id: `sel_${line.line_id}`,
+                            small: true,
                             options: [
                                 {value: '',  text: 'Select Action', selected: true},
                                 {value: '0', text: 'Cancel'}
@@ -71,7 +72,7 @@ showLines = (lines, options) => {
                     };
                 };
                 if (line.demand_id) { // if demanded
-                    if (line.demand && line.demand._date) add_cell(row, {text: new Date(line.demand._date).toLocaleDateString()})
+                    if (line.demand && line.demand.createdAt) add_cell(row, {text: new Date(line.demand.createdAt).toLocaleDateString()})
                     else add_cell(row, {text: 'Unknown'});
                 } else {
                     let select = document.querySelector(`#sel_${line.line_id}`);
@@ -79,7 +80,7 @@ showLines = (lines, options) => {
                     add_cell(row);
                 };
                 if (line.receipt_id) { // if received
-                    if (line.receipt && line.receipt._date) add_cell(row, {text: new Date(line.receipt._date).toLocaleDateString()})
+                    if (line.receipt && line.receipt.createdAt) add_cell(row, {text: new Date(line.receipt.createdAt).toLocaleDateString()})
                     else add_cell(row, {text: 'Unknown'});
                 } else {
                     let select = document.querySelector(`#sel_${line.line_id}`);
@@ -92,7 +93,7 @@ showLines = (lines, options) => {
                 };
                 if (line.order.ordered_for !== -1) { //if not an order for backing stock
                     if (line.issue_id) { // if issued
-                        if (line.issue && line.issue._date) add_cell(row, {text: new Date(line.issue._date).toLocaleDateString()})
+                        if (line.issue && line.issue.createdAt) add_cell(row, {text: new Date(line.issue.createdAt).toLocaleDateString()})
                         else add_cell(row, {text: 'Unknown'});
                     } else {
                         let select = document.querySelector(`#sel_${line.line_id}`);
@@ -103,9 +104,9 @@ showLines = (lines, options) => {
             } else if (line.order._status === 3) { //if order is complete
                 add_cell(row, {text: statuses[line._status] || 'Unknown'});
                 if (line.demand_id && line.demand_id !== '') {
-                    if (line.demand && line.demand._date) {
+                    if (line.demand && line.demand.createdAt) {
                         add_cell(row, {
-                            text: new Date(line.demand._date).toDateString(),
+                            text: new Date(line.demand.createdAt).toDateString(),
                             append: new Link({
                                 href: `/stores/demand_lines/${line.demand_id}`,
                                 small: true,
@@ -115,9 +116,9 @@ showLines = (lines, options) => {
                     } else add_cell(row, {text: 'Unknown'});
                 } else add_cell(row);
                 if (line.receipt_id && line.receipt_id !== '') {
-                    if (line.receipt && line.receipt._date) {
+                    if (line.receipt && line.receipt.createdAt) {
                         add_cell(row, {
-                            text: new Date(line.receipt._date).toDateString(),
+                            text: new Date(line.receipt.createdAt).toDateString(),
                             append: new Link({
                                 href: `/stores/receipt_lines/${line.receipt_id}`,
                                 small: true,
@@ -128,9 +129,9 @@ showLines = (lines, options) => {
                 } else add_cell(row);
                 if (line.order.ordered_for !== -1) {
                     if (line.issue_id && line.issue_id !== '') {
-                        if (line.issue && line.issue._date) {
+                        if (line.issue && line.issue.createdAt) {
                             add_cell(row, {
-                                text: new Date(line.issue._date).toDateString(),
+                                text: new Date(line.issue.createdAt).toDateString(),
                                 append: new Link({
                                     href: `/stores/issue_lines/${line.issue_id}`,
                                     small: true,

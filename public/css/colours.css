@@ -52,6 +52,10 @@ body {
 	color: var(--main-bg-color-dark);
 	background-color: var(--main-color);
 }
+.modal-header {
+	color: var(--main-bg-color-dark);
+	background-color: var(--main-color)
+}
 .navbar-light .navbar-nav .nav-link {
 	 color: var(--main-bg-color);
  }

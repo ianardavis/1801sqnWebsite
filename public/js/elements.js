@@ -70,7 +70,7 @@ function Option (options = {}) {
     let _text = '';
     if (options.selected === true) {
         this.option.setAttribute('selected', true);
-        _text = '***';
+        if (options.star_default) _text = '***';
     };
     this.option.value     = options.value;
     this.option.innerText = _text + options.text + _text;
@@ -150,8 +150,6 @@ function Spinner (options = {}) {
     this.spinner.setAttribute('role', 'status');
     this.spinner.innerHTML = '<span class="sr-only">Loading...</span>';
 };
-<<<<<<< HEAD
-=======
 function Notification (options = {}) {
     this.notification = document.createElement('li');
     this.notification.classList.add('alert', 'my-1', 'p-1', 'notification');
@@ -173,7 +171,55 @@ function Notification (options = {}) {
     this.notification.appendChild(heading);
     this.notification.appendChild(body);
 };
->>>>>>> 5937bb909a9770fae4706124d4fcf7f050a032b0
+function Input_Group (options = {}) {
+    this.group  = document.createElement('div')
+    let prepend = document.createElement('div'),
+        title   = document.createElement('span'),
+        text    = document.createElement('p');
+    this.group.classList.add('input-group', 'mb-1');
+    prepend.classList.add('input-group-prepend', 'w-30');
+    title.classList.add('input-group-text', 'w-100');
+    title.innerText = options.title || '';
+    text.classList.add('form-control');
+    text.innerText = options.text || '';
+    prepend.appendChild(title);
+    this.group.appendChild(prepend);
+    this.group.appendChild(text);
+};
+function Modal (options = {}) {
+    this.modal = document.createElement('div');
+    let mdl_dialog  = document.createElement('div'),
+        mdl_content = document.createElement('div'),
+        mdl_header  = document.createElement('div'),
+        mdl_title   = document.createElement('h5'),
+        mdl_body    = document.createElement('div'),
+        mdl_footer  = document.createElement('div'),
+        mdl_close   = document.createElement('button');
+    this.modal.setAttribute('id', `mdl_${options.id}`);
+    this.modal.setAttribute('tabindex', '-1');
+    this.modal.setAttribute('aria-labelledby', `mdl_${options.id}_title`);
+    this.modal.setAttribute('aria-hidden', 'true');
+    this.modal.classList.add('modal', 'fade');
+    mdl_dialog.classList.add('modal-dialog');
+    mdl_content.classList.add('modal-content');
+    mdl_header.classList.add('modal-header');
+    mdl_title.classList.add('modal-title');
+    mdl_title.setAttribute('id', `mdl_${options.id}_title`);
+    mdl_header.appendChild(mdl_title);
+    mdl_body.setAttribute('id', `mdl_${options.id}_body`)
+    mdl_body.classList.add('modal-body');
+    mdl_footer.classList.add('modal-footer');
+    mdl_close.setAttribute('type', 'button');
+    mdl_close.setAttribute('data-dismiss', 'modal');
+    mdl_close.classList.add('btn', 'btn-primary');
+    mdl_close.innerText = 'Close';
+    mdl_footer.appendChild(mdl_close);
+    mdl_content.appendChild(mdl_header);
+    mdl_content.appendChild(mdl_body);
+    mdl_content.appendChild(mdl_footer);
+    mdl_dialog.appendChild(mdl_content);
+    this.modal.appendChild(mdl_dialog);
+};
 boolean_to_yesno = boolean => {
     if (boolean === 1 || boolean === true) return 'Yes'
     else return 'No'

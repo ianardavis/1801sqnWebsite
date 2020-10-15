@@ -42,10 +42,11 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
 			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_for', 	  title: 'For', append: {a: {id: 'for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_by', 	  title: 'By',  append: {a: {id: 'by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_date',	  title: 'Date'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status', title: 'Status'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_for', 	title: 'For', append: {a: {id: 'user_for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_by', 	title: 'By',  append: {a: {id: 'user_by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',   title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
 			<% if (permissions.request_line_edit) { %>
@@ -54,10 +55,10 @@
 			<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=2', text: 'Declined'}]}) %>
 			<table class="table table-sm table-hover mx-auto w-100">
 				<thead id='table_header_lines' class="thead-dark">
-					<th id='line_id'  onclick="sortTable(0,'linesTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true}) %>Line ID</th>
-					<th id='col_item' onclick="sortTable(1,'linesTable')">Item</th>
-					<th id='col_size' onclick="sortTable(2,'linesTable')">Size</th>
-					<th id='col_qty'  onclick="sortTable(3,'linesTable')">Qty</th>
+					<th id='line_id'  	 onclick="sortTable(0,'linesTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true}) %>Line ID</th>
+					<th id='col_item'	 onclick="sortTable(1,'linesTable')">Item</th>
+					<th id='col_size'	 onclick="sortTable(2,'linesTable')">Size</th>
+					<th id='col_qty' 	 onclick="sortTable(3,'linesTable')">Qty</th>
 				</thead>
 				<tbody id="linesTable">
 				</tbody>
@@ -100,7 +101,7 @@
 <script async>getRequest()</script>
 <script>
     getLines = () => {
-		let sel_status = document.querySelector('#sel_status');
+		let sel_status = document.querySelector('#sel_status') || {value: ''};
 		get(
 			showLines,
 			{

@@ -28,11 +28,7 @@ module.exports = function(sequelize, DataTypes) {
     '_status': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-<<<<<<< HEAD
-      defaultValue: 0,
-=======
       defaultValue: '1',
->>>>>>> 5937bb909a9770fae4706124d4fcf7f050a032b0
       comment: "null"
     },
     '_action': {
@@ -50,9 +46,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    'user_id': {
+    'approved_by': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
+      comment: "null"
+    },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     'createdAt': {

@@ -3,16 +3,13 @@ showOrder = (orders, options) => {
         for (let [id, value] of Object.entries(orders[0])) {
             try {
                 let element = document.querySelector(`#${id}`);
-                if (id === '_for')  {
+                if (id === '_for' || id === '_by')  {
                     element.innerText = `${value.rank._rank} ${value.full_name}`;
-                    let for_link = document.querySelector('#for_link');
-                    for_link.setAttribute('href', `/stores/users/${value.user_id}`);
-                } else if (id === '_by') {
-                    element.innerText = `${value.rank._rank} ${value.full_name}`;
-                    let by_link = document.querySelector('#by_link');
-                    by_link.setAttribute('href', `/stores/users/${value.user_id}`);
-                } else if (id === '_date') element.innerText = `${new Date(value).toDateString()} ${new Date(value).toLocaleTimeString()}`
-                else if (id === '_status') {
+                    let link = document.querySelector(`#${id}_link`);
+                    link.setAttribute('href', `/stores/users/${value.user_id}`);
+                } else if (id === 'createdAt' || id === 'updatedAt') {
+                    element.innerText = `${new Date(value).toDateString()} ${new Date(value).toLocaleTimeString()}`
+                } else if (id === '_status') {
                     if      (value === 0) element.innerText = 'Cancelled'
                     else if (value === 1) element.innerText = 'Draft';
                     else if (value === 2) element.innerText = 'Open'
@@ -69,7 +66,7 @@ showOrder = (orders, options) => {
             let header_row = document.querySelector('#table_header_lines tr');
             header_row.appendChild(new Column({
                 id: 'col_action',
-                text: 'Action',
+                text: 'Action/Status',
                 classes: ['w-15'],
                 onclick: "sortTable(3,'orderTable')"
             }).th);

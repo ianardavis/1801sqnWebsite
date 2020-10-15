@@ -12,13 +12,13 @@
 	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
 	<table class="table table-sm table-hover w-100">
 		<thead class="thead-dark">
-			<th class="w-40" onclick="sortTable(0, 'requestTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests', spinner_sm: true, spinner_float_left: true}) %>For</th>
-			<th class="w-35" onclick="sortTable(1, 'requestTable')">Date</th>
-			<th class="w-10" onclick="sortTable(2, 'requestTable')">Lines</th>
-			<th class="w-15" onclick="sortTable(3, 'requestTable')">Status</th>
+			<th class="w-40" onclick="sortTable(0, 'tbl_requests')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests', spinner_sm: true, spinner_float_left: true}) %>For</th>
+			<th class="w-35" onclick="sortTable(1, 'tbl_requests')">Date</th>
+			<th class="w-10" onclick="sortTable(2, 'tbl_requests')">Lines</th>
+			<th class="w-15" onclick="sortTable(3, 'tbl_requests')">Status</th>
 			<th><i class='fas fa-search'></i></th>
 		</thead>
-		<tbody id="requestTable">
+		<tbody id="tbl_requests">
 		</tbody>
 	</table>
 </div>

@@ -17,8 +17,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 inc.receipt_lines({as: 'receipt_line', receipts: true})
             ],
             issues: [
-                inc.users({as: '_to'}), 
-                inc.users({as: '_by'}),
+                inc.users({as: 'user_to'}), 
+                inc.users({as: 'user_by'}),
                 inc.issue_lines()
             ],
             issue_lines: [
@@ -39,8 +39,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             items: [inc.categories(), inc.groups(), inc.types(), inc.subtypes(), inc.genders()],
             notes: [inc.users()],
             orders: [
-                inc.users({as: '_for'}),
-                inc.users({as: '_by'}),
+                inc.users({as: 'user_for'}),
+                inc.users({as: 'user_by'}),
                 inc.order_lines()
             ],
             order_lines: [
@@ -64,7 +64,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             request_lines: [
                 inc.sizes(),
                 inc.requests(),
-                inc.users()
+                inc.users({as: 'user_add'}),
+                inc.users({as: 'user_approve'})
             ],
             serials: [inc.locations({as: 'location'})],
             stock: [inc.locations({as: 'location'})],
@@ -123,8 +124,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             where: req.query,
             include: [
                 inc.request_lines(),
-                inc.users({as: '_for'}),
-                inc.users({as: '_by'})
+                inc.users({as: 'user_for'}),
+                inc.users({as: 'user_by'})
         ]})
         .then(requests => res.send({result: true, requests: requests}))
         .catch(err => res.error.send(err, res));
@@ -150,7 +151,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         m[req.params.table].findAll({
             where:      req.query,
             include:    includes[req.params.table]   || [],
-            attributes: attributes[req.params.table] || {exclude: ['updatedAt']}
+            attributes: attributes[req.params.table] || null
         })
         .then(results => {
             let _return = {result: true};

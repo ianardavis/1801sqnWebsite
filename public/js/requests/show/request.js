@@ -5,16 +5,13 @@ showRequest = (requests, options) => {
         for (let [id, value] of Object.entries(requests[0])) {
             try {
                 let element = document.querySelector(`#${id}`);
-                if (id === '_for')  {
+                if (id === 'user_for' || id === 'user_by')  {
                     element.innerText = `${value.rank._rank} ${value.full_name}`;
-                    let for_link = document.querySelector('#for_link');
-                    for_link.setAttribute('href', `/stores/users/${value.user_id}`);
-                } else if (id === '_by') {
-                    element.innerText = `${value.rank._rank} ${value.full_name}`;
-                    let by_link = document.querySelector('#by_link');
-                    by_link.setAttribute('href', `/stores/users/${value.user_id}`);
-                } else if (id === '_date') element.innerText = `${new Date(value).toDateString()} ${new Date(value).toLocaleTimeString()}`
-                else if (id === '_status') {
+                    let link = document.querySelector(`#${id}_link`);
+                    link.setAttribute('href', `/stores/users/${value.user_id}`);
+                } else if (id === 'createdAt' || id === 'updatedAt') {
+                    element.innerText = `${new Date(value).toDateString()} ${new Date(value).toLocaleTimeString()}`
+                } else if (id === '_status') {
                     if (value === 0) element.innerText = 'Cancelled'
                     else if (value === 1) {
                         element.innerText = 'Draft';
@@ -43,10 +40,10 @@ showRequest = (requests, options) => {
         document.querySelector('#btn_cancel').setAttribute('disabled', true);
         document.querySelector('#btn_addSize').setAttribute('disabled', true);
         document.querySelector('#btn_delete').setAttribute('disabled', true);
-        let line_id  = document.querySelector('#line_id'),
-            col_item = document.querySelector('#col_item'),
-            col_size = document.querySelector('#col_size'),
-            col_qty  = document.querySelector('#col_qty');
+        let line_id     = document.querySelector('#line_id'),
+            col_item    = document.querySelector('#col_item'),
+            col_size    = document.querySelector('#col_size'),
+            col_qty     = document.querySelector('#col_qty');
         if (requests[0]._status === 0 || requests[0]._status === 1) {
             line_id.classList.add('w-10');
             col_item.classList.add('w-40');
@@ -72,27 +69,19 @@ showRequest = (requests, options) => {
         } else if (requests[0]._status === 2 || requests[0]._status === 3) {
             if (requests[0]._status === 2) document.querySelector('#btn_action').removeAttribute('disabled');
             line_id.classList.add('w-10');
-            col_item.classList.add('w-15');
-            col_size.classList.add('w-15');
+            col_item.classList.add('w-30');
+            col_size.classList.add('w-30');
             col_qty.classList.add('w-10');
             let header_row = document.querySelector('#table_header_lines tr');
             header_row.appendChild(new Column({
                 id: 'col_status',
                 text: 'Status',
-                classes: ['w-15'],
+                classes: ['w-20'],
                 onclick: "sortTable(3,'linesTable')"
             }).th);
             header_row.appendChild(new Column({
-                id: 'col_dateApproved',
-                text: 'Date Approved',
-                classes: ['w-15'],
-                onclick: "sortTable(4,'linesTable')"
-            }).th);
-            header_row.appendChild(new Column({
-                id: 'col_approvedBy',
-                text: 'Approved By',
-                classes: ['w-20'],
-                onclick: "sortTable(5,'linesTable')"
+                id: 'col_view',
+                html: '<i class="fas fa-search"></i>'
             }).th);
         };
     } else alert(`${requests.length} matching requests found`);

@@ -1,45 +1,37 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
 	<nav class='navbar navbar-expand navbar-light bg-nav'>
 		<ul class='navbar-nav mr-auto'>
-			<li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores'>Stores</a>
-			</li>
-			<li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/demands'>Demands</a>
-			</li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/orders', text: 'Demands'}) %>
 		</ul>
 	</nav>
 </section>
 <section class='container'>
 	<%- include('../../partials/spinner', {id: 'suppliers'}) %>
-	<div class="input-group mb-2">
-		<div class="input-group-prepend w-20">
-			<label class="input-group-text w-100" for="suppliersSelect">Suppliers</label>
-		</div>
-		<select class="custom-select" id='suppliersSelect' onchange=getDemands()>
-		</select>
-	</div>
-	<%- include('../../partials/inputs/include_select', {id: 'completeSelect', title: 'Completed Demands', onChange: 'getDemands()', _default: 1}) %>
-	<%- include('../../partials/inputs/include_select', {id: 'closedSelect',   title: 'Closed Demands',    onChange: 'getDemands()', _default: 2}) %>
+	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Supplier', id: 'sel_suppliers'}) %>
+	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', 	 id: 'sel_status',  options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
 	<%- include('../../partials/spinner', {id: 'demands'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
-			<th class="w-25" onclick="sortTable(0, 'demandTable')">Supplier</th>
-			<th class="w-20" onclick="sortTable(1, 'demandTable')">Date</th>
-			<th class="w-10" onclick="sortTable(2, 'demandTable')">Lines</th>
-			<th class="w-10" onclick="sortTable(3, 'demandTable')">Complete</th>
-			<th class="w-10" onclick="sortTable(4, 'demandTable')">Closed</th>
-			<th class="w-25" onclick="sortTable(5, 'demandTable')">Raised By</th>
+			<th class="w-20" onclick="sortTable(0, 'tbl_demand')">Date</th>
+			<th class="w-25" onclick="sortTable(1, 'tbl_demand')">Supplier</th>
+			<th class="w-10" onclick="sortTable(2, 'tbl_demand')">Lines</th>
+			<th class="w-20" onclick="sortTable(3, 'tbl_demand')">Status</th>
+			<th class="w-25" onclick="sortTable(4, 'tbl_demand')">Raised By</th>
 			<th><i class="fas fa-search"></i></th>
 		</thead>
-		<tbody id="demandTable">
+		<tbody id="tbl_demand">
 		</tbody>
 	</table>
 </section>
-<% include ../../partials/foot/full %>
-<script src="/js/get/suppliers.js"></script>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src='/js/suppliers/list.js'></script>
+<script>
+	getSuppliers = () => get(listSuppliers, {table: 'suppliers', query: []});
+</script>
+<script async>getSuppliers()</script>
+
 <script src="/js/get/demands.js"></script>
-<script defer>getSuppliers()</script>
 <script defer>getDemands(true)</script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

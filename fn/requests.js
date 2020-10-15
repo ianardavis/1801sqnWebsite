@@ -41,7 +41,8 @@ module.exports = {
                                 size_id: size.size_id
                             },
                             defaults: {
-                                _qty: options.line._qty
+                                _qty: options.line._qty,
+                                user_id: options.user_id
                             }
                         })
                         .then(([line, created]) => {
