@@ -30,32 +30,13 @@ showRequest = (requests, options) => {
         let breadcrumb = document.querySelector('#breadcrumb');
         breadcrumb.innerText = requests[0].request_id;
         breadcrumb.href = `/stores/requests/${requests[0].request_id}`;
-        
-        document.querySelectorAll('#table_header_lines tr th').forEach(e => {
-            if (!['line_id', 'col_item', 'col_size', 'col_qty'].includes(e.id)) e.remove()
-            else e.removeAttribute('class');
+        ['action', 'complete', 'cancel', 'addSize', 'delete'].forEach(e => {
+            document.querySelector(`#btn_${e}`).setAttribute('disabled', true);
         });
-        document.querySelector('#btn_action').setAttribute('disabled', true);
-        document.querySelector('#btn_complete').setAttribute('disabled', true);
-        document.querySelector('#btn_cancel').setAttribute('disabled', true);
-        document.querySelector('#btn_addSize').setAttribute('disabled', true);
-        document.querySelector('#btn_delete').setAttribute('disabled', true);
-        let line_id     = document.querySelector('#line_id'),
-            col_item    = document.querySelector('#col_item'),
-            col_size    = document.querySelector('#col_size'),
-            col_qty     = document.querySelector('#col_qty');
-        if (requests[0]._status === 0 || requests[0]._status === 1) {
-            line_id.classList.add('w-10');
-            col_item.classList.add('w-40');
-            col_size.classList.add('w-40');
-            col_qty.classList.add('w-10');
+        if (requests[0]._status === 0) {
+
+        } else if (requests[0]._status === 1) {
             if (requests[0]._status === 1) {
-                if (options.permissions.line_delete) {
-                    document.querySelector('#table_header_lines tr').appendChild(new Column({
-                        id: 'col_delete',
-                        html: '<i class="fas fa-trash-alt"></i>'
-                    }).th);
-                };
                 if (options.permissions.edit) {
                     document.querySelector('#btn_complete').removeAttribute('disabled');
                     document.querySelector('#btn_cancel').removeAttribute('disabled');
@@ -68,21 +49,6 @@ showRequest = (requests, options) => {
             };
         } else if (requests[0]._status === 2 || requests[0]._status === 3) {
             if (requests[0]._status === 2) document.querySelector('#btn_action').removeAttribute('disabled');
-            line_id.classList.add('w-10');
-            col_item.classList.add('w-30');
-            col_size.classList.add('w-30');
-            col_qty.classList.add('w-10');
-            let header_row = document.querySelector('#table_header_lines tr');
-            header_row.appendChild(new Column({
-                id: 'col_status',
-                text: 'Status',
-                classes: ['w-20'],
-                onclick: "sortTable(3,'linesTable')"
-            }).th);
-            header_row.appendChild(new Column({
-                id: 'col_view',
-                html: '<i class="fas fa-search"></i>'
-            }).th);
         };
     } else alert(`${requests.length} matching requests found`);
 };

@@ -31,8 +31,23 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '1',
       comment: "null"
     },
+    'user_id_add': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
     'demand_line_id': {
       type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'demand_user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'demand_date': {
+      type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
     },
@@ -41,8 +56,38 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
+    'receipt_user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'receipt_date': {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "null"
+    },
     'issue_line_id': {
       type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'issue_user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'issue_date': {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "null"
+    },
+    'complete_user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'complete_date': {
+      type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
     },

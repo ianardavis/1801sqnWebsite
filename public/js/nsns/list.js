@@ -10,7 +10,8 @@ getNSNs = (size_id, line_id, cell, nsn_id = null) => {
             response.nsns.forEach(e => nsn_options.push({
                 value: e.nsn_id,
                 text: `${String(e.group._code).padStart(2, '0')}${String(e.classification._code).padStart(2, '0')}-${String(e.country._code).padStart(2, '0')}-${e._item_number}`,
-                selected: (e.nsn_id === nsn_id)
+                selected: (e.nsn_id === nsn_id),
+                default: (e.nsn_id === nsn_id)
             }));
             let _nsns = new Select({
                 small: true,

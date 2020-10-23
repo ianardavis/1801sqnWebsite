@@ -67,13 +67,16 @@ function Select (options = {}) {
 };
 function Option (options = {}) {
     this.option = document.createElement('option');
-    let _text = '';
+    let _text = '', pre_text = '';
     if (options.selected === true) {
         this.option.setAttribute('selected', true);
-        if (options.star_default) _text = '***';
+        if (options.star_default) {
+            _text = '***';
+            pre_text = '***'
+        } else if (options.default === true) _text = ' (default)';
     };
     this.option.value     = options.value;
-    this.option.innerText = _text + options.text + _text;
+    this.option.innerText = pre_text + options.text + _text;
 };
 function Card (options = {}) {
     this.div = document.createElement('div');
@@ -185,6 +188,16 @@ function Input_Group (options = {}) {
     prepend.appendChild(title);
     this.group.appendChild(prepend);
     this.group.appendChild(text);
+    if (options.link) {
+        let append = document.createElement('div'),
+            link   = document.createElement('a');
+        append.classList.add('input-group-append');
+        link.classList.add('btn', 'btn-primary');
+        link.setAttribute('href', options.link);
+        link.innerHTML = '<i class="fas fa-search"></i>';
+        append.appendChild(link);
+        this.group.appendChild(append);
+    };
 };
 function Modal (options = {}) {
     this.modal = document.createElement('div');
@@ -203,6 +216,7 @@ function Modal (options = {}) {
     mdl_dialog.classList.add('modal-dialog');
     mdl_content.classList.add('modal-content');
     mdl_header.classList.add('modal-header');
+    mdl_header.setAttribute('id', `mdl_${options.id}_header`);
     mdl_title.classList.add('modal-title');
     mdl_title.setAttribute('id', `mdl_${options.id}_title`);
     mdl_header.appendChild(mdl_title);

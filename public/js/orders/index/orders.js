@@ -4,7 +4,7 @@ showOrders = (orders, options = {}) => {
     orders.forEach(order => {
         let row = table_body.insertRow(-1);
         if (Number(order.ordered_for) === -1) add_cell(row, {text: 'Backing Stock'}) 
-        else add_cell(row, {text: order._for.rank._rank + ' ' + order._for.full_name});
+        else add_cell(row, {text: order.user_for.rank._rank + ' ' + order.user_for.full_name});
         add_cell(row, {
             sort: new Date(order.createdAt).getTime(),
             text: new Date(order.createdAt).toDateString()

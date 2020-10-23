@@ -49,10 +49,10 @@ module.exports = {
                             if (created) _note += `created${options.note_addition || ''}`
                             else {
                                 actions.push(line.increment('_qty', {by: options.line._qty}));
-                                _note += `incremented by ${request_line._qty}${options.note_addition || ''}`;
+                                _note += `incremented by ${options.line._qty}${options.note_addition || ''}`;
                             };
                             actions.push(
-                                m.notes.create({
+                                options.m.notes.create({
                                     _id: order.order_id,
                                     _table: 'orders',
                                     _note: _note,

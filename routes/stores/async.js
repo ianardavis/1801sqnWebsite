@@ -48,7 +48,12 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 inc.orders(),
                 inc.demand_lines( {as: 'demand_line',  demands: true}),
                 inc.receipt_lines({as: 'receipt_line', receipts: true}),
-                inc.issue_lines(  {as: 'issue_line',   issues: true})
+                inc.issue_lines(  {as: 'issue_line',   issues: true}),
+                inc.users({as: 'user_add'}),
+                inc.users({as: 'user_demand'}),
+                inc.users({as: 'user_receive'}),
+                inc.users({as: 'user_issue'}),
+                inc.users({as: 'user_complete'})
             ],
             receipts: [
                 inc.suppliers({as: 'supplier'}),

@@ -42,14 +42,14 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_for', 	  	title: 'For', append: {a: {id: '_for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_by', 	    title: 'By',  append: {a: {id: '_by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_for', 	title: 'For', append: {a: {id: 'user_for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_by', 	title: 'By',  append: {a: {id: 'user_by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status', 	title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-			<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=2', text: 'Declined'}]}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Demanded'}, {value: '_status=4', text: 'Received'}, {value: '_status=5', text: 'Complete'}]}) %>
 			<div id='spn_orders' class="spinner-border text-primary" role="status">
 				<span class="sr-only">Loading...</span>
 			</div>
@@ -58,12 +58,15 @@
 			<% } %>
 			<table class='table table-sm table-hover mx-auto w-100'>
 				<thead id='table_header_lines' class='thead-dark'>
-					<th id='line_id'  onclick='sortTable(0, "orderTable")'><%- include(`${process.env.PARTIALS}/spinner`, {id: 'order_lines', spinner_sm: true, spinner_float_left: true}) %>Line ID</th>
-					<th id='col_item' onclick='sortTable(1, "orderTable")'>Item</th>
-					<th id='col_size' onclick='sortTable(2, "orderTable")'>Size</th>
-					<th id='col_qty'  onclick='sortTable(3, "orderTable")'>Qty</th>
+					<th class='w-10' onclick='sortTable(0, "linesTable")'><%- include(`${process.env.PARTIALS}/spinner`, {id: 'order_lines', spinner_sm: true, spinner_float_left: true}) %>Line ID</th>
+					<th class='w-30' onclick="sortTable(1,'linesTable')">Item</th>
+					<th class='w-15' onclick="sortTable(2,'linesTable')">Size</th>
+					<th class='w-5' onclick="sortTable(3,'linesTable')">Qty</th>
+					<th class='w-20' onclick="sortTable(4,'linesTable')">Status</th>
+					<th class='w-20' onclick="sortTable(5,'linesTable')">Action</th>
+					<th id='col_view'><i class='fas fa-search'></i></th>
 				</thead>
-				<tbody id='orderTable'>
+				<tbody id='linesTable'>
 				</tbody>
 			</table>
 			<% if (permissions.order_line_edit) { %>
@@ -113,8 +116,8 @@
 				table: 'order_lines',
 				query: [`order_id=${path[3]}`, sel_status.value],
 				permissions: {
-					edit:	<%= permissions.order_line_edit   || false %>,
-					delete: <%= permissions.order_line_delete || false %>
+					line_edit:	<%= permissions.order_line_edit   || false %>,
+					line_delete: <%= permissions.order_line_delete || false %>
 				}
 			}
 		);

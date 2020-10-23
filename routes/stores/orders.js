@@ -9,11 +9,12 @@ module.exports = (app, al, inc, li, m) => {
     app.get('/stores/orders/:id',         li, al('access_orders'),                            (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
-            include: [inc.users({as: '_for', attributes: ['user_id']})]
+            include: [inc.users({as: 'user_for', attributes: ['user_id']})],
+            attributes: ['ordered_for']
         })
         .then(order => {
             if (!order) res.error.redirect(new Error('Order not found'), req, res)
-            else if (!req.allowed && order._for.user_id !== req.user.user_id) res.error.redirect(new Error('Permission Denied'), req, res)
+            else if (!req.allowed && order.ordered_for !== req.user.user_id) res.error.redirect(new Error('Permission Denied'), req, res)
             else res.render('stores/orders/show', {tab: req.query.tab || 'details'});
         })
         .catch(err => res.error.redirect(err, req, res));
@@ -21,7 +22,7 @@ module.exports = (app, al, inc, li, m) => {
     app.get('/stores/order_lines/:id',    li, al('access_orders', {allow: true}),             (req, res) => {
         m.order_lines.findOne({
             where: {line_id: req.params.id},
-            attributes: ['ordered_for']
+            attributes: ['order_id']
         })
         .then(line => {
             if (!line) res.error.redirect(new Error('Order line not found'), req, res)
@@ -124,10 +125,7 @@ module.exports = (app, al, inc, li, m) => {
             } else {
                 let actions = [];
                 actions.push(
-                    m.orders.update(
-                        {_status: req.body._status},
-                        {where: {order_id: req.params.id}}
-                    )
+                    order.update({_status: req.body._status})
                 );
                 actions.push(
                     m.notes.create({

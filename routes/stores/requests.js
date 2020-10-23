@@ -71,7 +71,7 @@ module.exports = (app, al, inc, li, m) => {
                 res.error.send('Permission denied', res);
             } else if (request._status !== 1) {
                 res.error.send('Request must be in draft to be completed', res);
-            } else if (req.body._status === '0' && (!request.lines || request.lines.length === 0)) {
+            } else if (req.body._status === '2' && (!request.lines || request.lines.length === 0)) {
                 res.error.send('A request must have at least one open line before you can complete it', res);
             } else if (req.body._status !== '0' && req.body._status !== '2') {
                 res.error.send('Invalid status requested', res);
@@ -81,11 +81,20 @@ module.exports = (app, al, inc, li, m) => {
                 else if (req.body._status === '2') _note = 'Completed';
                 let actions = [];
                 actions.push(
-                    m.requests.update(
+                    request.update(
                         {_status: req.body._status},
                         {where: {request_id: req.params.id}}
                     )
                 );
+                actions.push(
+                    m.request_lines.update(
+                        {_status: 2},
+                        {where:{
+                            request_id: request.request_id,
+                            _status: 1
+                        }}
+                    )
+                )
                 actions.push(
                     m.notes.create({
                         _id:     req.params.id,
@@ -99,10 +108,7 @@ module.exports = (app, al, inc, li, m) => {
                     actions.push(
                         m.request_lines.update(
                             {_status: 0},
-                            {where: {
-                                request_id: req.params.id,
-                                _status: {[op.or]: [1,2]}
-                            }}
+                            {where: {request_id: req.params.id}}
                         )
                     );
                 };
@@ -127,20 +133,20 @@ module.exports = (app, al, inc, li, m) => {
                 let _orders = [], _issues = [], actions = [];
                 for (let [lineID, line] of Object.entries(req.body.actions)) {
                     line.line_id = Number(String(lineID).replace('line_id', ''));
-                    if (line._status === '2') { // If Approved
+                    if (line._status === '3') { // If Approved
                         if (line._action === 'Order') _orders.push(line)
                         else if (line._action === 'Issue') {
                             line.offset = _issues.length;
                             _issues.push(line);
                         }
-                    } else if (line._status === '3') { // If Declined
+                    } else if (line._status === '4') { // If Declined
                         // Update request line to declined
                         actions.push(
                             m.request_lines.update(
                                 {
-                                    _status: 3,
+                                    _status: 4,
                                     _date: Date.now(),
-                                    user_id: req.user.user_id
+                                    approved_by: req.user.user_id
                                 },
                                 {where: {line_id: line.line_id}}
                             )
@@ -211,7 +217,7 @@ module.exports = (app, al, inc, li, m) => {
                     return m.request_lines.count({
                         where: {
                             request_id: request.request_id,
-                            _status:    1
+                            _status:    2
                         }
                     })
                     .then(open_lines => {
@@ -244,12 +250,15 @@ module.exports = (app, al, inc, li, m) => {
         .then(request => {
             if (!request) return res.error.send('Request not found', res)
             else if (request.requested_for !== req.user.user_id && !allowed) return res.error.send('Permission denied', res)
-            else if (request._status !== 1) return res.error.send('Only draft requests can be deleted', res)
+            else if (request._status !== 1) return res.error.send('Only draft requests can be cancelled', res)
             else {
-                return m.request_lines.destroy({where: {request_id: request.request.id}})
+                return m.request_lines.update(
+                    {_status: 0},
+                    {where: {request_id: request.request_id}}
+                )
                 .then(result => {
-                    return request.destroy()
-                    .then(result => res.send({result: true, message: 'Request deleted'}))
+                    return request.update({_status: 0})
+                    .then(result => res.send({result: true, message: 'Request cancelled'}))
                     .catch(err => res.error.send(err, res));
                 })
                 .catch(err => res.error.send(err, res));
@@ -267,14 +276,14 @@ module.exports = (app, al, inc, li, m) => {
             if (!allowed && line.request.requested_for !== req.user.user_id) {
                 res.error.send('Permission denied', res);
             } else if (line.request._status !== 1) {
-                res.error.send('Lines can only be deleted whilst a request is in draft', res);
+                res.error.send('Lines can only be cancelled whilst a request is in draft', res);
             } else if (line._status !== 1) {
-                res.error.send('Only pending lines can be deleted', res);
+                res.error.send('Only pending lines can be cancelled', res);
             } else {
-                return line.destroy()
+                return line.update({_status: 0})
                 .then(result => {
-                    if (result) res.send({result: true, message: 'Line deleted'})
-                    else res.error.send('Line NOT deleted', res);
+                    if (result) res.send({result: true, message: 'Line cancelled'})
+                    else res.error.send('Line NOT cancelled', res);
                 })
                 .catch(err => res.error.send(err, res));
             };
@@ -294,29 +303,26 @@ module.exports = (app, al, inc, li, m) => {
                 m: {
                     order_lines: m.order_lines,
                     orders:      m.orders,
-                    sizes:       m.sizes 
+                    sizes:       m.sizes,
+                    notes:       m.notes
                 },
                 line: {
                     order_id: order_id,
                     size_id:  request_line.size_id,
-                    _qty:     request_line._qty
+                    _qty:     request_line._qty,
+                    user_id:  user_id
                 },
                 note_addition: ` from request line ${request_line.line_id}`
             })
             .then(result => {
                 return request_line.update(
-                // return m.request_lines.update(
                     {
-                        _status: 2,
+                        _status: 3,
                         _action: 'Order',
                         _date: Date.now(),
-                        _id: line_id,
-                        user_id: user_id
+                        _id: result.line_id,
+                        approved_by: user_id
                     }
-                    // },
-                    // {
-                    //     where: {line_id: request_line.line_id}
-                    // }
                 )
                 .then(update_result => resolve(true))
                 .catch(err => reject(`Unable to update request line: ${err.message}`));
@@ -355,18 +361,13 @@ module.exports = (app, al, inc, li, m) => {
             .then(line_id => {
                 //update request line to approved and add issue line details
                 return request_line.update(
-                // return m.request_lines.update(
                     {
-                        _status: 2,
+                        _status: 3,
                         _action: 'Issue',
                         _date: Date.now(),
                         _id: line_id,
-                        user_id: user_id
+                        approved_by: user_id
                     }
-                    // },
-                    // {
-                    //     where: {line_id: request_line.line_id}
-                    // }
                 )
                 .then(result => {
                     if (result) {
