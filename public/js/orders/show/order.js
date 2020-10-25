@@ -32,8 +32,9 @@ showOrder = (orders, options) => {
                 document.querySelector('#btn_cancel').removeAttribute('disabled');
             };
             if (options.permissions.line_add) {
-                document.querySelector('#form_addSize').setAttribute('action', `javascript:addSize("order",${orders[0].order_id})`)
+                document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).modal);
                 document.querySelector('#btn_addSize').removeAttribute('disabled');
+                add_size_modal('order');
             };
             if (options.permissions.delete) document.querySelector('#btn_delete').removeAttribute('disabled');
         } else if (orders[0]._status === 2 || orders[0]._status === 3) {

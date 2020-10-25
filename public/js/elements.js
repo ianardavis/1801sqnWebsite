@@ -45,24 +45,31 @@ function DeleteButton (options = {}) {
 };
 function Input (options = {}) {
     this.input = document.createElement('input');
-    this.input.classList.add('form-control');
+    if (options.classes) {
+        options.classes.forEach(e => this.input.classList.add(e))
+    } else this.input.classList.add('form-control');
     this.input.setAttribute('type', options.type  || 'text');
-    this.input.setAttribute('name', options.name  || 'selected[]');
+    if (options.completeOff) this.input.setAttribute('autocomplete', 'off');
+    if (options.name)        this.input.setAttribute('name', options.name);
     if (options.small)       this.input.classList.add('form-control-sm');
     if (options.value)       this.input.setAttribute('value', options.value);
     if (options.maxlength)   this.input.setAttribute('maxlength', options.maxlength);
     if (options.id)          this.input.setAttribute('id', options.id);
     if (options.placeholder) this.input.setAttribute('placeholder', options.placeholder);
     if (options.required)    this.input.setAttribute('required', true);
-    if (options.onChange)    this.input.addEventListener('change', event => options.onChange());
+    if (options.onChange)    this.input.addEventListener('change', function (event) {options.onChange()});
+    if (options.keyUp)       this.input.addEventListener('keyup', function (event) {options.keyUp()});
 };
 function Select (options = {}) {
     this.select  = document.createElement('select');
-    this.select.classList.add('form-control');
-    this.select.name = options.name || 'selected[]';
+    if (options.classes) {
+        options.classes.forEach(e => this.select.classList.add(e))
+    } else this.select.classList.add('form-control');
+    if (options.name)     this.select.setAttribute('name', options.name);
     if (options.small)    this.select.classList.add('form-control-sm');
     if (options.required) this.select.required = true;
     if (options.id)       this.select.id = options.id;
+    if (options.size)     this.select.setAttribute('size', options.size);
     if (options.options)  options.options.forEach(e => this.select.appendChild(new Option(e).option));
 };
 function Option (options = {}) {
@@ -149,7 +156,7 @@ function Column (options = {}) {
 function Spinner (options = {}) {
     this.spinner = document.createElement('div');
     this.spinner.id = `spn_${options.id || random_id}`;
-    this.spinner.classList.add('spinner-border', 'text-primary');
+    this.spinner.classList.add('spinner-border', 'text-primary', 'hidden');
     this.spinner.setAttribute('role', 'status');
     this.spinner.innerHTML = '<span class="sr-only">Loading...</span>';
 };
@@ -177,17 +184,21 @@ function Notification (options = {}) {
 function Input_Group (options = {}) {
     this.group  = document.createElement('div')
     let prepend = document.createElement('div'),
-        title   = document.createElement('span'),
-        text    = document.createElement('p');
+        title   = document.createElement('span');
     this.group.classList.add('input-group', 'mb-1');
     prepend.classList.add('input-group-prepend', 'w-30');
     title.classList.add('input-group-text', 'w-100');
     title.innerText = options.title || '';
-    text.classList.add('form-control');
-    text.innerText = options.text || '';
     prepend.appendChild(title);
     this.group.appendChild(prepend);
-    this.group.appendChild(text);
+    if (options.text) {
+        let text = document.createElement('p');
+        text.classList.add('form-control');
+        text.innerText = options.text || '';
+        this.group.appendChild(text);
+    } else if (options.input) {
+        this.group.appendChild(options.input);
+    };
     if (options.link) {
         let append = document.createElement('div'),
             link   = document.createElement('a');
@@ -213,6 +224,7 @@ function Modal (options = {}) {
     this.modal.setAttribute('aria-labelledby', `mdl_${options.id}_title`);
     this.modal.setAttribute('aria-hidden', 'true');
     this.modal.classList.add('modal', 'fade');
+    if (options.static === true) this.modal.setAttribute('data-backdrop', 'static');
     mdl_dialog.classList.add('modal-dialog');
     mdl_content.classList.add('modal-content');
     mdl_header.classList.add('modal-header');

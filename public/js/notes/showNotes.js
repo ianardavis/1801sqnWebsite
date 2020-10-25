@@ -6,8 +6,8 @@ showNotes = (notes, options = {}) => {
     notes.forEach(note => {
         let row = table_body.insertRow(-1);
         add_cell(row, {
-            sort: new Date(note._date).getTime(),
-            text: new Date(note._date).toDateString()
+            sort: new Date(note.createdAt).getTime(),
+            text: new Date(note.createdAt).toDateString()
         });
         if (note._system) add_cell(row, {html: _check()})
         else add_cell(row);

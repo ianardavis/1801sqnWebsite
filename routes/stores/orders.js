@@ -45,21 +45,18 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/order_lines/:id',   li, al('order_line_add',             {send: true}), (req, res) => {
+    app.post('/stores/order_lines',       li, al('order_line_add',             {send: true}), (req, res) => {
         orders.createLine({
             m: {
                 order_lines: m.order_lines,
                 orders:      m.orders,
-                sizes:       m.sizes 
+                sizes:       m.sizes,
+                notes:       m.notes
             },
-            line: {
-                order_id: req.params.id,
-                size_id:  req.line.size_id,
-                _qty:     req.line._qty,
-                user_id:  req.user.user_id
-            }
+            line: req.body.line,
+            user_id: req.user.user_id
         })
-        .then(line_id => res.send({result: true, message: `Item added: ${line_id}`}))
+        .then(result => res.send({result: true, message: `Item added: ${result.line_id}`}))
         .catch(err => res.error.send(err, res));
     });
 

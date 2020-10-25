@@ -89,6 +89,9 @@ select {
 	text-align-last: center;
 	margin-bottom: 5px;
 }
+.hidden {
+	display: none
+}
 .nested {
 	display: none;
 	transition: 0.5s;

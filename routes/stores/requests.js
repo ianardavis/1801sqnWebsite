@@ -42,8 +42,7 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/request_lines/:id',   li, al('request_line_add',             {send: true}), (req, res) => {
-        req.body.line.request_id = req.params.id;
+    app.post('/stores/request_lines',       li, al('request_line_add',             {send: true}), (req, res) => {
         requests.createLine({
             m: {
                 sizes: m.sizes,
@@ -54,7 +53,7 @@ module.exports = (app, al, inc, li, m) => {
             line: req.body.line,
             user_id: req.user.user_id
         })
-        .then(line_id => res.send({result: true, message: 'Item added: ' + line_id}))
+        .then(line_id => res.send({result: true, message: `Item added: ${line_id}`}))
         .catch(err => res.error.send(err, res))
     });
     

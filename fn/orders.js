@@ -42,7 +42,10 @@ module.exports = {
                                 size_id:  size.size_id,
                                 _status:  1
                             },
-                            defaults: {_qty: options.line._qty}
+                            defaults: {
+                                _qty: options.line._qty,
+                                user_id_add: options.user_id
+                            }
                         })
                         .then(([line, created]) => {
                             let _note = `Line ${line.line_id} `, actions = [];;
@@ -56,7 +59,7 @@ module.exports = {
                                     _id: order.order_id,
                                     _table: 'orders',
                                     _note: _note,
-                                    user_id: options.line.user_id,
+                                    user_id: options.user_id,
                                     _system: 1
                                 })
                             );

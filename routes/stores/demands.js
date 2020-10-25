@@ -48,12 +48,16 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/demand_lines/:id',    isLoggedIn, allowed('demand_line_add', {send: true}), (req, res) => {
-        req.body.line.demand_id = req.params.id;
-        req.body.line.user_id   = req.user.user_id;
+    app.post('/stores/demand_lines',        isLoggedIn, allowed('demand_line_add', {send: true}), (req, res) => {
         demands.createLine({
-            m: {sizes: m.sizes, demands: m.demands, demand_lines: m.demand_lines},
-            line: req.body.line
+            m: {
+                sizes: m.sizes,
+                demands: m.demands,
+                demand_lines: m.demand_lines,
+                notes: m.notes
+            },
+            line: req.body.line,
+            user_id: req.user.user_id
         })
         .then(message => res.send({result: true, message: 'Item added: ' + message}))
         .catch(err => res.error.send(err, res))

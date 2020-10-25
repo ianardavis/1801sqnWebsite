@@ -4,6 +4,7 @@
 		<ul class='navbar-nav mr-auto'>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/orders', text: 'Demands'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
 		</ul>
 	</nav>
 </section>
@@ -14,24 +15,34 @@
 	<%- include('../../partials/spinner', {id: 'demands'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
-			<th class="w-20" onclick="sortTable(0, 'tbl_demand')">Date</th>
-			<th class="w-25" onclick="sortTable(1, 'tbl_demand')">Supplier</th>
-			<th class="w-10" onclick="sortTable(2, 'tbl_demand')">Lines</th>
-			<th class="w-20" onclick="sortTable(3, 'tbl_demand')">Status</th>
-			<th class="w-25" onclick="sortTable(4, 'tbl_demand')">Raised By</th>
+			<th class="w-30" onclick="sortTable(0, 'tbl_demands')">Date</th>
+			<th class="w-30" onclick="sortTable(1, 'tbl_demands')">Supplier</th>
+			<th class="w-15" onclick="sortTable(2, 'tbl_demands')">Lines</th>
+			<th class="w-25" onclick="sortTable(3, 'tbl_demands')">Status</th>
 			<th><i class="fas fa-search"></i></th>
 		</thead>
-		<tbody id="tbl_demand">
+		<tbody id="tbl_demands">
 		</tbody>
 	</table>
 </section>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src='/js/demands/index/demands.js'></script>
+<script src='/js/spinner.js'></script>
+<script src='/js/get.js'></script>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/XHRsend.js'></script>
+<script src='/js/data/send.js'></script>
 <script src='/js/suppliers/list.js'></script>
 <script>
 	getSuppliers = () => get(listSuppliers, {table: 'suppliers', query: []});
 </script>
 <script async>getSuppliers()</script>
-
-<script src="/js/get/demands.js"></script>
-<script defer>getDemands(true)</script>
+<script>
+	let sel_status = document.querySelector('#sel_status');
+	getDemands = () => get(showDemands, {table: 'demands', query: [sel_status.value]});
+</script>
+<script async>getDemands()</script>
+<script>document.querySelector('#reload').addEventListener('click', () => getDemands());</script>
+<script>document.querySelector('#reload').addEventListener('click', () => getSuppliers());</script>
+<script>document.querySelector('#sel_status').addEventListener('change', () => getDemands());</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

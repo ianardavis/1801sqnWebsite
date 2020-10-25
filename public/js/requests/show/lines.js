@@ -72,8 +72,8 @@ function add_modal (line, row) {
     btn_show.innerHTML = '<i class="fas fa-search"></i>';
     btn_show.addEventListener('click', () => {$(`#mdl_${line.line_id}`).modal('show')});
     add_cell(row, {append: btn_show, id: `mdl_cell_${line.line_id}`});
-    let mdl_cell = document.querySelector(`#mdl_cell_${line.line_id}`);
-    mdl_cell.appendChild(new Modal({id: line.line_id}).modal);
+    let div_modals = document.querySelector(`#div_modals`);
+    div_modals.appendChild(new Modal({id: line.line_id, static: true}).modal);
     let mdl_title = document.querySelector(`#mdl_${line.line_id}_title`);
     mdl_title.innerText = `Request Line ${line.line_id}`;
     let mdl_body = document.querySelector(`#mdl_${line.line_id}_body`)
@@ -82,7 +82,6 @@ function add_modal (line, row) {
     mdl_body.appendChild(new Input_Group({title: 'Qty', text: line._qty}).group);
     mdl_body.appendChild(new Input_Group({title: 'Added', text: `${new Date(line.createdAt).toDateString()} ${new Date(line.createdAt).toLocaleTimeString()}`}).group);
     mdl_body.appendChild(new Input_Group({title: 'Added By', text: `${line.user_add.rank._rank } ${line.user_add.full_name}`, link: `/stores/users/${line.user_id}`}).group);
-    console.log(typeof(line._status))
     if (line._status === 1) {
         mdl_body.appendChild(new Input_Group({title: 'Status', text: 'Pending'}).group);
     } else if (line._status === 2) {

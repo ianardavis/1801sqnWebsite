@@ -36,17 +36,16 @@ showRequest = (requests, options) => {
         if (requests[0]._status === 0) {
 
         } else if (requests[0]._status === 1) {
-            if (requests[0]._status === 1) {
-                if (options.permissions.edit) {
-                    document.querySelector('#btn_complete').removeAttribute('disabled');
-                    document.querySelector('#btn_cancel').removeAttribute('disabled');
-                };
-                if (options.permissions.line_add) {
-                    document.querySelector('#form_addSize').setAttribute('action', `javascript:addSize("request",${requests[0].request_id})`)
-                    document.querySelector('#btn_addSize').removeAttribute('disabled');
-                };
-                if (options.permissions.delete) document.querySelector('#btn_delete').removeAttribute('disabled');
+            if (options.permissions.edit) {
+                document.querySelector('#btn_complete').removeAttribute('disabled');
+                document.querySelector('#btn_cancel').removeAttribute('disabled');
             };
+            if (options.permissions.line_add) {
+                document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).modal);
+                document.querySelector('#btn_addSize').removeAttribute('disabled');
+                add_size_modal('request');
+            };
+            if (options.permissions.delete) document.querySelector('#btn_delete').removeAttribute('disabled');
         } else if (requests[0]._status === 2 || requests[0]._status === 3) {
             if (requests[0]._status === 2) document.querySelector('#btn_action').removeAttribute('disabled');
         };
