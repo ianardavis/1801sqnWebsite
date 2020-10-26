@@ -21,15 +21,17 @@ module.exports = {
         .catch(err => reject(err));
     }),
     createLine: (options = {}) => new Promise((resolve, reject) => {
-        options.m.sizes.findOne({
-            where: {size_id: options.size_id},
+        return options.m.sizes.findOne({
+            where: {size_id: options.line.size_id},
             attributes: ['size_id', 'supplier_id']
         })
         .then(size => {
             if (!size) reject(new Error('Size not found'))
-            else {
-                options.m.demands.findOne({
-                    where: {demand_id: options.demand_id},
+            else if (!size._demand_page || size._demand_page === '' || !size._demand_cell || size._demand_cell === '') {
+                reject(new Error('No demand details for this size'))
+            } else {
+                return options.m.demands.findOne({
+                    where: {demand_id: options.line.demand_id},
                     attributes: ['demand_id', 'supplier_id', '_status']
                 })
                 .then(demand => {
@@ -37,13 +39,13 @@ module.exports = {
                     else if (demand._status !== 1) reject(new Error('Lines can only be added to draft demands'))
                     else if (size.supplier_id !== demand.supplier_id) reject(new Error('Size is not from this supplier'))
                     else {
-                        options.m.demand_lines.findOrCreate({
+                        return options.m.demand_lines.findOrCreate({
                             where: {
                                 demand_id: demand.demand_id,
                                 size_id: size.size_id
                             },
                             defaults: {
-                                _qty: options._qty,
+                                _qty: options.line._qty,
                                 user_id: options.user_id
                             }
                         })
@@ -51,11 +53,11 @@ module.exports = {
                             let _note = `Line ${line.line_id} `, actions = [];;
                             if (created) _note += `created${options.note_addition || ''}`
                             else {
-                                actions.push(line.increment('_qty', {by: options._qty}));
-                                _note += `incremented by ${request_line._qty}${options.note_addition || ''}`;
+                                actions.push(line.increment('_qty', {by: options.line._qty}));
+                                _note += `incremented by ${options.line._qty}${options.note_addition || ''}`;
                             };
                             actions.push(
-                                m.notes.create({
+                                options.m.notes.create({
                                     _id: demand.demand_id,
                                     _table: 'demands',
                                     _note: _note,

@@ -14,7 +14,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             ],
             demand_lines: [
                 inc.sizes({stock: true}),
-                inc.receipt_lines({as: 'receipt_line', receipts: true})
+                inc.receipt_lines({as: 'receipt_line', receipts: true, include: [inc.users()]}),
+                inc.users(),
+                inc.demands()
             ],
             issues: [
                 inc.users({as: 'user_to'}), 

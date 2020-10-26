@@ -22,7 +22,7 @@ showRequest = (requests, options) => {
                         }).toast, document.querySelector('mainTab'));
                         $('#incompleteToast').toast('show');
                     } else if (value === 2) element.innerText = 'Open'
-                    else if (value === 3) element.innerText = 'Complete'
+                    else if (value === 3) element.innerText = 'Closed'
                     else element.innerText = 'Unknown';
                 };
             } catch (error) {console.log(error)};

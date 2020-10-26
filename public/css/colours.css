@@ -17,6 +17,10 @@ body {
 	color: var(--main-color);
 }
 
+.bg-red {
+	background-color: #ffb7b7;
+	color: var(--main-bg-color);
+}
 .bg-light {
  	background-color: var(--main-color) !important;
 }

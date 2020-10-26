@@ -5,11 +5,6 @@
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		    text: 'Stores'}) %>
 			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/demands', text: 'Demands'}) %>
 			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
-			<li class='nav-item'>
-				<a class='nav-link stores_nav' href='/stores/demands/<%= demand.demand_id %>'>
-					<%= demand.demand_id %>
-				</a>
-			</li>
 		</ul>
 	</nav>
 </section>
@@ -21,19 +16,18 @@
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
-				<% if (demand._complete && demand._filename) { %>
-					<a class='dropdown-item' href='javascript:download_file("<%= demand._filename %>")'>
-						Download
-					</a>
+				<form id="form_download">
+					<input id='btn_download' class='dropdown-item dropdown_button' name='_status' type="submit" value='Download' disabled>
+				</form>
+					<!-- href='javascript:download_file("demand._filename")' -->
 					<div class="dropdown-divider"></div>
-				<% } %>
 				<% if (permissions.demand_edit) { %><form id='form_complete'><% } %>
 					<input type="hidden" name='_status' value='2'>
-					<input id='btn_complete' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Complete' disabled>
+					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
 				<% if (permissions.demand_edit) { %></form>
 				<form id='form_cancel'><% } %>
 					<input type="hidden" name='_status' value='0'>
-					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Cancel' disabled>
+					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' type="submit" value='Cancel' disabled>
 				<% if (permissions.demand_edit) { %></form><% } %>
 				<div class="dropdown-divider"></div>
 				<div id='form_addSize'>
@@ -56,7 +50,7 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'supplier',  title: 'Supplier',  append: {a: {id: 'supplier_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'raised_by', title: 'Raised By', append: {a: {id: 'raised_by_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user',		title: 'Raised By', append: {a: {id: 'user_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
 			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',   title: 'Status'}) %>
@@ -98,23 +92,60 @@
 <script src="/js/search/select.js"></script>
 <script src="/js/addSize.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-
+<script>showTab('<%= tab %>');</script>
+<script>
+	getDemand = () => {
+		get(
+			showDemand,
+			{
+				table: 'demands',
+				query: [`demand_id=${path[3]}`],
+				permissions: {
+					edit: 	     <%= permissions.demand_edit  	   || false %>,
+					delete:		 <%= permissions.demand_delete	   || false %>,
+					line_add:	 <%= permissions.demand_line_add	   || false %>,
+					line_delete: <%= permissions.demand_line_delete || false %>
+				}
+			}
+		);
+	};
+    document.querySelector('#reload').addEventListener('click', () => getDemand());
+</script>
+<script async>getDemand()</script>
+<script>
+    getLines = () => {
+		let sel_status = document.querySelector('#sel_status');
+		get(
+			showLines,
+			{
+				table: 'demand_lines',
+				query: [`demand_id=${path[3]}`, sel_status.value],
+				permissions: {
+					line_edit:	<%= permissions.demand_line_edit   || false %>,
+					line_delete: <%= permissions.demand_line_delete || false %>
+				}
+			}
+		);
+	};
+	// getdemandlines = getLines;
+    document.querySelector('#reload').addEventListener('click', () => getLines());
+    document.querySelector('#sel_status').addEventListener('change', () => getLines());
+</script>
+<script async>getLines()</script>
 
 <script src="/js/get/demand_lines.js"></script>
 <script>
     window.addEventListener( "load", function () {
-		<% if (!demand._complete && !demand._closed) { %>
-			<% if (permissions.demand_edit) { %>
-				addFormListener('completeForm', 'PUT', '/stores/demands/<%= demand.demand_id %>', {reload: true})
-			<% } %>
-			<% if (permissions.demand_delete) { %>
-				addFormListener('deleteForm', 'DELETE', '/stores/demands/<%= demand.demand_id %>', {redirect: '/stores/demands'})
-			<% } %>
+		<% if (permissions.demand_delete) { %>
+			addFormListener('form_delete', 'DELETE', `/stores/demands/${path[3]}`,{redirect: '/stores/demands'});
 		<% } %>
-		<% if (permissions.demand_line_edit && demand._complete && !demand._closed) { %>
-			addFormListener('actionForm', 'PUT', '/stores/demand_lines/<%= demand.demand_id %>',{reload: true});
+		<% if (permissions.demand_edit) { %>
+			addFormListener('form_complete', 'PUT', `/stores/demands/${path[3]}`, {onComplete: [getDemand, getLines]});
+			addFormListener('form_cancel',	 'PUT', `/stores/demands/${path[3]}`, {onComplete: [getDemand, getLines]});
 		<% } %>
-    });
+		<% if (permissions.demand_line_edit) { %>
+			addFormListener('form_action', 'PUT', `/stores/demnd_lines/${path[3]}`,{onComplete: getLines});
+		<% } %>
+	});
 </script>
-<script async>getDemandLines(<%= demand.demand_id %>, <%= demand._complete %>, <%= permissions.demand_line_delete || false %>)</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
