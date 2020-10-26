@@ -79,12 +79,7 @@ module.exports = (app, al, inc, li, m) => {
                 if      (req.body._status === '0') _note = 'Cancelled'
                 else if (req.body._status === '2') _note = 'Completed';
                 let actions = [];
-                actions.push(
-                    request.update(
-                        {_status: req.body._status},
-                        {where: {request_id: req.params.id}}
-                    )
-                );
+                actions.push(request.update({_status: req.body._status}));
                 actions.push(
                     m.request_lines.update(
                         {_status: 2},
