@@ -30,7 +30,7 @@ module.exports = (app, al, inc, li, m) => {
 
     app.post('/stores/requests',            li, al('request_add',                  {send: true}), (req, res) => {
         requests.create({
-            m: m.request,
+            m: {requests: m.requests, users: m.users},
             requested_for: req.body.requested_for,
             user_id:       req.user.user_id
         })
