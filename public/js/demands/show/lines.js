@@ -44,7 +44,6 @@ showLines = (lines, options) => {
                 let div_actions = document.createElement('div'),
                     div_details = document.createElement('div'),
                     div_stocks  = document.createElement('div'),
-                    div_nsns    = document.createElement('div'),
                     div_serials = document.createElement('div');
                 let _status = new Select({
                     name: `actions[line_id${line.line_id}][_status]`,
@@ -53,31 +52,25 @@ showLines = (lines, options) => {
                     options: action_options
                 }).select;
                 _status.addEventListener("change", function () {
-                    ['details', 'serials', 'nsns', 'stocks'].forEach(e => {
+                    ['details', 'serials', 'stocks'].forEach(e => {
                         let _div = document.querySelector(`#${e}_${line.line_id}`);
                         _div.innerHTML = '';
                     })
-                    if (this.value === '4') {
+                    if (this.value === '3') {
                         if (line.size._serials) {
                             enterSerial(line.line_id);
                         } else {
                             getStock(line.size_id, line.line_id, 'stocks');
                         };
-                    } else if (this.value === '5') {
-                        getStock(line.size_id, line.line_id, 'stocks');
-                        if (line.size._serials) getSerials(line.size_id, line.line_id, 'serials');
-                        if (line.size._nsns)    getNSNs(line.size_id, line.line_id, 'nsns', line.size.nsn_id);
                     };
                 });
                 div_details.setAttribute('id', `details_${line.line_id}`);
                 div_stocks.setAttribute('id', `stocks_${line.line_id}`);
-                div_nsns.setAttribute('id', `nsns_${line.line_id}`);
                 div_serials.setAttribute('id', `serials_${line.line_id}`);
                 div_actions.appendChild(_status);
                 div_actions.appendChild(div_details);
                 div_actions.appendChild(div_stocks);
                 div_actions.appendChild(div_serials);
-                div_actions.appendChild(div_nsns);
                 cell_action.appendChild(div_actions);
             };
         } catch (error) {

@@ -54,7 +54,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             attributes: ['demand_id', '_status']
         })
         .then(demand => {
-            if (req.body._status === 0) {
+            if (Number(req.body._status) === 0) {
                 if (demand._status === 0) res.send_error('This demand has already ben cancelled', res)
                 else if (demand._status === 3) res.send_error('Closed demands can not be cancelled', res)
                 else {
@@ -81,7 +81,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     .then(result => res.send({result: true, message: 'Demand Cancelled'}))
                     .catch(err => res.error.send(err, res));
                 };
-            } else if (req.body._status === 2) {
+            } else if (Number(req.body._status) === 2) {
                 if (demand._status !== 1) res.send_error('Only draft demands can be completed', res)
                 else {
                     let actions = [];
@@ -114,7 +114,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     })
                     .catch(err => res.error.send(err, res));
                 };
-            } else if (req.body._status === 3) {
+            } else if (Number(req.body._status) === 3) {
                 if (demand._status !== 2) res.send_error('Only complete demands can be completed', res)
                 else {
                     m.demand_lines.findAll({
@@ -235,6 +235,51 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     
+    raise_demand = demand_id => new Promise((resolve, reject) => {
+        //check the demand is not already raised
+        m.demands.findOne({
+            where: {demand_id:demand_id},
+            include: [
+                inc.suppliers({
+                    as: 'supplier',
+                    file: true,
+                    account: true
+                })
+            ],
+            attributes: ['_filename']
+        })
+        .then(demand => {
+            //check template file exists
+            if (!demand._filename || demand._filename === '') {
+                //check demand has open lines
+                m.demand_lines.findAll({
+                    where: {
+                        demand_id: demand_id,
+                        _status: 2
+                    },
+                    include: [inc.order_lines({orders: true})]
+                })
+                .then(lines => {
+                    if (lines) {
+
+                    } else reject(new Error('No open lines for this demand')
+                })
+                .catch(err => reject(err));
+            } else reject(new Error('Demand has already been raised'));
+        })
+        .catch(err => reject(err));
+    });
+        //get the template file
+        //get demand lines (inc order lines and order for cadet names)
+            //sort demand lines, correlate items
+            //sort demand lines, correlate users
+        //create new demand file
+            //write cover sheet
+            //write items sheets
+        //update demand lines as demanded
+        //update demand with filename
+
+
     function raiseDemandFile (demand_id, user_id) {
         return new Promise((resolve, reject) => {
             m.demands.findOne({
@@ -245,7 +290,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                         file: true,
                         account: true}),
                     inc.demand_lines({
-                        where: {_status: 'Open'},
+                        where: {_status: 2},
                         include: [
                             inc.sizes(),
                             inc.order_lines({
@@ -292,10 +337,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                                 users
                             )
                             .then(results2 => {
-                                m.demands.update(
-                                    {_filename: demandFile},
-                                    {where: {demand_id: demand_id}}
-                                )
+                                demand.update({_filename: demandFile})
                                 .then(result => {
                                     m.notes.create({
                                         _table: 'demands',

@@ -23,7 +23,7 @@ module.exports = {
     createLine: (options = {}) => new Promise((resolve, reject) => {
         return options.m.sizes.findOne({
             where: {size_id: options.line.size_id},
-            attributes: ['size_id', 'supplier_id']
+            attributes: ['size_id', 'supplier_id', '_demand_page', '_demand_cell']
         })
         .then(size => {
             if (!size) reject(new Error('Size not found'))
