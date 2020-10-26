@@ -61,7 +61,7 @@ module.exports = (app, al, inc, li, m) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
             include: [inc.request_lines({where: {_status: 1}, attributes: ['line_id']})],
-            attributes: ['requested_for', '_status']
+            attributes: ['requested_for', '_status', 'request_id']
         })
         .then(request => {
             if (!request) {
