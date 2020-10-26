@@ -262,7 +262,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 .then(lines => {
                     if (lines) {
 
-                    } else reject(new Error('No open lines for this demand')
+                    } else reject(new Error('No open lines for this demand'));
                 })
                 .catch(err => reject(err));
             } else reject(new Error('Demand has already been raised'));
