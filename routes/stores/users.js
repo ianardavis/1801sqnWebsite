@@ -1,3 +1,4 @@
+// const { regexp } = require('sequelize/types/lib/operators');
 const op = require('sequelize').Op,
       { scryptSync, randomBytes } = require("crypto");
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
@@ -14,10 +15,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 tab: req.query.tab || 'details'
             });
         } else res.error.redirect(new Error('Permission denied'), req, res);
-    });
-    app.get('/stores/users/:id/password', isLoggedIn, allowed('user_password', {allow: true}),             (req, res) => {
-        if (req.allowed || req.user.user_id === Number(req.params.id)) res.render('stores/users/password', {user_id: req.params.id})
-        else res.error.redirect(new Error('Permission denied'), req, res);
     });
     app.get('/stores/users/:id/edit',     isLoggedIn, allowed('user_edit'),                                (req, res) => res.render('stores/users/edit', {user_id: req.params.id}));
     
@@ -37,27 +34,38 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     app.put('/stores/password/:id',       isLoggedIn, allowed('user_password', {send: true, allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
-            db.update({
-                table: m.users,
-                where: {user_id: req.params.id},
-                record: {...req.body.user, ...encryptPassword(req.body._password)}
-            })
-            .then(result => res.send({result: true, message: 'Password changed'}))
-            .catch(err => res.error.send(err, res));
+            if (req.body._password) {
+                m.users.findOne({where: {user_id: req.params.id}})
+                .then(user => {
+                    return user.update(
+                        encryptPassword(req.body._password),
+                        {where: {user_id: req.params.id}}
+                    )
+                    .then(result => {
+                        if (result) res.send({result: true, message: 'Password changed'})
+                        else res.error.send(new Error('Password not changed'), res);
+                    })
+                    .catch(err => res.error.send(err, res));
+                })
+                .catch(err => res.error.send(err, res));
+            } else res.error.send('No password submitted', res);
         } else res.error.send('Permission denied', res);
     });
     app.put('/stores/users/:id',          isLoggedIn, allowed('user_edit',     {send: true}),              (req, res) => {
-        if (!req.body.user)        req.body.user = {};
-        if (!req.body.user._reset) req.body.user._reset = 0;
-        db.update({
-            table: m.users,
-            where: {user_id: req.params.id},
-            record: req.body.user
-        })
-        .then(result => res.send({result: true, message: 'User saved'}))
-        .catch(err => res.error.send(err.message, res));
+        if (req.body.user) {
+            if (!req.body.user._reset) req.body.user._reset = 0;
+            ['user_id','full_name','_salt','_password','createdAt','updatedAt'].forEach(e => {
+                if (req.body.user[e]) delete req.body.user[e];
+            });
+            m.users.findOne({where: {user_id: req.params.id}})
+            .then(user => {
+                return user.update(req.body.user).then(user => res.send({result: true, message: 'User saved'}))
+                .catch(err => res.error.send(err, res));
+            })
+            .catch(err => res.error.send(err, res));
+        } else res.error.send(new Error('No details submitted'), res);
     });
-    generatePassword = () => {
+    function generatePassword () {
         let consenants = ['b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','z'],
             vowels     = ['a','e','i','o','u','y'],
             plain      = '',
@@ -75,7 +83,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         });
         return {plain: plain, readable: readable};
     };
-    encryptPassword = plainText => {
+    function encryptPassword (plainText) {
         let _salt     = randomBytes(16).toString("hex"),
             _password = scryptSync(plainText, _salt, 128).toString("hex");
         return {_salt: _salt, _password: _password};

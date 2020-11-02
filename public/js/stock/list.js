@@ -13,7 +13,7 @@ getStock = (size_id, line_id, cell) => {
                     name: `actions[line_id${line_id}][stock_id]`,
                     required: true,
                     options: locations
-                }).select;
+                }).e;
                 _cell.appendChild(_locations);
             } else {
                 alert(`Error: no matching stock found`);

@@ -20,7 +20,7 @@ showLines = (lines, options) => {
                         path: `/stores/order_lines/${line.line_id}`,
                         float: true,
                         options: {onComplete: getLines}
-                    }).form
+                    }).e
                 );
             }; 
             let cell_status = document.querySelector(`#cell_status_${line.line_id}`),
@@ -61,7 +61,7 @@ showLines = (lines, options) => {
                     id: `sel_${line.line_id}`,
                     small: true,
                     options: action_options
-                }).select;
+                }).e;
                 _status.addEventListener("change", function () {
                     ['details', 'serials', 'nsns', 'stocks'].forEach(e => {
                         let _div = document.querySelector(`#${e}_${line.line_id}`);
@@ -104,7 +104,7 @@ enterSerial = line_id => {
             placeholder: 'Serial #',
             required: true,
             maxlength: '45'
-        }).input
+        }).e
     );
     _cell.appendChild(
         new Input({
@@ -113,7 +113,7 @@ enterSerial = line_id => {
             placeholder: 'Location',
             required: true,
             maxlength: '20'
-        }).input
+        }).e
     );
 };
 function add_modal (line, row) {
@@ -126,21 +126,21 @@ function add_modal (line, row) {
     btn_show.addEventListener('click', () => {$(`#mdl_${line.line_id}`).modal('show')});
     add_cell(row, {append: btn_show, id: `mdl_cell_${line.line_id}`});
     let mdl_cell = document.querySelector(`#mdl_cell_${line.line_id}`);
-    mdl_cell.appendChild(new Modal({id: line.line_id}).modal);
+    mdl_cell.appendChild(new Modal({id: line.line_id}).e);
     let mdl_title = document.querySelector(`#mdl_${line.line_id}_title`);
     mdl_title.innerText = `Order Line ${line.line_id}`;
     let mdl_body = document.querySelector(`#mdl_${line.line_id}_body`);
-    mdl_body.appendChild(new Input_Group({title: 'Item', text: line.size.item._description, link: `/stores/items/${line.size.item_id}`}).group);
-    mdl_body.appendChild(new Input_Group({title: 'Size', text: line.size._size, link: `/stores/sizes/${line.size_id}`}).group);
-    mdl_body.appendChild(new Input_Group({title: 'Qty', text: line._qty}).group);
-    mdl_body.appendChild(new Input_Group({title: 'Added', text: `${new Date(line.createdAt).toDateString()} ${new Date(line.createdAt).toLocaleTimeString()}`}).group);
-    mdl_body.appendChild(new Input_Group({title: 'Added By', text: `${line.user_add.rank._rank } ${line.user_add.full_name}`, link: `/stores/users/${line.user_id}`}).group);
-    mdl_body.appendChild(new Input_Group({title: 'Status', text: statuses[line._status]}).group);
+    mdl_body.appendChild(new Input_Group({title: 'Item', text: line.size.item._description, link: `/stores/items/${line.size.item_id}`}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Size', text: line.size._size, link: `/stores/sizes/${line.size_id}`}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Qty', text: line._qty}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Added', text: `${new Date(line.createdAt).toDateString()} ${new Date(line.createdAt).toLocaleTimeString()}`}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Added By', text: `${line.user_add.rank._rank } ${line.user_add.full_name}`, link: `/stores/users/${line.user_id}`}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Status', text: statuses[line._status]}).e);
     mdl_body.appendChild(document.createElement('hr'));
     ['Demand', 'Receipt', 'Issue'].forEach(e => {
-        if (line[`${e.toLowerCase()}_date`]) mdl_body.appendChild(new Input_Group({title: `${e}ed`, text: new Date(line[`${e.toLowerCase()}_date`]).toDateString()}).group);
-        if (line[`${e.toLowerCase()}_line_id`]) mdl_body.appendChild(new Input_Group({title: `${e} Line ID`, text: line[`${e.toLowerCase()}_line_id`], link: `/stores/demand_lines/${line[`${e.toLowerCase()}_line_id`]}`}).group);
-        if (line[`user_${e.toLowerCase()}`]) mdl_body.appendChild(new Input_Group({title: `${e}ed By`, text: `${line[`user_${e.toLowerCase()}`].rank._rank} ${line[`user_${e.toLowerCase()}`].full_name}`, link: `/stores/users/${line[`${e.toLowerCase()}_user_id`]}`}).group);
+        if (line[`${e.toLowerCase()}_date`]) mdl_body.appendChild(new Input_Group({title: `${e}ed`, text: new Date(line[`${e.toLowerCase()}_date`]).toDateString()}).e);
+        if (line[`${e.toLowerCase()}_line_id`]) mdl_body.appendChild(new Input_Group({title: `${e} Line ID`, text: line[`${e.toLowerCase()}_line_id`], link: `/stores/demand_lines/${line[`${e.toLowerCase()}_line_id`]}`}).e);
+        if (line[`user_${e.toLowerCase()}`]) mdl_body.appendChild(new Input_Group({title: `${e}ed By`, text: `${line[`user_${e.toLowerCase()}`].rank._rank} ${line[`user_${e.toLowerCase()}`].full_name}`, link: `/stores/users/${line[`${e.toLowerCase()}_user_id`]}`}).e);
         mdl_body.appendChild(document.createElement('hr'));   
     });
 };

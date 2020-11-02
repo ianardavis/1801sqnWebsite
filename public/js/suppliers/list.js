@@ -5,7 +5,7 @@ listSuppliers = (suppliers, options) => {
         select.appendChild(new Option({
             value: supplier.supplier_id,
             text:  supplier._name
-        }).option);
+        }).e);
     });
     hide_spinner('suppliers');
 };

@@ -14,6 +14,6 @@ showOrders = (orders, options = {}) => {
         else if (order._status === 1) add_cell(row, {text: 'Draft'})
         else if (order._status === 2) add_cell(row, {text: 'Open'})
         else if (order._status === 3) add_cell(row, {text: 'Complete'});
-        add_cell(row, {append: new Link({href: `/stores/orders/${order.order_id}`, small: true}).link});
+        add_cell(row, {append: new Link({href: `/stores/orders/${order.order_id}`, small: true}).e});
     });
 };

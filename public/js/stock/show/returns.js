@@ -15,7 +15,7 @@ showReturns = (lines, options) => {
             add_cell(row, {append: new Link({
                 href: '/stores/returns/' + line.return_id,
                 small: true
-            }).link});
+            }).e});
         });
         hide_spinner('return_lines');
     } catch (error) {

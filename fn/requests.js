@@ -26,7 +26,8 @@ module.exports = {
             attributes: ['size_id']
         })
         .then(size => {
-            if (size) {
+            if (!size) reject(new Error('Size not found'));
+            else {
                 return options.m.requests.findOne({
                     where: {request_id: options.line.request_id},
                     attributes: ['_status', 'request_id']
@@ -51,10 +52,10 @@ module.exports = {
                                 return line.increment('_qty', {by: options.line._qty})
                                 .then(result => {
                                     return options.m.notes.create({
-                                        _id: request.request_id,
-                                        _table: 'requests',
+                                        _id: line.line_id,
+                                        _table: 'request_lines',
                                         _system: 1,
-                                        _note: `Line ${line.line_id} incremented by ${options.line._qty}`,
+                                        _note: `Incremented by ${options.line._qty}`,
                                         user_id: options.user_id
                                     })
                                     .then(result => resolve(line.line_id))
@@ -68,7 +69,7 @@ module.exports = {
                     };
                 })
                 .catch(err => reject(err));
-            } else reject(new Error('Size not found'))
+            };
         })
         .catch(err => reject(err));
     })

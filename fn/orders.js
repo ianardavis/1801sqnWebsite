@@ -48,11 +48,11 @@ module.exports = {
                             }
                         })
                         .then(([line, created]) => {
-                            let _note = `Line ${line.line_id} `, actions = [];;
-                            if (created) _note += `created${options.note_addition || ''}`
+                            let _note = '', actions = [];;
+                            if (created) _note += `Created${options.note_addition || ''}`
                             else {
                                 actions.push(line.increment('_qty', {by: options.line._qty}));
-                                _note += `incremented by ${options.line._qty}${options.note_addition || ''}`;
+                                _note += `Incremented by ${options.line._qty}${options.note_addition || ''}`;
                             };
                             actions.push(
                                 options.m.notes.create({

@@ -19,7 +19,7 @@ showDemands = (demands, na) => {
             href: `/stores/demands/${demand.demand_id}`,
             small: true,
             type: 'show'
-        }).link});
+        }).e});
     });
 };
 demand_query = () => {

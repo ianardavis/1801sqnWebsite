@@ -5,7 +5,7 @@ listRanks = (ranks, options) => {
         select.appendChild(new Option({
             value: rank.rank_id,
             text: rank._rank
-        }).option);
+        }).e);
     });
     ranks_loaded = true;
     hide_spinner('rank_id');

@@ -10,7 +10,7 @@ showUsers = (users, options) => {
         add_cell(row, {append: new Link({
             href: `/stores/users/${user.user_id}`,
             small: true
-        }).link});
+        }).e});
     });
     hide_spinner('users');
 };

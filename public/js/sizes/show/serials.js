@@ -10,7 +10,7 @@ showSerials = (serials, options) => {
             add_cell(row, {text: serial.location._location});
             add_cell(row, {append: new Link({
                 href: `javascript:show("serials",${serial.serial_id})`,
-                small: true}).link});
+                small: true}).e});
         });
         hide_spinner('serials');
     } catch (error) {

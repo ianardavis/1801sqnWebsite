@@ -18,7 +18,7 @@ getNSNs = (size_id, line_id, cell, nsn_id = null) => {
                 name: `actions[line_id${line_id}][nsn_id]`,
                 required: response.result.required,
                 options: nsn_options
-            }).select;
+            }).e;
             _cell.insertBefore(_nsns, document.querySelector(`#spn_nsns_${line_id}`));
         } else {
             alert(`Error: ${response.error}`);

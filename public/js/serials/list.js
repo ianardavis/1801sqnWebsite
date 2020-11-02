@@ -13,7 +13,7 @@ getSerials = (size_id, line_id, cell) => {
                 name: `actions[line_id${line_id}][serial_id]`,
                 required: response.result.required,
                 options: serials
-            }).select;
+            }).e;
             _cell.insertBefore(_serials, document.querySelector(`#spn_serials_${line_id}`));
         } else {
             alert(`Error: ${response.error}`);

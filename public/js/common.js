@@ -41,18 +41,3 @@ removeID = id => {
 };
 
 let path = window.location.pathname.toString().split('/');
-
-// alert = message => {
-//     if (window.opener) {
-//         window.opener.alert(message);
-//     } else {
-//         let notification = document.querySelector('#alert');
-//         if (notification) {
-//             notification.setAttribute('data-content', message);
-//             let _date = new Date();
-//             notification.setAttribute('data-original-title', _date.toLocaleDateString() + ' ' + _date.toLocaleTimeString());
-//             $('#alert').popover('show');
-//             setTimeout(() => {$('#alert').popover('hide')}, 5000);
-//         };
-//     };
-// };

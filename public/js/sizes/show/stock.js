@@ -10,7 +10,7 @@ showStock = (stock, options) => {
             add_cell(row, {text: stk._qty});
             add_cell(row, {append: new Link({
                 href: 'javascript:show("stock",' + stk.stock_id + ')',
-                small: true}).link});
+                small: true}).e});
         });
         hide_spinner('stock');
     } catch (error) {

@@ -10,7 +10,7 @@ showRequests = (lines, options) => {
             add_cell(row, {text: line._qty});
             add_cell(row, {append: new Link({
                 href: '/stores/requests/' + line.request_id,
-                small: true}).link});
+                small: true}).e});
         });
         hide_spinner('request_lines');
     } catch (error) {

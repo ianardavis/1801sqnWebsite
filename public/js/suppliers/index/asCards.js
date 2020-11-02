@@ -8,7 +8,7 @@ asCards = suppliers => {
             title:  supplier._name,
             search_title: true,
             body:   ''
-        }).div);
+        }).e);
     });
     getCounts();
     getSettings('default_supplier', setDefault, 'suppliers');

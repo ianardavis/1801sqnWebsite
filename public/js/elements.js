@@ -5,96 +5,112 @@ function _edit ()   {return '<i class="fas fa-pencil-alt"></i>'}
 function _save ()   {return '<i class="fas fa-save"></i>'}
 function _copy ()   {return '<i class="fas fa-clipboard"></i>'}
 function _delete () {return '<i class="fas fa-trash-alt"></i>'}
-random_id = () => {
+function random_id () {
     return Math.floor(Math.random()*10000)
 };
+function yesno (boolean) {
+    if (boolean === 1 || boolean === true) return 'Yes'
+    else return 'No'
+};
+function add_cell (row, options = {}) {
+    let cell = row.insertCell();
+    if (options.sort)      cell.dataset.sort = options.sort;
+    if (options.text)      cell.innerText = options.text || '';
+    else if (options.html) cell.innerHTML = options.html || '';
+    if (options.classes)   options.classes.forEach(e => cell.classList.add(e));
+    if (options.append)    cell.appendChild(options.append);
+    if (options.id)        cell.id = options.id;
+    if (options.ellipsis)  cell.classList.add('ellipsis1');
+};
 function Link (options = {}) {
-    this.link      = document.createElement('a');
-    this.link.href = options.href;
-    this.link.classList.add('btn');
+    this.e      = document.createElement('a');
+    this.e.href = options.href;
+    this.e.classList.add('btn');
     if (options.type === 'edit') {
-        this.link.classList.add('btn-success');
-        this.link.innerHTML = _edit();
+        this.e.classList.add('btn-success');
+        this.e.innerHTML = _edit();
     } else if (options.type === 'copy') {
-        this.link.classList.add('btn-info');
-        this.link.innerHTML = _copy();
+        this.e.classList.add('btn-info');
+        this.e.innerHTML = _copy();
     } else {
-        this.link.classList.add('btn-primary');
-        this.link.innerHTML = _search();
+        this.e.classList.add('btn-primary');
+        this.e.innerHTML = _search();
     };
-    if (options.margin) this.link.classList.add('m-1');
-    if (options.small)  this.link.classList.add('btn-sm');
-    if (options.float)  this.link.classList.add('float-right');
-    if (options.id)     this.link.id = options.id;
+    if (options.margin) this.e.classList.add('m-1');
+    if (options.small)  this.e.classList.add('btn-sm');
+    if (options.float)  this.e.classList.add('float-right');
+    if (options.id)     this.e.id = options.id;
 };
 function DeleteButton (options = {}) {
-    this.form = document.createElement('form');
+    this.e = document.createElement('form');
     let btn   = document.createElement('button');
     btn.classList.add('btn', 'btn-danger');
     btn.innerHTML = _delete();
     if (options.margin) btn.classList.add('m-1');
     if (options.small)  btn.classList.add('btn-sm');
-    if (options.float)  btn.classList.add('float-right');
-    this.form.appendChild(btn);
-    this.form.addEventListener("submit", event => {
+    if (options.float)  this.e.classList.add('float-right');
+    this.e.appendChild(btn);
+    this.e.addEventListener("submit", event => {
         event.preventDefault();
         if (confirm(`Delete ${options.descriptor || `line`}?`)){
-            sendData(this.form, 'DELETE', options.path, options.options || {reload: true});
+            sendData(this.e, 'DELETE', options.path, options.options || {reload: true});
         };
     });
 };
 function Input (options = {}) {
-    this.input = document.createElement('input');
+    this.e = document.createElement('input');
     if (options.classes) {
-        options.classes.forEach(e => this.input.classList.add(e))
-    } else this.input.classList.add('form-control');
-    this.input.setAttribute('type', options.type  || 'text');
-    if (options.completeOff) this.input.setAttribute('autocomplete', 'off');
-    if (options.name)        this.input.setAttribute('name', options.name);
-    if (options.small)       this.input.classList.add('form-control-sm');
-    if (options.value)       this.input.setAttribute('value', options.value);
-    if (options.maxlength)   this.input.setAttribute('maxlength', options.maxlength);
-    if (options.id)          this.input.setAttribute('id', options.id);
-    if (options.placeholder) this.input.setAttribute('placeholder', options.placeholder);
-    if (options.required)    this.input.setAttribute('required', true);
-    if (options.onChange)    this.input.addEventListener('change', function (event) {options.onChange()});
-    if (options.keyUp)       this.input.addEventListener('keyup', function (event) {options.keyUp()});
+        options.classes.forEach(e => this.e.classList.add(e))
+    } else this.e.classList.add('form-control');
+    this.e.setAttribute('type', options.type  || 'text');
+    if (options.completeOff) this.e.setAttribute('autocomplete', 'off');
+    if (options.name)        this.e.setAttribute('name', options.name);
+    if (options.small)       this.e.classList.add('form-control-sm');
+    if (options.value)       this.e.setAttribute('value', options.value);
+    if (options.minlength)   this.e.setAttribute('minlength', options.minlength);
+    if (options.maxlength)   this.e.setAttribute('maxlength', options.maxlength);
+    if (options.id)          this.e.setAttribute('id', options.id);
+    if (options.placeholder) this.e.setAttribute('placeholder', options.placeholder);
+    if (options.required)    this.e.setAttribute('required', true);
+    if (options.disabled)    this.e.setAttribute('disabled', true);
+    if (options.onChange)    this.e.addEventListener('change', function (event) {options.onChange()});
+    if (options.keyUp)       this.e.addEventListener('keyup', function (event) {options.keyUp()});
 };
 function Select (options = {}) {
-    this.select  = document.createElement('select');
+    this.e = document.createElement('select');
     if (options.classes) {
-        options.classes.forEach(e => this.select.classList.add(e))
-    } else this.select.classList.add('form-control');
-    if (options.name)     this.select.setAttribute('name', options.name);
-    if (options.small)    this.select.classList.add('form-control-sm');
-    if (options.required) this.select.required = true;
-    if (options.id)       this.select.id = options.id;
-    if (options.size)     this.select.setAttribute('size', options.size);
-    if (options.options)  options.options.forEach(e => this.select.appendChild(new Option(e).option));
+        options.classes.forEach(e => this.e.classList.add(e))
+    } else this.e.classList.add('form-control');
+    if (options.name)     this.e.setAttribute('name', options.name);
+    if (options.small)    this.e.classList.add('form-control-sm');
+    if (options.required) this.e.required = true;
+    if (options.id)       this.e.id = options.id;
+    if (options.size)     this.e.setAttribute('size', options.size);
+    if (options.options)  options.options.forEach(e => this.e.appendChild(new Option(e).e));
 };
 function Option (options = {}) {
-    this.option = document.createElement('option');
+    this.e = document.createElement('option');
     let _text = '', pre_text = '';
     if (options.selected === true) {
-        this.option.setAttribute('selected', true);
+        this.e.setAttribute('selected', true);
         if (options.star_default) {
             _text = '***';
             pre_text = '***'
         } else if (options.default === true) _text = ' (default)';
     };
-    this.option.value     = options.value;
-    this.option.innerText = pre_text + options.text + _text;
+    this.e.value     = options.value;
+    this.e.innerText = pre_text + options.text + _text;
 };
 function Card (options = {}) {
-    this.div = document.createElement('div');
+    this.e = document.createElement('div');
     let _a        = document.createElement('a'),
         _header   = document.createElement('div'),
         _title    = document.createElement('h3'),
         _body     = document.createElement('div'),
         _body_p   = document.createElement('p');
-    if (options.search) this.div.dataset.search = options.search;
-    this.div.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3', 'card_div');
-    if (options.id) this.div.id = options.id;
+    if (options.search) this.e.dataset.search = options.search;
+    this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3', 'card_div');
+    if (options.id) this.e.id = options.id;
     _a.href = options.href;
     _a.classList.add('card', 'm-3', 'text-left');
     _header.classList.add('card-header');
@@ -116,16 +132,16 @@ function Card (options = {}) {
     _body.appendChild(_body_p);
     _a.appendChild(_header);
     _a.appendChild(_body);
-    this.div.appendChild(_a);
+    this.e.appendChild(_a);
 };
 function Toast (options = {}) {
-    this.toast = document.createElement('div');
-    this.toast.id = options.id || `toast_${random_id}`;
-    this.toast.setAttribute('role', 'alert');
-    this.toast.setAttribute('aria-live', 'assertive');
-    this.toast.setAttribute('aria-atomic', 'true');
-    this.toast.classList.add('toast', 'float-right');
-    this.toast.setAttribute('data-autohide', 'false');
+    this.e = document.createElement('div');
+    this.e.id = options.id || `toast_${random_id}`;
+    this.e.setAttribute('role', 'alert');
+    this.e.setAttribute('aria-live', 'assertive');
+    this.e.setAttribute('aria-atomic', 'true');
+    this.e.classList.add('toast', 'float-right');
+    this.e.setAttribute('data-autohide', 'false');
     let header = document.createElement('div'),
         title  = document.createElement('strong'),
         close_button = document.createElement('button'),
@@ -140,34 +156,34 @@ function Toast (options = {}) {
     close_button.setAttribute('aria-label', 'Close');
     close_button.innerHTML = '<span aria-hidden="true">&times;</span>';
     header.appendChild(close_button);
-    this.toast.appendChild(header);
+    this.e.appendChild(header);
     body.classList.add('toast-body', 'toast-warn');
     body.innerText = options.text || '';
-    this.toast.appendChild(body);
+    this.e.appendChild(body);
 };
 function Column (options = {}) {
-    this.th = document.createElement('th');
-    this.th.id = options.id || `th_${random_id}`;
-    if (options.classes) options.classes.forEach(e => this.th.classList.add(e));
-    if (options.onclick) this.th.setAttribute('onclick', options.onclick);
-    if (options.html) this.th.innerHTML = options.html
-    else this.th.innerText = options.text || '';
+    this.e = document.createElement('th');
+    this.e.setAttribute('id', options.id || `th_${random_id}`);
+    if (options.classes) options.classes.forEach(e => this.e.classList.add(e));
+    if (options.onclick) this.e.setAttribute('onclick', options.onclick);
+    if (options.html)    this.e.innerHTML = options.html
+    else this.e.innerText = options.text || '';
 };
 function Spinner (options = {}) {
-    this.spinner = document.createElement('div');
-    this.spinner.id = `spn_${options.id || random_id}`;
-    this.spinner.classList.add('spinner-border', 'text-primary', 'hidden');
-    this.spinner.setAttribute('role', 'status');
-    this.spinner.innerHTML = '<span class="sr-only">Loading...</span>';
+    this.e = document.createElement('div');
+    this.e.id = `spn_${options.id || random_id}`;
+    this.e.classList.add('spinner-border', 'text-primary', 'hidden');
+    this.e.setAttribute('role', 'status');
+    this.e.innerHTML = '<span class="sr-only">Loading...</span>';
 };
 function Notification (options = {}) {
-    this.notification = document.createElement('li');
-    this.notification.classList.add('alert', 'my-1', 'p-1', 'notification');
-    if (options.urgency === 1) this.notification.classList.add('alert-success')
-    else if (options.urgency === 2) this.notification.classList.add('alert-warning')
-    else if (options.urgency === 3) this.notification.classList.add('alert-danger')
-    else this.notification.classList.add('alert-info')
-    this.notification.setAttribute('role', 'alert', 'my-1', 'p-1', 'notification');
+    this.e = document.createElement('li');
+    this.e.classList.add('alert', 'my-1', 'p-1', 'notification');
+    if (options.urgency === 1) this.e.classList.add('alert-success')
+    else if (options.urgency === 2) this.e.classList.add('alert-warning')
+    else if (options.urgency === 3) this.e.classList.add('alert-danger')
+    else this.e.classList.add('alert-info')
+    this.e.setAttribute('role', 'alert', 'my-1', 'p-1', 'notification');
     let heading = document.createElement('h4'),
         date = document.createElement('span'),
         body = document.createElement('p');
@@ -178,26 +194,26 @@ function Notification (options = {}) {
     heading.appendChild(date);
     body.classList.add('f-09', 'm-0');
     body.innerText = options.text || '';
-    this.notification.appendChild(heading);
-    this.notification.appendChild(body);
+    this.e.appendChild(heading);
+    this.e.appendChild(body);
 };
 function Input_Group (options = {}) {
-    this.group  = document.createElement('div')
+    this.e = document.createElement('div')
     let prepend = document.createElement('div'),
         title   = document.createElement('span');
-    this.group.classList.add('input-group', 'mb-1');
+    this.e.classList.add('input-group', 'mb-1');
     prepend.classList.add('input-group-prepend', 'w-30');
     title.classList.add('input-group-text', 'w-100');
     title.innerText = options.title || '';
     prepend.appendChild(title);
-    this.group.appendChild(prepend);
+    this.e.appendChild(prepend);
     if (options.text) {
         let text = document.createElement('p');
         text.classList.add('form-control');
         text.innerText = options.text || '';
-        this.group.appendChild(text);
-    } else if (options.input) {
-        this.group.appendChild(options.input);
+        this.e.appendChild(text);
+    } else if (options.append) {
+        this.e.appendChild(options.append);
     };
     if (options.link) {
         let append = document.createElement('div'),
@@ -207,11 +223,11 @@ function Input_Group (options = {}) {
         link.setAttribute('href', options.link);
         link.innerHTML = '<i class="fas fa-search"></i>';
         append.appendChild(link);
-        this.group.appendChild(append);
+        this.e.appendChild(append);
     };
 };
 function Modal (options = {}) {
-    this.modal = document.createElement('div');
+    this.e = document.createElement('div');
     let mdl_dialog  = document.createElement('div'),
         mdl_content = document.createElement('div'),
         mdl_header  = document.createElement('div'),
@@ -219,12 +235,12 @@ function Modal (options = {}) {
         mdl_body    = document.createElement('div'),
         mdl_footer  = document.createElement('div'),
         mdl_close   = document.createElement('button');
-    this.modal.setAttribute('id', `mdl_${options.id}`);
-    this.modal.setAttribute('tabindex', '-1');
-    this.modal.setAttribute('aria-labelledby', `mdl_${options.id}_title`);
-    this.modal.setAttribute('aria-hidden', 'true');
-    this.modal.classList.add('modal', 'fade');
-    if (options.static === true) this.modal.setAttribute('data-backdrop', 'static');
+    this.e.setAttribute('id', `mdl_${options.id}`);
+    this.e.setAttribute('tabindex', '-1');
+    this.e.setAttribute('aria-labelledby', `mdl_${options.id}_title`);
+    this.e.setAttribute('aria-hidden', 'true');
+    this.e.classList.add('modal', 'fade');
+    if (options.static === true) this.e.setAttribute('data-backdrop', 'static');
     mdl_dialog.classList.add('modal-dialog');
     mdl_content.classList.add('modal-content');
     mdl_header.classList.add('modal-header');
@@ -244,19 +260,121 @@ function Modal (options = {}) {
     mdl_content.appendChild(mdl_body);
     mdl_content.appendChild(mdl_footer);
     mdl_dialog.appendChild(mdl_content);
-    this.modal.appendChild(mdl_dialog);
+    this.e.appendChild(mdl_dialog);
 };
-boolean_to_yesno = boolean => {
-    if (boolean === 1 || boolean === true) return 'Yes'
-    else return 'No'
+function Textarea (options = {}) {
+    this.e = document.createElement('textarea');
+    this.e.classList.add('form-control');
+    if (options.disabled) this.e.setAttribute('disabled', true)
+    if (options.text)     this.e.innerText = options.text;
+    if (options.id)       this.e.setAttribute('id', options.id);
+}
+function Modal_Link (options = {}) {
+    this.e = document.createElement('button');
+    this.e.setAttribute('type', 'button');
+    this.e.setAttribute('data-toggle', 'modal');
+    this.e.setAttribute('data-target', `mdl_${options.id}`);
+    this.e.classList.add('btn', 'btn-sm', 'btn-primary');
+    this.e.innerHTML = '<i class="fas fa-search"></i>';
+    this.e.addEventListener('click', function () {$(`#mdl_${options.id}`).modal('show')});
 };
-add_cell = (row, options = {}) => {
-    let cell = row.insertCell();
-    if (options.sort)      cell.dataset.sort = options.sort;
-    if (options.text)      cell.innerText = options.text || '';
-    else if (options.html) cell.innerHTML = options.html || '';
-    if (options.classes)   options.classes.forEach(e => cell.classList.add(e));
-    if (options.append)    cell.appendChild(options.append);
-    if (options.id)        cell.id = options.id;
-    if (options.ellipsis)  cell.classList.add('ellipsis1');
+function Modal_Notes (options = {}) {
+    this.e = document.createElement('div');
+    this.e.appendChild(
+        new Input_Group({
+            title: 'System Notes',
+            input: new Select({
+                id: `sel_system_modal_${options.id}`,
+                options: [
+                    {value: '',          text: 'Include', selected: true},
+                    {value: '_system=0', text: 'Exclude'},
+                    {value: '_system=1', text: 'Only'}
+                ]
+            }).e
+        }).e
+    );
+    let table = document.createElement('table'),
+        head  = document.createElement('thead'),
+        col1  = document.createElement('th'),
+        col2  = document.createElement('th'),
+        col3  = document.createElement('th'),
+        body  = document.createElement('tbody');
+    table.classList.add('table', 'table-sm', 'table-hover');
+    head.classList.add('thead-dark');
+    col1.classList.add('w-30');
+    col1.innerText = 'Date';
+    head.appendChild(col1);
+    col2.classList.add('w-40');
+    col2.innerText = 'Note';
+    head.appendChild(col2);
+    col3.classList.add('w-30');
+    col3.innerText = 'User';
+    head.appendChild(col3);
+    table.appendChild(head);
+    body.setAttribute('id', `note_lines_mdl_${options.id}`);
+    table.appendChild(body);
+    this.e.appendChild(table);
+};
+function Tab (options = {}) {
+    this.e = document.createElement('a');
+    this.e.classList.add('nav-link');
+    if (options.active === true) {
+        this.e.classList.add('active');
+        this.e.setAttribute('aria-selected', 'true');
+    } else {
+        this.e.setAttribute('aria-selected', 'false');
+    };
+    this.e.setAttribute('id', options.id.tab);
+    this.e.setAttribute('data-toggle', 'tab');
+    this.e.setAttribute('href', `#${options.id.body}`);
+    this.e.setAttribute('role','tab');
+    this.e.setAttribute('aria-controls', options.id.body);
+    this.e.innerText = options.text;
+};
+function Tab_Pane (options = {}) {
+    this.e = document.createElement('div');
+    this.e.classList.add('tab-pane', 'fade');
+    if (options.active === true) this.e.classList.add('show', 'active');
+    this.e.setAttribute('id', options.id.body);
+    this.e.setAttribute('role', 'tabpanel');
+    this.e.setAttribute('aria-labelledby', options.id.tab);
+};
+function user_name (user) {
+    if (user) return `${user.rank._rank } ${user.full_name}`
+    else return '';
+};
+function print_date (date, time = false) {
+    if (date) {
+        let str = new Date(date).toDateString();
+        if (time) str += ` ${new Date(date).toLocaleTimeString()}`;
+        return str
+    } else return '';
+};
+function Password_Requirements () {
+    this.e = document.createElement('div');
+    let p  = document.createElement('p'),
+        ul = document.createElement('ul')
+    p.innerText = 'Password MUST NOT be the current password\nPassword MUST include:'
+    p.classList.add('my-1');
+    this.e.appendChild(p);
+    ul.classList.add('list-group', 'mb-3');
+    [
+        {text: 'At Least 8 characters',                       id: 'length'},
+        {text: 'A number',                                    id: 'number'},
+        {text: 'An upper case letter',                        id: 'upper'},
+        {text: 'A lower case letter',                         id: 'lower'},
+        {text: 'A special character ( ! ? @ # $ £ % ^ & * )', id: 'special'},
+        {text: 'Entered and confirmed passwords must match',  id: 'match'}
+    ].forEach(e => {
+        let li   = document.createElement('li'),
+            span = document.createElement('span');
+        li.classList.add('list-group-item', 'd-flex', 'p-1', 'justify-content-between', 'align-items-center');
+        li.innerText = e.text;
+        span.setAttribute('id', `pwd_${e.id}`);
+        span.classList.add('badge','badge-danger','badge-pill');
+        span.innerHTML = '<i class="fas fa-times"></i>';
+        li.appendChild(span);
+        ul.appendChild(li);
+    });
+    this.e.appendChild(ul);
 };

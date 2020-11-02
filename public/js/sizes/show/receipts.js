@@ -15,7 +15,7 @@ showReceipts = (lines, options) => {
             add_cell(row, {append: new Link({
                 href: '/stores/receipts/' + line.receipt_id,
                 small: true
-            }).link});
+            }).e});
         });
         hide_spinner('receipt_lines');
     } catch (error) {

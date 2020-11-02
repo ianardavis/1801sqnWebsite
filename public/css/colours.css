@@ -60,6 +60,10 @@ body {
 	color: var(--main-bg-color-dark);
 	background-color: var(--main-color)
 }
+.modal-footer {
+	color: var(--main-bg-color-dark);
+	background-color: var(--main-color)
+}
 .modal-content {
 	background-color: var(--main-bg-color)
 }

@@ -17,7 +17,7 @@ function item_search_results (items, options) {
                     new Option({
                         text: item._description,
                         value: item.item_id
-                    }).option
+                    }).e
                 )
             } else console.log('sel_items not found');
         });
@@ -46,7 +46,7 @@ function size_search_results (sizes, options) {
                     new Option({
                         text: size._size,
                         value: size.size_id
-                    }).option
+                    }).e
                 )
             } else console.log('sel_sizes not found');
         });
@@ -85,13 +85,13 @@ function add_size_modal (table) {
                 search_items();
                 $('#mdl_add_size').modal('show')
             });
-            div_modals.appendChild(new Modal({id:'add_size',static:true}).modal);
+            div_modals.appendChild(new Modal({id:'add_size',static:true}).e);
             let mdl_title  = document.querySelector('#mdl_add_size_title'),
                 mdl_body   = document.querySelector('#mdl_add_size_body'),
                 mdl_header = document.querySelector('#mdl_add_size_header');
             mdl_title.innerText = 'Add Size';
-            mdl_title.appendChild(new Spinner({id: 'items'}).spinner);
-            mdl_title.appendChild(new Spinner({id: 'sizes'}).spinner);
+            mdl_title.appendChild(new Spinner({id: 'items'}).e);
+            mdl_title.appendChild(new Spinner({id: 'sizes'}).e);
             let reset = document.createElement('a');
             reset.innerHTML = "<i class='fas fa-redo'></i>";
             reset.setAttribute('id', 'reset');
@@ -113,25 +113,25 @@ function add_size_modal (table) {
                 input: new Input({
                     id: 'inp_item',
                     completeOff: true
-                }).input
-            }).group);
+                }).e
+            }).e);
             div_items.appendChild(new Input_Group({title: 'Item', input: new Select({
                 id: 'sel_items',
                 size: 10
-            }).select}).group);
+            }).e}).e);
             div_sizes.appendChild(new Input_Group({
                 title: 'Search Sizes',
                 input: new Input({
                     id: 'inp_size',
                     completeOff: true
-                }).input
-            }).group);
+                }).e
+            }).e);
             div_sizes.appendChild(new Input_Group({title: 'Size', input: new Select({
                 id:   'sel_sizes',
                 name: 'line[size_id]',
                 size: 10,
                 required: true
-            }).select}).group);
+            }).e}).e);
             div_size.appendChild(new Input_Group({
                 title: 'Qty',
                 input: new Input({
@@ -139,14 +139,14 @@ function add_size_modal (table) {
                     name: 'line[_qty]',
                     value: '1',
                     required: true
-                }).input
-            }).group);
+                }).e
+            }).e);
             div_size.appendChild(
                 new Input({
                     type: 'submit',
                     classes: ['btn', 'btn-success'],
                     value: 'Add Size'
-                }).input
+                }).e
             );
             mdl_body.appendChild(div_items);
             form.appendChild(div_sizes);
@@ -155,7 +155,7 @@ function add_size_modal (table) {
                 type: 'hidden',
                 name: `line[${table}_id]`,
                 value: path[3]
-            }).input);
+            }).e);
             mdl_body.appendChild(form);
             addFormListener('form_line', 'POST', `/stores/${table}_lines`, {onComplete: [getLines, reset_add_size]});
             document.querySelector('#inp_item').addEventListener('keyup', function (event) {searchSelect('inp_item',"sel_items")});

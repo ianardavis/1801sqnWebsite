@@ -19,7 +19,7 @@ showRequest = (requests, options) => {
                             id: 'incompleteToast',
                             title: 'Incomplete Request',
                             text: "This request is still in draft, no items on this request will be actioned or considered until the request is marked as 'Complete'"
-                        }).toast, document.querySelector('mainTab'));
+                        }).e, document.querySelector('mainTab'));
                         $('#incompleteToast').toast('show');
                     } else if (value === 2) element.innerText = 'Open'
                     else if (value === 3) element.innerText = 'Closed'
@@ -41,7 +41,7 @@ showRequest = (requests, options) => {
                 document.querySelector('#btn_cancel').removeAttribute('disabled');
             };
             if (options.permissions.line_add) {
-                document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).modal);
+                document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).e);
                 document.querySelector('#btn_addSize').removeAttribute('disabled');
                 add_size_modal('request');
             };

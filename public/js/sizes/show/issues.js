@@ -15,7 +15,7 @@ showIssues = (lines, options) => {
             add_cell(row, {append: new Link({
                 href: '/stores/issues/' + line.issue_id,
                 small: true
-            }).link});
+            }).e});
         });
         hide_spinner('issue_lines');
     } catch (error) {

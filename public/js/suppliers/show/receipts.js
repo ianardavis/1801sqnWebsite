@@ -17,7 +17,7 @@ showReceipts = (receipts, na) => {
             href: '/stores/receipts/' + receipt.receipt_id,
             small: true,
             type: 'show'
-        }).link});
+        }).e});
     });
 };
 receipt_query = () => {

@@ -27,7 +27,7 @@ showNSNs = (nsns, options) => {
             )
             add_cell(row, {append: new Link({
                 href: `javascript:show("nsns",${nsn.nsn_id})`,
-                small: true}).link});
+                small: true}).e});
         });
         const XHR = new XMLHttpRequest();
         XHR.addEventListener("load", event => {

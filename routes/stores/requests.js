@@ -1,22 +1,26 @@
 const op = require('sequelize').Op;
-module.exports = (app, al, inc, li, m) => {
+module.exports = (app, allowed, inc, logged_in, m) => {
     let requests = require(process.env.ROOT + '/fn/requests'),
         orders   = require(process.env.ROOT + '/fn/orders'),
         issues   = require(process.env.ROOT + '/fn/issues');
-    app.get('/stores/requests',             li, al('access_requests', {allow: true}),             (req, res) => res.render('stores/requests/index'));
-    app.get('/stores/requests/:id',         li, al('access_requests', {allow: true}),             (req, res) => {
+    app.get('/stores/requests',             logged_in, allowed('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
+    app.get('/stores/requests/:id',         logged_in, allowed('access_requests',     {allow: true}),             (req, res) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
             attributes: ['requested_for']
         })
         .then(request => {
-            if (!request) res.error.redirect(new Error('Request not found'), req, res)
-            else if (!req.allowed && request.requested_for !== req.user.user_id) res.error.redirect(new Error('Permission denied'), req, res);
-            else res.render('stores/requests/show', {tab: req.query.tab || 'details'});
+            if (!request) {
+                res.error.redirect(new Error('Request not found'), req, res);
+            } else if (!req.allowed && request.requested_for !== req.user.user_id) {
+                res.error.redirect(new Error('Permission denied'), req, res);
+            } else {
+                res.render('stores/requests/show', {tab: req.query.tab || 'details'});
+            };
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/request_lines/:id',    li, al('access_request_lines',         {send: true}), (req, res) => {
+    app.get('/stores/request_lines/:id',    logged_in, allowed('access_request_lines',             {send: true}), (req, res) => {
         m.request_lines.findOne({
             where: {line_id: req.params.id},
             attribute: ['request_id']
@@ -28,7 +32,7 @@ module.exports = (app, al, inc, li, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/requests',            li, al('request_add',                  {send: true}), (req, res) => {
+    app.post('/stores/requests',            logged_in, allowed('request_add',                      {send: true}), (req, res) => {
         requests.create({
             m: {requests: m.requests, users: m.users},
             requested_for: req.body.requested_for,
@@ -42,7 +46,7 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/request_lines',       li, al('request_line_add',             {send: true}), (req, res) => {
+    app.post('/stores/request_lines',       logged_in, allowed('request_line_add',                 {send: true}), (req, res) => {
         requests.createLine({
             m: {
                 sizes: m.sizes,
@@ -57,7 +61,7 @@ module.exports = (app, al, inc, li, m) => {
         .catch(err => res.error.send(err, res))
     });
     
-    app.put('/stores/requests/:id',         li, al('request_edit',    {allow: true, send: true}), (req, res) => {
+    app.put('/stores/requests/:id',         logged_in, allowed('request_edit',        {allow: true, send: true}), (req, res) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
             include: [inc.request_lines({where: {_status: 1}, attributes: ['line_id']})],
@@ -113,7 +117,7 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/request_lines/:id',    li, al('request_line_edit',            {send: true}), (req, res) => {
+    app.put('/stores/request_lines/:id',    logged_in, allowed('request_line_edit',                {send: true}), (req, res) => {
         m.requests.findOne({
             where: { request_id: req.params.id },
             attributes: ['request_id', 'requested_for' , '_status']
@@ -236,7 +240,7 @@ module.exports = (app, al, inc, li, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/requests/:id',      li, al('request_delete',  {allow: true, send: true}), (req, res) => {
+    app.delete('/stores/requests/:id',      logged_in, allowed('request_delete',      {allow: true, send: true}), (req, res) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
             attributes: ['_status', 'requested_for', 'request_id']
@@ -260,7 +264,7 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/request_lines/:id', li, al('request_delete',  {allow: true, send: true}), (req, res) => {
+    app.delete('/stores/request_lines/:id', logged_in, allowed('request_line_delete', {allow: true, send: true}), (req, res) => {
         m.request_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['_status'],

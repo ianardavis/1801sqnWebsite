@@ -32,7 +32,7 @@ showOrder = (orders, options) => {
                 document.querySelector('#btn_cancel').removeAttribute('disabled');
             };
             if (options.permissions.line_add) {
-                document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).modal);
+                document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).e);
                 document.querySelector('#btn_addSize').removeAttribute('disabled');
                 add_size_modal('order');
             };

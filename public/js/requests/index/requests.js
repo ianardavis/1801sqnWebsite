@@ -18,6 +18,6 @@ showRequests = (requests, options = {}) => {
         } else if (request._status === 3) {
             add_cell(row, {text: 'Complete'})
         };
-        add_cell(row, {append: new Link({href: '/stores/requests/' + request.request_id, small: true}).link});
+        add_cell(row, {append: new Link({href: '/stores/requests/' + request.request_id, small: true}).e});
     });
 };

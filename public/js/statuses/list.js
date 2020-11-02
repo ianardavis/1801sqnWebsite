@@ -6,7 +6,7 @@ statuses_select = (statuses, options) => {
         select.appendChild(new Option({
             value: status.status_id,
             text: status._status
-        }).option);
+        }).e);
     });
     statuses_loaded = true;
     hide_spinner('status_id');

@@ -10,7 +10,7 @@ showItems = (items, options) => {
         add_cell(row, {append: new Link({
             href: `/stores/items/${item.item_id}`,
             small: true
-        }).link});
+        }).e});
     });
     hide_spinner('items');
 };

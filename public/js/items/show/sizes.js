@@ -11,7 +11,7 @@ showSizes = (sizes, options) => {
             href: '/stores/sizes/' + size.size_id,
             type: 'show',
             small: true
-        }).link});
+        }).e});
     });
     hide_spinner('sizes');
 }

@@ -1,4 +1,4 @@
-password_ok = () => {
+function password_ok () {
     let _password = document.querySelector("#_password"),
         _confirm  = document.querySelector("#_confirm");
     if (_password.value === _confirm.value) {
@@ -7,20 +7,15 @@ password_ok = () => {
         else return false;
     } else return false;
 };
-pwd_compare = () => {
-    let _save = document.querySelector("#_save");
+function pwd_compare () {
+    let _save = document.querySelector("#password_save");
     if (password_ok()) {
-        _password.classList.add('pwd_warn');
-        _confirm.classList.add( 'pwd_warn');
-        _save.disabled = true;
+        _save.removeAttribute('disabled');
     } else {
-        _password.classList.remove('pwd_warn');
-        _confirm.classList.remove( 'pwd_warn');
-        _save.disabled = false;
+        _save.setAttribute('disabled', true);
     };
-};
-pwd_check = () => {
     let _password = document.querySelector('#_password'),
+        _confirm  = document.querySelector("#_confirm"),
         _special  = /^(?=.*[!?@#$£%^&*])/,
         _number   = /^(?=.*\d)/,
         _upper    = /^(?=.*[A-Z])/,
@@ -31,8 +26,9 @@ pwd_check = () => {
     display_checker('pwd_upper',   _upper.test(_password.value));
     display_checker('pwd_lower',   _lower.test(_password.value));
     display_checker('pwd_length',  _length.test(_password.value));
+    display_checker('pwd_match',   (_password.value === _confirm.value));
 };
-display_checker = (id, status) => {
+function display_checker (id, status) {
     _id = document.querySelector(`#${id}`)
     if (status) {
         _id.classList.remove('badge-danger');

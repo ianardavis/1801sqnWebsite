@@ -12,7 +12,7 @@ showOrders = (lines, options) => {
             add_cell(row, {append: new Link({
                 href: '/stores/orders/' + line.order_id,
                 small: true
-            }).link});
+            }).e});
         });
         hide_spinner('order_lines');
     } catch (error) {

@@ -5,9 +5,9 @@
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/users', text: 'Users'}) %>
 			<% if (permissions.user_add) { %>
-				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("users")', text: '<i class="fas fa-plus"></i>'}) %>
+				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("users")', html: '<i class="fas fa-plus"></i>'}) %>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {text: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
 		</ul>
 	</nav>
 </section>
