@@ -33,7 +33,7 @@ function add_note_modal (note, row, permissions) {
         mdl_body.appendChild(new Input_Group({title: 'Added',    text:  `${new Date(note.createdAt).toDateString()} ${new Date(note.createdAt).toLocaleTimeString()}`}).e);
         mdl_body.appendChild(new Input_Group({title: 'Added By', text:  `${note.user.rank._rank } ${note.user.full_name}`, link: `/stores/users/${note.user_id}`}).e);
         mdl_body.appendChild(new Input_Group({title: 'System',   text:  yesno(note._system)}).e)
-        mdl_body.appendChild(new Input_Group({title: 'Note',     input: new Textarea({text: note._note, disabled: true}).e}).e);
+        mdl_body.appendChild(new Input_Group({title: 'Note',     append: new Textarea({text: note._note, disabled: true}).e}).e);
     };
     if (!note._system) {
         let mdl_header = document.querySelector(`#mdl_note_${note.note_id}_header`),

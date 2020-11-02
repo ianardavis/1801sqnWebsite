@@ -138,9 +138,9 @@ function add_modal (line, row) {
     mdl_body.appendChild(new Input_Group({title: 'Status', text: statuses[line._status]}).e);
     mdl_body.appendChild(document.createElement('hr'));
     ['Demand', 'Receipt', 'Issue'].forEach(e => {
-        if (line[`${e.toLowerCase()}_date`]) mdl_body.appendChild(new Input_Group({title: `${e}ed`, text: new Date(line[`${e.toLowerCase()}_date`]).toDateString()}).e);
+        if (line[`${e.toLowerCase()}_date`])    mdl_body.appendChild(new Input_Group({title: `${e}ed`,       text: new Date(line[`${e.toLowerCase()}_date`]).toDateString()}).e);
         if (line[`${e.toLowerCase()}_line_id`]) mdl_body.appendChild(new Input_Group({title: `${e} Line ID`, text: line[`${e.toLowerCase()}_line_id`], link: `/stores/demand_lines/${line[`${e.toLowerCase()}_line_id`]}`}).e);
-        if (line[`user_${e.toLowerCase()}`]) mdl_body.appendChild(new Input_Group({title: `${e}ed By`, text: `${line[`user_${e.toLowerCase()}`].rank._rank} ${line[`user_${e.toLowerCase()}`].full_name}`, link: `/stores/users/${line[`${e.toLowerCase()}_user_id`]}`}).e);
+        if (line[`user_${e.toLowerCase()}`])    mdl_body.appendChild(new Input_Group({title: `${e}ed By`,    text: `${line[`user_${e.toLowerCase()}`].rank._rank} ${line[`user_${e.toLowerCase()}`].full_name}`, link: `/stores/users/${line[`${e.toLowerCase()}_user_id`]}`}).e);
         mdl_body.appendChild(document.createElement('hr'));   
     });
 };

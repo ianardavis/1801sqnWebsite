@@ -283,7 +283,7 @@ function Modal_Notes (options = {}) {
     this.e.appendChild(
         new Input_Group({
             title: 'System Notes',
-            input: new Select({
+            append: new Select({
                 id: `sel_system_modal_${options.id}`,
                 options: [
                     {value: '',          text: 'Include', selected: true},

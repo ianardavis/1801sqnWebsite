@@ -110,31 +110,37 @@ function add_size_modal (table) {
             form.setAttribute('id', 'form_line');
             div_items.appendChild(new Input_Group({
                 title: 'Search Items',
-                input: new Input({
+                append: new Input({
                     id: 'inp_item',
                     completeOff: true
                 }).e
             }).e);
-            div_items.appendChild(new Input_Group({title: 'Item', input: new Select({
-                id: 'sel_items',
-                size: 10
-            }).e}).e);
+            div_items.appendChild(new Input_Group({
+                title: 'Item',
+                append: new Select({
+                    id: 'sel_items',
+                    size: 10
+                }).e
+            }).e);
             div_sizes.appendChild(new Input_Group({
                 title: 'Search Sizes',
-                input: new Input({
+                append: new Input({
                     id: 'inp_size',
                     completeOff: true
                 }).e
             }).e);
-            div_sizes.appendChild(new Input_Group({title: 'Size', input: new Select({
-                id:   'sel_sizes',
-                name: 'line[size_id]',
-                size: 10,
-                required: true
-            }).e}).e);
+            div_sizes.appendChild(new Input_Group({
+                title: 'Size',
+                append: new Select({
+                    id:   'sel_sizes',
+                    name: 'line[size_id]',
+                    size: 10,
+                    required: true
+                }).e
+            }).e);
             div_size.appendChild(new Input_Group({
                 title: 'Qty',
-                input: new Input({
+                append: new Input({
                     type: 'number',
                     name: 'line[_qty]',
                     value: '1',

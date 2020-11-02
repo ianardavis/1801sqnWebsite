@@ -100,7 +100,7 @@ function add_modal (line, row) {
     } else if (line._status === 3) {
         nav_body_2.appendChild(new Input_Group({title: 'Approved',    text: print_date(line._date)}).e);
         nav_body_2.appendChild(new Input_Group({title: 'Approved By', text: user_name(line.user_approve), link: `/stores/users/${line.approved_by}`}).e);
-        nav_body_2.appendChild(new Input_Group({title: 'Action', text: line._action}).e)
+        nav_body_2.appendChild(new Input_Group({title: 'Action',      text: line._action}).e)
         nav_body_2.appendChild(new Input_Group({title: `${line._action} Line ID`, text: line._id, link: `/stores/${line._action.toLowerCase()}_lines/${line._id}`}).e)
     } else if (line._status === 4) {
         nav_body_2.appendChild(new Input_Group({title: 'Declined',    text: print_date(line._date)}).e);

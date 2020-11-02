@@ -290,101 +290,105 @@ module.exports = (app, allowed, inc, logged_in, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    order_request_line = (order_id, line_id, user_id) => new Promise((resolve, reject) => {
-        //Get request line
-        return m.request_lines.findOne({
-            where: {line_id: line_id},
-            attributes: ['size_id','_qty','line_id']
-        })
-        .then(request_line => {
-            return orders.createLine({
-                m: {
-                    order_lines: m.order_lines,
-                    orders:      m.orders,
-                    sizes:       m.sizes,
-                    notes:       m.notes
-                },
-                line: {
-                    order_id: order_id,
-                    size_id:  request_line.size_id,
-                    _qty:     request_line._qty,
-                    user_id:  user_id
-                },
-                note_addition: ` from request line ${request_line.line_id}`
+    function order_request_line (order_id, line_id, user_id) {
+        return new Promise((resolve, reject) => {
+            //Get request line
+            return m.request_lines.findOne({
+                where: {line_id: line_id},
+                attributes: ['size_id','_qty','line_id']
             })
-            .then(result => {
-                return request_line.update(
-                    {
-                        _status: 3,
-                        _action: 'Order',
-                        _date: Date.now(),
-                        _id: result.line_id,
-                        approved_by: user_id
-                    }
-                )
-                .then(update_result => resolve(true))
-                .catch(err => reject(`Unable to update request line: ${err.message}`));
-            })
-            .catch(err => reject(err));
-        })
-        .catch(err => reject(`Unable to get request line: ${err.message}`));
-    });
-    issue_request_line = (issue, line, user_id) => new Promise((resolve, reject) => {
-        // Get request line
-        return m.request_lines.findOne({
-            where: {line_id: line.line_id},
-            attributes: ['size_id','_qty','line_id']
-        })
-        .then(request_line => {
-            // Create issue line for size
-            return issues.createLine({
-                m: {
-                    issue_lines: m.issue_lines,
-                    serials:     m.serials,
-                    issues:      m.issues,
-                    sizes:       m.sizes,
-                    stock:       m.stock
-                },
-                line: {
-                    serial_id: line.serial_id || null,
-                    stock_id:  line.stock_id  || null,
-                    nsn_id:    line.nsn_id    || null,
-                    issue_id:  issue.issue_id,
-                    size_id:   request_line.size_id,
-                    user_id:   user_id,
-                    _qty:      request_line._qty,
-                    _line:     issue.lines + line.offset
-                }
-            })
-            .then(line_id => {
-                //update request line to approved and add issue line details
-                return request_line.update(
-                    {
-                        _status: 3,
-                        _action: 'Issue',
-                        _date: Date.now(),
-                        _id: line_id,
-                        approved_by: user_id
-                    }
-                )
-                .then(result => {
-                    if (result) {
-                        return m.notes.create({
-                            _id:     issue.issue_id,
-                            _table:  'issues',
-                            _note:   `Line ${line_id} created from request line ${request_line.line_id}`,
-                            user_id: user_id,
-                            _system:  1
-                        })
-                        .then(note => resolve(line_id))
-                        .catch(err => reject(err));
-
-                    } else return reject(new Error(`Request line not updated`))
+            .then(request_line => {
+                return orders.createLine({
+                    m: {
+                        order_lines: m.order_lines,
+                        orders:      m.orders,
+                        sizes:       m.sizes,
+                        notes:       m.notes
+                    },
+                    line: {
+                        order_id: order_id,
+                        size_id:  request_line.size_id,
+                        _qty:     request_line._qty,
+                        user_id:  user_id
+                    },
+                    note_addition: ` from request line ${request_line.line_id}`
                 })
-                .catch(err => reject(`Unable to update request line: ${err.message}`));
+                .then(result => {
+                    return request_line.update(
+                        {
+                            _status: 3,
+                            _action: 'Order',
+                            _date: Date.now(),
+                            _id: result.line_id,
+                            approved_by: user_id
+                        }
+                    )
+                    .then(update_result => resolve(true))
+                    .catch(err => reject(`Unable to update request line: ${err.message}`));
+                })
+                .catch(err => reject(err));
             })
-            .catch(err => reject(`Unable to find/create issue line: ${err.message}`));
-        })
         .catch(err => reject(`Unable to get request line: ${err.message}`));
-    });
+        });
+    };
+    function issue_request_line (issue, line, user_id){
+        return new Promise((resolve, reject) => {
+            // Get request line
+            return m.request_lines.findOne({
+                where: {line_id: line.line_id},
+                attributes: ['size_id','_qty','line_id']
+            })
+            .then(request_line => {
+                // Create issue line for size
+                return issues.createLine({
+                    m: {
+                        issue_lines: m.issue_lines,
+                        serials:     m.serials,
+                        issues:      m.issues,
+                        sizes:       m.sizes,
+                        stock:       m.stock
+                    },
+                    line: {
+                        serial_id: line.serial_id || null,
+                        stock_id:  line.stock_id  || null,
+                        nsn_id:    line.nsn_id    || null,
+                        issue_id:  issue.issue_id,
+                        size_id:   request_line.size_id,
+                        user_id:   user_id,
+                        _qty:      request_line._qty,
+                        _line:     issue.lines + line.offset
+                    }
+                })
+                .then(line_id => {
+                    //update request line to approved and add issue line details
+                    return request_line.update(
+                        {
+                            _status: 3,
+                            _action: 'Issue',
+                            _date: Date.now(),
+                            _id: line_id,
+                            approved_by: user_id
+                        }
+                    )
+                    .then(result => {
+                        if (result) {
+                            return m.notes.create({
+                                _id:     line_id,
+                                _table:  'issue_lines',
+                                _note:   `Created from request line ${request_line.line_id}`,
+                                user_id: user_id,
+                                _system:  1
+                            })
+                            .then(note => resolve(line_id))
+                            .catch(err => reject(err));
+
+                        } else return reject(new Error(`Request line not updated`))
+                    })
+                    .catch(err => reject(`Unable to update request line: ${err.message}`));
+                })
+                .catch(err => reject(`Unable to find/create issue line: ${err.message}`));
+            })
+        .catch(err => reject(`Unable to get request line: ${err.message}`));
+        });
+    };
 };    
