@@ -37,13 +37,13 @@ function showLines (lines, options) {
                             id:   `sel_${line.line_id}`,
                             small: true,
                             options: [
-                                {value: '1', text: 'Open'},
-                                {value: '2', text: 'Approved'},
-                                {value: '3', text: 'Declined'}
+                                {value: '2', text: 'Open'},
+                                {value: '3', text: 'Approved'},
+                                {value: '4', text: 'Declined'}
                             ]
                         }).e;
                     _status.addEventListener("change", function () {
-                        if (this.value === '2') showActions(line.size_id, line.line_id)
+                        if (this.value === '3') showActions(line.size_id, line.line_id)
                         else {
                             document.querySelector(`#action_${line.line_id}`).innerHTML  = '';
                             document.querySelector(`#details_${line.line_id}`).innerHTML = '';

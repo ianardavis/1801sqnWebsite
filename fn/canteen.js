@@ -4,7 +4,7 @@ let settings = require(process.env.ROOT + '/fn/settings'),
 module.exports = {
     getSession: (req, res, options = {}) => new Promise(resolve => {
         settings.get({
-            m: {settings: m.settings},
+            m: {settings: options.m.settings},
             name: 'canteen_session',
             default: -1
         })

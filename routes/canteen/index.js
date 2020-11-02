@@ -12,7 +12,7 @@ module.exports = (app, m, getPermissions) => {
     require('./writeoffs')(app, allowed, inc, mw.isLoggedIn, m);
 
     app.get('/canteen', mw.isLoggedIn, allowed('access_canteen'), (req, res) => {
-        canteen.getSession(req, res)
+        canteen.getSession(req, res, {m: m})
         .then(session_id => res.render('canteen/index', {session_id: session_id}));
     });
 };

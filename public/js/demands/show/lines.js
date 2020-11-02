@@ -113,12 +113,12 @@ function add_modal (line, row) {
     let mdl_title = document.querySelector(`#mdl_${line.line_id}_title`);
     mdl_title.innerText = `Demand Line ${line.line_id}`;
     let mdl_body = document.querySelector(`#mdl_${line.line_id}_body`);
-    mdl_body.appendChild(new Input_Group({title: 'Item', text: line.size.item._description, link: `/stores/items/${line.size.item_id}`}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Size', text: line.size._size, link: `/stores/sizes/${line.size_id}`}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Qty', text: line._qty}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Added', text: `${new Date(line.createdAt).toDateString()} ${new Date(line.createdAt).toLocaleTimeString()}`}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Item',     text: line.size.item._description, link: `/stores/items/${line.size.item_id}`}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Size',     text: line.size._size, link: `/stores/sizes/${line.size_id}`}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Qty',      text: line._qty}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Added',    text: `${new Date(line.createdAt).toDateString()} ${new Date(line.createdAt).toLocaleTimeString()}`}).e);
     mdl_body.appendChild(new Input_Group({title: 'Added By', text: `${line.user.rank._rank } ${line.user.full_name}`, link: `/stores/users/${line.user_id}`}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Status', text: statuses[line._status]}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Status',   text: statuses[line._status]}).e);
     mdl_body.appendChild(document.createElement('hr'));
     if (line.receipt_line)    mdl_body.appendChild(new Input_Group({title: 'Received',        text: new Date(line.receipt_line.createdAt).toDateString()}).e);
     if (line.receipt_line_id) mdl_body.appendChild(new Input_Group({title: 'Receipt Line ID', text: line.receipt_line_id,                                                       link: `/stores/receipt_lines/${line.receipt_line_id}`}).e);

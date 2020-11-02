@@ -128,7 +128,7 @@ module.exports = (app, allowed, inc, logged_in, m) => {
             } else if (request._status !== 2) {
                 res.error.send('This request is not Open', res);
             } else {
-                let _orders = [], _issues = [], actions = [];
+;                let _orders = [], _issues = [], actions = [];
                 for (let [lineID, line] of Object.entries(req.body.actions)) {
                     line.line_id = Number(String(lineID).replace('line_id', ''));
                     if (line._status === '3') { // If Approved
@@ -308,9 +308,9 @@ module.exports = (app, allowed, inc, logged_in, m) => {
                     line: {
                         order_id: order_id,
                         size_id:  request_line.size_id,
-                        _qty:     request_line._qty,
-                        user_id:  user_id
+                        _qty:     request_line._qty
                     },
+                    user_id: user_id,
                     note_addition: ` from request line ${request_line.line_id}`
                 })
                 .then(result => {
