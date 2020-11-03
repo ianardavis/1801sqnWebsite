@@ -128,7 +128,7 @@ module.exports = (app, allowed, inc, logged_in, m) => {
             } else if (request._status !== 2) {
                 res.error.send('This request is not Open', res);
             } else {
-;                let _orders = [], _issues = [], actions = [];
+                let _orders = [], _issues = [], actions = [];
                 for (let [lineID, line] of Object.entries(req.body.actions)) {
                     line.line_id = Number(String(lineID).replace('line_id', ''));
                     if (line._status === '3') { // If Approved
@@ -153,61 +153,91 @@ module.exports = (app, allowed, inc, logged_in, m) => {
                 };
                 if (_orders.length > 0) {
                     actions.push(new Promise((resolve, reject) => {
-                        // Create/find open orders for user
                         return orders.create({
-                            m:           {orders: m.orders, users: m.users},
+                            m: {
+                                orders: m.orders,
+                                users: m.users
+                            },
                             ordered_for: request.requested_for,
                             user_id:     req.user.user_id
                         })
-                        .then(order => {
-                            let order_actions = [];
-                            _orders.forEach(_order => {
-                                order_actions.push(
-                                    order_request_line(
-                                        order.order_id,
-                                        _order.line_id,
-                                        req.user.user_id
-                                    )
-                                );
-                            });
-                            return Promise.all(order_actions)
-                            .then(() => resolve(true))
-                            .catch(err => reject(err));
-                        })
-                        .catch(err => reject(`Unable to create order: ${err.message}`));
-                    }));
-                };
-                if (_issues.length > 0) {
-                    actions.push(new Promise((resolve, reject) => {
-                        // Create/find open issues for user
-                        return issues.create({
-                            m:         {issues: m.issues, users: m.users},
-                            issued_to: request.requested_for,
-                            user_id:   req.user.user_id
-                        })
-                        .then(issue => {
-                            let issue_actions = [];
-                            return m.issue_lines.count({where: {issue_id: issue.issue_id}})
-                            .then(lines => {
-                                _issues.forEach(_issue => {
-                                    issue_actions.push(
-                                        issue_request_line(
-                                            {
-                                                issue_id: issue.issue_id,
-                                                lines: lines
-                                            },
-                                            _issue,
+                        .then(result => {
+                            if (result.success) {
+                                let order_actions = [];
+                                _orders.forEach(_order => {
+                                    order_actions.push(
+                                        order_request_line(
+                                            result.order.order_id,
+                                            _order.line_id,
                                             req.user.user_id
                                         )
                                     );
                                 });
-                                return Promise.all(issue_actions)
-                                .then(results => resolve(true))
+                                return Promise.all(order_actions)
+                                .then(results => {
+                                    resolve({
+                                        success: true,
+                                        message: 'Orders processed',
+                                        results: results
+                                    })
+                                })
                                 .catch(err => reject(err));
-                            })
-                            .catch(err => reject(err));
+                            } else {
+                                resolve({
+                                    success: false,
+                                    message: result.message
+                                })
+                            };
                         })
-                        .catch(err => reject(`Unable to create issue: ${err.message}`));
+                        .catch(err => reject(err));
+                    }));
+                };
+                if (_issues.length > 0) {
+                    actions.push(new Promise((resolve, reject) => {
+                        return issues.create({
+                            m: {
+                                issues: m.issues,
+                                users: m.users
+                            },
+                            issued_to: request.requested_for,
+                            user_id:   req.user.user_id
+                        })
+                        .then(result => {
+                            if (result.success) {
+                                return m.issue_lines.count({where: {issue_id: result.issue.issue_id}})
+                                .then(line_count => {
+                                    let issue_actions = [];
+                                    _issues.forEach(_issue => {
+                                        issue_actions.push(
+                                            issue_request_line(
+                                                {
+                                                    issue_id: result.issue.issue_id,
+                                                    line_count: line_count
+                                                },
+                                                _issue,
+                                                req.user.user_id
+                                            )
+                                        );
+                                    });
+                                    return Promise.all(issue_actions)
+                                    .then(results => {
+                                        resolve({
+                                            success: true,
+                                            message: 'Issues processed',
+                                            results: results
+                                        })
+                                    })
+                                    .catch(err => reject(err));
+                                })
+                                .catch(err => reject(err));
+                            } else {
+                                resolve({
+                                    success: false,
+                                    message: result.message
+                                })
+                            };
+                        })
+                        .catch(err => reject(err));
                     }));
                 };
                 return Promise.all(actions)
@@ -226,8 +256,8 @@ module.exports = (app, allowed, inc, logged_in, m) => {
                                 {where: {request_id: request.request_id}}
                             )
                             .then(result => {
-                                if (result) res.send({result: true, message: 'Lines actioned, request closed'});
-                                else res.error.send('All lines actioned, could not close request', res);
+                                if (result) res.send({result: true, message: 'All lines actioned, request closed'})
+                                else res.send({result: true, message: 'Lines actioned, could not close request'});
                             })
                             .catch(err => res.error.send(err, res));
                         };
@@ -290,45 +320,75 @@ module.exports = (app, allowed, inc, logged_in, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    function order_request_line (order_id, line_id, user_id) {
+    function order_request_line (order_id, request_line_id, user_id) {
         return new Promise((resolve, reject) => {
             //Get request line
             return m.request_lines.findOne({
-                where: {line_id: line_id},
+                where: {line_id: request_line_id},
                 attributes: ['size_id','_qty','line_id']
             })
             .then(request_line => {
-                return orders.createLine({
-                    m: {
-                        order_lines: m.order_lines,
-                        orders:      m.orders,
-                        sizes:       m.sizes,
-                        notes:       m.notes
-                    },
-                    line: {
+                if (!request_line) {
+                    resolve({
+                        success: false,
+                        message: 'Request line not found'
+                    });
+                } else {
+                    return orders.createLine({
+                        m: {
+                            order_lines: m.order_lines,
+                            orders:      m.orders,
+                            sizes:       m.sizes,
+                            notes:       m.notes
+                        },
                         order_id: order_id,
                         size_id:  request_line.size_id,
-                        _qty:     request_line._qty
-                    },
-                    user_id: user_id,
-                    note_addition: ` from request line ${request_line.line_id}`
-                })
-                .then(result => {
-                    return request_line.update(
-                        {
-                            _status: 3,
-                            _action: 'Order',
-                            _date: Date.now(),
-                            _id: result.line_id,
-                            approved_by: user_id
-                        }
-                    )
-                    .then(update_result => resolve(true))
-                    .catch(err => reject(`Unable to update request line: ${err.message}`));
-                })
-                .catch(err => reject(err));
+                        _qty:     request_line._qty,
+                        user_id:  user_id,
+                        note:     ` from request line ${request_line.line_id}`
+                    })
+                    .then(result => {
+                        if (!result.success) resolve(result)
+                        else {
+                            let actions = [
+                                request_line.update(
+                                    {
+                                        _status: 3,
+                                        _action: 'Order',
+                                        _date: Date.now(),
+                                        _id: result.line.line_id,
+                                        approved_by: user_id
+                                    }
+                                )
+                            ];
+                            if (result.line.created) {
+                                actions.push(
+                                    m.notes.create({
+                                        _id: result.line.line_id,
+                                        _table: 'order_lines',
+                                        _note: `Created from request line ${request_line.line_id}`,
+                                        user_id: user_id,
+                                        _system: 1
+                                    })
+                                );
+                            };
+                            Promise.all(actions)
+                            .then(results => {
+                                resolve({
+                                    success: true,
+                                    message: 'Request line ordered',
+                                    order_line: {
+                                        line_id: result.line.line_id
+                                    }
+                                })
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                };
             })
-        .catch(err => reject(`Unable to get request line: ${err.message}`));
+        .catch(err => reject(err));
         });
     };
     function issue_request_line (issue, line, user_id){
@@ -356,39 +416,63 @@ module.exports = (app, allowed, inc, logged_in, m) => {
                         size_id:   request_line.size_id,
                         user_id:   user_id,
                         _qty:      request_line._qty,
-                        _line:     issue.lines + line.offset
+                        _line:     issue.line_count + line.offset
                     }
                 })
-                .then(line_id => {
+                .then(result => {
                     //update request line to approved and add issue line details
                     return request_line.update(
                         {
                             _status: 3,
                             _action: 'Issue',
                             _date: Date.now(),
-                            _id: line_id,
+                            _id: result.line.line_id,
                             approved_by: user_id
                         }
                     )
-                    .then(result => {
+                    .then(noteresult => {
                         if (result) {
                             return m.notes.create({
-                                _id:     line_id,
+                                _id:     result.line.line_id,
                                 _table:  'issue_lines',
                                 _note:   `Created from request line ${request_line.line_id}`,
                                 user_id: user_id,
                                 _system:  1
                             })
-                            .then(note => resolve(line_id))
-                            .catch(err => reject(err));
+                            .then(note => {
+                                resolve({
+                                    success: true,
+                                    message: 'Request line issued',
+                                    issue_line: {
+                                        line_id: result.line.line_id
+                                    }
+                                });
+                            })
+                            .catch(err => {
+                                resolve({
+                                    success: true,
+                                    message: 'Request line issued, Note not created',
+                                    issue_line: {
+                                        line_id: result.line.line_id
+                                    }
+                                });
+                            });
 
-                        } else return reject(new Error(`Request line not updated`))
+                        } else {
+                            resolve({
+                                success: true,
+                                message: 'Request line not updated',
+                                issue_line: {
+                                    line_id: result.line.line_id
+                                }
+                            });
+                        };
                     })
-                    .catch(err => reject(`Unable to update request line: ${err.message}`));
+                    .catch(err => reject(err));
                 })
-                .catch(err => reject(`Unable to find/create issue line: ${err.message}`));
+                .catch(err => reject(err));
             })
-        .catch(err => reject(`Unable to get request line: ${err.message}`));
+        .catch(err => reject(err));
         });
     };
 };    

@@ -5,8 +5,12 @@ module.exports = {
             {attributes: ['user_id']}
         )
         .then(user => {
-            if (!user) reject(new Error('User not found'))
-            else {
+            if (!user) {
+                resolve({
+                    success: false,
+                    message: 'User not found'
+                });
+            } else {
                 return options.m.issues.findOrCreate({
                     where: {
                         issued_to: user.user_id,
@@ -14,7 +18,16 @@ module.exports = {
                     },
                     defaults: {user_id: options.user_id}
                 })
-                .then(([issue, created]) => resolve({created: created, issue_id: issue.issue_id}))
+                .then(([issue, created]) => {
+                    resolve({
+                        success: true,
+                        message: 'Issue created',
+                        issue: {
+                            issue_id: issue.issue_id,
+                            created: created
+                        }
+                    });
+                })
                 .catch(err => reject(err));
             };
         })
@@ -27,24 +40,47 @@ module.exports = {
             attributes: ['_issueable', '_serials', '_nsns']
         })
         .then(size => {
-            if (!size) reject(new Error('Size not found'))// If size is not found, return error
-            else if (size._issueable) { //If size is issueable, continue
+            if (!size) {
+                resolve({
+                    success: false,
+                    message: 'Size not found'
+                });// If size is not found, return error
+            } else if (!size._issueable) {
+                resolve({
+                    success: false,
+                    message: 'Size not found'
+                });//If size is not issueable, return error
+            } else {
                 // Find issue
                 return options.m.issues.findOne({
                     where: {issue_id: options.line.issue_id},
                     attributes: ['_status', 'issue_id']
                 })
                 .then(issue => {
-                    if (!issue) reject(new Error('Issue not found')) //If issue is not found return error
-                    else if (issue._status !== 1) reject(new Error('Lines can can only be added to draft issues')) //If issue is complete return error
-                    else {
+                    if (!issue) {
+                        resolve({
+                            success: false,
+                            message: 'Issue not found'
+                        });//If issue is not found return error
+                    } else if (issue._status !== 1) {
+                        resolve({
+                            success: false,
+                            message: 'Lines can can only be added to draft issues'
+                        });//If issue is complete return error
+                    } else {
                         //Count lines already on the issue
                         return options.m.issue_lines.count({where: {issue_id: issue.issue_id}})
                         .then(lines => {
                             if (size._serials && (!options.line.serial_id || options.line.serial_id === '')) {
-                                reject(new Error('You must specify a serial #')) //If serial required and no serial return error
+                                resolve({
+                                    success: false,
+                                    message: 'You must specify a serial #'
+                                });//If serial required and no serial return error
                             } else if (size._nsns && (!options.line.nsn_id || options.line.nsn_id === '')) {
-                                reject(new Error('You must specify an NSN')) //If nsn required and no nsn return error
+                                resolve({
+                                    success: false,
+                                    message: 'You must specify an NSN'
+                                });//If nsn required and no nsn return error
                             } else {
                                 if (!options.line._line) options.line._line = lines + 1; //Add line number if not present
                                 if (size._serials) { //If serials required
@@ -54,8 +90,12 @@ module.exports = {
                                         attributes: []
                                     })
                                     .then(serial => {
-                                        if (!serial) reject(new Error('Serial not found')) //If serials not found return error
-                                        else {
+                                        if (!serial) {
+                                            resolve({
+                                                success: false,
+                                                message: 'Serial not found'
+                                            });
+                                        } else {
                                             //create issue line
                                             return options.m.issue_lines.create(options.line)
                                             .then(issue_line => {
@@ -75,7 +115,13 @@ module.exports = {
                                                     );
                                                 };
                                                 return Promise.allSettled(actions)
-                                                .then(result => resolve(issue_line.line_id))
+                                                .then(result => {
+                                                    resolve({
+                                                        success: true,
+                                                        message: 'Line issued',
+                                                        line: {line_id: issue_line.line_id}
+                                                    });
+                                                })
                                                 .catch(err => reject(err));
                                             })
                                             .catch(err => reject(err));
@@ -89,7 +135,13 @@ module.exports = {
                                         //Remove from stock
                                         return options.m.stock.findByPk(issue_line.stock_id)
                                         .then(stock => stock.decrement('_qty', {by: issue_line._qty}))
-                                        .then(result => resolve(issue_line.line_id))
+                                        .then(result => {
+                                            resolve({
+                                                success: true,
+                                                message: 'Line issued',
+                                                line: {line_id: issue_line.line_id}
+                                            });
+                                        })
                                         .catch(err => reject(err));
                                     })
                                     .catch(err => reject(err));
@@ -100,7 +152,7 @@ module.exports = {
                     };
                 })
                 .catch(err => reject(err));
-            } else reject(new Error('This size can not be issued')); //If not issueable return error
+            };
         })
         .catch(err => reject(err));
     })

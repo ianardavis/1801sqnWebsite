@@ -1,8 +1,10 @@
 var statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3':'Approved', '4':'Declined'};
 function showLines (lines, options) {
-    let table_body = document.querySelector('#linesTable');
+    let table_body = document.querySelector('#linesTable'),
+        div_modals = document.querySelector(`#div_modals`);
     if (lines) document.querySelector('#line_count').innerText = lines.length || '0';
     table_body.innerHTML = '';
+    div_modals.innerHTML = '';
     lines.forEach(line => {
         try {
             let row = table_body.insertRow(-1);

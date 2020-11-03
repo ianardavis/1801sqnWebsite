@@ -5,8 +5,12 @@ module.exports = {
             {attributes: ['user_id']}
         )
         .then(user => {
-            if (!user) reject(new Error('User not found'))
-            else {
+            if (!user) {
+                resolve({
+                    success: false,
+                    message: 'User not found'
+                });
+            } else {
                 return options.m.orders.findOrCreate({
                     where: {
                         ordered_for: user.user_id,
@@ -14,7 +18,16 @@ module.exports = {
                     },
                     defaults: {user_id: options.user_id}
                 })
-                .then(([order, created]) => resolve({created: created, order_id: order.order_id}))
+                .then(([order, created]) => {
+                    resolve({
+                        success: true,
+                        message: 'Order created',
+                        order: {
+                            order_id: order.order_id,
+                            created: created
+                        }
+                    });
+                })
                 .catch(err => reject(err));
             };
         })
@@ -22,20 +35,37 @@ module.exports = {
     }),
     createLine: (options = {}) => new Promise((resolve, reject) => {
         return options.m.sizes.findOne({
-            where: {size_id: options.line.size_id},
+            where: {size_id: options.size_id},
             attributes: ['_orderable', 'size_id']
         })
         .then(size => {
-            if (!size) reject(new Error('Size not found'))
-            else if (size._orderable) {
+            if (!size) {
+                resolve({
+                    success: false,
+                    message: 'Size not found'
+                });
+            } else if (!size._orderable) {
+                resolve({
+                    success: false,
+                    message: 'This size can not be ordered'
+                });
+            } else {
                 return options.m.orders.findOne({
-                    where: {order_id: options.line.order_id},
+                    where: {order_id: options.order_id},
                     attributes: ['_status', 'order_id']
                 })
                 .then(order => {
-                    if (!order) reject(new Error('Order not found'))
-                    else if (order._status !== 1) reject(new Error('Lines can only be added to draft orders'))
-                    else {
+                    if (!order) {
+                        resolve({
+                            success: false,
+                            message: 'Order not found'
+                        });
+                    } else if (order._status !== 1) {
+                        resolve({
+                            success: false,
+                            message: 'Lines can only be added to draft orders'
+                        });
+                    } else {
                         return options.m.order_lines.findOrCreate({
                             where: {
                                 order_id: order.order_id,
@@ -43,35 +73,60 @@ module.exports = {
                                 _status:  1
                             },
                             defaults: {
-                                _qty: options.line._qty,
+                                _qty: options._qty,
                                 user_id_add: options.user_id
                             }
                         })
                         .then(([line, created]) => {
-                            let _note = '', actions = [];;
-                            if (created) _note += `Created${options.note_addition || ''}`
-                            else {
-                                actions.push(line.increment('_qty', {by: options.line._qty}));
-                                _note += `Incremented by ${options.line._qty}${options.note_addition || ''}`;
-                            };
-                            actions.push(
-                                options.m.notes.create({
-                                    _id: order.order_id,
-                                    _table: 'orders',
-                                    _note: _note,
-                                    user_id: options.user_id,
-                                    _system: 1
+                            if (created) {
+                                resolve({
+                                    success: true,
+                                    message: 'Line created',
+                                    line: {
+                                        line_id: line.line_id,
+                                        created: created
+                                    }
+                                });
+                            } else {
+                                return line.increment('_qty', {by: options._qty})
+                                .then(result => {
+                                    return options.m.notes.create({
+                                        _id: line.line_id,
+                                        _table: 'order_lines',
+                                        _note: `Incremented by ${options._qty}${options.note || ''}`,
+                                        user_id: options.user_id,
+                                        _system: 1
+                                    })
+                                    .then(note => {
+                                        resolve({
+                                            success: true,
+                                            message: 'Line incremented',
+                                            line: {
+                                                line_id: line.line_id,
+                                                created: created
+                                            }
+                                        });
+                                    })
+                                    .catch(err => {
+                                        resolve({
+                                            success: true,
+                                            message: 'Line incremented. Could not create note',
+                                            details: err,
+                                            line: {
+                                                line_id: line.line_id,
+                                                created: created
+                                            }
+                                        });
+                                    });
                                 })
-                            );
-                            return Promise.all(actions)
-                            .then(note => resolve({line_id: line.line_id, created: created}))
-                            .catch(err => reject(err));
+                                .catch(err => reject(err));
+                            };
                         })
                         .catch(err => reject(err));
                     };
                 })
                 .catch(err => reject(err));
-            } else reject(new Error('This size can not be ordered'));
+            };
         })
         .catch(err => reject(err));
     })
