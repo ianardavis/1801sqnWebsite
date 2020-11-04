@@ -33,18 +33,23 @@ showLines = (lines, options) => {
                 //       
             } else if (line._status === 2) { //If open
                 if (options.permissions.line_edit && line.order._status === 2) {
+                    action_options.push({value: '0', text: 'Cancel'});
                     action_options.push({value: '3', text: 'Demand'});
                     action_options.push({value: '4', text: 'Receive'});
                     if (line.order.ordered_for !== -1) action_options.push({value: '5', text: 'Issue'});
                 };
             } else if (line._status === 3) { //If Demanded
                 if (options.permissions.line_edit && line.order._status === 2) {
+                    action_options.push({value: '0', text: 'Cancel'});
                     action_options.push({value: '4', text: 'Receive'});
                     if (line.order.ordered_for !== -1) action_options.push({value: '5', text: 'Issue'});
                 };
             } else if (line._status === 4) { //If Received
                 if (line.order.ordered_for !== -1) {
-                    if (options.permissions.line_edit && line.order._status === 2) action_options.push({value: '5', text: 'Issue'});
+                    if (options.permissions.line_edit && line.order._status === 2) {
+                        action_options.push({value: '0', text: 'Cancel'});
+                        action_options.push({value: '5', text: 'Issue'});
+                    };
                 } else action_options.push({value: '6', text: 'Mark as Complete'});
             } else if (line._status === 5) { //If Issued
                 cell_status.innerText = 'Issued';

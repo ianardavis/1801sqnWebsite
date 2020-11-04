@@ -1,12 +1,12 @@
 const op = require('sequelize').Op;
-module.exports = (app, al, inc, li, m) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
     let orders   = require(process.env.ROOT + '/fn/orders'),
         demands  = require(process.env.ROOT + '/fn/demands'),
         receipts = require(process.env.ROOT + '/fn/receipts'),
         issues   = require(process.env.ROOT + '/fn/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/orders',             li, al('access_orders'),                            (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
-    app.get('/stores/orders/:id',         li, al('access_orders'),                            (req, res) => {
+    app.get('/stores/orders',             loggedIn, allowed('access_orders'),                            (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
+    app.get('/stores/orders/:id',         loggedIn, allowed('access_orders'),                            (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.users({as: 'user_for', attributes: ['user_id']})],
@@ -19,7 +19,7 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/order_lines/:id',    li, al('access_orders', {allow: true}),             (req, res) => {
+    app.get('/stores/order_lines/:id',    loggedIn, allowed('access_orders', {allow: true}),             (req, res) => {
         m.order_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['order_id']
@@ -31,21 +31,32 @@ module.exports = (app, al, inc, li, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.post('/stores/orders',            li, al('order_add',                  {send: true}), (req, res) => {
+    app.post('/stores/orders',            loggedIn, allowed('order_add',                  {send: true}), (req, res) => {
         orders.create({
-            m: m.orders,
+            m: {
+                orders: m.orders,
+                users:  m.users
+            },
             ordered_for: req.body.ordered_for,
             user_id: req.user.user_id
         })
         .then(result => {
             let message = '';
-            if (result.created) message = `Order raised: ${result.order_id}`
-            else message = `Order already in draft for this user: ${result.order_id}`;
-            res.send({result: true, message: message})
+            if (result.order.created) {
+                res.send({
+                    result: true,
+                    message: `Order raised: ${result.order_id}`
+                });
+            } else {
+                res.send({
+                    result: true,
+                    message: `Draft order already exists for this user: ${result.order_id}`
+                });
+        };
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/order_lines',       li, al('order_line_add',             {send: true}), (req, res) => {
+    app.post('/stores/order_lines',       loggedIn, allowed('order_line_add',             {send: true}), (req, res) => {
         orders.createLine({
             m: {
                 order_lines: m.order_lines,
@@ -53,14 +64,16 @@ module.exports = (app, al, inc, li, m) => {
                 sizes:       m.sizes,
                 notes:       m.notes
             },
-            line: req.body.line,
-            user_id: req.user.user_id
+            order_id: req.body.line.order_id,
+            size_id:  req.body.line.size_id,
+            _qty:     req.body.line._qty,
+            user_id:  req.user.user_id
         })
-        .then(result => res.send({result: true, message: `Item added: ${result.line_id}`}))
+        .then(result => res.send({result: true, message: `Item added: ${result.line.line_id}`}))
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/stores/orders/addtodemand', li, al('demand_line_add',            {send: true}), (req, res) => {
+    app.put('/stores/orders/addtodemand', loggedIn, allowed('demand_line_add',            {send: true}), (req, res) => {
         m.order_lines.findAll({
             where: {
                 _status:        'Open',
@@ -99,11 +112,11 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/orders/:id',         li, al('order_edit',    {allow: true, send: true}), (req, res) => {
+    app.put('/stores/orders/:id',         loggedIn, allowed('order_edit',    {allow: true, send: true}), (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.order_lines({where: {_status: 1}, attributes: ['line_id']})],
-            attributes: ['ordered_for', '_status']
+            attributes: ['order_id', 'ordered_for', '_status']
         })
         .then(order => {
             let _note = '';
@@ -122,7 +135,10 @@ module.exports = (app, al, inc, li, m) => {
             } else {
                 let actions = [];
                 actions.push(
-                    order.update({_status: req.body._status})
+                    order.update(
+                        {_status: req.body._status},
+                        {where: {order_id: order.order_id}}
+                    )
                 );
                 actions.push(
                     m.notes.create({
@@ -148,56 +164,115 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/order_lines/:id',    li, al('order_edit',                 {send: true}), (req, res) => {
+    app.put('/stores/order_lines/:id',    loggedIn, allowed('order_edit',                 {send: true}), (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
             attributes: ['order_id', '_status']
         })
         .then(order => {
-            let actions = [], _receipts = [], _issues = [];
-            for (let [lineID, line] of Object.entries(req.body.actions)) {
+            let actions = [], _demands = [], _receipts = [], _issues = [];
+            for (let [lineID, order_line] of Object.entries(req.body.actions)) {
+                let line = {};
                 line.line_id = Number(String(lineID).replace('line_id', ''));
-                if (line._status === '2') { // if demand
-                    actions.push(
-                        demand_order_line(
-                            line.line_id,
-                            req.user.user_id
-                        )
-                    );
-                } else if (line._status === '3') { //if receipt
+                line._status = order_line._status;
+                console.log(line, order_line);
+                if (line._status === '3') { // if demand
+                    _demands.push(line);
+                } else if (line._status === '4') { //if receipt
                     _receipts.push(line);
-                    // actions.push(
-                    //     receive_order_line(
-                    //         line,
-                    //         req.user.user_id
-                    //     )
-                    // );
-                } else if (line._status === '4')   { // if issued/complete
+                } else if (line._status === '5')   { // if issued
                     line.offset = _issues.length;
                     _issues.push(line)
-                    // actions.push(
-                    //     issue_order_line(
-                    //         line,
-                    //         req.user.user_id
-                    //     )
-                    // );
-                } else if (line._status === '0') { //if cancelled
+                } else if (line._status === '6' || line._status === '0')   { // if complete
                     actions.push(
                         m.order_lines.update(
-                            {_status: 0},
+                            {_status: line._status},
                             {where: {line_id: line.line_id}}
                         )
                     );
+                    let note = '';
+                    if (line._status === 0) note = 'Cancelled'
+                    else if (line._status === 0) note = 'Completed'
                     actions.push(
                         m.notes.create({
-                            _id:     order.order_id,
-                            _table:  'orders',
-                            _note:   `Line ${line.line_id} cancelled`,
+                            _id:     line.line_id,
+                            _table:  'order_lines',
+                            _note:   note,
                             user_id: req.user.user_id,
                             _system:  1
                         })
                     );
                 };
+            };
+            if (_demands.length > 0) {
+                _demands.forEach(line => {
+                    actions.push(
+                        new Promise((resolve, reject) => {
+                            return m.order_lines.findOne({
+                                where: {line_id: line.line_id},
+                                include: [inc.sizes()],
+                                attributes: ['line_id', '_qty']
+                            })
+                            .then(order_line => {
+                                if (!order_line) {
+                                    resolve({
+                                        success: false,
+                                        message: 'Order line not found'
+                                    });
+                                } else if (!order_line.size) {
+                                    resolve({
+                                        success: false,
+                                        message: 'Size not found'
+                                    });
+                                } else if (!order_line.size.supplier_id || order_line.size.supplier_id === '') {
+                                    resolve({
+                                        success: false,
+                                        message: 'Size does not have a supplier specified'
+                                    });
+                                } else {
+                                    demands.create({
+                                        m: {
+                                            suppliers: m.supplier,
+                                            demands: m.demands
+                                        },
+                                        supplier_id: order_line.size.supplier_id,
+                                        user_id: req.user.user_id
+                                    })
+                                    .then(demand_result => {
+                                        if (demand_result.success) {
+                                            demands.createLine({
+                                                m: {
+                                                    sizes: m.sizes,
+                                                    demands: m.demand_lines,
+                                                    demand_lines: m.demand_lines,
+                                                    notes: m.notes
+                                                },
+                                                demand_id: demand_result.demand.demand_id,
+                                                size_id: order_line.size,
+                                                _qty: order_line._qty,
+                                                user_id: req.user.user_id,
+                                                note: ` from order line ${order_line.line_id}`
+                                            })
+                                            .then(line_result => {
+                                                //if created add note
+                                                //resolve promise
+                                            })
+                                            .catch(err => reject(err));
+                                        } else {
+                                            resolve({
+                                                success: false,
+                                                message: demand_result.message
+                                            });
+                                        };
+                                    })
+                                    .catch(err => reject(err));
+                                };
+                            })
+                            .catch(err => reject(err));
+                        })
+                    );
+
+                });
             };
             if (_receipts.length > 0) {
 
@@ -249,7 +324,7 @@ module.exports = (app, al, inc, li, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/orders/:id',      li, al('order_delete',               {send: true}), (req, res) => {
+    app.delete('/stores/orders/:id',      loggedIn, allowed('order_delete',               {send: true}), (req, res) => {
         m.order_lines.destroy({where: {order_id: req.params.id}})
         .then(result => {
             m.orders.destroy({where: {order_id: req.params.id}})
@@ -258,7 +333,7 @@ module.exports = (app, al, inc, li, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/order_lines/:id', li, al('order_line_delete',          {send: true}), (req, res) => { //
+    app.delete('/stores/order_lines/:id', loggedIn, allowed('order_line_delete',          {send: true}), (req, res) => { //
         m.order_lines.findOne({where: {line_id: req.params.id}})
         .then(line => {
             m.order_lines.update(

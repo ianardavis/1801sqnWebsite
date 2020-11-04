@@ -19,14 +19,25 @@ module.exports = {
                     defaults: {user_id: options.user_id}
                 })
                 .then(([order, created]) => {
-                    resolve({
-                        success: true,
-                        message: 'Order created',
-                        order: {
-                            order_id: order.order_id,
-                            created: created
-                        }
-                    });
+                    if (created) {
+                        resolve({
+                            success: true,
+                            message: 'Order created',
+                            order: {
+                                order_id: order.order_id,
+                                created: created
+                            }
+                        });
+                    } else {
+                        resolve({
+                            success: true,
+                            message: 'Order already exists',
+                            order: {
+                                order_id: order.order_id,
+                                created: created
+                            }
+                        });
+                    };
                 })
                 .catch(err => reject(err));
             };
