@@ -16,7 +16,10 @@
 		<form class='mb-1' id='demandForm'>
 			<div class="input-group">
 				<div class="input-group-prepend w-30">
-					<button class="btn btn-success text-left w-100 confirm"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'suppliers', spinner_sm: true, spinner_float_left: true}) %>Demand Orders for</button>
+					<button class="btn btn-success text-left w-100 confirm">
+						<%- include(`${process.env.PARTIALS}/spinner`, {id: 'suppliers', float_left: true, small: true}) %>
+						Demand Orders for
+					</button>
 				</div>
 				<select class="custom-select" id='sel_suppliers' name='supplier_id'></select>
 			</div>	
@@ -25,7 +28,10 @@
 	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
-			<th class='w-40' onclick='sortTable(0, "tbl_orders")'><%- include(`${process.env.PARTIALS}/spinner`, {id: 'orders', spinner_sm: true, spinner_float_left: true}) %>Ordered For</th>
+			<th class='w-40' onclick='sortTable(0, "tbl_orders")'>
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'orders', float_left: true, small: true}) %>
+				Ordered For
+			</th>
 			<th class='w-40' onclick='sortTable(1, "tbl_orders")'>Order Date</th>
 			<th class='w-10' onclick='sortTable(2, "tbl_orders")'>Lines</th>
 			<th class='w-10' onclick='sortTable(3, "tbl_orders")'>Status</th>
@@ -48,6 +54,7 @@
 		getSuppliers = () => get(listSuppliers, {table: 'suppliers', query: []});
 	</script>
 	<script async>getSuppliers()</script>
+	<script>document.querySelector('#reload').addEventListener('click', () => getSuppliers());</script>
 <% } %>
 <script>
 	let sel_status = document.querySelector('#sel_status');
@@ -65,6 +72,5 @@
 	<% } %>
 </script>
 <script>document.querySelector('#reload').addEventListener('click', () => getOrders());</script>
-<script>document.querySelector('#reload').addEventListener('click', () => getSuppliers());</script>
 <script>document.querySelector('#sel_status').addEventListener('change', () => getOrders());</script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

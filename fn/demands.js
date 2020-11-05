@@ -106,8 +106,8 @@ module.exports = {
                                 line.increment('_qty', {by: options._qty})
                                 .then(result => {
                                     options.m.notes.create({
-                                        _id: demand.demand_id,
-                                        _table: 'demands',
+                                        _id: line.line_id,
+                                        _table: 'demand_lines',
                                         _note: `Incremented by ${options._qty}${options.note || ''}`,
                                         user_id: options.user_id,
                                         _system: 1

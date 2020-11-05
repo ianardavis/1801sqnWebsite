@@ -33,19 +33,17 @@ module.exports = function(sequelize, DataTypes) {
     '_price': {
       type: DataTypes.DECIMAL,
       allowNull: false,
-      defaultValue: '0.00',
+      defaultValue: '0.50',
       comment: "null"
     },
     'createdAt': {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: sequelize.fn('current_timestamp'),
+      allowNull: false,
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: sequelize.fn('current_timestamp'),
+      allowNull: false,
       comment: "null"
     }
   }, {

@@ -1,9 +1,9 @@
 module.exports = {
     create: (options = {}) => new Promise((resolve, reject) => {
-        return options.m.users.findOne(
-            {where: {user_id: options.issued_to}},
-            {attributes: ['user_id']}
-        )
+        return options.m.users.findOne({
+            where: {user_id: options.issued_to},
+            attributes: ['user_id']
+        })
         .then(user => {
             if (!user) {
                 resolve({
@@ -19,14 +19,25 @@ module.exports = {
                     defaults: {user_id: options.user_id}
                 })
                 .then(([issue, created]) => {
-                    resolve({
-                        success: true,
-                        message: 'Issue created',
-                        issue: {
-                            issue_id: issue.issue_id,
-                            created: created
-                        }
-                    });
+                    if (created) {
+                        resolve({
+                            success: true,
+                            message: 'Issue created',
+                            issue: {
+                                issue_id: issue.issue_id,
+                                created: created
+                            }
+                        });
+                    } else {
+                        resolve({
+                            success: true,
+                            message: 'Draft issue already exists',
+                            issue: {
+                                issue_id: issue.issue_id,
+                                created: created
+                            }
+                        });
+                    };
                 })
                 .catch(err => reject(err));
             };
@@ -48,7 +59,7 @@ module.exports = {
             } else if (!size._issueable) {
                 resolve({
                     success: false,
-                    message: 'Size not found'
+                    message: 'Size not issueable'
                 });//If size is not issueable, return error
             } else {
                 // Find issue

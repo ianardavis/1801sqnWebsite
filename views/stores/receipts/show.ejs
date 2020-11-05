@@ -1,124 +1,135 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class="mb-2">
 	<nav class="navbar navbar-expand navbar-light bg-nav">
 		<ul class="navbar-nav mr-auto">
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores">Stores</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/receipts">Receipts</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/receipts/<%= receipt.receipt_id %>"><%= receipt.receipt_id %></a>
-			</li>
-			<li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle stores_nav" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Options
-                </a>
-                <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-					<% if (permissions.receipt_edit && !receipt._complete && !receipt._closed) { %>
-						<!-- ////////////////////////////////// -->
-						<a class="dropdown-item" href='#'>
-							Complete
-						</a>
-					<% } %>
-					<% if (permissions.receipt_line_add && !receipt._complete && !receipt._closed) { %>
-						<!-- ////////////////////////////////// -->
-						<a class="dropdown-item" href='javascript:addSize("receipt",<%= receipt.receipt_id %>,"supplier_id=<%= receipt.supplier_id%>")'>
-							Add Item
-						</a>
-					<% } %>
-					<% include ../../partials/notes/menu_add %>
-					<div class="dropdown-divider"></div>
-					<% if (permissions.receipt_delete && !receipt._complete && !receipt._closed) { %>
-						<form id='deleteForm'>
-							<button class="dropdown-item dropdown_button confirm">
-								Delete
-							</button>
-						</form>
-					<% } %>
-                </div>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/receipts', text: 'Receipts'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
 		</ul>
 	</nav>
 </section>
 <section class="container">
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
-                Details
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
-                Lines (<span id='line_count'></span>)
-            </a>
-        </li>
-        <% include ../../partials/notes/tab_head %>
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Menu
+			</a>
+			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
+				<%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+				<% if (permissions.receipt_edit) { %><form id='form_complete'><% } %>
+					<input type="hidden" name='_status' value='2'>
+					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
+				<% if (permissions.receipt_edit) { %></form>
+				<form id='form_cancel'><% } %>
+					<input type="hidden" name='_status' value='0'>
+					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' type="submit" value='Cancel' disabled>
+				<% if (permissions.receipt_edit) { %></form><% } %>
+				<div class="dropdown-divider"></div>
+				<div id='form_addSize'>
+					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
+						Add Item
+					</button>
+				</div>
+				<% if (permissions.receipt_delete) { %><form id='form_delete'><% } %>
+					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Delete' disabled>
+				<% if (permissions.receipt_edit) { %></form><% } %>
+			</div>
+		</li>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="container">
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-30">
-						<span class="input-group-text w-100">Supplier</span>
-					</div>
-					<p class="form-control"><%= receipt.supplier._name %></p>
-					<div class="input-group-append">
-						<a class='btn btn-primary' href='/stores/suppliers/<%= receipt.supplier_id %>'>
-							<i class='fas fa-search'></i>
-						</a>
-					</div>
-				</div>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-30">
-						<span class="input-group-text w-100">Received By</span>
-					</div>
-					<p class="form-control"><%= receipt.user.rank._rank %> <%= receipt.user.full_name %></p>
-					<div class="input-group-append">
-						<a class='btn btn-primary' href='/stores/users/<%= receipt.user_id %>'>
-							<i class='fas fa-search'></i>
-						</a>
-					</div>
-				</div>
-				<%- include('../../partials/inputs/display', {title: 'Received', text: receipt._date.toDateString()}) %>
-				<div class="input-group mb-1">
-					<div class="input-group-prepend w-30">
-						<span class="input-group-text w-100">Complete</span>
-					</div>
-					<p class="form-control"><% if (receipt._complete) { %>Yes<% } else { %>No<% } %></p>
-				</div>
-			</div>
+			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipts'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'supplier',  title: 'Supplier',    append: {a: {id: 'supplier_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user',      title: 'Received By', append: {a: {id: 'user_link',     type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt', title: 'Received'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'updatedAt', title: 'Updated'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',	title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-            <div class="container">
-				<div id='spn_receipts' class="spinner-border text-primary" role="status">
-					<span class="sr-only">Loading...</span>
-				</div>
-				<table class="table table-sm table-hover mx-auto w-100">
-					<thead class="thead-dark">
-						<th class="w-20" onclick="sortTable(0, 'receiptTable')">Location</th>
-						<th class="w-30" onclick="sortTable(1, 'receiptTable')">Item</th>
-						<th class="w-30" onclick="sortTable(2, 'receiptTable')">Size</th>
-						<th class="w-20" onclick="sortTable(3, 'receiptTable')">Quantity</th>
-						<% if (permissions.receipt_line_delete && !receipt._complete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-					</thead>
-					<tbody id="receiptTable">
-					</tbody>
-				</table>
-			</div>
+			<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Closed'}]}) %>
+			<table class="table table-sm table-hover mx-auto w-100">
+				<thead class="thead-dark">
+					<th class="w-10" onclick="sortTable(0, 'tbl_lines')">
+						<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipt_lines', float_left: true, small: true}) %>
+						Line ID
+					</th>
+					<th class="w-20" onclick="sortTable(1, 'tbl_lines')">Item</th>
+					<th class="w-20" onclick="sortTable(2, 'tbl_lines')">Size</th>
+					<th class="w-10" onclick="sortTable(3, 'tbl_lines')">Quantity</th>
+					<th class="w-20" onclick="sortTable(4, 'tbl_lines')">Location</th>
+					<th class="w-20" onclick="sortTable(4, 'tbl_lines')">Action</th>
+					<th><i class="fas fa-search"></i></th>
+				</thead>
+				<tbody id="tbl_lines">
+				</tbody>
+			</table>
 		</div>
-        <% include ../../partials/notes/tab_body %>
+        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<script src='/js/get/receipt_lines.js'></script>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<!-- get/spinner/XHRsend/send from notes include -->
+<script src='/js/tabs.js'></script>
+<script src="/js/receipts/show/receipt.js"></script>
+<script src="/js/receipts/show/lines.js"></script>
+<script src="/js/stock/list.js"></script>
+<script src="/js/serials/list.js"></script>
+<script src="/js/search/select.js"></script>
+<script src="/js/addSize.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script>showTab('<%= tab %>');</script>
+<script>
+	getReceipt = () => {
+		get(
+			showReceipt,
+			{
+				table: 'receipts',
+				query: [`receipt_id=${path[3]}`],
+				permissions: {
+					edit: 	     <%= permissions.receipt_edit  	   || false %>,
+					delete:		 <%= permissions.receipt_delete	   || false %>,
+					line_add:	 <%= permissions.receipt_line_add	   || false %>,
+					line_delete: <%= permissions.receipt_line_delete || false %>
+				}
+			}
+		);
+	};
+    document.querySelector('#reload').addEventListener('click', () => getReceipt());
+</script>
+<script async>getReceipt()</script>
+<script>
+    getLines = () => {
+		let sel_status = document.querySelector('#sel_status');
+		get(
+			showLines,
+			{
+				table: 'receipt_lines',
+				query: [`receipt_id=${path[3]}`, sel_status.value],
+				permissions: {
+					line_edit:	 <%= permissions.receipt_line_edit   || false %>,
+					line_delete: <%= permissions.receipt_line_delete || false %>
+				}
+			}
+		);
+	};
+	// getreceiptlines = getLines;
+    document.querySelector('#reload').addEventListener('click', () => getLines());
+    document.querySelector('#sel_status').addEventListener('change', () => getLines());
+</script>
+<script async>getLines()</script>
 <script>
     window.addEventListener( "load", function () {
-		<% if (permissions.receipt_delete && !receipt._complete && !receipt._closed) { %>
-			addFormListener('deleteForm', 'DELETE', '/stores/receipts/<%= receipt.receipt_id %>', {redirect: '/stores/receipts'})
+		<% if (permissions.receipt_delete) { %>
+			addFormListener('form_delete', 'DELETE', `/stores/receipts/${path[3]}`,{redirect: '/stores/receipts'});
+		<% } %>
+		<% if (permissions.receipt_edit) { %>
+			addFormListener('form_complete', 'PUT', `/stores/receipts/${path[3]}`, {onComplete: [getReceipt, getLines]});
+			addFormListener('form_cancel',	 'PUT', `/stores/receipts/${path[3]}`, {onComplete: [getReceipt, getLines]});
 		<% } %>
     });
 </script>
-<script async>getReceiptLines(<%= receipt.receipt_id %>, <%= receipt._complete%>, <%= permissions.receipt_line_delete %>)</script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

@@ -1,6 +1,6 @@
 let statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Demanded', '4': 'Received', '5': 'Issued', '6': 'Closed'};
 showLines = (lines, options) => {
-    let table_body = document.querySelector('#linesTable');
+    let table_body = document.querySelector('#tbl_lines');
     if (lines) document.querySelector('#line_count').innerText = lines.length || '0';
     table_body.innerHTML = '';
     lines.forEach(line => {

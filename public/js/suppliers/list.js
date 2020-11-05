@@ -3,7 +3,7 @@ listSuppliers = (suppliers, options) => {
     select.innerHTML = '';
     suppliers.forEach(supplier => {
         select.appendChild(new Option({
-            value: supplier.supplier_id,
+            value: `supplier_id=${supplier.supplier_id}`,
             text:  supplier._name
         }).e);
     });

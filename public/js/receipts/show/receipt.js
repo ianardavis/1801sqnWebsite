@@ -1,14 +1,18 @@
-showOrder = (orders, options) => {
-    if (orders.length === 1) {
-        for (let [id, value] of Object.entries(orders[0])) {
+showReceipt = (receipts, options) => {
+    if (receipts.length === 1) {
+        for (let [id, value] of Object.entries(receipts[0])) {
             try {
                 let element = document.querySelector(`#${id}`);
-                if (id === 'user_for' || id === 'user_by')  {
+                if (id === 'supplier')  {
+                    element.innerText = value._name;
+                    let link = document.querySelector(`#${id}_link`);
+                    link.setAttribute('href', `/stores/suppliers/${value.supplier_id}`);
+                } else if (id === 'user')  {
                     element.innerText = user_name(value);
                     let link = document.querySelector(`#${id}_link`);
                     link.setAttribute('href', `/stores/users/${value.user_id}`);
                 } else if (id === 'createdAt' || id === 'updatedAt') {
-                    element.innerText = `${new Date(value).toDateString()} ${new Date(value).toLocaleTimeString()}`
+                    element.innerText = print_date(value, true);
                 } else if (id === '_status') {
                     if      (value === 0) element.innerText = 'Cancelled'
                     else if (value === 1) element.innerText = 'Draft';
@@ -19,14 +23,14 @@ showOrder = (orders, options) => {
             } catch (error) {console.log(error)};
         };
         let breadcrumb = document.querySelector('#breadcrumb');
-        breadcrumb.innerText = orders[0].order_id;
-        breadcrumb.href = `/stores/orders/${orders[0].order_id}`;
+        breadcrumb.innerText = receipts[0].receipt_id;
+        breadcrumb.href = `/stores/receipts/${receipts[0].receipt_id}`;
 
-        ['action', 'complete', 'cancel', 'addSize', 'delete'].forEach(e => {
+        ['complete', 'cancel', 'addSize', 'delete'].forEach(e => {
             document.querySelector(`#btn_${e}`).setAttribute('disabled', true);
         });
-        if (orders[0]._status === 0) {
-        } else if (orders[0]._status === 1) {
+        if (receipts[0]._status === 0) {
+        } else if (receipts[0]._status === 1) {
             if (options.permissions.edit) {
                 document.querySelector('#btn_complete').removeAttribute('disabled');
                 document.querySelector('#btn_cancel').removeAttribute('disabled');
@@ -34,11 +38,11 @@ showOrder = (orders, options) => {
             if (options.permissions.line_add) {
                 document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).e);
                 document.querySelector('#btn_addSize').removeAttribute('disabled');
-                add_size_modal('order');
+                add_size_modal('receipt');
             };
             if (options.permissions.delete) document.querySelector('#btn_delete').removeAttribute('disabled');
-        } else if (orders[0]._status === 2 || orders[0]._status === 3) {
-            if (orders[0]._status === 2) document.querySelector('#btn_action').removeAttribute('disabled');
+        } else if (receipts[0]._status === 2 || receipts[0]._status === 3) {
+            if (receipts[0]._status === 2) document.querySelector('#btn_action').removeAttribute('disabled');
         };
-    } else alert(`${orders.length} matching orders found`);
+    } else alert(`${receipts.length} matching receipts found`);
 };

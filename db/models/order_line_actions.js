@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('groups', {
-    'group_id': {
+  return sequelize.define('order_line_actions', {
+    'action_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,13 +10,23 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'category_id': {
+    'order_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_group': {
+    '_action': {
       type: DataTypes.STRING(20),
+      allowNull: false,
+      comment: "null"
+    },
+    'action_line_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
@@ -31,6 +41,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'groups'
+    tableName: 'order_line_actions'
   });
 };

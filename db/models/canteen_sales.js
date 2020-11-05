@@ -10,16 +10,10 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    '_complete': {
-      type: DataTypes.INTEGER(4),
+    '_status': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: '0',
-      comment: "null"
-    },
-    '_date': {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: sequelize.fn('current_timestamp'),
+      defaultValue: '1',
       comment: "null"
     },
     'session_id': {
@@ -35,13 +29,11 @@ module.exports = function(sequelize, DataTypes) {
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.fn('current_timestamp'),
       comment: "null"
     }
   }, {

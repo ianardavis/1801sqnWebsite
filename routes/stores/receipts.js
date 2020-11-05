@@ -1,28 +1,10 @@
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
     let db       = require(process.env.ROOT + '/fn/db'),
         receipts = require(process.env.ROOT + '/fn/receipts');;
-    app.get('/stores/receipts',           isLoggedIn, allowed('access_receipts'),                (req, res) => {
-        m.suppliers.findAll()
-        .then(suppliers => res.render('stores/receipts/index', {suppliers: suppliers}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/stores/receipts/:id',       isLoggedIn, allowed('access_receipts'),                (req, res) => {
-        db.findOne({
-            table: m.receipts,
-            where: {receipt_id: req.params.id},
-            include: [
-                inc.users(),
-                inc.suppliers({as: 'supplier'})
-        ]})
-        .then(receipt => {
-            res.render('stores/receipts/show', {
-                receipt: receipt,
-                show_tab: req.query.tab || 'details'
-            });
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.post('/stores/receipts',          isLoggedIn, allowed('receipt_add',      {send: true}), (req, res) => {
+    app.get('/stores/receipts',           loggedIn, allowed('access_receipts'),                (req, res) => res.render('stores/receipts/index'));
+    app.get('/stores/receipts/:id',       loggedIn, allowed('access_receipts'),                (req, res) => res.render('stores/receipts/show', {tab: req.query.tab || 'details'}));
+    
+    app.post('/stores/receipts',          loggedIn, allowed('receipt_add',      {send: true}), (req, res) => {
         receipts.create({
             m: {receipts: m.receipts},
             receipt: {
@@ -37,7 +19,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/receipt_lines/:id', isLoggedIn, allowed('receipt_line_add', {send: true}), (req, res) => {
+    app.post('/stores/receipt_lines/:id', loggedIn, allowed('receipt_line_add', {send: true}), (req, res) => {
         req.body.line.user_id    = req.user.user_id;
         req.body.line.receipt_id = req.params.id;
         receipts.createLine({
