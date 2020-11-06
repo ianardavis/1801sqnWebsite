@@ -30,11 +30,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 inc.users(),
                 inc.stock({as: 'stock'}),
                 inc.sizes({stock: true}),
-                inc.return_lines({
+                inc.returns({
                     as: 'return',
                     include: [
-                        inc.stock({as: 'stock'}),
-                        inc.returns()
+                        inc.locations({as: 'location'}),
+                        inc.stock({as: 'stock'})
                     ]
                 })
             ],
@@ -63,6 +63,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 inc.users()
             ],
             receipt_lines: [
+                inc.serials({as: 'serial'}),
+                inc.locations({as: 'location'}),
                 inc.sizes(),
                 inc.receipts(),
                 inc.users(),

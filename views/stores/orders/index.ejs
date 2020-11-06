@@ -48,17 +48,33 @@
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/XHRsend.js'></script>
 <script src='/js/data/send.js'></script>
+<script src='/js/utils/select_sel_status.js'></script>
 <% if (permissions.demand_line_add) { %>
 	<script src='/js/suppliers/list.js'></script>
 	<script>
-		getSuppliers = () => get(listSuppliers, {table: 'suppliers', query: []});
+		function getSuppliers() {
+			get(
+				listSuppliers,
+				{
+					table: 'suppliers',
+					query: []
+				}
+			);
+		};
 	</script>
 	<script async>getSuppliers()</script>
 	<script>document.querySelector('#reload').addEventListener('click', () => getSuppliers());</script>
 <% } %>
 <script>
-	let sel_status = document.querySelector('#sel_status');
-	getOrders = () => get(showOrders, {table: 'orders', query: [sel_status.value]});
+	function getOrders() {
+		get(
+			showOrders,
+			{
+				table: 'orders',
+				query: [sel_status.value]
+			}
+		);
+	};
 </script>
 <script async>getOrders()</script>
 <script>

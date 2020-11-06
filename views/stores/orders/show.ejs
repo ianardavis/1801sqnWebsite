@@ -24,13 +24,11 @@
 					<input type="hidden" name='_status' value='0'>
 					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' type="submit" value='Cancel' disabled>
 				<% if (permissions.order_edit) { %></form><% } %>
-				<div class="dropdown-divider"></div>
 				<div id='form_addSize'>
 					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
 						Add Item
 					</button>
 				</div>
-				<div class="dropdown-divider"></div>
 				<% if (permissions.order_delete) { %><form id='form_delete'><% } %>
 					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Delete' disabled>
 				<% if (permissions.order_edit) { %></form><% } %>
@@ -58,15 +56,15 @@
 			<% } %>
 			<table class='table table-sm table-hover mx-auto w-100'>
 				<thead id='table_header_lines' class='thead-dark'>
-					<th class='w-10' onclick='sortTable(0, "linesTable")'>
+					<th class='w-10' onclick='sortTable(0, "tbl_lines")'>
 						<%- include(`${process.env.PARTIALS}/spinner`, {id: 'order_lines', float_left: true, small: true}) %>
 						Line ID
 					</th>
-					<th class='w-30' onclick="sortTable(1,'linesTable')">Item</th>
-					<th class='w-15' onclick="sortTable(2,'linesTable')">Size</th>
-					<th class='w-5'  onclick="sortTable(3,'linesTable')">Qty</th>
-					<th class='w-20' onclick="sortTable(4,'linesTable')">Status</th>
-					<th class='w-20' onclick="sortTable(5,'linesTable')">Action</th>
+					<th class='w-30' onclick="sortTable(1,'tbl_lines')">Item</th>
+					<th class='w-15' onclick="sortTable(2,'tbl_lines')">Size</th>
+					<th class='w-5'  onclick="sortTable(3,'tbl_lines')">Qty</th>
+					<th class='w-20' onclick="sortTable(4,'tbl_lines')">Status</th>
+					<th class='w-20' onclick="sortTable(5,'tbl_lines')">Action</th>
 					<th id='col_view'><i class='fas fa-search'></i></th>
 				</thead>
 				<tbody id='tbl_lines'>
@@ -91,9 +89,10 @@
 <script src="/js/search/select.js"></script>
 <script src="/js/addSize.js"></script>
 <script src="/js/data/addFormListener.js"></script>
+<script src='/js/utils/select_sel_status.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script>
-	getOrder = () => {
+	function getOrder() {
 		get(
 			showOrder,
 			{
@@ -112,15 +111,14 @@
 </script>
 <script async>getOrder()</script>
 <script>
-    getLines = () => {
-		let sel_status = document.querySelector('#sel_status');
+    function getLines() {
 		get(
 			showLines,
 			{
 				table: 'order_lines',
 				query: [`order_id=${path[3]}`, sel_status.value],
 				permissions: {
-					line_edit:	<%= permissions.order_line_edit   || false %>,
+					line_edit:	 <%= permissions.order_line_edit   || false %>,
 					line_delete: <%= permissions.order_line_delete || false %>
 				}
 			}

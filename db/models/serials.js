@@ -23,13 +23,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     'location_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'issue_line_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
-      defaultValue: '-1',
+      allowNull: true,
       comment: "null"
     },
     'createdAt': {

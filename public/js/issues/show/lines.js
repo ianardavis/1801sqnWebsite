@@ -17,7 +17,7 @@ showLines = (lines, options) => {
                 let mdl_header = document.querySelector(`#mdl_${line.line_id}_header`);
                 mdl_header.appendChild(
                     new DeleteButton({
-                        path: `/stores/order_lines/${line.line_id}`,
+                        path: `/stores/issue_lines/${line.line_id}`,
                         float: true,
                         options: {onComplete: getLines}
                     }).e
@@ -32,30 +32,30 @@ showLines = (lines, options) => {
             } else if (line._status === 1) { //If pending
                 //       
             } else if (line._status === 2) { //If open
-                if (options.permissions.line_edit && line.order._status === 2) {
+                if (options.permissions.line_edit && line.issue._status === 2) {
                     action_options.push({value: '0', text: 'Cancel'});
                     action_options.push({value: '3', text: 'Demand'});
                     action_options.push({value: '4', text: 'Receive'});
-                    if (line.order.ordered_for !== -1) action_options.push({value: '5', text: 'Issue'});
+                    if (line.issue.issueed_for !== -1) action_options.push({value: '5', text: 'Issue'});
                 };
             } else if (line._status === 3) { //If Demanded
-                if (options.permissions.line_edit && line.order._status === 2) {
+                if (options.permissions.line_edit && line.issue._status === 2) {
                     action_options.push({value: '0', text: 'Cancel'});
                     action_options.push({value: '4', text: 'Receive'});
-                    if (line.order.ordered_for !== -1) action_options.push({value: '5', text: 'Issue'});
+                    if (line.issue.issueed_for !== -1) action_options.push({value: '5', text: 'Issue'});
                 };
             } else if (line._status === 4) { //If Received
-                if (line.order.ordered_for !== -1) {
-                    if (options.permissions.line_edit && line.order._status === 2) {
+                if (line.issue.issueed_for !== -1) {
+                    if (options.permissions.line_edit && line.issue._status === 2) {
                         action_options.push({value: '0', text: 'Cancel'});
                         action_options.push({value: '5', text: 'Issue'});
                     };
                 } else action_options.push({value: '6', text: 'Mark as Complete'});
             } else if (line._status === 5) { //If Issued
                 cell_status.innerText = 'Issued';
-                if (options.permissions.line_edit && line.order._status === 2) action_options.push({value: '6', text: 'Mark as Complete'});
+                if (options.permissions.line_edit && line.issue._status === 2) action_options.push({value: '6', text: 'Mark as Complete'});
             };
-            if (options.permissions.line_edit && line.order._status === 2) {
+            if (options.permissions.line_edit && line.issue._status === 2) {
                 let div_actions = document.createElement('div'),
                     div_details = document.createElement('div'),
                     div_stocks  = document.createElement('div'),
@@ -133,19 +133,13 @@ function add_modal (line, row) {
     let mdl_cell = document.querySelector(`#mdl_cell_${line.line_id}`);
     mdl_cell.appendChild(new Modal({id: line.line_id}).e);
     let mdl_title = document.querySelector(`#mdl_${line.line_id}_title`);
-    mdl_title.innerText = `Order Line ${line.line_id}`;
+    mdl_title.innerText = `Issue Line ${line.line_id}`;
     let mdl_body = document.querySelector(`#mdl_${line.line_id}_body`);
     mdl_body.appendChild(new Input_Group({title: 'Item',     text: line.size.item._description, link: `/stores/items/${line.size.item_id}`}).e);
     mdl_body.appendChild(new Input_Group({title: 'Size',     text: line.size._size, link: `/stores/sizes/${line.size_id}`}).e);
     mdl_body.appendChild(new Input_Group({title: 'Qty',      text: line._qty}).e);
     mdl_body.appendChild(new Input_Group({title: 'Added',    text: print_date(line.createdAt, true)}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Added By', text: print_user(line.user_add), link: `/stores/users/${line.user_id}`}).e);
+    mdl_body.appendChild(new Input_Group({title: 'Added By', text: print_user(line.user), link: `/stores/users/${line.user_id}`}).e);
     mdl_body.appendChild(new Input_Group({title: 'Status',   text: statuses[line._status]}).e);
     mdl_body.appendChild(document.createElement('hr'));
-    ['Demand', 'Receipt', 'Issue'].forEach(e => {
-        if (line[`${e.toLowerCase()}_date`])    mdl_body.appendChild(new Input_Group({title: `${e}ed`,       text: print_date(line[`${e.toLowerCase()}_date`])}).e);
-        if (line[`${e.toLowerCase()}_line_id`]) mdl_body.appendChild(new Input_Group({title: `${e} Line ID`, text: line[`${e.toLowerCase()}_line_id`], link: `/stores/demand_lines/${line[`${e.toLowerCase()}_line_id`]}`}).e);
-        if (line[`user_${e.toLowerCase()}`])    mdl_body.appendChild(new Input_Group({title: `${e}ed By`,    text: print_user(line[`user_${e.toLowerCase()}`]), link: `/stores/users/${line[`${e.toLowerCase()}_user_id`]}`}).e);
-        mdl_body.appendChild(document.createElement('hr'));   
-    });
 };

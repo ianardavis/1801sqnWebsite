@@ -94,19 +94,19 @@ function add_modal (line, row) {
     nav_body_1.appendChild(new Input_Group({title: 'Qty',      text: line._qty}).e);
     nav_body_2.appendChild(new Input_Group({title: 'Status',   text: statuses[String(line._status)] || 'Unknown'}).e);
     nav_body_2.appendChild(new Input_Group({title: 'Added',    text: print_date(line.createdAt, true)}).e);
-    nav_body_2.appendChild(new Input_Group({title: 'Added By', text: user_name(line.user_add), link: `/stores/users/${line.user_id}`}).e);
+    nav_body_2.appendChild(new Input_Group({title: 'Added By', text: print_user(line.user_add), link: `/stores/users/${line.user_id}`}).e);
     if (line._status === 1) {
         //
     } else if (line._status === 2) {
         //
     } else if (line._status === 3) {
         nav_body_2.appendChild(new Input_Group({title: 'Approved',    text: print_date(line._date)}).e);
-        nav_body_2.appendChild(new Input_Group({title: 'Approved By', text: user_name(line.user_approve), link: `/stores/users/${line.approved_by}`}).e);
+        nav_body_2.appendChild(new Input_Group({title: 'Approved By', text: print_user(line.user_approve), link: `/stores/users/${line.approved_by}`}).e);
         nav_body_2.appendChild(new Input_Group({title: 'Action',      text: line._action}).e)
         nav_body_2.appendChild(new Input_Group({title: `${line._action} Line ID`, text: line._id, link: `/stores/${line._action.toLowerCase()}_lines/${line._id}`}).e)
     } else if (line._status === 4) {
         nav_body_2.appendChild(new Input_Group({title: 'Declined',    text: print_date(line._date)}).e);
-        nav_body_2.appendChild(new Input_Group({title: 'Declined By', text: user_name(line.user_approve), link: `/stores/users/${line.approved_by}`}).e);
+        nav_body_2.appendChild(new Input_Group({title: 'Declined By', text: print_user(line.user_approve), link: `/stores/users/${line.approved_by}`}).e);
     };
     nav_body_3.appendChild(new Modal_Notes({id: `line_${line.line_id}`}).e);
     nav_bodies.appendChild(nav_body_1);
@@ -179,7 +179,7 @@ function showLineNotes (notes, options = {}) {
             text: new Date(note.createdAt).toDateString()
         });
         add_cell(row, {text: note._note});
-        add_cell(row, {text: user_name(note.user)});
+        add_cell(row, {text: print_user(note.user)});
     });
     hide_spinner('notes');
 };

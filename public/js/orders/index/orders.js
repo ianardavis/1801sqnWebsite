@@ -4,10 +4,10 @@ showOrders = (orders, options = {}) => {
     orders.forEach(order => {
         let row = table_body.insertRow(-1);
         if (Number(order.ordered_for) === -1) add_cell(row, {text: 'Backing Stock'}) 
-        else add_cell(row, {text: `${order.user_for.rank._rank} ${order.user_for.full_name}`});
+        else add_cell(row, {text: print_user(order.user_for)});
         add_cell(row, {
             sort: new Date(order.createdAt).getTime(),
-            text: new Date(order.createdAt).toDateString()
+            text: print_date(order.createdAt)
         });
         add_cell(row, {text: order.lines.length || '0'});
         if (order._status === 0) add_cell(row, {text: 'Cancelled'})

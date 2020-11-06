@@ -67,6 +67,7 @@ function Input (options = {}) {
     if (options.name)        this.e.setAttribute('name', options.name);
     if (options.small)       this.e.classList.add('form-control-sm');
     if (options.value)       this.e.setAttribute('value', options.value);
+    if (options.min)         this.e.setAttribute('min', options.min);
     if (options.minlength)   this.e.setAttribute('minlength', options.minlength);
     if (options.maxlength)   this.e.setAttribute('maxlength', options.maxlength);
     if (options.id)          this.e.setAttribute('id', options.id);
@@ -215,6 +216,7 @@ function Input_Group (options = {}) {
     } else if (options.append) {
         this.e.appendChild(options.append);
     };
+    if (options.id) this.e.setAttribute('id', options.id)
     if (options.link) {
         let append = document.createElement('div'),
             link   = document.createElement('a');
@@ -339,7 +341,7 @@ function Tab_Pane (options = {}) {
     this.e.setAttribute('role', 'tabpanel');
     this.e.setAttribute('aria-labelledby', options.id.tab);
 };
-function user_name (user) {
+function print_user (user) {
     if (user) return `${user.rank._rank } ${user.full_name}`
     else return '';
 };

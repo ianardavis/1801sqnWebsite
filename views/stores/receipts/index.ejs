@@ -36,8 +36,9 @@
 <script src='/js/data/XHRsend.js'></script>
 <script src='/js/data/send.js'></script>
 <script src='/js/suppliers/list.js'></script>
+<script src='/js/utils/select_sel_status.js'></script>
 <script>
-	function getSuppliers () {
+	function getSuppliers() {
 		get(
 			listSuppliers,
 			{
@@ -49,9 +50,8 @@
 </script>
 <script async>getSuppliers()</script>
 <script>
-	function getReceipts () {
-		let sel_status 	  = document.querySelector('#sel_status'),
-			sel_suppliers = document.querySelector('#sel_suppliers');;
+	function getReceipts() {
+		let sel_suppliers = document.querySelector('#sel_suppliers');;
 		get(
 			showReceipts,
 			{

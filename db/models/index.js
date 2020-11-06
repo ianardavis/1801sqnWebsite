@@ -44,14 +44,16 @@ db.sizes.hasMany(  db.serials,       {foreignKey: 'size_id',     targetKey: 'siz
 db.nsns.belongsTo( db.sizes,         {foreignKey: 'size_id',     targetKey: 'size_id'});
 db.stock.belongsTo(db.sizes,         {foreignKey: 'size_id',     targetKey: 'size_id'});
 
-db.stock.hasOne(     db.locations,     {foreignKey: 'location_id', sourceKey: 'location_id', constraints: false});
-db.locations.hasMany(db.stock,         {foreignKey: 'location_id', targetKey: 'location_id'});
-db.stock.hasMany(    db.adjusts,       {foreignKey: 'stock_id',    targetKey: 'stock_id'});
-db.stock.hasMany(    db.issue_lines,   {foreignKey: 'stock_id',    targetKey: 'stock_id', as: 'issues'});
-db.stock.hasMany(    db.receipt_lines, {foreignKey: 'stock_id',    targetKey: 'stock_id', as: 'receipts'});
-db.stock.hasMany(    db.return_lines,  {foreignKey: 'stock_id',    targetKey: 'stock_id', as: 'returns'});
-db.adjusts.hasOne(   db.users,         {foreignKey: 'user_id',     sourceKey: 'user_id',  constraints: false});
-db.adjusts.hasOne(   db.stock,         {foreignKey: 'stock_id',    sourceKey: 'stock_id', constraints: false});
+db.stock.hasOne(     db.locations,          {foreignKey: 'location_id', sourceKey: 'location_id', constraints: false});
+db.stock.hasMany(    db.adjusts,            {foreignKey: 'stock_id',    targetKey: 'stock_id'});
+db.stock.hasMany(    db.issue_lines,        {foreignKey: 'stock_id',    targetKey: 'stock_id', as: 'issues'});
+db.stock.hasMany(    db.receipt_lines,      {foreignKey: 'stock_id',    targetKey: 'stock_id', as: 'receipts'});
+db.stock.hasMany(    db.issue_line_returns, {foreignKey: 'stock_id',    targetKey: 'stock_id', as: 'returns'});
+db.adjusts.hasOne(   db.users,              {foreignKey: 'user_id',     sourceKey: 'user_id',  constraints: false});
+db.adjusts.hasOne(   db.stock,              {foreignKey: 'stock_id',    sourceKey: 'stock_id', constraints: false});
+db.locations.hasMany(db.stock,              {foreignKey: 'location_id', targetKey: 'location_id'});
+db.locations.hasMany(db.serials,            {foreignKey: 'location_id', targetKey: 'location_id'});
+db.locations.hasMany(db.issue_line_returns, {foreignKey: 'location_id', targetKey: 'location_id'});
 
 db.suppliers.hasMany(db.sizes,    {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
 db.suppliers.hasMany(db.receipts, {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
@@ -66,21 +68,18 @@ db.issues.hasOne( db.users,       {foreignKey: 'user_id',  sourceKey: 'issued_to
 db.issues.hasOne( db.users,       {foreignKey: 'user_id',  sourceKey: 'user_id',   constraints: false, as: 'user_by'});
 db.issues.hasMany(db.issue_lines, {foreignKey: 'issue_id', targetKey: 'issue_id',                      as: 'lines'});
 
-db.issue_lines.hasOne(   db.users,        {foreignKey: 'user_id',   sourceKey: 'user_id',        constraints: false});
-db.issue_lines.hasOne(   db.nsns,         {foreignKey: 'nsn_id',    sourceKey: 'nsn_id',         constraints: false});
-db.issue_lines.hasOne(   db.stock,        {foreignKey: 'stock_id',  sourceKey: 'stock_id',       constraints: false});
-db.issue_lines.hasOne(   db.sizes,        {foreignKey: 'size_id',   sourceKey: 'size_id',        constraints: false});
-db.issue_lines.hasOne(   db.return_lines, {foreignKey: 'line_id',   sourceKey: 'return_line_id', constraints: false, as: 'return'});
-db.issue_lines.hasOne(   db.serials,      {foreignKey: 'serial_id', sourceKey: 'serial_id',      constraints: false});
-db.issue_lines.belongsTo(db.issues,       {foreignKey: 'issue_id',  targetKey: 'issue_id'})
+db.issue_lines.hasOne(   db.users,              {foreignKey: 'user_id',       sourceKey: 'user_id',   constraints: false});
+db.issue_lines.hasOne(   db.nsns,               {foreignKey: 'nsn_id',        sourceKey: 'nsn_id',    constraints: false});
+db.issue_lines.hasOne(   db.stock,              {foreignKey: 'stock_id',      sourceKey: 'stock_id',  constraints: false});
+db.issue_lines.hasOne(   db.sizes,              {foreignKey: 'size_id',       sourceKey: 'size_id',   constraints: false});
+db.issue_lines.hasOne(   db.issue_line_returns, {foreignKey: 'issue_line_id', sourceKey: 'line_id',   constraints: false, as: 'return'});
+db.issue_lines.hasOne(   db.serials,            {foreignKey: 'serial_id',     sourceKey: 'serial_id', constraints: false});
+db.issue_lines.belongsTo(db.issues,             {foreignKey: 'issue_id',      targetKey: 'issue_id'})
 
-db.returns.hasOne( db.users,        {foreignKey: 'user_id',   sourceKey: 'from',    constraints: false, as: 'user_from'});
-db.returns.hasOne( db.users,        {foreignKey: 'user_id',   sourceKey: 'user_id', constraints: false, as: 'user_by'});
-db.returns.hasMany(db.return_lines, {foreignKey: 'return_id', targetKey: 'return_id',                   as: 'lines'});
-
-db.return_lines.hasOne(   db.stock,   {foreignKey: 'stock_id',  sourceKey: 'stock_id', constraints: false});
-db.return_lines.hasOne(   db.sizes,   {foreignKey: 'size_id',   sourceKey: 'size_id',  constraints: false});
-db.return_lines.belongsTo(db.returns, {foreignKey: 'return_id', targetKey: 'return_id'});
+db.issue_line_returns.hasOne(db.issue_lines, {foreignKey: 'line_id',     sourceKey: 'issue_line_id', constraints: false});
+db.issue_line_returns.hasOne(db.stock,       {foreignKey: 'stock_id',    sourceKey: 'stock_id',      constraints: false});
+db.issue_line_returns.hasOne(db.locations,   {foreignKey: 'location_id', sourceKey: 'location_id',   constraints: false});
+db.issue_line_returns.hasOne(db.users,       {foreignKey: 'user_id',     sourceKey: 'user_id',       constraints: false});
 
 db.notes.hasOne(db.users, {foreignKey: 'user_id', sourceKey: 'user_id', constraints: false});
 
@@ -112,10 +111,12 @@ db.receipts.hasOne( db.users,         {foreignKey: 'user_id',     sourceKey: 'us
 db.receipts.hasOne( db.suppliers,     {foreignKey: 'supplier_id', sourceKey: 'supplier_id', constraints: false});
 db.receipts.hasMany(db.receipt_lines, {foreignKey: 'receipt_id',  targetKey: 'receipt_id',  as: 'lines'});
 
-db.receipt_lines.hasOne(   db.users,    {foreignKey: 'user_id',    sourceKey: 'user_id',  constraints: false});
-db.receipt_lines.hasOne(   db.stock,    {foreignKey: 'stock_id',   sourceKey: 'stock_id', constraints: false});
-db.receipt_lines.hasOne(   db.sizes,    {foreignKey: 'size_id',    sourceKey: 'size_id',  constraints: false});
-db.receipt_lines.belongsTo(db.receipts, {foreignKey: 'receipt_id', targetKey: 'receipt_id'});
+db.receipt_lines.hasOne(   db.users,     {foreignKey: 'user_id',     sourceKey: 'user_id',     constraints: false});
+db.receipt_lines.hasOne(   db.stock,     {foreignKey: 'stock_id',    sourceKey: 'stock_id',    constraints: false});
+db.receipt_lines.hasOne(   db.sizes,     {foreignKey: 'size_id',     sourceKey: 'size_id',     constraints: false});
+db.receipt_lines.hasOne(   db.serials,   {foreignKey: 'serial_id',   sourceKey: 'serial_id',   constraints: false});
+db.receipt_lines.hasOne(   db.locations, {foreignKey: 'location_id', sourceKey: 'location_id', constraints: false});
+db.receipt_lines.belongsTo(db.receipts,  {foreignKey: 'receipt_id',  targetKey: 'receipt_id'});
 
 db.demands.belongsTo(db.suppliers,    {foreignKey: 'supplier_id', sourceKey: 'supplier_id'});
 db.demands.hasOne(   db.users,        {foreignKey: 'user_id',     sourceKey: 'user_id',     constraints: false});

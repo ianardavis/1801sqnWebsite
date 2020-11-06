@@ -4,7 +4,7 @@ showOrder = (orders, options) => {
             try {
                 let element = document.querySelector(`#${id}`);
                 if (id === 'user_for' || id === 'user_by')  {
-                    element.innerText = user_name(value);
+                    element.innerText = print_user(value);
                     let link = document.querySelector(`#${id}_link`);
                     link.setAttribute('href', `/stores/users/${value.user_id}`);
                 } else if (id === 'createdAt' || id === 'updatedAt') {

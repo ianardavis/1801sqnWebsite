@@ -414,36 +414,19 @@ module.exports = (inc, m) => {
         };
     };
     
-    inc.return_lines = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
-        else {
-            if (options.issues) include.push(inc.returns());
-        };
-        return {
-            model:    m.return_lines,
-            attributes: options.attributes || null,
-            include:  include,
-            as:       options.as       || 'lines',
-            where:    options.where    || null,
-            required: options.required || false
-        };
-    };
     inc.returns = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            include.push(inc.users({as: 'user_by'}));
-            include.push(inc.users({as: 'user_from'}));
-            if (options.lines) include.push(inc.return_lines());
+            include.push(inc.users());
         };
         return {
-            model:    m.returns,
+            model:      m.issue_line_returns,
             attributes: options.attributes || null,
-            include:  include,
-            as:       options.as       || 'return',
-            where:    options.where    || null,
-            required: options.required || false
+            include:    include,
+            as:         options.as         || 'return',
+            where:      options.where      || null,
+            required:   options.required   || false
         };
     };
 };

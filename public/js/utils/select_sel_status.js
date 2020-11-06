@@ -1,0 +1,1 @@
+let sel_status = document.querySelector('#sel_status') || {value: ''};

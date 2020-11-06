@@ -86,9 +86,10 @@
 <script src="/js/requests/show/request.js"></script>
 <script src="/js/requests/show/lines.js"></script>
 <script src='/js/data/addFormListener.js'></script>
+<script src='/js/utils/select_sel_status.js'></script>
 <script>showTab('<%= tab %>')</script>
 <script>
-	getRequest = () => {
+	function getRequest() {
 		get(
 			showRequest,
 			{
@@ -106,8 +107,7 @@
 </script>
 <script async>getRequest()</script>
 <script>
-    getLines = () => {
-		let sel_status = document.querySelector('#sel_status') || {value: ''};
+    function getLines() {
 		get(
 			showLines,
 			{

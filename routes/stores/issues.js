@@ -1,71 +1,64 @@
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db       = require(process.env.ROOT + '/fn/db'),
-        loancard = require(process.env.ROOT + '/fn/loancard'),
+module.exports = (app, allowed, inc, loggedIn, m) => {
+    let loancard = require(process.env.ROOT + '/fn/loancard'),
         issues   = require(process.env.ROOT + '/fn/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/issues',              isLoggedIn, allowed('access_issues'),                 (req, res) => res.render('stores/issues/index'));
-    app.get('/stores/issues/:id',          isLoggedIn, allowed('access_issues',  {allow: true}), (req, res) => {
-        db.findOne({
-            table: m.issues,
+    app.get('/stores/issues',              loggedIn, allowed('access_issues'),                 (req, res) => res.render('stores/issues/index'));
+    app.get('/stores/issues/:id',          loggedIn, allowed('access_issues',  {allow: true}), (req, res) => {
+        m.issues.findOne({
             where: {issue_id: req.params.id},
-            include: [
-                inc.users({as: '_to'}),
-                inc.users({as: '_by'})
-        ]})
+            attributes: ['issued_to']
+        })
         .then(issue => {
-            if (req.allowed || issue.issuedTo.user_id === req.user.user_id) {
+            if (req.allowed || issue.issued_to === req.user.user_id) {
                 res.render('stores/issues/show', {
-                    issue: issue,
                     download: req.query.download || null,
-                    show_tab: req.query.tab || 'details'
+                    tab: req.query.tab || 'details'
                 })
             } else res.error.redirect(new Error('Permission denied'), req, res);
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/issuelines/:id',      isLoggedIn, allowed('access_issues',  {allow: true}), (req, res) => {
-        db.findOne({
-            table: m.issue_lines,
-            where: {line_id: req.params.id}
+    app.get('/stores/issue_lines/:id',     loggedIn, allowed('access_issues',  {allow: true}), (req, res) => {
+        m.issue_lines.findOne({
+            where: {line_id: req.params.id},
+            attributes: ['issue_id']
         })
-        .then(line => res.redirect('/stores/issues/' + line.issue_id))
+        .then(line => res.redirect(`/stores/issues/${line.issue_id}`))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/issues/:id/download', isLoggedIn, allowed('access_issues'),                 (req, res) => {
-        db.findOne({
-            table: m.issues,
-            where: {issue_id: req.params.id}
+    app.get('/stores/issues/:id/download', loggedIn, allowed('access_issues'),                 (req, res) => {
+        m.issues.findOne({
+            where: {issue_id: req.params.id},
+            attributes: ['issue_id', '_filename']
         })
         .then(issue => {
             if (issue._filename && issue._filename !== '') {
-                res.redirect('/stores/issues/' + req.params.id  + '?download=' + issue._filename);
+                res.redirect(`/stores/issues/${issue.issue_id}?download=${issue._filename}`);
             } else {
                 loancard.create({
                     m: {issues: m.issues},
-                    issue_id: req.params.id
+                    issue_id: issue.issue_id
                 })
-                .then(filename => res.redirect('/stores/issues/' + req.params.id  + '?download=' + filename))
+                .then(filename => res.redirect(`/stores/issues/${issue.issue_id}?download=${filename}`))
                 .catch(err => res.error.redirect(err, req, res));
             }
         })
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.put('/stores/issues/:id',          isLoggedIn, allowed('issue_edit',     {send: true}),  (req, res) => {
+    app.put('/stores/issues/:id',          loggedIn, allowed('issue_edit',     {send: true}),  (req, res) => {
         if (req.body.issue) {
-            db.findOne({
-                table: m.issues,
+            m.issues.findOne({
                 where: {issue_id: req.params.id},
                 include: [inc.issue_lines()],
                 attributes: ['issue_id']
             })
             .then(issue => {
                 if (issue.lines.length > 0) {
-                    db.update({
-                        table: m.issues,
-                        where: {issue_id: issue.issue_id},
-                        record: req.body.issue
-                    })
+                    m.issues.update(
+                        req.body.issue,
+                        {where: {issue_id: issue.issue_id}}
+                    )
                     .then(result => res.send({result: true, message: 'Issue updated'}))
                     .catch(err => res.error.send(err, res));
                 } else res.error.send('An issue must have at least 1 line to be completed', res);
@@ -74,7 +67,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         } else res.error.send('No issue details', res);
     });
 
-    app.post('/stores/issues',             isLoggedIn, allowed('issue_add',      {send: true}),  (req, res) => {
+    app.post('/stores/issues',             loggedIn, allowed('issue_add',      {send: true}),  (req, res) => {
         issues.create({
             m: {issues: m.issues},
             issue: {
@@ -83,14 +76,14 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 _date_due: utils.addYears(7)
             }
         })
-        .then(issue_id => {
+        .then(result => {
             let message = 'Issue raised: ';
             if (!result.created) message = 'There is already an issue open for this user: ';
-            res.send({result: true, message: message + issue_id})
+            res.send({result: true, message: message + result.issue.issue_id})
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/issue_lines/:id',    isLoggedIn, allowed('issue_line_add', {send: true}),  (req, res) => {
+    app.post('/stores/issue_lines/:id',    loggedIn, allowed('issue_line_add', {send: true}),  (req, res) => {
         req.body.line.user_id  = req.user.user_id;
         req.body.line.issue_id = req.params.id;
         issues.createLine({
@@ -103,7 +96,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             },
             line: req.body.line
         })
-        .then(line_id => res.send({result: true, message: 'Line added: ' + line_id}))
+        .then(line_id => res.send({result: true, message: `Line added: ${line_id}`}))
         .catch(err => res.error.send(err, res))
     });
 };

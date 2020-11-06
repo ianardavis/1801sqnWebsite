@@ -20,12 +20,17 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'stock_id': {
+    'serial_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
-    '_line': {
+    'stock_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'location_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
@@ -33,6 +38,11 @@ module.exports = function(sequelize, DataTypes) {
     'nsn_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
+      comment: "null"
+    },
+    '_line': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     '_qty': {
@@ -44,16 +54,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       defaultValue: '1',
-      comment: "null"
-    },
-    'serial_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'return_line_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
       comment: "null"
     },
     'user_id': {
