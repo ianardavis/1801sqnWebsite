@@ -16,23 +16,26 @@
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
-				<% if (permissions.receipt_edit) { %><form id='form_complete'><% } %>
-					<input type="hidden" name='_status' value='2'>
-					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
-				<% if (permissions.receipt_edit) { %></form>
-				<form id='form_cancel'><% } %>
-					<input type="hidden" name='_status' value='0'>
-					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' type="submit" value='Cancel' disabled>
-				<% if (permissions.receipt_edit) { %></form><% } %>
-				<div class="dropdown-divider"></div>
+				<% if (permissions.receipt_edit) { %>
+					<form id='form_complete'>
+				<% } %>
+						<input type="hidden" name='_status' value='2'>
+						<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
+				<% if (permissions.receipt_edit) { %>
+					</form>
+				<% } %>
 				<div id='form_addSize'>
 					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
 						Add Item
 					</button>
 				</div>
-				<% if (permissions.receipt_delete) { %><form id='form_delete'><% } %>
-					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Delete' disabled>
-				<% if (permissions.receipt_edit) { %></form><% } %>
+				<% if (permissions.receipt_delete) { %>
+					<form id='form_delete'>
+				<% } %>
+						<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Cancel' disabled>
+				<% if (permissions.receipt_edit) { %>
+					</form>
+				<% } %>
 			</div>
 		</li>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
@@ -57,9 +60,10 @@
 						<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipt_lines', float_left: true, small: true}) %>
 						Line ID
 					</th>
-					<th class="w-30" onclick="sortTable(1, 'tbl_lines')">Item</th>
+					<th class="w-25" onclick="sortTable(1, 'tbl_lines')">Item</th>
 					<th class="w-30" onclick="sortTable(2, 'tbl_lines')">Size</th>
-					<th class="w-20" onclick="sortTable(3, 'tbl_lines')">Quantity</th>
+					<th class="w-10" onclick="sortTable(3, 'tbl_lines')">Quantity</th>
+					<th class="w-15" onclick="sortTable(4, 'tbl_lines')">Status</th>
 					<th><i class="fas fa-search"></i></th>
 				</thead>
 				<tbody id="tbl_lines">
@@ -81,6 +85,7 @@
 <script src="/js/addSize.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/utils/select_sel_status.js'></script>
+<script src='/js/utils/getLineNotes.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script>
 	function getReceipt() {
@@ -123,11 +128,10 @@
 <script>
     window.addEventListener( "load", function () {
 		<% if (permissions.receipt_delete) { %>
-			addFormListener('form_delete', 'DELETE', `/stores/receipts/${path[3]}`,{redirect: '/stores/receipts'});
+			addFormListener('form_delete', 'DELETE', `/stores/receipts/${path[3]}`, {onComplete: [getReceipt, getLines]});
 		<% } %>
 		<% if (permissions.receipt_edit) { %>
 			addFormListener('form_complete', 'PUT', `/stores/receipts/${path[3]}`, {onComplete: [getReceipt, getLines]});
-			addFormListener('form_cancel',	 'PUT', `/stores/receipts/${path[3]}`, {onComplete: [getReceipt, getLines]});
 		<% } %>
     });
 </script>

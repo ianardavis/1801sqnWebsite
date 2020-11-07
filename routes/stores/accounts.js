@@ -18,4 +18,21 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(account => res.send({result: true, message: 'Account created'}))
         .catch(err => res.error.send(err, res));
     });
+
+    app.delete('/stores/accounts/:id',     isLoggedIn, allowed('account_delete',     {send: true}), (req, res) => {
+        db.destroy({
+            table: m.accounts,
+            where: {account_id: req.params.id}
+        })
+        .then(result => {
+            db.update({
+                table: m.suppliers,
+                where: {supplier_id: req.body.supplier_id},
+                record: {account_id: null}
+            })
+            .then(result => res.send({result: true, message: 'Account deleted and supplier updated'}))
+            .catch(err => res.error.send(err, res));
+        })
+        .catch(err => res.error.send(err, res));
+    });
 };

@@ -252,6 +252,32 @@ function Modal (options = {}) {
     mdl_header.appendChild(mdl_title);
     mdl_body.setAttribute('id', `mdl_${options.id}_body`)
     mdl_body.classList.add('modal-body');
+    if (options.tabs === true) {
+        let nav        = document.createElement('nav'),
+            nav_tabs   = document.createElement('div'),
+            nav_bodies = document.createElement('div'),
+            nav_body_1 = new Tab_Pane({id:{tab:`mdl_line_${options.id}_tab_1`,body:`mdl_line_${options.id}_body_1`},active:true}).e,
+            nav_body_2 = new Tab_Pane({id:{tab:`mdl_line_${options.id}_tab_2`,body:`mdl_line_${options.id}_body_2`}}).e,
+            nav_body_3 = new Tab_Pane({id:{tab:`mdl_line_${options.id}_tab_3`,body:`mdl_line_${options.id}_body_3`}}).e;nav_tabs.classList.add('nav', 'nav-tabs');
+        nav_tabs.setAttribute('role', 'tablist');
+        nav_tabs.appendChild(new Tab({id:{tab:`mdl_line_${options.id}_tab_1`,body: `mdl_line_${options.id}_body_1`},text: 'Item',active: true}).e);
+        nav_tabs.appendChild(new Tab({id:{tab:`mdl_line_${options.id}_tab_2`,body: `mdl_line_${options.id}_body_2`},text: 'Dates'}).e);
+        nav_tabs.appendChild(new Tab({id:{tab:`mdl_line_${options.id}_tab_3`,body: `mdl_line_${options.id}_body_3`},text: 'Notes'}).e);
+        nav.appendChild(nav_tabs);
+        nav_bodies.classList.add('tab-content');
+        if (options.size) {
+            nav_body_1.appendChild(new Input_Group({title: 'Item', text: options.size.item._description, link: `/stores/items/${options.size.item_id}`}).e);
+            nav_body_1.appendChild(new Input_Group({title: 'Size', text: options.size._size, link: `/stores/sizes/${options.size_id}`}).e);
+        };
+        nav_body_3.appendChild(new Modal_Notes({id: `line_${options.id}`}).e);
+        nav_bodies.appendChild(nav_body_1);
+        nav_bodies.appendChild(nav_body_2);
+        nav_bodies.appendChild(nav_body_3);
+        nav.appendChild(nav_bodies);
+        mdl_body.appendChild(nav);
+        let select = document.querySelector(`#sel_system_modal_line_${options.id}`);
+        if (select) select.addEventListener('change', function() {get_line_notes({id: line.line_id, table: 'receipt_lines'})});
+    };
     mdl_footer.classList.add('modal-footer');
     mdl_close.setAttribute('type', 'button');
     mdl_close.setAttribute('data-dismiss', 'modal');

@@ -1,17 +1,14 @@
 const mw = {}, inc = {};
 module.exports = (app, m, getPermissions) => {
-    var al    = require(process.env.ROOT + '/config/allowed.js'),
-        utils = require(process.env.ROOT + '/fn/utils');
+    var al    = require(`${process.env.ROOT}/config/allowed.js`),
+        utils = require(`${process.env.ROOT}/fn/utils`);
     require('./includes') (inc, m);
-    require(process.env.ROOT + '/config/middleware')(mw, {permissions: m.permissions}, getPermissions);
-    require('./async')      (app, al, inc, mw.isLoggedIn, m);
-    require('./delete')     (app, al, inc, mw.isLoggedIn, m);
+    require(`${process.env.ROOT}/config/middleware`)(mw, {permissions: m.permissions}, getPermissions);
     require('./accounts')   (app, al, inc, mw.isLoggedIn, m);
     require('./adjusts')    (app, al, inc, mw.isLoggedIn, m);
     require('./demands')    (app, al, inc, mw.isLoggedIn, m);
     require('./files')      (app, al, inc, mw.isLoggedIn, m);
     require('./issues')     (app, al, inc, mw.isLoggedIn, m);
-    require('./sizes')      (app, al, inc, mw.isLoggedIn, m);
     require('./items')      (app, al, inc, mw.isLoggedIn, m);
     require('./itemSearch') (app, inc, mw.isLoggedIn,     m);
     require('./notes')      (app, al, inc, mw.isLoggedIn, m);
@@ -24,9 +21,11 @@ module.exports = (app, m, getPermissions) => {
     require('./returns')    (app, al, inc, mw.isLoggedIn, m);
     require('./serials')    (app, al, inc, mw.isLoggedIn, m);
     require('./settings')   (app, al, inc, mw.isLoggedIn, m);
+    require('./sizes')      (app, al, inc, mw.isLoggedIn, m);
     require('./stock')      (app, al, inc, mw.isLoggedIn, m);
     require('./suppliers')  (app, al, inc, mw.isLoggedIn, m);
     require('./users')      (app, al, inc, mw.isLoggedIn, m);
+    require('./async')      (app, al, inc, mw.isLoggedIn, m);
 
     app.get('/stores', mw.isLoggedIn, (req, res) => res.render('stores/index'));
 

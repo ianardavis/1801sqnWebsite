@@ -146,7 +146,7 @@ module.exports = {
                                         options.serials_clean.forEach(serial => {
                                             actions.push(
                                                 new Promise((resolve, reject) => {
-                                                    serials.create({
+                                                    return serials.create({
                                                         m: {
                                                             serials: options.m.serials,
                                                             sizes:   options.m.sizes
@@ -178,7 +178,7 @@ module.exports = {
                                                                     location_result.location_id &&
                                                                     String(location_result.location_id).trim() !== ''
                                                                 ) {
-                                                                    options.m.receipt_lines.findOrCreate({
+                                                                    return options.m.receipt_lines.findOrCreate({
                                                                         where: {
                                                                             serial_id:  serial_result.serial_id,
                                                                             receipt_id: receipt.receipt_id,
@@ -308,7 +308,7 @@ module.exports = {
                                     );
                                 };
                             };
-                            Promise.all(actions)
+                            return Promise.all(actions)
                             .then(results => {
                                 resolve({
                                     success: true,

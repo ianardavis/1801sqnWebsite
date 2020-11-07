@@ -3,9 +3,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     let demands  = require(process.env.ROOT + '/fn/demands'),
         receipts = require(process.env.ROOT + '/fn/receipts'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/demands',              isLoggedIn, allowed('access_demands'),                (req, res) => res.render('stores/demands/index'));
-    app.get('/stores/demands/:id',          isLoggedIn, allowed('access_demands'),                (req, res) => res.render('stores/demands/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/demands/:id/download', isLoggedIn, allowed('access_demands'),                (req, res) => {
+    app.get('/stores/demands',              isLoggedIn, allowed('access_demands'),                   (req, res) => res.render('stores/demands/index'));
+    app.get('/stores/demands/:id',          isLoggedIn, allowed('access_demands'),                   (req, res) => res.render('stores/demands/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/demands/:id/download', isLoggedIn, allowed('access_demands'),                   (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['_filename']
@@ -17,7 +17,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.post('/stores/demands',             isLoggedIn, allowed('demand_add',      {send: true}), (req, res) => {
+    app.post('/stores/demands',             isLoggedIn, allowed('demand_add',         {send: true}), (req, res) => {
         demands.create({
             m: {suppliers: m.suppliers, demands: m.demands},
             demand: {
@@ -32,7 +32,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/demand_lines',        isLoggedIn, allowed('demand_line_add', {send: true}), (req, res) => {
+    app.post('/stores/demand_lines',        isLoggedIn, allowed('demand_line_add',    {send: true}), (req, res) => {
         demands.createLine({
             m: {
                 sizes: m.sizes,
@@ -47,7 +47,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.put('/stores/demands/:id',          isLoggedIn, allowed('demand_edit',     {send: true}), (req, res) => {
+    app.put('/stores/demands/:id',          isLoggedIn, allowed('demand_edit',        {send: true}), (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             include: [inc.suppliers({as: 'supplier', file: true})],
@@ -156,7 +156,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/demand_lines/:id',     isLoggedIn, allowed('receipt_add',     {send: true}), (req, res) => {
+    app.put('/stores/demand_lines/:id',     isLoggedIn, allowed('receipt_add',        {send: true}), (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['demand_id', 'supplier_id']
@@ -235,6 +235,48 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     
+    app.delete('/stores/demands/:id',       isLoggedIn, allowed('demand_delete',      {send: true}), (req, res) => {
+        db.destroy({
+            table: m.demand_lines,
+            where: {demand_id: req.params.id}
+        })
+        .then(result => {
+            db.destroy({
+                table: m.demands,
+                where: {demand_id: req.params.id}
+            })
+            .then(result => res.send({result: true, message: 'Demand deleted'}))
+            .catch(err => res.error.send(err, res));
+        })
+        .catch(err => res.error.send(err, res));
+    });
+    app.delete('/stores/demand_lines/:id',  isLoggedIn, allowed('demand_line_delete', {send: true}), (req, res) => { //
+        db.findOne({
+            table: m.demand_lines,
+            where: {line_id: req.params.id}
+        })
+        .then(line => {
+            db.update({
+                table: m.demand_lines,
+                where: {line_id: req.params.id},
+                record: {_status: 'Cancelled'}
+            })
+            .then(result => {
+                m.notes.create({
+                    _table:  'demands',
+                    _note:   'Line ' + req.params.id + ' cancelled',
+                    _id:     line.demand_id,
+                    user_id: req.user.user_id,
+                    system:  1
+                })
+                .then(result => res.send({result: true, message: 'Line cancelled'}))
+                .catch(err => res.error.send(err, res));
+            })
+            .catch(err => res.error.send(err, res));
+        })
+        .catch(err => res.error.send(err, res));
+    });
+
     raise_demand = demand_id => new Promise((resolve, reject) => {
         //check the demand is not already raised
         m.demands.findOne({

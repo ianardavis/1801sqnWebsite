@@ -65,6 +65,22 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             .catch(err => res.error.send(err, res));
         } else res.error.send(new Error('No details submitted'), res);
     });
+    
+    app.delete('/stores/users/:id',       isLoggedIn, allowed('user_delete',   {send: true}),              (req, res) => {
+        if (Number(req.user.user_id) !== Number(req.params.id)) {
+            m.permissions.destroy({where: {user_id: req.params.id}})
+            .then(result => {
+                db.destroy({
+                    table: m.users,
+                    where: {user_id: req.params.id}
+                })
+                .then(result => res.send({result: true, message: 'User/Permissions deleted'}))
+                .catch(err => res.error.send(err, res));
+            })
+            .catch(err => res.error.send(err, res));
+        } else res.send_error('You can not delete your own account', res);       
+    });
+
     function generatePassword () {
         let consenants = ['b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','z'],
             vowels     = ['a','e','i','o','u','y'],

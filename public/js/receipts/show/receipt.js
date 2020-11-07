@@ -26,7 +26,7 @@ showReceipt = (receipts, options) => {
         breadcrumb.innerText = receipts[0].receipt_id;
         breadcrumb.href = `/stores/receipts/${receipts[0].receipt_id}`;
 
-        ['complete', 'cancel', 'addSize', 'delete'].forEach(e => {
+        ['complete', 'addSize', 'delete'].forEach(e => {
             document.querySelector(`#btn_${e}`).setAttribute('disabled', true);
         });
         if (receipts[0]._status === 0) {

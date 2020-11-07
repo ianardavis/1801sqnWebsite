@@ -2,8 +2,8 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     let loancard = require(process.env.ROOT + '/fn/loancard'),
         issues   = require(process.env.ROOT + '/fn/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/issues',              loggedIn, allowed('access_issues'),                 (req, res) => res.render('stores/issues/index'));
-    app.get('/stores/issues/:id',          loggedIn, allowed('access_issues',  {allow: true}), (req, res) => {
+    app.get('/stores/issues',              loggedIn, allowed('access_issues'),                                (req, res) => res.render('stores/issues/index'));
+    app.get('/stores/issues/:id',          loggedIn, allowed('access_issues',                 {allow: true}), (req, res) => {
         m.issues.findOne({
             where: {issue_id: req.params.id},
             attributes: ['issued_to']
@@ -18,7 +18,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/issue_lines/:id',     loggedIn, allowed('access_issues',  {allow: true}), (req, res) => {
+    app.get('/stores/issue_lines/:id',     loggedIn, allowed('access_issues',                 {allow: true}), (req, res) => {
         m.issue_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['issue_id']
@@ -26,7 +26,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(line => res.redirect(`/stores/issues/${line.issue_id}`))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/issues/:id/download', loggedIn, allowed('access_issues'),                 (req, res) => {
+    app.get('/stores/issues/:id/download', loggedIn, allowed('access_issues'),                                (req, res) => {
         m.issues.findOne({
             where: {issue_id: req.params.id},
             attributes: ['issue_id', '_filename']
@@ -46,7 +46,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.put('/stores/issues/:id',          loggedIn, allowed('issue_edit',     {send: true}),  (req, res) => {
+    app.put('/stores/issues/:id',          loggedIn, allowed('issue_edit',        {send: true}),              (req, res) => {
         if (req.body.issue) {
             m.issues.findOne({
                 where: {issue_id: req.params.id},
@@ -67,7 +67,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         } else res.error.send('No issue details', res);
     });
 
-    app.post('/stores/issues',             loggedIn, allowed('issue_add',      {send: true}),  (req, res) => {
+    app.post('/stores/issues',             loggedIn, allowed('issue_add',         {send: true}),              (req, res) => {
         issues.create({
             m: {issues: m.issues},
             issue: {
@@ -83,7 +83,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/issue_lines/:id',    loggedIn, allowed('issue_line_add', {send: true}),  (req, res) => {
+    app.post('/stores/issue_lines/:id',    loggedIn, allowed('issue_line_add',    {send: true}),              (req, res) => {
         req.body.line.user_id  = req.user.user_id;
         req.body.line.issue_id = req.params.id;
         issues.createLine({
@@ -98,5 +98,51 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .then(line_id => res.send({result: true, message: `Line added: ${line_id}`}))
         .catch(err => res.error.send(err, res))
+    });
+    app.delete('/stores/issues/:id',       loggedIn, allowed('issue_delete',      {send: true}),              (req, res) => {
+        db.findOne({
+            table: m.issues,
+            where: {issue_id: req.params.id},
+            include: [inc.issue_lines()]
+        })
+        .then(issue => {
+            if (issue._complete || issue._closed) res.error.send('Completed/closed issues can not be deleted');
+            else {
+                if (issue.lines.filter(e => e.return_line_id).length === 0) {
+                    db.destroy({
+                        table: m.issue_lines,
+                        where: {issue_id: req.params.id}
+                    })
+                    .then(result => {
+                        db.destroy({
+                            table: m.issues,
+                            where: {issue_id: req.params.id}
+                        })
+                        .then(result => res.send({result: true, message: 'Issue deleted'}))
+                        .catch(err => res.error.send(err, res));
+                    })
+                    .catch(err => res.error.send(err, res));
+                } else res.error.send('Returned issue lines can not be deleted');
+            };
+        })
+        .catch(err => res.error.send(err, res));
+    });
+    app.delete('/stores/issue_lines/:id',  loggedIn, allowed('issue_line_delete', {send: true}),              (req, res) => { //
+        db.findOne({
+            table: m.issue_lines,
+            where: {line_id: req.params.id}
+        })
+        .then(line => {
+            if (line.return_line_id) res.error.send('Returned issue lines can not be deleted')
+            else {
+                db.destroy({
+                    table: m.issue_lines,
+                    where: {line_id: req.params.id}
+                })
+                .then(result => res.send({result: true, message: 'Line deleted'}))
+                .catch(err => res.error.send(err, res));
+            };
+        })
+        .catch(err => res.error.send(err, res));
     });
 };

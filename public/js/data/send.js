@@ -16,7 +16,10 @@ sendData = (form, method, _location, options = {reload: false, reload_opener: tr
                 if (options.reload)        window.location.reload();
                 else if (options._close)   close();
                 else if (options.redirect) window.location.replace(options.redirect);
-            } else alert('Error: ' + response.error);
+            } else {
+                console.log(response);
+                alert(`Error: ${response.message || response.error || 'unknown'}`);
+            };
         } catch (error) {
             console.log(error)
         };
