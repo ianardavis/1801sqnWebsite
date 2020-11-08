@@ -21,10 +21,6 @@
 					<input type="hidden" name='_status' value='2'>
 					<input id='btn_complete' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Complete' disabled>
 				</form>
-				<form id='form_cancel'>
-					<input type="hidden" name='_status' value='0'>
-					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Cancel' disabled>
-				</form>
 				<div id='form_addSize'>
 					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
 						Add Item
@@ -32,7 +28,7 @@
 				</div>
 				<div class="dropdown-divider"></div>
 				<form id='form_delete'>
-					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Delete' disabled>
+					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Cancel' disabled>
 				</form>
             </div>
         </li>
@@ -130,11 +126,10 @@
 <script>
     window.addEventListener( "load", () => {
 		<% if (permissions.request_delete) { %>
-			addFormListener('form_delete', 'DELETE', `/stores/requests/${path[3]}`, {redirect: '/stores/requests'});
+			addFormListener('form_delete', 'DELETE', `/stores/requests/${path[3]}`, {onComplete: [getRequest, getLines]});
 		<% } %>
 		<% if (permissions.request_edit) { %>
 			addFormListener('form_complete', 'PUT', `/stores/requests/${path[3]}`,		{onComplete: [getRequest, getLines]});
-			addFormListener('form_cancel',   'PUT', `/stores/requests/${path[3]}`,		{onComplete: [getRequest, getLines]});
 			addFormListener('form_approve',  'PUT', `/stores/request_lines/${path[3]}`, {onComplete: getLines});
 		<% } %>
 	});

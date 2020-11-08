@@ -21,18 +21,14 @@
 					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
                 <% if (permissions.issue_edit) { %>
                     </form>
-                    <form id='form_cancel'>
                 <% } %>
-					<input type="hidden" name='_status' value='0'>
-					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' type="submit" value='Cancel' disabled>
-				<% if (permissions.issue_edit) { %></form><% } %>
 				<div id='form_addSize'>
 					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
 						Add Item
 					</button>
 				</div>
 				<% if (permissions.issue_delete) { %><form id='form_delete'><% } %>
-					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Delete' disabled>
+					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Cancel' disabled>
 				<% if (permissions.issue_edit) { %></form><% } %>
 				<input id='btn_action' form='form_action' class='dropdown-item dropdown_button confirm' type="submit" value='Action Lines' disabled>
                 <a class='dropdown-item' id='btn_loancard'>
@@ -97,6 +93,7 @@
 <script src="/js/addSize.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/utils/select_sel_status.js'></script>
+<script src='/js/utils/getLineNotes.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script>
 	function getIssue() {
@@ -139,11 +136,10 @@
 <script>
     window.addEventListener( "load", () => {
 		<% if (permissions.issue_delete) { %>
-			addFormListener('form_delete', 'DELETE', `/stores/issues/${path[3]}`,{redirect: '/stores/issues'});
+			addFormListener('form_delete', 'DELETE', `/stores/issues/${path[3]}`,{onComplete: [getIssue, getLines]});
 		<% } %>
 		<% if (permissions.issue_edit) { %>
 			addFormListener('form_complete', 'PUT', `/stores/issues/${path[3]}`, {onComplete: [getIssue, getLines]});
-			addFormListener('form_cancel',	 'PUT', `/stores/issues/${path[3]}`, {onComplete: [getIssue, getLines]});
 		<% } %>
 		<% if (permissions.issue_line_edit) { %>
 			addFormListener('form_action', 'PUT', `/stores/issue_lines/${path[3]}`,{onComplete: getLines});

@@ -87,16 +87,20 @@ db.orders.hasOne( db.users,       {foreignKey: 'user_id',  sourceKey: 'ordered_f
 db.orders.hasOne( db.users,       {foreignKey: 'user_id',  sourceKey: 'user_id',     constraints: false, as: 'user_by'});
 db.orders.hasMany(db.order_lines, {foreignKey: 'order_id', targetKey: 'order_id',                        as: 'lines'});
 
-db.order_lines.hasOne(   db.users,         {foreignKey: 'user_id',  sourceKey: 'user_id_add',      constraints: false, as: 'user_add'});
-db.order_lines.hasOne(   db.users,         {foreignKey: 'user_id',  sourceKey: 'demand_user_id',   constraints: false, as: 'user_demand'});
-db.order_lines.hasOne(   db.users,         {foreignKey: 'user_id',  sourceKey: 'receipt_user_id',  constraints: false, as: 'user_receive'});
-db.order_lines.hasOne(   db.users,         {foreignKey: 'user_id',  sourceKey: 'issue_user_id',    constraints: false, as: 'user_issue'});
-db.order_lines.hasOne(   db.users,         {foreignKey: 'user_id',  sourceKey: 'complete_user_id', constraints: false, as: 'user_complete'});
-db.order_lines.hasOne(   db.sizes,         {foreignKey: 'size_id',  sourceKey: 'size_id',          constraints: false});
-db.order_lines.hasOne(   db.demand_lines,  {foreignKey: 'line_id',  sourceKey: 'demand_line_id',   constraints: false});
-db.order_lines.hasOne(   db.receipt_lines, {foreignKey: 'line_id',  sourceKey: 'receipt_line_id',  constraints: false});
-db.order_lines.hasOne(   db.issue_lines,   {foreignKey: 'line_id',  sourceKey: 'issue_line_id',    constraints: false});
-db.order_lines.belongsTo(db.orders,        {foreignKey: 'order_id', targetKey: 'order_id'});
+db.order_lines.hasOne(   db.users,              {foreignKey: 'user_id',  sourceKey: 'user_id_add',      constraints: false, as: 'user_add'});
+db.order_lines.hasOne(   db.users,              {foreignKey: 'user_id',  sourceKey: 'demand_user_id',   constraints: false, as: 'user_demand'});
+db.order_lines.hasOne(   db.users,              {foreignKey: 'user_id',  sourceKey: 'receipt_user_id',  constraints: false, as: 'user_receive'});
+db.order_lines.hasOne(   db.users,              {foreignKey: 'user_id',  sourceKey: 'issue_user_id',    constraints: false, as: 'user_issue'});
+db.order_lines.hasOne(   db.users,              {foreignKey: 'user_id',  sourceKey: 'complete_user_id', constraints: false, as: 'user_complete'});
+db.order_lines.hasOne(   db.sizes,              {foreignKey: 'size_id',  sourceKey: 'size_id',          constraints: false});
+db.order_lines.hasOne(   db.demand_lines,       {foreignKey: 'line_id',  sourceKey: 'demand_line_id',   constraints: false});
+db.order_lines.hasOne(   db.receipt_lines,      {foreignKey: 'line_id',  sourceKey: 'receipt_line_id',  constraints: false});
+db.order_lines.hasOne(   db.issue_lines,        {foreignKey: 'line_id',  sourceKey: 'issue_line_id',    constraints: false});
+db.order_lines.belongsTo(db.orders,             {foreignKey: 'order_id', targetKey: 'order_id'});
+db.order_lines.hasMany(  db.order_line_actions, {foreignKey: 'line_id',  targetKey: 'order_line_id',                        as: 'actions'});
+
+db.order_line_actions.belongsTo(db.order_line, {foreignKey: 'order_line_id', targetKey: 'line_id'});
+db.order_line_actions.hasOne(   db.users,      {foreignKey: 'user_id',       sourceKey: 'user_id', constraints: false});
 
 db.requests.hasOne( db.users,         {foreignKey: 'user_id',    sourceKey: 'requested_for', constraints: false, as: 'user_for'});
 db.requests.hasOne( db.users,         {foreignKey: 'user_id',    sourceKey: 'user_id',       constraints: false, as: 'user_by'});

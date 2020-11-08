@@ -2,7 +2,8 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, loggedIn, m) => {
     let requests = require(process.env.ROOT + '/fn/requests'),
         orders   = require(process.env.ROOT + '/fn/orders'),
-        issues   = require(process.env.ROOT + '/fn/issues');
+        issues   = require(process.env.ROOT + '/fn/issues'),
+        utils    = require(process.env.ROOT + '/fn/utils');
     app.get('/stores/requests',             loggedIn, allowed('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
     app.get('/stores/requests/:id',         loggedIn, allowed('access_requests',     {allow: true}),             (req, res) => {
         m.requests.findOne({
@@ -273,21 +274,39 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     app.delete('/stores/requests/:id',      loggedIn, allowed('request_delete',      {allow: true, send: true}), (req, res) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
-            attributes: ['_status', 'requested_for', 'request_id']
+            attributes: ['request_id', '_status', 'requested_for'],
+            include: [inc.request_lines({attributes: ['line_id'], where: {_status: 1}})]
         })
         .then(request => {
             if (!request) return res.error.send('Request not found', res)
-            else if (request.requested_for !== req.user.user_id && !allowed) return res.error.send('Permission denied', res)
+            else if (!allowed && request.requested_for !== req.user.user_id) return res.error.send('Permission denied', res)
             else if (request._status !== 1) return res.error.send('Only draft requests can be cancelled', res)
             else {
-                return m.request_lines.update(
-                    {_status: 0},
-                    {where: {request_id: request.request_id}}
-                )
+                let actions = [];
+                actions.push(
+                    m.request_lines.update(
+                        {_status: 0},
+                        {where: {request_id: request.request_id}}
+                    )
+                );
+                request.lines.forEach(line => {
+                    actions.push(
+                        m.notes.create({
+                            _id: line.line_id,
+                            _table: 'request_lines',
+                            _note: 'Request cancelled',
+                            _system: 1,
+                            user_id: req.user.user_id
+                        })
+                    )
+                });
+                actions.push(
+                    request.update({_status: 0})
+                );
+                Promise.allSettled(actions)
                 .then(result => {
-                    return request.update({_status: 0})
-                    .then(result => res.send({result: true, message: 'Request cancelled'}))
-                    .catch(err => res.error.send(err, res));
+                    if (utils.promiseResults(result)) res.send({result: true, message: 'Request cancelled'})
+                    else res.send({result: true, message: 'Some actions have failed'});
                 })
                 .catch(err => res.error.send(err, res));
             };
@@ -297,7 +316,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     app.delete('/stores/request_lines/:id', loggedIn, allowed('request_line_delete', {allow: true, send: true}), (req, res) => {
         m.request_lines.findOne({
             where: {line_id: req.params.id},
-            attributes: ['_status'],
+            attributes: ['line_id', '_status'],
             include: [inc.requests({attributes:['_status', 'requested_for']})]
         })
         .then(line => {
@@ -308,14 +327,24 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             } else if (line._status !== 1) {
                 res.error.send('Only pending lines can be cancelled', res);
             } else {
-                return line.update({_status: 0})
+                let actions = [];
+                actions.push(line.update({_status: 0}))
+                actions.push(
+                    m.notes.create({
+                        _id: line.line_id,
+                        _table: 'request_lines',
+                        _note: 'Cancelled',
+                        _system: 1,
+                        user_id: req.user.user_id
+                    })
+                );
+                return Promise.allSettled(actions)
                 .then(result => {
-                    if (result) res.send({result: true, message: 'Line cancelled'})
-                    else res.error.send('Line NOT cancelled', res);
+                    if (utils.promiseResults(result)) res.send({result: true, message: 'Line cancelled'})
+                    else res.send({result: true, message: 'Some actions have failed'});
                 })
                 .catch(err => res.error.send(err, res));
             };
-
         })
         .catch(err => res.error.send(err, res));
     });

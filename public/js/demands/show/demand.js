@@ -26,14 +26,13 @@ showDemand = (demands, options) => {
         breadcrumb.innerText = demands[0].demand_id;
         breadcrumb.href = `/stores/demands/${demands[0].demand_id}`;
 
-        ['action', 'complete', 'cancel', 'addSize', 'delete'].forEach(e => {
+        ['action', 'complete', 'addSize', 'delete'].forEach(e => {
             document.querySelector(`#btn_${e}`).setAttribute('disabled', true);
         });
         if (demands[0]._status === 0) {
         } else if (demands[0]._status === 1) {
             if (options.permissions.edit) {
                 document.querySelector('#btn_complete').removeAttribute('disabled');
-                document.querySelector('#btn_cancel').removeAttribute('disabled');
             };
             if (options.permissions.line_add) {
                 document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).e);

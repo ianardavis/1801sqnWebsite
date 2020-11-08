@@ -13,7 +13,8 @@ function showLines (lines, options) {
             add_cell(row, {text: line.size._size});
             add_cell(row, {text: line._qty});
             add_cell(row, {id: `cell_action_${line.line_id}`});
-            add_modal(line, row);
+            add_cell(row, {append: new Modal_Link({id: `${line.line_id}`}).e, id: `mdl_cell_${line.line_id}`});
+            add_modal(line);
             let cell_action = document.querySelector(`#cell_action_${line.line_id}`);
             if (line._status === 0) { //If cancelled
                 cell_action.innerText = 'Cancelled';
@@ -67,8 +68,7 @@ function showLines (lines, options) {
     });
     hide_spinner('requests');
 };
-function add_modal (line, row) {
-    add_cell(row, {append: new Modal_Link({id: `${line.line_id}`}).e, id: `mdl_cell_${line.line_id}`});
+function add_modal (line) {
     document.querySelector(`#div_modals`).appendChild(
         new Modal({
             id: line.line_id,

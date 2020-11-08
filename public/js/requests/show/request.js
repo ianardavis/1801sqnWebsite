@@ -30,7 +30,7 @@ showRequest = (requests, options) => {
         let breadcrumb = document.querySelector('#breadcrumb');
         breadcrumb.innerText = requests[0].request_id;
         breadcrumb.href = `/stores/requests/${requests[0].request_id}`;
-        ['action', 'complete', 'cancel', 'addSize', 'delete'].forEach(e => {
+        ['action', 'complete', 'addSize', 'delete'].forEach(e => {
             document.querySelector(`#btn_${e}`).setAttribute('disabled', true);
         });
         if (requests[0]._status === 0) {
@@ -38,7 +38,6 @@ showRequest = (requests, options) => {
         } else if (requests[0]._status === 1) {
             if (options.permissions.edit) {
                 document.querySelector('#btn_complete').removeAttribute('disabled');
-                document.querySelector('#btn_cancel').removeAttribute('disabled');
             };
             if (options.permissions.line_add) {
                 document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).e);

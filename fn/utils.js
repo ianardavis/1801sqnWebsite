@@ -16,11 +16,9 @@ module.exports = {
         return year + month + day + ' ' + hour + minute + second;
     },
     promiseResults: results => {
-        let result = true,
-            rejects = results.filter(e => e.status === 'rejected');
-        if (rejects.length > 0) result = false;
-        rejects.forEach(reject => console.log(reject.reason));
-        return result;
+        let rejects = results.filter(e => e.status === 'rejected');
+        rejects.forEach(reject => console.log(reject));
+        return (rejects.length === 0);
     },
     download: (file, req, res) => {
         let path = process.env.ROOT + '/public/res/';

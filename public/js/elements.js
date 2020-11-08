@@ -276,7 +276,7 @@ function Modal (options = {}) {
         nav.appendChild(nav_bodies);
         mdl_body.appendChild(nav);
         let select = document.querySelector(`#sel_system_modal_line_${options.id}`);
-        if (select) select.addEventListener('change', function() {get_line_notes({id: line.line_id, table: 'receipt_lines'})});
+        if (select) select.addEventListener('change', function() {get_line_notes({id: line.line_id, table: options.table})});
     };
     mdl_footer.classList.add('modal-footer');
     mdl_close.setAttribute('type', 'button');

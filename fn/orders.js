@@ -2,13 +2,18 @@ module.exports = {
     create: (options = {}) => new Promise((resolve, reject) => {
         return options.m.users.findOne(
             {where: {user_id: options.ordered_for}},
-            {attributes: ['user_id']}
+            {attributes: ['user_id', 'status_id']}
         )
         .then(user => {
             if (!user) {
                 resolve({
                     success: false,
                     message: 'User not found'
+                });
+            } else if (user.status_id === 1 || user_status_id === 2) {
+                resolve({
+                    success: false,
+                    message: 'Orders can only be made for current cadets or staff'
                 });
             } else {
                 return options.m.orders.findOrCreate({

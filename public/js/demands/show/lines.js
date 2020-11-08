@@ -15,7 +15,8 @@ showLines = (lines, options) => {
             add_cell(row, {text: line._qty});
             add_cell(row, {id: `cell_status_${line.line_id}`});
             add_cell(row, {id: `cell_action_${line.line_id}`});
-            add_modal(line, row);
+            add_cell(row, {append: new Modal_Link({id: `${line.line_id}`}).e, id: `mdl_cell_${line.line_id}`});
+            add_modal(line);
             if (line._status !== 3 && line._status !== 0 && options.permissions.line_delete) {
                 let mdl_header = document.querySelector(`#mdl_${line.line_id}_header`);
                 mdl_header.appendChild(
@@ -99,28 +100,26 @@ enterSerial = line_id => {
         }).e
     );
 };
-function add_modal (line, row) {
-    let btn_show = document.createElement('button');
-    btn_show.setAttribute('type', 'button');
-    btn_show.setAttribute('data-toggle', 'modal');
-    btn_show.setAttribute('data-target', `mdl_${line.line_id}`);
-    btn_show.classList.add('btn', 'btn-sm', 'btn-primary');
-    btn_show.innerHTML = '<i class="fas fa-search"></i>';
-    btn_show.addEventListener('click', () => {$(`#mdl_${line.line_id}`).modal('show')});
-    add_cell(row, {append: btn_show, id: `mdl_cell_${line.line_id}`});
-    let mdl_cell = document.querySelector(`#mdl_cell_${line.line_id}`);
-    mdl_cell.appendChild(new Modal({id: line.line_id}).e);
-    let mdl_title = document.querySelector(`#mdl_${line.line_id}_title`);
+function add_modal (line) {
+    document.querySelector(`#div_modals`).appendChild(
+        new Modal({
+            id: line.line_id,
+            static: true,
+            tabs: true,
+            size: line.size,
+            table: 'order_lines'
+        }).e
+    );
+    get_line_notes({id: line.line_id, table: 'demand_lines'});
+    let nav_body_1 = document.querySelector(`#mdl_line_${line.line_id}_body_1`),
+        nav_body_2 = document.querySelector(`#mdl_line_${line.line_id}_body_2`),
+        mdl_title = document.querySelector(`#mdl_${line.line_id}_title`);
     mdl_title.innerText = `Demand Line ${line.line_id}`;
-    let mdl_body = document.querySelector(`#mdl_${line.line_id}_body`);
-    mdl_body.appendChild(new Input_Group({title: 'Item',     text: line.size.item._description, link: `/stores/items/${line.size.item_id}`}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Size',     text: line.size._size, link: `/stores/sizes/${line.size_id}`}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Qty',      text: line._qty}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Added',    text: `${new Date(line.createdAt).toDateString()} ${new Date(line.createdAt).toLocaleTimeString()}`}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Added By', text: `${line.user.rank._rank } ${line.user.full_name}`, link: `/stores/users/${line.user_id}`}).e);
-    mdl_body.appendChild(new Input_Group({title: 'Status',   text: statuses[line._status]}).e);
-    mdl_body.appendChild(document.createElement('hr'));
-    if (line.receipt_line)    mdl_body.appendChild(new Input_Group({title: 'Received',        text: new Date(line.receipt_line.createdAt).toDateString()}).e);
-    if (line.receipt_line_id) mdl_body.appendChild(new Input_Group({title: 'Receipt Line ID', text: line.receipt_line_id,                                                       link: `/stores/receipt_lines/${line.receipt_line_id}`}).e);
-    if (line.receipt_line)    mdl_body.appendChild(new Input_Group({title: 'Received By',     text: `${line.receipt_line.user.rank._rank} ${line.receipt_line.user.full_name}`, link: `/stores/users/${line.receipt_line.user_id}`}).e);
+    nav_body_1.appendChild(new Input_Group({title: 'Qty',      text: line._qty}).e);
+    nav_body_2.appendChild(new Input_Group({title: 'Status',   text: statuses[String(line._status)] || 'Unknown'}).e);
+    nav_body_2.appendChild(new Input_Group({title: 'Added',    text: print_date(line.createdAt, true)}).e);
+    nav_body_2.appendChild(new Input_Group({title: 'Added By', text: print_user(line.user_add), link: `/stores/users/${line.user_id}`}).e);
+    if (line.receipt_line)    nav_body_2.appendChild(new Input_Group({title: 'Received',        text: new Date(line.receipt_line.createdAt).toDateString()}).e);
+    if (line.receipt_line_id) nav_body_2.appendChild(new Input_Group({title: 'Receipt Line ID', text: line.receipt_line_id,                                                       link: `/stores/receipt_lines/${line.receipt_line_id}`}).e);
+    if (line.receipt_line)    nav_body_2.appendChild(new Input_Group({title: 'Received By',     text: `${line.receipt_line.user.rank._rank} ${line.receipt_line.user.full_name}`, link: `/stores/users/${line.receipt_line.user_id}`}).e);
 };

@@ -22,7 +22,7 @@ showOrder = (orders, options) => {
         breadcrumb.innerText = orders[0].order_id;
         breadcrumb.href = `/stores/orders/${orders[0].order_id}`;
 
-        ['action', 'complete', 'cancel', 'addSize', 'delete'].forEach(e => {
+        ['action', 'complete', 'addSize', 'delete'].forEach(e => {
             document.querySelector(`#btn_${e}`).setAttribute('disabled', true);
         });
         if (orders[0]._status === 0) {

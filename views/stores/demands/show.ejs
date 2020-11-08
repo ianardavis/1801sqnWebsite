@@ -19,25 +19,17 @@
 				<form id="form_download">
 					<input id='btn_download' class='dropdown-item dropdown_button' name='_status' type="submit" value='Download' disabled>
 				</form>
-					<!-- href='javascript:download_file("demand._filename")' -->
-					<div class="dropdown-divider"></div>
 				<% if (permissions.demand_edit) { %><form id='form_complete'><% } %>
 					<input type="hidden" name='_status' value='2'>
 					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
-				<% if (permissions.demand_edit) { %></form>
-				<form id='form_cancel'><% } %>
-					<input type="hidden" name='_status' value='0'>
-					<input id='btn_cancel' class='dropdown-item dropdown_button confirm' type="submit" value='Cancel' disabled>
 				<% if (permissions.demand_edit) { %></form><% } %>
-				<div class="dropdown-divider"></div>
 				<div id='form_addSize'>
 					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
 						Add Item
 					</button>
 				</div>
-				<div class="dropdown-divider"></div>
 				<% if (permissions.demand_delete) { %><form id='form_delete'><% } %>
-					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Delete' disabled>
+					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Cancel' disabled>
 				<% if (permissions.demand_edit) { %></form><% } %>
 				<input id='btn_action' form='form_action' class='dropdown-item dropdown_button confirm' type="submit" value='Action Lines' disabled>
 			</div>
@@ -93,6 +85,7 @@
 <script src="/js/addSize.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/utils/select_sel_status.js'></script>
+<script src='/js/utils/getLineNotes.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script>
 	function getDemand() {
@@ -132,16 +125,13 @@
     document.querySelector('#sel_status').addEventListener('change', () => getLines());
 </script>
 <script async>getLines()</script>
-
-<script src="/js/get/demand_lines.js"></script>
 <script>
     window.addEventListener( "load", function () {
 		<% if (permissions.demand_delete) { %>
-			addFormListener('form_delete', 'DELETE', `/stores/demands/${path[3]}`,{redirect: '/stores/demands'});
+			addFormListener('form_delete', 'DELETE', `/stores/demands/${path[3]}`,{onComplete: [getDemand, getLines]});
 		<% } %>
 		<% if (permissions.demand_edit) { %>
 			addFormListener('form_complete', 'PUT', `/stores/demands/${path[3]}`, {onComplete: [getDemand, getLines]});
-			addFormListener('form_cancel',	 'PUT', `/stores/demands/${path[3]}`, {onComplete: [getDemand, getLines]});
 		<% } %>
 		<% if (permissions.demand_line_edit) { %>
 			addFormListener('form_action', 'PUT', `/stores/demnd_lines/${path[3]}`,{onComplete: getLines});

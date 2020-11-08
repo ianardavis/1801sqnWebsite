@@ -283,19 +283,36 @@ module.exports = (inc, m) => {
         };
     };
 
+    inc.order_line_actions = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        else {
+            if (options.order_lines) include.push(inc.order_lines());
+            include.push(inc.users());
+        };
+        return {
+            model:      m.order_line_actions,
+            attributes: options.attributes || null,
+            include:    include,
+            as:         options.as         || 'actions',
+            where:      options.where      || null,
+            required:   options.required   || false
+        };
+    };
     inc.order_lines = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
         else {
             if (options.orders) include.push(inc.orders());
+            if (options.actions) include.push(inc.order_line_actions());
         };
         return {
-            model:    m.order_lines,
+            model:      m.order_lines,
             attributes: options.attributes || null,
-            include:  include,
-            as:       options.as       || 'lines',
-            where:    options.where    || null,
-            required: options.required || false
+            include:    include,
+            as:         options.as         || 'lines',
+            where:      options.where      || null,
+            required:   options.required   || false
         };
     };
     inc.orders = (options = {}) => {
@@ -414,7 +431,7 @@ module.exports = (inc, m) => {
         };
     };
     
-    inc.returns = (options = {}) => {
+    inc.issue_line_returns = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
         else {

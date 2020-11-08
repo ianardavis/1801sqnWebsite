@@ -11,7 +11,8 @@ showLines = (lines, options) => {
             add_cell(row, {text: line.size._size});
             add_cell(row, {text: line._qty});
             add_cell(row, {text: statuses[String(line._status)]});
-            add_modal(line, row);
+            add_cell(row, {append: new Modal_Link({id: `${line.line_id}`}).e, id: `mdl_cell_${line.line_id}`});
+            add_modal(line);
             if (line._status === 1 && options.permissions.line_delete) {
                 let mdl_header = document.querySelector(`#mdl_${line.line_id}_header`);
                 mdl_header.appendChild(
@@ -28,8 +29,7 @@ showLines = (lines, options) => {
         };
     });
 };
-function add_modal (line, row) {
-    add_cell(row, {append: new Modal_Link({id: `${line.line_id}`}).e, id: `mdl_cell_${line.line_id}`});
+function add_modal (line) {
     document.querySelector(`#div_modals`).appendChild(
         new Modal({
             id: line.line_id,
