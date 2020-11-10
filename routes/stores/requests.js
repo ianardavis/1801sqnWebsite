@@ -75,16 +75,11 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 res.error.send('Permission denied', res);
             } else if (request._status !== 1) {
                 res.error.send('Request must be in draft to be completed', res);
-            } else if (req.body._status === '2' && (!request.lines || request.lines.length === 0)) {
+            } else if (!request.lines || request.lines.length === 0) {
                 res.error.send('A request must have at least one open line before you can complete it', res);
-            } else if (req.body._status !== '0' && req.body._status !== '2') {
-                res.error.send('Invalid status requested', res);
             } else {
-                let _note = '';
-                if      (req.body._status === '0') _note = 'Cancelled'
-                else if (req.body._status === '2') _note = 'Completed';
                 let actions = [];
-                actions.push(m.requests.update({_status: req.body._status}, {where: {request_id: req.params.id}}));
+                actions.push(request.update({_status: 2}));
                 actions.push(
                     m.request_lines.update(
                         {_status: 2},
@@ -93,26 +88,18 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                             _status: 1
                         }}
                     )
-                )
+                );
                 actions.push(
                     m.notes.create({
                         _id:     req.params.id,
                         _table:  'requests',
-                        _note:   _note,
+                        _note:   'Completed',
                         _system: 1,
                         user_id: req.user.user_id
                     })
                 );
-                if (req.body._status === '0') {
-                    actions.push(
-                        m.request_lines.update(
-                            {_status: 0},
-                            {where: {request_id: req.params.id}}
-                        )
-                    );
-                };
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: `Request ${_note.toLowerCase()}`}))
+                .then(result => res.send({result: true, message: `Request completed`}))
                 .catch(err => res.error.send(err, res));
             };
         })

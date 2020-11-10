@@ -18,8 +18,7 @@
                 <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
 				<input id='btn_action' form='form_approve' class='dropdown-item dropdown_button confirm' type="submit" value='Action Lines' disabled>
 				<form id='form_complete'>
-					<input type="hidden" name='_status' value='2'>
-					<input id='btn_complete' class='dropdown-item dropdown_button confirm' name='_status' type="submit" value='Complete' disabled>
+					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
 				</form>
 				<div id='form_addSize'>
 					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >

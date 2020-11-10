@@ -17,7 +17,6 @@
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
 				<% if (permissions.order_edit) { %><form id='form_complete'><% } %>
-					<input type="hidden" name='_status' value='2'>
 					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
 				<% if (permissions.order_edit) { %></form><% } %>
 				<div id='form_addSize'>

@@ -112,53 +112,42 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/orders/:id',         loggedIn, allowed('order_edit',    {allow: true, send: true}), (req, res) => {
+    app.put('/stores/orders/:id',         loggedIn, allowed('order_edit',                 {send: true}), (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.order_lines({where: {_status: 1}, attributes: ['line_id']})],
             attributes: ['order_id', 'ordered_for', '_status']
         })
         .then(order => {
-            let _note = '';
-            if      (req.body._status === '0') _note = 'Cancelled'
-            else if (req.body._status === '2') _note = 'Completed';
             if (!order) {
                 res.error.send('Order not found', res);
-            } else if (!req.allowed && req.user.user_id !== order.ordered_for) {
-                res.error.send('Permission denied', res);
             } else if (order._status !== 1) {
-                res.error.send(`Order must be in draft to be ${_note.toLowerCase()}`, res);
-            } else if (req.body._status === '2' && (!order.lines || order.lines.length === 0)) {
+                res.error.send(`Order must be in draft to be completed`, res);
+            } else if (!order.lines || order.lines.length === 0) {
                 res.error.send('A order must have at least one open line before you can complete it', res);
-            } else if (req.body._status !== '0' && req.body._status !== '2') {
-                res.error.send('Invalid status requested', res);
             } else {
                 let actions = [];
+                actions.push(order.update({_status: 2}));
                 actions.push(
-                    order.update(
-                        {_status: req.body._status},
-                        {where: {order_id: order.order_id}}
+                    m.order_lines.update(
+                        {_status: 2},
+                        {where:{
+                            order_id: order.order_id,
+                            _status: 1
+                        }}
                     )
                 );
                 actions.push(
                     m.notes.create({
                         _id:     req.params.id,
                         _table:  'orders',
-                        _note:   _note,
+                        _note:   'Completed',
                         _system: 1,
                         user_id: req.user.user_id
                     })
                 );
-                if (req.body._status === '0') {
-                    actions.push(
-                        m.order_lines.update(
-                            {_status: 0},
-                            {where: {order_id: req.params.id}}
-                        )
-                    );
-                };
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: `Order ${_note.toLowerCase()}`}))
+                .then(result => res.send({result: true, message: `Order completed`}))
                 .catch(err => res.error.send(err, res));
             };
         })

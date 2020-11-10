@@ -99,8 +99,8 @@ db.order_lines.hasOne(   db.issue_lines,        {foreignKey: 'line_id',  sourceK
 db.order_lines.belongsTo(db.orders,             {foreignKey: 'order_id', targetKey: 'order_id'});
 db.order_lines.hasMany(  db.order_line_actions, {foreignKey: 'line_id',  targetKey: 'order_line_id',                        as: 'actions'});
 
-db.order_line_actions.belongsTo(db.order_line, {foreignKey: 'order_line_id', targetKey: 'line_id'});
-db.order_line_actions.hasOne(   db.users,      {foreignKey: 'user_id',       sourceKey: 'user_id', constraints: false});
+db.order_line_actions.belongsTo(db.order_lines, {foreignKey: 'order_line_id', targetKey: 'line_id'});
+db.order_line_actions.hasOne(   db.users,       {foreignKey: 'user_id',       sourceKey: 'user_id', constraints: false});
 
 db.requests.hasOne( db.users,         {foreignKey: 'user_id',    sourceKey: 'requested_for', constraints: false, as: 'user_for'});
 db.requests.hasOne( db.users,         {foreignKey: 'user_id',    sourceKey: 'user_id',       constraints: false, as: 'user_by'});

@@ -54,34 +54,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             attributes: ['demand_id', '_status']
         })
         .then(demand => {
-            if (Number(req.body._status) === 0) {
-                if (demand._status === 0) res.send_error('This demand has already ben cancelled', res)
-                else if (demand._status === 3) res.send_error('Closed demands can not be cancelled', res)
-                else {
-                    let actions = [];
-                    actions.push(demand.update({_status: 0}));
-                    actions.push(
-                        m.demand_lines.update(
-                            {_status: 0},
-                            {where: {
-                                demand_id: demand.demand_id,
-                                _status:   {[op.or]: [1 ,2]}
-                            }}
-                        )
-                    );
-                    actions.push(
-                        m.notes.create({
-                            _table:  'demands',
-                            _id:     demand.demand_id,
-                            _note:   'Cancelled',
-                            user_id: req.user.user_id,
-                            _system:  1
-                        }))
-                    Promise.allSettled(actions)
-                    .then(result => res.send({result: true, message: 'Demand Cancelled'}))
-                    .catch(err => res.error.send(err, res));
-                };
-            } else if (Number(req.body._status) === 2) {
+            if (Number(req.body._status) === 2) {
                 if (demand._status !== 1) res.send_error('Only draft demands can be completed', res)
                 else {
                     let actions = [];
@@ -104,11 +77,21 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                             _system:  1
                         })
                     );
-                    Promise.allSettled(actions)
+                    return Promise.allSettled(actions)
                     .then(result => {
                         if (demand.supplier.file) {
-                            raiseDemandFile(demand.demand_id, req.user.user_id)
-                            .then(filename => res.send({result: true, message: `Demand completed, filename: ${filename}`}))
+                            return raise_demand(demand.demand_id, req.user.user_id)
+                            .then(raise_result => {
+                                if (raise_result.success) {
+                                    demand.update({_filename: raise_result.file})
+                                    .then(update_result => {
+                                        res.send({result: true, message: `Demand completed, filename: ${raise_result.file}`})
+                                    })
+                                    .catch(err => res.error.send(err, res));
+                                } else {
+                                    res.error.send(raise_result.message, res)
+                                };
+                            })
                             .catch(err => res.error.send(err, res));
                         } else res.send({result: true, message: 'Demand completed'});
                     })
@@ -277,51 +260,280 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    raise_demand = demand_id => new Promise((resolve, reject) => {
-        //check the demand is not already raised
-        m.demands.findOne({
-            where: {demand_id:demand_id},
-            include: [
-                inc.suppliers({
-                    as: 'supplier',
-                    file: true,
-                    account: true
-                })
-            ],
-            attributes: ['_filename']
-        })
-        .then(demand => {
-            //check template file exists
-            if (!demand._filename || demand._filename === '') {
-                //check demand has open lines
-                m.demand_lines.findAll({
-                    where: {
-                        demand_id: demand_id,
-                        _status: 2
-                    },
-                    include: [inc.order_lines({orders: true})]
-                })
-                .then(lines => {
-                    if (lines) {
-
-                    } else reject(new Error('No open lines for this demand'));
+    function raise_demand(demand_id, user_id) {
+        return new Promise((resolve, reject) => {
+            return m.demands.findOne({
+                where: {demand_id: demand_id},
+                include: [
+                    inc.demand_lines({
+                        where: {_status: 2},
+                        sizes: true
+                    }),
+                    inc.suppliers({
+                        as: 'supplier',
+                        file: true,
+                        account: true
+                    })
+                ],
+                attributes: ['demand_id', '_filename', 'supplier_id']
+            })
+            .then(demand => {
+                if (demand._filename && demand._filename !== '') {       //check the demand is not already raised
+                    resolve({
+                        success: false,
+                        message: 'Demand has already been raised'
+                    });
+                } else if (!demand.lines || demand.lines.length === 0) { //check demand has open lines
+                    resolve({
+                        success: false,
+                        message: 'No open lines for this demand'
+                    });
+                } else if (!demand.supplier.file) {                      //check template file exists
+                    resolve({
+                        success: false,
+                        message: 'No demand file for this supplier'
+                    });
+                } else if (!demand.supplier.account) {                   //check account exists
+                    resolve({
+                        success: false,
+                        message: 'No account for this supplier'
+                    });
+                } else {
+                    return correlate_sizes(demand.lines, demand.supplier_id)
+                    .then(correlate_results => {
+                        if (correlate_results.success) {
+                            return createDemandFile(demand.supplier.file._path, demand.demand_id)
+                            .then(create_file_result => {
+                                if (create_file_result.success) {
+                                    return writeCoverSheet(create_file_result.file, demand.supplier, correlate_results.users)
+                                    .then(cover_sheet_result => {
+                                        return writeItems(create_file_result.file, correlate_results.items)
+                                        .then(items_result => {
+                                            return m.notes.create({
+                                                _id: demand_id,
+                                                _table: 'demands',
+                                                _note: 'Demand file created',
+                                                _system: 1,
+                                                user_id: user_id
+                                            })
+                                            .then(note => {
+                                                resolve({
+                                                    success: true,
+                                                    message: 'Demand file created',
+                                                    file: create_file_result.file
+                                                });
+                                            })
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    })
+                                    .catch(err => reject(err))
+                                } else resolve(create_file_result);
+                            })
+                            .catch(err => reject(err));
+                        } else resolve(correlate_results);
+                    })
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    //get demand lines (inc order lines and order for cadet names)
+        //sort demand lines, correlate items
+        //sort demand lines, correlate users
+    function correlate_sizes(lines, supplier_id) {
+        return new Promise((resolve, reject) => {
+            let items = [], users = [], orders = [], order_actions = [], rejects = [];
+            lines.forEach(line => {
+                if (
+                    !line.size._demand_page                      &&
+                    String(line.size._demand_page).trim() === '' &&
+                    !line.size._demand_cell                      &&
+                    String(line.size._demand_cell).trim() === ''
+                ) {                                                 //Reject if no demand details
+                    rejects.push({
+                        line_id: line.line_id,
+                        reason:  'No demand details'
+                    });
+                } else if (supplier_id !== line.size.supplier_id) { //Reject if wrong supplier
+                    rejects.push({
+                        line_id: line.line_id,
+                        reason:  'Size not for this supplier'
+                    });
+                } else {
+                    order_actions.push(
+                        m.order_line_actions.findAll({
+                            where: {
+                                _action: 'Demand',
+                                action_line_id: line.line_id
+                            },
+                            include: [inc.order_lines({orders: true, as: 'order_line'})],
+                            attributes: ['order_line_id']
+                        })
+                    );
+                    let itemIndex = items.findIndex(e => e.size_id === line.size_id)
+                    if (itemIndex === -1) {
+                        items.push({
+                            size_id: line.size_id,
+                            qty:     line._qty,
+                            page:    line.size._demand_page,
+                            cell:    line.size._demand_cell
+                        })
+                    } else {
+                        items[itemIndex].qty += line._qty;
+                    };
+                };
+            });
+            if (items.length === 0) {                               //Reject if no valid items
+                resolve({
+                    success: false,
+                    message: 'No valid items'
+                });
+            } else {
+                return Promise.allSettled(order_actions)
+                .then(order_results => {
+                    order_results.forEach(order_action => {
+                        if (order_action.status === 'fulfilled') {
+                            order_action.value.forEach(action => {
+                                if (action.order_line.order.ordered_for !== -1) {
+                                    if (users.findIndex(e => e.id === action.order_line.order.ordered_for) === -1) {
+                                        orders.push({line_id: action.order_line.order_line_id})
+                                        users.push({
+                                            id: action.order_line.order.ordered_for,
+                                            rank: action.order_line.order.user_for.rank._rank,
+                                            name: action.order_line.order.user_for._name
+                                        });
+                                    };
+                                };
+                            });
+                        };
+                    });
+                    resolve({
+                        success: true,
+                        rejects: rejects,
+                        orders:  orders,
+                        users:   users,
+                        items:   items
+                    });
                 })
                 .catch(err => reject(err));
-            } else reject(new Error('Demand has already been raised'));
-        })
-        .catch(err => reject(err));
-    });
-        //get the template file
-        //get demand lines (inc order lines and order for cadet names)
-            //sort demand lines, correlate items
-            //sort demand lines, correlate users
-        //create new demand file
-            //write cover sheet
-            //write items sheets
-        //update demand lines as demanded
-        //update demand with filename
+            };
+        });
+    };
+    function createDemandFile (file, demand_id) { //create new demand file
+        return new Promise((resolve, reject) => {
+            let fs = require('fs');
+            if (file) {
+                let path       = `${process.env.ROOT}/public/res/`,
+                    newDemand  = `demands/${utils.timestamp()}_demand-${demand_id}.xlsx`,
+                    demandFile = `${path}files/${file}`;
+                    console.log(path, newDemand, demandFile);
+                fs.copyFile(demandFile, path + newDemand, err => {
+                    if (!err) resolve({
+                        success: true,
+                        file: newDemand
+                    })
+                    else {
+                        console.log(err);
+                        resolve({
+                            success: false,
+                            message: `Unable to create demand file: ${err.message}`
+                        })
+                    };
+                });
+            } else {
+                resolve({
+                    success: false,
+                    message: `No demand file specified`
+                });
+            };
+        });
+    };
+    function writeCoverSheet (demandFile, supplier, users) {
+        return new Promise((resolve, reject) => {
+            let ex       = require('exceljs'),
+                workbook = new ex.Workbook(),
+                path     = `${process.env.ROOT}/public/res/`;
+            workbook.xlsx.readFile(path + demandFile)
+            .then(() => {
+                try {
+                    let worksheet = workbook.getWorksheet(supplier.file._cover_sheet);
 
+                    let cell_code = worksheet.getCell(supplier.file['_code']);
+                    cell_code.value = supplier.account._number;
 
+                    let cell_rank = worksheet.getCell(supplier.file['_rank']);
+                    cell_rank.value = supplier.account.user.rank._rank;
+
+                    let cell_name = worksheet.getCell(supplier.file['_name']);
+                    cell_name.value = supplier.account.user._name;
+
+                    let cell_sqn = worksheet.getCell(supplier.file['_sqn']);
+                    cell_sqn.value = supplier.account._name;
+
+                    let cell_date = worksheet.getCell(supplier.file._date),
+                        now       = new Date(),
+                        line      = utils.counter();
+                    cell_date.value = now.toDateString();
+
+                    if (users) {
+                        for (let r = Number(supplier.file._request_start); r <= Number(supplier.file._request_end); r++) {
+                            let rankCell = worksheet.getCell(supplier.file._rank_column + r),
+                                nameCell = worksheet.getCell(supplier.file._name_column + r),
+                                currentLine = line() - 1,
+                                sortedKeys = Object.keys(users).sort(),
+                                user = users[sortedKeys[currentLine]];
+                            if (user) {
+                                rankCell.value = user.rank;
+                                nameCell.value = user.name;
+                            } else break;
+                        };
+                    };
+                    
+                    workbook.xlsx.writeFile(path + demandFile)
+                    .then(() => resolve({success: true}))
+                    .catch(err => reject(err));
+                } catch (err) {
+                    reject(err);
+                };
+            }).catch(err => reject(err));
+        });
+    };
+    function writeItems (demandFile, items) {
+        return new Promise((resolve, reject) => {
+            let ex = require('exceljs'),
+                workbook = new ex.Workbook(),
+                path = `${process.env.ROOT}/public/res/`;
+            workbook.xlsx.readFile(path + demandFile)
+            .then(() => {
+                let success = [], fails = [];
+                items.forEach(item => {
+                    try {
+                        let worksheet = workbook.getWorksheet(item.page),
+                            cell      = worksheet.getCell(item.cell);
+                        cell.value = item.qty;
+                        success.push({
+                            size_id: item.size_id,
+                            qty:     item.qty
+                        });
+                    } catch (err) {
+                        fails.push({size_id: item.size_id, reason: err.message});
+                    };
+                });
+                workbook.xlsx.writeFile(path + demandFile)
+                .then(() => resolve({success: success, fails: fails}))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    //get the template file
+   
+        //write cover sheet
+        //write items sheets
+    //update demand lines as demanded
+    //update demand with filename
     function raiseDemandFile (demand_id, user_id) {
         return new Promise((resolve, reject) => {
             m.demands.findOne({
@@ -398,98 +610,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     })
                     .catch(err => reject(err));
                 })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function createDemandFile (file, demand_id) {
-        return new Promise((resolve, reject) => {
-            let fs = require('fs');
-            if (file._path) {
-                let path = process.env.ROOT + '/public/res/',
-                    newDemand = 'demands/' + utils.timestamp() + ' demand - ' + demand_id + '.xlsx',
-                    demandFile = path + 'files/' + file._path;
-                fs.copyFile(demandFile, path + newDemand, err => {
-                    if (!err) resolve(newDemand)
-                    else reject(err);
-                });
-            } else reject(new Error('No demand file specified'));
-        });
-    };
-    function writeCoverSheet (demandFile, supplier, users) {
-        return new Promise((resolve, reject) => {
-            let ex = require('exceljs'),
-                workbook = new ex.Workbook(),
-                path     = process.env.ROOT + '/public/res/';
-            workbook.xlsx.readFile(path + demandFile)
-            .then(() => {
-                try {
-                    let worksheet = workbook.getWorksheet(supplier.file._cover_sheet);
-
-                    let cell_code = worksheet.getCell(supplier.file['_code']);
-                    cell_code.value = supplier.account._number;
-
-                    let cell_rank = worksheet.getCell(supplier.file['_rank']);
-                    cell_rank.value = supplier.account.user.rank._rank;
-
-                    let cell_name = worksheet.getCell(supplier.file['_name']);
-                    cell_name.value = supplier.account.user._name;
-
-                    let cell_sqn = worksheet.getCell(supplier.file['_sqn']);
-                    cell_sqn.value = supplier.account._name;
-
-                    let cell = worksheet.getCell(supplier.file._date),
-                        now = new Date(),
-                        line = utils.counter();
-                    cell.value = now.toDateString();
-
-                    if (users) {
-                        for (let r = Number(supplier.file._request_start); r <= Number(supplier.file._request_end); r++) {
-                            let rankCell = worksheet.getCell(supplier.file._rank_column + r),
-                                nameCell = worksheet.getCell(supplier.file._name_column + r),
-                                currentLine = line() - 1,
-                                sortedKeys = Object.keys(users).sort(),
-                                user = users[sortedKeys[currentLine]];
-                            if (user) {
-                                rankCell.value = user.rank;
-                                nameCell.value = user.name;
-                            } else break;
-                        };
-                    };
-                    
-                    workbook.xlsx.writeFile(path + demandFile)
-                    .then(() => resolve(true))
-                    .catch(err => reject(err));
-                } catch (err) {
-                    reject(err);
-                };
-            }).catch(err => reject(err));
-        });
-    };
-    function writeItems (demandFile, items) {
-        return new Promise((resolve, reject) => {
-            let ex = require('exceljs'),
-                workbook = new ex.Workbook(),
-                path = process.env.ROOT + '/public/res/';
-            workbook.xlsx.readFile(path + demandFile)
-            .then(() => {
-                let success = [], fails = [];
-                items.forEach(item => {
-                    try {
-                        let worksheet = workbook.getWorksheet(item.page),
-                            cell      = worksheet.getCell(item.cell);
-                        cell.value = item.qty;
-                        success.push({
-                            size_id: item.size_id,
-                            qty:     item.qty
-                        });
-                    } catch (err) {
-                        fails.push({size_id: item.size_id, reason: err.message});
-                    };
-                });
-                workbook.xlsx.writeFile(path + demandFile)
-                .then(() => resolve({success: success, fails: fails}))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));

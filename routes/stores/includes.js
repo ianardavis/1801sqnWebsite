@@ -287,7 +287,7 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            if (options.order_lines) include.push(inc.order_lines());
+            if (options.order_line) include.push(inc.order_lines());
             include.push(inc.users());
         };
         return {
@@ -398,6 +398,23 @@ module.exports = (inc, m) => {
         };
     };
 
+    inc.issue_line_returns = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        else {
+            include.push(inc.locations({as: 'location'}));
+            include.push(inc.stock({as: 'stock'}));
+            if (options.issue_lines) include.push(inc.issue_lines());
+        };
+        return {
+            model:    m.issue_line_returns,
+            attributes: options.attributes || null,
+            include:  include,
+            as:       options.as       || 'return',
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
     inc.issue_lines = (options = {}) => {
         let include = [];
         if (options.include) include = options.include

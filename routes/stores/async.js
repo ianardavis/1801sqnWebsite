@@ -30,13 +30,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 inc.users(),
                 inc.stock({as: 'stock'}),
                 inc.sizes({stock: true}),
-                inc.returns({
-                    as: 'return',
-                    include: [
-                        inc.locations({as: 'location'}),
-                        inc.stock({as: 'stock'})
-                    ]
-                })
+                inc.issue_line_returns()
             ],
             items: [inc.categories(), inc.groups(), inc.types(), inc.subtypes(), inc.genders()],
             notes: [inc.users()],
