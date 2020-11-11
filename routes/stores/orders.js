@@ -154,15 +154,14 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/order_lines/:id',    loggedIn, allowed('order_edit',                 {send: true}), (req, res) => {
-        m.orders.findOne({
+        return m.orders.findOne({
             where: {order_id: req.params.id},
-            attributes: ['order_id', '_status']
+            attributes: ['order_id', '_status', 'ordered_for']
         })
         .then(order => {
             let actions = [], _demands = [], _receipts = [], _issues = [];
             for (let [lineID, line] of Object.entries(req.body.actions)) {
                 line.line_id = Number(String(lineID).replace('line_id', ''));
-                console.log(line);
                 if (line._status === '3') { // if demand
                     _demands.push(line);
                 } else if (line._status === '4') { //if receipt
@@ -206,51 +205,49 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 });
             };
             if (_issues.length > 0) {
-                issues.create({
-                    m: {
-                        users:  m.users,
-                        issues: m.issues
-                    },
-                    issued_to: order_line.order.ordered_for,
-                    user_id:   req.user.user_id
-                })
-                .then(issue_result => {
-                    if (issue_result.success) {
-                        _issues.forEach(line => {
-                            actions.push(
-                                new Promise((resolve, reject) => {
-                                    return m.order_lines.findOne({
-                                        where: {line_id: line.line_id},
-                                        include: [inc.orders()],
-                                        attributes: ['line_id', '_qty']
-                                    })
-                                    .then(order_line => {
-                                        if (!order_line) {
-                                            resolve({
-                                                success: false,
-                                                message: 'Order line not found'
-                                            })
-                                        } else {
-                                            issues.createLine({
-                                                m: {
-
-                                                }
-                                            })
-                                        };
-                                    })
-                                    .catch(err => reject(err));
-                                })
-                            );
-                        });
-                    } else resolve(issue_result);
-                })
-                .catch(err => console.log(err));
+                actions.push(
+                    issues.create({
+                        m: {
+                            users:  m.users,
+                            issues: m.issues
+                        },
+                        issued_to: order.ordered_for,
+                        user_id:   req.user.user_id
+                    })
+                    .then(issue_result => {
+                        if (issue_result.success) {
+                            return m.issue_lines.count({
+                                where: {issue_id: issue_result.issue.issue_id}
+                            })
+                            .then(line_count => {
+                                _issues.forEach(line => {
+                                    actions.push(
+                                        issue_order_line(
+                                            {
+                                                issue_id: issue_result.issue.issue_id,
+                                                count: line_count
+                                            },
+                                            line,
+                                            req.user.user_id
+                                        )
+                                    );
+                                });
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            });
+                        } else {
+                            console.log(issue_result);
+                        };
+                    })
+                    .catch(err => console.log(err))
+                );
             };
-            Promise.all(actions)
+            return Promise.allSettled(actions)
             .then(results => {
-                m.order_lines.findAll({
+                return m.order_lines.findAll({
                     where: {
-                        _status: 'Open',
+                        _status: 2,
                         order_id: order.order_id
                     }
                 })
@@ -271,7 +268,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                                 system:  1
                             })
                         );
-                        Promise.allSettled(actions)
+                        return Promise.allSettled(actions)
                         .then(results2 => {
                             if (utils.promiseResults(results)) res.send({result: true, message: 'Lines actioned, order closed'})
                             else res.error.send('Some lines failed', res);
@@ -607,66 +604,60 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             .catch(err => reject(err));
         });
     };
-    function issue_order_line(line, user_id) {
-        return new Promise((resolve, reject) => {
+    function issue_order_line(issue, line, user_id) {
+        new Promise((resolve, reject) => {
             return m.order_lines.findOne({
-                where: {line_id: line.line_id},
-                include: [inc.orders()]
+                where:      {line_id: line.line_id},
+                include:    [inc.orders()],
+                attributes: ['line_id', 'size_id', 'order_id', '_qty']
             })
             .then(order_line => {
-                if (Number(order_line.order.ordered_for) !== -1) {
-                    issues.create({
-                        m: {issues: m.issues},
-                        issue: {
-                            issued_to: order_line.order.ordered_for,
-                            _date_due: utils.addYears(7),
-                            user_id:   user_id
-                        }
+                if (!order_line) {
+                    resolve({
+                        success: false,
+                        message: 'Order line not found'
                     })
-                    .then(result => {
-                        m.issue_lines.findAll({where: {issue_id: result.issue_id}})
-                        .then(issue_lines => {
-                            let line_id = line.line_id;
-                            line.issue_id = result.issue_id;
-                            line.user_id  = user_id;
-                            line.size_id  = order_line.size_id;
-                            line._line    = line.offset + issue_lines.length
-                            line._qty     = order_line._qty;
-                            delete line.line_id
-                            issues.createLine({
-                                m: {
-                                    sizes: m.sizes,
-                                    issues: m.issues,
-                                    issue_lines: m.issue_lines,
-                                    serials: m.serials,
-                                    stock: m.stock
-                                },
-                                line: line
-                            })
-                            .then(issue_line_id => {
-                                let update_line = {
-                                    issue_line_id: issue_line_id,
-                                    _status: 'Complete'
-                                };
-                                if (!order_line.demand_line_id) update_line.demand_line_id = -1;
-                                if (!order_line.receipt_line_id) update_line.receipt_line_id = -1;
-                                m.order_lines.update(
-                                    update_line,
-                                    {where: {line_id: line_id}}
-                                )
-                                .then(result => resolve(issue_line_id))
-                                .catch(err => reject(err));
+                } else {
+                    return issues.createLine({
+                        m: {
+                            sizes:       m.sizes,
+                            issues:      m.issues,
+                            issue_lines: m.issue_lines,
+                            serials:     m.serials,
+                            stock:       m.stock
+                        },
+                        serial_id: line.serial_id  || null,
+                        issue_id:  issue.issue_id,
+                        stock_id:  line.stock_id   || null,
+                        size_id:   order_line.size_id,
+                        user_id:   user_id,
+                        nsn_id:    line.nsn_id     || null,
+                        _line:     issue.count + line.offset + 1,
+                        _qty:      order_line._qty
+                    })
+                    .then(line_result => {
+                        return m.order_line_actions.create({
+                            action_line_id: line_result.line.line_id,
+                            order_line_id:  order_line.line_id,
+                            user_id:        user_id,
+                            _action:        'Issue'
+                        })
+                        .then(action_result => {
+                            return order_line.update({_status: 6})
+                            .then(order_line_result => {
+                                resolve({
+                                    success: true,
+                                    message: 'Order line created'
+                                });
                             })
                             .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
-                } else {
-                    reject(new Error('Orders for backing stock can not be issued'))
                 };
             })
             .catch(err => reject(err));
-        });
+        })
     };
 };

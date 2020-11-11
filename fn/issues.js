@@ -10,7 +10,7 @@ module.exports = {
                     success: false,
                     message: 'User not found'
                 });
-            } else if (user.status_id === 1 || user_status_id === 2) {
+            } else if (user.status_id !== 1 && user_status_id !== 2) {
                 resolve({
                     success: false,
                     message: 'Issues can only be made to current cadets or staff'
@@ -52,8 +52,8 @@ module.exports = {
     createLine: (options = {}) => new Promise((resolve, reject) => {
         // Find size
         return options.m.sizes.findOne({
-            where: {size_id: options.line.size_id},
-            attributes: ['_issueable', '_serials', '_nsns']
+            where: {size_id: options.size_id},
+            attributes: ['size_id', '_issueable', '_serials', '_nsns']
         })
         .then(size => {
             if (!size) {
@@ -69,7 +69,7 @@ module.exports = {
             } else {
                 // Find issue
                 return options.m.issues.findOne({
-                    where: {issue_id: options.line.issue_id},
+                    where: {issue_id: options.issue_id},
                     attributes: ['_status', 'issue_id']
                 })
                 .then(issue => {
@@ -87,38 +87,38 @@ module.exports = {
                         //Count lines already on the issue
                         return options.m.issue_lines.count({where: {issue_id: issue.issue_id}})
                         .then(lines => {
-                            if (size._serials && (!options.line.serial_id || options.line.serial_id === '')) {
+                            if (size._serials && (!options.serial_id || options.serial_id === '')) {
                                 resolve({
                                     success: false,
                                     message: 'You must specify a serial #'
                                 });//If serial required and no serial return error
-                            } else if (size._nsns && (!options.line.nsn_id || options.line.nsn_id === '')) {
+                            } else if (size._nsns && (!options.nsn_id || options.nsn_id === '')) {
                                 resolve({
                                     success: false,
                                     message: 'You must specify an NSN'
                                 });//If nsn required and no nsn return error
                             } else {
-                                if (!options.line._line) options.line._line = lines + 1; //Add line number if not present
+                                if (!options._line) options._line = lines + 1; //Add line number if not present
                                 let verify_search = null;
                                 if (size._serials) { //If serials required
                                     verify_search = options.m.serials.findOne({
                                         where: {
-                                            serial_id: options.line.serial_id,
-                                            size_id: options.line.size_id
+                                            serial_id: options.serial_id,
+                                            size_id: options.size_id
                                         },
-                                        attributes: ['serial_id']
+                                        attributes: ['serial_id', 'location_id']
                                     });
                                 } else {
                                     verify_search = options.m.stock.findOne({
                                         where: {
-                                            stock_id: options.line.stock_id,
-                                            size_id: options.line.size_id
+                                            stock_id: options.stock_id,
+                                            size_id: options.size_id
                                         },
-                                        attributes: ['stock_id']
+                                        attributes: ['stock_id', 'location_id']
                                     });
                                 };
                                 if (verify_search) {
-                                    verify_search
+                                    return verify_search
                                     .then(result => {
                                         if (!result) {
                                             resolve({
@@ -127,7 +127,17 @@ module.exports = {
                                             });
                                         } else {
                                             //create issue line
-                                            return options.m.issue_lines.create(options.line)
+                                            return options.m.issue_lines.create({
+                                                issue_id:    options.issue_id,
+                                                size_id:     options.size_id,
+                                                serial_id:   options.serial_id || null,
+                                                stock_id:    options.stock_id  || null,
+                                                nsn_id:      options.nsn_id    || null,
+                                                location_id: result.location_id,
+                                                _line:       options._line,
+                                                _qty:        options._qty,
+                                                user_id:     options.user_id
+                                            })
                                             .then(issue_line => {
                                                 resolve({
                                                     success: true,

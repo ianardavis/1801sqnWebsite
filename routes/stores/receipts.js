@@ -60,7 +60,6 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         res.send({result: true, message: ''})
     });
 
-    
     app.delete('/stores/receipts/:id',      loggedIn, allowed('receipt_delete',      {send: true}), (req, res) => {
         return m.receipts.findOne({
             where: {receipt_id: req.params.id},

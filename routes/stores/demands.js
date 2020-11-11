@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let demands  = require(process.env.ROOT + '/fn/demands'),
-        receipts = require(process.env.ROOT + '/fn/receipts'),
+    let receipts = require(process.env.ROOT + '/fn/receipts'),
+        demands  = require(process.env.ROOT + '/fn/demands'),
         utils    = require(process.env.ROOT + '/fn/utils');
     app.get('/stores/demands',              isLoggedIn, allowed('access_demands'),                   (req, res) => res.render('stores/demands/index'));
     app.get('/stores/demands/:id',          isLoggedIn, allowed('access_demands'),                   (req, res) => res.render('stores/demands/show', {tab: req.query.tab || 'details'}));
@@ -339,9 +339,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             .catch(err => reject(err));
         });
     };
-    //get demand lines (inc order lines and order for cadet names)
-        //sort demand lines, correlate items
-        //sort demand lines, correlate users
     function correlate_sizes(lines, supplier_id) {
         return new Promise((resolve, reject) => {
             let items = [], users = [], orders = [], order_actions = [], rejects = [];
@@ -523,93 +520,6 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 });
                 workbook.xlsx.writeFile(path + demandFile)
                 .then(() => resolve({success: success, fails: fails}))
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    //get the template file
-   
-        //write cover sheet
-        //write items sheets
-    //update demand lines as demanded
-    //update demand with filename
-    function raiseDemandFile (demand_id, user_id) {
-        return new Promise((resolve, reject) => {
-            m.demands.findOne({
-                where: {demand_id: demand_id},
-                include: [
-                    inc.suppliers({
-                        as: 'supplier',
-                        file: true,
-                        account: true}),
-                    inc.demand_lines({
-                        where: {_status: 2},
-                        include: [
-                            inc.sizes(),
-                            inc.order_lines({
-                                as: 'order_lines',
-                                orders: true})
-            ]})]
-            })
-            .then(demand => {
-                let items = [], users = [], rejects = false;
-                demand.lines.forEach(line => {
-                    if (line.size._demand_page && line.size._demand_cell) {
-                        if (line.order_lines) {
-                            line.order_lines.forEach(order_line => {
-                                if (users.findIndex(e => e.id === order_line.order.ordered_for) === -1) {
-                                    users.push({
-                                        id: order_line.order.ordered_for,
-                                        rank: order_line.order._for.rank._rank,
-                                        name: order_line.order._for._name
-                                    });
-                                };
-                            });
-                        };
-                        let itemIndex = items.findIndex(e => e.size_id === line.size_id)
-                        if (itemIndex === -1) {
-                            items.push({
-                                size_id: line.size_id,
-                                qty:     line._qty,
-                                page:    line.size._demand_page,
-                                cell:    line.size._demand_cell
-                            })
-                        } else {
-                            items[itemIndex].qty += line._qty;
-                        };
-                    } else rejects = true;
-                });
-                createDemandFile(demand.supplier.file, demand.demand_id)
-                .then(demandFile => {
-                    writeItems(demandFile, items)
-                    .then(writeItemsResult => {
-                        if (writeItemsResult.success.length > 0) {
-                            writeCoverSheet(
-                                demandFile,
-                                demand.supplier,
-                                users
-                            )
-                            .then(results2 => {
-                                demand.update({_filename: demandFile})
-                                .then(result => {
-                                    m.notes.create({
-                                        _table: 'demands',
-                                        _id: demand_id,
-                                        _note: 'File created',
-                                        user_id: user_id,
-                                        _system: 1
-                                    })
-                                    .then(result => resolve({fails: writeItemsResult.fails, filename: demandFile}))
-                                    .catch(err => reject(err));
-                                })
-                                .catch(err => reject(err));
-                            })
-                            .catch(err => reject(err));
-                        } else reject(new Error('No items written to demand'));
-                    })
-                    .catch(err => reject(err));
-                })
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));

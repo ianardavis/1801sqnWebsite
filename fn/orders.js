@@ -90,7 +90,7 @@ module.exports = {
                             },
                             defaults: {
                                 _qty: options._qty,
-                                user_id_add: options.user_id
+                                user_id: options.user_id
                             }
                         })
                         .then(([line, created]) => {
