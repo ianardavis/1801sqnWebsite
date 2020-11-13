@@ -53,5 +53,11 @@ module.exports = {
         } else {
            return str.substring(0, str.length - 1);
         };
+    },
+    nullify: record => {
+        for (let [key, value] of Object.entries(record)) {
+            if (value === '') record[key] = null;
+        };
+        return record;
     }
 };

@@ -1,7 +1,7 @@
 module.exports = (mw, m, getPermissions) => {
     mw.isLoggedIn = (req, res, next) => {
         if (req.isAuthenticated()) {
-            if ('/stores/users/' + req.user.user_id + '/password' ||
+            if (req._parsedUrl.pathname === `/stores/users/${req.user.user_id}/password` ||
                 !req.user._reset
                 ) {
                 getPermissions({
@@ -19,7 +19,7 @@ module.exports = (mw, m, getPermissions) => {
                 });
             } else {
                 req.flash('info', 'You must change your password before you can continue')
-                res.redirect('/stores/users/' + req.user.user_id + '/password');
+                res.redirect(`/stores/users/${req.user.user_id}/password`);
             };
         } else {
             req.flash('danger', 'You need to be signed in to do that!');

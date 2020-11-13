@@ -1,8 +1,6 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/nsns/new',      isLoggedIn, allowed('nsn_add'),                  (req, res) => {
-        db.findOne({
-            table: m.sizes,
+        m.sizes.findOne({
             where: {size_id: req.query.size_id},
             include: [inc.items()]
         })
@@ -18,19 +16,15 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/nsns/:id',      isLoggedIn, allowed('nsn_edit',   {send: true}), (req, res) => {
-        db.update({
-            table: m.nsns,
-            where: {nsn_id: req.params.id},
-            record: req.body.nsn
-        })
+        m.nsns.update(
+            req.body.nsn,
+            {where: {nsn_id: req.params.id}}
+        )
         .then(result => res.send({result: true, message: 'NSN saved'}))
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/nsns/:id',   isLoggedIn, allowed('nsn_delete', {send: true}), (req, res) => {
-        db.destroy({
-            table: m.nsns,
-            where: {nsn_id: req.params.id}
-        })
+        m.nsns.destroy({where: {nsn_id: req.params.id}})
         .then(result => {
             m.sizes.update(
                 {nsn_id: null},

@@ -1,6 +1,5 @@
 module.exports = (app, allowed, inc, loggedIn, m) => {
-    let db       = require(process.env.ROOT + '/fn/db'),
-        receipts = require(process.env.ROOT + '/fn/receipts');;
+    let receipts = require(process.env.ROOT + '/fn/stores/receipts');;
     app.get('/stores/receipts',             loggedIn, allowed('access_receipts'),                   (req, res) => res.render('stores/receipts/index'));
     app.get('/stores/receipts/:id',         loggedIn, allowed('access_receipts'),                   (req, res) => res.render('stores/receipts/show', {tab: req.query.tab || 'details'}));
     

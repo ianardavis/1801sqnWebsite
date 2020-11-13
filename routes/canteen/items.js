@@ -1,44 +1,13 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
-    app.get('/canteen/items',          isLoggedIn, allowed('access_canteen'),     (req, res) => {
-        m.canteen_items.findAll({where: {item_id: {[op.not]: 0}}})
-        .then(items => res.render('canteen/items/index', {items: items}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/canteen/items/new',      isLoggedIn, allowed('canteen_supervisor'), (req, res) => res.render('canteen/items/new'));
-    app.post('/canteen/items',         isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        m.canteen_items.create(req.body.item)
-        .then(item => {
-            req.flash('success', 'Item added');
-            res.redirect('/canteen/items');
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-
-    app.get('/canteen/items/:id/edit', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        db.findOne({
-            table: m.canteen_items,
-            where: {item_id: req.params.id}
-        })
+    app.get('/canteen/items',          isLoggedIn, allowed('access_canteen_items'),              (req, res) => res.render('canteen/items/index'));
+    app.get('/canteen/items/:id/edit', isLoggedIn, allowed('canteen_item_edit'),                 (req, res) => {
+        m.canteen_items.findOne({where: {item_id: req.params.id}})
         .then(item => res.render('canteen/items/edit', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.put('/canteen/items/:id',      isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        db.update({
-            table: m.canteen_items,
-            where: {item_id: req.params.id},
-            record: req.body.item
-        })
-        .then(result => {
-            req.flash('success', 'Item updated');
-            res.redirect('/canteen/items/' + req.params.id);
-        }).catch(err => res.error.redirect(err, req, res));
-    });
-
-    app.get('/canteen/items/:id',      isLoggedIn, allowed('access_canteen'),     (req, res) => {
-        db.findOne({
-            table: m.canteen_items,
+    app.get('/canteen/items/:id',      isLoggedIn, allowed('access_canteen_items'),              (req, res) => {
+        m.canteen_items.findOne({
             where: {item_id: req.params.id},
             include: [
                 inc.canteen_sale_lines({as: 'sales', sale: true}),
@@ -72,20 +41,48 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.delete('/canteen/items/:id',   isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        if (Number(req.params.id) !== 0) {
-            db.destroy({
-                table: m.canteen_items,
-                where: {item_id: req.params.id}
-            })
-            .then(result => {
-                req.flash('success', 'Item deleted');
-                res.redirect('/canteen/items');
-            })
-            .catch(err => res.error.redirect(err, req, res));
-        } else {
-            req.flash('danger', 'This item can not be deleted');
-            res.redirect('/canteen/items');
-        };
+    
+    app.put('/canteen/items/:id',      isLoggedIn, allowed('canteen_item_edit',   {send: true}), (req, res) => {
+        m.canteen_items.findOne({
+            where: {item_id: req.params.id},
+            attributes: ['item_id']
+        })
+        .then(item => {
+            if (item) {
+                item.update(req.body.item)
+                .then(result => {
+                    if (result) res.send({result: true,  message: 'Item updated'})
+                    else        res.send({result: false, message: 'Item not updated'})
+                })
+                .catch(err => res.error.send(err, res));
+            } else res.send({result: false, message: 'Item not found'});
+        })
+        .catch(err => res.error.send(err, res));
+    });
+    
+    app.post('/canteen/items',         isLoggedIn, allowed('canteen_item_add',    {send: true}), (req, res) => {
+        m.canteen_items.create(req.body.item)
+        .then(item => res.send({result: true, message: `Item added: ${item.item_id}`}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.delete('/canteen/items/:id',   isLoggedIn, allowed('canteen_item_delete', {send: true}), (req, res) => {
+        m.canteen_items.findOne({
+            where: {item_id: req.params.id},
+            attributes: ['item_id']
+        })
+        .then(item => {
+            if (item) {
+                if (item.item_id > 0) {
+                    item.destroy()
+                    .then(result => {
+                        if (result) res.send({result: true,  message: 'Item deleted'})
+                        else        res.send({result: false, message: 'Item not deleted'});
+                    })
+                    .catch(err => res.error.send(err, res));
+                } else res.send({result: false, message: 'This item can not be deleted'});
+            } else res.send({result: false, message: 'Item not found'});
+        })
+        .catch(err => res.error.send(err, res));
     });
 };

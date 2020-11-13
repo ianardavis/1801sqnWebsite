@@ -1,11 +1,8 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
+    let utils = require(process.env.ROOT + '/fn/utils');
     app.get('/stores/sizes/new',      isLoggedIn, allowed('size_add'),                  (req, res) => {
-        db.findOne({
-            table: m.items,
-            where: {item_id: req.query.item_id}
-        })
+        m.items.findOne({where: {item_id: req.query.item_id}})
         .then(item => res.render('stores/sizes/new', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
@@ -14,7 +11,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
 
     app.post('/stores/sizes',         isLoggedIn, allowed('size_add',    {send: true}), (req, res) => {
         req.body.size._ordering_details = req.body.size._ordering_details.trim()
-        req.body.size = db.nullify(req.body.size);
+        req.body.size = utils.nullify(req.body.size);
         m.sizes.findOrCreate({
             where: {
                 item_id: req.body.size.item_id,
@@ -30,11 +27,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/sizes/:id',      isLoggedIn, allowed('size_edit',   {send: true}), (req, res) => {
-        db.update({
-            table: m.sizes,
-            where: {size_id: req.params.id},
-            record: req.body.size
-        })
+        m.sizes.update(
+            req.body.size,
+            {where: {size_id: req.params.id}}
+        )
         .then(result => res.send({result: true, message: 'Size saved'}))
         .catch(err => res.error.send(err, res));
     });
@@ -48,10 +44,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 .then(nsn => {
                     if (nsn) res.error.send('Cannot delete a size whilst it has NSNs assigned', res)
                     else {
-                        db.destroy({
-                            table: m.sizes,
-                            where: {size_id: req.params.id}
-                        })
+                        m.sizes.destroy({where: {size_id: req.params.id}})
                         .then(result => res.send({result: true, message: 'Size deleted'}))
                         .catch(err => res.error.send(err, res));
                     };

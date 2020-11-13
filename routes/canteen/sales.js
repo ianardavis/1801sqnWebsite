@@ -1,7 +1,6 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db       = require(process.env.ROOT + '/fn/db'),
-        canteen  = require(process.env.ROOT + '/fn/canteen'),
+    let canteen  = require(process.env.ROOT + '/fn/canteen'),
         settings = require(process.env.ROOT + '/fn/settings');
     app.get('/canteen/pos',         isLoggedIn, allowed('access_canteen'), (req, res) => {
         canteen.getSale(req, res)
@@ -36,10 +35,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 })
                 .then(line => {
                     if (!line || Number(req.body.sale_line.item_id) === 0) {
-                        db.findOne({
-                            table: m.canteen_items,
-                            where: {item_id: req.body.sale_line.item_id}
-                        })
+                        m.canteen_items.findOne({where: {item_id: req.body.sale_line.item_id}                        })
                         .then(item => {
                             if (Number(req.body.sale_line.item_id) !== 0) req.body.sale_line._price = item._price;
                             m.canteen_sale_lines.create(req.body.sale_line)
@@ -50,18 +46,14 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     } else {
                         let newQty = Number(line._qty) + Number(req.body.sale_line._qty)
                         if (newQty === 0) {
-                            db.destroy({
-                                table: m.canteen_sale_lines,
-                                where: {line_id: line.line_id}
-                            })
+                            m.canteen_sale_lines.destroy({where: {line_id: line.line_id}                            })
                             .then(result => res.redirect('/canteen/pos'))
                             .catch(err =>res.error.redirect(err, req, res));
                         } else {
-                            db.update({
-                                table: m.canteen_sale_lines,
-                                where: {line_id: line.line_id},
-                                record: {_qty: newQty}
-                            })
+                            m.canteen_sale_lines.update(
+                                {_qty: newQty},
+                                {where: {line_id: line.line_id}}
+                            )
                             .then(result => res.redirect('/canteen/pos'))
                             .catch(err =>res.error.redirect(err, req, res));
                         };
@@ -78,25 +70,18 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         if (req.body.sale_line) {
             canteen.getSession(req, res, {redirect: true})
             .then(session_id => {
-                db.findOne({
-                    table: m.canteen_sale_lines,
-                    where: {line_id: req.body.sale_line.line_id}
-                })
+                m.canteen_sale_lines.findOne({where: {line_id: req.body.sale_line.line_id}})
                 .then(line => {
                     let newQty = Number(line._qty) + Number(req.body.sale_line._qty)
                     if (newQty <= 0) {
-                        db.destroy({
-                            table: m.canteen_sale_lines,
-                            where: {line_id: line.line_id}
-                        })
+                        m.canteen_sale_lines.destroy({where: {line_id: line.line_id}})
                         .then(result => res.redirect('/canteen/pos'))
                         .catch(err =>res.error.redirect(err, req, res));
                     } else {
-                        db.update({
-                            table: m.canteen_sale_lines,
-                            where: {line_id: line.line_id},
-                            record: {_qty: newQty}
-                        })
+                        m.canteen_sale_lines.update(
+                            {_qty: newQty},
+                            {where: {line_id: line.line_id}}
+                        )
                         .then(result => res.redirect('/canteen/pos'))
                         .catch(err =>res.error.redirect(err, req, res));
                     };
@@ -132,11 +117,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     );
                 });
                 actions.push(
-                    db.update({
-                        table: m.canteen_sales,
-                        where: {sale_id: req.params.id},
-                        record: {_complete: 1}
-                    })
+                    m.canteen_sales.update(
+                        {_complete: 1},
+                        {where: {sale_id: req.params.id}}
+                    )
                 )
                 Promise.allSettled(actions)
                 .then(results => {
@@ -164,8 +148,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
 
     app.get('/canteen/sales/:id',   isLoggedIn, allowed('access_canteen'), (req, res) => {
-        db.findOne({
-            table: m.canteen_sales,
+        m.canteen_sales.findOne({
             where: {sale_id: req.params.id},
             include: [
                 inc.users(),

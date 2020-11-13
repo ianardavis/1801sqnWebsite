@@ -34,11 +34,11 @@ module.exports = (passport, m) => {
         },(req, _login_id, _password, done) => {
             m.users.findOne({
                 where: {_login_id: _login_id},
-                include: [{
-                    model: m.permissions,
-                    where: {_permission: 'account_enabled'},
-                    required: false
-                }],
+                // include: [{
+                //     model: m.permissions,
+                //     where: {_permission: 'account_enabled'},
+                //     required: false
+                // }],
                 attributes: ['_login_id', 'user_id', '_reset', '_password', '_salt']
             })
             .then(user => {
@@ -57,13 +57,7 @@ module.exports = (passport, m) => {
                         false, 
                         {message: 'Invalid username or password!'}
                     );
-                } else if (!user.permissions || user.permissions.length === 0) {
-                    req.flash('danger', 'Your account is disabled!')
-                    return done(
-                        null, 
-                        false, 
-                        {message: 'Your account is disabled!'}
-                    );
+                // } else if x
                 } else {
                     delete user.dataValues._password;
                     delete user.dataValues._salt;

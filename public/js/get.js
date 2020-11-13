@@ -12,6 +12,6 @@ get = (onComplete, options = {query: []}) => new Promise(resolve => {
             hide_spinner(options.table);
             resolve(true);
         });
-        XHR_send(XHR, options.table, `/stores/get/${options.table}?${options.query.join('&')}`);
+        XHR_send(XHR, options.table, `/${options.db || 'stores'}/get/${options.table}?${options.query.join('&')}`);
     } else console.log('public/js/get.js:13', 'No/Invalid table specified');
 });

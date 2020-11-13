@@ -1,82 +1,36 @@
-<% include ../partials/head/full %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
+<section class="mb-2">
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen', text: 'Canteen'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
 	<div class="row container m-auto p-0 menu">
-        <% if (Number(session_id) !== -1) { %>
-            <div class="col-6 col-lg-4 col-xl-3">
-                <div class="card m-3">
-                    <a href="/canteen/pos">
-                        <div class="card-header">
-                            <h3>Point of Sale</h3>
-                        </div>
-                        <div class="card-body">
-                            <i class="fas fa-cash-register fa-5x"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        <% } %>
-		<div class="col-6 col-lg-4 col-xl-3">
-            <div class="card m-3">
-                <a href="/canteen/items">
-                    <div class="card-header">
-                        <h3>Items</h3>
-                    </div>
-                    <div class="card-body">
-                        <i class="fas fa-candy-cane fa-5x"></i>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <% if (permissions.canteen_supervisor) { %>
-            <div class="col-6 col-lg-4 col-xl-3">
-                <div class="card m-3">
-                    <a href="/canteen/sessions">
-                        <div class="card-header">
-                            <h3>Sessions</h3>
-                        </div>
-                        <div class="card-body">
-                            <i class="fas fa-list fa-5x"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-6 col-lg-4 col-xl-3">
-                <div class="card m-3">
-                    <a href="/canteen/receipts">
-                        <div class="card-header">
-                            <h3>Receipts</h3>
-                        </div>
-                        <div class="card-body">
-                            <i class="fas fa-receipt fa-5x"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-6 col-lg-4 col-xl-3">
-                <div class="card m-3">
-                    <a href="/canteen/writeoffs">
-                        <div class="card-header">
-                            <h3>Writeoffs</h3>
-                        </div>
-                        <div class="card-body">
-                            <i class="fas fa-receipt fa-5x"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        <% } %>
+        <%- include(`${process.env.PARTIALS}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos'}) %>
+		<%- include(`${process.env.PARTIALS}/card`, {title: 'Items',         image: 'candy-cane', href: '/canteen/items'}) %>
+		<% if (permissions.canteen_supervisor) { %>
+            <%- include(`${process.env.PARTIALS}/card`, {href: '/canteen/sessions',  title: 'Sessions',  image: 'list'}) %>
+		    <%- include(`${process.env.PARTIALS}/card`, {href: '/canteen/receipts',  title: 'Receipts',  image: 'receipt'}) %>
+		    <%- include(`${process.env.PARTIALS}/card`, {href: '/canteen/writeoffs', title: 'Writeoffs', image: 'receipt'}) %>
+	    <% } %>
 	</div>
 </section>
-<% include ../partials/foot/full %>
-<% include ../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src="/js/canteen/index/getSession.js"></script>
+<script>
+    function checkSession() {
+        get(
+            getSession,
+            {
+                table: 'canteen_sessions',
+                query: ['_status=1']
+            }
+        );
+    };
+    document.querySelector('#reload').addEventListener('click', checkSession);
+</script>
+<script async>checkSession()</script>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>    

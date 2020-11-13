@@ -1,18 +1,13 @@
-const mw = {}, inc = {}, 
+const inc = {}, 
       op = require('sequelize').Op;
-module.exports = (app, m, getPermissions) => {
-    let canteen = require(process.env.ROOT + '/fn/canteen'),
-        allowed = require(process.env.ROOT + '/config/allowed.js');
+module.exports = (app, m) => {
+    var allowed  = require(`${process.env.ROOT}/middleware/allowed.js`),
+        loggedIn = require(`${process.env.ROOT}/middleware/loggedIn.js`)(m.canteen.permissions);
     require('./includes') (inc, m);
-    require(process.env.ROOT + '/config/middleware')(mw, {permissions: m.permissions}, getPermissions);
-    require('./sales')    (app, allowed, inc, mw.isLoggedIn, m);
-    require('./sessions') (app, allowed, inc, mw.isLoggedIn, m);
-    require('./items')    (app, allowed, inc, mw.isLoggedIn, m);
-    require('./receipts') (app, allowed, inc, mw.isLoggedIn, m);
-    require('./writeoffs')(app, allowed, inc, mw.isLoggedIn, m);
-
-    app.get('/canteen', mw.isLoggedIn, allowed('access_canteen'), (req, res) => {
-        canteen.getSession(req, res, {m: m})
-        .then(session_id => res.render('canteen/index', {session_id: session_id}));
-    });
+    require('./sales')    (app, allowed, inc, loggedIn, m.canteen);
+    require('./sessions') (app, allowed, inc, loggedIn, m.canteen);
+    require('./items')    (app, allowed, inc, loggedIn, m.canteen);
+    require('./receipts') (app, allowed, inc, loggedIn, m.canteen);
+    require('./writeoffs')(app, allowed, inc, loggedIn, m.canteen);
+    app.get('/canteen', loggedIn, allowed('access_canteen'), (req, res) => res.render('canteen/index'));
 };

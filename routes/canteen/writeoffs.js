@@ -1,7 +1,6 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db       = require(process.env.ROOT + '/fn/db'),
-        canteen  = require(process.env.ROOT + '/fn/canteen'),
+    let canteen  = require(process.env.ROOT + '/fn/canteen'),
         settings = require(process.env.ROOT + '/fn/settings');
     app.get('/canteen/writeoffs',              isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoffs.findAll({
@@ -39,8 +38,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/canteen/writeoffs/:id',          isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        db.findOne({
-            table: m.canteen_writeoffs,
+        m.canteen_writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             include: [inc.canteen_writeoff_lines()]
         })
@@ -71,11 +69,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
 
     app.put('/canteen/writeoff_lines/:id',     isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        db.update({
-            table: m.canteen_writeoff_lines,
-            where: {line_id: req.params.id},
-            record: req.body.line
-        })
+        m.canteen_writeoff_lines.update(
+            req.body.line,
+            {where: {line_id: req.params.id}}
+        )
         .then(result => {
             req.flash('success', 'Line updated');
             res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
@@ -105,11 +102,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                 );
             });
             actions.push(
-                db.update({
-                    table: m.canteen_writeoffs,
-                    where: {writeoff_id: req.params.id},
-                    record: {_complete: 1}
-                })
+                m.canteen_writeoffs.update(
+                    {_complete: 1},
+                    {where: {writeoff_id: req.params.id}}
+                )
             )
             Promise.allSettled(actions)
             .then(results => {
@@ -121,11 +117,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     app.put('/canteen/writeoffs/:id',          isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        db.update({
-            table: m.canteen_writeoffs,
-            where: {writeoff_id: req.params.id},
-            record: req.body.writeoff
-        })
+        m.canteen_writeoffs.update(
+            req.body.writeoff,
+            {where: {writeoff_id: req.params.id}}
+        )
         .then(result => {
             req.flash('success', 'Writeoff updated');
             res.redirect('/canteen/writeoffs/' + req.params.id);
@@ -134,10 +129,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
 
     app.delete('/canteen/writeoff_lines/:id',  isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        db.destroy({
-            table: m.canteen_writeoff_lines,
-            where: {line_id: req.params.id}
-        })
+        m.canteen_writeoff_lines.destroy({where: {line_id: req.params.id}})
         .then(result => {
             req.flash('success', 'Line removed');
             res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
@@ -145,10 +137,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     app.delete('/canteen/writeoffs/:id',       isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        db.destroy({
-            table: m.canteen_writeoffs,
-            where: {writeoff_id: req.params.id}
-        })
+        m.canteen_writeoffs.destroy({where: {writeoff_id: req.params.id}})
         .then(result => {
             req.flash('success', 'Writeoff deleted');
             res.redirect('/canteen');

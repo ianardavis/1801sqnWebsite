@@ -1,5 +1,4 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
     nullify = item => {
         if (item.subtype_id === '') item.subtype_id = null;
         if (item.gender_id === '')  item.gender_id  = null;
@@ -12,10 +11,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     app.get('/stores/items/new',      isLoggedIn, allowed('item_add'),                  (req, res) => res.render('stores/items/new'));
     app.get('/stores/items/:id',      isLoggedIn, allowed('access_items'),              (req, res) => res.render('stores/items/show', {tab: req.query.tab || 'details'}));
     app.get('/stores/items/:id/edit', isLoggedIn, allowed('item_edit'),                 (req, res) => {
-        db.findOne({
-            table: m.items,
-            where: {item_id: req.params.id}
-        })
+        m.items.findOne({where: {item_id: req.params.id}})
         .then(item => res.render('stores/items/edit', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
@@ -28,11 +24,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     app.put('/stores/items/:id',      isLoggedIn, allowed('item_edit',   {send: true}), (req, res) => {
         req.body.item = nullify(req.body.item);
-        db.update({
-            table: m.items,
-            where: {item_id: req.params.id},
-            record: req.body.item
-        })
+        m.items.update(
+            req.body.item,
+            {where: {item_id: req.params.id}}
+        )
         .then(result => res.send({result: true, message: 'Item saved'}))
         .catch(err => res.error.send(err, res));
     });
@@ -40,14 +35,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         m.sizes.findOne({where: {item_id: req.params.id}})
         .then(sizes => {
             if (!sizes) {
-                db.destroy({
-                    table: m.items,
-                    where: {item_id: req.params.id}
-                })
+                m.items.destroy({where: {item_id: req.params.id}})
                 .then(result => res.send({result: true, message: 'Item deleted'}))
                 .catch(err => res.error.send(err, res));
             } else res.error.send('Cannot delete item while it has sizes assigned', res);
         })
         .catch(err => res.error.send(err, res));
     });
-    };
+};

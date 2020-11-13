@@ -1,6 +1,5 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db          = require(process.env.ROOT + '/fn/db'),
-        options     = require(process.env.ROOT + '/fn/options'),
+    let options     = require(process.env.ROOT + '/fn/options'),
         singularise = require(process.env.ROOT + '/fn/utils').singularise;
     _options = () => {
         return [
@@ -68,11 +67,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     app.put('/stores/options/:table/:id',      isLoggedIn, allowed('option_edit',    {send: true}), (req, res) => {
         let id_field = {};
         id_field[singularise(req.params.table) + '_id'] = req.params.id;
-        db.update({
-            table: m[req.params.table],
-            where: id_field,
-            record: req.body[req.params.table]
-        })
+        m[req.params.table].update(
+            req.body[req.params.table],
+            {where: id_field}
+        )
         .then(result => {
             req.flash('success', 'Record updated in ' + req.params.table);
             res.redirect('/stores/settings?show=' + req.params.table);
@@ -120,10 +118,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     _delete = (table, req, res) => {
         let where = {};
         where[singularise(table) + '_id'] = req.params.id;
-        db.destroy({
-            table: m[table],
-            where: where
-        })
+        m[table].destroy({where: where})
         .then(result => {
             if (result) req.flash('success', 'Record deleted from ' + table);
             res.redirect('/stores/settings?show=' + table);

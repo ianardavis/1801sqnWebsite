@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let orders = require(process.env.ROOT + '/fn/orders'),
-        stock  = require(process.env.ROOT + '/fn/stock');
+    let orders = require(process.env.ROOT + '/fn/stores/orders'),
+        stock  = require(process.env.ROOT + '/fn/stores/stock');
     app.get('/stores/reports',     isLoggedIn, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
 
     app.get('/stores/reports/:id', isLoggedIn, allowed('access_reports'), (req, res) => {

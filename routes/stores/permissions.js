@@ -1,13 +1,11 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/permissions/:id/edit', isLoggedIn, allowed('permission_edit'),               (req, res) => {
         if (Number(req.params.id) === req.user.user_id && Number(req.params.id) !== 2) {
             res.error.redirect(new Error('You can not edit your own permissions'), req, res);
         } else if (Number(req.params.id) === 1) {
             res.error.redirect(new Error('You can not edit the Admin user permissions'), req, res);
         } else {
-            db.findOne({
-                table: m.users,
+            m.users.findOne({
                 where: {user_id: req.params.id},
                 include: [
                     m.ranks,
@@ -54,10 +52,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     permissions.forEach(permission => {
                         if (req.body.permissions.filter(e => e === permission._permission).length === 0) {
                             actions.push(
-                                db.destroy({
-                                    table: m.permissions,
-                                    where: {permission_id: permission.permission_id}
-                                })
+                                m.permissions.destroy({where: {permission_id: permission.permission_id}})
                             );
                         };
                     });

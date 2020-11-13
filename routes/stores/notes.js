@@ -1,5 +1,4 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/notes/new',      isLoggedIn, allowed('note_add'),                  (req, res) => {
         res.render('stores/notes/new', {
             table: req.query.table,
@@ -7,10 +6,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         });
     });
     app.get('/stores/notes/:id/edit', isLoggedIn, allowed('note_add'),                  (req, res) => {
-        db.findOne({
-            table: m.notes,
-            attributes: ['note_id'],
-            where: {note_id: req.params.id, _system: 0}
+        m.notes.findOne({
+            where: {note_id: req.params.id, _system: 0},
+            attributes: ['note_id']
         })
         .then(note => res.render('stores/notes/edit'))
         .catch(err => res.error.redirect(err, req, res));
@@ -25,17 +23,15 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     app.put('/stores/notes/:id',      isLoggedIn, allowed('note_edit',   {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         req.body.note._date = Date.now();
-        db.update({
-            table: m.notes,
-            where: {note_id: req.params.id},
-            record: req.body.note
-        })
+        m.notes.update(
+            req.body.note,
+            {where: {note_id: req.params.id}}
+        )
         .then(note => res.send({result: true, message: 'Note saved'}))
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/notes/:id',   isLoggedIn, allowed('note_delete', {send: true}), (req, res) => {
-        db.destroy({
-            table: m.notes,
+        m.notes.destroy({
             where: {
                 note_id: req.params.id,
                 _system: 0

@@ -63,6 +63,9 @@ function Input (options = {}) {
         options.classes.forEach(e => this.e.classList.add(e))
     } else this.e.classList.add('form-control');
     this.e.setAttribute('type', options.type  || 'text');
+    if (options.type === 'number') {
+        if (options.step)    this.e.setAttribute('step', options.step);
+    };
     if (options.completeOff) this.e.setAttribute('autocomplete', 'off');
     if (options.name)        this.e.setAttribute('name', options.name);
     if (options.small)       this.e.classList.add('form-control-sm');
@@ -248,6 +251,7 @@ function Modal (options = {}) {
     mdl_header.classList.add('modal-header');
     mdl_header.setAttribute('id', `mdl_${options.id}_header`);
     mdl_title.classList.add('modal-title');
+    if (options.title) mdl_title.innerText = options.title;
     mdl_title.setAttribute('id', `mdl_${options.id}_title`);
     mdl_header.appendChild(mdl_title);
     mdl_body.setAttribute('id', `mdl_${options.id}_body`)

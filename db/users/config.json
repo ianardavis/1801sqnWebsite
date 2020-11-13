@@ -1,0 +1,26 @@
+{
+    "development": {
+        "username": "Admin",
+        "password": "Pyr0maniac1",
+        "database": "users",
+        "host": "127.0.0.1",
+        "dialect": "mysql",
+        "logging": false
+    },
+    "test": {
+        "username": "Admin",
+        "password": "Pyr0maniac1",
+        "database": "users",
+        "host": "127.0.0.1",
+        "dialect": "mysql",
+        "logging": true
+    },
+    "production": {
+        "username": "Admin",
+        "password": "Pyr0maniac1",
+        "database": "users",
+        "host": "127.0.0.1",
+        "dialect": "mysql",
+        "logging": false
+    }
+}

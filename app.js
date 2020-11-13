@@ -5,7 +5,7 @@ var express  = require('express'),
     bb       = require('express-busboy'),
     flash    = require('connect-flash'),
     memStore = require('memorystore')(session);
-process.env.ROOT = __dirname;
+process.env.ROOT     = __dirname;
 process.env.PARTIALS = __dirname + '/views/partials';
 let port = require(process.env.ROOT + '/fn/port'),
    _port = 3000;
@@ -16,9 +16,16 @@ port.check(_port)
     console.log('environment: ' + process.env.NODE_ENV);
 
     console.log('Models:');
-    let m           = require(process.env.ROOT + '/db/models'),
-        permissions = require(process.env.ROOT + '/fn/permissions');
+    let m = {};
+    m.stores  = require(`${process.env.ROOT}/db/stores/models`);
+    m.canteen = require(`${process.env.ROOT}/db/canteen/models`);
+    m.users   = require(`${process.env.ROOT}/db/users/models`);
     console.log('   Loaded');
+    console.log('Associating tables:');
+    require(`${process.env.ROOT}/db/stores/associations.js`)(m.stores);
+    require(`${process.env.ROOT}/db/canteen/associations.js`)(m.canteen);
+    require(`${process.env.ROOT}/db/users/associations.js`)(m);
+    console.log('   Done');
 
     console.log('Busboy:');
     bb.extend(app, {
@@ -43,7 +50,7 @@ port.check(_port)
     console.log('Passport:');
     app.use(passport.initialize());
     app.use(passport.session());
-    require('./config/passport.js')(passport, m);
+    require('./config/passport.js')(passport, m.users);
     console.log('   Setup');
 
     console.log('Flash:');
@@ -67,15 +74,16 @@ port.check(_port)
 
     console.log('Error handling:');
     app.use((req, res, next) => {
-        res.error = require(process.env.ROOT + '/fn/error');
+        res.error = require(`${process.env.ROOT}/fn/error`);
         next();
     });
     console.log('   Set');
 
     console.log('Routes:');
-    require('./routes/stores') (app, m, permissions.get);
-    require('./routes/canteen')(app, m, permissions.get);
-    require('./routes/site')   (app, m);
+    require('./routes/stores') (app, m);
+    require('./routes/canteen')(app, m);
+    require('./routes/users')  (app, m);
+    require('./routes/site')   (app);
     console.log('   Loaded');
     app.listen(_port, err => {
         if (err) console.log(err);

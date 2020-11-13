@@ -1,8 +1,6 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/stock/new',      isLoggedIn, allowed('stock_add'),                  (req, res) => {
-        db.findOne({
-            table: m.sizes,
+        m.sizes.findOne({
             where: {size_id: req.query.size_id},
             include: []
         })
@@ -11,8 +9,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     app.get('/stores/stock/:id',      isLoggedIn, allowed('access_stock'),               (req, res) => res.render('stores/stock/show', {tab: req.query.tab || 'details'}));
     app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'),                 (req, res) => {
-        db.findOne({
-            table: m.stock,
+        m.stock.findOne({
             where: {stock_id: req.params.id},
             include: [m.locations]
         })
@@ -38,15 +35,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/stock/:id',      isLoggedIn, allowed('stock_edit',   {send: true}), (req, res) => {
-        db.findOne({
-            table: m.stock,
-            where: {stock_id: req.params.id}
-        })
+        m.stock.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
-            db.findOne({
-                table: m.locations,
-                where: {_location: req.body._location}
-            })
+            m.locations.findOne({where: {_location: req.body._location}})
             .then(location => {
                 if (location) {
                     if (Number(location.location_id) !== Number(stock.location_id)) {
@@ -65,16 +56,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     
     app.delete('/stores/stock/:id',   isLoggedIn, allowed('stock_delete', {send: true}), (req, res) => {
-        db.findOne({
-            table: m.stock,
-            where: {stock_id: req.params.id}
-        })
+        m.stock.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             if (stock._qty === 0) {
-                db.destroy({
-                    table: m.stock,
-                    where: {stock_id: req.params.id}
-                })
+                stock.destroy()
                 .then(result => {
                     if (result) res.send({result: true, message: 'Stock deleted'})
                     else res.error.send('Stock NOT deleted', res);
@@ -91,11 +76,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));;
     };
     updateStockLocation = (location_id, stock_id, res) => {
-        db.update({
-            tbale: m.stock,
-            where: {stock_id: stock_id},
-            record: {location_id: location_id}
-        })
+        m.stock.update(
+            {location_id: location_id},
+            {where: {stock_id: stock_id}}
+        )
         .then(result => res.send({result: true, message: 'Stock saved'}))
         .catch(err => res.error.send(err, res));
     };

@@ -1,5 +1,4 @@
 module.exports = (app, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
     //Display Items
     app.get('/stores/itemSearch',       isLoggedIn, (req, res) => {
         let supplier_id = Number(req.query.supplier_id) || -1,
@@ -104,8 +103,7 @@ module.exports = (app, inc, isLoggedIn, m) => {
             include_options.serials.issued = false;
         };
         if (req.body.size_id) {
-            db.findOne({
-                table: m.sizes,
+            m.sizes.findOne({
                 where: {
                     size_id: req.body.size_id,
                     _issueable: 1

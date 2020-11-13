@@ -2,13 +2,12 @@
 const op = require('sequelize').Op,
       { scryptSync, randomBytes } = require("crypto");
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
-    app.get('/stores/users',              isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
+    app.get('/stores/users',          isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
         if (req.allowed) res.render('stores/users/index')
         else res.redirect('/stores/users/' + req.user.user_id);
     });
-    app.get('/stores/users/new',          isLoggedIn, allowed('user_add'),                                 (req, res) => res.render('stores/users/new'));
-    app.get('/stores/users/:id',          isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
+    app.get('/stores/users/new',      isLoggedIn, allowed('user_add'),                                 (req, res) => res.render('stores/users/new'));
+    app.get('/stores/users/:id',      isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             res.render('stores/users/show', {
                 user_id: req.params.id,
@@ -16,9 +15,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             });
         } else res.error.redirect(new Error('Permission denied'), req, res);
     });
-    app.get('/stores/users/:id/edit',     isLoggedIn, allowed('user_edit'),                                (req, res) => res.render('stores/users/edit', {user_id: req.params.id}));
+    app.get('/stores/users/:id/edit', isLoggedIn, allowed('user_edit'),                                (req, res) => res.render('stores/users/edit', {user_id: req.params.id}));
     
-    app.post('/stores/users',             isLoggedIn, allowed('user_add',      {send: true}),              (req, res) => {
+    app.post('/stores/users',         isLoggedIn, allowed('user_add',      {send: true}),              (req, res) => {
         let user = req.body.user;
         if (
             (user._bader    && user._bader !== '')    &&
@@ -27,15 +26,15 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             (user._login_id && user._login_id !== '')
         ) {
             let _password = generatePassword();
-            m.users.create({...user, ...{_reset: 1}, ...encryptPassword(_password.plain)})
+            m.users.users.create({...user, ...{_reset: 1}, ...encryptPassword(_password.plain)})
             .then(user => res.send({result: true, message: `User added. Password: ${_password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
             .catch(err => res.error.send(err, res));
         } else res.error.send(new Error('Not all required information has been submitted'), res)
     });
-    app.put('/stores/password/:id',       isLoggedIn, allowed('user_password', {send: true, allow: true}), (req, res) => {
+    app.put('/stores/password/:id',   isLoggedIn, allowed('user_password', {send: true, allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             if (req.body._password) {
-                m.users.findOne({where: {user_id: req.params.id}})
+                m.users.users.findOne({where: {user_id: req.params.id}})
                 .then(user => {
                     return user.update(
                         encryptPassword(req.body._password),
@@ -51,13 +50,13 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             } else res.error.send('No password submitted', res);
         } else res.error.send('Permission denied', res);
     });
-    app.put('/stores/users/:id',          isLoggedIn, allowed('user_edit',     {send: true}),              (req, res) => {
+    app.put('/stores/users/:id',      isLoggedIn, allowed('user_edit',     {send: true}),              (req, res) => {
         if (req.body.user) {
             if (!req.body.user._reset) req.body.user._reset = 0;
             ['user_id','full_name','_salt','_password','createdAt','updatedAt'].forEach(e => {
                 if (req.body.user[e]) delete req.body.user[e];
             });
-            m.users.findOne({where: {user_id: req.params.id}})
+            m.users.users.findOne({where: {user_id: req.params.id}})
             .then(user => {
                 return user.update(req.body.user).then(user => res.send({result: true, message: 'User saved'}))
                 .catch(err => res.error.send(err, res));
@@ -66,14 +65,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         } else res.error.send(new Error('No details submitted'), res);
     });
     
-    app.delete('/stores/users/:id',       isLoggedIn, allowed('user_delete',   {send: true}),              (req, res) => {
+    app.delete('/stores/users/:id',   isLoggedIn, allowed('user_delete',   {send: true}),              (req, res) => {
         if (Number(req.user.user_id) !== Number(req.params.id)) {
-            m.permissions.destroy({where: {user_id: req.params.id}})
+            m.stores.permissions.destroy({where: {user_id: req.params.id}})
             .then(result => {
-                db.destroy({
-                    table: m.users,
-                    where: {user_id: req.params.id}
-                })
+                m.users.users.destroy({where: {user_id: req.params.id}})
                 .then(result => res.send({result: true, message: 'User/Permissions deleted'}))
                 .catch(err => res.error.send(err, res));
             })

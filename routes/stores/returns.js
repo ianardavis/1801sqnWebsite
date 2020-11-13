@@ -1,8 +1,7 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db      = require(process.env.ROOT + '/fn/db'),
-        utils   = require(process.env.ROOT + '/fn/utils'),
-        returns = require(process.env.ROOT + '/fn/returns'),
-        stock   = require(process.env.ROOT + '/fn/stock');
+    let utils   = require(process.env.ROOT + '/fn/utils'),
+        returns = require(process.env.ROOT + '/fn/stores/returns'),
+        stock   = require(process.env.ROOT + '/fn/stores/stock');
     app.post('/stores/returns', isLoggedIn, allowed('return_line_add', {send: true}), (req, res) => {
         let actions = [];
         for (let [lineID, line] of Object.entries(req.body.return)) {
@@ -19,8 +18,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     return_issue_line = (line, user_id) => new Promise((resolve, reject) => {
-        db.findOne({
-            table: m.issue_lines,
+        m.issue_lines.findOne({
             where: {line_id: line.line_id},
             include: [inc.issues()]
         })
@@ -55,11 +53,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     })
                     .then(return_line_id => {
                         if (Number(line._qty) === Number(issue_line._qty)) {
-                            db.update({
-                                table: m.issue_lines,
-                                where: {line_id: issue_line.line_id},
-                                record: {return_line_id: return_line_id}
-                            })
+                            m.issue_lines.update(
+                                {return_line_id: return_line_id},
+                                {where: {line_id: issue_line.line_id}}
+                            )
                             .then(result => resolve(true))
                             .catch(err => reject(err));
                         } else {

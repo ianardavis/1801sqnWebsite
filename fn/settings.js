@@ -1,5 +1,5 @@
-module.exports = (settings, _return) => {
-    _return.get = (options = {}) => new Promise((resolve, reject) => {
+module.exports = {
+    get: (options = {}) => new Promise((resolve, reject) => {
         settings.findOrCreate({
             where: {_name: options.name},
             defaults: {_value: options.default || ''}
@@ -13,7 +13,7 @@ module.exports = (settings, _return) => {
             reject(null);
         });
     }),
-    _return.edit = (options = {}) => new Promise((resolve, reject) => {
+    edit: (options = {}) => new Promise((resolve, reject) => {
         settings.update(
             {_value: options.value},
             {where: {_name: options.name}}

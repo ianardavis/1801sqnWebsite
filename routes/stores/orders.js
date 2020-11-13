@@ -1,9 +1,9 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, loggedIn, m) => {
-    let orders   = require(process.env.ROOT + '/fn/orders'),
-        demands  = require(process.env.ROOT + '/fn/demands'),
-        receipts = require(process.env.ROOT + '/fn/receipts'),
-        issues   = require(process.env.ROOT + '/fn/issues'),
+    let orders   = require(process.env.ROOT + '/fn/stores/orders'),
+        demands  = require(process.env.ROOT + '/fn/stores/demands'),
+        receipts = require(process.env.ROOT + '/fn/stores/receipts'),
+        issues   = require(process.env.ROOT + '/fn/stores/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
     app.get('/stores/orders',             loggedIn, allowed('access_orders'),                            (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
     app.get('/stores/orders/:id',         loggedIn, allowed('access_orders'),                            (req, res) => {

@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let receipts = require(process.env.ROOT + '/fn/receipts'),
-        demands  = require(process.env.ROOT + '/fn/demands'),
+    let receipts = require(process.env.ROOT + '/fn/stores/receipts'),
+        demands  = require(process.env.ROOT + '/fn/stores/demands'),
         utils    = require(process.env.ROOT + '/fn/utils');
     app.get('/stores/demands',              isLoggedIn, allowed('access_demands'),                   (req, res) => res.render('stores/demands/index'));
     app.get('/stores/demands/:id',          isLoggedIn, allowed('access_demands'),                   (req, res) => res.render('stores/demands/show', {tab: req.query.tab || 'details'}));
@@ -219,31 +219,18 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     
     app.delete('/stores/demands/:id',       isLoggedIn, allowed('demand_delete',      {send: true}), (req, res) => {
-        db.destroy({
-            table: m.demand_lines,
-            where: {demand_id: req.params.id}
-        })
+        m.demand_lines.destroy({where: {demand_id: req.params.id}})
         .then(result => {
-            db.destroy({
-                table: m.demands,
-                where: {demand_id: req.params.id}
-            })
+            m.demands.destroy({where: {demand_id: req.params.id}})
             .then(result => res.send({result: true, message: 'Demand deleted'}))
             .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/demand_lines/:id',  isLoggedIn, allowed('demand_line_delete', {send: true}), (req, res) => { //
-        db.findOne({
-            table: m.demand_lines,
-            where: {line_id: req.params.id}
-        })
+        m.demand_lines.findOne({where: {line_id: req.params.id}})
         .then(line => {
-            db.update({
-                table: m.demand_lines,
-                where: {line_id: req.params.id},
-                record: {_status: 'Cancelled'}
-            })
+            line.update({_status: 0})
             .then(result => {
                 m.notes.create({
                     _table:  'demands',

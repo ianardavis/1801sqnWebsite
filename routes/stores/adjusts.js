@@ -1,10 +1,8 @@
 module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
     app.get('/stores/adjusts/new', isLoggedIn, allowed('adjust_add'), (req, res) => {
         if (req.query.adjustType === 'Scrap' || 'Count') {
             if (req.query.stock_id) {
-                db.findOne({
-                    table: m.stock,
+                m.stock.findOne({
                     where: {stock_id: req.query.stock_id},
                     include: [
                         inc.sizes(),

@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, loggedIn, m) => {
-    let loancard = require(process.env.ROOT + '/fn/loancard'),
-        issues   = require(process.env.ROOT + '/fn/issues'),
+    let loancard = require(process.env.ROOT + '/fn/stores/loancard'),
+        issues   = require(process.env.ROOT + '/fn/stores/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
     app.get('/stores/issues',              loggedIn, allowed('access_issues'),                                (req, res) => res.render('stores/issues/index'));
     app.get('/stores/issues/:id',          loggedIn, allowed('access_issues',                 {allow: true}), (req, res) => {
@@ -100,8 +100,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res))
     });
     app.delete('/stores/issues/:id',       loggedIn, allowed('issue_delete',      {send: true}),              (req, res) => {
-        db.findOne({
-            table: m.issues,
+        m.issues.findOne({
             where: {issue_id: req.params.id},
             include: [inc.issue_lines()]
         })
@@ -109,15 +108,9 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             if (issue._complete || issue._closed) res.error.send('Completed/closed issues can not be deleted');
             else {
                 if (issue.lines.filter(e => e.return_line_id).length === 0) {
-                    db.destroy({
-                        table: m.issue_lines,
-                        where: {issue_id: req.params.id}
-                    })
+                    m.issue_lines.destroy({where: {issue_id: req.params.id}})
                     .then(result => {
-                        db.destroy({
-                            table: m.issues,
-                            where: {issue_id: req.params.id}
-                        })
+                        issue.destroy()
                         .then(result => res.send({result: true, message: 'Issue deleted'}))
                         .catch(err => res.error.send(err, res));
                     })
@@ -128,17 +121,11 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/issue_lines/:id',  loggedIn, allowed('issue_line_delete', {send: true}),              (req, res) => { //
-        db.findOne({
-            table: m.issue_lines,
-            where: {line_id: req.params.id}
-        })
+        m.issue_lines.findOne({where: {line_id: req.params.id}})
         .then(line => {
             if (line.return_line_id) res.error.send('Returned issue lines can not be deleted')
             else {
-                db.destroy({
-                    table: m.issue_lines,
-                    where: {line_id: req.params.id}
-                })
+                line.destroy()
                 .then(result => res.send({result: true, message: 'Line deleted'}))
                 .catch(err => res.error.send(err, res));
             };

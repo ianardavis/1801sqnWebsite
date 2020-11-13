@@ -75,11 +75,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             ]
         },
         attributes = {
-            users: ['user_id', 'full_name', '_bader', '_name', '_ini', 'status_id', 'rank_id', '_login_id', '_reset', '_last_login'],
             settings: ['_name', '_value']
         };
     app.get('/stores/get/issue_lines/:id', isLoggedIn, allowed('', {send: true}),              (req, res) => {
-        m.issue_lines.findAll({
+        m.stores.issue_lines.findAll({
             include: [
                 inc.users(),
                 inc.sizes({stock: true}),
@@ -92,7 +91,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request_lines/:id', isLoggedIn, allowed('', {send: true}),            (req, res) => {
-        m.request_lines.findAll({
+        m.stores.request_lines.findAll({
             where: req.query,
             include: [
                 inc.sizes(),
@@ -104,7 +103,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/order_lines/:id', isLoggedIn, allowed('', {send: true}),              (req, res) => {
-        m.order_lines.findAll({
+        m.stores.order_lines.findAll({
             where: req.query,
             include: [
                 inc.sizes(),
@@ -117,18 +116,19 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
     });
     app.get('/stores/get/requests',        isLoggedIn, allowed('', {allow: true, send: true}), (req, res) => {
         if (!allowed) req.query.requested_for = req.user.user_id;
-        m.requests.findAll({
+        m.stores.requests.findAll({
             where: req.query,
             include: [
                 inc.request_lines(),
                 inc.users({as: 'user_for'}),
                 inc.users({as: 'user_by'})
-        ]})
+            ]
+        })
         .then(requests => res.send({result: true, requests: requests}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/sizes',           isLoggedIn, allowed('', {send: true}),              (req, res) => {
-        m.sizes.findAll({
+        m.stores.sizes.findAll({
             where: req.query,
             attributes: {exclude: ['createdAt', 'updatedAt']},
             include: [inc.items(), inc.suppliers({as: 'supplier'})]
@@ -140,12 +140,12 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/count/:table',        isLoggedIn, allowed('', {send: true}),              (req, res) => {
-        m[req.params.table].count({where: req.query})
+        m.stores[req.params.table].count({where: req.query})
         .then(count => res.send({result: true, count: count}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/:table',          isLoggedIn, allowed('', {send: true}),              (req, res) => {
-        m[req.params.table].findAll({
+        m.stores[req.params.table].findAll({
             where:      req.query,
             include:    includes[req.params.table]   || [],
             attributes: attributes[req.params.table] || null

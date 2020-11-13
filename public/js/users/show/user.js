@@ -31,10 +31,12 @@ showUser = (users, options) => {
         };
         if (options.permissions.user.edit) {
             let modals = document.querySelector('#modals_user');
-            modals.appendChild(new Modal({id: 'change_password', static: true}).e);
-            let chg_pwd_title = document.querySelector('#mdl_change_password_title'),
-                chg_pwd_body  = document.querySelector('#mdl_change_password_body');
-            if (chg_pwd_title) chg_pwd_title.innerText = 'Change Password';
+            modals.appendChild(new Modal({
+                id: 'change_password',
+                static: true,
+                title: 'Change Password'
+            }).e);
+            let chg_pwd_body  = document.querySelector('#mdl_change_password_body');
             if (chg_pwd_body) {
                 let form = document.createElement('form');
                 form.setAttribute('id', 'form_password_change')
