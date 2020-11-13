@@ -9,7 +9,7 @@ process.env.ROOT     = __dirname;
 process.env.PARTIALS = __dirname + '/views/partials';
 let port = require(process.env.ROOT + '/fn/port'),
    _port = 3000;
-port.check(_port)
+port.check(_port) 
 .then(result => {
     console.log(result);
     if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
