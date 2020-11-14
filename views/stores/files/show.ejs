@@ -41,7 +41,7 @@
 <script src='/js/edit.js'></script>
 <script src='/js/add.js'></script>
 <script src='/js/tabs.js'></script>
-<script src="/js/files/show/file.js"></script>
+<script src="/js/stores/files/show/file.js"></script>
 <script>getFile = () => get(showFile, {table: 'files', query:[`file_id=${path[3]}`]})
     document.querySelector('#reload').addEventListener('click', () => getFile());
 </script>

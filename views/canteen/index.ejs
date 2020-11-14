@@ -10,12 +10,10 @@
 <section class='container'>
 	<div class="row container m-auto p-0 menu">
         <%- include(`${process.env.PARTIALS}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos'}) %>
-		<%- include(`${process.env.PARTIALS}/card`, {title: 'Items',         image: 'candy-cane', href: '/canteen/items'}) %>
-		<% if (permissions.canteen_supervisor) { %>
-            <%- include(`${process.env.PARTIALS}/card`, {href: '/canteen/sessions',  title: 'Sessions',  image: 'list'}) %>
-		    <%- include(`${process.env.PARTIALS}/card`, {href: '/canteen/receipts',  title: 'Receipts',  image: 'receipt'}) %>
-		    <%- include(`${process.env.PARTIALS}/card`, {href: '/canteen/writeoffs', title: 'Writeoffs', image: 'receipt'}) %>
-	    <% } %>
+		<%- include(`${process.env.PARTIALS}/card`, {title: 'Items',         image: 'candy-cane',    href: '/canteen/items'}) %>
+		<%- include(`${process.env.PARTIALS}/card`, {title: 'Sessions',      image: 'list',          href: '/canteen/sessions'}) %>
+        <%- include(`${process.env.PARTIALS}/card`, {title: 'Receipts',      image: 'receipt',       href: '/canteen/receipts'}) %>
+        <%- include(`${process.env.PARTIALS}/card`, {title: 'Writeoffs',     image: 'receipt',       href: '/canteen/writeoffs'}) %>
 	</div>
 </section>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
@@ -25,7 +23,8 @@
         get(
             getSession,
             {
-                table: 'canteen_sessions',
+                db:    'canteen',
+                table: 'sessions',
                 query: ['_status=1']
             }
         );

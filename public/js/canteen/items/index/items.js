@@ -23,8 +23,6 @@ function showItems(items, options) {
             static: true,
             title: 'Add Item'
         }).e);
-        
-
         let mdl_add_item_body  = document.querySelector('#mdl_add_item_body');
         if (mdl_add_item_body) {
             let form = document.createElement('form');

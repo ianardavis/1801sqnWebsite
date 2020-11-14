@@ -1,9 +1,15 @@
 const fs = require('fs');
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    app.get('/stores/files/:id',      isLoggedIn, allowed('access_files'),              (req, res) => res.render('stores/files/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/files/:id/edit', isLoggedIn, allowed('file_edit'),                 (req, res) => res.render('stores/files/edit'));
+module.exports = (app, allowed, inc, loggedIn, m) => {
+    app.get('/stores/files/:id',      loggedIn, allowed('access_files'),               (req, res) => res.render('stores/files/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/files/:id/edit', loggedIn, allowed('file_edit'),                  (req, res) => res.render('stores/files/edit'));
     
-    app.put('/stores/files/:id',      isLoggedIn, allowed('file_edit',   {send: true}), (req, res) => {
+    app.get('/stores/get/files',      loggedIn, allowed('access_files', {send: true}), (req, res) => {
+        m.stores.files.findAll({where: req.query})
+        .then(files => res.send({result: true, files: files}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.put('/stores/files/:id',      loggedIn, allowed('file_edit',    {send: true}), (req, res) => {
         m.files.update(
             req.body.file,
             {where: {file_id: req.params.id}}
@@ -11,7 +17,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(result => res.send({result: true, message: 'File details saved'}))
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/files',         isLoggedIn, allowed('file_add',    {send: true}), (req, res) => {
+    app.post('/stores/files',         loggedIn, allowed('file_add',     {send: true}), (req, res) => {
         if (!req.files || Object.keys(req.files).length !== 1) res.error.send(`${req.files.length} files or multiple files selected`, res)
         else {
             let uploaded = req.files.demandfile;
@@ -35,7 +41,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         };
     });
 
-    app.delete('/stores/files/:id',   isLoggedIn, allowed('file_delete', {send: true}), (req, res) => {
+    app.delete('/stores/files/:id',   loggedIn, allowed('file_delete',  {send: true}), (req, res) => {
         m.files.findOne({where: {file_id: req.params.id}})
         .then(file => {
             file.destroy()

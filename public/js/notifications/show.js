@@ -7,8 +7,9 @@ showNotifications = (notifications, options = {}) => {
                 urgency: notification._urgency,
                 title:   notification._title,
                 text:    notification._notification,
-                date:    `${new Date(notification.createdAt).toDateString()} ${new Date(notification.createdAt).toLocaleTimeString()}`
+                date:    print_date(notification.createdAt, true)
             }).e
         );
     });
+    hide_spinner('notifications');
 };

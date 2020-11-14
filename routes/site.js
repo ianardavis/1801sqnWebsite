@@ -1,6 +1,4 @@
-const   passport = require('passport'),
-        mw       = require(process.env.ROOT + '/config/middleware');
-
+const passport = require('passport');;
 module.exports = (app) => {
     app.get("/", (req, res) => {
         // res.redirect('/resources');
@@ -22,7 +20,7 @@ module.exports = (app) => {
     });
     
     app.post('/login', passport.authenticate('local-signin', {
-        failureRedirect: `/login?`
+        failureRedirect: `/login`
     }), (req, res) => res.redirect(`/${req.query.redirect || 'stores'}`));
     
     app.get("*",  (req, res) => res.render("404"));

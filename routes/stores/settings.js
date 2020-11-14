@@ -1,4 +1,4 @@
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
     let options     = require(process.env.ROOT + '/fn/options'),
         singularise = require(process.env.ROOT + '/fn/utils').singularise;
     _options = () => {
@@ -12,7 +12,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             {table: 'statuses'}
         ]
     };
-    app.get('/stores/settings',                isLoggedIn, allowed('access_settings'),              (req, res) => {
+    app.get('/stores/settings',                loggedIn, allowed('access_settings'),               (req, res) => {
         m.settings.findAll()
         .then(settings => {
             options.get(_options())
@@ -27,7 +27,16 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.put('/stores/settings',                isLoggedIn, allowed('setting_edit',   {send: true}), (req, res) => {
+    app.get('/stores/get/settings',            loggedIn, allowed('access_settings', {send: true}), (req, res) => {
+        m.settings.findAll({
+            where:      req.query,
+            attributes: ['_name', '_value']
+        })
+        .then(settings => res.send({result: true, settings: settings}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.put('/stores/settings',                loggedIn, allowed('setting_edit',    {send: true}), (req, res) => {
         console.log(req.body);
         console.log(req.query);
         if (!req.query) res.send({result: false, message: 'No query specified'})
@@ -46,7 +55,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         };
     });
     
-    app.get('/stores/get/options/:table',      isLoggedIn, allowed('access_options', {send: true}), (req, res) => {
+    app.get('/stores/get/options/:table',      loggedIn, allowed('access_options',  {send: true}), (req, res) => {
         let allowed_tables = ['ranks', 'genders', 'statuses', 'categories', 'groups', 'types', 'subtypes']
         if (allowed_tables.includes(req.params.table)) {
             m[req.params.table].findAll({where: req.query})
@@ -55,7 +64,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         } else res.error.send(new Error('Invalid request', res));
     });
     
-    app.post('/stores/options/:table',         isLoggedIn, allowed('option_add',     {send: true}), (req, res) => {
+    app.post('/stores/options/:table',         loggedIn, allowed('option_add',      {send: true}), (req, res) => {
         m[req.params.table].create(req.body[req.params.table])
         .then(record => {
             req.flash('success', 'Record added to ' + req.params.table);
@@ -64,7 +73,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.put('/stores/options/:table/:id',      isLoggedIn, allowed('option_edit',    {send: true}), (req, res) => {
+    app.put('/stores/options/:table/:id',      loggedIn, allowed('option_edit',     {send: true}), (req, res) => {
         let id_field = {};
         id_field[singularise(req.params.table) + '_id'] = req.params.id;
         m[req.params.table].update(
@@ -78,10 +87,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.delete('/stores/options/genders/:id',  isLoggedIn, allowed('option_delete',  {send: true}),   (req, res) => _delete('genders', req, res));
-    app.delete('/stores/options/ranks/:id',    isLoggedIn, allowed('option_delete',  {send: true}),   (req, res) => deleteSetting('ranks', req, res));
-    app.delete('/stores/options/statuses/:id', isLoggedIn, allowed('option_delete',  {send: true}),   (req, res) => deleteSetting('statuses', req, res));
-    app.delete('/stores/options/:table/:id',   isLoggedIn, allowed('option_delete',  {send: true}),   (req, res) => {
+    app.delete('/stores/options/genders/:id',  loggedIn, allowed('option_delete',   {send: true}), (req, res) => _delete('genders', req, res));
+    app.delete('/stores/options/ranks/:id',    loggedIn, allowed('option_delete',   {send: true}), (req, res) => deleteSetting('ranks', req, res));
+    app.delete('/stores/options/statuses/:id', loggedIn, allowed('option_delete',   {send: true}), (req, res) => deleteSetting('statuses', req, res));
+    app.delete('/stores/options/:table/:id',   loggedIn, allowed('option_delete',   {send: true}), (req, res) => {
         let check_table;
         if (req.params.table === 'categories')  check_table = m.groups
         else if (req.params.table === 'groups') check_table = m.types

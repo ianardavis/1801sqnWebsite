@@ -11,18 +11,15 @@ module.exports = (passport, m) => {
         })
         .then(user => {
             if (user) {
-                done(null, user.get());
-                return null;
+                return done(null, user.get());
             } else {
                 console.log(new Error('User not found'));
-                done(new Error('User not found'), null);
-                return null;
+                return done(new Error('User not found'), null);
             };
         })
         .catch(err => {
             console.log(err);
-            done(err, null);
-            return null;
+            return done(err, null);
         });
     });
 
@@ -32,13 +29,8 @@ module.exports = (passport, m) => {
             passwordField: '_password',
             passReqToCallback: true
         },(req, _login_id, _password, done) => {
-            m.users.findOne({
+            return m.users.findOne({
                 where: {_login_id: _login_id},
-                // include: [{
-                //     model: m.permissions,
-                //     where: {_permission: 'account_enabled'},
-                //     required: false
-                // }],
                 attributes: ['_login_id', 'user_id', '_reset', '_password', '_salt']
             })
             .then(user => {
@@ -57,11 +49,10 @@ module.exports = (passport, m) => {
                         false, 
                         {message: 'Invalid username or password!'}
                     );
-                // } else if x
                 } else {
                     delete user.dataValues._password;
                     delete user.dataValues._salt;
-                    m.users.update({_last_login: Date.now()},{where: {user_id: user.user_id}})
+                    return m.users.update({_last_login: Date.now()},{where: {user_id: user.user_id}})
                     .then(function(result) {
                         return done(null, user.get())})
                     .catch(err => {
@@ -71,7 +62,6 @@ module.exports = (passport, m) => {
                             {message: `Error setting last login: ${err.message}`}
                         );
                     });
-                    return null; //to prevent promise not returned error
                 };
             })
             .catch(err => {

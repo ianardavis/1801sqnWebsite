@@ -36,7 +36,8 @@
         get(
             showItems,
             {
-                table: 'canteen_items',
+                db:    'canteen',
+                table: 'items',
                 query: [_current.value || null],
                 permissions: {
                     item_add: <%= permissions.canteen_item_add || false %>

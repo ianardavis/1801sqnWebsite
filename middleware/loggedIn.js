@@ -12,12 +12,14 @@ module.exports = (m) => {
                 .then(permissions => {
                     res.locals.permissions = {};
                     permissions.forEach(e => res.locals.permissions[e._permission] = true);
-                    return next();
+                    next();
+                    return null;
                 })
                 .catch(err => {
                     console.log(err);
                     res.locals.permissions = [];
-                    return next();
+                    next();
+                    return null;
                 });
             } else {
                 req.flash('info', 'You must change your password before you can continue')
@@ -25,7 +27,7 @@ module.exports = (m) => {
             };
         } else {
             req.flash('danger', 'You need to be signed in to do that!');
-            res.redirect('/login?redirect=' + req.route.path.split('/')[1]);
+            res.redirect(`/login?redirect=${req.route.path.split('/')[1]}`);
         };
     };
 };

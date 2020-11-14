@@ -41,7 +41,7 @@
 	</div>
 </section>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
-<script src="/js/specific/index_show.js"></script>
+<script src="/js/stores/index/show.js"></script>
 <% if (permissions.access_requests) { %>
 	<script async>getCount('requests', ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
 	<script async>getCount('requests', ['_status=2'], {text: 'Open',  colour: 'danger',  float: 'right'})</script>

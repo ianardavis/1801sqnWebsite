@@ -4,8 +4,8 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         orders   = require(process.env.ROOT + '/fn/stores/orders'),
         issues   = require(process.env.ROOT + '/fn/stores/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/requests',             loggedIn, allowed('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
-    app.get('/stores/requests/:id',         loggedIn, allowed('access_requests',     {allow: true}),             (req, res) => {
+    app.get('/stores/requests',              loggedIn, allowed('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
+    app.get('/stores/requests/:id',          loggedIn, allowed('access_requests',     {allow: true}),             (req, res) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
             attributes: ['requested_for']
@@ -21,7 +21,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/request_lines/:id',    loggedIn, allowed('access_request_lines',             {send: true}), (req, res) => {
+    app.get('/stores/request_lines/:id',     loggedIn, allowed('access_request_lines',             {send: true}), (req, res) => {
         m.request_lines.findOne({
             where: {line_id: req.params.id},
             attribute: ['request_id']
@@ -32,8 +32,49 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
+    
+    app.get('/stores/get/requests',          loggedIn, allowed('access_requests',     {allow: true, send: true}), (req, res) => {
+        if (!allowed) req.query.requested_for = req.user.user_id;
+        m.requests.findAll({
+            where: req.query,
+            include: [
+                inc.request_lines(),
+                inc.users({as: 'user_for'}),
+                inc.users({as: 'user_by'})
+            ]
+        })
+        .then(requests => res.send({result: true, requests: requests}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/request_lines',     loggedIn, allowed('access_request_lines',             {send: true}), (req, res) => {
+        m.request_lines.findAll({
+            where:      req.query,
+            include:    [
+                inc.sizes(),
+                inc.requests(),
+                inc.users({as: 'user_add'}),
+                inc.users({as: 'user_approve'})
+            ]
+        })
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/request_lines/:id', loggedIn, allowed('access_request_lines',             {send: true}), (req, res) => {
+        m.request_lines.findAll({
+            where: req.query,
+            include: [
+                inc.sizes(),
+                inc.requests({
+                    where: {requested_for: req.params.id},
+                    required: true
+                })
+            ]
+        })
+        .then(lines => res.send({result: true, request_lines: lines}))
+        .catch(err => res.error.send(err, res));
+    });
 
-    app.post('/stores/requests',            loggedIn, allowed('request_add',                      {send: true}), (req, res) => {
+    app.post('/stores/requests',             loggedIn, allowed('request_add',                      {send: true}), (req, res) => {
         requests.create({
             m: {requests: m.requests, users: m.users},
             requested_for: req.body.requested_for,
@@ -47,7 +88,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/request_lines',       loggedIn, allowed('request_line_add',                 {send: true}), (req, res) => {
+    app.post('/stores/request_lines',        loggedIn, allowed('request_line_add',                 {send: true}), (req, res) => {
         requests.createLine({
             m: {
                 sizes: m.sizes,
@@ -62,7 +103,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res))
     });
     
-    app.put('/stores/requests/:id',         loggedIn, allowed('request_edit',        {allow: true, send: true}), (req, res) => {
+    app.put('/stores/requests/:id',          loggedIn, allowed('request_edit',        {allow: true, send: true}), (req, res) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
             include: [inc.request_lines({where: {_status: 1}, attributes: ['line_id']})],
@@ -105,7 +146,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/request_lines/:id',    loggedIn, allowed('request_line_edit',                {send: true}), (req, res) => {
+    app.put('/stores/request_lines/:id',     loggedIn, allowed('request_line_edit',                {send: true}), (req, res) => {
         m.requests.findOne({
             where: { request_id: req.params.id },
             attributes: ['request_id', 'requested_for' , '_status']
@@ -258,7 +299,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/requests/:id',      loggedIn, allowed('request_delete',      {allow: true, send: true}), (req, res) => {
+    app.delete('/stores/requests/:id',       loggedIn, allowed('request_delete',      {allow: true, send: true}), (req, res) => {
         m.requests.findOne({
             where: {request_id: req.params.id},
             attributes: ['request_id', '_status', 'requested_for'],
@@ -300,7 +341,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/request_lines/:id', loggedIn, allowed('request_line_delete', {allow: true, send: true}), (req, res) => {
+    app.delete('/stores/request_lines/:id',  loggedIn, allowed('request_line_delete', {allow: true, send: true}), (req, res) => {
         m.request_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status'],

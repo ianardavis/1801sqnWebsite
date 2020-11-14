@@ -1,5 +1,5 @@
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    app.get('/stores/stock/new',      isLoggedIn, allowed('stock_add'),                  (req, res) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
+    app.get('/stores/stock/new',      loggedIn, allowed('stock_add'),                  (req, res) => {
         m.sizes.findOne({
             where: {size_id: req.query.size_id},
             include: []
@@ -7,8 +7,8 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(item => res.render('stores/stock/new', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/stock/:id',      isLoggedIn, allowed('access_stock'),               (req, res) => res.render('stores/stock/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'),                 (req, res) => {
+    app.get('/stores/stock/:id',      loggedIn, allowed('access_stock'),               (req, res) => res.render('stores/stock/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/stock/:id/edit', loggedIn, allowed('stock_edit'),                 (req, res) => {
         m.stock.findOne({
             where: {stock_id: req.params.id},
             include: [m.locations]
@@ -17,7 +17,16 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.post('/stores/stock',         isLoggedIn, allowed('stock_add',    {send: true}), (req, res) => {
+    app.get('/stores/get/stock',      loggedIn, allowed('access_stock', {send: true}), (req, res) => {
+        m.stock.findAll({
+            where:   req.query,
+            include: [inc.locations({as: 'location'})],
+        })
+        .then(stocks => res.send({result: true, stocks: stocks}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.post('/stores/stock',         loggedIn, allowed('stock_add',    {send: true}), (req, res) => {
         m.locations.findOne({where: {_location: req.body.location}})
         .then(location => {
             if (location) {
@@ -34,7 +43,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/stock/:id',      isLoggedIn, allowed('stock_edit',   {send: true}), (req, res) => {
+    app.put('/stores/stock/:id',      loggedIn, allowed('stock_edit',   {send: true}), (req, res) => {
         m.stock.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             m.locations.findOne({where: {_location: req.body._location}})
@@ -55,7 +64,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         
     });
     
-    app.delete('/stores/stock/:id',   isLoggedIn, allowed('stock_delete', {send: true}), (req, res) => {
+    app.delete('/stores/stock/:id',   loggedIn, allowed('stock_delete', {send: true}), (req, res) => {
         m.stock.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             if (stock._qty === 0) {

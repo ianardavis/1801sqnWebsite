@@ -1,15 +1,30 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
     let utils = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/sizes/new',      isLoggedIn, allowed('size_add'),                  (req, res) => {
+    app.get('/stores/sizes/new',      loggedIn, allowed('size_add'),                   (req, res) => {
         m.items.findOne({where: {item_id: req.query.item_id}})
         .then(item => res.render('stores/sizes/new', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/sizes/:id',      isLoggedIn, allowed('access_sizes'),              (req, res) => res.render('stores/sizes/show', {tab:  req.query.tab || 'details'}));
-    app.get('/stores/sizes/:id/edit', isLoggedIn, allowed('size_edit'),                 (req, res) => res.render('stores/sizes/edit'));
+    app.get('/stores/sizes/:id',      loggedIn, allowed('access_sizes'),               (req, res) => res.render('stores/sizes/show', {tab:  req.query.tab || 'details'}));
+    app.get('/stores/sizes/:id/edit', loggedIn, allowed('size_edit'),                  (req, res) => res.render('stores/sizes/edit'));
 
-    app.post('/stores/sizes',         isLoggedIn, allowed('size_add',    {send: true}), (req, res) => {
+    app.get('/stores/get/sizes',      loggedIn, allowed('access_sizes', {send: true}), (req, res) => {
+        m.sizes.findAll({
+            where: req.query,
+            include: [
+                inc.items(),
+                inc.suppliers({as: 'supplier'})
+            ]
+        })
+        .then(sizes => {
+            sizes.forEach(size => size.dataValues.locationStock = utils.summer(size.stocks));
+            res.send({result: true, sizes: sizes})
+        })
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.post('/stores/sizes',         loggedIn, allowed('size_add',     {send: true}), (req, res) => {
         req.body.size._ordering_details = req.body.size._ordering_details.trim()
         req.body.size = utils.nullify(req.body.size);
         m.sizes.findOrCreate({
@@ -26,7 +41,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/sizes/:id',      isLoggedIn, allowed('size_edit',   {send: true}), (req, res) => {
+    app.put('/stores/sizes/:id',      loggedIn, allowed('size_edit',    {send: true}), (req, res) => {
         m.sizes.update(
             req.body.size,
             {where: {size_id: req.params.id}}
@@ -35,7 +50,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.delete('/stores/sizes/:id',   isLoggedIn, allowed('size_delete', {send: true}), (req, res) => {
+    app.delete('/stores/sizes/:id',   loggedIn, allowed('size_delete',  {send: true}), (req, res) => {
         m.stock.findOne({where: {size_id: req.params.id}})
         .then(stock => {
             if (stock) res.error.send('Cannot delete a size whilst it has stock', res)

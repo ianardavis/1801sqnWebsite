@@ -8,7 +8,7 @@
         addFormListener(
             'deleteForm',
             'DELETE',
-            '/stores/' + path[2] + '/' + path[3],
+            `/${path[1]}/${path[2]}/${path[3]}`,
             {<% if (locals.close) { %>
                 onComplete: window.opener['<%- onComplete %>'],
                 _close: true

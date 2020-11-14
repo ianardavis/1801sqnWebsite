@@ -1,8 +1,6 @@
 node_modules
 .env
-db/stores/config.json
-db/canteen/config.json
-db/users/config.json
+db/config.json
 public/lib/icons
 public/lib/css
 public/lib/js

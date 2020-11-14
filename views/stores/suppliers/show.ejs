@@ -148,8 +148,8 @@
 <script>showTab('<%= tab %>');</script>
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/get/settings.js'></script>
-<script src='/js/suppliers/show/showSupplier.js'></script>
-<script src='/js/suppliers/show/setDefault.js'></script>
+<script src='/js/stores/suppliers/show/showSupplier.js'></script>
+<script src='/js/stores/suppliers/show/setDefault.js'></script>
 <script>
     getSupplier = () => get(showSupplier, {table: 'suppliers', query: ['supplier_id=' + path[3]]});
     document.querySelector('#reload').addEventListener('click', () => getSupplier());

@@ -1,11 +1,11 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
     let receipts = require(process.env.ROOT + '/fn/stores/receipts'),
         demands  = require(process.env.ROOT + '/fn/stores/demands'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/demands',              isLoggedIn, allowed('access_demands'),                   (req, res) => res.render('stores/demands/index'));
-    app.get('/stores/demands/:id',          isLoggedIn, allowed('access_demands'),                   (req, res) => res.render('stores/demands/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/demands/:id/download', isLoggedIn, allowed('access_demands'),                   (req, res) => {
+    app.get('/stores/demands',              loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/index'));
+    app.get('/stores/demands/:id',          loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/demands/:id/download', loggedIn, allowed('access_demands'),                    (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['_filename']
@@ -17,7 +17,33 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.post('/stores/demands',             isLoggedIn, allowed('demand_add',         {send: true}), (req, res) => {
+    app.get('/stores/get/demands',          loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
+        m.demands.findAll({
+            where:   req.query,
+            include: [
+                inc.demand_lines(),
+                inc.users(),
+                inc.suppliers({as: 'supplier'})
+            ]
+        })
+        .then(demands => res.send({result: true, demands: demands}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/demand_lines',     loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
+        m.demand_lines.findAll({
+            where:   req.query,
+            include: [
+                inc.sizes({stock: true}),
+                inc.receipt_lines({as: 'receipt_line', receipts: true, include: [inc.users()]}),
+                inc.users(),
+                inc.demands()
+            ]
+        })
+        .then(demands => res.send({result: true, demands: demands}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.post('/stores/demands',             loggedIn, allowed('demand_add',          {send: true}), (req, res) => {
         demands.create({
             m: {suppliers: m.suppliers, demands: m.demands},
             demand: {
@@ -32,7 +58,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/demand_lines',        isLoggedIn, allowed('demand_line_add',    {send: true}), (req, res) => {
+    app.post('/stores/demand_lines',        loggedIn, allowed('demand_line_add',     {send: true}), (req, res) => {
         demands.createLine({
             m: {
                 sizes: m.sizes,
@@ -47,7 +73,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.put('/stores/demands/:id',          isLoggedIn, allowed('demand_edit',        {send: true}), (req, res) => {
+    app.put('/stores/demands/:id',          loggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             include: [inc.suppliers({as: 'supplier', file: true})],
@@ -139,7 +165,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/demand_lines/:id',     isLoggedIn, allowed('receipt_add',        {send: true}), (req, res) => {
+    app.put('/stores/demand_lines/:id',     loggedIn, allowed('receipt_add',         {send: true}), (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['demand_id', 'supplier_id']
@@ -218,7 +244,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/demands/:id',       isLoggedIn, allowed('demand_delete',      {send: true}), (req, res) => {
+    app.delete('/stores/demands/:id',       loggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
         m.demand_lines.destroy({where: {demand_id: req.params.id}})
         .then(result => {
             m.demands.destroy({where: {demand_id: req.params.id}})
@@ -227,7 +253,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/demand_lines/:id',  isLoggedIn, allowed('demand_line_delete', {send: true}), (req, res) => { //
+    app.delete('/stores/demand_lines/:id',  loggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => {
         m.demand_lines.findOne({where: {line_id: req.params.id}})
         .then(line => {
             line.update({_status: 0})
