@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
     let canteen = require(process.env.ROOT + '/fn/canteen');
-    app.get('/canteen/receipts',              isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/receipts',              loggedIn, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_receipts.findAll({
             include: [
                 inc.canteen_receipt_lines(),
@@ -11,72 +11,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .then(receipts => res.render('canteen/receipts/index', {receipts: receipts}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/canteen/receipts/new',          isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        m.canteen_receipts.findOne({
-            where: {
-                _complete: 0,
-                user_id: req.user.user_id
-            }
-        })
-        .then(receipt => {
-            if (!receipt) {
-                m.canteen_receipts.create({user_id: req.user.user_id})
-                .then(new_receipt => {
-                    req.flash('success', 'Receipt created: ' + new_receipt.receipt_id);
-                    res.redirect('/canteen/receipts');
-                })
-                .catch(err => res.error.redirect(err, req, res));
-            } else {
-                req.flash('success', 'Receipt already open: ' + receipt.receipt_id);
-                res.redirect('/canteen/receipts');
-            };
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/canteen/receipts/:id',          isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        m.canteen_receipts.findOne({
-            where: {receipt_id: req.params.id},
-            include: [inc.canteen_receipt_lines()]
-        })
-        .then(receipt => res.render('canteen/receipts/show', {receipt: receipt}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
-
-    app.post('/canteen/receipt_lines',        isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        m.canteen_receipt_lines.findOne({
-            where: {
-                receipt_id: req.body.line.receipt_id,
-                item_id: req.body.line.item_id
-            }
-        })
-        .then(line => {
-            if (!line) {
-                m.canteen_receipt_lines.create(req.body.line)
-                .then(line => {
-                    req.flash('success', 'Item added');
-                    res.redirect('/canteen/items/' + req.body.line.item_id);
-                })
-                .catch(err => res.error.redirect(err, req, res));
-            } else {
-                req.flash('danger', 'Item already on receipt');
-                res.redirect('/canteen/items/' + req.body.line.item_id);
-            };
-        })
-    
-    });
-
-    app.put('/canteen/receipt_lines/:id',     isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        m.canteen_receipt_lines.update(
-            req.body.line,
-            {where: {line_id: req.params.id}}
-        )
-        .then(result => {
-            req.flash('success', 'Line updated');
-            res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/canteen/receipts/:id/complete', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/receipts/:id/complete', loggedIn, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_receipt_lines.findAll({
             where: {receipt_id: req.params.id},
             include: [
@@ -113,7 +48,83 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.put('/canteen/receipts/:id',          isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/receipts/new',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
+        m.canteen_receipts.findOne({
+            where: {
+                _complete: 0,
+                user_id: req.user.user_id
+            }
+        })
+        .then(receipt => {
+            if (!receipt) {
+                m.canteen_receipts.create({user_id: req.user.user_id})
+                .then(new_receipt => {
+                    req.flash('success', 'Receipt created: ' + new_receipt.receipt_id);
+                    res.redirect('/canteen/receipts');
+                })
+                .catch(err => res.error.redirect(err, req, res));
+            } else {
+                req.flash('success', 'Receipt already open: ' + receipt.receipt_id);
+                res.redirect('/canteen/receipts');
+            };
+        })
+        .catch(err => res.error.redirect(err, req, res));
+    });
+    app.get('/canteen/receipts/:id',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
+        m.canteen_receipts.findOne({
+            where: {receipt_id: req.params.id},
+            include: [inc.canteen_receipt_lines()]
+        })
+        .then(receipt => res.render('canteen/receipts/show', {receipt: receipt}))
+        .catch(err => res.error.redirect(err, req, res));
+    });
+    
+    app.get('/canteen/get/receipts',          loggedIn, allowed('access_receipts', {send: true}), (req, res) => {
+        m.receipts.findAll({where: req.query})
+        .then(receipts => res.send({result: true, receipts: receipts}))
+        .catch(err => res.error.send(err, res))
+    });
+    app.get('/canteen/get/receipt_lines',     loggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
+        m.receipt_lines.findAll({where: req.query})
+        .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => res.error.send(err, res))
+    });
+
+    app.post('/canteen/receipt_lines',        loggedIn, allowed('canteen_supervisor'), (req, res) => {
+        m.canteen_receipt_lines.findOne({
+            where: {
+                receipt_id: req.body.line.receipt_id,
+                item_id: req.body.line.item_id
+            }
+        })
+        .then(line => {
+            if (!line) {
+                m.canteen_receipt_lines.create(req.body.line)
+                .then(line => {
+                    req.flash('success', 'Item added');
+                    res.redirect('/canteen/items/' + req.body.line.item_id);
+                })
+                .catch(err => res.error.redirect(err, req, res));
+            } else {
+                req.flash('danger', 'Item already on receipt');
+                res.redirect('/canteen/items/' + req.body.line.item_id);
+            };
+        })
+    
+    });
+
+    app.put('/canteen/receipt_lines/:id',     loggedIn, allowed('canteen_supervisor'), (req, res) => {
+        m.canteen_receipt_lines.update(
+            req.body.line,
+            {where: {line_id: req.params.id}}
+        )
+        .then(result => {
+            req.flash('success', 'Line updated');
+            res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
+        })
+        .catch(err => res.error.redirect(err, req, res));
+    });
+    app.put('/canteen/receipts/:id',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_receipts.update(
             req.body.receipt,
             {where: {receipt_id: req.params.id}}
@@ -124,7 +135,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.delete('/canteen/receipt_lines/:id',  isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.delete('/canteen/receipt_lines/:id',  loggedIn, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_receipt_lines.destroy({where: {line_id: req.params.id}})
         .then(result => {
             req.flash('success', 'Line removed');
@@ -132,7 +143,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.delete('/canteen/receipts/:id',       isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.delete('/canteen/receipts/:id',       loggedIn, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_receipts.destroy({where: {receipt_id: req.params.id}})
         .then(result => {
             req.flash('success', 'Receipt deleted');

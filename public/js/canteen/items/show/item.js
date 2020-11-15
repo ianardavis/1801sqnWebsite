@@ -5,10 +5,6 @@ showItem = (items, options) => {
                 let element = document.querySelector(`#${id}`);
                 if (id === '_current') {
                     if (element) element.innerText = yesno(value);
-                } else if (id === 'item_id') {
-                    let item_ids = document.querySelectorAll('.item_id');
-                    console.log(item_ids);
-                    item_ids.forEach(e => e.setAttribute('value', value));
                 } else if (element) element.innerText = value;
             } catch (error) {console.log(error)};
         };
@@ -45,10 +41,7 @@ showItem = (items, options) => {
                 let btn_edit_item = document.querySelector('#edit_link');
                 if (btn_edit_item) btn_edit_item.setAttribute('href', 'javascript:$("#mdl_edit_item").modal("show")');
             };
-
-
         };
-        
         let add_size = document.querySelector('#add_size');
         if (add_size) add_size.href = `javascript:add("sizes",{"queries":"item_id=${items[0].item_id}"})`;
     } else alert(`${items.length} matching items found`);

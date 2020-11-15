@@ -31,12 +31,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    'opened_by': {
+    'user_id_open': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'closed_by': {
+    'user_id_close': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"

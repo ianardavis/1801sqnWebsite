@@ -13,7 +13,7 @@
                 onComplete: window.opener['<%- onComplete %>'],
                 _close: true
             <% } else { %>
-                redirect: <% if (locals.redirect) { %>'<%= redirect %>'<% } else { %>'/stores/' + path[2]<% } %>
+                redirect: <% if (locals.redirect) { %>'<%= redirect %>'<% } else { %>`'/${path[1]}/${path[2]}`<% } %>
             <% } %>}
         );
     };

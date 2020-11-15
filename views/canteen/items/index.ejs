@@ -4,10 +4,11 @@
         <ul class='navbar-nav mr-auto'>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
-			<% if (permissions.canteen_item_add) { %>
+			<% if (permissions.item_add) { %>
 				<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_item'}) %>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+            <%- include(`${process.env.PARTIALS}/reload`) %>
+            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
         </ul>
     </nav>
 </section>
@@ -40,7 +41,7 @@
                 table: 'items',
                 query: [_current.value || null],
                 permissions: {
-                    item_add: <%= permissions.canteen_item_add || false %>
+                    item_add: <%= permissions.item_add || false %>
                 }
             }
         );

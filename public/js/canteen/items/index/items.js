@@ -26,13 +26,13 @@ function showItems(items, options) {
         let mdl_add_item_body  = document.querySelector('#mdl_add_item_body');
         if (mdl_add_item_body) {
             let form = document.createElement('form');
-            form.setAttribute('id', 'form_add_item')
+            form.setAttribute('id', 'form_add_item');
             form.appendChild(new Input_Group({title: 'Name',    append: new Input({ required: true, name: 'item[_name]'}).e}).e);
             form.appendChild(new Input_Group({title: 'Price',   append: new Input({ required: true, name: 'item[_price]', type: 'number', value: '0.50', step: '0.01'}).e}).e);
             form.appendChild(new Input_Group({title: 'Cost',    append: new Input({ required: true, name: 'item[_cost]',  type: 'number', value: '0.50', step: '0.01'}).e}).e);
             form.appendChild(new Input_Group({title: 'Stock',   append: new Input({ required: true, name: 'item[_qty]',   type: 'number', value: '0'}).e}).e);
             form.appendChild(new Input_Group({title: 'Current', append: new Select({required: true, name: 'item[_current]', options: [{value: '1', text: 'Yes', selected: true},{value: '0', text: 'No'}]}).e}).e);
-            form.appendChild(new Input({id: 'item_save', type: 'submit', value: 'Save', classes: ['btn', 'btn-success']}).e);
+            form.appendChild(new Input({type: 'submit', value: 'Save', classes: ['btn', 'btn-success']}).e);
             mdl_add_item_body.appendChild(form);
             addFormListener(
                 'form_add_item',
@@ -41,8 +41,6 @@ function showItems(items, options) {
                 {onComplete: [window.getItems, function () {$('#mdl_add_item').modal('hide')}]}
             );
         };
-
-
         let btn_add_item = document.querySelector('#btn_add_item');
         if (btn_add_item) btn_add_item.setAttribute('href', 'javascript:$("#mdl_add_item").modal("show")');
     };

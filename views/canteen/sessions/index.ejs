@@ -1,167 +1,52 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/sessions'>
-                    Sessions
-                </a>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/sessions', text: 'Sessions'}) %>
+			<% if (permissions.session_add) { %>
+				<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_session'}) %>
+			<% } %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
+            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'sessions'}) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <div class="row">
-        <% if (Number(session) === -1) { %>
-            <div class="col-12 bordered mb-2">
-                <form action="/canteen/sessions" method='POST'>
-                    <h4>Opening Balance</h4>
-                    <table class="table table-sm table-hover">
-                        <thead class="thead-dark">
-                            <th class="w-20">Denomination</th>
-                            <th class="w-40">Bagged</th>
-                            <th class="w-40">Loose</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><label class='col-form-label'>1p</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.01' name='opening_balance[v001][bagged]'>
-                                </td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.01' name='opening_balance[v001][loose]'>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class='col-form-label'>2p</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.02' name='opening_balance[v002][bagged]'>
-                                </td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.02' name='opening_balance[v002][loose]'>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class='col-form-label'>5p</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.05' name='opening_balance[v005][bagged]'>
-                                </td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.05' name='opening_balance[v005][loose]'>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class='col-form-label'>10p</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.1' name='opening_balance[v010][bagged]'>
-                                </td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.1' name='opening_balance[v010][loose]'>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class='col-form-label'>20p</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.2' name='opening_balance[v020][bagged]'>
-                                </td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.2' name='opening_balance[v020][loose]'>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class='col-form-label'>50p</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.5' name='opening_balance[v050][bagged]'>
-                                </td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='0.5' name='opening_balance[v050][loose]'>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class='col-form-label'>£1</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='1' name='opening_balance[v100][bagged]'>
-                                </td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='1' name='opening_balance[v100][loose]'>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class='col-form-label'>£2</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='2' name='opening_balance[v200][bagged]'>
-                                </td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='2' name='opening_balance[v200][loose]'>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class='col-form-label'>Notes</label></td>
-                                <td>
-                                    <input class='form-control form-control-sm' type="number" step='5' name='opening_balance[vnotes][bagged]'>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button class='btn btn-sm btn-success w-100 confirm'>Open Session</button>
-                </form>
-            </div>
-        <% } %>
-        <div class="col-12">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-35" onclick="sortTable(0, 'sessionTable')">Start</th>
-                    <th class="w-35" onclick="sortTable(1, 'sessionTable')">End</th>
-                    <th class="w-10" onclick="sortTable(2, 'sessionTable')">Opening<br>Balance</th>
-                    <th class="w-10" onclick="sortTable(3, 'sessionTable')">Takings</th>
-                    <th class="w-10" onclick="sortTable(4, 'sessionTable')">Closing<br>Balance</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="sessionTable">
-                    <% if (sessions) sessions.forEach(session => { %>
-                        <tr>
-                            <td data-sort="<%= session._start.getTime() %>">
-                                <%= session._start.toLocaleString() %>
-                            </td>
-                            <td data-sort="<% if (session._end) { %> <%= session._end.getTime() %> <% } else { %>0<% } %>">
-                                <% if (session._end) { %>
-                                    <%= session._end.toLocaleString() %>
-                                <% } else { %>
-                                    <form action="/canteen/sessions/<%= session.session_id %>/close?_method=PUT" method='POST'>
-                                        <button class='btn btn-sm btn-success w-100 confirm'>Close Session</button>
-                                    </form>
-                                <% } %>
-                            </td>
-                            <td>
-                                <%= session._opening_balance %>
-                            </td>
-                            <td>
-                                <% if (session._takings) { %>
-                                    <%= session._takings %>
-                                <% } %>
-                            </td>
-                            <td>
-                                <% if (session._closing_balance) { %>
-                                    <%= session._closing_balance %>
-                                <% } %>
-                            </td>
-                            <td>
-                                <a class='btn btn-sm btn-primary' href="/canteen/sessions/<%= session.session_id %>"><i class='fas fa-search'></i></a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <th class="w-35" onclick="sortTable(0, 'tbl_sessions')">Start</th>
+            <th class="w-35" onclick="sortTable(1, 'tbl_sessions')">End</th>
+            <th class="w-15" onclick="sortTable(2, 'tbl_sessions')">Takings</th>
+            <th class="w-15" onclick="sortTable(3, 'tbl_sessions')">Status</th>
+            <th><i class='fas fa-search'></i></th>
+        </thead>
+        <tbody id="tbl_sessions">
+        </tbody>
+    </table>
+    <div id="div_modals"></div>
 </section>
-<% include ../../partials/foot/full %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/canteen/sessions/index/sessions.js'></script>
 <script>
-    sortTable(0, 'sessionTable', 'desc');
+    function getSessions() {
+        get(
+            showSessions,
+            {
+                db: 'canteen',
+                table: 'sessions',
+                query: [],
+                permissions: {
+                    add: <%= permissions.session_add || false %>
+                }
+            }
+        );
+    };
+    document.querySelector('#reload').addEventListener('click', getSessions);
 </script>
-<% include ../../partials/foot/htmlClose %>
+<!-- <script>
+    sortTable(3, 'tbl_sessions', 'desc');
+</script> -->
+<script async>getSessions()</script>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

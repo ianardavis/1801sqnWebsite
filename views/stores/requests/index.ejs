@@ -4,7 +4,7 @@
 		<ul class="navbar-nav mr-auto">
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
 		</ul>
 	</nav>
 </section>

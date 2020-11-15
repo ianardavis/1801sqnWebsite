@@ -1,69 +1,23 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
     let canteen  = require(`${process.env.ROOT}/fn/canteen`),
         settings = require(`${process.env.ROOT}/fn/settings`);
-    app.get('/canteen/sessions',           isLoggedIn, allowed('access_canteen'),     (req, res) => {
-        m.sessions.findAll({include: [{model: m.canteen_sales, as: 'sales'}]})
-        .then(sessions => {
-            canteen.getSession(req, res)
-            .then(session_id => {
-                res.render('canteen/sessions/index', {
-                    sessions: sessions,
-                    session: session_id
-                });
-            });
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/canteen/sessions/:id',       isLoggedIn, allowed('access_canteen'),     (req, res) => {
-        m.sessions.findOne({
-            where: {session_id: req.params.id},
-            include: [
-                {
-                    model: m.sales,
-                    as: 'sales',
-                    include: [
-                        {
-                            model: m.sale_lines,
-                            as: 'lines'
-                        },
-                        inc.users()
-                    ]
-                },
-                inc.users({as: '_opened_by'}),
-                inc.users({as: '_closed_by'})
-        ]})
-        .then(session => {
-            m.items.findAll({
-                include: [{
-                    model: m.sale_lines,
-                    as: 'sales',
-                    required: true,
-                    include: [{
-                        model: m.sales,
-                        as: 'sale',
-                        where: {session_id: req.params.id}
-            }]}]})
-            .then(items => {
-                res.render('canteen/sessions/show', {
-                    session: session,
-                    items: items
-                });
-            })
-            .catch(err => res.error.redirect(err, req, res));
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/canteen/get/sessions',       isLoggedIn, allowed('access_canteen'),     (req, res) => {
+    app.get('/canteen/sessions',           loggedIn, allowed('access_canteen'),     (req, res) => res.render('canteen/sessions/index'));
+    app.get('/canteen/sessions/:id',       loggedIn, allowed('access_canteen'),     (req, res) => res.render('canteen/sessions/show', {tab: req.query.tab || 'details'}));
+
+    app.get('/canteen/get/sessions',       loggedIn, allowed('access_sessions'),    (req, res) => {
         m.sessions.findAll({
             where: req.query,
-            attributes: ['session_id']
+            include: [
+                inc.users({as: 'user_open'}),
+                inc.users({as: 'user_close'})
+            ]
         })
         .then(sessions => res.send({result: true, sessions: sessions}))
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.post('/canteen/sessions',          isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.post('/canteen/sessions',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
         let session = {};
         session._opening_balance = 0.0;
         for (let [key, denomination] of Object.entries(req.body.opening_balance)) {
@@ -88,7 +42,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.put('/canteen/sessions/:id',       isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.put('/canteen/sessions/:id',       loggedIn, allowed('canteen_supervisor'), (req, res) => {
         m.sessions.update(
             req.body.session,
             {where: {session_id: req.params.id}}
@@ -99,7 +53,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.put('/canteen/sessions/:id/close', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.put('/canteen/sessions/:id/close', loggedIn, allowed('canteen_supervisor'), (req, res) => {
         m.sales.findAll({where: {_complete: 0}})
         .then(sales => {
             let salesToDelete = [];

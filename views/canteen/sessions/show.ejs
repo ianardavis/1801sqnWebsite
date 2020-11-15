@@ -1,192 +1,113 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/sessions'>
-                    Sessions
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/sessions/<%= session.session_id %>'>
-                    <%= session.session_id %>
-                </a>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/sessions', text: 'Sessions'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
+			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'sessions'}) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <div class="row">
-        <div class="col-12">
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Start</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= session._start.toLocaleString() %>' readonly>
-                </div>
-            </div>
-            <% if (session._end) { %>
-                <div class="row">
-                    <div class="col-6">
-                        <label class='col-form-label'>End</label>
-                    </div>
-                    <div class="col-6">
-                        <input class='form-control' type="text" value='<%= session._end.toLocaleString() %>' readonly>
-                    </div>
-                </div>
-            <% } %>
-            <% if (permissions.canteen_supervisor && !session._closing_balance) { %>
-                <form action="/canteen/sessions/<%= session.session_id %>?_method=PUT" method='POST'>
-            <% } %>
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Opening Balance (£)</label>
-                </div>
-                <% if (permissions.canteen_supervisor && !session._closing_balance) { %>
-                    <div class="col-5">
-                <% } else { %> 
-                    <div class="col-6">
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <% if (permissions.session_edit) { %>
+                    <%- include(`${process.env.PARTIALS}/edit`) %>
                 <% } %>
-                    <input class='form-control' type="text" name='session[_opening_balance]' value='<%= Number(session._opening_balance).toFixed(2) %>' <% if (!permissions.canteen_supervisor || session._closing_balance) { %>readonly<% } %>>
-                </div>
-                <% if (permissions.canteen_supervisor && !session._closing_balance) { %>
-                    <div class="col-1">
-                        <button class='float-right btn btn-success'><i class='fas fa-save'></i></button>
-                    </div>
+                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <% if (permissions.session_delete) { %>
+                    <%- include(`${process.env.PARTIALS}/delete`) %>
                 <% } %>
             </div>
-            <% if (permissions.canteen_supervisor && !session._closing_balance) { %>
-                </form>
-            <% } %>
-            <% if (session._takings) { %>
-                <div class="row">
-                    <div class="col-6">
-                        <label class='col-form-label'>Takings (£)</label>
-                    </div>
-                    <div class="col-6">
-                        <input class='form-control' type="text" value='<%= Number(session._takings).toFixed(2) %>' readonly>
-                    </div>
-                </div>
-            <% } %>
-            <% if (session._closing_balance) { %>
-                <div class="row">
-                    <div class="col-6">
-                        <label class='col-form-label'>Closing Balance (£)</label>
-                    </div>
-                    <div class="col-6">
-                        <input class='form-control' type="text" value='<%= Number(session._closing_balance).toFixed(2) %>' readonly>
-                    </div>
-                </div>
-            <% } %>
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Opened By</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= session._opened_by.rank._rank %> <%= session._opened_by.full_name %>' readonly>
-                </div>
-            </div>
-            <% if (session._closed_by) { %>
-                <div class="row">
-                    <div class="col-6">
-                        <label class='col-form-label'>Closed By</label>
-                    </div>
-                    <div class="col-6">
-                        <input class='form-control' type="text" value='<%= session._closed_by.rank._rank %> <%= session._closed_by.full_name %>' readonly>
-                    </div>
-                </div>
-            <% } %>
+        </li>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'sales',   title: 'Sales', count_id: 'sale_count',  permission: 'access_sales'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'items',   title: 'Items', count_id: 'item_count',  permission: 'access_sales'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count',  permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'session_id',       title: 'Session ID'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',          title: 'Status'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt',        title: 'Start'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_end',             title: 'End'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_opening_balance', title: 'Opening Balance'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_open',        title: 'Opened By'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_takings',         title: 'Takings'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_closing_balance', title: 'Closing Balance'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_close',       title: 'Closed By'}) %>
         </div>
-        <div class="col-12 bordered">
-            <a class="my-3" data-toggle="collapse" href="#collapseSales" role="button" aria-expanded="false" aria-controls="collapseSales">
-                <h4>Sales (<%= session.sales.length %>)</h4>
-            </a>
-            <div class="collapse mb-3" id="collapseSales">
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-30" onclick="sortTable(0, 'saleTable')">Time</th>
-                        <th class="w-50" onclick="sortTable(1, 'saleTable')">User</th>
-                        <th class="w-10" onclick="sortTable(2, 'saleTable')">Lines</th>
-                        <th class="w-10" onclick="sortTable(3, 'saleTable')">Complete</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="saleTable">
-                        <% if (session.sales) session.sales.forEach(sale => { %>
-                            <tr>
-                                <td data-sort="<%= sale._date.getTime() %>">
-                                    <%= sale._date.toLocaleTimeString() %>
-                                </td>
-                                <td>
-                                    <%= sale.user.rank._rank %> <%= sale.user.full_name %>
-                                </td>
-                                <td>
-                                    <% if (sale.lines) { %>
-                                        <%= sale.lines.length %>
-                                    <% } %>
-                                </td>
-                                <td>
-                                    <% if (sale._complete) { %><i class='fas fa-check'></i><% } %>
-                                </td>
-                                <td>
-                                    <a class='btn btn-sm btn-primary' href="/canteen/sales/<%= sale.sale_id %>">
-                                        <i class='fas fa-search'></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </div>
+        <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-30" onclick="sortTable(0, 'tbl_sales')">Time</th>
+                    <th class="w-50" onclick="sortTable(1, 'tbl_sales')">User</th>
+                    <th class="w-10" onclick="sortTable(2, 'tbl_sales')">Lines</th>
+                    <th class="w-10" onclick="sortTable(3, 'tbl_sales')">Status</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_sales">
+                </tbody>
+            </table>
         </div>
-        <div class="col-12 bordered">
-            <a class="my-3" data-toggle="collapse" href="#collapseItems" role="button" aria-expanded="false" aria-controls="collapseItems">
-                <h4>Items (<%= items.length %>)</h4>
-            </a>
-            <div class="collapse mb-3" id="collapseItems">
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-60" onclick="sortTable(0, 'itemTable')">Name</th>
-                        <th class="w-20" onclick="sortTable(1, 'itemTable')">Sales</th>
-                        <th class="w-20" onclick="sortTable(2, 'itemTable')">Qty Sold</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="itemTable">
-                        <% if (items) items.forEach(item => { %>
-                            <tr>
-                                <td>
-                                    <%= item._name %>
-                                </td>
-                                <td>
-                                    <%= item.sales.length %>
-                                </td>
-                                <td>
-                                    <% let _qty = 0; %>
-                                    <% item.sales.forEach(sale => { %>
-                                        <% _qty += Number(sale._qty) %>
-                                    <% }) %>
-                                    <%= _qty %>
-                                </td>
-                                <td>
-                                    <a class='btn btn-sm btn-primary' href="/canteen/items/<%= item.item_id %>">
-                                        <i class='fas fa-search'></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </div>
+        <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-60" onclick="sortTable(0, 'tbl_items')">Name</th>
+                    <th class="w-20" onclick="sortTable(1, 'tbl_items')">Sales</th>
+                    <th class="w-20" onclick="sortTable(2, 'tbl_items')">Qty</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_items">
+                </tbody>
+            </table>
         </div>
+        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
+    <div id="div_modals"></div>
 </section>
-<% include ../../partials/foot/full %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src='/js/tabs.js'></script>
+<script src="/js/canteen/sessions/show/session.js"></script>
+<script>showTab('<%= tab %>');</script>
 <script>
-    sortTable(0, 'sessionTable', 'desc');
+    function getSession() {
+        get(
+            showSession,
+            {
+                db: 'canteen',
+                table: 'sessions',
+                query: [`session_id=${path[3]}`],
+                permissions: {
+                    edit: <%= permissions.session_edit || false %>
+                }
+            }
+        );
+    };
+    document.querySelector('#reload').addEventListener('click', getSession);
 </script>
-<% include ../../partials/foot/htmlClose %>
+<script async>getSession()</script>
+<% if (permissions.access_sales) { %>
+    <script src="/js/canteen/sessions/show/sales.js"></script>
+    <script>
+        function getSales() {
+            get(
+                showSales,
+                {
+                    db: 'canteen',
+                    table: 'sales',
+                    query: [`session_id=${path[3]}`]
+                }
+            );
+        };
+        document.querySelector('#reload').addEventListener('click', getSales);
+    </script>
+    <script async>getSales()</script>
+<% } %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

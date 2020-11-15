@@ -7,7 +7,8 @@
 			<% if (permissions.user_add) { %>
 				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("users")', html: '<i class="fas fa-plus"></i>'}) %>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+			<%- include(`${process.env.PARTIALS}/			<%- include(`${process.env.PARTIALS}/reload`) %>
+			) %>
 		</ul>
 	</nav>
 </section>

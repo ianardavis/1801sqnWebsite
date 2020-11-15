@@ -1,6 +1,6 @@
 module.exports = (inc, m) => {
     inc.users = (options = {}) => {
-        let include = options.include || [m.ranks];
+        let include = options.include || [m.users.ranks];
         return {
             model:   m.users.users,
             as:      options.as || 'user',
@@ -105,6 +105,18 @@ module.exports = (inc, m) => {
             model:    m.canteen.items,
             include:  include,
             as:       options.as       || 'item',
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
+    
+    inc.sessions = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include;
+        return {
+            model:    m.canteen.sessions,
+            include:  include,
+            as:       options.as       || 'session',
             where:    options.where    || null,
             required: options.required || false
         };

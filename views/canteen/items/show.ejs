@@ -5,7 +5,8 @@
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
+			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
         </ul>
     </nav>
 </section>
@@ -26,10 +27,10 @@
             </div>
         </li>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',   title: 'Details'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts',  title: 'Receipts', count_id: 'receipt_count'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'writeoffs', title: 'Writeoff', count_id: 'writeoff_count'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'sales',     title: 'Sales',    count_id: 'sale_count'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',     title: 'Notes',    count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts',  title: 'Receipts', count_id: 'receipt_count',  permission: 'access_receipts'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'writeoffs', title: 'Writeoff', count_id: 'writeoff_count', permission: 'access_writeoffs'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'sales',     title: 'Sales',    count_id: 'sale_count',     permission: 'access_sales'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',     title: 'Notes',    count_id: 'note_count',     permission: 'access_notes'}) %>
         <%- include(`${process.env.PARTIALS}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -40,82 +41,42 @@
             <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_qty',     title: 'Stock'}) %>
             <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_current', title: 'Current Item'}) %>
         </div>
-        <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
-            <form class='bordered mb-2' action="/canteen/receipt_lines" method='POST'>
-                <input type="hidden" name='line[receipt_id]' id='receipt_id'>
-                <input type="hidden" name='line[item_id]'    class='item_id'>
-                <div class="row">
-                    <div class="col-12 col-md-4">
-                        <label class='col-form-label'>Add To Receipt: </label>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <input class='form-control' type="number" name='line[_qty]' placeholder='Quantity'>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <input class='form-control' type="number" name='line[_cost]' step='0.01' placeholder='Cost' id='receipt_cost'>
-                    </div>
-                    <div class="col-12">
-                        <button class='btn btn-success w-100 mb-1'>Save</button>
-                    </div>
-                </div>
-            </form>
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-20" onclick="sortTable(0, 'movementTable')">Date</th>
-                    <th class="w-30" onclick="sortTable(1, 'movementTable')">User</th>
-                    <th class="w-10" onclick="sortTable(3, 'movementTable')">Qty</th>
-                    <th class="w-10" onclick="sortTable(4, 'movementTable')">New Stock Qty</th>
-                    <th class="w-10">Complete</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_receipts"></tbody>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
-            <form class='bordered mb-2' action="/canteen/writeoff_lines" method='POST'>
-                <input type="hidden" name='line[writeoff_id]' id='writeoff_id'>
-                <input type="hidden" name='line[item_id]'     class='item_id'>
-                <div class="row">
-                    <div class="col-12 col-md-4">
-                        <label class='col-form-label'>Add To Receipt:</label>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <input class='form-control' type="number" name='line[_qty]' placeholder='Quantity'>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <input class='form-control' type="number" name='line[_cost]' step='0.01' placeholder='Cost' id='writeoff_cost'>
-                    </div>
-                    <div class="col-12">
-                        <button class='btn btn-success w-100 mb-1'>Save</button>
-                    </div>
-                </div>
-            </form>
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-20" onclick="sortTable(0, 'movementTable')">Date</th>
-                    <th class="w-30" onclick="sortTable(1, 'movementTable')">User</th>
-                    <th class="w-10" onclick="sortTable(3, 'movementTable')">Qty</th>
-                    <th class="w-10" onclick="sortTable(4, 'movementTable')">New Stock Qty</th>
-                    <th class="w-10">Complete</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_writeoffs"></tbody>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-20" onclick="sortTable(0, 'movementTable')">Date</th>
-                    <th class="w-30" onclick="sortTable(1, 'movementTable')">User</th>
-                    <th class="w-10" onclick="sortTable(3, 'movementTable')">Qty</th>
-                    <th class="w-10" onclick="sortTable(4, 'movementTable')">New Stock Qty</th>
-                    <th class="w-10">Complete</th>
-                    <th><i class='fas fa-search'></i></th>
-                    <th><i class='fas fa-trash-alt'></i></th>
-                </thead>
-                <tbody id="tbl_sales"></tbody>
-            </table>
-        </div>
+        <% if (permissions.access_receipts) { %>
+            <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-80" onclick="sortTable(0, 'tbl_receipts')">Date</th>
+                        <th class="w-20" onclick="sortTable(1, 'tbl_receipts')">Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="tbl_receipts"></tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (permissions.access_writeoffs) { %>
+            <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                            <th class="w-80" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
+                        <th class="w-20" onclick="sortTable(1, 'tbl_writeoffs')">Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="tbl_writeoffs"></tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (permissions.access_sales) { %>
+            <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-80" onclick="sortTable(0, 'tbl_sales')">Date</th>
+                        <th class="w-20" onclick="sortTable(1, 'tbl_sales')">Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="tbl_sales"></tbody>
+                </table>
+            </div>
+        <% } %>
         <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
     <div id="div_modals"></div>
@@ -124,6 +85,7 @@
 <script src='/js/tabs.js'></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
+<script>showTab('<%= tab %>');</script>
 <script src='/js/canteen/items/show/item.js'></script>
 <script>
     function getItem() {
@@ -142,5 +104,55 @@
     document.querySelector('#reload').addEventListener('click', getItem);
 </script>
 <script async>getItem()</script>
-<script>showTab('<%= tab %>');</script>
+<% if (permissions.access_receipts) { %>
+    <script src='/js/canteen/items/show/receipts.js'></script>
+    <script>
+        function getReceipts() {
+            get(
+                showReceipts,
+                {
+                    db: 'canteen',
+                    table: 'receipt_lines',
+                    query: [`item_id=${path[3]}`]
+                }
+            )
+        };
+        document.querySelector('#reload').addEventListener('click', getReceipts);
+    </script>
+    <script async>getReceipts()</script>
+<% } %>
+<% if (permissions.access_writeoffs) { %>
+    <script src='/js/canteen/items/show/writeoffs.js'></script>
+    <script>
+        function getWriteoffs() {
+            get(
+                showWriteoffs,
+                {
+                    db: 'canteen',
+                    table: 'writeoff_lines',
+                    query: [`item_id=${path[3]}`]
+                }
+            )
+        };
+        document.querySelector('#reload').addEventListener('click', getWriteoffs);
+    </script>
+    <script async>getWriteoffs()</script>
+<% } %>
+<% if (permissions.access_sales) { %>
+    <script src='/js/canteen/items/show/sales.js'></script>
+    <script>
+        function getSales() {
+            get(
+                showSales,
+                {
+                    db: 'canteen',
+                    table: 'sale_lines',
+                    query: [`item_id=${path[3]}`]
+                }
+            )
+        };
+        document.querySelector('#reload').addEventListener('click', getSales);
+    </script>
+    <script async>getSales()</script>
+<% } %>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

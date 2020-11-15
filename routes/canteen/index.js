@@ -10,7 +10,7 @@ module.exports = (app, m) => {
         return (file.indexOf(".") !== 0) && (file !== "index.js");
     })
     .forEach(function(file) {
-        if (file === 'include.js') {
+        if (file === 'includes.js') {
             require(`./${file}`)(inc, m);
         } else {
             require(`./${file}`)(app, allowed, inc, loggedIn, m.canteen)
