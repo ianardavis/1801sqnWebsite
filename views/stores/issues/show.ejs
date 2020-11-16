@@ -1,177 +1,149 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores'>Stores</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/issues'>Issues</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/stores/issues/<%= issue.issue_id %>'><%= issue.issue_id %></a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle stores_nav" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Options
-                </a>
-                <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-                    <% if (!issue._complete && !issue._closed) { %>
-                        <% if (permissions.issue_edit) { %>
-                            <form id='completeForm'>
-                                <input type="hidden" name='issue[_complete]' value='1'>
-                                <button class='dropdown-item dropdown_button confirm'>
-                                    Complete Issue
-                                </button>
-                            </form>
-                            <div class="dropdown-divider"></div>
-                        <% } %>
-                        <% if (permissions.issue_line_add) { %>
-                            <a class='dropdown-item' href='javascript:addSize("issue",<%= issue.issue_id %>,{"height":600})'>
-                                Add Line
-                            </a>
-                            <div class="dropdown-divider"></div>
-                        <% } %>
-                        <% if (permissions.issue_delete) { %><% include ../../partials/delete %><% } %>
-                    <% } else if (issue._complete) { %>
-                        <% if (permissions.file_download) { %>
-                            <% if (issue._filename) { %>
-                                <a class='dropdown-item' href='javascript:download_file("<%= issue._filename %>")'>
-                                    Download Loancard
-                                </a>
-                            <% } else { %>
-                                <a class='dropdown-item' href='javascript:download_file("<%= issue._filename %>")'>
-                                    Generate Loancard
-                                </a>
-                            <% } %>
-                        <% } %>
-                        <% if (permissions.return_line_add && !issue._closed) { %>
-                            <button class='dropdown-item dropdown_button confirm' form='returnForm'>
-                                Return Selected Lines
-                            </button>
-                        <% } %>
-                    <% } %>
-                    <% include ../../partials/notes/menu_add %>
-                </div>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/issues', text: 'Issues'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">
-                Details
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
             </a>
+            <div class="dropdown-menu" aria-labelledby="optionsDropdown">
+                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+				<% if (permissions.issue_edit) { %><form id='form_complete'><% } %>
+					<input type="hidden" name='_status' value='2'>
+					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
+                <% if (permissions.issue_edit) { %>
+                    </form>
+                <% } %>
+				<div id='form_addSize'>
+					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
+						Add Item
+					</button>
+				</div>
+				<% if (permissions.issue_delete) { %><form id='form_delete'><% } %>
+					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Cancel' disabled>
+				<% if (permissions.issue_edit) { %></form><% } %>
+				<input id='btn_action' form='form_action' class='dropdown-item dropdown_button confirm' type="submit" value='Action Lines' disabled>
+                <a class='dropdown-item' id='btn_loancard'>
+                    Download Loancard
+                </a>
+            </div>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines" role="tab" aria-controls="lines" aria-selected="true">
-                Lines (<span id='line_count'></span>)
-            </a>
-        </li>
-        <% include ../../partials/notes/tab_head %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div class="container">
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">To</span>
-                    </div>
-                    <p class="form-control"><%= issue._to.rank._rank %> <%= issue._to.full_name %></p>
-                    <div class="input-group-append">
-                        <a class='btn btn-primary' href="/stores/users/<%= issue.issued_to %>">
-                            <i class='fas fa-search'></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">By</span>
-                    </div>
-                    <p class="form-control"><%= issue._by.rank._rank %> <%= issue._by.full_name %></p>
-                    <div class="input-group-append">
-                        <a class='btn btn-primary' href="/stores/users/<%= issue.user_id %>">
-                            <i class='fas fa-search'></i>
-                        </a>
-                    </div>
-                </div>
-                <%- include('../../partials/inputs/display', {title: 'Date',     text: issue._date.toDateString()}) %>
-				<%- include('../../partials/inputs/display', {title: 'Due Back', text: issue._date_due.toDateString()}) %>
-				<div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">Complete</span>
-                    </div>
-                    <p class="form-control"><% if (issue._complete) { %>Yes<% } else { %>No<% } %></p>
-                </div>
-                <div class="input-group mb-1">
-                    <div class="input-group-prepend w-20">
-                        <span class="input-group-text w-100">Closed</span>
-                    </div>
-                    <p class="form-control"><% if (issue._closed) { %>Yes<% } else { %>No<% } %></p>
-                </div>
-            </div>
-        </div>
+            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'issuess'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_to', 	title: 'To',  append: {a: {id: 'user_to_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_by', 	title: 'By',  append: {a: {id: 'user_by_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_date_due', title: 'Date Due Back'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status', 	title: 'Status'}) %>
+		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-            <div class="container">
-                <%- include('../../partials/spinner', {id: 'issues'}) %>
-                <% if (issue._complete && !issue._closed && permissions.return_line_add) { %>
-                    <form id='returnForm'>
-                <% } %>
-                    <table class='table table-sm table-hover'>
-                        <thead class='thead-dark'>
-                            <th class='w-5'  onclick='sortTable(0, "issueTable")'>Line</th>
-                            <th class='w-15' onclick='sortTable(1, "issueTable")'>NSN/Serial</th>
-                            <th class='w-<% if (issue._complete && !issue._closed) { %>20<% } else { %>25<% } %>' onclick='sortTable(2, "issueTable")'>Item</th>
-                            <th class='w-20' onclick='sortTable(3, "issueTable")'>Size</th>
-                            <th class='w-5' onclick='sortTable(4, "issueTable")'>Qty</th>
-                            <% if (issue._complete && !issue._closed && permissions.return_line_add) { %>
-                                <th class='w-5' onclick='sortTable(4, "issueTable")'>Return Qty</th>
-                            <% } %>
-                            <th class='w-10' onclick='sortTable(5, "issueTable")'>Issue Location</th>
-                            <th class='w-10' onclick='sortTable(6, "issueTable")'>Return Location</th>
-                            <th class='w-10' onclick='sortTable(7, "issueTable")'>Date Returned</th>
-                            <% if (permissions.issue_line_delete && !issue._complete && !issue._closed) { %>
-                                <th><i class='fas fa-trash-alt'></i></th>
-                            <% } %>
-                        </thead>
-                        <tbody id='issueTable'>
-                        </tbody>
-                    </table>
-                <% if (issue._complete && !issue._closed && permissions.return_line_add) { %>
-                    </form>
-                <% } %>
-            </div>
+            <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=5', text: 'Closed'}]}) %>
+			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'issues'}) %>
+            <% if (permissions.return_line_add) { %>
+                <form id='form_action'>
+            <% } %>
+                <table class='table table-sm table-hover'>
+                    <thead class='thead-dark'>
+                        <th class='w-10' onclick='sortTable(0, "tbl_lines")'>
+                            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'issue_lines', float_left: true, small: true}) %>
+                            Line
+                        </th>
+                        <th class='w-20' onclick='sortTable(1, "tbl_lines")'>Item</th>
+                        <th class='w-20' onclick='sortTable(2, "tbl_lines")'>Size</th>
+                        <th class='w-10'  onclick='sortTable(3, "tbl_lines")'>Qty</th>
+                        <th class='w-20'  onclick='sortTable(4, "tbl_lines")'>Status</th>
+                        <th class='w-20' onclick='sortTable(5, "tbl_lines")'>Action</th>
+                        <th><i class="fas fa-search"></i></th>
+                    </thead>
+                    <tbody id='tbl_lines'>
+                    </tbody>
+                </table>
+            <% if (permissions.return_line_add) { %>
+                </form>
+            <% } %>
+            <div id="div_modals"></div>
         </div>
-        <% include ../../partials/notes/tab_body %>
+        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<script src='/js/addSize.js'></script>
-<script src="/js/get/issue_lines.js"></script>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<!-- get/spinner/XHRsend/send from notes include -->
+<script src='/js/tabs.js'></script>
+<script src="/js/stores/issues/show/issue.js"></script>
+<script src="/js/stores/issues/show/lines.js"></script>
+<script src="/js/stores/nsns/list.js"></script>
+<script src="/js/stores/stock/list.js"></script>
+<script src="/js/stores/serials/list.js"></script>
+<script src="/js/search/select.js"></script>
+<script src="/js/addSize.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src='/js/utils/select_sel_status.js'></script>
+<script src='/js/utils/getLineNotes.js'></script>
+<script>showTab('<%= tab %>');</script>
+<script>
+	function getIssue() {
+		get(
+			showIssue,
+			{
+				table: 'issues',
+				query: [`issue_id=${path[3]}`],
+				permissions: {
+					edit: 	     <%= permissions.issue_edit  	   || false %>,
+					delete:		 <%= permissions.issue_delete	   || false %>,
+					line_add:	 <%= permissions.issue_line_add	   || false %>,
+					line_delete: <%= permissions.issue_line_delete || false %>
+				}
+			}
+		);
+	};
+    document.querySelector('#reload').addEventListener('click', () => getIssue());
+</script>
+<script async>getIssue()</script>
+<script>
+    function getLines() {
+		get(
+			showLines,
+			{
+				table: 'issue_lines',
+				query: [`issue_id=${path[3]}`, sel_status.value],
+				permissions: {
+					line_edit:	 <%= permissions.issue_line_edit   || false %>,
+					line_delete: <%= permissions.issue_line_delete || false %>
+				}
+			}
+		);
+	};
+	// getissuelines = getLines;
+    document.querySelector('#reload').addEventListener('click', () => getLines());
+    document.querySelector('#sel_status').addEventListener('change', () => getLines());
+</script>
+<script async>getLines()</script>
 <script>
     window.addEventListener( "load", () => {
-        <% if (!issue._complete && !issue._closed) { %>
-            <% if (permissions.issue_delete) { %>
-                    addFormListener('deleteForm', 'DELETE', '/stores/issues/<%= issue.issue_id %>', {redirect: '/stores/issues'});
-            <% } %>
-            <% if (permissions.issue_edit) { %>
-                    addFormListener('completeForm', 'PUT', '/stores/issues/<%= issue.issue_id %>', {reload: true});
-            <% } %>
-        <% } else if (issue._complete && !issue._closed) { %>
-            <% if (permissions.return_line_add) { %>
-                    addFormListener('returnForm', 'POST', '/stores/returns', {reload: true});
-            <% } %>
-        <% } %>
+		<% if (permissions.issue_delete) { %>
+			addFormListener('form_delete', 'DELETE', `/stores/issues/${path[3]}`,{onComplete: [getIssue, getLines]});
+		<% } %>
+		<% if (permissions.issue_edit) { %>
+			addFormListener('form_complete', 'PUT', `/stores/issues/${path[3]}`, {onComplete: [getIssue, getLines]});
+		<% } %>
+		<% if (permissions.issue_line_edit) { %>
+			addFormListener('form_action', 'PUT', `/stores/issue_lines/${path[3]}`,{onComplete: getLines});
+		<% } %>
     });
 </script>
-<script async>
-    getIssueLines(
-        <%= issue.issue_id %>,
-        <%= issue._complete %>,
-        <%= issue._closed %>,
-        <%= permissions.return_line_add || false %>,
-        <%= permissions.issue_delete    || false %>
-    );
-</script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

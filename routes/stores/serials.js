@@ -1,18 +1,25 @@
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
-    app.get('/stores/serials/new',      isLoggedIn, allowed('serial_add'),                (req, res) => {
-        db.findOne({
-            table: m.sizes,
+module.exports = (app, allowed, inc, loggedIn, m) => {
+    app.get('/stores/serials/new',      loggedIn, allowed('serial_add'),                   (req, res) => {
+        m.sizes.findOne({
             where: {size_id: req.query.size_id},
             include: [m.items]
         })
         .then(size => res.render('stores/serials/new', {size: size}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/serials/:id',      isLoggedIn, allowed('access_serials'),            (req, res) => res.render('stores/serials/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/serials/:id/edit', isLoggedIn, allowed('serial_edit'),               (req, res) => res.render('stores/serials/edit'));
+    app.get('/stores/serials/:id',      loggedIn, allowed('access_serials'),               (req, res) => res.render('stores/serials/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/serials/:id/edit', loggedIn, allowed('serial_edit'),                  (req, res) => res.render('stores/serials/edit'));
 
-    app.post('/stores/serials',         isLoggedIn, allowed('serial_add',  {send: true}), (req, res) => {
+    app.get('/stores/get/serials',      loggedIn, allowed('access_serials', {send: true}), (req, res) => {
+        m.serials.findAll({
+            where:   req.query,
+            include: [inc.locations({as: 'location'})]
+        })
+        .then(serials => res.send({result: true, serials: serials}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.post('/stores/serials',         loggedIn, allowed('serial_add',     {send: true}), (req, res) => {
         m.locations.findOrCreate({where: {_location: req.body._location}})
         .then(([location, created]) => {
             m.serials.create({...req.body.serial, ...{location_id: location.location_id}})
@@ -21,17 +28,23 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res))
     });
-    app.put('/stores/serials/:id',      isLoggedIn, allowed('serial_edit', {send: true}), (req, res) => {
+    
+    app.put('/stores/serials/:id',      loggedIn, allowed('serial_edit',    {send: true}), (req, res) => {
         m.locations.findOrCreate({where: {_location: req.body._location}})
         .then(([location, created]) => {
-            db.update({
-                table: m.serials,
-                where: {serial_id: req.params.id},
-                record: {...req.body.serial, ...{location_id: location.location_id}}
-            })
+            m.serials.update(
+                {...req.body.serial, ...{location_id: location.location_id}},
+                {where: {serial_id: req.params.id}}
+            )
             .then(result => res.send({result: true, message: 'Serial saved'}))
             .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res))
+    });
+
+    app.delete('/stores/serials/:id',   loggedIn, allowed('serial_delete',  {send: true}), (req, res) => { //////
+        m.serials.destroy({where: {serial_id: req.params.id}})
+        .then(result => res.send({result: true, message: 'Serial deleted'}))
+        .catch(err => res.error.send(err, res));
     });
 };

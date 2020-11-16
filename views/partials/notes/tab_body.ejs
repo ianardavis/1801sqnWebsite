@@ -3,13 +3,20 @@
         <%- include(`${process.env.PARTIALS}/notes/note_table`) %>
         <script src='/js/add.js'></script>
         <script src='/js/edit.js'></script>
-        <script src="/js/get.js"></script>
-        <script src="/js/spinner.js"></script>
-        <script src="/js/data/XHRsend.js"></script>
         <script src="/js/data/send.js"></script>
         <script src="/js/notes/showNotes.js"></script>
         <script>
-            getNotes = () => get(showNotes, {table: 'notes', query: note_query(), delete_permission: <%= permissions.note_delete || false %>});
+            getNotes = () => get(
+                showNotes,
+                {
+                    table: 'notes',
+                    query: note_query(),
+                    permissions: {
+                        delete: <%= permissions.note_delete || false %>,
+                        edit:   <%= permissions.note_edit   || false %>
+                    }
+                }
+            );
             document.querySelector('#reload').addEventListener('click', () => getNotes());
         </script>
         <script async>getNotes()</script>

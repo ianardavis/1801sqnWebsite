@@ -1,36 +1,35 @@
-const mw = {}, inc = {};
-module.exports = (app, m, getPermissions) => {
-    var al    = require(process.env.ROOT + '/config/allowed.js'),
-        utils = require(process.env.ROOT + '/fn/utils');
-    require('./includes') (inc, m);
-    require(process.env.ROOT + '/config/middleware')(mw, {permissions: m.permissions}, getPermissions);
-    require('./async')      (app, al, inc, mw.isLoggedIn, m);
-    require('./delete')     (app, al, inc, mw.isLoggedIn, m);
-    require('./accounts')   (app, al, inc, mw.isLoggedIn, m);
-    require('./adjusts')    (app, al, inc, mw.isLoggedIn, m);
-    require('./demands')    (app, al, inc, mw.isLoggedIn, m);
-    require('./files')      (app, al, inc, mw.isLoggedIn, m);
-    require('./issues')     (app, al, inc, mw.isLoggedIn, m);
-    require('./sizes')      (app, al, inc, mw.isLoggedIn, m);
-    require('./items')      (app, al, inc, mw.isLoggedIn, m);
-    require('./itemSearch') (app, inc, mw.isLoggedIn,     m);
-    require('./notes')      (app, al, inc, mw.isLoggedIn, m);
-    require('./nsns')       (app, al, inc, mw.isLoggedIn, m);
-    require('./orders')     (app, al, inc, mw.isLoggedIn, m);
-    require('./permissions')(app, al, inc, mw.isLoggedIn, m);
-    require('./receipts')   (app, al, inc, mw.isLoggedIn, m);
-    require('./reports')    (app, al, inc, mw.isLoggedIn, m);
-    require('./requests')   (app, al, inc, mw.isLoggedIn, m);
-    require('./returns')    (app, al, inc, mw.isLoggedIn, m);
-    require('./serials')    (app, al, inc, mw.isLoggedIn, m);
-    require('./settings')   (app, al, inc, mw.isLoggedIn, m);
-    require('./stock')      (app, al, inc, mw.isLoggedIn, m);
-    require('./suppliers')  (app, al, inc, mw.isLoggedIn, m);
-    require('./users')      (app, al, inc, mw.isLoggedIn, m);
+const inc = {};
+module.exports = (app, m) => {
+    var allowed  = require(`${process.env.ROOT}/middleware/allowed.js`),
+        loggedIn = require(`${process.env.ROOT}/middleware/loggedIn.js`)(m.stores.permissions),
+        utils    = require(`${process.env.ROOT}/fn/utils`),
+        fs       = require("fs");
+    fs
+    .readdirSync(__dirname)
+    .filter(function(file) {
+        return (file.indexOf(".") !== 0) && (file !== "index.js");
+    })
+    .forEach(function(file) {
+        if (file === 'includes.js') {
+            require(`./${file}`)(inc, m);
+        } else if (file === 'users.js') {
+            require(`./${file}`)(app, allowed, inc, loggedIn, m);
+        } else {
+            require(`./${file}`)(app, allowed, inc, loggedIn, m.stores)
+        };
+    });
 
-    app.get('/stores', mw.isLoggedIn, (req, res) => res.render('stores/index'));
+    app.get('/stores', loggedIn, (req, res) => res.render('stores/index'));
 
-    app.get('/stores/download', mw.isLoggedIn, al('file_download'), (req, res) => {
+    app.get('/stores/download', loggedIn, allowed('file_download'), (req, res) => {
         if (req.query.file) utils.download(req.query.file, req, res);
+    });
+
+    app.get('/stores/get/notifications', loggedIn, allowed('access_stores'), (req, res) => {
+        m.stores.notifications.findAll({
+            where: {user_id: req.user.user_id}
+        })
+        .then(notifications => res.send({result: true, notifications: notifications}))
+        .catch(err => res.error.send(err, res));
     });
 };

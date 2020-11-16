@@ -9,14 +9,14 @@ showOptions = (results, options) => {
     });
     let _select = document.querySelector(`#${options.table}Select`);
     _select.innerHTML = '';
-    _select.appendChild(new Option({value: '', text: ''}).option);
+    _select.appendChild(new Option({value: '', text: ''}).e);
     results.forEach(result => {
         _select.appendChild(
             new Option({
                 value: result[`${options.singular}_id`],
                 text: result[`_${options.singular}`],
                 selected: (options.selected === result[`${options.singular}_id`])
-            }).option
+            }).e
         )
     });
     hide_spinner(options.table);

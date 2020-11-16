@@ -1,4 +1,3 @@
-<div class="dropdown-divider"></div>
 <form id='deleteForm'>
     <button class="dropdown-item dropdown_button confirm">
         Delete
@@ -9,12 +8,12 @@
         addFormListener(
             'deleteForm',
             'DELETE',
-            '/stores/' + path[2] + '/' + path[3],
+            `/${path[1]}/${path[2]}/${path[3]}`,
             {<% if (locals.close) { %>
                 onComplete: window.opener['<%- onComplete %>'],
                 _close: true
             <% } else { %>
-                redirect: <% if (locals.redirect) { %>'<%= redirect %>'<% } else { %>'/stores/' + path[2]<% } %>
+                redirect: <% if (locals.redirect) { %>'<%= redirect %>'<% } else { %>`'/${path[1]}/${path[2]}`<% } %>
             <% } %>}
         );
     };

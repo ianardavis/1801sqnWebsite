@@ -61,12 +61,16 @@
                 <script src="/js/spinner.js"></script>
                 <script src="/js/data/XHRsend.js"></script>
                 <script>
-                    getNotifications = () => get(
-                        showNotifications, {
-                            table: 'notifications',
-                            query: ['user_id=<%- user.user_id %>','_active=1']
-                        }
-                    );
+                    function getNotifications() {
+                        get(
+                            showNotifications,
+                            {
+                                db: path[1],
+                                table: 'notifications',
+                                query: []
+                            }
+                        );
+                    };
                     // window.setInterval(getNotifications, 2000);
                 </script>
                 <script async>getNotifications()</script>

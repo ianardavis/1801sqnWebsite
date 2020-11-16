@@ -1,7 +1,7 @@
 <% if (locals.append.a) { %>
     <div class="input-group-append">
         <a
-            class='btn btn-<%= append.a.type %>'
+            class='btn btn-<%= append.a.type || 'primary' %>'
             id='<%= append.a.id %>'
             <% if (locals.href) { %>href='<%= append.a.href %>'<% } %>
         >

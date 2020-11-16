@@ -6,8 +6,8 @@ showIssues = (lines, options) => {
     lines.forEach(line => {
         let row = table_body.insertRow(-1);
         add_cell(row, {
-            sort: new Date(line.issue._date).getTime(),
-            text: new Date(line.issue._date).toDateString()
+            sort: new Date(line.createdAt).getTime(),
+            text: print_date(line.createdAt)
         });
         if (line.size) {
             add_cell(row, {
@@ -16,7 +16,7 @@ showIssues = (lines, options) => {
                     href: '/stores/items/' + line.size.item_id,
                     small: true,
                     float: true
-                }).link
+                }).e
             });
             add_cell(row, {
                 text: line.size._size,
@@ -24,7 +24,7 @@ showIssues = (lines, options) => {
                     href: '/stores/sizes/' + line.size.size_id,
                     small: true,
                     float: true
-                }).link
+                }).e
             });
         } else {
             add_cell(row);
@@ -42,7 +42,7 @@ showIssues = (lines, options) => {
                     name: 'returns[line_id' + line.line_id + '][stock_id]',
                     small: true,
                     options: options
-                }).select
+                }).e
             });
         } else add_cell(row);
         
@@ -50,7 +50,7 @@ showIssues = (lines, options) => {
             append: new Link({
                 href: '/stores/issues/' + line.issue_id,
                 small: true
-            }).link
+            }).e
         });
     });
     hide_spinner('issue_lines');

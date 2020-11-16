@@ -1,36 +1,68 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class="mb-2">
 	<nav class="navbar navbar-expand navbar-light bg-nav">
 		<ul class="navbar-nav mr-auto">
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores">Stores</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link stores_nav" href="/stores/receipts">Receipts</a>
-			</li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		     text: 'Stores'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/receipts', text: 'Receipts'}) %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
 		</ul>
 	</nav>
 </section>
 <section>
 	<div class="container">
-		<%- include('../../partials/inputs/select', 		{id: 'suppliersSelect'. title: 'Suppliers', 		 onchange: 'getReceipts(true)'}) %>
-		<%- include('../../partials/inputs/include_select', {id: 'completeSelect',  title: 'Completed Receipts', onChange: 'getReceipts(true)', _default: 1}) %>
-		<%- include('../../partials/spinner', 				{id: 'receipts'}) %>
+		<%- include(`${process.env.PARTIALS}/inputs/select`, {id: 'sel_suppliers', title: 'Suppliers'}) %>
+		<%- include(`${process.env.PARTIALS}/inputs/select`, {id: 'sel_status',    title: 'Status', options: [{text: 'All', value: '', selected: true}, {text: 'Cancelled', value: '_status=0'}, {text: 'Draft', value: '_status=1'}, {text: 'Open', value: '_status=2'}, {text: 'Closed', value: '_status=3'}]}) %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class="w-25" onclick="sortTable(0, 'receiptTable')">Supplier</th>
-				<th class="w-25" onclick="sortTable(1, 'receiptTable')">Receipt Date</th>
-				<th class="w-10" onclick="sortTable(2, 'receiptTable')">Lines</th>
-				<th class="w-10" onclick="sortTable(3, 'receiptTable')">Complete</th>
-				<th class="w-30" onclick="sortTable(4, 'receiptTable')">Received By</th>
+				<th class="w-40" onclick="sortTable(0, 'receiptTable')">
+					<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipts', float_left: true, small: true}) %>
+					Supplier
+				</th>
+				<th class="w-30" onclick="sortTable(1, 'receiptTable')">Receipt Date</th>
+				<th class="w-15" onclick="sortTable(2, 'receiptTable')">Lines</th>
+				<th class="w-15" onclick="sortTable(3, 'receiptTable')">Status</th>
 				<th><i class='fas fa-search'></i></th>
 			</thead>
-			<tbody id="receiptTable">
+			<tbody id="tbl_receipts">
 			</tbody>
 		</table>
 	</div>
 </section>
-<% include ../../partials/foot/full %>
-<script src="/js/get/receipts.js"></script>
-<script async>getReceipts(true)</script>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src='/js/stores/receipts/index/receipts.js'></script>
+<script src='/js/spinner.js'></script>
+<script src='/js/get.js'></script>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/XHRsend.js'></script>
+<script src='/js/data/send.js'></script>
+<script src='/js/stores/suppliers/list.js'></script>
+<script src='/js/utils/select_sel_status.js'></script>
+<script>
+	function getSuppliers() {
+		get(
+			listSuppliers,
+			{
+				table: 'suppliers',
+				query: []
+			}
+		)
+	};
+</script>
+<script async>getSuppliers()</script>
+<script>
+	function getReceipts() {
+		let sel_suppliers = document.querySelector('#sel_suppliers');;
+		get(
+			showReceipts,
+			{
+				table: 'receipts',
+				query: [sel_status.value, sel_suppliers.value]
+			}
+		);
+	};
+</script>
+<script async>getReceipts()</script>
+<script>document.querySelector('#reload').addEventListener('click', () => getReceipts());</script>
+<script>document.querySelector('#sel_status').addEventListener('change', () => getReceipts());</script>
+<script>document.querySelector('#sel_suppliers').addEventListener('change', () => getReceipts());</script>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

@@ -11,14 +11,12 @@
     </div>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-25" onclick="sortTable(0, 'notesTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'notes', spinner_sm: true, spinner_float_left: true}) %>Date</th>
-            <th class="w-10" onclick="sortTable(1, 'notesTable')">Sys</th>
-            <th class="w-45" onclick="sortTable(2, 'notesTable')">Note</th>
-            <th class="w-20" onclick="sortTable(3, 'notesTable')">User</th>
-            <th><i class="fas fa-pencil-alt"></i></th>
-            <% if (permissions.note_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
+            <th class="w-30" onclick="sortTable(0, 'notesTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'notes', spinner_sm: true, spinner_float_left: true}) %>Date</th>
+            <th class="w-70" onclick="sortTable(1, 'notesTable')">Note</th>
+            <th><i class="fas fa-search"></i></th>
         </thead>
         <tbody id="notesTable">
         </tbody>
     </table>
+    <div id="note_modals"></div>
 <% } %>

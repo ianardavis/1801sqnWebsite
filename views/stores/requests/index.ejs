@@ -4,15 +4,18 @@
 		<ul class="navbar-nav mr-auto">
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
 		</ul>
 	</nav>
 </section>
 <div class="container">
-	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
+	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All'}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open', selected: true}, {value: '_status=3', text: 'Complete'}]}) %>
 	<table class="table table-sm table-hover w-100">
 		<thead class="thead-dark">
-			<th class="w-40" onclick="sortTable(0, 'tbl_requests')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests', spinner_sm: true, spinner_float_left: true}) %>For</th>
+			<th class="w-40" onclick="sortTable(0, 'tbl_requests')">
+				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests', float_left: true, small: true}) %>
+				For
+			</th>
 			<th class="w-35" onclick="sortTable(1, 'tbl_requests')">Date</th>
 			<th class="w-10" onclick="sortTable(2, 'tbl_requests')">Lines</th>
 			<th class="w-15" onclick="sortTable(3, 'tbl_requests')">Status</th>
@@ -23,14 +26,22 @@
 	</table>
 </div>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
-<script src='/js/requests/index/requests.js'></script>
+<script src='/js/stores/requests/index/requests.js'></script>
 <script src='/js/spinner.js'></script>
 <script src='/js/get.js'></script>
 <script src='/js/data/XHRsend.js'></script>
 <script src='/js/data/send.js'></script>
+<script src='/js/utils/select_sel_status.js'></script>
 <script>
-	let sel_status = document.querySelector('#sel_status');
-	getRequests = () => get(showRequests, {table: 'requests', query: [sel_status.value]});
+	function getRequests() {
+		get(
+			showRequests,
+			{
+				table: 'requests',
+				query: [sel_status.value]
+			}
+		);
+	};
 </script>
 <script async>getRequests()</script>
 <script>document.querySelector('#reload').addEventListener('click', () => getRequests());</script>	

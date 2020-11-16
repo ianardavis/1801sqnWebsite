@@ -1,10 +1,8 @@
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
-    app.get('/stores/adjusts/new', isLoggedIn, allowed('adjust_add'), (req, res) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
+    app.get('/stores/adjusts/new', loggedIn, allowed('adjust_add'),                   (req, res) => {
         if (req.query.adjustType === 'Scrap' || 'Count') {
             if (req.query.stock_id) {
-                db.findOne({
-                    table: m.stock,
+                m.stock.findOne({
                     where: {stock_id: req.query.stock_id},
                     include: [
                         inc.sizes(),
@@ -21,7 +19,20 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             } else res.error.redirect(new Error('No item specified'), req, res);
         } else res.error.redirect(new Error('Invalid request'), req, res);
     });
-    app.post('/stores/adjusts',    isLoggedIn, allowed('adjust_add', {send: true}), (req, res) => {
+    
+    app.get('/stores/get/adjusts', loggedIn, allowed('access_adjusts', {send: true}), (req, res) => {
+        m.adjusts.findAll({
+            where:   req.query,
+            include: [
+                inc.users(), 
+                inc.stock({as: 'stock'})
+            ]
+        })
+        .then(adjusts => res.send({result: true, adjusts: adjusts}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.post('/stores/adjusts',    loggedIn, allowed('adjust_add',     {send: true}), (req, res) => {
         if (req.body.adjust) {
             req.body.adjust.user_id = req.user.user_id;
             stock.adjust({

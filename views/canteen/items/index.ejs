@@ -1,64 +1,53 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/items'>
-                    Items
-                </a>
-            </li>
-            <% if (permissions.canteen_supervisor) { %>
-                <li class='nav-item'>
-                    <a class='nav-link stores_nav' href='/canteen/items/new'>
-                        <i class='fas fa-plus'></i>
-                    </a>
-                </li>
-            <% } %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
+			<% if (permissions.item_add) { %>
+				<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_item'}) %>
+			<% } %>
+            <%- include(`${process.env.PARTIALS}/reload`) %>
+            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <div class="row">
-        <div class="col-12">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-30" onclick="sortTable(0, 'itemTable')">Name</th>
-                    <th class="w-30" onclick="sortTable(1, 'itemTable')">Price</th>
-                    <th class="w-30" onclick="sortTable(2, 'itemTable')">Stock</th>
-                    <th class="w-10" onclick="sortTable(3, 'itemTable')">Current</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="itemTable">
-                    <% if (items) items.forEach(item => { %>
-                        <tr>
-                            <td>
-                                <%= item._name %>
-                            </td>
-                            <td>
-                                <%= item._price %>
-                            </td>
-                            <td>
-                                <%= item._qty %>
-                            </td>
-                            <td>
-                               <% if (item._current) { %> <i class='fas fa-check'></i> <% } %>
-                            </td>
-                            <td>
-                                <a class='btn btn-sm btn-primary' href="/canteen/items/<%= item.item_id %>">
-                                    <i class='fas fa-search'></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Non-Current Items', id: '_current', spinner: true, spinner_sm: true, spinner_float_right: true, options: [{value:'', text: 'Include', selected: true},{value:'_current=1', text: 'Exclude'},{value:'_current=0', text: 'Only'}]}) %>
+	<table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <th class="w-30" onclick="sortTable(0, 'tbl_items')">Name</th>
+            <th class="w-30" onclick="sortTable(1, 'tbl_items')">Price</th>
+            <th class="w-30" onclick="sortTable(2, 'tbl_items')">Stock</th>
+            <th class="w-10" onclick="sortTable(3, 'tbl_items')">Current</th>
+            <th><i class='fas fa-search'></i></th>
+        </thead>
+        <tbody id="tbl_items">
+        </tbody>
+    </table>
+    <div id="div_modals"></div>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src="/js/canteen/items/index/items.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
+<script>
+    function getItems() {
+        let _current = document.querySelector('#_current')
+        get(
+            showItems,
+            {
+                db:    'canteen',
+                table: 'items',
+                query: [_current.value || null],
+                permissions: {
+                    item_add: <%= permissions.item_add || false %>
+                }
+            }
+        );
+    };
+    document.querySelector('#reload').addEventListener('click', getItems);
+    document.querySelector('#_current').addEventListener('change', getItems);
+</script>
+<script async>getItems()</script>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

@@ -5,9 +5,9 @@
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
 			<% if (permissions.item_add) { %>
-				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("items")', text: '<i class="fas fa-plus"></i>'}) %>
+				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("items")', html: '<i class="fas fa-plus"></i>'}) %>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {text: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
         </ul>
     </nav>
 </section>
@@ -26,10 +26,9 @@
 </section>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
 <!-- get, XHRsend and spinner from item options -->
-<script src="/js/get.js"></script>
 <script src="/js/add.js"></script>
 <script src="/js/search/table.js"></script>
-<script src="/js/items/index/items.js"></script>
+<script src="/js/stores/items/index/items.js"></script>
 <script>
 	getItems = () => get(showItems, {table: 'items', query: item_query()});
 	document.querySelector('#reload').addEventListener('click', () => getItems());

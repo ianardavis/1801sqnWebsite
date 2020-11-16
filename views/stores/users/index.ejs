@@ -5,9 +5,10 @@
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
             <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/users', text: 'Users'}) %>
 			<% if (permissions.user_add) { %>
-				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("users")', text: '<i class="fas fa-plus"></i>'}) %>
+				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: 'javascript:add("users")', html: '<i class="fas fa-plus"></i>'}) %>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {text: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+			<%- include(`${process.env.PARTIALS}/			<%- include(`${process.env.PARTIALS}/reload`) %>
+			) %>
 		</ul>
 	</nav>
 </section>
@@ -33,7 +34,7 @@
 <script src="/js/users/index/users.js"></script>
 <script src="/js/statuses/list.js"></script>
 <script>
-	getUsers = () => get(showUsers, {table: 'users', query: user_query()})
+	getUsers = () => get(showUsers, {db: 'users', table: 'users', query: user_query()})
 	document.querySelector('#reload').addEventListener('click', () => getUsers());
     var statuses_loaded = false;
     let int_load_users = window.setInterval(
@@ -46,7 +47,7 @@
         100
 	);
 </script>
-<script>listStatuses = () => get(statuses_select, {table: 'statuses', query: []})</script>
+<script>listStatuses = () => get(statuses_select, {db: 'users', table: 'statuses', query: []})</script>
 <script async>listStatuses()</script>
 <script>
 	window.addEventListener( "load", () => {

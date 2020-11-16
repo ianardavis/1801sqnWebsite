@@ -1,18 +1,27 @@
-const mw = {}, inc = {}, 
+const inc = {}, 
       op = require('sequelize').Op;
-module.exports = (app, m, getPermissions) => {
-    let canteen = require(process.env.ROOT + '/fn/canteen'),
-        allowed = require(process.env.ROOT + '/config/allowed.js');
-    require('./includes') (inc, m);
-    require(process.env.ROOT + '/config/middleware')(mw, {permissions: m.permissions}, getPermissions);
-    require('./sales')    (app, allowed, inc, mw.isLoggedIn, m);
-    require('./sessions') (app, allowed, inc, mw.isLoggedIn, m);
-    require('./items')    (app, allowed, inc, mw.isLoggedIn, m);
-    require('./receipts') (app, allowed, inc, mw.isLoggedIn, m);
-    require('./writeoffs')(app, allowed, inc, mw.isLoggedIn, m);
+module.exports = (app, m) => {
+    var allowed  = require(`${process.env.ROOT}/middleware/allowed.js`),
+        loggedIn = require(`${process.env.ROOT}/middleware/loggedIn.js`)(m.canteen.permissions),
+        fs       = require("fs");
+    fs
+    .readdirSync(__dirname)
+    .filter(function(file) {
+        return (file.indexOf(".") !== 0) && (file !== "index.js");
+    })
+    .forEach(function(file) {
+        if (file === 'includes.js') {
+            require(`./${file}`)(inc, m);
+        } else {
+            require(`./${file}`)(app, allowed, inc, loggedIn, m.canteen)
+        };
+    });
 
-    app.get('/canteen', mw.isLoggedIn, allowed('access_canteen'), (req, res) => {
-        canteen.getSession(req, res)
-        .then(session_id => res.render('canteen/index', {session_id: session_id}));
+    app.get('/canteen',                   loggedIn, allowed('access_canteen'), (req, res) => res.render('canteen/index'));
+    
+    app.get('/canteen/get/notifications', loggedIn, allowed('access_canteen'), (req, res) => {
+        m.canteen.notifications.findAll({where: {user_id: req.user.user_id}})
+        .then(notifications => res.send({result: true, notifications: notifications}))
+        .catch(err => res.error.send(err, res));
     });
 };

@@ -1,251 +1,158 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/items'>
-                    Items
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/items/<%= item.item_id %>'>
-                    <%= item._name %>
-                </a>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`) %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
+			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <div class="row">
-        <div class="col-12 bordered">
-            <div class="row">
-                <div class="col-6">
-                    <% if (permissions.canteen_supervisor) { %>
-                        <a class='float-left btn btn-primary mx-1' href="/canteen/items/<%= item.item_id %>/edit">
-                            <i class='fas fa-pencil-alt'></i>
-                        </a>
-                        <form action="/canteen/items/<%= item.item_id %>?_method=DELETE" method='POST'>
-                            <button class='float-left btn btn-danger confirm mx-1'><i class='fas fa-trash-alt'></i></button>
-                        </form>
-                    <% } %>
-                    <label class='col-form-label'>Name</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= item._name %>' readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Price</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= item._price %>' readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Cost</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= item._cost %>' readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Stock</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= item._qty %>' readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Current Item</label>
-                </div>
-                <div class="col-6">
-                    <% if (permissions.canteen_supervisor) { %>
-                        <form action="/canteen/items/<%= item.item_id %>?_method=PUT" method='POST'>
-                            <select class='form-control' name="item[_current]" onchange='this.form.submit()'>
-                                <option value="1" <% if (item._current) { %> selected <% } %>>Yes</option>
-                                <option value="0" <% if (!item._current) { %> selected <% } %>>No</option>
-                            </select>
-                        </form>
-                    <% } else { %>
-                        <input class='form-control' type="checkbox" <% if (item._current) { %> checked <% } %>disabled>
-                    <% } %>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 bordered">
-            <a class="my-3" data-toggle="collapse" href="#collapseMoments" role="button" aria-expanded="false" aria-controls="collapseMoments">
-                <h4>Movements (<%= item.sales.length + item.writeoffs.length + item.receipts.length %>)</h4>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
             </a>
-            <div class="collapse mb-3" id="collapseMoments">
-                <% if (receipt) { %>
-                    <form class='bordered mb-2' action="/canteen/receipt_lines" method='POST'>
-                        <input type="hidden" name='line[receipt_id]' value='<%= receipt.receipt_id %>'>
-                        <input type="hidden" name='line[item_id]' value='<%= item.item_id %>'>
-                        <div class="row">
-                            <div class="col-12 col-md-4">
-                                <label class='col-form-label'>Add To Receipt: <%= receipt.receipt_id %></label>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <input class='form-control' type="number" name='line[_qty]' placeholder='Quantity'>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <input class='form-control' type="number" name='line[_cost]' step='0.01' placeholder='Cost' value='<%= item._cost %>'>
-                            </div>
-                            <div class="col-12">
-                                <button class='btn btn-success w-100 mb-1'>Save</button>
-                            </div>
-                        </div>
-                    </form>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <% if (permissions.item_edit) { %>
+                    <%- include(`${process.env.PARTIALS}/edit`) %>
                 <% } %>
-                <% if (writeoff) { %>
-                    <form class='bordered mb-2' action="/canteen/writeoff_lines" method='POST'>
-                        <input type="hidden" name='line[writeoff_id]' value='<%= writeoff.writeoff_id %>'>
-                        <input type="hidden" name='line[item_id]' value='<%= item.item_id %>'>
-                        <div class="row">
-                            <div class="col-12 col-md-4">
-                                <label class='col-form-label'>Add To Receipt: <%= writeoff.writeoff_id %></label>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <input class='form-control' type="number" name='line[_qty]' placeholder='Quantity'>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <input class='form-control' type="number" name='line[_cost]' step='0.01' placeholder='Cost' value='<%= item._cost %>'>
-                            </div>
-                            <div class="col-12">
-                                <button class='btn btn-success w-100 mb-1'>Save</button>
-                            </div>
-                        </div>
-                    </form>
+                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <% if (permissions.item_delete) { %>
+                    <%- include(`${process.env.PARTIALS}/delete`) %>
                 <% } %>
+            </div>
+        </li>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',   title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts',  title: 'Receipts', count_id: 'receipt_count',  permission: 'access_receipts'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'writeoffs', title: 'Writeoff', count_id: 'writeoff_count', permission: 'access_writeoffs'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'sales',     title: 'Sales',    count_id: 'sale_count',     permission: 'access_sales'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',     title: 'Notes',    count_id: 'note_count',     permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/reload`) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_name',    title: 'Name'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_price',   title: 'Price'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_cost',    title: 'Cost'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_qty',     title: 'Stock'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_current', title: 'Current Item'}) %>
+        </div>
+        <% if (permissions.access_receipts) { %>
+            <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-30" onclick="sortTable(0, 'movementTable')">Date</th>
-                        <th class="w-20" onclick="sortTable(1, 'movementTable')">User</th>
-                        <th class="w-20" onclick="sortTable(2, 'movementTable')">Type</th>
-                        <th class="w-10" onclick="sortTable(3, 'movementTable')">Qty</th>
-                        <th class="w-10" onclick="sortTable(4, 'movementTable')">New Stock Qty</th>
-                        <th class="w-10">Complete</th>
+                        <th class="w-80" onclick="sortTable(0, 'tbl_receipts')">Date</th>
+                        <th class="w-20" onclick="sortTable(1, 'tbl_receipts')">Qty</th>
                         <th><i class='fas fa-search'></i></th>
-                        <th><i class='fas fa-trash-alt'></i></th>
                     </thead>
-                    <tbody id="movementTable">
-                        <% if (item.sales) item.sales.forEach(sale => { %>
-                            <tr>
-                                <td data-sort="<%= sale.sale._date.getTime() %>">
-                                    <%= sale.sale._date.toDateString() %>
-                                </td>
-                                <td>
-                                    <%= sale.sale.user.rank._rank %> <%= sale.sale.user.full_name %>
-                                </td>
-                                <td>
-                                    Sale
-                                </td>
-                                <td>
-                                    <%= sale._qty %>
-                                </td>
-                                <td>
-                                    <% if (sale._new_qty) { %><%= sale._new_qty %><% } %>
-                                </td>
-                                <td>
-                                    <% if (sale.sale._complete) { %><i class='fas fa-check'></i><% } %>
-                                </td>
-                                <td>
-                                    <a class='btn btn-sm btn-primary' href="/canteen/sales/<%= sale.sale_id %>">
-                                        <i class='fas fa-search'></i>
-                                    </a>
-                                </td>
-                                <td></td>
-                            </tr>
-                        <% }) %>
-                        <% if (item.receipts) item.receipts.forEach(receipt => { %>
-                            <tr>
-                                <td data-sort="<%= receipt.receipt._date.getTime() %>">
-                                    <%= receipt.receipt._date.toDateString() %>
-                                </td>
-                                <td>
-                                    <%= receipt.receipt.user.rank._rank %> <%= receipt.receipt.user.full_name %>
-                                </td>
-                                <td>
-                                    Receipt
-                                </td>
-                                <td>
-                                    <%= receipt._qty %>
-                                </td>
-                                <td>
-                                    <% if (receipt._new_qty) { %><%= receipt._new_qty %><% } %>
-                                </td>
-                                <td>
-                                    <% if (receipt.receipt._complete) { %><i class='fas fa-check'></i><% } %>
-                                </td>
-                                <td>
-                                    <% if (permissions.canteen_supervisor) { %>
-                                        <a class='btn btn-sm btn-primary' href="/canteen/receipts/<%= receipt.receipt_id %>">
-                                            <i class='fas fa-search'></i>
-                                        </a>
-                                    <% } %>
-                                </td>
-                                <td>
-                                    <% if (!receipt.receipt._complete && permissions.canteen_supervisor) { %>
-                                        <form action="/canteen/receipt_lines/<%= receipt.line_id %>?_method=DELETE&page=items&id=<%= item.item_id %>" method='POST'>
-                                            <button class='btn btn-sm btn-danger confirm'><i class='fas fa-trash-alt'></i></button>
-                                        </form>
-                                    <% } %>
-                                </td>
-                            </tr>
-                        <% }) %>
-                        <% if (item.writeoffs) item.writeoffs.forEach(writeoff => { %>
-                            <tr>
-                                <td data-sort="<%= writeoff.writeoff._date.getTime() %>">
-                                    <%= writeoff.writeoff._date.toDateString() %>
-                                </td>
-                                <td>
-                                    <%= writeoff.writeoff.user.rank._rank %> <%= writeoff.writeoff.user.full_name %>
-                                </td>
-                                <td>
-                                    Writeoff: <%= writeoff.writeoff._reason %>
-                                </td>
-                                <td>
-                                    <%= writeoff._qty %>
-                                </td>
-                                <td>
-                                    <% if (writeoff._new_qty) { %><%= writeoff._new_qty %><% } %>
-                                </td>
-                                <td>
-                                    <% if (writeoff.writeoff._complete) { %><i class='fas fa-check'></i><% } %>
-                                </td>
-                                <td>
-                                    <% if (permissions.canteen_supervisor) { %>
-                                        <a class='btn btn-sm btn-primary' href="/canteen/writeoffs/<%= writeoff.writeoff_id %>">
-                                            <i class='fas fa-search'></i>
-                                        </a>
-                                    <% } %>
-                                </td>
-                                <td>
-                                    <% if (!writeoff.writeoff._complete && permissions.canteen_supervisor) { %>
-                                        <form action="/canteen/writeoff_lines/<%= writeoff.line_id %>?_method=DELETE&page=items&id=<%= item.item_id %>" method='POST'>
-                                            <button class='btn btn-sm btn-danger confirm'><i class='fas fa-trash-alt'></i></button>
-                                        </form>
-                                    <% } %>
-                                </td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
+                    <tbody id="tbl_receipts"></tbody>
                 </table>
             </div>
-        </div>
+        <% } %>
+        <% if (permissions.access_writeoffs) { %>
+            <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                            <th class="w-80" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
+                        <th class="w-20" onclick="sortTable(1, 'tbl_writeoffs')">Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="tbl_writeoffs"></tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (permissions.access_sales) { %>
+            <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-80" onclick="sortTable(0, 'tbl_sales')">Date</th>
+                        <th class="w-20" onclick="sortTable(1, 'tbl_sales')">Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="tbl_sales"></tbody>
+                </table>
+            </div>
+        <% } %>
+        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
     </div>
+    <div id="div_modals"></div>
 </section>
-<% include ../../partials/foot/full %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src='/js/tabs.js'></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
+<script>showTab('<%= tab %>');</script>
+<script src='/js/canteen/items/show/item.js'></script>
 <script>
-    sortTable(0, 'movementTable', 'desc');
+    function getItem() {
+        get(
+            showItem,
+            {
+                db: 'canteen',
+                table: 'items',
+                query: [`item_id=${path[3]}`],
+                permissions: {
+                    edit: <%= permissions.item_edit || false %>
+                }
+            }
+        )
+    };
+    document.querySelector('#reload').addEventListener('click', getItem);
 </script>
-<% include ../../partials/foot/htmlClose %>
+<script async>getItem()</script>
+<% if (permissions.access_receipts) { %>
+    <script src='/js/canteen/items/show/receipts.js'></script>
+    <script>
+        function getReceipts() {
+            get(
+                showReceipts,
+                {
+                    db: 'canteen',
+                    table: 'receipt_lines',
+                    query: [`item_id=${path[3]}`]
+                }
+            )
+        };
+        document.querySelector('#reload').addEventListener('click', getReceipts);
+    </script>
+    <script async>getReceipts()</script>
+<% } %>
+<% if (permissions.access_writeoffs) { %>
+    <script src='/js/canteen/items/show/writeoffs.js'></script>
+    <script>
+        function getWriteoffs() {
+            get(
+                showWriteoffs,
+                {
+                    db: 'canteen',
+                    table: 'writeoff_lines',
+                    query: [`item_id=${path[3]}`]
+                }
+            )
+        };
+        document.querySelector('#reload').addEventListener('click', getWriteoffs);
+    </script>
+    <script async>getWriteoffs()</script>
+<% } %>
+<% if (permissions.access_sales) { %>
+    <script src='/js/canteen/items/show/sales.js'></script>
+    <script>
+        function getSales() {
+            get(
+                showSales,
+                {
+                    db: 'canteen',
+                    table: 'sale_lines',
+                    query: [`item_id=${path[3]}`]
+                }
+            )
+        };
+        document.querySelector('#reload').addEventListener('click', getSales);
+    </script>
+    <script async>getSales()</script>
+<% } %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

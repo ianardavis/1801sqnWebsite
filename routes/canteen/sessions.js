@@ -1,22 +1,23 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db       = require(process.env.ROOT + '/fn/db'),
-        canteen  = require(process.env.ROOT + '/fn/canteen'),
-        settings = require(process.env.ROOT + '/fn/settings');
-    app.get('/canteen/sessions',           isLoggedIn, allowed('access_canteen'), (req, res) => {
-        m.canteen_sessions.findAll({include: [{model: m.canteen_sales, as: 'sales'}]})
-        .then(sessions => {
-            canteen.getSession(req, res)
-            .then(session_id => {
-                res.render('canteen/sessions/index', {
-                    sessions: sessions,
-                    session: session_id
-                });
-            });
+module.exports = (app, allowed, inc, loggedIn, m) => {
+    let canteen  = require(`${process.env.ROOT}/fn/canteen`),
+        settings = require(`${process.env.ROOT}/fn/settings`);
+    app.get('/canteen/sessions',           loggedIn, allowed('access_canteen'),     (req, res) => res.render('canteen/sessions/index'));
+    app.get('/canteen/sessions/:id',       loggedIn, allowed('access_canteen'),     (req, res) => res.render('canteen/sessions/show', {tab: req.query.tab || 'details'}));
+
+    app.get('/canteen/get/sessions',       loggedIn, allowed('access_sessions'),    (req, res) => {
+        m.sessions.findAll({
+            where: req.query,
+            include: [
+                inc.users({as: 'user_open'}),
+                inc.users({as: 'user_close'})
+            ]
         })
+        .then(sessions => res.send({result: true, sessions: sessions}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.post('/canteen/sessions',          isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
+
+    app.post('/canteen/sessions',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
         let session = {};
         session._opening_balance = 0.0;
         for (let [key, denomination] of Object.entries(req.body.opening_balance)) {
@@ -25,11 +26,11 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             };
         };
         session.opened_by = req.user.user_id;
-        m.canteen_sessions.create(session)
+        m.sessions.create(session)
         .then(new_session => {
             settings.edit({
                 m: {settings: m.settings},
-                name: 'canteen_session',
+                name: 'session',
                 value: new_session.session_id
             })
             .then(result => {
@@ -40,71 +41,28 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/canteen/sessions/:id',       isLoggedIn, allowed('access_canteen'), (req, res) => {
-        db.findOne({
-            table: m.canteen_sessions,
-            where: {session_id: req.params.id},
-            include: [
-                {
-                    model: m.canteen_sales,
-                    as: 'sales',
-                    include: [
-                        {
-                            model: m.canteen_sale_lines,
-                            as: 'lines'
-                        },
-                        inc.users()
-                    ]
-                },
-                inc.users({as: '_opened_by'}),
-                inc.users({as: '_closed_by'})
-        ]})
-        .then(session => {
-            m.canteen_items.findAll({
-                include: [{
-                    model: m.canteen_sale_lines,
-                    as: 'sales',
-                    required: true,
-                    include: [{
-                        model: m.canteen_sales,
-                        as: 'sale',
-                        where: {session_id: req.params.id}
-            }]}]})
-            .then(items => {
-                res.render('canteen/sessions/show', {
-                    session: session,
-                    items: items
-                });
-            })
-            .catch(err => res.error.redirect(err, req, res));
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.put('/canteen/sessions/:id',       isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        db.update({
-            table: m.canteen_sessions,
-            where: {session_id: req.params.id},
-            record: req.body.session
-        })
+    
+    app.put('/canteen/sessions/:id',       loggedIn, allowed('canteen_supervisor'), (req, res) => {
+        m.sessions.update(
+            req.body.session,
+            {where: {session_id: req.params.id}}
+        )
         .then(result => {
             req.flash('success', 'Session updated');
             res.redirect('/canteen/sessions/' + req.params.id);
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.put('/canteen/sessions/:id/close', isLoggedIn, allowed('canteen_supervisor'), (req, res) => {
-        m.canteen_sales.findAll({where: {_complete: 0}})
+    app.put('/canteen/sessions/:id/close', loggedIn, allowed('canteen_supervisor'), (req, res) => {
+        m.sales.findAll({where: {_complete: 0}})
         .then(sales => {
             let salesToDelete = [];
             sales.forEach(sale => {
                 salesToDelete.push(
-                    db.destroy({
-                        table: m.canteen_sales,
-                        where: {sale_id: sale.sale_id}
-                    })
+                    m.sales.destroy({where: {sale_id: sale.sale_id}})
                 );
                 salesToDelete.push(
-                    m.canteen_sale_lines.destroy({where: {sale_id: sale.sale_id}})
+                    m.sale_lines.destroy({where: {sale_id: sale.sale_id}})
                 );
             })
             Promise.allSettled(salesToDelete)
@@ -123,35 +81,31 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
                     });
                     Promise.allSettled(clear_sales)
                     .then(results => {
-                        m.canteen_sale_lines.findAll({
+                        m.sale_lines.findAll({
                             include: [{
-                                model: m.canteen_sales,
+                                model: m.sales,
                                 as: 'sale',
                                 where: {session_id: req.params.id}
                             }]
                         })
                         .then(sales => {
-                            db.findOne({
-                                table: m.canteen_sessions,
-                                where: {session_id: req.params.id}
-                            })
+                            m.sessions.findOne({where: {session_id: req.params.id}})
                             .then(session => {
                                 let takings = 0;
                                 sales.forEach(sale => takings += (Number(sale._price) * Number(sale._qty)));
-                                db.update({
-                                    table: m.canteen_sessions,
-                                    where: {session_id: req.params.id},
-                                    record: {
+                                m.sessions.update(
+                                    {
                                         _end: Date.now(),
                                         _takings: takings,
                                         _closing_balance: Number(session._opening_balance) + takings,
                                         closed_by: req.user.user_id
-                                    }
-                                })
+                                    },
+                                    {where: {session_id: req.params.id}}
+                                )
                                 .then(result => {
                                     settings.edit({
                                         m: {settings: m.settings},
-                                        name: 'canteen_session',
+                                        name: 'ession',
                                         value: -1
                                     })
                                     .then(result => {

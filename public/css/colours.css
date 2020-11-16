@@ -17,6 +17,10 @@ body {
 	color: var(--main-color);
 }
 
+.bg-red {
+	background-color: #ffb7b7;
+	color: var(--main-bg-color);
+}
 .bg-light {
  	background-color: var(--main-color) !important;
 }
@@ -55,6 +59,13 @@ body {
 .modal-header {
 	color: var(--main-bg-color-dark);
 	background-color: var(--main-color)
+}
+.modal-footer {
+	color: var(--main-bg-color-dark);
+	background-color: var(--main-color)
+}
+.modal-content {
+	background-color: var(--main-bg-color)
 }
 .navbar-light .navbar-nav .nav-link {
 	 color: var(--main-bg-color);

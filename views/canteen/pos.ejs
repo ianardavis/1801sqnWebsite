@@ -1,27 +1,24 @@
-<% include ../partials/head/head %>
+<%- include(`${process.env.PARTIALS}/head/head`) %>
 <body>
-<% include ../partials/head/flash %>
+<%- include(`${process.env.PARTIALS}/head/flash`) %>
 <section id='body'>
 <section class='mb-2'>
+    <nav class="navbar navbar-expand navbar-light bg-nav">
+        <ul class="navbar-nav mr-auto">
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',     text: 'Canteen'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/pos', text: 'POS'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
+        </ul>
+    <!-- </nav>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/pos'>
-                    Point of Sale
-                </a>
-            </li>
             <li class='nav-item'>
                 <a class='nav-link stores_nav' href='/canteen/pos'>
                     Sale: <%= sale_id %>
                 </a>
             </li>
         </ul>
-    </nav>
+    </nav> -->
 </section>
 <section class='container'>
 	<div class='row'>

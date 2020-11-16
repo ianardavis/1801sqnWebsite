@@ -1,18 +1,15 @@
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
-    app.get('/stores/stock/new',      isLoggedIn, allowed('stock_add'),                (req, res) => {
-        db.findOne({
-            table: m.sizes,
+module.exports = (app, allowed, inc, loggedIn, m) => {
+    app.get('/stores/stock/new',      loggedIn, allowed('stock_add'),                  (req, res) => {
+        m.sizes.findOne({
             where: {size_id: req.query.size_id},
             include: []
         })
         .then(item => res.render('stores/stock/new', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/stock/:id',      isLoggedIn, allowed('access_stock'),             (req, res) => res.render('stores/stock/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/stock/:id/edit', isLoggedIn, allowed('stock_edit'),               (req, res) => {
-        db.findOne({
-            table: m.stock,
+    app.get('/stores/stock/:id',      loggedIn, allowed('access_stock'),               (req, res) => res.render('stores/stock/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/stock/:id/edit', loggedIn, allowed('stock_edit'),                 (req, res) => {
+        m.stock.findOne({
             where: {stock_id: req.params.id},
             include: [m.locations]
         })
@@ -20,7 +17,16 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.post('/stores/stock',         isLoggedIn, allowed('stock_add',  {send: true}), (req, res) => {
+    app.get('/stores/get/stock',      loggedIn, allowed('access_stock', {send: true}), (req, res) => {
+        m.stock.findAll({
+            where:   req.query,
+            include: [inc.locations({as: 'location'})],
+        })
+        .then(stocks => res.send({result: true, stocks: stocks}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.post('/stores/stock',         loggedIn, allowed('stock_add',    {send: true}), (req, res) => {
         m.locations.findOne({where: {_location: req.body.location}})
         .then(location => {
             if (location) {
@@ -37,16 +43,10 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/stock/:id',      isLoggedIn, allowed('stock_edit', {send: true}), (req, res) => {
-        db.findOne({
-            table: m.stock,
-            where: {stock_id: req.params.id}
-        })
+    app.put('/stores/stock/:id',      loggedIn, allowed('stock_edit',   {send: true}), (req, res) => {
+        m.stock.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
-            db.findOne({
-                table: m.locations,
-                where: {_location: req.body._location}
-            })
+            m.locations.findOne({where: {_location: req.body._location}})
             .then(location => {
                 if (location) {
                     if (Number(location.location_id) !== Number(stock.location_id)) {
@@ -64,17 +64,31 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         
     });
     
+    app.delete('/stores/stock/:id',   loggedIn, allowed('stock_delete', {send: true}), (req, res) => {
+        m.stock.findOne({where: {stock_id: req.params.id}})
+        .then(stock => {
+            if (stock._qty === 0) {
+                stock.destroy()
+                .then(result => {
+                    if (result) res.send({result: true, message: 'Stock deleted'})
+                    else res.error.send('Stock NOT deleted', res);
+                })
+                .catch(err => res.error.send(err, res));
+            } else res.error.send('Cannot delete whilst stock is not 0', res)
+        })
+        .catch(err => res.error.send(err, res));
+    });
+    
     createStock = (stock, res) => {
         m.stock.create(stock)
         .then(stock => res.send({result: true, message: 'Stock added'}))
         .catch(err => res.error.send(err, res));;
     };
     updateStockLocation = (location_id, stock_id, res) => {
-        db.update({
-            tbale: m.stock,
-            where: {stock_id: stock_id},
-            record: {location_id: location_id}
-        })
+        m.stock.update(
+            {location_id: location_id},
+            {where: {stock_id: stock_id}}
+        )
         .then(result => res.send({result: true, message: 'Stock saved'}))
         .catch(err => res.error.send(err, res));
     };

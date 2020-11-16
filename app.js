@@ -5,20 +5,25 @@ var express  = require('express'),
     bb       = require('express-busboy'),
     flash    = require('connect-flash'),
     memStore = require('memorystore')(session);
-process.env.ROOT = __dirname;
-process.env.PARTIALS = __dirname + '/views/partials';
-let port = require(process.env.ROOT + '/fn/port'),
-   _port = 3000;
-port.check(_port)
-.then(result => {
-    console.log(result);
-    if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
-    console.log('environment: ' + process.env.NODE_ENV);
-
+console.log('Setting Environment Variables');
+require('dotenv').config();
+if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
+console.log(`Environment: ${process.env.NODE_ENV}`);
+console.log('   Set')
+let port_check = require(`${process.env.ROOT}/fn/utils/port_check`)
+port_check()
+.then(port => {
     console.log('Models:');
-    let m           = require(process.env.ROOT + '/db/models'),
-        permissions = require(process.env.ROOT + '/fn/permissions');
+    let m = {};
+    m.stores  = require(`${process.env.ROOT}/db/stores/models`);
+    m.canteen = require(`${process.env.ROOT}/db/canteen/models`);
+    m.users   = require(`${process.env.ROOT}/db/users/models`);
     console.log('   Loaded');
+    console.log('Associating tables:');
+    require(`${process.env.ROOT}/db/stores/associations.js`) (m.stores);
+    require(`${process.env.ROOT}/db/canteen/associations.js`)(m.canteen);
+    require(`${process.env.ROOT}/db/users/associations.js`)  (m);
+    console.log('   Done');
 
     console.log('Busboy:');
     bb.extend(app, {
@@ -43,19 +48,15 @@ port.check(_port)
     console.log('Passport:');
     app.use(passport.initialize());
     app.use(passport.session());
-    require('./config/passport.js')(passport, m);
+    require('./config/passport.js')(passport, m.users);
     console.log('   Setup');
 
     console.log('Flash:');
     app.use(flash());
-    app.use((req, res, next) => {
-        res.locals.user    = req.user;
-        res.locals.info    = req.flash('info');
-        res.locals.danger  = req.flash('danger');
-        res.locals.success = req.flash('success');
-        next();
-    });
     console.log('   Setup');
+    console.log('Custom variables:');
+    app.use(require(`${process.env.ROOT}/middleware/variables.js`)());
+    console.log('   Set');
 
     console.log('Engine:');
     app.set('view engine', 'ejs');
@@ -65,21 +66,15 @@ port.check(_port)
     app.use(express.static(__dirname + '/public'));
     console.log('   Set');
 
-    console.log('Error handling:');
-    app.use((req, res, next) => {
-        res.error = require(process.env.ROOT + '/fn/error');
-        next();
-    });
-    console.log('   Set');
-
     console.log('Routes:');
-    require('./routes/stores') (app, m, permissions.get);
-    require('./routes/canteen')(app, m, permissions.get);
-    require('./routes/site')   (app, m);
+    require('./routes/stores') (app, m);
+    require('./routes/canteen')(app, m);
+    require('./routes/users')  (app, m);
+    require('./routes/site')   (app);
     console.log('   Loaded');
-    app.listen(_port, err => {
+    app.listen(port, err => {
         if (err) console.log(err);
-        else console.log('Server listening on port: ' + _port);
+        else console.log(`Server listening on port: ${port}`);
     });
 })
 .catch(err => console.log(err));

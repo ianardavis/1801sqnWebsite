@@ -1,36 +1,36 @@
 module.exports = (inc, m) => {
     inc.users = (options = {}) => {
-        let include = options.include || [m.ranks];
+        let include = options.include || [m.users.ranks];
         return {
-            model:   m.users,
+            model:   m.users.users,
             as:      options.as || 'user',
             include: include
         };
     };
-    inc.canteen_sale_lines = (options = {}) => {
+    inc.sale_lines = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            if (options.sale) include.push(inc.canteen_sales({as: 'sale'}));
-            if (options.item) include.push(inc.canteen_items());
+            if (options.sale) include.push(inc.sales({as: 'sale'}));
+            if (options.item) include.push(inc.items());
         };
         return {
-            model:    m.canteen_sale_lines,
+            model:    m.canteen.sale_lines,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
             required: options.required || false
         };
     };
-    inc.canteen_sales = (options = {}) => {
+    inc.sales = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            if (options.lines) include.push(inc.canteen_sale_lines());
+            if (options.lines) include.push(inc.sale_lines());
         };
         include.push(inc.users());
         return {
-            model:    m.canteen_sales,
+            model:    m.canteen.sales,
             include:  include,
             as:       options.as       || 'sales',
             where:    options.where    || null,
@@ -38,29 +38,29 @@ module.exports = (inc, m) => {
         };
     };
     
-    inc.canteen_receipt_lines = (options = {}) => {
-        let include = [inc.canteen_items()];
+    inc.receipt_lines = (options = {}) => {
+        let include = [inc.items()];
         if (options.include) include = options.include
         else {
-            if (options.receipt) include.push(inc.canteen_receipts({as: 'receipt'}));
+            if (options.receipt) include.push(inc.receipts({as: 'receipt'}));
         };
         return {
-            model:    m.canteen_receipt_lines,
+            model:    m.canteen.receipt_lines,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
             required: options.required || false
         };
     };
-    inc.canteen_receipts = (options = {}) => {
+    inc.receipts = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            if (options.lines) include.push(inc.canteen_receipt_lines());
+            if (options.lines) include.push(inc.receipt_lines());
         };
         include.push(inc.users());
         return {
-            model:    m.canteen_receipts,
+            model:    m.canteen.receipts,
             include:  include,
             as:       options.as       || 'receipts',
             where:    options.where    || null,
@@ -68,29 +68,29 @@ module.exports = (inc, m) => {
         };
     };
     
-    inc.canteen_writeoff_lines = (options = {}) => {
-        let include = [inc.canteen_items()];
+    inc.writeoff_lines = (options = {}) => {
+        let include = [inc.items()];
         if (options.include) include = options.include
         else {
-            if (options.writeoff) include.push(inc.canteen_writeoffs({as: 'writeoff'}));
+            if (options.writeoff) include.push(inc.writeoffs({as: 'writeoff'}));
         };
         return {
-            model:    m.canteen_writeoff_lines,
+            model:    m.canteen.writeoff_lines,
             include:  include,
             as:       options.as       || 'lines',
             where:    options.where    || null,
             required: options.required || false
         };
     };
-    inc.canteen_writeoffs = (options = {}) => {
+    inc.writeoffs = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            if (options.lines) include.push(inc.canteen_writeoff_lines());
+            if (options.lines) include.push(inc.writeoff_lines());
         };
         include.push(inc.users());
         return {
-            model:    m.canteen_writeoffs,
+            model:    m.canteen.writeoffs,
             include:  include,
             as:       options.as       || 'writeoffs',
             where:    options.where    || null,
@@ -98,13 +98,25 @@ module.exports = (inc, m) => {
         };
     };
     
-    inc.canteen_items = (options = {}) => {
+    inc.items = (options = {}) => {
         let include = [];
         if (options.include) include = options.include;
         return {
-            model:    m.canteen_items,
+            model:    m.canteen.items,
             include:  include,
             as:       options.as       || 'item',
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
+    
+    inc.sessions = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include;
+        return {
+            model:    m.canteen.sessions,
+            include:  include,
+            as:       options.as       || 'session',
             where:    options.where    || null,
             required: options.required || false
         };

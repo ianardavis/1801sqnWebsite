@@ -1,36 +1,52 @@
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    let db = require(process.env.ROOT + '/fn/db');
-    app.get('/stores/notes/new',      isLoggedIn, allowed('note_add'),                (req, res) => {
+module.exports = (app, allowed, inc, loggedIn, m) => {
+    app.get('/stores/notes/new',      loggedIn, allowed('note_add'),                   (req, res) => {
         res.render('stores/notes/new', {
             table: req.query.table,
             id:    req.query.id
         });
     });
-    app.get('/stores/notes/:id/edit', isLoggedIn, allowed('note_add'),                (req, res) => {
-        db.findOne({
-            table: m.notes,
-            attributes: ['note_id'],
-            where: {note_id: req.params.id, _system: 0}
+    app.get('/stores/notes/:id/edit', loggedIn, allowed('note_add'),                   (req, res) => {
+        m.notes.findOne({
+            where: {note_id: req.params.id, _system: 0},
+            attributes: ['note_id']
         })
         .then(note => res.render('stores/notes/edit'))
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.post('/stores/notes',         isLoggedIn, allowed('note_add',  {send: true}), (req, res) => {
+    app.get('/stores/get/notes',      loggedIn, allowed('access_notes', {send: true}), (req, res) => {
+        m.notes.findAll({
+            where:   req.query,
+            include: [inc.users()]
+        })
+        .then(notes => res.send({result: true, notes: notes}))
+        .catch(err => res.error.send(err, res));
+    });
+
+    app.post('/stores/notes',         loggedIn, allowed('note_add',     {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         m.notes.create(req.body.note)
         .then(note => res.send({result: true, message: 'Note added'}))
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/notes/:id',      isLoggedIn, allowed('note_edit', {send: true}), (req, res) => {
+    app.put('/stores/notes/:id',      loggedIn, allowed('note_edit',    {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         req.body.note._date = Date.now();
-        db.update({
-            table: m.notes,
-            where: {note_id: req.params.id},
-            record: req.body.note
-        })
+        m.notes.update(
+            req.body.note,
+            {where: {note_id: req.params.id}}
+        )
         .then(note => res.send({result: true, message: 'Note saved'}))
         .catch(err => res.error.send(err, res));
     });
-};
+    app.delete('/stores/notes/:id',   loggedIn, allowed('note_delete',  {send: true}), (req, res) => {
+        m.notes.destroy({
+            where: {
+                note_id: req.params.id,
+                _system: 0
+            }
+        })
+        .then(result => res.send({result: true, message: 'Note deleted'}))
+        .catch(err => res.error.send(err, res));
+    });
+    };
