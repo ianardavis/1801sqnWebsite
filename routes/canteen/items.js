@@ -4,9 +4,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     app.get('/canteen/items/:id',    loggedIn, allowed('access_items'),              (req, res) => res.render('canteen/items/show', {tab: req.query.tab || 'details'}));
     
     app.get('/canteen/get/items',    loggedIn, allowed('access_items'),              (req, res) => {
-        m.items.findAll({
-            where: req.query
-        })
+        m.items.findAll({where: req.query})
         .then(items => res.send({result: true, items: items}))
         .catch(err => res.error.send(err, res));
     });

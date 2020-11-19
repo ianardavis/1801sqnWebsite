@@ -18,7 +18,7 @@ module.exports = (app, m) => {
     });
 
     app.get('/canteen',                   loggedIn, allowed('access_canteen'), (req, res) => res.render('canteen/index'));
-    
+
     app.get('/canteen/get/notifications', loggedIn, allowed('access_canteen'), (req, res) => {
         m.canteen.notifications.findAll({where: {user_id: req.user.user_id}})
         .then(notifications => res.send({result: true, notifications: notifications}))

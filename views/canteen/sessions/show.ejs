@@ -81,7 +81,7 @@
         get(
             showSession,
             {
-                db: 'canteen',
+                db:    'canteen',
                 table: 'sessions',
                 query: [`session_id=${path[3]}`],
                 permissions: {
@@ -100,7 +100,7 @@
             get(
                 showSales,
                 {
-                    db: 'canteen',
+                    db:    'canteen',
                     table: 'sales',
                     query: [`session_id=${path[3]}`]
                 }

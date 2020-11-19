@@ -4,7 +4,7 @@ addFormListener = (form_id, method, location, options = {reload: false, reload_o
         if (form) {
             form.addEventListener("submit", event => {
                 event.preventDefault();
-                if (method.toUpperCase() === 'GET' || confirm('Are you sure?')) sendData(form, method, location, options);
+                if (method.toUpperCase() === 'GET' || options.noConfirm === true || confirm('Are you sure?')) sendData(form, method, location, options);
             });
         } else console.log(`${form_id} not found`);
     } catch (error) {

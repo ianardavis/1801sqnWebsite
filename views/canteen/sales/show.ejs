@@ -1,84 +1,78 @@
-<% include ../../partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/sessions'>
-                    Sales
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/sales/<%= sale.sale_id %>'>
-                    <%= sale.sale_id %>
-                </a>
-            </li>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen', text: 'Canteen'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen', text: 'Sales'}) %>
+            <%- include(`${process.env.PARTIALS}/breadcrumb`) %>
+			<%- include(`${process.env.PARTIALS}/reload`) %>
+			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'sales'}) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <div class="row">
-        <div class="col-12 mb-1">
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Date</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= sale._date.toDateString() %>' readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>User</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= sale.user.rank._rank %> <%= sale.user.full_name %>' readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Complete</label>
-                </div>
-                <div class="col-6">
-                    <% if (sale._complete) { %>
-                        <i class='fas fa-check'></i>
-                    <% } %>
-                </div>
-            </div>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count', permission: 'access_sale_lines'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user',      title: 'User'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',   title: 'Status'}) %>
         </div>
-        <div class="col-12 bordered">
-            <a class="my-3" data-toggle="collapse" href="#collapseLines" role="button" aria-expanded="false" aria-controls="collapseLines">
-                <h4>Lines (<%= sale.lines.length %>)</h4>
-            </a>
-            <div class="collapse mb-3" id="collapseLines">
+        <% if (permissions.access_sale_lines) { %>
+            <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-50" onclick="sortTable(0, 'lineTable')">Item</th>
-                        <th class="w-25" onclick="sortTable(1, 'lineTable')">Qty</th>
-                        <th class="w-25" onclick="sortTable(2, 'lineTable')">Price</th>
+                        <th class="w-35" onclick="sortTable(0, 'tbl_lines')">
+                            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'sale_lines', small: true, float_left: true}) %>
+                            Date/Time
+                        </th>
+                        <th class="w-25" onclick="sortTable(1, 'tbl_lines')">Item</th>
+                        <th class="w-10" onclick="sortTable(2, 'tbl_lines')">Qty</th>
+                        <th class="w-15" onclick="sortTable(3, 'tbl_lines')">Price</th>
+                        <th class="w-15" onclick="sortTable(4, 'tbl_lines')">Total</th>
                     </thead>
-                    <tbody id="lineTable">
-                        <% if (sale.lines) sale.lines.forEach(line => { %>
-                            <tr>
-                                <td>
-                                    <a class='float-right btn btn-sm btn-primary' href="/canteen/items/<%= line.item_id %>">
-                                        <i class='fas fa-search'></i>
-                                    </a>
-                                    <%= line.item._name %>
-                                </td>
-                                <td><%= line._qty %></td>
-                                <td><%= line._price %></td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
+                    <tbody id="tbl_lines"></tbody>
                 </table>
             </div>
-        </div>
+        <% } %>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src='/js/tabs.js'></script>
+<script>showTab('<%= tab %>');</script>
+<script src='/js/canteen/sales/show/sale.js'></script>
+<script>
+    function getSale() {
+        get(
+            showSale,
+            {
+                db: 'canteen',
+                table: 'sales',
+                query: [`sale_id=${path[3]}`]
+            }
+        )
+    };
+    document.querySelector('#reload').addEventListener('click', getSale);
+</script>
+<script async>getSale()</script>
+<% if (permissions.access_sale_lines) { %>
+    <script src='/js/canteen/sales/show/lines.js'></script>
+    <script>
+        function getLines() {
+            get(
+                showLines,
+                {
+                    db: 'canteen',
+                    table: 'sale_lines',
+                    query: [`sale_id=${path[3]}`]
+                }
+            )
+        };
+        document.querySelector('#reload').addEventListener('click', getLines);
+    </script>
+    <script async>getLines()</script>
+<% } %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

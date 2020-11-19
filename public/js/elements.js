@@ -69,7 +69,8 @@ function Input (options = {}) {
     if (options.completeOff) this.e.setAttribute('autocomplete', 'off');
     if (options.name)        this.e.setAttribute('name', options.name);
     if (options.small)       this.e.classList.add('form-control-sm');
-    if (options.value)       this.e.setAttribute('value', options.value);
+    if      (options.value)  this.e.setAttribute('value', options.value);
+    else if (options.html)   this.e.innerHTML = options.html;
     if (options.min)         this.e.setAttribute('min', options.min);
     if (options.minlength)   this.e.setAttribute('minlength', options.minlength);
     if (options.maxlength)   this.e.setAttribute('maxlength', options.maxlength);
@@ -79,6 +80,19 @@ function Input (options = {}) {
     if (options.disabled)    this.e.setAttribute('disabled', true);
     if (options.onChange)    this.e.addEventListener('change', function (event) {options.onChange()});
     if (options.keyUp)       this.e.addEventListener('keyup', function (event) {options.keyUp()});
+};
+function Button (options = {}) {
+    this.e = document.createElement('button');
+    this.e.classList.add('btn');
+    if (options.classes)   options.classes.forEach(e => this.e.classList.add(e))
+    if (options.type)      this.e.classList.add(`btn-${options.type}`)
+    else                   this.e.classList.add('btn-primary');
+    if (options.small)     this.e.classList.add('btn-sm');
+    if      (options.text) this.e.innerText = options.text
+    else if (options.html) this.e.innerHTML = options.html;
+    if (options.id)        this.e.setAttribute('id', options.id);
+    if (options.disabled)  this.e.setAttribute('disabled', true);
+    if (options.click)     this.e.addEventListener('click', function (event) {options.click()});
 };
 function Select (options = {}) {
     this.e = document.createElement('select');

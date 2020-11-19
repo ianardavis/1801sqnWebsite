@@ -2,45 +2,13 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, loggedIn, m) => {
     let canteen  = require(process.env.ROOT + '/fn/canteen'),
         settings = require(process.env.ROOT + '/fn/settings');
-    app.get('/canteen/pos',            loggedIn, allowed('access_canteen'),                  (req, res) => {
-        canteen.getSale(req, res)
-        .then(sale_id => {
-            m.canteen_items.findAll({where: {_current: 1}})
-            .then(items => {
-                m.canteen_sale_lines.findAll({
-                    where: {sale_id: sale_id},
-                    include: [{model: m.canteen_items, as: 'item'}]
-                })
-                .then(sale_items => {
-                    res.render('canteen/pos', {
-                        items:      items,
-                        sale_items: sale_items,
-                        sale_id:    sale_id
-                    })
-                })
-                .catch(err => res.error.redirect(err, req, res));
-            })
-            .catch(err => res.error.redirect(err, req, res));
-        })
-    });
-    app.get('/canteen/sales/:id',      loggedIn, allowed('access_canteen'),                  (req, res) => {
-        m.canteen_sales.findOne({
-            where: {sale_id: req.params.id},
-            include: [
-                inc.users(),
-                inc.canteen_sale_lines({item: true})
-            ]
-        })
-        .then(sale => res.render('canteen/sales/show', {sale: sale}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/canteen/sales/:id',      loggedIn, allowed('access_canteen'),                  (req, res) => res.render('canteen/sales/show', {tab: req.query.tab || 'details'}));
 
     app.get('/canteen/get/sales',      loggedIn, allowed('access_sales',      {send: true}), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
                 inc.sale_lines({item: true}),
-                inc.sessions(),
                 inc.users()
             ]
         })
@@ -48,7 +16,10 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res))
     });
     app.get('/canteen/get/sale_lines', loggedIn, allowed('access_sale_lines', {send: true}), (req, res) => {
-        m.sale_lines.findAll({where: req.query})
+        m.sale_lines.findAll({
+            where:   req.query,
+            include: [inc.items()]
+        })
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res))
     });

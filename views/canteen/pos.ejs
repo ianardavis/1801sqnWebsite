@@ -9,88 +9,23 @@
 			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/pos', text: 'POS'}) %>
 			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
         </ul>
-    <!-- </nav>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/pos'>
-                    Sale: <%= sale_id %>
-                </a>
-            </li>
-        </ul>
-    </nav> -->
 </section>
-<section class='container'>
+<section class='mx-5'>
 	<div class='row'>
 		<div class="col-6 col-lg-8 bordered">
-            <div class="menu row">
-                <% items.forEach(item => { %>
-                    <% if (item.item_id !== 0 || permissions.canteen_supervisor) { %>
-                        <div class="col-6 col-xl-4 mb-2">
-                            <div class="card">
-                                <form action="/canteen/sale_lines" method='POST'>
-                                    <div class="card-header py-1">
-                                        <h3><%= item._name %></h3>
-                                        <p class="card-subtitle text-left text-muted">
-                                            <% if (item.item_id !== 0) { %>
-                                                £<%= item._price %>
-                                            <% } %>
-                                        </p>
-                                    </div>
-                                    <div class="card-body pt-1">
-                                        <input type="hidden" name='sale_line[sale_id]' value='<%= sale_id %>'>
-                                        <input type="hidden" name='sale_line[item_id]' value='<%= item.item_id %>'>
-                                        <p>
-                                            <% if (item.item_id !== 0) { %>
-                                                Qty: <input class='form-control' type="number" name='sale_line[_qty]' value='1' required>
-                                            <% } else { %>
-                                                <input type="hidden" name='sale_line[_qty]' value='1' required>
-                                                <input class='form-control' type="number" name='sale_line[_price]' value='' required>
-                                            <% } %>
-                                        </p>
-                                        <button class='btn btn-lg btn-success w-100'>Add</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    <% } %>
-                <% }) %>
+            <div class="menu row" id='div_items'>
             </div>
         </div>
         <div class="col-6 col-lg-4 bordered">
-            <div class="row mb-2">
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(7)">7</a>
+            <% [['7','8','9'],['4','5','6'],['1','2','3']].forEach(r => { %>
+                <div class="row mb-2">
+                    <% r.forEach(e => { %>
+                        <div class="col-4">
+                            <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(<%= e %>)"><%= e %></a>
+                        </div>
+                    <% }) %>
                 </div>
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(8)">8</a>
-                </div>
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(9)">9</a>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(4)">4</a>
-                </div>
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(5)">5</a>
-                </div>
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(6)">6</a>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(1)">1</a>
-                </div>
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(2)">2</a>
-                </div>
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(3)">3</a>
-                </div>
-            </div>
+            <% }) %>
             <div class="row mb-2">
                 <div class="col-4">
                     <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(0)">0</a>
@@ -102,7 +37,7 @@
                     <a class='btn btn-lg btn-danger w-100 confirm' href="javascript:cancelSale()">Cancel</a>
                 </div>
             </div>
-            <form action="/canteen/sales/<%= sale_id %>?_method=PUT" method="POST">
+            <form id='form_complete_sale'>
                 <button class='btn btn-lg btn-success w-100 confirm mb-2'>Pay</button>
                 <div class="row mb-2">
                     <div class="col-6">
@@ -130,54 +65,37 @@
                     <th><i class='fas fa-minus'></i></th>
                     <th><i class='fas fa-plus'></i></th>
                 </thead>
-                <tbody id="selectedItems">
-                    <% let total = 0.0; %>
-                    <% sale_items.forEach(item => { %>
-                        <% total += Number(item._price) * Number(item._qty); %>
-                        <tr>
-                            <td>
-                                <%= item.item._name %>
-                            </td>
-                            <td>
-                                <%= item._price %>
-                            </td>
-                            <td>
-                                <%= item._qty %>
-                            </td>
-                            <td>
-                                <%= Number(item._price * item._qty).toFixed(2) %>
-                            </td>
-                            <td>
-                                <form action="/canteen/sale_lines?_method=PUT" method='POST'>
-                                    <input type="hidden" name='sale_line[line_id]' value='<%= item.line_id %>'>
-                                    <input type="hidden" name='sale_line[_qty]' value='-1'>
-                                    <button class='btn btn-danger'><i class='fas fa-minus'></i></button>
-                                </form>
-                            </td>
-                            <td>
-                                <form action="/canteen/sale_lines?_method=PUT" method='POST'>
-                                    <input type="hidden" name='sale_line[line_id]' value='<%= item.line_id %>'>
-                                    <input type="hidden" name='sale_line[_qty]' value='1'>
-                                    <button class='btn btn-success'><i class='fas fa-plus'></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
+                <tbody id="tbl_sale_lines"></tbody>
             </table>
         </div>
     </div>
 </section>
-<% include ../partials/foot/full %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<script src="/js/canteen/pos/showSale.js"></script>
+<script src="/js/canteen/pos/showSaleLines.js"></script>
+<script src="/js/canteen/pos/showItems.js"></script>
+<script src="/js/get.js"></script>
+<script src="/js/spinner.js"></script>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/data/send.js"></script>
+<script src="/js/data/addFormListener.js"></script>
 <script>
-    let items = {}, selected = {},
-        _total = document.querySelector('#_total');
-    if (<%= total %> === 0.0) {
-        _total.value = '';
-    } else {
-        _total.value = Number(<%= total %>).toFixed(2);
+    function getItems() {
+        get(
+            showItems,
+            {
+                db: 'canteen',
+                table: 'items',
+                query: [],
+                permissions: {
+                    pay_out: <%= permissions.pay_out || false %>
+                }
+            }
+        )
     };
-
+</script>
+<script async>getItems()</script>
+<script>
     function cancelSale() {
         selected = {};
         let tendered = document.querySelector('#_tendered');
@@ -207,4 +125,4 @@
         tendered.value = amt;
     };
 </script>
-<% include ../partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>    
