@@ -54,9 +54,10 @@ port_check()
     console.log('Flash:');
     app.use(flash());
     console.log('   Setup');
-    console.log('Custom variables:');
+    console.log('Middleware:');
     app.use(require(`${process.env.ROOT}/middleware/variables.js`)());
-    console.log('   Set');
+    app.use(require(`${process.env.ROOT}/middleware/loggedIn.js`)());
+    console.log('   Loaded');
 
     console.log('Engine:');
     app.set('view engine', 'ejs');

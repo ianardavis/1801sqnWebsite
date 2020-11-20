@@ -8,15 +8,16 @@
 			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',     text: 'Canteen'}) %>
 			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/pos', text: 'POS'}) %>
 			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {id: 'alert'}) %>
         </ul>
 </section>
 <section class='mx-5'>
 	<div class='row'>
-		<div class="col-6 col-lg-8 bordered">
+		<div class="col-6 col-lg-7 col-xl-8 bordered">
             <div class="menu row" id='div_items'>
             </div>
         </div>
-        <div class="col-6 col-lg-4 bordered">
+        <div class="col-6 col-lg-5 col-xl-4 bordered">
             <% [['7','8','9'],['4','5','6'],['1','2','3']].forEach(r => { %>
                 <div class="row mb-2">
                     <% r.forEach(e => { %>
@@ -58,17 +59,17 @@
             </form>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-                    <th class="w-25" onclick="sortTable(0, 'selectedItems')">Item</th>
+                    <th class="w-40" onclick="sortTable(0, 'selectedItems')">Item</th>
                     <th class="w-25" onclick="sortTable(1, 'selectedItems')">£/Each</th>
                     <th class="w-10" onclick="sortTable(2, 'selectedItems')">Qty</th>
-                    <th class="w-65" onclick="sortTable(3, 'selectedItems')">£/Total</th>
+                    <th class="w-25" onclick="sortTable(3, 'selectedItems')">£/Total</th>
                     <th><i class='fas fa-minus'></i></th>
-                    <th><i class='fas fa-plus'></i></th>
                 </thead>
                 <tbody id="tbl_sale_lines"></tbody>
             </table>
         </div>
     </div>
+    <div id="div_modals"></div>
 </section>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
 <script src="/js/canteen/pos/showSale.js"></script>
@@ -80,6 +81,16 @@
 <script src="/js/data/send.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script>
+    function clear_alert() {
+        let _alert = document.querySelector('#alert');
+        _alert.innerText = '';
+    };
+    function alert(message) {
+        let _alert = document.querySelector('#alert');
+        _alert.innerText = message;
+        setTimeout(clear_alert, 3000);
+    };
+
     function getItems() {
         get(
             showItems,

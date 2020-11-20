@@ -28,7 +28,8 @@ module.exports = (passport, m) => {
             usernameField: '_login_id',
             passwordField: '_password',
             passReqToCallback: true
-        },(req, _login_id, _password, done) => {
+        },
+        (req, _login_id, _password, done) => {
             return m.users.findOne({
                 where: {_login_id: _login_id},
                 attributes: ['_login_id', 'user_id', '_reset', '_password', '_salt']
@@ -52,6 +53,7 @@ module.exports = (passport, m) => {
                 } else {
                     delete user.dataValues._password;
                     delete user.dataValues._salt;
+                    
                     return m.users.update({_last_login: Date.now()},{where: {user_id: user.user_id}})
                     .then(function(result) {
                         return done(null, user.get())})
@@ -66,7 +68,7 @@ module.exports = (passport, m) => {
             })
             .catch(err => {
                 console.log(err);
-                req.flash('danger', 'Something went wrong with your signin!')
+                req.flash('danger', 'Something went wrong with your signin!');
                 return done(null, false, {message: 'Something went wrong with your signin!'});
             });
         }

@@ -10,18 +10,13 @@ function showSaleLines(lines, options) {
         add_cell(row, {text: `£${line.item._price}`});
         add_cell(row, {text: line._qty});
         add_cell(row, {text: Number(line._qty * line.item._price).toFixed(2)});
-        [
-            {qty: 1,  html: '<i class="fas fa-minus"></i>'},
-            {qty: -1, html: '<i class="fas fa-plus"></i>'}
-        ].forEach(e => {
-            let form = document.createElement('form');
-            form.setAttribute('id', `form_${line.line_id}_${e.qty}`)
-            form.appendChild(new Input({type: 'hidden', name: 'sale_line[line_id]', value: line.line_id}).e);
-            form.appendChild(new Input({type: 'hidden', name: 'sale_line[_qty]',    value: e.qty}).e);
-            form.appendChild(new Button({html: e.html}).e);
-            add_cell(row, {append: form});
-            addFormListener(`form_${line.line_id}_${e.qty}`, 'PUT', `/canteen/sale_lines`, {onComplete: [getSaleLines]});
-        });
+        let form = document.createElement('form');
+        form.setAttribute('id', `form_${line.line_id}_minus`)
+        form.appendChild(new Input({type: 'hidden', name: 'line[line_id]', value: line.line_id}).e);
+        form.appendChild(new Input({type: 'hidden', name: 'line[_qty]',    value: -1}).e);
+        form.appendChild(new Button({html: '<i class="fas fa-minus"></i>'}).e);
+        add_cell(row, {append: form});
+        addFormListener(`form_${line.line_id}_minus`, 'PUT', `/canteen/sale_lines`, {noConfirm: true, onComplete: [getSaleLines]});
     });
     _total.innerText = total.toFixed(2) || '0.00'
 };

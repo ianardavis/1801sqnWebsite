@@ -1,15 +1,15 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, loggedIn, m) => {
-    app.get('/canteen/items',        loggedIn, allowed('access_items'),              (req, res) => res.render('canteen/items/index'));
-    app.get('/canteen/items/:id',    loggedIn, allowed('access_items'),              (req, res) => res.render('canteen/items/show', {tab: req.query.tab || 'details'}));
+module.exports = (app, allowed, inc, permissions, m) => {
+    app.get('/canteen/items',        permissions, allowed('access_items'),              (req, res) => res.render('canteen/items/index'));
+    app.get('/canteen/items/:id',    permissions, allowed('access_items'),              (req, res) => res.render('canteen/items/show', {tab: req.query.tab || 'details'}));
     
-    app.get('/canteen/get/items',    loggedIn, allowed('access_items'),              (req, res) => {
+    app.get('/canteen/get/items',    permissions, allowed('access_items'),              (req, res) => {
         m.items.findAll({where: req.query})
         .then(items => res.send({result: true, items: items}))
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/canteen/items/:id',    loggedIn, allowed('item_edit',   {send: true}), (req, res) => {
+    app.put('/canteen/items/:id',    permissions, allowed('item_edit',   {send: true}), (req, res) => {
         m.items.findOne({
             where: {item_id: req.params.id},
             attributes: ['item_id']
@@ -27,13 +27,13 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.post('/canteen/items',       loggedIn, allowed('item_add',    {send: true}), (req, res) => {
+    app.post('/canteen/items',       permissions, allowed('item_add',    {send: true}), (req, res) => {
         m.items.create(req.body.item)
         .then(item => res.send({result: true, message: `Item added: ${item.item_id}`}))
         .catch(err => res.error.send(err, res));
     });
 
-    app.delete('/canteen/items/:id', loggedIn, allowed('item_delete', {send: true}), (req, res) => {
+    app.delete('/canteen/items/:id', permissions, allowed('item_delete', {send: true}), (req, res) => {
         m.items.findOne({
             where: {item_id: req.params.id},
             attributes: ['item_id']

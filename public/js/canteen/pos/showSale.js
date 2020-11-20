@@ -1,5 +1,4 @@
 function showSale(sale_id, options) {
-    console.log(sale_id);
     if (sale_id) {
         window.getSaleLines = function() {
             get(

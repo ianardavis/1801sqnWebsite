@@ -1,8 +1,8 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, loggedIn, m) => {
+module.exports = (app, allowed, inc, permissions, m) => {
     let canteen  = require(process.env.ROOT + '/fn/canteen'),
         settings = require(process.env.ROOT + '/fn/settings');
-    app.get('/canteen/writeoffs',              loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/writeoffs',              permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoffs.findAll({
             include: [
                 inc.canteen_writeoff_lines(),
@@ -12,7 +12,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(writeoffs => res.render('canteen/writeoffs/index', {writeoffs: writeoffs}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/canteen/writeoffs/:id/complete', loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/writeoffs/:id/complete', permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoff_lines.findAll({
             where: {writeoff_id: req.params.id},
             include: [
@@ -49,7 +49,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/canteen/writeoffs/new/:reason',  loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/writeoffs/new/:reason',  permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoffs.findOne({
             where: {
                 _complete: 0,
@@ -74,7 +74,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/canteen/writeoffs/:id',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/writeoffs/:id',          permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             include: [inc.canteen_writeoff_lines()]
@@ -83,18 +83,18 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.get('/canteen/get/writeoffs',          loggedIn, allowed('access_writeoffs',      {send: true}), (req, res) => {
+    app.get('/canteen/get/writeoffs',          permissions, allowed('access_writeoffs',      {send: true}), (req, res) => {
         m.writeoffs.findAll({where: req.query})
         .then(writeoffs => res.send({result: true, writeoffs: writeoffs}))
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/writeoff_lines',     loggedIn, allowed('access_writeoff_lines', {send: true}), (req, res) => {
+    app.get('/canteen/get/writeoff_lines',     permissions, allowed('access_writeoff_lines', {send: true}), (req, res) => {
         m.writeoff_lines.findAll({where: req.query})
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res))
     });
 
-    app.post('/canteen/writeoff_lines',        loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.post('/canteen/writeoff_lines',        permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoff_lines.findOne({
             where: {
                 writeoff_id: req.body.line.writeoff_id,
@@ -116,7 +116,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
     });
 
-    app.put('/canteen/writeoff_lines/:id',     loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.put('/canteen/writeoff_lines/:id',     permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoff_lines.update(
             req.body.line,
             {where: {line_id: req.params.id}}
@@ -127,7 +127,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.put('/canteen/writeoffs/:id',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.put('/canteen/writeoffs/:id',          permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoffs.update(
             req.body.writeoff,
             {where: {writeoff_id: req.params.id}}
@@ -139,7 +139,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.delete('/canteen/writeoff_lines/:id',  loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.delete('/canteen/writeoff_lines/:id',  permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoff_lines.destroy({where: {line_id: req.params.id}})
         .then(result => {
             req.flash('success', 'Line removed');
@@ -147,7 +147,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.delete('/canteen/writeoffs/:id',       loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.delete('/canteen/writeoffs/:id',       permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_writeoffs.destroy({where: {writeoff_id: req.params.id}})
         .then(result => {
             req.flash('success', 'Writeoff deleted');

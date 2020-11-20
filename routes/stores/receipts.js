@@ -1,9 +1,9 @@
-module.exports = (app, allowed, inc, loggedIn, m) => {
+module.exports = (app, allowed, inc, permissions, m) => {
     let receipts = require(process.env.ROOT + '/fn/stores/receipts');;
-    app.get('/stores/receipts',             loggedIn, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/index'));
-    app.get('/stores/receipts/:id',         loggedIn, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/receipts',             permissions, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/index'));
+    app.get('/stores/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/show', {tab: req.query.tab || 'details'}));
     
-    app.get('/stores/get/receipts',         loggedIn, allowed('access_receipts',      {send: true}), (req, res) => {
+    app.get('/stores/get/receipts',         permissions, allowed('access_receipts',      {send: true}), (req, res) => {
         m.receipts.findAll({
             where:      req.query,
             include:    [
@@ -15,7 +15,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(receipts => res.send({result: true, receipts: receipts}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/receipt_lines',    loggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
+    app.get('/stores/get/receipt_lines',    permissions, allowed('access_receipt_lines', {send: true}), (req, res) => {
         m.receipt_lines.findAll({
             where:      req.query,
             include:    [
@@ -31,7 +31,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/receipts',            loggedIn, allowed('receipt_add',          {send: true}), (req, res) => {
+    app.post('/stores/receipts',            permissions, allowed('receipt_add',          {send: true}), (req, res) => {
         if (req.body.supplier_id && String(req.body.supplier_id).trim() !== '') 
             receipts.create({
                 m: {
@@ -49,7 +49,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             .catch(err => res.error.send(err, res));
         else res.error.send('No supplier specified', res);
     });
-    app.post('/stores/receipt_lines',       loggedIn, allowed('receipt_line_add',     {send: true}), (req, res) => {
+    app.post('/stores/receipt_lines',       permissions, allowed('receipt_line_add',     {send: true}), (req, res) => {
         receipts.createLine({
             m: {
                 receipt_lines: m.receipt_lines,
@@ -83,11 +83,11 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/stores/receipts',             loggedIn, allowed('receipt_edit',         {send: true}), (req, res) => {
+    app.put('/stores/receipts',             permissions, allowed('receipt_edit',         {send: true}), (req, res) => {
         res.send({result: true, message: ''})
     });
 
-    app.delete('/stores/receipts/:id',      loggedIn, allowed('receipt_delete',       {send: true}), (req, res) => {
+    app.delete('/stores/receipts/:id',      permissions, allowed('receipt_delete',       {send: true}), (req, res) => {
         return m.receipts.findOne({
             where: {receipt_id: req.params.id},
             attributes: ['receipt_id', '_status']
@@ -146,7 +146,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.send.error(err, res));
     });
-    app.delete('/stores/receipt_lines/:id', loggedIn, allowed('receipt_line_delete',  {send: true}), (req, res) => {
+    app.delete('/stores/receipt_lines/:id', permissions, allowed('receipt_line_delete',  {send: true}), (req, res) => {
         return m.receipt_lines.findOne({
             where: {line_id: req.params.id},
             include: [inc.receipts({attributes: ['_status']})],

@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, loggedIn, m) => {
+module.exports = (app, allowed, inc, permissions, m) => {
     let canteen = require(process.env.ROOT + '/fn/canteen');
-    app.get('/canteen/receipts',              loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/receipts',              permissions, allowed('canteen_supervisor'),                 (req, res) => {
         m.canteen_receipts.findAll({
             include: [
                 inc.canteen_receipt_lines(),
@@ -11,7 +11,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(receipts => res.render('canteen/receipts/index', {receipts: receipts}))
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/canteen/receipts/:id/complete', loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/receipts/:id/complete', permissions, allowed('canteen_supervisor'),                 (req, res) => {
         m.canteen_receipt_lines.findAll({
             where: {receipt_id: req.params.id},
             include: [
@@ -48,7 +48,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/canteen/receipts/new',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/receipts/new',          permissions, allowed('canteen_supervisor'),                 (req, res) => {
         m.canteen_receipts.findOne({
             where: {
                 _complete: 0,
@@ -70,7 +70,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/canteen/receipts/:id',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.get('/canteen/receipts/:id',          permissions, allowed('canteen_supervisor'),                 (req, res) => {
         m.canteen_receipts.findOne({
             where: {receipt_id: req.params.id},
             include: [inc.canteen_receipt_lines()]
@@ -79,18 +79,18 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.get('/canteen/get/receipts',          loggedIn, allowed('access_receipts', {send: true}), (req, res) => {
+    app.get('/canteen/get/receipts',          permissions, allowed('access_receipts',      {send: true}), (req, res) => {
         m.receipts.findAll({where: req.query})
         .then(receipts => res.send({result: true, receipts: receipts}))
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/receipt_lines',     loggedIn, allowed('access_receipt_lines', {send: true}), (req, res) => {
+    app.get('/canteen/get/receipt_lines',     permissions, allowed('access_receipt_lines', {send: true}), (req, res) => {
         m.receipt_lines.findAll({where: req.query})
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res))
     });
 
-    app.post('/canteen/receipt_lines',        loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.post('/canteen/receipt_lines',        permissions, allowed('canteen_supervisor'), (req, res) => {
         m.canteen_receipt_lines.findOne({
             where: {
                 receipt_id: req.body.line.receipt_id,
@@ -113,7 +113,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     
     });
 
-    app.put('/canteen/receipt_lines/:id',     loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.put('/canteen/receipt_lines/:id',     permissions, allowed('canteen_supervisor'),                 (req, res) => {
         m.canteen_receipt_lines.update(
             req.body.line,
             {where: {line_id: req.params.id}}
@@ -124,7 +124,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.put('/canteen/receipts/:id',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.put('/canteen/receipts/:id',          permissions, allowed('canteen_supervisor'),                 (req, res) => {
         m.canteen_receipts.update(
             req.body.receipt,
             {where: {receipt_id: req.params.id}}
@@ -135,7 +135,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.delete('/canteen/receipt_lines/:id',  loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.delete('/canteen/receipt_lines/:id',  permissions, allowed('canteen_supervisor'),                 (req, res) => {
         m.canteen_receipt_lines.destroy({where: {line_id: req.params.id}})
         .then(result => {
             req.flash('success', 'Line removed');
@@ -143,7 +143,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.delete('/canteen/receipts/:id',       loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.delete('/canteen/receipts/:id',       permissions, allowed('canteen_supervisor'),                 (req, res) => {
         m.canteen_receipts.destroy({where: {receipt_id: req.params.id}})
         .then(result => {
             req.flash('success', 'Receipt deleted');

@@ -1,12 +1,12 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, loggedIn, m) => {
+module.exports = (app, allowed, inc, permissions, m) => {
     let orders   = require(process.env.ROOT + '/fn/stores/orders'),
         demands  = require(process.env.ROOT + '/fn/stores/demands'),
         receipts = require(process.env.ROOT + '/fn/stores/receipts'),
         issues   = require(process.env.ROOT + '/fn/stores/issues'),
         utils    = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/orders',              loggedIn, allowed('access_orders'),                                 (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
-    app.get('/stores/orders/:id',          loggedIn, allowed('access_orders'),                                 (req, res) => {
+    app.get('/stores/orders',              permissions, allowed('access_orders'),                                 (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
+    app.get('/stores/orders/:id',          permissions, allowed('access_orders'),                                 (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.users({as: 'user_for', attributes: ['user_id']})],
@@ -19,7 +19,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/order_lines/:id',     loggedIn, allowed('access_orders',                   {allow: true}),(req, res) => {
+    app.get('/stores/order_lines/:id',     permissions, allowed('access_orders',                   {allow: true}),(req, res) => {
         m.order_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['order_id']
@@ -31,7 +31,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.get('/stores/get/orders',          loggedIn, allowed('access_orders',      {send: true}),              (req, res) => {
+    app.get('/stores/get/orders',          permissions, allowed('access_orders',      {send: true}),              (req, res) => {
         m.orders.findAll({
             where:   req.query,
             include: [
@@ -43,7 +43,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(orders => res.send({result: true, orders: orders}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order_lines',     loggedIn, allowed('access_order_lines', {send: true}),              (req, res) => {
+    app.get('/stores/get/order_lines',     permissions, allowed('access_order_lines', {send: true}),              (req, res) => {
         m.order_lines.findAll({
             where:   req.query,
             include: [
@@ -56,7 +56,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order_lines/:id', loggedIn, allowed('access_order_lines', {send: true}),              (req, res) => {
+    app.get('/stores/get/order_lines/:id', permissions, allowed('access_order_lines', {send: true}),              (req, res) => {
         m.order_lines.findAll({
             where: req.query,
             include: [
@@ -71,7 +71,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/orders',             loggedIn, allowed('order_add',          {send: true}),              (req, res) => {
+    app.post('/stores/orders',             permissions, allowed('order_add',          {send: true}),              (req, res) => {
         orders.create({
             m: {
                 orders: m.orders,
@@ -96,7 +96,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/order_lines',        loggedIn, allowed('order_line_add',     {send: true}),              (req, res) => {
+    app.post('/stores/order_lines',        permissions, allowed('order_line_add',     {send: true}),              (req, res) => {
         orders.createLine({
             m: {
                 order_lines: m.order_lines,
@@ -113,7 +113,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/stores/orders/addtodemand',  loggedIn, allowed('demand_line_add',    {send: true}),              (req, res) => {
+    app.put('/stores/orders/addtodemand',  permissions, allowed('demand_line_add',    {send: true}),              (req, res) => {
         m.order_lines.findAll({
             where: {
                 _status:        'Open',
@@ -152,7 +152,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/orders/:id',          loggedIn, allowed('order_edit',         {send: true}),              (req, res) => {
+    app.put('/stores/orders/:id',          permissions, allowed('order_edit',         {send: true}),              (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.order_lines({where: {_status: 1}, attributes: ['line_id']})],
@@ -193,7 +193,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/order_lines/:id',     loggedIn, allowed('order_edit',         {send: true}),              (req, res) => {
+    app.put('/stores/order_lines/:id',     permissions, allowed('order_edit',         {send: true}),              (req, res) => {
         return m.orders.findOne({
             where: {order_id: req.params.id},
             attributes: ['order_id', '_status', 'ordered_for']
@@ -323,7 +323,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/orders/:id',       loggedIn, allowed('order_delete',       {send: true}),              (req, res) => {
+    app.delete('/stores/orders/:id',       permissions, allowed('order_delete',       {send: true}),              (req, res) => {
         m.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.order_lines({actions: true, attributes: ['line_id', '_status', '_qty']})],
@@ -351,7 +351,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/order_lines/:id',  loggedIn, allowed('order_line_delete',  {send: true}),              (req, res) => { //
+    app.delete('/stores/order_lines/:id',  permissions, allowed('order_line_delete',  {send: true}),              (req, res) => { //
         m.order_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status', '_qty'],

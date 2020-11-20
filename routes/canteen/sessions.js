@@ -1,11 +1,11 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, loggedIn, m) => {
+module.exports = (app, allowed, inc, permissions, m) => {
     let canteen  = require(`${process.env.ROOT}/fn/canteen`),
         settings = require(`${process.env.ROOT}/fn/settings`);
-    app.get('/canteen/sessions',           loggedIn, allowed('access_canteen'),     (req, res) => res.render('canteen/sessions/index'));
-    app.get('/canteen/sessions/:id',       loggedIn, allowed('access_canteen'),     (req, res) => res.render('canteen/sessions/show', {tab: req.query.tab || 'details'}));
+    app.get('/canteen/sessions',           permissions, allowed('access_canteen'),     (req, res) => res.render('canteen/sessions/index'));
+    app.get('/canteen/sessions/:id',       permissions, allowed('access_canteen'),     (req, res) => res.render('canteen/sessions/show', {tab: req.query.tab || 'details'}));
 
-    app.get('/canteen/get/sessions',       loggedIn, allowed('access_sessions'),    (req, res) => {
+    app.get('/canteen/get/sessions',       permissions, allowed('access_sessions'),    (req, res) => {
         m.sessions.findAll({
             where: req.query,
             include: [
@@ -17,7 +17,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.post('/canteen/sessions',          loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.post('/canteen/sessions',          permissions, allowed('canteen_supervisor'), (req, res) => {
         let session = {};
         session._opening_balance = 0.0;
         for (let [key, denomination] of Object.entries(req.body.opening_balance)) {
@@ -42,7 +42,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.put('/canteen/sessions/:id',       loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.put('/canteen/sessions/:id',       permissions, allowed('canteen_supervisor'), (req, res) => {
         m.sessions.update(
             req.body.session,
             {where: {session_id: req.params.id}}
@@ -53,7 +53,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.put('/canteen/sessions/:id/close', loggedIn, allowed('canteen_supervisor'), (req, res) => {
+    app.put('/canteen/sessions/:id/close', permissions, allowed('canteen_supervisor'), (req, res) => {
         m.sales.findAll({where: {_complete: 0}})
         .then(sales => {
             let salesToDelete = [];

@@ -1,11 +1,11 @@
-module.exports = (app, allowed, inc, loggedIn, m) => {
-    app.get('/stores/notes/new',      loggedIn, allowed('note_add'),                   (req, res) => {
+module.exports = (app, allowed, inc, permissions, m) => {
+    app.get('/stores/notes/new',      permissions, allowed('note_add'),                   (req, res) => {
         res.render('stores/notes/new', {
             table: req.query.table,
             id:    req.query.id
         });
     });
-    app.get('/stores/notes/:id/edit', loggedIn, allowed('note_add'),                   (req, res) => {
+    app.get('/stores/notes/:id/edit', permissions, allowed('note_add'),                   (req, res) => {
         m.notes.findOne({
             where: {note_id: req.params.id, _system: 0},
             attributes: ['note_id']
@@ -14,7 +14,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.get('/stores/get/notes',      loggedIn, allowed('access_notes', {send: true}), (req, res) => {
+    app.get('/stores/get/notes',      permissions, allowed('access_notes', {send: true}), (req, res) => {
         m.notes.findAll({
             where:   req.query,
             include: [inc.users()]
@@ -23,13 +23,13 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/notes',         loggedIn, allowed('note_add',     {send: true}), (req, res) => {
+    app.post('/stores/notes',         permissions, allowed('note_add',     {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         m.notes.create(req.body.note)
         .then(note => res.send({result: true, message: 'Note added'}))
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/notes/:id',      loggedIn, allowed('note_edit',    {send: true}), (req, res) => {
+    app.put('/stores/notes/:id',      permissions, allowed('note_edit',    {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         req.body.note._date = Date.now();
         m.notes.update(
@@ -39,7 +39,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(note => res.send({result: true, message: 'Note saved'}))
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/notes/:id',   loggedIn, allowed('note_delete',  {send: true}), (req, res) => {
+    app.delete('/stores/notes/:id',   permissions, allowed('note_delete',  {send: true}), (req, res) => {
         m.notes.destroy({
             where: {
                 note_id: req.params.id,

@@ -1,14 +1,14 @@
-<% include partials/head/full %>
+<%- include(`${process.env.PARTIALS}/head/full`) %>
 <h2>Stores Management</h2>
 <div class="container row mx-auto">
 	<div class="col-12 col-md-6 bordered mx-auto">
 		<h3>Login:</h3>
-		<form action="/login?redirect=<%= redirect %>" method="post">
-			<p><input class="form-control" id="username" type="text" name="_login_id" placeholder="Username" required autocomplete="username"></p>
-			<p><input class="form-control" id="password" type="password" name="_password" placeholder="Password" required autocomplete="current-password"></p>
-			<p><button class="btn btn-success w-100">Log In</button></p>
+		<form action="/login?redirect=<%= redirect %>" method="POST">
+            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: 'username', name: '_login_id', title: 'Username', required: true, autocomplete: 'username'}) %>
+			<%- include(`${process.env.PARTIALS}/inputs/text`, {id: 'password', name: '_password', type: 'password', title: 'Password', required: true, autocomplete: 'current-password'}) %>
+			<button class="btn btn-success w-100">Log In</button>
 		</form>
 	</div>
 </div>
-<% include partials/foot/full %>
-<% include partials/foot/htmlClose %>
+<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

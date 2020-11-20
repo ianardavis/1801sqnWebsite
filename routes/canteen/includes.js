@@ -26,7 +26,8 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            if (options.lines) include.push(inc.sale_lines());
+            if (options.session) include.push(inc.sessions());
+            if (options.lines)   include.push(inc.sale_lines());
         };
         include.push(inc.users());
         return {

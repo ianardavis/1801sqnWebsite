@@ -1,13 +1,13 @@
 // const { regexp } = require('sequelize/types/lib/operators');
 const op = require('sequelize').Op,
       { scryptSync, randomBytes } = require("crypto");
-module.exports = (app, allowed, inc, isLoggedIn, m) => {
-    app.get('/stores/users',          isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
+module.exports = (app, allowed, inc, permissions, m) => {
+    app.get('/stores/users',          permissions, allowed('access_users',  {allow: true}),             (req, res) => {
         if (req.allowed) res.render('stores/users/index')
         else res.redirect('/stores/users/' + req.user.user_id);
     });
-    app.get('/stores/users/new',      isLoggedIn, allowed('user_add'),                                 (req, res) => res.render('stores/users/new'));
-    app.get('/stores/users/:id',      isLoggedIn, allowed('access_users',  {allow: true}),             (req, res) => {
+    app.get('/stores/users/new',      permissions, allowed('user_add'),                                 (req, res) => res.render('stores/users/new'));
+    app.get('/stores/users/:id',      permissions, allowed('access_users',  {allow: true}),             (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             res.render('stores/users/show', {
                 user_id: req.params.id,
@@ -15,9 +15,9 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             });
         } else res.error.redirect(new Error('Permission denied'), req, res);
     });
-    app.get('/stores/users/:id/edit', isLoggedIn, allowed('user_edit'),                                (req, res) => res.render('stores/users/edit', {user_id: req.params.id}));
+    app.get('/stores/users/:id/edit', permissions, allowed('user_edit'),                                (req, res) => res.render('stores/users/edit', {user_id: req.params.id}));
     
-    app.post('/stores/users',         isLoggedIn, allowed('user_add',      {send: true}),              (req, res) => {
+    app.post('/stores/users',         permissions, allowed('user_add',      {send: true}),              (req, res) => {
         let user = req.body.user;
         if (
             (user._bader    && user._bader !== '')    &&
@@ -31,7 +31,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             .catch(err => res.error.send(err, res));
         } else res.error.send(new Error('Not all required information has been submitted'), res)
     });
-    app.put('/stores/password/:id',   isLoggedIn, allowed('user_password', {send: true, allow: true}), (req, res) => {
+    app.put('/stores/password/:id',   permissions, allowed('user_password', {send: true, allow: true}), (req, res) => {
         if (req.allowed || req.user.user_id === Number(req.params.id)) {
             if (req.body._password) {
                 m.users.users.findOne({where: {user_id: req.params.id}})
@@ -50,7 +50,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
             } else res.error.send('No password submitted', res);
         } else res.error.send('Permission denied', res);
     });
-    app.put('/stores/users/:id',      isLoggedIn, allowed('user_edit',     {send: true}),              (req, res) => {
+    app.put('/stores/users/:id',      permissions, allowed('user_edit',     {send: true}),              (req, res) => {
         if (req.body.user) {
             if (!req.body.user._reset) req.body.user._reset = 0;
             ['user_id','full_name','_salt','_password','createdAt','updatedAt'].forEach(e => {
@@ -65,7 +65,7 @@ module.exports = (app, allowed, inc, isLoggedIn, m) => {
         } else res.error.send(new Error('No details submitted'), res);
     });
     
-    app.delete('/stores/users/:id',   isLoggedIn, allowed('user_delete',   {send: true}),              (req, res) => {
+    app.delete('/stores/users/:id',   permissions, allowed('user_delete',   {send: true}),              (req, res) => {
         if (Number(req.user.user_id) !== Number(req.params.id)) {
             m.stores.permissions.destroy({where: {user_id: req.params.id}})
             .then(result => {

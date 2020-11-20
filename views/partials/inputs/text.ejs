@@ -5,15 +5,16 @@
     <input
         class="form-control"
         type="<%= locals.type || 'text' %>"
-        <% if (locals.id) { %>         id='<%= id %>'<% } %>
-        <% if (locals.name) { %>       name='<%= name %>'<% } %>
-        <% if (locals.value) { %>      value='<%= value %>'<% } %>
-        <% if (locals.minLength) { %>  minlength='<%= minLength %>'<% } %>
-        <% if (locals.maxLength) { %>  maxlength='<%= maxLength %>'<% } %>
-        <% if (locals.placeholder) { %>placeholder='<%= placeholder %>'<% } %>
-        <% if (locals.required) { %>   required<% } %>
-        <% if (locals.readonly) { %>   readonly<% } %>
-        <% if (locals.inputmode) { %>  inputMode='<%= inputmode %>'<% } %>
+        <% if (locals.id) { %>          id='<%= id %>'<% } %>
+        <% if (locals.name) { %>        name='<%= name %>'<% } %>
+        <% if (locals.value) { %>       value='<%= value %>'<% } %>
+        <% if (locals.required) { %>    required<% } %>
+        <% if (locals.readonly) { %>    readonly<% } %>
+        <% if (locals.minLength) { %>   minlength='<%= minLength %>'<% } %>
+        <% if (locals.maxLength) { %>   maxlength='<%= maxLength %>'<% } %>
+        <% if (locals.inputmode) { %>   inputMode='<%= inputmode %>'<% } %>
+        <% if (locals.placeholder) { %> placeholder='<%= placeholder %>'<% } %>
+        <% if (locals.autocomplete) { %>autocomplete='<%= autocomplete %>'<% } %>
         <% if (locals.list) { %>       
             list='<%= id %>_list'
             autocomplete='off'
