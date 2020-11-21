@@ -1,6 +1,6 @@
 function showSaleLines(lines, options) {
     let tbl_sale_lines = document.querySelector('#tbl_sale_lines'),
-        _total         = document.querySelector('#_total'),
+        totals         = document.querySelectorAll('.total'),
         total          = 0;
     tbl_sale_lines.innerHTML = '';
     lines.forEach(line => {
@@ -18,5 +18,7 @@ function showSaleLines(lines, options) {
         add_cell(row, {append: form});
         addFormListener(`form_${line.line_id}_minus`, 'PUT', `/canteen/sale_lines`, {noConfirm: true, onComplete: [getSaleLines]});
     });
-    _total.innerText = total.toFixed(2) || '0.00'
+    totals.forEach(e => {
+        e.innerText = total.toFixed(2) || '0.00'
+    });
 };

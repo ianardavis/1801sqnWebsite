@@ -1,4 +1,5 @@
-const inc = {};
+const inc = {},
+      op = require('sequelize').Op;
 module.exports = (app, m) => {
     var allowed  = require(`${process.env.ROOT}/middleware/allowed.js`),
         permissions = require(`${process.env.ROOT}/middleware/permissions.js`)(m.users.permissions);
@@ -43,6 +44,20 @@ module.exports = (app, m) => {
             res.send({
                 result: true,
                 users: users
+            });
+        })
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/users/get/current',  permissions, allowed('access_users',    {send: true}), (req, res) => {
+        m.users.users.findAll({
+            where:      {status_id: {[op.or]: [1, 2]}},
+            include:    [m.users.ranks, m.users.statuses],
+            attributes: ['user_id', 'full_name', '_bader', '_name', '_ini', 'status_id', 'rank_id', '_login_id', '_reset', '_last_login']
+        })
+        .then(users => {
+            res.send({
+                result: true,
+                current: users
             });
         })
         .catch(err => res.error.send(err, res));

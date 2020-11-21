@@ -31,4 +31,5 @@ module.exports = function (m) {
     m.canteen.sales.hasOne(            m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',       constraints: false});
     m.canteen.receipts.hasOne(         m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',       constraints: false});
     m.canteen.writeoffs.hasOne(        m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',       constraints: false});
+    m.canteen.credits.hasOne(          m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',       constraints: false});
 };

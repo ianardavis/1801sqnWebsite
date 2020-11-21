@@ -6,7 +6,7 @@
         <%- html %>
     <% } else { %>
         <p
-            class="form-control"
+    class="form-control<% if (locals.classes) { locals.classes.forEach(e => {%> <%= e %><% })%><% } %>"
             <% if (locals.id) { %>id='<%= id %>'<% } %>
         >
             <% if (locals.text) { %><%= text %><% } %>

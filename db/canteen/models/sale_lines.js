@@ -30,12 +30,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    '_price': {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-      defaultValue: '0.50',
-      comment: "null"
-    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,

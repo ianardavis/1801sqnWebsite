@@ -8,55 +8,20 @@
 			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',     text: 'Canteen'}) %>
 			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/pos', text: 'POS'}) %>
 			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {id: 'alert'}) %>
+			<%- include(`${process.env.PARTIALS}/breadcrumb`, {classes: ['alert']}) %>
         </ul>
 </section>
 <section class='mx-5'>
 	<div class='row'>
-		<div class="col-6 col-lg-7 col-xl-8 bordered">
+		<div class="order-last order-lg-first col-12 col-lg-7 col-xl-8 bordered">
             <div class="menu row" id='div_items'>
             </div>
         </div>
-        <div class="col-6 col-lg-5 col-xl-4 bordered">
-            <% [['7','8','9'],['4','5','6'],['1','2','3']].forEach(r => { %>
-                <div class="row mb-2">
-                    <% r.forEach(e => { %>
-                        <div class="col-4">
-                            <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(<%= e %>)"><%= e %></a>
-                        </div>
-                    <% }) %>
-                </div>
-            <% }) %>
-            <div class="row mb-2">
-                <div class="col-4">
-                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(0)">0</a>
-                </div>
-                <div class="col-4">
-                    <a class='btn btn-lg btn-warning w-100' href="javascript:backspace()"><i class='fas fa-backspace'></i></a>
-                </div>
-                <div class="col-4">
-                    <a class='btn btn-lg btn-danger w-100 confirm' href="javascript:cancelSale()">Cancel</a>
-                </div>
-            </div>
-            <form id='form_complete_sale'>
-                <button class='btn btn-lg btn-success w-100 confirm mb-2'>Pay</button>
-                <div class="row mb-2">
-                    <div class="col-6">
-                        <label class="col-form-label">Total (£)</label>
-                    </div>
-                    <div class="col-6">
-                        <input id="_total" class="form-control" type="text" name='sale[total]' readonly required>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-6">
-                        <label class="col-form-label">Tendered (£)</label>
-                    </div>
-                    <div class="col-6">
-                        <input id="_tendered" class="form-control" type="number" step='0.01' name='sale[tendered]' required>
-                    </div>
-                </div>
-            </form>
+        <div class="order-first order-lg-last col-12 col-lg-5 col-xl-4 bordered">
+            <% if (permissions.sale_edit) { %>
+                <a href="javascript:$('#complete_sale').modal('show')" class='btn btn-lg btn-success w-100 mb-2'>Finish</a>
+                <%- include(`${process.env.PARTIALS}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
+            <% } %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                     <th class="w-40" onclick="sortTable(0, 'selectedItems')">Item</th>
@@ -69,7 +34,54 @@
             </table>
         </div>
     </div>
-    <div id="div_modals"></div>
+    <% if (permissions.sale_edit) { %>
+        <div id="div_modals">
+            <div id='complete_sale' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Finish Sale <span class='alert'></span></h5>
+                            <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${process.env.PARTIALS}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
+                            <% [['7','8','9'],['4','5','6'],['1','2','3']].forEach(r => { %>
+                                <div class="row mb-2">
+                                    <% r.forEach(e => { %>
+                                        <div class="col-4">
+                                            <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(<%= e %>)"><%= e %></a>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            <% }) %>
+                            <div class="row mb-2">
+                                <div class="col-4">
+                                    <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(0)">0</a>
+                                </div>
+                                <div class="col-4">
+                                    <a class='btn btn-lg btn-warning w-100' href="javascript:backspace()"><i class='fas fa-backspace'></i></a>
+                                </div>
+                                <div class="col-4">
+                                    <a class='btn btn-lg btn-danger w-100 confirm' href="javascript:cancelSale()">Cancel</a>
+                                </div>
+                            </div>
+                            <form id='form_complete_sale'>
+                                <input type="hidden" class='sale_id' name='sale_id'>
+                                <%- include(`${process.env.PARTIALS}/inputs/select`,  {title: 'Debit from',    id: 'debit',  name: 'sale[debit_user_id]'}) %>
+                                <%- include(`${process.env.PARTIALS}/inputs/select`,  {title: 'Credit change', id: 'credit', name: 'sale[credit_user_id]'}) %>
+                                <%- include(`${process.env.PARTIALS}/inputs/display`, {title: 'Tendered (£)',  html: '<input id="_tendered" class="form-control" type="number" step="0.01" name="sale[tendered]" readonly required>'}) %>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button form='form_complete_sale' class='btn btn-lg btn-success w-100 mb-2'>Pay</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
 </section>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
 <script src="/js/canteen/pos/showSale.js"></script>
@@ -81,13 +93,20 @@
 <script src="/js/data/send.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script>
+    window.addEventListener('keydown', function (e) {
+        if (['0','1','2','3','4','5','6','7','8','9'].includes(e.key)) {
+            numberBtn(e.key)
+        } else if (e.key === 'Backspace') {
+            backspace();
+        };
+    });
     function clear_alert() {
-        let _alert = document.querySelector('#alert');
-        _alert.innerText = '';
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(e => e.innerText = '');
     };
     function alert(message) {
-        let _alert = document.querySelector('#alert');
-        _alert.innerText = message;
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(e => e.innerText = message);
         setTimeout(clear_alert, 3000);
     };
 
@@ -97,7 +116,7 @@
             {
                 db: 'canteen',
                 table: 'items',
-                query: [],
+                query: ['_current=1'],
                 permissions: {
                     pay_out: <%= permissions.pay_out || false %>
                 }
@@ -105,6 +124,36 @@
         )
     };
 </script>
+<% if (permissions.sale_edit) { %>
+    <script src="/js/canteen/pos/showUsers.js"></script>
+    <script src="/js/canteen/pos/showCredits.js"></script>
+    <script>
+        function getUsers() {
+            get(
+                showUsers,
+                {
+                    db:    'users',
+                    table: 'current',
+                    query: []
+                }
+            )
+        };
+    </script>
+    <script>
+        function getCredits() {
+            get(
+                showCredits,
+                {
+                    db:    'canteen',
+                    table: 'credits',
+                    query: []
+                }
+            )
+        };
+    </script>
+    <script async>getUsers()</script>
+    <script async>getCredits()</script>
+<% } %>
 <script async>getItems()</script>
 <script>
     function cancelSale() {
@@ -135,5 +184,15 @@
         let tendered = document.querySelector('#_tendered');
         tendered.value = amt;
     };
+    <% if (permissions.sale_edit) { %>
+        window.addEventListener( "load", function () {
+            addFormListener(
+                'form_complete_sale',
+                'PUT',
+                '/canteen/sales',
+                {onComplete: window.getSale}
+            );
+        });
+    <% } %>
 </script>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>    

@@ -1,27 +1,9 @@
 module.exports = (passport, m) => {
     var local  = require('passport-local').Strategy,
         { scryptSync } = require("crypto");
-    passport.serializeUser((user, done) => done(null, user._login_id));
+    passport.serializeUser((user, done) => done(null, user));
 
-    passport.deserializeUser((_login_id, done) => {
-        m.users.findOne({
-            where: {_login_id: _login_id},
-            include: [{model: m.ranks, attributes: ['_rank']}],
-            attributes: ['_login_id', 'user_id', '_reset', 'full_name']
-        })
-        .then(user => {
-            if (user) {
-                return done(null, user.get());
-            } else {
-                console.log(new Error('User not found'));
-                return done(new Error('User not found'), null);
-            };
-        })
-        .catch(err => {
-            console.log(err);
-            return done(err, null);
-        });
-    });
+    passport.deserializeUser((user, done) => done(null, user));
 
     passport.use('local-signin', new local(
         {
@@ -31,8 +13,10 @@ module.exports = (passport, m) => {
         },
         (req, _login_id, _password, done) => {
             return m.users.findOne({
-                where: {_login_id: _login_id},
-                attributes: ['_login_id', 'user_id', '_reset', '_password', '_salt']
+                where:      {_login_id: _login_id},
+                include:    [{model: m.ranks, attributes: ['_rank']}],
+                attributes: ['user_id', '_login_id', '_reset', 'full_name', '_password', '_salt']
+                // attributes: ['_login_id', 'user_id', '_reset', '_password', '_salt']
             })
             .then(user => {
                 // console.log(scryptSync(_password, user._salt, 128).toString('hex'));
@@ -51,12 +35,15 @@ module.exports = (passport, m) => {
                         {message: 'Invalid username or password!'}
                     );
                 } else {
-                    delete user.dataValues._password;
-                    delete user.dataValues._salt;
-                    
-                    return m.users.update({_last_login: Date.now()},{where: {user_id: user.user_id}})
-                    .then(function(result) {
-                        return done(null, user.get())})
+                    return user.update({_last_login: Date.now()})
+                    .then(result => {
+                        delete user.dataValues._password;
+                        delete user.dataValues._salt;
+                        return done(
+                            null,
+                            user.dataValues
+                        )
+                    })
                     .catch(err => {
                         return done(
                             null, 

@@ -6,6 +6,9 @@
         <% } else { %>
             id='<%= locals.id || 'breadcrumb' %>'
         <% }%>
+        <% if (locals.classes) { %>
+            class='<% classes.forEach(e => { %><%= e %> <% }) %>'
+        <% } %>
     >
         <% if (locals.text) { %>
             <%= text %>
