@@ -9,7 +9,7 @@ sendData = (form, method, _location, options = {reload: false, reload_opener: tr
                 if (!options.args) options.args = [];
                 if (options.onComplete) {
                     if (Array.isArray(options.onComplete)) {
-                        options.onComplete.forEach(func => func())
+                        options.onComplete.forEach(func => func(response))
                     } else options.onComplete(...options.args);
                 };
                 if (options.reload_opener) window.opener.location.reload();
@@ -17,6 +17,7 @@ sendData = (form, method, _location, options = {reload: false, reload_opener: tr
                 else if (options._close)   close();
                 else if (options.redirect) window.location.replace(options.redirect);
             } else {
+                console.log(response);
                 alert(`Error: ${response.message || response.error || 'unknown'}`);
             };
         } catch (error) {

@@ -1,8 +1,8 @@
 function showUsers(users, options) {
-    let credit = document.querySelector('#credit');
-    credit.innerHTML = ''
-    credit.appendChild(new Option({value: '', text: 'Select Account'}).e)
+    let _users = document.querySelector('#users');
+    _users.innerHTML = ''
+    _users.appendChild(new Option({value: '', text: 'Select User'}).e)
     users.forEach(user => {
-        credit.appendChild(new Option({value: user.user_id, text: `${user.rank._rank} ${user.full_name}`}).e)
+        _users.appendChild(new Option({value: user.user_id, text: `${user.rank._rank} ${user.full_name}`}).e)
     });
 };

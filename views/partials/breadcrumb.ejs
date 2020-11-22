@@ -1,19 +1,14 @@
 <li class='nav-item'>
     <a
-        class='nav-link stores_nav'
+        class='nav-link stores_nav<% if (locals.classes) classes.forEach(e => { %> <%= e %><% }) %>'
         <% if (locals.href) { %>
             href='<%= href %>'
         <% } else { %>
             id='<%= locals.id || 'breadcrumb' %>'
         <% }%>
-        <% if (locals.classes) { %>
-            class='<% classes.forEach(e => { %><%= e %> <% }) %>'
-        <% } %>
-    >
-        <% if (locals.text) { %>
+    ><% if (locals.text) { %>
             <%= text %>
         <% } else if (locals.html) { %>
             <%- html %>
-        <% } %>
-    </a>
+        <% } %></a>
 </li>

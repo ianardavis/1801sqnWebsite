@@ -5,7 +5,6 @@ get = (onComplete, options = {query: []}) => new Promise(resolve => {
         XHR.addEventListener("load", event => {
             try {
                 let response = JSON.parse(event.target.responseText);
-                console.log(response);
                 if (response.result) onComplete(response[options.table] || response.lines, options);
                 else {
                     alert(`Error: ${response.message || response.error || 'unknown'}`);
@@ -14,9 +13,7 @@ get = (onComplete, options = {query: []}) => new Promise(resolve => {
                 hide_spinner(options.table);
                 resolve(true);
             } catch (error) {
-                console.log(`Error processing request`);
-                console.log(options);
-                console.log(error);
+                console.log(`Error processing request:`, options, error);
             };
         });
         XHR_send(XHR, options.table, `/${options.db || 'stores'}/get/${options.table}?${options.query.join('&')}`);
