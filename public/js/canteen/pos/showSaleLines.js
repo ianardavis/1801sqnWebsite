@@ -22,7 +22,7 @@ function showSaleLines(lines, options) {
             form.setAttribute('id', `form_${line.line_id}_minus`)
             form.appendChild(new Input({type: 'hidden', name: 'line[line_id]', value: line.line_id}).e);
             form.appendChild(new Input({type: 'hidden', name: 'line[_qty]',    value: -1}).e);
-            form.appendChild(new Button({html: '<i class="fas fa-minus"></i>'}).e);
+            form.appendChild(new Button({html: '<i class="fas fa-minus"></i>', small: true}).e);
             add_cell(row, {append: form});
             addFormListener(`form_${line.line_id}_minus`, 'PUT', `/canteen/sale_lines`, {noConfirm: true, onComplete: [getSaleLines]});
         });

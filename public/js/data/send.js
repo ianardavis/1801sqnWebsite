@@ -4,7 +4,7 @@ sendData = (form, method, _location, options = {reload: false, reload_opener: tr
     XHR.addEventListener("load", event => {
         try {
             let response = JSON.parse(event.target.responseText);
-            if (response.result) {
+            if (response.result === true) {
                 alert(response.message);
                 if (!options.args) options.args = [];
                 if (options.onComplete) {

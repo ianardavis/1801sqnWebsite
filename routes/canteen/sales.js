@@ -180,45 +180,52 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                             let debit_amount = Number(total - req.body.sale.tendered)
                                             return account.decrement('_credit', {by: debit_amount})
                                             .then(result => {
-                                                let actions = [];
-                                                actions.push(
-                                                    m.payments.create({
-                                                        sale_id: sale.sale_id,
-                                                        _amount: debit_amount,
-                                                        _method: 'Account',
-                                                        user_id: account.user_id
-                                                    })
-                                                );
-                                                if (Number(req.body.sale.tendered) > 0) {
+                                                return account.reload()
+                                                .then(updated_account => {
+                                                    let actions = [];
+                                                    if (updated_account._credit === '0.00') actions.push(updated_account.destroy());
                                                     actions.push(
                                                         m.payments.create({
                                                             sale_id: sale.sale_id,
-                                                            _amount: Number(req.body.sale.tendered),
+                                                            _amount: debit_amount,
+                                                            _type: 'Debit',
+                                                            user_id: req.body.sale.debit_user_id
                                                         })
                                                     );
-                                                };
-                                                actions.push(
-                                                    m.sale_lines.update(
-                                                        {_status: 2},
-                                                        {where: {sale_id: sale.sale_id}}
-                                                    )
-                                                );
-                                                actions.push(
-                                                    sale.update({_status: 2})
-                                                );
-                                                lines.forEach(line => {
-                                                    if (line.item_id !== 0) {
+                                                    if (Number(req.body.sale.tendered) > 0) {
                                                         actions.push(
-                                                            m.items.findOne({
-                                                                where: {item_id: line.item_id},
-                                                                attributes: ['item_id', '_qty']
+                                                            m.payments.create({
+                                                                sale_id: sale.sale_id,
+                                                                _amount: Number(req.body.sale.tendered),
                                                             })
-                                                            .then(item => {return item.decrement('_qty', {by: line._qty})})
                                                         );
                                                     };
+                                                    actions.push(
+                                                        m.sale_lines.update(
+                                                            {_status: 2},
+                                                            {where: {sale_id: sale.sale_id}}
+                                                        )
+                                                    );
+                                                    actions.push(
+                                                        sale.update({_status: 2})
+                                                    );
+                                                    lines.forEach(line => {
+                                                        if (line.item_id !== 0) {
+                                                            actions.push(
+                                                                m.items.findOne({
+                                                                    where: {item_id: line.item_id},
+                                                                    attributes: ['item_id', '_qty']
+                                                                })
+                                                                .then(item => {
+                                                                    return item.decrement('_qty', {by: line._qty})
+                                                                })
+                                                            );
+                                                        };
+                                                    })
+                                                    return Promise.all(actions)
+                                                    .then(result => res.send({result: true, message: 'Sale completed', change: 0.00}))
+                                                    .catch(err => res.error.send(err, res));
                                                 })
-                                                return Promise.all(actions)
-                                                .then(result => res.send({result: true, message: 'Sale completed', change: 0.00}))
                                                 .catch(err => res.error.send(err, res));
                                             })
                                             .catch(err => res.error.send(err, res));
@@ -229,7 +236,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             } else res.send({result: false, message: 'Not enough tendered'});
                         } else {
                             let actions = [],
-                                change = Number(req.body.sale.tendered - total);
+                                change  = Number(req.body.sale.tendered - total);
                             actions.push(
                                 m.sale_lines.update(
                                     {_status: 2},
@@ -255,15 +262,26 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                         .then(item => {return item.decrement('_qty', {by: line._qty})})
                                     );
                                 }
-                            })
-                            if (req.body.sale.credit_user_id && String(req.body.sale.credit_user_id) !== '') {
+                            });
+                            if (req.body.sale.credit_user_id && String(req.body.sale.credit_user_id) !== '' && change > 0) {
                                 actions.push(
                                     m.credits.findOrCreate({
                                         where:    {user_id: req.body.sale.credit_user_id},
                                         defaults: {_credit: change}
                                     })
                                     .then(([credit, created]) => {
-                                        if (!created) return credit.increment('_credit', {by: change}).then(result => change = 0)
+                                        if (!created) {
+                                            return credit.increment('_credit', {by: change})
+                                            .then(result => {
+                                                return m.payments.create({
+                                                    sale_id: sale.sale_id,
+                                                    _amount: change,
+                                                    _type: 'Credit',
+                                                    user_id: credit.user_id
+                                                })
+                                                .then(result => change = 0);
+                                            });
+                                        };
                                     })
                                 );
                             };

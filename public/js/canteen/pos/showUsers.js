@@ -1,5 +1,5 @@
 function showUsers(users, options) {
-    let _users = document.querySelector('#users');
+    let _users = document.querySelector('#current');
     _users.innerHTML = ''
     _users.appendChild(new Option({value: '', text: 'Select User'}).e)
     users.forEach(user => {

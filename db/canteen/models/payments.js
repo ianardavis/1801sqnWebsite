@@ -21,7 +21,7 @@ module.exports = function(sequelize, DataTypes) {
         defaultValue: '0.00',
         comment: "null"
       },
-      '_method': {
+      '_type': {
         type: DataTypes.STRING(10),
         allowNull: false,
         defaultValue: 'Cash',

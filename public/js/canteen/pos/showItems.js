@@ -1,16 +1,6 @@
 function showItems(items, options) {
     let div_items = document.querySelector('#div_items');
     div_items.innerHTML = '';
-    window.getSale = function() {
-        get(
-            showSale,
-            {
-                db: 'canteen',
-                table: 'sale',
-                query: []
-            }
-        );
-    };
     items.forEach(item => {
         if (item.item_id !== 0 || options.permissions.pay_out) {
             let col      = document.createElement('div'),
@@ -64,8 +54,9 @@ function showItems(items, options) {
             card.appendChild(form);
             col.appendChild(card);
             div_items.appendChild(col);
-            addFormListener(`form_${item.item_id}`, 'POST', "/canteen/sale_lines", {onComplete: [getSale], noConfirm: true});
+            addFormListener(`form_${item.item_id}`, 'POST', "/canteen/sale_lines", {onComplete: getSaleLines, noConfirm: true});
         };
     });
-    getSale();
+    items_loaded = true;
+    load_check();
 };
