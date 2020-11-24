@@ -61,7 +61,9 @@ function Input (options = {}) {
     this.e = document.createElement('input');
     if (options.classes) {
         options.classes.forEach(e => this.e.classList.add(e))
-    } else this.e.classList.add('form-control');
+    } else {
+        if (!options.type || options.type !==  'hidden') this.e.classList.add('form-control');
+    };
     this.e.setAttribute('type', options.type  || 'text');
     if (options.type === 'number') {
         if (options.step)    this.e.setAttribute('step', options.step);

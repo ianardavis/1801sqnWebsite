@@ -25,11 +25,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_new_qty': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
     '_price': {
       type: DataTypes.DECIMAL,
       allowNull: false,

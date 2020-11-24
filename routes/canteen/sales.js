@@ -55,9 +55,18 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                             sale_id: sale.sale_id,
                                             item_id: 0,
                                             _qty:    1,
-                                            _price: req.body.line._price
+                                            _price: -Math.abs(req.body.line._price)
                                         })
-                                        .then(line => res.send({result: true, message: 'Line added'}))
+                                        .then(line => {
+                                            return m.notes.create({
+                                                _note:   req.body.line._note,
+                                                _table:  'sale_lines',
+                                                _id:     line.line_id,
+                                                user_id: req.user.user_id
+                                            })
+                                            .then(note => res.send({result: true, message: 'Line added'}))
+                                            .catch(err => res.error.send(err, res));
+                                        })
                                         .catch(err => res.error.send(err, res));
                                     }
                                 })
@@ -79,7 +88,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                                 item_id: item.item_id
                                             },
                                             defaults: {
-                                                _qty:   req.body.line._qty,
+                                                _qty:   req.body.line._qty || 1,
                                                 _price: item._price
                                             }
                                         })
@@ -131,8 +140,20 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         .then(result => {
                             if (result) {
                                 if (line._qty === 0) {
-                                    return line.destroy()
-                                    .then(result => {
+                                    let actions = [];
+                                    actions.push(line.destroy());
+                                    if (line.item_id === 0) {
+                                        actions.push(
+                                            m.notes.destroy({
+                                                where: {
+                                                    _table: 'sale_lines',
+                                                    _id:    line.line_id
+                                                }
+                                            })
+                                        );
+                                    };
+                                    return Promise.all(actions)
+                                    .then(result => { 
                                         if (result) res.send({result: true,  message: 'Line updated'})
                                         else res.send({result: false, message: 'Line not updated'});
                                     })

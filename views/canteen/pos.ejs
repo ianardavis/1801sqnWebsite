@@ -14,18 +14,23 @@
 </section>
 <section class='mx-5'>
 	<div class='row'>
-		<div class="order-last order-lg-first col-12 col-lg-7 col-xl-8 bordered">
-            <div class="menu row" id='div_items'></div>
+		<div class="order-last order-lg-first col-12 col-lg-7 col-xl-8">
+            <ul class="nav nav-tabs" id="tab_headers" role="tablist">
+            </ul>
+            <div class="tab-content pt-3" id="tab_pages">
+            </div>
+            <div class="row" id='div_items' style='height: 100px'>
+            </div>
         </div>
-        <div class="order-first order-lg-last col-12 col-lg-5 col-xl-4 bordered">
+        <div class="order-first order-lg-last col-12 col-lg-5 col-xl-4">
             <button id='btn_finish' class='btn btn-lg btn-success w-100 mb-2'>Finish</button>
             <%- include(`${process.env.PARTIALS}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-                    <th class="w-40" onclick="sortTable(0, 'selectedItems')">Item</th>
-                    <th class="w-25" onclick="sortTable(1, 'selectedItems')">£/Each</th>
-                    <th class="w-10" onclick="sortTable(2, 'selectedItems')">Qty</th>
-                    <th class="w-25" onclick="sortTable(3, 'selectedItems')">£/Total</th>
+                    <th class="w-40" onclick="sortTable(0, 'tbl_sale_lines')">Item</th>
+                    <th class="w-25" onclick="sortTable(1, 'tbl_sale_lines')">£/Each</th>
+                    <th class="w-10" onclick="sortTable(2, 'tbl_sale_lines')">Qty</th>
+                    <th class="w-25" onclick="sortTable(3, 'tbl_sale_lines')">£/Total</th>
                     <th><i class='fas fa-minus'></i></th>
                 </thead>
                 <tbody id="tbl_sale_lines"></tbody>
@@ -85,12 +90,14 @@
 <script src="/js/canteen/pos/showSaleLines.js"></script>
 <script src="/js/canteen/pos/showItems.js"></script>
 <script src="/js/canteen/pos/showUsers.js"></script>
+<script src="/js/canteen/pos/showPages.js"></script>
 <script src="/js/get.js"></script>
 <script src="/js/spinner.js"></script>
 <script src="/js/data/XHRsend.js"></script>
 <script src="/js/data/send.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/canteen/pos/utils.js"></script>
+<script src='/js/tabs.js'></script>
 <script>
     var sale_id = null, sale_loaded = false, items_loaded = false;
     function getSale() {
@@ -103,27 +110,26 @@
             }
         );
     };
-    function getItems() {
+    function getSaleLines() {
         get(
-            showItems,
+            showSaleLines,
             {
                 db: 'canteen',
-                table: 'items',
-                query: ['_current=1'],
-                permissions: {pay_out: <%= permissions.pay_out || false %>}
+                table: 'sale_lines',
+                query: [`sale_id=${sale_id}`]
             }
-        )
+        );
     };
-    function getSaleLines() {
-            get(
-                showSaleLines,
-                {
-                    db: 'canteen',
-                    table: 'sale_lines',
-                    query: [`sale_id=${sale_id}`]
-                }
-            );
-        };
+    function getPages() {
+        get(
+            showPages,
+            {
+                db: 'canteen',
+                table: 'pos_pages',
+                query: []
+            }
+        );
+    };
 
     function load_check() {
         if (sale_loaded === true && items_loaded === true && sale_id) {
@@ -148,13 +154,13 @@
         sale_id = null;
         sale_loaded = false;
         items_loaded = false;
-        getItems();
+        getPages();
         getSale();
     });
     document.querySelector('#reload_users').addEventListener('click', getUsers);
 </script>
+<script async>getPages()</script>
 <script async>getUsers()</script>
-<script async>getItems()</script>
 <script async>getSale()</script>
 <% if (permissions.access_credits) { %>
     <script src="/js/canteen/pos/showCredits.js"></script>

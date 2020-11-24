@@ -12,7 +12,7 @@ function showSaleLines(lines, options) {
         btn_complete_sale.removeAttribute('disabled');
         btn_finish.removeAttribute('disabled');
         lines.forEach(line => {
-            total += line._qty * line.item._price;
+            total += line._qty * line._price;
             let row = tbl_sale_lines.insertRow(-1);
             add_cell(row, {text: line.item._name});
             add_cell(row, {text: `£${Number(line._price).toFixed(2)}`});

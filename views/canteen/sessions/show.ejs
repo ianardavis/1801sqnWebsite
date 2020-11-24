@@ -18,11 +18,11 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.session_edit) { %>
-                    <%- include(`${process.env.PARTIALS}/edit`) %>
-                <% } %>
-                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
-                <% if (permissions.session_delete) { %>
-                    <%- include(`${process.env.PARTIALS}/delete`) %>
+                    <form id='form_close'>
+                        <button class="dropdown-item dropdown_button confirm">
+                            Close
+                        </button>
+                    </form>
                 <% } %>
             </div>
         </li>
@@ -109,5 +109,21 @@
         document.querySelector('#reload').addEventListener('click', getSales);
     </script>
     <script async>getSales()</script>
+<% } %>
+<% if (permissions.session_edit) { %>
+    <script>
+        window.addEventListener('load', function () {
+            addFormListener(
+                'form_close',
+                'PUT',
+                `/canteen/sessions/${path[3]}`,
+                {
+                    onComplete: [getSession<% if (permissions.access_sales) { %>,getSales<% } %>]
+                }
+            )
+
+            //form_id, method, location, options = {reload: false, reload_opener: true, _close: true})
+        });
+    </script>
 <% } %>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

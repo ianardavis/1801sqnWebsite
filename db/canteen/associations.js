@@ -15,4 +15,6 @@ module.exports = function (m) {
     m.writeoffs.hasMany(       m.writeoff_lines, {foreignKey: 'writeoff_id', targetKey: 'writeoff_id', as: 'lines'});
     m.writeoff_lines.hasOne(   m.items,          {foreignKey: 'item_id',     sourceKey: 'item_id',     constraints: false});
     m.writeoff_lines.belongsTo(m.writeoffs,      {foreignKey: 'writeoff_id', targetKey: 'writeoff_id'});
+    m.pos_pages.hasMany(       m.pos_layouts,    {foreignKey: 'page_id',     targetKey: 'page_id',     as: 'items'});
+    m.pos_layouts.hasOne(      m.items,          {foreignKey: 'item_id',     sourceKey: 'item_id',     constraints: false});
 };

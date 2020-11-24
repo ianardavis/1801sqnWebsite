@@ -3,57 +3,18 @@ function showItems(items, options) {
     div_items.innerHTML = '';
     items.forEach(item => {
         if (item.item_id !== 0 || options.permissions.pay_out) {
-            let col      = document.createElement('div'),
-                card     = document.createElement('div'),
-                form     = document.createElement('form'),
-                header   = document.createElement('div'),
-                title    = document.createElement('h4'),
-                body     = document.createElement('div'),
-                body_p   = document.createElement('p'),
-                inp_sale = new Input({type: 'hidden', name: 'line[sale_id]', value: '', classes: ['sale_id']}).e,
-                inp_item = new Input({type: 'hidden', name: 'line[item_id]', value: item.item_id}).e,
-                inp_save = new Button({text: 'Add', classes: ['w-100', 'mt-auto']}).e
-            col.classList.add('col-6', 'col-md-6', 'col-xl-3', 'mb-2');
-            card.classList.add('card', 'h-100');
+            let form   = document.createElement('form'),
+                button = document.createElement('button');
             form.setAttribute('id', `form_${item.item_id}`);
-            form.classList.add('h-100');
-            header.classList.add('card-header', 'py-1', 'h-40','d-flex', 'flex-column');
-            title.innerText = item._name;
-            header.appendChild(title);
-            if (item.item_id !== 0) {
-                let subtitle = document.createElement('p');
-                subtitle.classList.add('card-subtitle', 'float-left', 'text-left', 'text-muted', 'mt-auto');
-                subtitle.innerText = `£${Number(item._price).toFixed(2)}`;
-                header.appendChild(subtitle);
-            };
-            body.classList.add('card-body','d-flex', 'flex-column', 'h-60');
-            body.appendChild(inp_sale);
-            body.appendChild(inp_item);
-            if (item.item_id === 0) {
-                body_p.appendChild(new Input({
-                    type:     'number',
-                    name:     'line[_price]',
-                    value:    '1.00',
-                    min:      '0.01',
-                    step:     '0.01',
-                    required: true
-                }).e);
-            } else {
-                body_p.appendChild(new Input({
-                    type:     'number',
-                    name:     'line[_qty]',
-                    value:    '1',
-                    min:      '1',
-                    required: true
-                }).e);
-            };
-            body.appendChild(body_p);
-            body.appendChild(inp_save);
-            form.appendChild(header);
-            form.appendChild(body);
-            card.appendChild(form);
-            col.appendChild(card);
-            div_items.appendChild(col);
+            form.classList.add('col-12', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2', 'h-100');
+            button.classList.add('w-100', 'h-100', 'btn', 'btn-primary');
+            let button_text = `${item._name}`;
+            if (item.item_id !== 0) button_text += `\n£${Number(item._price).toFixed(2)}`
+            button.innerText = button_text;
+            form.appendChild(button);
+            form.appendChild(new Input({type: 'hidden', name: 'line[sale_id]', value: '', classes: ['sale_id']}).e);
+            form.appendChild(new Input({type: 'hidden', name: 'line[item_id]', value: String(item.item_id)}).e);
+            div_items.appendChild(form);
             addFormListener(`form_${item.item_id}`, 'POST', "/canteen/sale_lines", {onComplete: getSaleLines, noConfirm: true});
         };
     });

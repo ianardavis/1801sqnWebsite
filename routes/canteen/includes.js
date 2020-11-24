@@ -7,6 +7,22 @@ module.exports = (inc, m) => {
             include: include
         };
     };
+    inc.pos_pages = (options = {}) => {
+        let include = options.include;
+        return {
+            model:   m.canteen.pos_pages,
+            as:      options.as || 'page',
+            include: include
+        };
+    };
+    inc.pos_layouts = (options = {}) => {
+        let include = options.include || [inc.items()];
+        return {
+            model:   m.canteen.pos_layouts,
+            as:      options.as || 'items',
+            include: include
+        };
+    };
     inc.sale_lines = (options = {}) => {
         let include = [];
         if (options.include) include = options.include

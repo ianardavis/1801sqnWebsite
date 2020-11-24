@@ -8,7 +8,7 @@
     </nav>
 </section>
 <section class='container'>
-	<div class="row container m-auto p-0 menu">
+	<div class="row m-auto p-0 menu">
         <%- include(`${process.env.PARTIALS}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos'}) %>
 		<%- include(`${process.env.PARTIALS}/card`, {title: 'Items',         image: 'candy-cane',    href: '/canteen/items'}) %>
 		<%- include(`${process.env.PARTIALS}/card`, {title: 'Sessions',      image: 'list',          href: '/canteen/sessions'}) %>

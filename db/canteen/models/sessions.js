@@ -26,6 +26,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
+    '_paid_out': {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      comment: "null"
+    },
     '_closing_balance': {
       type: DataTypes.DECIMAL,
       allowNull: true,
