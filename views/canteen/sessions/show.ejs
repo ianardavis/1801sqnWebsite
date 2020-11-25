@@ -17,31 +17,27 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.session_edit) { %>
-                    <form id='form_close'>
-                        <button class="dropdown-item dropdown_button confirm">
-                            Close
-                        </button>
-                    </form>
-                <% } %>
+                <button id='btn_close' class="dropdown-item dropdown_button confirm" disabled>
+                    Close
+                </button>
             </div>
         </li>
         <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'sales',   title: 'Sales', count_id: 'sale_count',  permission: 'access_sales'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'items',   title: 'Items', count_id: 'item_count',  permission: 'access_sales'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count',  permission: 'access_notes'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'sales',   title: 'Sales', count_id: 'sale_count', permission: 'access_sales'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'items',   title: 'Items', count_id: 'item_count', permission: 'access_sales'}) %>
+        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'session_id',       title: 'Session ID'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',          title: 'Status'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt',        title: 'Start'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_end',             title: 'End'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_opening_balance', title: 'Opening Balance'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_open',        title: 'Opened By'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_takings',         title: 'Takings'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_closing_balance', title: 'Closing Balance'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_close',       title: 'Closed By'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'session_id', title: 'Session ID'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',    title: 'Status'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt',  title: 'Opened'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_open',  title: 'Opened By'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_end',       title: 'Closed'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_close', title: 'Closed By'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'takings',    title: 'Takings'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'paid_in',    title: 'Paid In'}) %>
+            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'paid_out',   title: 'Paid Out'}) %>
         </div>
         <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
             <table class="table table-sm table-hover">
@@ -74,6 +70,8 @@
 </section>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
 <script src='/js/tabs.js'></script>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/send.js'></script>
 <script src="/js/canteen/sessions/show/session.js"></script>
 <script>showTab('<%= tab %>');</script>
 <script>
@@ -82,10 +80,11 @@
             showSession,
             {
                 db:    'canteen',
-                table: 'sessions',
+                table: 'session',
                 query: [`session_id=${path[3]}`],
                 permissions: {
-                    edit: <%= permissions.session_edit || false %>
+                    edit:         <%= permissions.session_edit || false %>,
+                    access_sales: <%= permissions.access_sales || false %>
                 }
             }
         );
@@ -109,21 +108,5 @@
         document.querySelector('#reload').addEventListener('click', getSales);
     </script>
     <script async>getSales()</script>
-<% } %>
-<% if (permissions.session_edit) { %>
-    <script>
-        window.addEventListener('load', function () {
-            addFormListener(
-                'form_close',
-                'PUT',
-                `/canteen/sessions/${path[3]}`,
-                {
-                    onComplete: [getSession<% if (permissions.access_sales) { %>,getSales<% } %>]
-                }
-            )
-
-            //form_id, method, location, options = {reload: false, reload_opener: true, _close: true})
-        });
-    </script>
 <% } %>
 <%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>

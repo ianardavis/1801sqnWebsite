@@ -15,10 +15,9 @@
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-35" onclick="sortTable(0, 'tbl_sessions')">Start</th>
-            <th class="w-35" onclick="sortTable(1, 'tbl_sessions')">End</th>
-            <th class="w-15" onclick="sortTable(2, 'tbl_sessions')">Takings</th>
-            <th class="w-15" onclick="sortTable(3, 'tbl_sessions')">Status</th>
+            <th class="w-40" onclick="sortTable(0, 'tbl_sessions')">Start</th>
+            <th class="w-40" onclick="sortTable(1, 'tbl_sessions')">End</th>
+            <th class="w-20" onclick="sortTable(2, 'tbl_sessions')">Status</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_sessions">
@@ -28,6 +27,7 @@
 </section>
 <%- include(`${process.env.PARTIALS}/foot/full`) %>
 <script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/send.js'></script>
 <script src='/js/canteen/sessions/index/sessions.js'></script>
 <script>
     function getSessions() {

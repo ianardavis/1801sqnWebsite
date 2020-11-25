@@ -14,7 +14,6 @@ function showSessions(sessions, options) {
                 sort: new Date(session._end).getTime()
             });
         } else add_cell(row);
-        add_cell(row, {text: `£${Number(session._takings).toFixed(2)}`});
         if (session._status === 0) {
             add_cell(row, {text: 'Cancelled'});
         } else if (session._status === 1) {
@@ -35,7 +34,7 @@ function showSessions(sessions, options) {
         if (current_sessions.length === 0) {
             div_modals.appendChild(new Modal({
                 id: 'add_session',
-                static: true,
+                statuc: true, 
                 title: 'Add Session'
             }).e);
             let mdl_add_session_body  = document.querySelector('#mdl_add_session_body');
@@ -46,34 +45,44 @@ function showSessions(sessions, options) {
                 header.innerHTML = 'Enter Opening Balance';
                 form.appendChild(header);
                 [
-                    {text: '1p',  name: 'v0001', step: '0.01'},
-                    {text: '2p',  name: 'v0002', step: '0.02'},
-                    {text: '5p',  name: 'v0005', step: '0.05'},
-                    {text: '10p', name: 'v0010', step: '0.1'},
-                    {text: '20p', name: 'v0020', step: '0.2'},
-                    {text: '50p', name: 'v0050', step: '0.5'},
-                    {text: '£1',  name: 'v0100', step: '1'},
-                    {text: '£2',  name: 'v0200', step: '2'},
-                    {text: '£5',  name: 'v0500', step: '5'},
-                    {text: '£10', name: 'v1000', step: '10'},
-                    {text: '£20', name: 'v2000', step: '20'},
-                    {text: '£50', name: 'v5000', step: '50'}
+                    {text: '1p',      name: 'c0001',   step: '0.01'},
+                    {text: '2p',      name: 'c0002',   step: '0.02'},
+                    {text: '5p',      name: 'c0005',   step: '0.05'},
+                    {text: '10p',     name: 'c0010',   step: '0.1'},
+                    {text: '20p',     name: 'c0020',   step: '0.2'},
+                    {text: '50p',     name: 'c0050',   step: '0.5'},
+                    {text: '£1',      name: 'c0100',   step: '1'},
+                    {text: '£2',      name: 'c0200',   step: '2'},
+                    {text: '£5',      name: 'c0500',   step: '5'},
+                    {text: '£10',     name: 'c1000',   step: '10'},
+                    {text: '£20',     name: 'c2000',   step: '20'},
+                    {text: '£50',     name: 'c5000',   step: '50'}
                 ].forEach(e => {
                     let ig = new Input_Group({id: `ig_${e.name}`, title: e.text}).e;
                     ig.appendChild(new Input({
                         placeholder: 'bagged',
                         type: 'number',
                         step: e.step,
-                        name: `opening_balance[${e.name}][bagged]`
+                        min: '0',
+                        name: `balance[${e.name}][b]`
                     }).e);
                     ig.appendChild(new Input({
                         placeholder: 'loose',
                         type: 'number',
                         step: e.step,
-                        name: `opening_balance[${e.name}][loose]`
+                        min: '0',
+                        name: `balance[${e.name}][l]`
                     }).e);
                     form.appendChild(ig);
                 });
+                let cheques = new Input_Group({id: `ig_cheques`, title: 'Cheques'}).e;
+                cheques.appendChild(new Input({
+                    type: 'number',
+                    step: '0.01',
+                    min: '0',
+                    name: `balance[cheques][cheques]`
+                }).e);
+                form.appendChild(cheques);
                 form.appendChild(new Input({type: 'submit', value: 'Save', classes: ['btn', 'btn-success']}).e);
                 mdl_add_session_body.appendChild(form);
                 addFormListener(

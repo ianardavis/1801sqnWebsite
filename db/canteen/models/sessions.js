@@ -15,27 +15,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    '_opening_balance': {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-      defaultValue: '0.00',
-      comment: "null"
-    },
-    '_takings': {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      comment: "null"
-    },
-    '_paid_out': {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      comment: "null"
-    },
-    '_closing_balance': {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      comment: "null"
-    },
     'user_id_open': {
       type: DataTypes.INTEGER(11),
       allowNull: false,

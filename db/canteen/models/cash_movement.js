@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('users', {
-    'user_id': {
+  return sequelize.define('cash_movements', {
+    'cash_movement_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,61 +10,55 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    '_bader': {
-      type: DataTypes.STRING(20),
+    '_description': {
+      type: DataTypes.STRING(15),
       allowNull: false,
       comment: "null"
     },
-    '_name': {
-      type: DataTypes.STRING(50),
+    '_amount': {
+      type: DataTypes.DECIMAL,
       allowNull: false,
       comment: "null"
     },
-    '_ini': {
-      type: DataTypes.STRING(5),
-      allowNull: true,
+    '_type': {
+      type: DataTypes.STRING(15),
+      allowNull: false,
       comment: "null"
     },
-    'full_name': {
-      type: DataTypes.STRING(57),
-      allowNull: true,
-      comment: "null"
-    },
-    'rank_id': {
+    'holding_id_to': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
     },
-    'status_id': {
+    'holding_id_from': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'user_id_to': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'user_id_from': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'user_id_confirm': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
+    '_status': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       defaultValue: '1',
-      comment: "null"
-    },
-    '_login_id': {
-      type: DataTypes.STRING(30),
-      allowNull: false,
-      comment: "null"
-    },
-    '_password': {
-      type: DataTypes.STRING(512),
-      allowNull: false,
-      comment: "null"
-    },
-    '_salt': {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      comment: "null"
-    },
-    '_reset': {
-      type: DataTypes.INTEGER(4),
-      allowNull: false,
-      defaultValue: '1',
-      comment: "null"
-    },
-    '_last_login': {
-      type: DataTypes.DATE,
-      allowNull: true,
       comment: "null"
     },
     'createdAt': {
@@ -78,7 +72,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'users',
+    tableName: 'cash_movements',
     schema: 'canteen'
   });
 };

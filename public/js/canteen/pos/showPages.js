@@ -31,7 +31,7 @@ function showPages(pages, options) {
             form.classList.add('col-6', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2', 'h-100');
             button.classList.add('w-100', 'h-100', 'btn', 'btn-primary');
             let button_text = `${item.item._name}`;
-            if (item.item_id !== 0) button_text += `\n£${Number(item.item._price).toFixed(2)}`
+            if (item.item_id !== 0 && item.item_id !== 1) button_text += `\n£${Number(item.item._price).toFixed(2)}`
             button.innerText = button_text;
             form.appendChild(button);
             form.appendChild(new Input({type: 'hidden', name: 'line[sale_id]', value: '', classes: ['sale_id']}).e);

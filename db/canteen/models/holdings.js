@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('credits', {
-    'credit_id': {
+  return sequelize.define('holdings', {
+    'holding_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -10,15 +10,19 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'user_id': {
-      type: DataTypes.INTEGER(11),
+    '_description': {
+      type: DataTypes.STRING(45),
       allowNull: false,
       comment: "null"
     },
-    '_credit': {
+    '_cash': {
       type: DataTypes.DECIMAL,
       allowNull: false,
-      defaultValue: '0.00',
+      comment: "null"
+    },
+    '_cheques': {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
       comment: "null"
     },
     'createdAt': {
@@ -32,7 +36,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'credits',
+    tableName: 'holdings',
     schema: 'canteen'
   });
 };
