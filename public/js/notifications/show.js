@@ -1,6 +1,6 @@
 showNotifications = (notifications, options = {}) => {
-    let div_notifications = document.querySelector('#notifications');
-    div_notifications.innerHTML = '';
+    clearElement('ul_notifications');
+    let div_notifications = document.querySelector('#ul_notifications');
     notifications.forEach(notification => {
         div_notifications.appendChild(
             new Notification({

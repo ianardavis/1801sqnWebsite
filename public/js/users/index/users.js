@@ -1,6 +1,6 @@
 showUsers = (users, options) => {
+    clearElement('userTable');
     let table_body = document.querySelector('#userTable');
-    table_body.innerHTML = '';
     users.forEach(user => {
         let row = table_body.insertRow(-1);
         add_cell(row, {text: user._bader});

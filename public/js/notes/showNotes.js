@@ -1,10 +1,9 @@
 function showNotes (notes, options = {}) {
-    let table_body  = document.querySelector('#notesTable'),
-        note_modals = document.querySelector('#note_modals');
-    table_body.innerHTML = '';
-    note_modals.innerHTML = '';
-    let note_count = document.querySelector('#note_count');
-    note_count.innerText = notes.length;
+    clearElement('tbl_notes');
+    clearElement('note_modals');
+    let table_body = document.querySelector('#tbl_notes'),
+        note_count = document.querySelector('#note_count');
+    note_count.innerText = notes.length || 0;
     notes.forEach(note => {
         let row = table_body.insertRow(-1);
         add_cell(row, {

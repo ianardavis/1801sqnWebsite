@@ -1,14 +1,14 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <form id='noteForm'>
         <input type="hidden" name="note[_table]" value="<%= table %>">
         <input type="hidden" name="note[_id]"    value="<%= id %>">
         <textarea class="form-control" name="note[_note]" rows="19" maxlength="1000" required></textarea>
-        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <%- include(`${partials}/save_cancel`) %>
     </form>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
 <script>
@@ -24,4 +24,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

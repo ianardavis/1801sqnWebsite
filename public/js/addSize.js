@@ -8,9 +8,9 @@ function search_items() {
     );
 };
 function item_search_results(items, options) {
+    clearElement('sel_items');
     let sel_items = document.querySelector('#sel_items');
     if (sel_items) {
-        sel_items.innerHTML = '';
         items.forEach(item => {
             if (sel_items) {
                 sel_items.appendChild(
@@ -33,13 +33,13 @@ function search_sizes(item_id) {
     );
 };
 function size_search_results(sizes, options) {
+    clearElement('sel_sizes');
     let sel_sizes = document.querySelector('#sel_sizes'),
         div_sizes = document.querySelector('#div_sizes'),
         sel_items = document.querySelector('#sel_items');
     if (sel_sizes) {
         if (div_sizes) div_sizes.classList.remove('hidden');
         if (sel_items) sel_items.removeAttribute('size');
-        sel_sizes.innerHTML = '';
         sizes.forEach(size => {
             if (sel_sizes) {
                 sel_sizes.appendChild(
@@ -61,15 +61,14 @@ function show_details() {
     } else console.log('sel_sizes note found');
 };
 function showSize(sizes, options) {
+    clearElement('sel_locations');
+    clearElement('div_serials');
     let sel_locations     = document.querySelector('#sel_locations'),
         grp_inp_location  = document.querySelector('#grp_inp_location'),
         grp_sel_locations = document.querySelector('#grp_sel_locations'),
-        sel_sizes         = document.querySelector('#sel_sizes'),
-        div_serials       = document.querySelector('#div_serials');
+        sel_sizes         = document.querySelector('#sel_sizes');;
     let serial_func = function() {getSerials(options.options)}
     document.querySelector('#add_size_qty').removeEventListener('change', serial_func);
-    sel_locations.innerHTML = '';
-    div_serials.innerHTML = '';
     if (sizes.length === 1) {
         if (sizes[0]._serials) {
             sel_locations.removeAttribute('required');
@@ -136,10 +135,10 @@ function getSerials(options) {
     )
 };
 function showSerials(serials, options) {
+    clearElement('div_serials');
     let div_serials = document.querySelector('#div_serials'),
         _qty        = document.querySelector('#add_size_qty');
     if (div_serials && _qty) {
-        div_serials.innerHTML = '';
         let locations = [];
         if (options.options.locations) {
             locations.push({value: '', text: 'Enter manually', selected: true});

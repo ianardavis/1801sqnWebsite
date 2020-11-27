@@ -1,7 +1,7 @@
 showReceipts = (receipts, na) => {
+    clearElement('receiptTable');
     let table_body = document.querySelector('#receiptTable'),
         count      = document.querySelector('#receipt_count');
-    table_body.innerHTML = '';
     if (count) count.innerText = receipts.length || 0;
     receipts.forEach(receipt => {
         let row = table_body.insertRow(-1);

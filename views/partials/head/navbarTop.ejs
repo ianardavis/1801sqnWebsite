@@ -51,10 +51,10 @@
             <% } else { %>
                 <li class="nav-item dropleft">
                     <a class="nav-link dropdown-toggle" href="#" id="dd_notification" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'notifications', float_left: true}) %>
+                        <%- include(`${partials}/spinner`, {id: 'notifications', float_left: true}) %>
                         <i class='fas fa-bell'></i>
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="dd_notification" id='notifications'></ul>
+                    <ul class="dropdown-menu" aria-labelledby="dd_notification" id='ul_notifications'></ul>
                 </li>
                 <script src="/js/notifications/show.js"></script>
                 <script src="/js/get.js"></script>

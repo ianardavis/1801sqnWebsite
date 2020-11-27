@@ -1,23 +1,23 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <form id='supplierForm'>
-        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'suppliers'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {id: '_name',          title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20, required: true}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {id: '_address1',      title: 'Address',       name: 'supplier[_address1]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {id: '_address2',      title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {id: '_address3',      title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {id: '_address4',      title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {id: '_address5',      title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {id: '_telephone',     title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {id: '_email',         title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
-        <%- include(`${process.env.PARTIALS}/spinner`,              {id: 'accounts'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select`,        {id: 'accountsSelect', title: 'Account',       name: 'supplier[account_id]', append: {a: {id: 'account_link', type: 'success', href: 'javascript:add("accounts")', text: '<i class="fas fa-plus"></i>'}}}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select_yes_no`, {id: '_stores',        title: 'RAF Stores?',   name: 'supplier[_stores]'}) %>
-        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
+        <%- include(`${partials}/inputs/text`,          {id: '_name',          title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20, required: true}) %>
+        <%- include(`${partials}/inputs/text`,          {id: '_address1',      title: 'Address',       name: 'supplier[_address1]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {id: '_address2',      title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {id: '_address3',      title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {id: '_address4',      title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {id: '_address5',      title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {id: '_telephone',     title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
+        <%- include(`${partials}/inputs/text`,          {id: '_email',         title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
+        <%- include(`${partials}/spinner`,              {id: 'accounts'}) %>
+        <%- include(`${partials}/inputs/select`,        {id: 'accountsSelect', title: 'Account',       name: 'supplier[account_id]', append: {a: {id: 'account_link', type: 'success', href: 'javascript:add("accounts")', text: '<i class="fas fa-plus"></i>'}}}) %>
+        <%- include(`${partials}/inputs/select_yes_no`, {id: '_stores',        title: 'RAF Stores?',   name: 'supplier[_stores]'}) %>
+        <%- include(`${partials}/save_cancel`) %>
     </form>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src="/js/spinner.js"></script>
 <script src="/js/add.js"></script>
 <script src="/js/data/addFormListener.js"></script>
@@ -41,4 +41,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

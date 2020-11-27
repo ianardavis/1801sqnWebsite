@@ -5,7 +5,7 @@
             <% if (locals.id) { %>for="<%= id %>"<% } %>
         >
             <%= title %>
-            <% if (locals.spinner === true) { %><%- include(`${process.env.PARTIALS}/spinner`, {id: locals.id, small: true}) %><% } %>
+            <% if (locals.spinner === true) { %><%- include(`${partials}/spinner`, {id: locals.id, small: true}) %><% } %>
         </label>
     </div>
     <select

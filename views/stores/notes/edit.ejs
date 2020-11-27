@@ -1,13 +1,13 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <form id='noteForm'>
-        <%- include(`${process.env.PARTIALS}/spinner`, {id: 'notes'}) %>
+        <%- include(`${partials}/spinner`, {id: 'notes'}) %>
         <textarea class="form-control" id='_note' name="note[_note]" rows="19" maxlength="1000" required></textarea>
-        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <%- include(`${partials}/save_cancel`) %>
     </form>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
 <script src="/js/notes/showNote.js"></script>
@@ -28,4 +28,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

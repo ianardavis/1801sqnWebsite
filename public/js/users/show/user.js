@@ -1,8 +1,5 @@
 showUser = (users, options) => {
-    ['user','requests','orders','demands'].forEach(e => {
-        let div = document.querySelector(`#modals_${e}`);
-        if (div) div.innerHTML = '';
-    });
+    ['user','requests','orders','demands'].forEach(e => clearElement(`modals_${e}`));
     if (users.length === 1) {
         for (let [id, value] of Object.entries(users[0])) {
             try {

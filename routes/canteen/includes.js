@@ -8,10 +8,26 @@ module.exports = (inc, m) => {
         };
     };
     inc.pos_pages = (options = {}) => {
-        let include = options.include;
+        let include = options.include || [];
         return {
             model:   m.canteen.pos_pages,
             as:      options.as || 'page',
+            include: include
+        };
+    };
+    inc.movements = (options = {}) => {
+        let include = options.include || [];
+        return {
+            model:   m.canteen.movements,
+            as:      options.as || 'movement',
+            include: include
+        };
+    };
+    inc.holdings = (options = {}) => {
+        let include = options.include || [];
+        return {
+            model:   m.canteen.holdings,
+            as:      options.as || 'holding',
             include: include
         };
     };

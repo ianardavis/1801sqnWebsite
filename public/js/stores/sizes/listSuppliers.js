@@ -1,7 +1,7 @@
 listSuppliers = (suppliers, options = {}) => {
     if (suppliers.length > 0) {
-        let _select  = document.querySelector('#supplier_id');
-        _select.innerHTML = '';
+        clearElement('supplier_id');
+        let _select = document.querySelector('#supplier_id');
         _select.appendChild(new Option({value: '', text: ''}).e);
         suppliers.forEach(supplier => {
             _select.appendChild(

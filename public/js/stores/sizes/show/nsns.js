@@ -1,9 +1,9 @@
 showNSNs = (nsns, options) => {
     try {
+        clearElement('nsnTable');
         let table_body = document.querySelector('#nsnTable'),
             nsn_count  = document.querySelector('#nsn_count');
         nsn_count.innerText = nsns.length || '0';
-        table_body.innerHTML = '';
         nsns.forEach(nsn => {
             let row      = table_body.insertRow(-1),
                 d_form   = document.createElement('form'),

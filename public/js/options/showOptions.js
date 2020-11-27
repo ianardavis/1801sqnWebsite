@@ -3,12 +3,9 @@ showOptions = (results, options) => {
     if (options.table === 'categories')  tables = ['groups', 'types', 'subtypes']
     else if (options.table === 'groups') tables = ['types', 'subtypes']
     else if (options.table === 'types')  tables = ['subtypes'];
-    tables.forEach(table => {
-        let _sel = document.querySelector(`#${table}Select`);
-        _sel.innerHTML = '';
-    });
+    tables.forEach(table => clearElement(`${table}Select`));
+    clearElement(`${options.table}Select`);
     let _select = document.querySelector(`#${options.table}Select`);
-    _select.innerHTML = '';
     _select.appendChild(new Option({value: '', text: ''}).e);
     results.forEach(result => {
         _select.appendChild(

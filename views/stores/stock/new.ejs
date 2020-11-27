@@ -1,17 +1,17 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
 	<form id='stockForm' action="/stores/stock" method="POST">
         <input type="hidden" name="stock[size_id]" value="<%= item.size_id %>">
-		<%- include(`${process.env.PARTIALS}/spinner`, {id: 'locations'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_location', name: 'location', title: 'Location', maxlength: 10, required: true, list: true}) %>
+		<%- include(`${partials}/spinner`, {id: 'locations'}) %>
+        <%- include(`${partials}/inputs/text`, {id: '_location', name: 'location', title: 'Location', maxlength: 10, required: true, list: true}) %>
         <% if (permissions.adjust_add) { %>
-			<%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_location', name: 'stock[_qty]', title: 'Quantity', value: 0, maxlength: 11}) %>
+			<%- include(`${partials}/inputs/text`, {id: '_location', name: 'stock[_qty]', title: 'Quantity', value: 0, maxlength: 11}) %>
 		<% } %>
-		<%- include(`${process.env.PARTIALS}/save_cancel`) %>
+		<%- include(`${partials}/save_cancel`) %>
 	</form>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/send.js'></script>
 <script src='/js/data/XHRsend.js'></script>
@@ -32,4 +32,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

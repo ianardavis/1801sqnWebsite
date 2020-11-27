@@ -1,22 +1,22 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <form id='supplierForm'>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20,  placeholder: 'Required', required: true}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: 'Address',       name: 'supplier[_address1]',  maxLength: 45,  placeholder: 'Required', required: true}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
-        <%- include(`${process.env.PARTIALS}/spinner`,              {id: 'accounts'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select`,        {id: 'accountsSelect',   title: 'Account/Inventory',   name: 'supplier[account_id]', append: {a: {type: 'success', href: 'javascript:add("accounts")', text: '<i class="fas fa-plus"></i>'}}}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select_yes_no`, {title: 'RAF Stores?',   name: 'supplier[_stores]',    selected: 0}) %>
-        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <%- include(`${partials}/inputs/text`,          {title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20,  placeholder: 'Required', required: true}) %>
+        <%- include(`${partials}/inputs/text`,          {title: 'Address',       name: 'supplier[_address1]',  maxLength: 45,  placeholder: 'Required', required: true}) %>
+        <%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
+        <%- include(`${partials}/inputs/text`,          {title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
+        <%- include(`${partials}/inputs/text`,          {title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
+        <%- include(`${partials}/spinner`,              {id: 'accounts'}) %>
+        <%- include(`${partials}/inputs/select`,        {id: 'accountsSelect',   title: 'Account/Inventory',   name: 'supplier[account_id]', append: {a: {type: 'success', href: 'javascript:add("accounts")', text: '<i class="fas fa-plus"></i>'}}}) %>
+        <%- include(`${partials}/inputs/select_yes_no`, {title: 'RAF Stores?',   name: 'supplier[_stores]',    selected: 0}) %>
+        <%- include(`${partials}/save_cancel`) %>
     </form>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src="/js/spinner.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
@@ -38,4 +38,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

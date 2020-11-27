@@ -10,6 +10,7 @@
             aria-selected="true"
         >
             <%= title %><% if (locals.count_id) { %> (<span id='<%= count_id %>'></span>)<% } %>
+            <% if (locals.spinner) { %><%- include(`${partials}/spinner`, {id: spinner}) %><% } %>
         </a>
     </li>
 <% } %>

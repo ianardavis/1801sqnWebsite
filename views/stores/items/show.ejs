@@ -1,10 +1,10 @@
-<%- include(`${process.env.PARTIALS}/head/full`) %>
+<%- include(`${partials}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
+            <%- include(`${partials}/breadcrumb`) %>
         </ul>
     </nav>
 </section>
@@ -16,11 +16,11 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.item_edit) { %>
-                    <%- include(`${process.env.PARTIALS}/edit`) %>
+                    <%- include(`${partials}/edit`) %>
                 <% } %>
-                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.item_delete) { %>
-                    <%- include(`${process.env.PARTIALS}/delete`) %>
+                    <%- include(`${partials}/delete`) %>
                 <% } %>
                 <% if (permissions.size_add) { %>
                     <a class='dropdown-item' id='add_size'>
@@ -29,25 +29,25 @@
                 <% } %>
             </div>
         </li>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'sizes',   title: 'Sizes', count_id: 'size_count', permission: 'access_sizes'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
-        <%- include(`${process.env.PARTIALS}/reload`) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sizes',   title: 'Sizes', count_id: 'size_count', permission: 'access_sizes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_description', title: 'Description'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_category',    title: 'Category'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_group',       title: 'Group'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_type',        title: 'Type'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_subtype',     title: 'Subtype'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_gender',      title: 'Gender'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_size_text',   title: 'Size Text'}) %>
+            <%- include(`${partials}/spinner`, {id: 'items'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_description', title: 'Description'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_category',    title: 'Category'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_group',       title: 'Group'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_type',        title: 'Type'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_subtype',     title: 'Subtype'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_gender',      title: 'Gender'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_size_text',   title: 'Size Text'}) %>
         </div>
         <% if (permissions.access_sizes) { %>
             <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
-                <%- include(`${process.env.PARTIALS}/spinner`, {id: 'sizes'}) %>
+                <%- include(`${partials}/spinner`, {id: 'sizes'}) %>
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
                         <th class='w-50' onclick='sortTable(0, "sizeTable")' id='size_text'></th>
@@ -59,10 +59,10 @@
                 </table>
             </div>
         <% } %>
-        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
+        <%- include(`${partials}/notes/tab_body`) %>
     </div>
 </section>
-<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<%- include(`${partials}/foot/full`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
@@ -81,4 +81,4 @@
     </script>
     <script async>getSizes()</script>
 <% } %>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

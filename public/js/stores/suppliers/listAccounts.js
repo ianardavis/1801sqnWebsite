@@ -1,7 +1,7 @@
 listAccounts = (accounts, options = {}) => {
     if (accounts.length > 0) {
+        clearElement('accountsSelect');
         let _select  = document.querySelector('#accountsSelect');
-        _select.innerHTML = '';
         _select.appendChild(new Option({value: '', text: ''}).e);
         accounts.forEach(account => {
             _select.appendChild(

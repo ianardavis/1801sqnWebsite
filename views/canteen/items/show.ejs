@@ -1,12 +1,11 @@
-<%- include(`${process.env.PARTIALS}/head/full`) %>
+<%- include(`${partials}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`) %>
-			<%- include(`${process.env.PARTIALS}/reload`) %>
-			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'items'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
+            <%- include(`${partials}/breadcrumb`) %>
+			<%- include(`${partials}/reload`) %>
         </ul>
     </nav>
 </section>
@@ -18,27 +17,27 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.item_edit) { %>
-                    <%- include(`${process.env.PARTIALS}/edit`) %>
+                    <%- include(`${partials}/menu/edit`, {href: 'javascript:$("#mdl_edit_item").modal("show")'}) %>
                 <% } %>
-                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.item_delete) { %>
-                    <%- include(`${process.env.PARTIALS}/delete`) %>
+                    <%- include(`${partials}/menu/delete`) %>
                 <% } %>
             </div>
         </li>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',   title: 'Details'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts',  title: 'Receipts', count_id: 'receipt_count',  permission: 'access_receipts'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'writeoffs', title: 'Writeoff', count_id: 'writeoff_count', permission: 'access_writeoffs'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'sales',     title: 'Sales',    count_id: 'sale_count',     permission: 'access_sales'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',     title: 'Notes',    count_id: 'note_count',     permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',  spinner: 'item'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipt_lines',  count_id: 'receipt_count',  permission: 'access_receipts'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoff_lines', count_id: 'writeoff_count', permission: 'access_writeoffs'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines',     count_id: 'sale_count',     permission: 'access_sales'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',    spinner: 'notes',          count_id: 'note_count',     permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_name',    title: 'Name'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_price',   title: 'Price'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_cost',    title: 'Cost'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_qty',     title: 'Stock'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_current', title: 'Current Item'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_name',    title: 'Name'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_price',   title: 'Price'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_cost',    title: 'Cost'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_qty',     title: 'Stock'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_current', title: 'Current Item'}) %>
         </div>
         <% if (permissions.access_receipts) { %>
             <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
@@ -56,7 +55,7 @@
             <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                            <th class="w-80" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
+                        <th class="w-80" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
                         <th class="w-20" onclick="sortTable(1, 'tbl_writeoffs')">Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
@@ -76,82 +75,66 @@
                 </table>
             </div>
         <% } %>
-        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
+        <%- include(`${partials}/notes/tab_body`) %>
     </div>
-    <div id="div_modals"></div>
+    <% if (permissions.item_add) { %>
+        <div id='mdl_edit_item' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_edit_item'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Item</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[_name]',    id: 'edit_name',    required: true, maxLength: '45'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[_price]',   id: 'edit_price',   required: true, step: '0.01', min: '0'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[_cost]',    id: 'edit_cost',    required: true, step: '0.01', min: '0'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[_current]', id: 'edit_current', options: [{value: '1', text: 'Yes', selected: true}, {value: '0', text: 'No'}]}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Item'>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
 </section>
-<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<%- include(`${partials}/foot/full`) %>
 <script src='/js/tabs.js'></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
 <script>showTab('<%= tab %>');</script>
-<script src='/js/canteen/items/show/item.js'></script>
-<script>
-    function getItem() {
-        get(
-            showItem,
-            {
-                db: 'canteen',
-                table: 'items',
-                query: [`item_id=${path[3]}`],
-                permissions: {
-                    edit: <%= permissions.item_edit || false %>
-                }
-            }
-        )
-    };
-    document.querySelector('#reload').addEventListener('click', getItem);
-</script>
+<script src='/js/canteen/items/show/getItem.js'></script>
 <script async>getItem()</script>
 <% if (permissions.access_receipts) { %>
-    <script src='/js/canteen/items/show/receipts.js'></script>
-    <script>
-        function getReceipts() {
-            get(
-                showReceipts,
-                {
-                    db: 'canteen',
-                    table: 'receipt_lines',
-                    query: [`item_id=${path[3]}`]
-                }
-            )
-        };
-        document.querySelector('#reload').addEventListener('click', getReceipts);
-    </script>
+    <script src='/js/canteen/items/show/getReceipts.js'></script>
     <script async>getReceipts()</script>
 <% } %>
 <% if (permissions.access_writeoffs) { %>
-    <script src='/js/canteen/items/show/writeoffs.js'></script>
-    <script>
-        function getWriteoffs() {
-            get(
-                showWriteoffs,
-                {
-                    db: 'canteen',
-                    table: 'writeoff_lines',
-                    query: [`item_id=${path[3]}`]
-                }
-            )
-        };
-        document.querySelector('#reload').addEventListener('click', getWriteoffs);
-    </script>
+    <script src='/js/canteen/items/show/getWriteoffs.js'></script>
     <script async>getWriteoffs()</script>
 <% } %>
 <% if (permissions.access_sales) { %>
-    <script src='/js/canteen/items/show/sales.js'></script>
-    <script>
-        function getSales() {
-            get(
-                showSales,
-                {
-                    db: 'canteen',
-                    table: 'sale_lines',
-                    query: [`item_id=${path[3]}`]
-                }
-            )
-        };
-        document.querySelector('#reload').addEventListener('click', getSales);
-    </script>
+    <script src='/js/canteen/items/show/getSales.js'></script>
     <script async>getSales()</script>
 <% } %>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<% if (permissions.item_edit) { %>
+<script>
+    window.addEventListener('load', function () {
+        addFormListener(
+            'form_edit_item',
+            'PUT',
+            '/canteen/items',
+            {
+                onComplete: [
+                    getItem,
+                    function () {$('#mdl_edit_item').modal('hide')}
+                ]
+            }
+        )
+    })
+</script>
+<% } %>
+<%- include(`${partials}/foot/htmlClose`) %>

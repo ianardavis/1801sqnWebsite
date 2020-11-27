@@ -1,15 +1,16 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
 <section class='mb-2'>
     <nav class="navbar navbar-expand navbar-light bg-nav">
         <ul class="navbar-nav mr-auto">
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',     text: 'Canteen'}) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/pos', text: 'POS'}) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`) %>
-			<%- include(`${process.env.PARTIALS}/reload`) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {id: 'alert_main', classes: ['alert_pos']}) %>
+			<%- include(`${partials}/breadcrumb`, {href: '/canteen',     text: 'Canteen'}) %>
+			<%- include(`${partials}/breadcrumb`, {href: '/canteen/pos', text: 'POS'}) %>
+			<%- include(`${partials}/breadcrumb`) %>
+			<%- include(`${partials}/reload`) %>
+			<%- include(`${partials}/spinner`, {id: 'current_sale'}) %>
+			<%- include(`${partials}/breadcrumb`, {id: 'alert_main', classes: ['alert_pos']}) %>
         </ul>
 </section>
 <section class='mx-5'>
@@ -24,7 +25,7 @@
         </div>
         <div class="order-first order-lg-last col-12 col-lg-5 col-xl-4">
             <button id='btn_finish' class='btn btn-lg btn-success w-100 mb-2'>Finish</button>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                     <th class="w-40" onclick="sortTable(0, 'tbl_sale_lines')">Item</th>
@@ -48,7 +49,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${process.env.PARTIALS}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
                         <% [['7','8','9'],['4','5','6'],['1','2','3']].forEach(r => { %>
                             <div class="row mb-2">
                                 <% r.forEach(e => { %>
@@ -69,11 +70,11 @@
                         <form id='form_complete_sale'>
                             <input type="hidden" class='sale_id' name='sale_id'>
                             <% if (permissions.access_credits) { %>
-                                <%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Debit from', id: 'credits', spinner: true, name: 'sale[debit_user_id]',  append: {a:{type: 'success', id: 'reload_credits', text: '<i class="fas fa-redo"></i>'}}}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Debit from', id: 'credits', spinner: true, name: 'sale[debit_user_id]',  append: {a:{type: 'success', id: 'reload_credits', text: '<i class="fas fa-redo"></i>'}}}) %>
                             <% } %>
-                            <%- include(`${process.env.PARTIALS}/inputs/select`,  {title: 'Credit change', id: 'current', spinner: true, name: 'sale[credit_user_id]', append: {a:{type: 'success', id: 'reload_users',   text: '<i class="fas fa-redo"></i>'}}}) %>
-                            <%- include(`${process.env.PARTIALS}/inputs/display`, {title: 'Tendered (£)',  html: '<input id="_tendered" class="form-control" type="number" step="0.01" value="0.00" name="sale[tendered]" readonly required>'}) %>
-                            <%- include(`${process.env.PARTIALS}/inputs/display`, {title: 'Change (£)',    id: 'change'}) %>
+                            <%- include(`${partials}/inputs/select`,  {title: 'Credit change', id: 'current', spinner: true, name: 'sale[credit_user_id]', append: {a:{type: 'success', id: 'reload_users',   text: '<i class="fas fa-redo"></i>'}}}) %>
+                            <%- include(`${partials}/inputs/number`,  {title: 'Tendered (£)',  id: '_tendered', step: '0.01', value: '0.00', name: 'sale[tendered]', readonly: true, required: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Change (£)',    id: 'change'}) %>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -85,51 +86,22 @@
         </div>
     </div>
 </section>
-<%- include(`${process.env.PARTIALS}/foot/full`) %>
-<script src="/js/canteen/pos/showSale.js"></script>
-<script src="/js/canteen/pos/showSaleLines.js"></script>
-<script src="/js/canteen/pos/showUsers.js"></script>
-<script src="/js/canteen/pos/showPages.js"></script>
+<%- include(`${partials}/foot/full`) %>
+<script>
+    var sale_id = null, sale_loaded = false, items_loaded = false;
+</script>
+<script src="/js/canteen/pos/getSale.js"></script>
+<script src="/js/canteen/pos/getSaleLines.js"></script>
+<script src="/js/canteen/pos/getUsers.js"></script>
+<script src="/js/canteen/pos/getPages.js"></script>
+<script src="/js/canteen/pos/utils.js"></script>
 <script src="/js/get.js"></script>
 <script src="/js/spinner.js"></script>
 <script src="/js/data/XHRsend.js"></script>
 <script src="/js/data/send.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src="/js/canteen/pos/utils.js"></script>
 <script src='/js/tabs.js'></script>
 <script>
-    var sale_id = null, sale_loaded = false, items_loaded = false;
-    function getSale() {
-        get(
-            showSale,
-            {
-                db: 'canteen',
-                table: 'sale',
-                query: []
-            }
-        );
-    };
-    function getSaleLines() {
-        get(
-            showSaleLines,
-            {
-                db: 'canteen',
-                table: 'sale_lines',
-                query: [`sale_id=${sale_id}`]
-            }
-        );
-    };
-    function getPages() {
-        get(
-            showPages,
-            {
-                db: 'canteen',
-                table: 'pos_pages',
-                query: []
-            }
-        );
-    };
-
     function load_check() {
         if (sale_loaded === true && items_loaded === true && sale_id) {
             let sale_id_fields = document.querySelectorAll('.sale_id');
@@ -139,16 +111,6 @@
             getSaleLines();
         };
     };
-    function getUsers() {
-        get(
-            showUsers,
-            {
-                db:    'users',
-                table: 'current',
-                query: []
-            }
-        )
-    };
     document.querySelector('#reload').addEventListener('click', function() {
         sale_id = null;
         sale_loaded = false;
@@ -156,28 +118,14 @@
         getPages();
         getSale();
     });
-    document.querySelector('#reload_users').addEventListener('click', getUsers);
 </script>
+<% if (permissions.access_credits) { %>
+    <script src="/js/canteen/pos/getCredits.js"></script>
+    <script async>getCredits()</script>
+<% } %>
 <script async>getPages()</script>
 <script async>getUsers()</script>
 <script async>getSale()</script>
-<% if (permissions.access_credits) { %>
-    <script src="/js/canteen/pos/showCredits.js"></script>
-    <script>
-        function getCredits() {
-            get(
-                showCredits,
-                {
-                    db:    'canteen',
-                    table: 'credits',
-                    query: []
-                }
-            )
-        };
-        document.querySelector('#reload_credits').addEventListener('click', getCredits);
-    </script>
-    <script async>getCredits()</script>
-<% } %>
 <script>
     window.addEventListener('load', function () {
         let close   = document.querySelector('#btn_close_complete_sale'),
@@ -207,4 +155,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>    
+<%- include(`${partials}/foot/htmlClose`) %>    

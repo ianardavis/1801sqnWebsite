@@ -1,14 +1,14 @@
-<%- include(`${process.env.PARTIALS}/head/full`) %>
+<%- include(`${partials}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/canteen/sessions', text: 'Sessions'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen/sessions', text: 'Sessions'}) %>
 			<% if (permissions.session_add) { %>
-				<%- include(`${process.env.PARTIALS}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_session'}) %>
+				<%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_session'}) %>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/reload`) %>
-            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'sessions'}) %>
+			<%- include(`${partials}/reload`) %>
+            <%- include(`${partials}/spinner`, {id: 'sessions'}) %>
         </ul>
     </nav>
 </section>
@@ -25,7 +25,7 @@
     </table>
     <div id="div_modals"></div>
 </section>
-<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<%- include(`${partials}/foot/full`) %>
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/send.js'></script>
 <script src='/js/canteen/sessions/index/sessions.js'></script>
@@ -49,4 +49,4 @@
     sortTable(3, 'tbl_sessions', 'desc');
 </script> -->
 <script async>getSessions()</script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

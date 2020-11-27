@@ -1,7 +1,7 @@
 let receipt_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
 showReceipts = (receipts, options = {}) => {
+    clearElement('tbl_receipts');
     let table_body = document.querySelector('#tbl_receipts');
-    table_body.innerHTML = '';
     receipts.forEach(receipt => {
         let row = table_body.insertRow(-1);
         add_cell(row, {text: receipt.supplier._name});

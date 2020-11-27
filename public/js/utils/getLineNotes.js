@@ -4,8 +4,8 @@ function get_line_notes(options = {}) {
     if (select && select.value) query.push(select.value);
     get(
         function (notes, options = {}) {
+            clearElement(`note_lines_mdl_line_${options.line_id}`);
             let table_body = document.querySelector(`#note_lines_mdl_line_${options.line_id}`);
-            table_body.innerHTML = '';
             notes.forEach(note => {
                 let row = table_body.insertRow(-1);
                 add_cell(row, {

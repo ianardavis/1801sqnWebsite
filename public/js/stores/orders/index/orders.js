@@ -1,6 +1,6 @@
 showOrders = (orders, options = {}) => {
+    clearElement('tbl_orders');
     let table_body = document.querySelector('#tbl_orders');
-    table_body.innerHTML = '';
     orders.forEach(order => {
         let row = table_body.insertRow(-1);
         if (Number(order.ordered_for) === -1) add_cell(row, {text: 'Backing Stock'}) 

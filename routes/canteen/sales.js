@@ -13,6 +13,38 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(sales => res.send({result: true, sales: sales}))
         .catch(err => res.error.send(err, res))
     });
+    app.get('/canteen/get/sale',       permissions, allowed('access_sales', {send: true}), (req, res) => {
+        m.sales.findOne({
+            where: req.query,
+            include: [inc.users()]
+        })
+        .then(sale => {
+            if (sale) res.send({result: true,  sale: sale})
+            else      res.send({result: false, message: 'Sale not found'})
+        })
+        .catch(err => res.error.send(err, res))
+    });
+    app.get('/canteen/get/user_sale',  permissions, allowed('access_pos',   {send: true}), (req, res) => {
+        m.sessions.findAll({
+            where: {_status: 1},
+            attributes: ['session_id']
+        })
+        .then(sessions => {
+            if (sessions.length !== 1) res.send({result: false, message: `${sessions.length} session(s) open`})
+            else {
+                return m.sales.findOrCreate({
+                    where: {
+                        session_id: sessions[0].session_id,
+                        user_id:    req.user.user_id,
+                        _status:    1
+                    }
+                })
+                .then(([sale, created]) => res.send({result: true, user_sale: sale.sale_id}))
+                .catch(err => res.error.send(err, res));
+            };
+        })
+        .catch(err => res.error.send(err, res));
+    });
     app.get('/canteen/get/sale_lines', permissions, allowed('access_pos',   {send: true}), (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
@@ -40,74 +72,28 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     .then(item => {
                         if (!item) res.send({result: false, message: 'Item not found'})
                         else {
-                            if (item.item_id === 0) {
-                                return m.sale_lines.findAll({
-                                    where: {
-                                        sale_id: sale.sale_id,
-                                        item_id: {[op.not]: 0}
-                                    },
-                                    attributes: ['line_id']
-                                })
-                                .then(lines => {
-                                    if (lines.length > 0) res.send({result: false, message: 'You can not pay out on a sale with items on it'})
-                                    else {
-                                        return m.sale_lines.create({
-                                            sale_id: sale.sale_id,
-                                            item_id: 0,
-                                            _qty:    1,
-                                            _price: -Math.abs(req.body.line._price)
-                                        })
-                                        .then(line => {
-                                            return m.notes.create({
-                                                _note:   req.body.line._note,
-                                                _table:  'sale_lines',
-                                                _id:     line.line_id,
-                                                user_id: req.user.user_id
-                                            })
-                                            .then(note => res.send({result: true, message: 'Line added'}))
-                                            .catch(err => res.error.send(err, res));
-                                        })
-                                        .catch(err => res.error.send(err, res));
-                                    }
-                                })
-                                .catch(err => res.error.send(err, res));
-                            } else  {
-                                return m.sale_lines.findAll({
-                                    where: {
-                                        sale_id: sale.sale_id,
-                                        item_id: 0
-                                    },
-                                    attributes: ['line_id']
-                                })
-                                .then(lines => {
-                                    if (lines.length > 0) res.send({result: false, message: 'You can not add items to a paying out sale'})
-                                    else {
-                                        return m.sale_lines.findOrCreate({
-                                            where: {
-                                                sale_id: sale.sale_id,
-                                                item_id: item.item_id
-                                            },
-                                            defaults: {
-                                                _qty:   req.body.line._qty || 1,
-                                                _price: item._price
-                                            }
-                                        })
-                                        .then(([line, created]) => {
-                                            if (created) res.send({result: true, message: 'Line added'})
-                                            else {
-                                                return line.increment('_qty', {by: req.body.line._qty})
-                                                .then(result => {
-                                                    if (result) res.send({result: true, message: 'Line updated'})
-                                                    else res.send({result: false, message: 'Line not updated'});
-                                                })
-                                                .catch(err => res.error.send(err, res));
-                                            };
-                                        })
-                                        .catch(err =>res.error.send(err, res));
-                                    };
-                                })
-                                .catch(err => res.error.send(err, res));
-                            };
+                            return m.sale_lines.findOrCreate({
+                                where: {
+                                    sale_id: sale.sale_id,
+                                    item_id: item.item_id
+                                },
+                                defaults: {
+                                    _qty:   req.body.line._qty || 1,
+                                    _price: item._price
+                                }
+                            })
+                            .then(([line, created]) => {
+                                if (created) res.send({result: true, message: 'Line added'})
+                                else {
+                                    return line.increment('_qty', {by: req.body.line._qty})
+                                    .then(result => {
+                                        if (result) res.send({result: true, message: 'Line updated'})
+                                        else res.send({result: false, message: 'Line not updated'});
+                                    })
+                                    .catch(err => res.error.send(err, res));
+                                };
+                            })
+                            .catch(err =>res.error.send(err, res));
                         };
                     })
                     .catch(err => res.error.send(err, res));
@@ -142,16 +128,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                 if (line._qty === 0) {
                                     let actions = [];
                                     actions.push(line.destroy());
-                                    if (line.item_id === 0) {
-                                        actions.push(
-                                            m.notes.destroy({
-                                                where: {
-                                                    _table: 'sale_lines',
-                                                    _id:    line.line_id
-                                                }
-                                            })
-                                        );
-                                    };
                                     return Promise.all(actions)
                                     .then(result => { 
                                         if (result) res.send({result: true,  message: 'Line updated'})
@@ -231,17 +207,15 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                                         sale.update({_status: 2})
                                                     );
                                                     lines.forEach(line => {
-                                                        if (line.item_id !== 0) {
-                                                            actions.push(
-                                                                m.items.findOne({
-                                                                    where: {item_id: line.item_id},
-                                                                    attributes: ['item_id', '_qty']
-                                                                })
-                                                                .then(item => {
-                                                                    return item.decrement('_qty', {by: line._qty})
-                                                                })
-                                                            );
-                                                        };
+                                                        actions.push(
+                                                            m.items.findOne({
+                                                                where: {item_id: line.item_id},
+                                                                attributes: ['item_id', '_qty']
+                                                            })
+                                                            .then(item => {
+                                                                return item.decrement('_qty', {by: line._qty})
+                                                            })
+                                                        );
                                                     })
                                                     return Promise.all(actions)
                                                     .then(result => res.send({result: true, message: 'Sale completed', change: 0.00}))
@@ -274,15 +248,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                 })
                             );
                             lines.forEach(line => {
-                                if (line.item_id !== 0) {
-                                    actions.push(
-                                        m.items.findOne({
-                                            where: {item_id: line.item_id},
-                                            attributes: ['item_id', '_qty']
-                                        })
-                                        .then(item => {return item.decrement('_qty', {by: line._qty})})
-                                    );
-                                }
+                                actions.push(
+                                    m.items.findOne({
+                                        where: {item_id: line.item_id},
+                                        attributes: ['item_id', '_qty']
+                                    })
+                                    .then(item => {return item.decrement('_qty', {by: line._qty})})
+                                );
                             });
                             if (req.body.sale.credit_user_id && String(req.body.sale.credit_user_id) !== '' && change > 0) {
                                 actions.push(

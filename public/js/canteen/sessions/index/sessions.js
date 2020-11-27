@@ -1,7 +1,7 @@
 function showSessions(sessions, options) {
+    clearElement('tbl_sessions');
     let table_body = document.querySelector('#tbl_sessions'),
         current_sessions = [];
-    table_body.innerHTML = '';
     sessions.forEach(session => {
         let row = table_body.insertRow(-1);
         add_cell(row, {
@@ -27,8 +27,8 @@ function showSessions(sessions, options) {
             small: true
         }).e});
     });
+    clearElement('div_modals');
     let div_modals = document.querySelector('#div_modals');
-    div_modals.innerHTML = '';
     if (options.permissions.add) {
         let btn_add_session = document.querySelector('#btn_add_session');
         if (current_sessions.length === 0) {

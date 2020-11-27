@@ -1,6 +1,6 @@
 showRequests = (requests, options = {}) => {
+    clearElement('tbl_requests');
     let table_body = document.querySelector('#tbl_requests');
-    table_body.innerHTML = '';
     requests.forEach(request => {
         let row = table_body.insertRow(-1);
         add_cell(row, {text: `${request.user_for.rank._rank} ${request.user_for.full_name}`});

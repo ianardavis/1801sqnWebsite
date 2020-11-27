@@ -1,10 +1,10 @@
-<%- include(`${process.env.PARTIALS}/head/full`) %>
+<%- include(`${partials}/head/full`) %>
 <section class="mb-2">
 	<nav class="navbar navbar-expand navbar-light bg-nav">
 		<ul class="navbar-nav mr-auto">
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
-			<%- include(`${process.env.PARTIALS}/breadcrumb`) %> 
+            <%- include(`${partials}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
+			<%- include(`${partials}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
+			<%- include(`${partials}/breadcrumb`) %> 
 		</ul>
 	</nav>
 </section>
@@ -15,7 +15,7 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <%- include(`${partials}/notes/menu_add`) %>
 				<input id='btn_action' form='form_approve' class='dropdown-item dropdown_button confirm' type="submit" value='Action Lines' disabled>
 				<form id='form_complete'>
 					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
@@ -31,28 +31,28 @@
 				</form>
             </div>
         </li>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
-        <%- include(`${process.env.PARTIALS}/reload`) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'requests'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_for', 	title: 'For', append: {a: {id: 'user_for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'user_by', 	title: 'By',  append: {a: {id: 'user_by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_status',   title: 'Status'}) %>
+			<%- include(`${partials}/spinner`, {id: 'requests'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_for', 	title: 'For', append: {a: {id: 'user_for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_by', 	title: 'By',  append: {a: {id: 'user_by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_status',   title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
 			<% if (permissions.request_line_edit) { %>
 				<form id='form_approve'>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}]}) %>
+			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}]}) %>
 			<table class="table table-sm table-hover mx-auto w-100">
 				<thead id='table_header_lines' class="thead-dark">
-					<th class='w-10' onclick="sortTable(0,'linesTable')"><%- include(`${process.env.PARTIALS}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true, small: true}) %>Line ID</th>
+					<th class='w-10' onclick="sortTable(0,'linesTable')"><%- include(`${partials}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true, small: true}) %>Line ID</th>
 					<th class='w-30' onclick="sortTable(1,'linesTable')">Item</th>
 					<th class='w-30' onclick="sortTable(2,'linesTable')">Size</th>
 					<th class='w-10' onclick="sortTable(3,'linesTable')">Qty</th>
@@ -66,11 +66,11 @@
 				</form>
 			<% } %>
 		</div>
-        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
+        <%- include(`${partials}/notes/tab_body`) %>
 	</div>
 	<div id="div_modals"></div>
 </section>
-<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<%- include(`${partials}/foot/full`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
 <script src='/js/addSize.js'></script>
@@ -133,4 +133,4 @@
 		<% } %>
 	});
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

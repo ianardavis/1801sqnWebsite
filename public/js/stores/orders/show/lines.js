@@ -1,8 +1,8 @@
 let statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Demanded', '4': 'Received', '5': 'Issued', '6': 'Closed'};
 showLines = (lines, options) => {
+    clearElement('tbl_lines');
     let table_body = document.querySelector('#tbl_lines');
     if (lines) document.querySelector('#line_count').innerText = lines.length || '0';
-    table_body.innerHTML = '';
     lines.forEach(line => {
         try {
             let row = table_body.insertRow(-1);
@@ -68,10 +68,7 @@ showLines = (lines, options) => {
                         options: action_options
                     }).e;
                     _status.addEventListener("change", function () {
-                        ['details', 'serials', 'nsns', 'stocks'].forEach(e => {
-                            let _div = document.querySelector(`#${e}_${line.line_id}`);
-                            _div.innerHTML = '';
-                        })
+                        ['details', 'serials', 'nsns', 'stocks'].forEach(e => clearElement(`${e}_${line.line_id}`))
                         if (this.value === '4') {
                             if (line.size._serials) {
                                 enterSerial(line.line_id);

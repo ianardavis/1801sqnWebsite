@@ -1,6 +1,6 @@
 getNSNs = (size_id, line_id, cell, nsn_id = null) => {
+    clearElement(`${cell}_${line_id}`);
     let _cell = document.querySelector(`#${cell}_${line_id}`);
-    _cell.innerHTML = '';
     add_spinner(_cell, {id: `nsns_${line_id}`});
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {

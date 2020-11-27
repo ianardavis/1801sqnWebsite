@@ -1,21 +1,21 @@
-<%- include(`${process.env.PARTIALS}/head/full`) %>
+<%- include(`${partials}/head/full`) %>
 <section class="mb-2">
 	<nav class="navbar navbar-expand navbar-light bg-nav">
 		<ul class="navbar-nav mr-auto">
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		     text: 'Stores'}) %>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/receipts', text: 'Receipts'}) %>
-			<%- include(`${process.env.PARTIALS}/reload`) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/stores',		     text: 'Stores'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/stores/receipts', text: 'Receipts'}) %>
+			<%- include(`${partials}/reload`) %>
 		</ul>
 	</nav>
 </section>
 <section>
 	<div class="container">
-		<%- include(`${process.env.PARTIALS}/inputs/select`, {id: 'sel_suppliers', title: 'Suppliers'}) %>
-		<%- include(`${process.env.PARTIALS}/inputs/select`, {id: 'sel_status',    title: 'Status', options: [{text: 'All', value: '', selected: true}, {text: 'Cancelled', value: '_status=0'}, {text: 'Draft', value: '_status=1'}, {text: 'Open', value: '_status=2'}, {text: 'Closed', value: '_status=3'}]}) %>
+		<%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Suppliers'}) %>
+		<%- include(`${partials}/inputs/select`, {id: 'sel_status',    title: 'Status', options: [{text: 'All', value: '', selected: true}, {text: 'Cancelled', value: '_status=0'}, {text: 'Draft', value: '_status=1'}, {text: 'Open', value: '_status=2'}, {text: 'Closed', value: '_status=3'}]}) %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
 				<th class="w-40" onclick="sortTable(0, 'receiptTable')">
-					<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipts', float_left: true, small: true}) %>
+					<%- include(`${partials}/spinner`, {id: 'receipts', float_left: true, small: true}) %>
 					Supplier
 				</th>
 				<th class="w-30" onclick="sortTable(1, 'receiptTable')">Receipt Date</th>
@@ -28,7 +28,7 @@
 		</table>
 	</div>
 </section>
-<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<%- include(`${partials}/foot/full`) %>
 <script src='/js/stores/receipts/index/receipts.js'></script>
 <script src='/js/spinner.js'></script>
 <script src='/js/get.js'></script>
@@ -65,4 +65,4 @@
 <script>document.querySelector('#reload').addEventListener('click', () => getReceipts());</script>
 <script>document.querySelector('#sel_status').addEventListener('change', () => getReceipts());</script>
 <script>document.querySelector('#sel_suppliers').addEventListener('change', () => getReceipts());</script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

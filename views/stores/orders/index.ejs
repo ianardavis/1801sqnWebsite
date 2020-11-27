@@ -1,13 +1,13 @@
-<%- include(`${process.env.PARTIALS}/head/full`) %>
+<%- include(`${partials}/head/full`) %>
 <section class='mb-2'>
 	<nav class='navbar navbar-expand navbar-light bg-nav'>
 		<ul class='navbar-nav mr-auto'>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
-            <%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
 			<% if (permissions.order_add) { %>
-				<%- include(`${process.env.PARTIALS}/breadcrumb`, {href: '/stores/orders/new?user=-1', html: '<i class="fas fa-plus"></i>'}) %>
+				<%- include(`${partials}/breadcrumb`, {href: '/stores/orders/new?user=-1', html: '<i class="fas fa-plus"></i>'}) %>
 			<% } %>
-			<%- include(`${process.env.PARTIALS}/reload`) %>
+			<%- include(`${partials}/reload`) %>
 		</ul>
 	</nav>
 </section>
@@ -17,7 +17,7 @@
 			<div class="input-group">
 				<div class="input-group-prepend w-30">
 					<button class="btn btn-success text-left w-100 confirm">
-						<%- include(`${process.env.PARTIALS}/spinner`, {id: 'suppliers', float_left: true, small: true}) %>
+						<%- include(`${partials}/spinner`, {id: 'suppliers', float_left: true, small: true}) %>
 						Demand Orders for
 					</button>
 				</div>
@@ -25,11 +25,11 @@
 			</div>	
 		</form>
 	<% } %>
-	<%- include(`${process.env.PARTIALS}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
 			<th class='w-40' onclick='sortTable(0, "tbl_orders")'>
-				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'orders', float_left: true, small: true}) %>
+				<%- include(`${partials}/spinner`, {id: 'orders', float_left: true, small: true}) %>
 				Ordered For
 			</th>
 			<th class='w-40' onclick='sortTable(1, "tbl_orders")'>Order Date</th>
@@ -41,7 +41,7 @@
 		</tbody>
 	</table>
 </section>
-<%- include(`${process.env.PARTIALS}/foot/full`) %>
+<%- include(`${partials}/foot/full`) %>
 <script src='/js/stores/orders/index/orders.js'></script>
 <script src='/js/spinner.js'></script>
 <script src='/js/get.js'></script>
@@ -89,4 +89,4 @@
 </script>
 <script>document.querySelector('#reload').addEventListener('click', () => getOrders());</script>
 <script>document.querySelector('#sel_status').addEventListener('change', () => getOrders());</script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

@@ -1,9 +1,9 @@
 showReceipts = (lines, options) => {
     try {
+        clearElement('receiptTable');
         let table_body    = document.querySelector('#receiptTable'),
             receipt_count = document.querySelector('#receipt_count');
         receipt_count.innerText = lines.length || '0';
-        table_body.innerHTML = '';
         lines.forEach(line => {
             let row = table_body.insertRow(-1);
             add_cell(row, {

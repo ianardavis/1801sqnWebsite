@@ -1,58 +1,48 @@
-<% include ../../partials/head/full %>
+<%- include(`${partials}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/receipts'>
-                    Receipts
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/receipts/new'>
-                    <i class='fas fa-plus'></i>
-                </a>
-            </li>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen/receipts', text: 'Receipts'}) %>
+            <% if (permissions.receipt_add) { %>
+                <li class="nav-item">
+                    <form id='form_add_receipt'>
+                        <button class="nav-link stores_nav dropdown_button confirm"><i class="fas fa-plus"></i></button>
+                    </form>
+                </li>
+			<% } %>
+            <%- include(`${partials}/reload`) %>
+            <%- include(`${partials}/spinner`, {id: 'receipts'}) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <div class="row">
-        <div class="col-12">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-35" onclick="sortTable(0, 'receiptTable')">Date</th>
-                    <th class="w-35" onclick="sortTable(1, 'receiptTable')">User</th>
-                    <th class="w-10" onclick="sortTable(2, 'receiptTable')">Complete</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="receiptTable">
-                    <% if (receipts) receipts.forEach(receipt => { %>
-                        <tr>
-                            <td data-sort="<%= receipt._date.getTime() %>">
-                                <%= receipt._date.toDateString() %>
-                            </td>
-                            <td>
-                                <%= receipt.user.rank._rank %> <%= receipt.user.full_name %>
-                            </td>
-                            <td>
-                                <% if (receipt._complete) { %><i class='fas fa-check'></i><% } %>
-                            </td>
-                            <td>
-                                <a class='btn btn-sm btn-primary' href="/canteen/receipts/<%= receipt.receipt_id %>">
-                                    <i class='fas fa-search'></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <%- include(`${partials}/inputs/select`, {title: 'Complete Receipts', id: 'sel_status', options: [{value:'', text: 'Include'},{value:'_status=1', text: 'Exclude', selected: true},{value:'_status=2', text: 'Only'}]}) %>
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <th class="w-40" onclick="sortTable(0, 'tbl_receipts')">Date</th>
+            <th class="w-40" onclick="sortTable(1, 'tbl_receipts')">User</th>
+            <th class="w-20" onclick="sortTable(2, 'tbl_receipts')">Status</th>
+            <th><i class='fas fa-search'></i></th>
+        </thead>
+        <tbody id="tbl_receipts"></tbody>
+    </table>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${partials}/foot/full`) %>
+<script src="/js/canteen/receipts/index/getReceipts.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
+<script async>getReceipts()</script>
+<% if (permissions.receipt_add) { %>
+<script>
+    window.addEventListener('load', function () {
+        addFormListener(
+            'form_add_receipt',
+            'POST',
+            '/canteen/receipts',
+            {onComplete: getReceipts}
+        )
+    })
+</script>
+<% } %>
+<%- include(`${partials}/foot/htmlClose`) %>

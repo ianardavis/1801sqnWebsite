@@ -1,9 +1,9 @@
 showReturns = (lines, options) => {
     try {
+        clearElement('returnTable');
         let table_body   = document.querySelector('#returnTable'),
             return_count = document.querySelector('#return_count');
         return_count.innerText = lines.length || '0';
-        table_body.innerHTML = '';
         lines.forEach(line => {
             let row = table_body.insertRow(-1);
             add_cell(row, {

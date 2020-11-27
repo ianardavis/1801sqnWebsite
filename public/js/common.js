@@ -1,4 +1,4 @@
-sortTable = (n, tableName) => {
+function sortTable(n, tableName) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById(tableName);
     switching = true;
@@ -34,10 +34,12 @@ sortTable = (n, tableName) => {
         };
     };
 };
-
-removeID = id => {
+function removeID(id) {
     if (typeof(id) === 'string') document.querySelector('#' + id).remove();
     else id.remove();
 };
-
+function clearElement(id) {
+    let element = document.querySelector(`#${id}`);
+    if (element) element.innerHTML = '';
+};
 let path = window.location.pathname.toString().split('/');

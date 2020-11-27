@@ -1,10 +1,9 @@
 var statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3':'Approved', '4':'Declined'};
 function showLines (lines, options) {
-    let table_body = document.querySelector('#linesTable'),
-        div_modals = document.querySelector(`#div_modals`);
+    clearElement('linesTable');
+    clearElement('div_modals');
+    let table_body = document.querySelector('#linesTable');
     if (lines) document.querySelector('#line_count').innerText = lines.length || '0';
-    table_body.innerHTML = '';
-    div_modals.innerHTML = '';
     lines.forEach(line => {
         try {
             let row = table_body.insertRow(-1);
@@ -48,8 +47,8 @@ function showLines (lines, options) {
                     _status.addEventListener("change", function () {
                         if (this.value === '3') showActions(line.size_id, line.line_id)
                         else {
-                            document.querySelector(`#action_${line.line_id}`).innerHTML  = '';
-                            document.querySelector(`#details_${line.line_id}`).innerHTML = '';
+                            clearElement(`action_${line.line_id}`);
+                            clearElement(`details_${line.line_id}`);
                         };
                     });
                     div_action.setAttribute('id', `action_${line.line_id}`);
@@ -102,8 +101,8 @@ function add_modal (line) {
     };
 };
 function showActions (size_id, line_id) {
+    clearElement(`action_${line_id}`);
     let _cell = document.querySelector(`#action_${line_id}`);
-    _cell.innerHTML = '';
     add_spinner(_cell, {id: line_id});
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {
@@ -123,7 +122,7 @@ function showActions (size_id, line_id) {
                     getStock(size_id, line_id, 'details');
                     if (response.sizes[0]._nsns) getNSNs(size_id, line_id, 'details', response.sizes[0].nsn_id);
                     if (response.sizes[0]._serials) getSerials(size_id, line_id, 'details');
-                } else document.querySelector(`#details_${line_id}`).innerHTML = '';
+                } else clearElement(`details_${line_id}`);
             });
             _cell.appendChild(_action);
         } else {

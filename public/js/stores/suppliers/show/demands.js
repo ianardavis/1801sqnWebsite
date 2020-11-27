@@ -1,7 +1,7 @@
 showDemands = (demands, na) => {
+    clearElement('demandTable');
     let table_body = document.querySelector('#demandTable'),
         count      = document.querySelector('#demand_count');
-    table_body.innerHTML = '';
     if (count) count.innerText = demands.length;
     demands.forEach(demand => {
         let row = table_body.insertRow(-1);

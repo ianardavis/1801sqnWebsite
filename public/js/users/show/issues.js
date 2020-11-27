@@ -1,8 +1,8 @@
 showIssues = (lines, options) => {
+    clearElement('issueTable');
     let table_body  = document.querySelector('#issueTable'),
         issue_count = document.querySelector('#issue_count');
     if (lines) issue_count.innerText = lines.length || '0';
-    table_body.innerHTML = '';
     lines.forEach(line => {
         let row = table_body.insertRow(-1);
         add_cell(row, {

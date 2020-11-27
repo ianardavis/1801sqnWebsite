@@ -1,6 +1,6 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
 		<li class="nav-item dropdown">
@@ -9,12 +9,12 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.stock_edit) { %>
-                    <%- include(`${process.env.PARTIALS}/edit`) %>
+                    <%- include(`${partials}/edit`) %>
                 <% } %>
                 <div class="dropdown-divider"></div>
-                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.stock_delete) { %>
-                    <%- include(`${process.env.PARTIALS}/delete`, {close: true, onComplete: 'getSerials'}) %>
+                    <%- include(`${partials}/delete`, {close: true, onComplete: 'getSerials'}) %>
                 <% } %>
 				<% if (permissions.adjust_add) { %>
 					<div class="dropdown-divider"></div>
@@ -23,23 +23,23 @@
 				<% } %>
             </div>
         </li>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details',  title: 'Details'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'adjusts',  title: 'Adjustments', count_id: 'adjust_count',  permission: 'access_adjusts'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'receipts', title: 'Receipts',    count_id: 'receipt_count', permission: 'access_receipts'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'issues',   title: 'Issues', 	   count_id: 'issue_count',   permission: 'access_issues'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'returns',  title: 'Returns', 	   count_id: 'return_count',  permission: 'access_returns'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',    title: 'Notes',       count_id: 'note_count',    permission: 'access_notes'}) %>
-        <%- include(`${process.env.PARTIALS}/reload`) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'adjusts',  title: 'Adjustments', count_id: 'adjust_count',  permission: 'access_adjusts'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts',    count_id: 'receipt_count', permission: 'access_receipts'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues', 	   count_id: 'issue_count',   permission: 'access_issues'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'returns',  title: 'Returns', 	   count_id: 'return_count',  permission: 'access_returns'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',       count_id: 'note_count',    permission: 'access_notes'}) %>
+        <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${process.env.PARTIALS}/spinner`, {id: 'stock'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: 'location', title: 'Location'}) %>
-			<%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_qty', title: 'Quantity'}) %>
+			<%- include(`${partials}/spinner`, {id: 'stock'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'location', title: 'Location'}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_qty', title: 'Quantity'}) %>
 		</div>
         <% if (permissions.access_adjusts) { %>
 			<div class="tab-pane fade" id="adjusts" role="tabpanel" aria-labelledby="adjusts-tab">
-				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'adjusts'}) %>
+				<%- include(`${partials}/spinner`, {id: 'adjusts'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-25" onclick="sortTable(0, 'adjustsTable')">Date</th>
@@ -55,7 +55,7 @@
         <% } %>
         <% if (permissions.access_receipts) { %>
 			<div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
-				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'receipt_lines'}) %>
+				<%- include(`${partials}/spinner`, {id: 'receipt_lines'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-45" onclick="sortTable(0, 'receiptTable')">Date</th>
@@ -70,7 +70,7 @@
         <% } %>
         <% if (permissions.access_issues) { %>
 			<div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'issue_lines'}) %>
+				<%- include(`${partials}/spinner`, {id: 'issue_lines'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-40" onclick="sortTable(0, 'issueTable')">Date</th>
@@ -86,7 +86,7 @@
         <% } %>
         <% if (permissions.access_returns) { %>
 			<div class="tab-pane fade" id="returns" role="tabpanel" aria-labelledby="returns-tab">
-				<%- include(`${process.env.PARTIALS}/spinner`, {id: 'return_lines'}) %>
+				<%- include(`${partials}/spinner`, {id: 'return_lines'}) %>
 				<table class="table table-sm table-hover">
 					<thead class="thead-dark">
 						<th class="w-45" onclick="sortTable(0, 'returnTable')">Date</th>
@@ -101,7 +101,7 @@
         <% } %>
         <% include ../../partials/notes/tab_body %>
 	</div>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
@@ -147,4 +147,4 @@
     </script>
     <script async>getReturns()</script>
 <% } %>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

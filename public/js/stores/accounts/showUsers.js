@@ -1,6 +1,6 @@
 showUsers = (users, options) => {
+    clearElement('usersSelect');
     let _select  = document.querySelector('#usersSelect');
-    _select.innerHTML = '';
     _select.appendChild(new Option({value: '', text: ''}).e);
     users.forEach(user => {
         _select.appendChild(

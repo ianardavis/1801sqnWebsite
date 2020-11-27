@@ -8,6 +8,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(items => res.send({result: true, items: items}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/canteen/get/item',     permissions, allowed('access_items'),              (req, res) => {
+        m.items.findOne({where: req.query})
+        .then(item => {
+            if (item) res.send({result: true,  item: item})
+            else      res.send({result: false, message: 'Item not found'})
+        })
+        .catch(err => res.error.send(err, res));
+    });
 
     app.put('/canteen/items/:id',    permissions, allowed('item_edit',   {send: true}), (req, res) => {
         m.items.findOne({

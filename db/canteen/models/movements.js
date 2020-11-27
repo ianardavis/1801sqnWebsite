@@ -1,8 +1,6 @@
-/* jshint indent: 2 */
-
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('cash_movements', {
-    'cash_movement_id': {
+  return sequelize.define('movements', {
+    'movement_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -72,7 +70,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'cash_movements',
+    tableName: 'movements',
     schema: 'canteen'
   });
 };

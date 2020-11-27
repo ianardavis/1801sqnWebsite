@@ -1,6 +1,6 @@
 showIssues = (issues, options = {}) => {
+    clearElement('tbl_issues');
     let table_body = document.querySelector('#tbl_issues');
-    table_body.innerHTML = '';
     issues.forEach(issue => {
         let row = table_body.insertRow(-1);
         add_cell(row, {text: print_user(issue.user_to)});

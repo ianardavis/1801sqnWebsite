@@ -1,6 +1,6 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -11,32 +11,32 @@
                 <a class='dropdown-item' id='edit_link'>
                     Edit
                 </a>
-                <%- include(`${process.env.PARTIALS}/notes/menu_add`) %>
+                <%- include(`${partials}/notes/menu_add`) %>
             </div>
         </li>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${process.env.PARTIALS}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
-        <%- include(`${process.env.PARTIALS}/reload`) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'files'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_path',          title: 'File'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_code',          title: 'Account'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_rank',          title: 'Holder Rank'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_name',          title: 'Holder Name'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_sqn',           title: 'Squadron'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_cover_sheet',   title: 'Cover Sheet'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_items_sheet',   title: 'Items Sheet'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_rank_column',   title: 'Rank Column'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_name_column',   title: 'Name Column'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_request_start', title: 'Name Start Row'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_request_end',   title: 'Name End Row'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/display`, {id: '_date',          title: 'Date'}) %>
+            <%- include(`${partials}/spinner`, {id: 'files'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_path',          title: 'File'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_code',          title: 'Account'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_rank',          title: 'Holder Rank'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_name',          title: 'Holder Name'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_sqn',           title: 'Squadron'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_cover_sheet',   title: 'Cover Sheet'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_items_sheet',   title: 'Items Sheet'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_rank_column',   title: 'Rank Column'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_name_column',   title: 'Name Column'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_request_start', title: 'Name Start Row'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_request_end',   title: 'Name End Row'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_date',          title: 'Date'}) %>
         </div>
-        <%- include(`${process.env.PARTIALS}/notes/tab_body`) %>
+        <%- include(`${partials}/notes/tab_body`) %>
     </div>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <!-- Get/spinner/XHRsend from notes include -->
 <script src='/js/edit.js'></script>
 <script src='/js/add.js'></script>
@@ -47,4 +47,4 @@
 </script>
 <script async>getFile()</script>
 <script>showTab('<%= tab %>');</script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

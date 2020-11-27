@@ -1,14 +1,14 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <form id='itemForm'>
-        <%- include(`${process.env.PARTIALS}/inputs/text`, {title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
-        <%- include(`${process.env.PARTIALS}/itemOptions`) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`, {title: 'Size Text', name: 'item[_size_text]', placeholder: 'Required', maxLength: 45, required: true}) %>
-        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
+        <%- include(`${partials}/itemOptions`) %>
+        <%- include(`${partials}/inputs/text`, {title: 'Size Text', name: 'item[_size_text]', placeholder: 'Required', maxLength: 45, required: true}) %>
+        <%- include(`${partials}/save_cancel`) %>
     </form>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
 <script>
@@ -24,4 +24,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

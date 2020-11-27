@@ -1,9 +1,9 @@
 showStock = (stock, options) => {
     try {
+        clearElement('stockTable');
         let table_body  = document.querySelector('#stockTable'),
             stock_count = document.querySelector('#stock_count');
         stock_count.innerText = stock.length || '0';
-        table_body.innerHTML = '';
         stock.forEach(stk => {
             let row = table_body.insertRow(-1);
             add_cell(row, {text: stk.location._location});

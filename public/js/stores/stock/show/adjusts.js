@@ -1,9 +1,9 @@
 showAdjusts = (lines, options) => {
     try {
+        clearElement('adjustTable');
         let table_body  = document.querySelector('#adjustTable'),
             adjust_count = document.querySelector('#adjust_count');
         adjust_count.innerText = lines.length || '0';
-        table_body.innerHTML = '';
         lines.forEach(adjust => {
             let row = table_body.insertRow(-1);
             add_cell(row, {

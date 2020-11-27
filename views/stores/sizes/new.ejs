@@ -1,23 +1,23 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <form id='sizeForm'>
         <input type='hidden' name='size[item_id]', value='<%= item.item_id %>'>
-        <%- include(`${process.env.PARTIALS}/inputs/display`,       {title: 'Add Size to',            text: item._description}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select_yes_no`, {name: 'size[_issueable]',        title: 'Issueable'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select_yes_no`, {name: 'size[_orderable]',        title: 'Orderable'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select_yes_no`, {name: 'size[_serials]',          title: 'Has Serial #'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select_yes_no`, {name: 'size[_nsns]',             title: 'Has NSNs'}) %>
-        <%- include(`${process.env.PARTIALS}/spinner`,  {id: 'suppliers'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/select`,        {name: 'size[supplier_id]',       title: 'Supplier', id: 'supplier_id'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {name: 'size[_demand_page]',      title: 'Demand Page',      maxlength: 20}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {name: 'size[_demand_cell]',      title: 'Cell',             maxlength: 3}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/textarea`,      {name: 'size[_ordering_details]', title: 'Ordering Details', maxlength: 1000, rows: 5}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             maxlength: 15,   id:'_size'}) %>
-        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <%- include(`${partials}/inputs/display`,       {title: 'Add Size to',            text: item._description}) %>
+        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_issueable]',        title: 'Issueable'}) %>
+        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',        title: 'Orderable'}) %>
+        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',          title: 'Has Serial #'}) %>
+        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_nsns]',             title: 'Has NSNs'}) %>
+        <%- include(`${partials}/spinner`,  {id: 'suppliers'}) %>
+        <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]',       title: 'Supplier', id: 'supplier_id'}) %>
+        <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_page]',      title: 'Demand Page',      maxlength: 20}) %>
+        <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_cell]',      title: 'Cell',             maxlength: 3}) %>
+        <%- include(`${partials}/inputs/textarea`,      {name: 'size[_ordering_details]', title: 'Ordering Details', maxlength: 1000, rows: 5}) %>
+        <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             maxlength: 15,   id:'_size'}) %>
+        <%- include(`${partials}/save_cancel`) %>
     </form>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src='/js/get.js'></script>
 <script src='/js/spinner.js'></script>
 <script src="/js/stores/sizes/listSuppliers.js"></script>
@@ -43,4 +43,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

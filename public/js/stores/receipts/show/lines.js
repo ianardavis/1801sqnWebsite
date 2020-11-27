@@ -1,8 +1,8 @@
 let statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Closed'};
 showLines = (lines, options) => {
+    clearElement('tbl_lines');
     let table_body = document.querySelector('#tbl_lines');
     if (lines) document.querySelector('#line_count').innerText = lines.length || '0';
-    table_body.innerHTML = '';
     lines.forEach(line => {
         try {
             let row = table_body.insertRow(-1);

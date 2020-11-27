@@ -1,18 +1,18 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <form id='itemForm'>
-        <%- include(`${process.env.PARTIALS}/spinner`,     {id: 'items'}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_description', title: 'Description', name: 'item[_description]', maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/itemOptions`, {inhibit: true}) %>
-        <%- include(`${process.env.PARTIALS}/inputs/text`, {id:'_size_text',    title: 'Size Text',   name: 'item[_size_text]',   maxLength: 45}) %>
-        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <%- include(`${partials}/spinner`,     {id: 'items'}) %>
+        <%- include(`${partials}/inputs/text`, {id: '_description', title: 'Description', name: 'item[_description]', maxLength: 45}) %>
+        <%- include(`${partials}/itemOptions`, {inhibit: true}) %>
+        <%- include(`${partials}/inputs/text`, {id:'_size_text',    title: 'Size Text',   name: 'item[_size_text]',   maxLength: 45}) %>
+        <%- include(`${partials}/save_cancel`) %>
         <a class="float-right" id='reload'>
             <i class='fas fa-redo'></i>
         </a>
     </form>
-<% include(`${process.env.PARTIALS}/foot/noNav`) %>
+<% include(`${partials}/foot/noNav`) %>
 <script src="/js/get.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/stores/items/edit/item.js"></script>
@@ -24,4 +24,4 @@
         addFormListener('itemForm', 'PUT', '/stores/items/<%= item.item_id %>');
     });
 </Script>
-<% include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<% include(`${partials}/foot/htmlClose`) %>

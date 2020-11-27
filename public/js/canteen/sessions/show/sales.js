@@ -1,11 +1,11 @@
 function showSales(sales, options) {
+    clearElement('tbl_items');
+    clearElement('tbl_sales');
     let tbl_sales  = document.querySelector('#tbl_sales'),
         tbl_items  = document.querySelector('#tbl_items'),
         sale_count = document.querySelector('#sale_count'),
         item_count = document.querySelector('#item_count'),
         items      = [];
-    tbl_items.innerHTML = '';
-    tbl_sales.innerHTML = '';
     sale_count.innerText = sales.length || '0';
     sales.forEach(sale => {
         let row = tbl_sales.insertRow(-1);

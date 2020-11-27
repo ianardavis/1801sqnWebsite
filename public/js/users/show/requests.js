@@ -1,9 +1,9 @@
 var request_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3':'Approved', '4':'Declined'};
 showRequests = (lines, options) => {
+    clearElement('requestTable');
     let table_body    = document.querySelector('#requestTable'),
         request_count = document.querySelector('#request_count');
     if (lines) request_count.innerText = lines.length || '0';
-    table_body.innerHTML = '';
     lines.forEach(line => {
         let row = table_body.insertRow(-1);
         add_cell(row, {

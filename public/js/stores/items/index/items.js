@@ -1,6 +1,6 @@
 showItems = (items, options) => {
+    clearElement('itemTable');
     let table_body = document.querySelector('#itemTable');
-    table_body.innerHTML = '';
     items.forEach(item => {
         let row = table_body.insertRow(-1);
         add_cell(row, {

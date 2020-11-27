@@ -1,0 +1,28 @@
+<%- include(`${partials}/head/full`) %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	       text: 'Canteen'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen/movements', text: 'Movements'}) %>
+            <%- include(`${partials}/breadcrumb`) %>
+			<%- include(`${partials}/reload`) %>
+			<%- include(`${partials}/spinner`, {id: 'movements'}) %>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+
+        </div>
+        <%- include(`${partials}/notes/tab_body`) %>
+    </div>
+</section>
+<%- include(`${partials}/foot/full`) %>
+<script src='/js/tabs.js'></script>
+<script>showTab('<%= tab %>');</script>
+<%- include(`${partials}/foot/htmlClose`) %>

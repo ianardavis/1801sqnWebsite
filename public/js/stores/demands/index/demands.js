@@ -1,6 +1,6 @@
 showDemands = (demands, options = {}) => {
+    clearElement('tbl_demands');
     let table_body = document.querySelector('#tbl_demands');
-    table_body.innerHTML = '';
     demands.forEach(demand => {
         let row = table_body.insertRow(-1);
         add_cell(row, {

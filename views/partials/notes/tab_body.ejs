@@ -1,6 +1,6 @@
 <% if (permissions.access_notes) { %>
     <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-        <%- include(`${process.env.PARTIALS}/notes/note_table`) %>
+        <%- include(`${partials}/notes/note_table`) %>
         <script src='/js/add.js'></script>
         <script src='/js/edit.js'></script>
         <script src="/js/data/send.js"></script>

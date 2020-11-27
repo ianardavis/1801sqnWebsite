@@ -22,6 +22,17 @@ function add_cell (row, options = {}) {
     if (options.id)        cell.id = options.id;
     if (options.ellipsis)  cell.classList.add('ellipsis1');
 };
+function Div (options = {}) {
+    this.e = document.createElement('div');
+    if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
+};
+function Form (options = {}) {
+    this.e = document.createElement('form');
+    if (options.id) this.e.setAttribute('id', options.id);
+    if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
+    if (options.submit)  this.e.addEventListener('submit', options.submit);
+    if (options.append)  options.append.forEach(a => this.e.appendChild(a));
+};
 function Link (options = {}) {
     this.e      = document.createElement('a');
     this.e.href = options.href;
@@ -83,6 +94,27 @@ function Input (options = {}) {
     if (options.onChange)    this.e.addEventListener('change', function (event) {options.onChange()});
     if (options.keyUp)       this.e.addEventListener('keyup', function (event) {options.keyUp()});
 };
+function Tab_Header (options ={}) {
+    this.e = document.createElement('li');
+    let a  = document.createElement('a');
+    this.e.classList.add('nav_item');
+    a.classList.add('nav-link', 'btn', 'btn-lg', 'btn-info', 'm-2', 'w-100-px');
+    a.setAttribute('id', `${options.id}-tab`);
+    a.setAttribute('data-toggle', 'tab');
+    a.setAttribute('href', `#${options.id}`);
+    a.setAttribute('role', 'tab');
+    a.setAttribute('aria-controls', `${options.id}`);
+    a.setAttribute('aria-selected', 'true');
+    a.innerText = options.text;
+    this.e.appendChild(a);
+};
+function Tab_Body (options = {}) {
+    this.e = document.createElement('div');
+    this.e.classList.add('tab-pane', 'fade');
+    this.e.setAttribute('id', `${options.id}`);
+    this.e.setAttribute('role', 'tabpanel');
+    this.e.setAttribute('aria-labelledby', `${options.id}-tab`);
+};
 function Button (options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
@@ -94,7 +126,8 @@ function Button (options = {}) {
     else if (options.html) this.e.innerHTML = options.html;
     if (options.id)        this.e.setAttribute('id', options.id);
     if (options.disabled)  this.e.setAttribute('disabled', true);
-    if (options.click)     this.e.addEventListener('click', function (event) {options.click()});
+    // if (options.click)     this.e.addEventListener('click', function (event) {options.click()});
+    if (options.click)     this.e.addEventListener('click', options.click);
 };
 function Select (options = {}) {
     this.e = document.createElement('select');

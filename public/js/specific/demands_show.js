@@ -1,6 +1,6 @@
 function getStock(size_id, line_id, action) {
-    let _cell = document.querySelector('#stock' + line_id);
-    _cell.innerHTML = _spinner('line_' + line_id);
+    let _cell = document.querySelector(`#stock${line_id}`);
+    _cell.innerHTML = _spinner(`line_${line_id}`);
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", function(event) {
         let response = JSON.parse(event.target.responseText);
@@ -18,7 +18,7 @@ function getStock(size_id, line_id, action) {
             _cell.appendChild(_locations);
             if (response.size._serials) {
                 let _serials = _input({
-                    name: 'actions[line_id' + line_id + '][_serial]',
+                    name: `actions[line_id${line_id}][_serial]`,
                     placeholder: 'Enter Serial #'
                 });
                 _cell.appendChild(_serials);

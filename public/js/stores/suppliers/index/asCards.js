@@ -1,6 +1,6 @@
 asCards = suppliers => {
+    clearElement('suppliers');
     let _suppliers = document.querySelector('#suppliers');
-    _suppliers.innerHTML = '';
     suppliers.forEach(supplier => {
         _suppliers.appendChild(new Card({
             href:   `/stores/suppliers/${supplier.supplier_id}`,

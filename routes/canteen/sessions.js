@@ -50,7 +50,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 )
             );
             actions.push(
-                m.cash_movements.create({
+                m.movements.create({
                     _description:  'Count',
                     _amount:       Number(balance.cash - holding._cash),
                     _type:         'Cash',
@@ -60,7 +60,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 })
             );
             actions.push(
-                m.cash_movements.create({
+                m.movements.create({
                     _description:  'Count',
                     _amount:       Number(balance.cheques - holding._cheques),
                     _type:         'Cheque',
@@ -125,7 +125,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                         movement_actions = [];
                                     if (balance.cash > 0) {
                                         movement_actions.push(
-                                            m.cash_movements.create({
+                                            m.movements.create({
                                                 holding_id_from: canteen_holding.holding_id,
                                                 holding_id_to:   petty_holding.holding_id,
                                                 _description:    'Canteen cash',
@@ -137,7 +137,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                     };
                                     if (balance.cheques > 0) {
                                         movement_actions.push(
-                                            m.cash_movements.create({
+                                            m.movements.create({
                                                 holding_id_from: canteen_holding.holding_id,
                                                 holding_id_to:   petty_holding.holding_id,
                                                 _description:    'Canteen cheques',

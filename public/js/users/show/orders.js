@@ -1,9 +1,9 @@
 let order_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Demanded', '4': 'Received', '5': 'Issued', '6': 'Closed'};
 showOrders = (lines, options) => {
+    clearElement('orderTable');
     let table_body    = document.querySelector('#orderTable'),
         order_count = document.querySelector('#order_count');
     if (lines) order_count.innerText = lines.length || '0';
-    table_body.innerHTML = '';
     lines.forEach(line => {
         let row = table_body.insertRow(-1);
         add_cell(row, {

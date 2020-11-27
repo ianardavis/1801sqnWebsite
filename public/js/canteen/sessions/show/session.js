@@ -26,9 +26,9 @@ function showSession(session, options) {
     breadcrumb.innerText = session.session_id;
     breadcrumb.href = `/canteen/sessions/${session.session_id}`;
 
+    clearElement('div_modals');
     let div_modals = document.querySelector('#div_modals');
     if (div_modals) {
-        div_modals.innerHTML = '';
         if (options.permissions.edit) {
             div_modals.appendChild(new Modal({
                 id: 'close_session',

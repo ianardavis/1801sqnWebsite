@@ -1,6 +1,6 @@
-<%- include(`${process.env.PARTIALS}/head/head`) %>
+<%- include(`${partials}/head/head`) %>
 <body>
-<%- include(`${process.env.PARTIALS}/head/flash`) %>
+<%- include(`${partials}/head/flash`) %>
 <section id='body'>
     <form id='fileForm'>
         <div>
@@ -9,22 +9,22 @@
         </div>
         <div class="form-group">
             <h4>Cells</h4>
-            <%- include(`${process.env.PARTIALS}/spinner`, {id: 'files'}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_code',          title: 'Account',        name: 'file[_code]',          maxLength: 20}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_rank',          title: 'Holder Rank',    name: 'file[_rank]',          maxLength: 4}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_name',          title: 'Holder Name',    name: 'file[_name]',          maxLength: 4}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_sqn',           title: 'Squadron',       name: 'file[_sqn]',           maxLength: 4}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_cover_sheet',   title: 'Cover Sheet',    name: 'file[_cover_sheet]',   maxLength: 20}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_items_sheet',   title: 'Items Sheet',    name: 'file[_items_sheet]',   maxLength: 20}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_rank_column',   title: 'Rank Column',    name: 'file[_rank_column]',   maxLength: 2}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_name_column',   title: 'Name Column',    name: 'file[_name_column]',   maxLength: 2}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_request_start', title: 'Name Start Row', name: 'file[_request_start]', maxLength: 2}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_request_end',   title: 'Name End Row',   name: 'file[_request_end]',   maxLength: 2}) %>
-            <%- include(`${process.env.PARTIALS}/inputs/text`, {id: '_date',          title: 'Date',           name: 'file[_date]',          maxLength: 4}) %>
+            <%- include(`${partials}/spinner`, {id: 'files'}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_code',          title: 'Account',        name: 'file[_code]',          maxLength: 20}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_rank',          title: 'Holder Rank',    name: 'file[_rank]',          maxLength: 4}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_name',          title: 'Holder Name',    name: 'file[_name]',          maxLength: 4}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_sqn',           title: 'Squadron',       name: 'file[_sqn]',           maxLength: 4}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_cover_sheet',   title: 'Cover Sheet',    name: 'file[_cover_sheet]',   maxLength: 20}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_items_sheet',   title: 'Items Sheet',    name: 'file[_items_sheet]',   maxLength: 20}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_rank_column',   title: 'Rank Column',    name: 'file[_rank_column]',   maxLength: 2}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_name_column',   title: 'Name Column',    name: 'file[_name_column]',   maxLength: 2}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_request_start', title: 'Name Start Row', name: 'file[_request_start]', maxLength: 2}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_request_end',   title: 'Name End Row',   name: 'file[_request_end]',   maxLength: 2}) %>
+            <%- include(`${partials}/inputs/text`, {id: '_date',          title: 'Date',           name: 'file[_date]',          maxLength: 4}) %>
         </div>
-        <%- include(`${process.env.PARTIALS}/save_cancel`) %>
+        <%- include(`${partials}/save_cancel`) %>
     </form>
-<%- include(`${process.env.PARTIALS}/foot/noNav`) %>
+<%- include(`${partials}/foot/noNav`) %>
 <script src="/js/data/send.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/stores/files/edit/file.js"></script>
@@ -42,4 +42,4 @@
         );
     });
 </script>
-<%- include(`${process.env.PARTIALS}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/htmlClose`) %>

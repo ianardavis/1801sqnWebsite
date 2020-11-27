@@ -3,11 +3,11 @@ function getRequests(user_id) {
     spn_requests.style.display = 'block';
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {
+        clearElement('requestTable');
         let response      = JSON.parse(event.target.responseText),
             table_body    = document.querySelector('#requestTable'),
             request_count = document.querySelector('#request_count');
         if (response.lines) request_count.innerText = response.lines.length || '0';
-        table_body.innerHTML = '';
         if (response.result) {
             response.lines.forEach(line => {
                 let row   = table_body.insertRow(-1),
@@ -40,11 +40,11 @@ function getOrders(user_id) {
     spn_orders.style.display = 'block';
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {
+        clearElement('orderTable');
         let response      = JSON.parse(event.target.responseText),
             table_body    = document.querySelector('#orderTable'),
             order_count = document.querySelector('#order_count');
         if (response.lines) order_count.innerText = response.lines.length || '0';
-        table_body.innerHTML = '';
         if (response.result) {
             response.lines.forEach(line => {
                 let row   = table_body.insertRow(-1),
@@ -83,11 +83,11 @@ function getIssues(user_id, return_permission) {
     spn_issues.style.display = 'block';
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", event => {
+        clearElement('issueTable');
         let response    = JSON.parse(event.target.responseText),
             table_body  = document.querySelector('#issueTable'),
             issue_count = document.querySelector('#issue_count');
         if (response.lines) issue_count.innerText = response.lines.length || '0';
-        table_body.innerHTML = '';
         if (response.result) {
             response.lines.forEach(line => {
                 let row   = table_body.insertRow(-1),
