@@ -1,63 +1,10 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
     let canteen = require(process.env.ROOT + '/fn/canteen');
-    app.get('/canteen/receipts',              permissions, allowed('access_receipts'),                    (req, res) => {
-        m.receipts.findAll({
-            include: [
-                inc.receipt_lines(),
-                inc.users()
-            ]
-        })
-        .then(receipts => res.render('canteen/receipts/index', {receipts: receipts}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/canteen/receipts/:id/complete', permissions, allowed('receipt_edit'),                       (req, res) => {
-        m.receipt_lines.findAll({
-            where: {receipt_id: req.params.id},
-            include: [
-                inc.items(),
-                inc.receipts({as: 'receipt'})
-            ]
-        })
-        .then(lines => {
-            let actions = [];
-            lines.forEach(line => {
-                actions.push(
-                    canteen.completeMovement({
-                        m: {
-                            canteen_items: m.items,
-                            update: m.receipt_lines
-                        },
-                        action: 'increment',
-                        line: line
-                    })
-                );
-            });
-            actions.push(
-                m.receipts.update(
-                    {_complete: 1},
-                    {where: {receipt_id: req.params.id}}
-                )
-            );
-            Promise.allSettled(actions)
-            .then(results => {
-                req.flash('success', 'Receipt completed');
-                res.redirect('/canteen/receipts/' + req.params.id);
-            })
-            .catch(err => res.error.redirect(err, req, res));
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/canteen/receipts/:id',          permissions, allowed('access_receipts'),                    (req, res) => {
-        m.receipts.findOne({
-            where: {receipt_id: req.params.id},
-            include: [inc.receipt_lines()]
-        })
-        .then(receipt => res.render('canteen/receipts/show', {receipt: receipt}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/canteen/receipts',             permissions, allowed('access_receipts'),                    (req, res) => res.render('canteen/receipts/index'));
+    app.get('/canteen/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('canteen/receipts/show', {tab: req.query.tab || 'details'}));
     
-    app.get('/canteen/get/receipts',          permissions, allowed('access_receipts',      {send: true}), (req, res) => {
+    app.get('/canteen/get/receipts',         permissions, allowed('access_receipts',      {send: true}), (req, res) => {
         m.receipts.findAll({
             include: [inc.users()],
             where: req.query
@@ -65,21 +12,30 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(receipts => res.send({result: true, receipts: receipts}))
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/receipt',           permissions, allowed('access_receipts',      {send: true}), (req, res) => {
-        m.receipts.findOne({where: req.query})
+    app.get('/canteen/get/receipt',          permissions, allowed('access_receipts',      {send: true}), (req, res) => {
+        m.receipts.findOne({
+            where: req.query,
+            include: [inc.users()]
+        })
         .then(receipt => {
             if (receipt) res.send({result: true,  receipt: receipt})
             else         res.send({result: false, message: 'Receipt not found'});
         })
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/receipt_lines',     permissions, allowed('access_receipt_lines', {send: true}), (req, res) => {
-        m.receipt_lines.findAll({where: req.query})
+    app.get('/canteen/get/receipt_lines',    permissions, allowed('access_receipt_lines', {send: true}), (req, res) => {
+        m.receipt_lines.findAll({
+            include: [
+                inc.items(),
+                inc.users()
+            ],
+            where: req.query
+        })
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res))
     });
 
-    app.post('/canteen/receipts',             permissions, allowed('receipt_add',          {send: true}), (req, res) => {
+    app.post('/canteen/receipts',            permissions, allowed('receipt_add',          {send: true}), (req, res) => {
         m.receipts.findOrCreate({
             where:    {_status: 1},
             defaults: {user_id: req.user.user_id}
@@ -90,65 +46,142 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
     
     });
-    app.post('/canteen/receipt_lines',        permissions, allowed('receipt_line_add',     {send: true}), (req, res) => {
-        m.receipt_lines.findOne({
-            where: {
-                receipt_id: req.body.line.receipt_id,
-                item_id: req.body.line.item_id
-            }
+    app.post('/canteen/receipt_lines',       permissions, allowed('receipt_line_add',     {send: true}), (req, res) => {
+        m.receipts.findOne({
+            where: {receipt_id: req.body.line.receipt_id},
+            attributes: ['receipt_id']
         })
-        .then(line => {
-            if (!line) {
-                m.receipt_lines.create(req.body.line)
-                .then(line => {
-                    req.flash('success', 'Item added');
-                    res.redirect('/canteen/items/' + req.body.line.item_id);
+        .then(receipt => {
+            if (receipt) {
+                return m.receipt_lines.findOrCreate({
+                    where: {
+                        receipt_id: receipt.receipt_id,
+                        item_id:    req.body.line.item_id
+                    },
+                    defaults: {
+                        _qty:    req.body.line._qty,
+                        _cost:   req.body.line._cost,
+                        user_id: req.user.user_id
+                    }
                 })
-                .catch(err => res.error.redirect(err, req, res));
-            } else {
-                req.flash('danger', 'Item already on receipt');
-                res.redirect('/canteen/items/' + req.body.line.item_id);
-            };
+                .then(([line, created]) => {
+                    if (created) res.send({result: true, message: 'Line added'})
+                    else {
+                        let actions = [line.increment('_qty', {by: req.body.line._qty})];
+                        if (line._cost !== req.body.line._cost) {
+                            actions.push(
+                                line.update({
+                                    _cost: ((line._qty * line._cost) + (Number(req.body.line._qty) * Number(req.body.line._cost))) / (line._qty + Number(req.body.line._qty))
+                                })
+                            );
+                        };
+                        return Promise.all(actions)
+                        .then(result => res.send({result: true, message: 'Line updated'}))
+                        .catch(err => res.error.send(err, res));
+                    };
+                })
+                .catch(err => res.error.send(err, res));
+            } else res.send({result: false, message: 'Receipt not found'});
         })
+        .catch(err => res.error.send(err, res));
     
     });
 
-    app.put('/canteen/receipt_lines/:id',     permissions, allowed('receipt_line_edit',    {send: true}), (req, res) => {
-        m.receipt_lines.update(
-            req.body.line,
-            {where: {line_id: req.params.id}}
-        )
-        .then(result => {
-            req.flash('success', 'Line updated');
-            res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
+    app.put('/canteen/receipts/:id',         permissions, allowed('receipt_edit',         {send: true}), (req, res) => {
+        m.receipts.findOne({
+            where: {receipt_id: req.params.id},
+            attributes: ['receipt_id', '_status'],
+            include: [inc.receipt_lines({as: 'lines'})]
         })
-        .catch(err => res.error.redirect(err, req, res));
+        .then(receipt => {
+            if      (!receipt)              res.send({result: false, message: 'Receipt not found'})
+            else if (receipt._status !== 1) res.send({result: false, message: 'Receipt is not open'})
+            else {
+                let actions = [], status = {"0": "Cancelled", "2": "Completed"};
+                if (req.body.receipt._status === 2) {
+                    actions.push(
+                        new Promise((resolve, reject) => {
+                            let complete_actions = [];
+                            receipt.lines.forEach(line => {
+                                complete_actions.push(
+                                    new Promise((resolve, reject) => {
+                                        m.items.findOne({
+                                            where: {item_id: line.item_id},
+                                            attributes: ['item_id', '_qty', '_cost']
+                                        })
+                                        .then(item => {
+                                            let item_actions = [item.increment('_qty', {by: line._qty})];
+                                            if (line._cost !== item._cost) {
+                                                item_actions.push(
+                                                    m.notes.create({
+                                                        _id: line.item_id,
+                                                        _table: 'items',
+                                                        _note: `Cost changed from £${Number(item._cost).toFixed(2)} to £${Number(line._cost).toFixed(2)}`
+                                                    })
+                                                );
+                                                item_actions.push(
+                                                    item.update({
+                                                        _cost: ((item._qty * item._cost) + (line._qty * line._cost)) / (item._qty + line._qty)
+                                                    })
+                                                );
+                                            };
+                                            return Promise.all(item_actions)
+                                            .then(result => {
+                                                line.update({_status: 2})
+                                                .then(result => resolve(true))
+                                                .catch(err => reject(err));
+                                            })
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err))
+                                    })
+                                );
+                            });
+                            Promise.all(complete_actions)
+                            .then(result => resolve('Lines completed'))
+                            .catch(err => reject(err));
+                        })
+                    );
+                };
+                actions.push(receipt.update({_status: req.body.receipt._status}));
+                actions.push(
+                    m.notes.create({
+                        _id: receipt.receipt_id,
+                        _table: 'receipts',
+                        _note: status[req.body.receipt._status],
+                        user_id: req.user.user_id,
+                        _system: 1
+                    })
+                );
+                return Promise.all(actions)
+                .then(result => res.send({result: true, message: `Receipt ${String(status[req.body.receipt._status]).toLowerCase()}`}))
+                .catch(err => res.error.send(err, res));
+            };
+        })
+        .catch(err => res.send(err, res));
     });
-    app.put('/canteen/receipts/:id',          permissions, allowed('receipt_edit',         {send: true}), (req, res) => {
-        m.receipts.update(
-            req.body.receipt,
-            {where: {receipt_id: req.params.id}}
-        )
-        .then(result => {
-            req.flash('success', 'Receipt updated');
-            res.redirect('/canteen/receipts/' + req.params.id);
-        })
-        .catch(err => res.error.redirect(err, req, res));
+    app.delete('/canteen/receipt_lines/:id', permissions, allowed('receipt_line_delete',  {send: true}), (req, res) => {
+        m.receipt_lines.update({_status: 0}, {where: {line_id: req.params.id}})
+        .then(result => res.send({result: true, message: 'Line deleted'}))
+        .catch(err => res.error.send(err, res));
     });
-    app.delete('/canteen/receipt_lines/:id',  permissions, allowed('receipt_line_delete',  {send: true}), (req, res) => {
-        m.receipt_lines.destroy({where: {line_id: req.params.id}})
-        .then(result => {
-            req.flash('success', 'Line removed');
-            res.redirect('/canteen/' + req.query.page + '/' + req.query.id);
+    app.delete('/canteen/receipts/:id',      permissions, allowed('receipt_delete',       {send: true}), (req, res) => {
+        m.receipts.findOne({
+            where: {receipt_id: req.params.id},
+            attributes: ['receipt_id', '_status']
         })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.delete('/canteen/receipts/:id',       permissions, allowed('receipt_delete',       {send: true}), (req, res) => {
-        m.receipts.destroy({where: {receipt_id: req.params.id}})
-        .then(result => {
-            req.flash('success', 'Receipt deleted');
-            res.redirect('/canteen');
+        .then(receipt => {
+            if      (!receipt)              res.send({result: false, message: 'Receipt not found'})
+            else if (receipt._status !== 1) res.send({result: false, message: 'Receipt is not open'})
+            else {
+                let actions = [];
+                actions.push(m.receipts.update({_status: 0}, {where: {receipt_id: receipt.receipt_id}}));
+                actions.push(m.receipt_lines.update({_status: 0}, {where: {receipt_id: receipt.receipt_id}}));
+                return Promise.all(actions)
+                .then(result => res.send({result: true, message: 'Receipt deleted'}))
+                .catch(err => res.error.send(err, res));
+            }
         })
-        .catch(err => res.error.redirect(err, req, res));
+        .catch(err => res.error.send(err, res));
     });
 };

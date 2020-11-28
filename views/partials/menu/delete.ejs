@@ -1,4 +1,4 @@
-<form id='deleteForm'>
+<form id='form_delete'>
     <button class="dropdown-item dropdown_button confirm">
         Delete
     </button>
@@ -6,7 +6,7 @@
 <script>
     window.onload = () => {
         addFormListener(
-            'deleteForm',
+            'form_delete',
             'DELETE',
             `/${path[1]}/${path[2]}/${path[3]}`,
             {<% if (locals.close) { %>

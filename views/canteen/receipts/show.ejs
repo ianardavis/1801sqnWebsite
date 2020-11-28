@@ -1,111 +1,67 @@
-<% include ../../partials/head/full %>
+<%- include(`${partials}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/receipts'>
-                    Receipts
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/receipts/<%= receipt.receipt_id %>'>
-                    <%= receipt.receipt_id %>
-                </a>
-            </li>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen/receipts', text: 'Receipts'}) %>
+            <%- include(`${partials}/breadcrumb`) %>
+			<%- include(`${partials}/reload`) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <div class="row">
-        <div class="col-12 mb-1">
-            <div class="row">
-                <div class="col-6">
-                    <label class='col-form-label'>Date</label>
-                </div>
-                <div class="col-6">
-                    <input class='form-control' type="text" value='<%= receipt._date.toDateString() %>' readonly>
-                </div>
-            </div>
-            <div class="row">
-                <% if (receipt._complete) { %>
-                    <div class="col-6">
-                        <label class='col-form-label'>Complete</label>
-                    </div>
-                    <div class="col-6">
-                        <i class='fas fa-check'></i>
-                    </div>
-                <% } else { %> 
-                    <div class="col-12">
-                        <a class='btn btn-success w-100 confirm' href="/canteen/receipts/<%= receipt.receipt_id %>/complete">
-                            Complete Receipt
-                        </a>
-                    </div>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <% if (permissions.receipt_line_add) { %>
+                    <a class='dropdown-item' href='javascript:$("#mdl_add_item").modal("show")'>
+                        Add Item
+                    </a>
+                <% } %>
+                <%- include(`${partials}/notes/menu_add`) %>
+                <% if (permissions.item_delete) { %>
+                    <%- include(`${partials}/menu/delete`) %>
                 <% } %>
             </div>
+        </li>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'receipt'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',   spinner: 'receipt_lines', count_id: 'line_count', permission: 'access_receipt_lines'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes',         count_id: 'note_count', permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_status',   title: 'Status'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'user',      title: 'Raised By', append: {a: {id: 'receipt_user', text: '<i class="fas fa-search"></i>'}}}) %>
         </div>
-        <div class="col-12 bordered">
-            <a class="my-3" data-toggle="collapse" href="#collapseLines" role="button" aria-expanded="false" aria-controls="collapseLines">
-                <h4>Lines (<%= receipt.lines.length %>)</h4>
-            </a>
-            <div class="collapse mb-3" id="collapseLines">
+        <% if (permissions.access_receipt_lines) { %>
+            <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-50" onclick="sortTable(0, 'lineTable')">Item</th>
-                        <th class="w-25" onclick="sortTable(1, 'lineTable')">Qty</th>
-                        <th class="w-25" onclick="sortTable(2, 'lineTable')">Cost</th>
-                        <% if (!receipt._complete) { %>
-                            <th><i class='fas fa-save'></i></th>
-                            <th><i class='fas fa-trash-alt'></i></th>
-                        <% } %>
+                        <th class="w-50" onclick="sortTable(0, 'tbl_receipt_lines')">Item</th>
+                        <th class="w-25" onclick="sortTable(1, 'tbl_receipt_lines')">Qty</th>
+                        <th class="w-25" onclick="sortTable(2, 'tbl_receipt_lines')">Cost</th>
+                        <th><i class="fas fa-search"></i></th>
                     </thead>
-                    <tbody id="lineTable">
-                        <% if (receipt.lines) receipt.lines.forEach(line => { %>
-                            <tr>
-                                <% if (receipt._complete) { %>
-                                    <td>
-                                        <a class='float-right btn btn-sm btn-primary' href="/canteen/items/<%= line.item_id %>">
-                                            <i class='fas fa-search'></i>
-                                        </a>
-                                        <%= line.item._name %>
-                                    </td>
-                                    <td><%= line._qty %></td>
-                                    <td><%= line._cost %></td>
-                                <% } else { %>
-                                    <form action="/canteen/receipt_lines/<%= line.line_id %>?_method=PUT&page=receipts&id=<%= receipt.receipt_id %>" method='POST'>
-                                        <td>
-                                            <a class='float-right btn btn-sm btn-primary' href="/canteen/items/<%= line.item_id %>">
-                                                <i class='fas fa-search'></i>
-                                            </a>
-                                            <label class='col-form-label'><%= line.item._name %></label>
-                                        </td>
-                                        <td>
-                                            <input class='form-control form-control-sm' type="number" name='line[_qty]' value='<%= line._qty %>'>
-                                        </td>
-                                        <td>
-                                            <input class='form-control form-control-sm' type="number" step='0.01' name='line[_cost]' value='<%= line._cost %>'>
-                                        </td>
-                                        <td>
-                                            <button class='btn btn-sm btn-success confirm'><i class='fas fa-save'></i></button>
-                                        </td>
-                                    </form>
-                                    <td>
-                                        <form action="/canteen/receipt_lines/<%= line.line_id %>?_method=DELETE&page=receipts&id=<%= receipt.receipt_id %>" method='POST'>
-                                            <button class='btn btn-sm btn-danger confirm'><i class='fas fa-trash-alt'></i></button>
-                                        </form>
-                                    </td>
-                                <% } %>
-                            </tr>
-                        <% }) %>
-                    </tbody>
+                    <tbody id="tbl_receipt_lines"></tbody>
                 </table>
             </div>
-        </div>
+            <div id="div_line_modals"></div>
+        <% } %>
+        <%- include(`${partials}/notes/tab_body`) %>
     </div>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${partials}/foot/full`) %>
+<script src="/js/canteen/receipts/show/getReceipt.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/tabs.js"></script>
+<script>showTab('<%= tab %>')</script>
+<script async>getReceipt()</script>
+<% if (permissions.access_receipt_lines) { %>
+    <script src="/js/canteen/receipts/show/getLines.js"></script>
+    <script async>getLines()</script>
+<% } %>
+<%- include(`${partials}/foot/htmlClose`) %>

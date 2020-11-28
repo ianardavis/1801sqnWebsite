@@ -6,6 +6,7 @@
             <%- include(`${partials}/breadcrumb`, {href: '/canteen/receipts', text: 'Receipts'}) %>
             <% if (permissions.receipt_add) { %>
                 <li class="nav-item">
+                    <!-- <a class="nav-link stores_nav confirm" id="btn_add_receipt"><i class="fas fa-plus"></i></a> -->
                     <form id='form_add_receipt'>
                         <button class="nav-link stores_nav dropdown_button confirm"><i class="fas fa-plus"></i></button>
                     </form>
@@ -42,7 +43,7 @@
             '/canteen/receipts',
             {onComplete: getReceipts}
         )
-    })
+    });
 </script>
 <% } %>
 <%- include(`${partials}/foot/htmlClose`) %>

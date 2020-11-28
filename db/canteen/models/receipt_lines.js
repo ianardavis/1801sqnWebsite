@@ -25,15 +25,15 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_new_qty': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
     '_cost': {
       type: DataTypes.DECIMAL,
       allowNull: false,
       defaultValue: '0.00',
+      comment: "null"
+    },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     'createdAt': {
