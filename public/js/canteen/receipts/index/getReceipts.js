@@ -26,5 +26,5 @@ function getReceipts() {
         }
     );
 };
-document.querySelector('#sel_status').addEventListener('click', getReceipts);
+document.querySelector('#sel_status').addEventListener('change', getReceipts);
 document.querySelector('#reload').addEventListener('click', getReceipts);

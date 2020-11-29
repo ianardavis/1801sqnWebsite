@@ -1,0 +1,30 @@
+<%- include(`${partials}/head/full`) %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen/users', text: 'Users'}) %>
+			<%- include(`${partials}/reload`) %>
+            <%- include(`${partials}/spinner`, {id: 'users'}) %>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status'}) %>
+	<table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <th class="w-60" onclick="sortTable(0, 'tbl_sessions')">Name</th>
+            <th class="w-40" onclick="sortTable(1, 'tbl_sessions')">Status</th>
+            <th><i class='fas fa-search'></i></th>
+        </thead>
+        <tbody id="tbl_users">
+        </tbody>
+    </table>
+</section>
+<%- include(`${partials}/foot/full`) %>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/data/send.js'></script>
+<script src='/js/canteen/users/index/getUsers.js'></script>
+<script src='/js/canteen/users/index/getStatuses.js'></script>
+<script async>getStatuses()</script>
+<%- include(`${partials}/foot/htmlClose`) %>

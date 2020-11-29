@@ -66,6 +66,73 @@
         </div>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
+    <% if (permissions.session_edit) { %>
+        <div id='mdl_close_session' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_close'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Open Session</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <% [{text: '1p',  name: 'c0001', step: '0.01'},{text: '2p',  name: 'c0002', step: '0.02'},{text: '5p',  name: 'c0005', step: '0.05'},{text: '10p', name: 'c0010', step: '0.1'},{text: '20p', name: 'c0020', step: '0.2'},{text: '50p', name: 'c0050', step: '0.5'},{text: '£1',  name: 'c0100', step: '1'},{text: '£2',  name: 'c0200', step: '2'},{text: '£5',  name: 'c0500', step: '5'},{text: '£10', name: 'c1000', step: '10'},{text: '£20', name: 'c2000', step: '20'},{text: '£50', name: 'c5000', step: '50'}].forEach(e => { %>
+                            <div class="input-group mb-1">
+                                <div class="input-group-prepend w-30">
+                                    <span class="input-group-text w-100"><%= e.text %></span>
+                                </div>
+                                <input
+                                    class="form-control"
+                                    type="number"
+                                    inputMode='numeric'
+                                    name='balance[<%= e.name %>][b]'
+                                    step='<%= e.step %>'
+                                    min='0'
+                                    placeholder="Bagged"
+                                >
+                                <input
+                                    class="form-control"
+                                    type="number"
+                                    inputMode='numeric'
+                                    name='balance[<%= e.name %>][l]'
+                                    step='<%= e.step %>'
+                                    min='0'
+                                    placeholder="Loose"
+                                >
+                            </div>
+                        <% }) %>
+                        <div class="input-group mb-1">
+                            <div class="input-group-prepend w-30">
+                                <span class="input-group-text w-100">Cheques</span>
+                            </div>
+                            <input
+                                class="form-control"
+                                type="number"
+                                inputMode='numeric'
+                                name='balance[cheques][b]'
+                                step='0.01'
+                                min='0'
+                                placeholder="Bagged"
+                            >
+                            <input
+                                class="form-control"
+                                type="number"
+                                inputMode='numeric'
+                                name='balance[cheques][l]'
+                                step='0.01'
+                                min='0'
+                                placeholder="Loose"
+                            >
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100 confirm" value='Close'>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
     <div id="div_modals"></div>
 </section>
 <%- include(`${partials}/foot/full`) %>
@@ -74,39 +141,29 @@
 <script src='/js/data/send.js'></script>
 <script src="/js/canteen/sessions/show/session.js"></script>
 <script>showTab('<%= tab %>');</script>
-<script>
-    function getSession() {
-        get(
-            showSession,
-            {
-                db:    'canteen',
-                table: 'session',
-                query: [`session_id=${path[3]}`],
-                permissions: {
-                    edit:         <%= permissions.session_edit || false %>,
-                    access_sales: <%= permissions.access_sales || false %>
-                }
-            }
-        );
-    };
-    document.querySelector('#reload').addEventListener('click', getSession);
-</script>
 <script async>getSession()</script>
 <% if (permissions.access_sales) { %>
     <script src="/js/canteen/sessions/show/sales.js"></script>
-    <script>
-        function getSales() {
-            get(
-                showSales,
-                {
-                    db:    'canteen',
-                    table: 'sales',
-                    query: [`session_id=${path[3]}`]
-                }
-            );
-        };
-        document.querySelector('#reload').addEventListener('click', getSales);
-    </script>
     <script async>getSales()</script>
+<% } %>
+<% if (permissions.session_edit) { %>
+    <script>
+        window.addEventListener('load', function () {
+            addFormListener(
+                'form_close',
+                'PUT',
+                `/canteen/sessions/${path[3]}`,
+                {
+                    onComplete: [
+                        function(){$("#mdl_close_session").modal("hide")},
+                        getSession<% if (permissions.access_sales) { %>,
+                        getSales<% } %>
+                    ]
+                }
+            )
+        });
+        let btn_close = document.querySelector('#btn_close');
+        if (btn_close) btn_close.setAttribute('href', 'javascript:$("#mdl_close_session").modal("show")');
+    </script>
 <% } %>
 <%- include(`${partials}/foot/htmlClose`) %>

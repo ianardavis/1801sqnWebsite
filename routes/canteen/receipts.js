@@ -1,6 +1,5 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let canteen = require(process.env.ROOT + '/fn/canteen');
     app.get('/canteen/receipts',             permissions, allowed('access_receipts'),                    (req, res) => res.render('canteen/receipts/index'));
     app.get('/canteen/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('canteen/receipts/show', {tab: req.query.tab || 'details'}));
     
@@ -40,15 +39,15 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:    {_status: 1},
             defaults: {user_id: req.user.user_id}
         })
-        .then(([line, created]) => {
+        .then(([writeoff, created]) => {
             if (created) res.send({result: true,  message: 'Receipt created'})
             else         res.send({result: false, message: 'Receipt already open'});
         })
     
     });
-    app.post('/canteen/receipt_lines',       permissions, allowed('receipt_line_add',     {send: true}), (req, res) => {
+    app.post('/canteen/receipt_lines/:id',   permissions, allowed('receipt_line_add',     {send: true}), (req, res) => {
         m.receipts.findOne({
-            where: {receipt_id: req.body.line.receipt_id},
+            where: {receipt_id: req.params.id},
             attributes: ['receipt_id']
         })
         .then(receipt => {
@@ -97,72 +96,73 @@ module.exports = (app, allowed, inc, permissions, m) => {
             if      (!receipt)              res.send({result: false, message: 'Receipt not found'})
             else if (receipt._status !== 1) res.send({result: false, message: 'Receipt is not open'})
             else {
-                let actions = [], status = {"0": "Cancelled", "2": "Completed"};
-                if (req.body.receipt._status === 2) {
-                    actions.push(
-                        new Promise((resolve, reject) => {
-                            let complete_actions = [];
-                            receipt.lines.forEach(line => {
-                                complete_actions.push(
-                                    new Promise((resolve, reject) => {
-                                        m.items.findOne({
-                                            where: {item_id: line.item_id},
-                                            attributes: ['item_id', '_qty', '_cost']
-                                        })
-                                        .then(item => {
-                                            let item_actions = [item.increment('_qty', {by: line._qty})];
-                                            if (line._cost !== item._cost) {
-                                                item_actions.push(
-                                                    m.notes.create({
-                                                        _id: line.item_id,
-                                                        _table: 'items',
-                                                        _note: `Cost changed from £${Number(item._cost).toFixed(2)} to £${Number(line._cost).toFixed(2)}`
-                                                    })
-                                                );
-                                                item_actions.push(
-                                                    item.update({
-                                                        _cost: ((item._qty * item._cost) + (line._qty * line._cost)) / (item._qty + line._qty)
-                                                    })
-                                                );
-                                            };
-                                            return Promise.all(item_actions)
-                                            .then(result => {
-                                                line.update({_status: 2})
-                                                .then(result => resolve(true))
-                                                .catch(err => reject(err));
-                                            })
+                let actions = [];
+                actions.push(
+                    new Promise((resolve, reject) => {
+                        let complete_actions = [];
+                        receipt.lines.forEach(line => {
+                            complete_actions.push(
+                                new Promise((resolve, reject) => {
+                                    m.items.findOne({
+                                        where: {item_id: line.item_id},
+                                        attributes: ['item_id', '_qty', '_cost']
+                                    })
+                                    .then(item => {
+                                        let item_actions = [item.increment('_qty', {by: line._qty})];
+                                        if (line._cost !== item._cost) {
+                                            item_actions.push(
+                                                m.notes.create({
+                                                    _id: line.item_id,
+                                                    _table: 'items',
+                                                    _note: `Cost changed from £${Number(item._cost).toFixed(2)} to £${Number(line._cost).toFixed(2)}`,
+                                                    user_id: req.user.user_id,
+                                                    _system: 1
+                                                })
+                                            );
+                                            item_actions.push(
+                                                item.update({
+                                                    _cost: ((item._qty * item._cost) + (line._qty * line._cost)) / (item._qty + line._qty)
+                                                })
+                                            );
+                                        };
+                                        return Promise.all(item_actions)
+                                        .then(result => {
+                                            line.update({_status: 2})
+                                            .then(result => resolve(true))
                                             .catch(err => reject(err));
                                         })
-                                        .catch(err => reject(err))
+                                        .catch(err => reject(err));
                                     })
-                                );
-                            });
-                            Promise.all(complete_actions)
-                            .then(result => resolve('Lines completed'))
-                            .catch(err => reject(err));
-                        })
-                    );
-                };
-                actions.push(receipt.update({_status: req.body.receipt._status}));
+                                    .catch(err => reject(err))
+                                })
+                            );
+                        });
+                        Promise.all(complete_actions)
+                        .then(result => resolve('Lines completed'))
+                        .catch(err => reject(err));
+                    })
+                );
+                actions.push(receipt.update({_status: 2}));
                 actions.push(
                     m.notes.create({
                         _id: receipt.receipt_id,
                         _table: 'receipts',
-                        _note: status[req.body.receipt._status],
+                        _note: 'Completed',
                         user_id: req.user.user_id,
                         _system: 1
                     })
                 );
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: `Receipt ${String(status[req.body.receipt._status]).toLowerCase()}`}))
+                .then(result => res.send({result: true, message: `Receipt completed`}))
                 .catch(err => res.error.send(err, res));
             };
         })
         .catch(err => res.send(err, res));
     });
+    
     app.delete('/canteen/receipt_lines/:id', permissions, allowed('receipt_line_delete',  {send: true}), (req, res) => {
         m.receipt_lines.update({_status: 0}, {where: {line_id: req.params.id}})
-        .then(result => res.send({result: true, message: 'Line deleted'}))
+        .then(result => res.send({result: true, message: 'Line cancelled'}))
         .catch(err => res.error.send(err, res));
     });
     app.delete('/canteen/receipts/:id',      permissions, allowed('receipt_delete',       {send: true}), (req, res) => {
@@ -175,10 +175,19 @@ module.exports = (app, allowed, inc, permissions, m) => {
             else if (receipt._status !== 1) res.send({result: false, message: 'Receipt is not open'})
             else {
                 let actions = [];
-                actions.push(m.receipts.update({_status: 0}, {where: {receipt_id: receipt.receipt_id}}));
+                actions.push(receipt.update({_status: 0}));
                 actions.push(m.receipt_lines.update({_status: 0}, {where: {receipt_id: receipt.receipt_id}}));
+                actions.push(
+                    m.notes.create({
+                        _id: receipt.receipt_id,
+                        _table: 'receipts',
+                        _note: 'Cancelled',
+                        user_id: req.user.user_id,
+                        _system: 1
+                    })
+                );
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: 'Receipt deleted'}))
+                .then(result => res.send({result: true, message: 'Receipt cancelled'}))
                 .catch(err => res.error.send(err, res));
             }
         })

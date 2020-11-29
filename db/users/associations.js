@@ -34,10 +34,12 @@ module.exports = function (m) {
     m.canteen.receipts.hasOne(         m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
     m.canteen.receipt_lines.hasOne(    m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
     m.canteen.writeoffs.hasOne(        m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
+    m.canteen.writeoff_lines.hasOne(   m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
     m.canteen.credits.hasOne(          m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
     m.canteen.payments.hasOne(         m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
     m.canteen.movements.hasOne(        m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false, as: 'user'});
     m.canteen.movements.hasOne(        m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id_to',      constraints: false, as: 'user_to'});
     m.canteen.movements.hasOne(        m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id_from',    constraints: false, as: 'user_from'});
     m.canteen.movements.hasOne(        m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id_confirm', constraints: false, as: 'user_confirm'});
+    m.canteen.notes.hasOne(            m.users.users,         {foreignKey: 'user_id',       sourceKey: 'user_id',         constraints: false});
 };

@@ -1,7 +1,6 @@
 function getSale() {
     get(
         function (sale, options) {
-            console.log(sale);
             for (let [id, value] of Object.entries(sale)) {
                 try {
                     let element = document.querySelector(`#${id}`);

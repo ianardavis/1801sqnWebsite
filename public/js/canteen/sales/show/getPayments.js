@@ -13,7 +13,7 @@ function getPayments() {
                         text: print_date(payment.createdAt, true)
                     });
                     add_cell(row, {text: `£${Number(payment._amount).toFixed(2)}`});
-                    add_cell(row, {text: payment._method});
+                    add_cell(row, {text: payment._type});
                     add_cell(row, {text: print_user(payment.user)});
                 });
             } catch (error) {

@@ -1,61 +1,71 @@
-<% include ../../partials/head/full %>
+<%- include(`${partials}/head/full`) %>
 <section class='mb-2'>
     <nav class='navbar navbar-expand navbar-light bg-nav'>
         <ul class='navbar-nav mr-auto'>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen'>
-                    Canteen
-                </a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link stores_nav' href='/canteen/writeoffs'>
-                    Writeoffs
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link stores_nav dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class='fas fa-plus'></i>
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="/canteen/writeoffs/new/Out_of_Date">Out of Date</a>
-                </div>
-            </li>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	       text: 'Canteen'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen/writeoffs', text: 'Writeoffs'}) %>
+            <% if (permissions.writeoff_add) { %>
+                <li class="nav-item">
+                    <button class="nav-link stores_nav dropdown_button confirm" id='btn_add_writeoff'>
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </li>
+			<% } %>
+            <%- include(`${partials}/reload`) %>
+            <%- include(`${partials}/spinner`, {id: 'writeoffs'}) %>
         </ul>
     </nav>
 </section>
 <section class='container'>
-    <div class="row">
-        <div class="col-12">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-35" onclick="sortTable(0, 'writeoffTable')">Date</th>
-                    <th class="w-35" onclick="sortTable(1, 'writeoffTable')">User</th>
-                    <th class="w-10" onclick="sortTable(2, 'writeoffTable')">Complete</th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="writeoffTable">
-                    <% if (writeoffs) writeoffs.forEach(writeoff => { %>
-                        <tr>
-                            <td data-sort="<%= writeoff._date.getTime() %>">
-                                <%= writeoff._date.toDateString() %>
-                            </td>
-                            <td>
-                                <%= writeoff.user.rank._rank %> <%= writeoff.user.full_name %>
-                            </td>
-                            <td>
-                                <% if (writeoff._complete) { %><i class='fas fa-check'></i><% } %>
-                            </td>
-                            <td>
-                                <a class='btn btn-sm btn-primary' href="/canteen/writeoffs/<%= writeoff.writeoff_id %>">
-                                    <i class='fas fa-search'></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+    <%- include(`${partials}/inputs/select`, {title: 'Complete Writeoffs', id: 'sel_status', options: [{value:'', text: 'Include'},{value:'_status=1', text: 'Exclude', selected: true},{value:'_status=2', text: 'Only'}]}) %>
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <th class="w-30" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
+            <th class="w-30" onclick="sortTable(1, 'tbl_writeoffs')">User</th>
+            <th class="w-30" onclick="sortTable(2, 'tbl_writeoffs')">Reason</th>
+            <th class="w-10" onclick="sortTable(3, 'tbl_writeoffs')">Status</th>
+            <th><i class='fas fa-search'></i></th>
+        </thead>
+        <tbody id="tbl_writeoffs"></tbody>
+    </table>
+    <% if (permissions.writeoff_add) { %>
+        <div id='mdl_add_writeoff' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_add_writeoff'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Writeoff</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`, {title: 'Reason', name: 'writeoff[_reason]', required: true, maxLength: '45'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100 confirm" value='Add Writeoff'>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    <% } %>
 </section>
-<% include ../../partials/foot/full %>
-<% include ../../partials/foot/htmlClose %>
+<%- include(`${partials}/foot/full`) %>
+<script src="/js/canteen/writeoffs/index/getWriteoffs.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
+<script async>getWriteoffs()</script>
+<% if (permissions.writeoff_add) { %>
+<script>
+    window.addEventListener('load', function () {
+        let btn_add_writeoff = document.querySelector('#btn_add_writeoff');
+        if (btn_add_writeoff) btn_add_writeoff.addEventListener('click', function () {$("#mdl_add_writeoff").modal("show")});
+        addFormListener(
+            'form_add_writeoff',
+            'POST',
+            '/canteen/writeoffs',
+            {onComplete: getWriteoffs}
+        )
+    });
+</script>
+<% } %>
+<%- include(`${partials}/foot/htmlClose`) %>

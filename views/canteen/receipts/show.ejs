@@ -17,14 +17,20 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.receipt_line_add) { %>
-                    <a class='dropdown-item' href='javascript:$("#mdl_add_item").modal("show")'>
+                    <button class="dropdown-item dropdown_button" id='btn_add_item' disabled>Add Item</button>
+                    <!-- <a class='dropdown-item' href='javascript:$("#mdl_add_item").modal("show")'>
                         Add Item
-                    </a>
+                    </a> -->
+                <% } %>
+                <% if (permissions.receipt_edit) { %>
+                    <form id='form_cancel'>
+                        <button class="dropdown-item dropdown_button" id='btn_cancel' disabled>Cancel</button>
+                    </form>
+                    <form id='form_complete'>
+                        <button class="dropdown-item dropdown_button" id='btn_complete' disabled>Complete</button>
+                    </form>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>
-                <% if (permissions.item_delete) { %>
-                    <%- include(`${partials}/menu/delete`) %>
-                <% } %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'receipt'}) %>
@@ -53,15 +59,99 @@
         <% } %>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
+    <% if (permissions.receipt_line_add) { %>
+        <div id='mdl_add_item' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_add_item'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Item</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items',  name: 'line[item_id]',                        required: true}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total', placeholder: 'Optional',                                      step: '0.01', min: '0.01'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',  placeholder: 'Required', name: 'line[_cost]', required: true, step: '0.01', min: '0.01'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty',        placeholder: 'Required', name: 'line[_qty]',  required: true,               min: '1'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100 confirm" value='Add Item'>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
 </section>
 <%- include(`${partials}/foot/full`) %>
 <script src="/js/canteen/receipts/show/getReceipt.js"></script>
 <script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
 <script src="/js/tabs.js"></script>
 <script>showTab('<%= tab %>')</script>
 <script async>getReceipt()</script>
 <% if (permissions.access_receipt_lines) { %>
     <script src="/js/canteen/receipts/show/getLines.js"></script>
     <script async>getLines()</script>
+<% } %>
+<% if (permissions.receipt_line_add) { %>
+    <script src="/js/canteen/receipts/show/getItems.js"></script>
+    <script async>getItems()</script>
+    <script>
+        function calculate_cost() {
+            let qty        = document.querySelector('#qty'),
+                cost_total = document.querySelector('#cost_total'),
+                cost_each  = document.querySelector('#cost_each');
+            if (qty.value > 0 && cost_total.value !== '') {
+                cost_each.value = Number(cost_total.value / qty.value).toFixed(2);
+            };
+        };
+        function reset_add_item() {
+                let qty        = document.querySelector('#qty'),
+                    cost_total = document.querySelector('#cost_total'),
+                    cost_each  = document.querySelector('#cost_each');
+                if (qty)        qty.value = '';
+                if (cost_total) cost_total.value = '';
+                if (cost_each)  cost_each.value = '';
+        };
+        window.addEventListener('load', function () {
+            let btn_add_item = document.querySelector('#btn_add_item');
+            if (btn_add_item) btn_add_item.addEventListener('click', function () {$("#mdl_add_item").modal("show")});
+            ['qty', 'cost_total'].forEach(e => {
+                let input = document.querySelector(`#${e}`)
+                if (input) input.addEventListener('input', calculate_cost);
+            })
+            addFormListener(
+                'form_add_item',
+                'POST',
+                `/canteen/receipt_lines/${path[3]}`,
+                {onComplete: [getLines, reset_add_item]}
+            );
+            let sel_items = document.querySelector('#sel_items');
+            if (sel_items) sel_items.addEventListener('change', reset_add_item);
+        });
+    </script>
+<% } %>
+<% if (permissions.receipt_edit) { %>
+    <script>
+        window.addEventListener('load', function () {
+            addFormListener(
+                'form_cancel',
+                'DELETE',
+                `/canteen/receipts/${path[3]}`,
+                {
+                    onComplete: [getReceipt<% if (permissions.access_receipt_lines) { %>, getLines<% } %>]
+                }
+            );
+            addFormListener(
+                'form_complete',
+                'PUT',
+                `/canteen/receipts/${path[3]}`,
+                {
+                    onComplete: [getReceipt<% if (permissions.access_receipt_lines) { %>, getLines<% } %>]
+                }
+            );
+        });
+    </script>
 <% } %>
 <%- include(`${partials}/foot/htmlClose`) %>
