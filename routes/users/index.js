@@ -37,7 +37,7 @@ module.exports = (app, m) => {
     app.get('/users/get/users',    permissions, allowed('access_users',    {send: true}), (req, res) => {
         m.users.users.findAll({
             where:      req.query,
-            include:    [m.users.ranks, m.users.statuses],
+            include:    [inc.ranks(), inc.statuses()],
             attributes: ['user_id', 'full_name', '_bader', '_name', '_ini', 'status_id', 'rank_id', '_login_id', '_reset', '_last_login']
         })
         .then(users => {
@@ -45,6 +45,18 @@ module.exports = (app, m) => {
                 result: true,
                 users: users
             });
+        })
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/users/get/user',     permissions, allowed('access_users',    {send: true}), (req, res) => {
+        m.users.users.findOne({
+            where:      req.query,
+            include:    [inc.ranks(), inc.statuses()],
+            attributes: ['user_id', 'full_name', '_bader', '_name', '_ini', 'status_id', 'rank_id', '_login_id', '_reset', '_last_login']
+        })
+        .then(user => {
+            if (user) res.send({result: true,  user: user})
+            else      res.send({result: false, message: 'User not found'});
         })
         .catch(err => res.error.send(err, res));
     });

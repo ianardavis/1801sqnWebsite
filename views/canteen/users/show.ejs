@@ -1,0 +1,82 @@
+<%- include(`${partials}/head/full`) %>
+<section class='mb-2'>
+    <nav class='navbar navbar-expand navbar-light bg-nav'>
+        <ul class='navbar-nav mr-auto'>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
+            <%- include(`${partials}/breadcrumb`, {href: '/canteen/users', text: 'Users'}) %>
+            <%- include(`${partials}/breadcrumb`) %>
+			<%- include(`${partials}/reload`) %>
+        </ul>
+    </nav>
+</section>
+<section class='container'>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-user dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%- include(`${partials}/notes/menu_add`) %>
+            </div>
+        </li>
+        <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details',     spinner: 'user'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'permissions', title: 'Permissions', spinner: 'permissions', count_id: 'permission_count', permission: 'access_permissions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'movements',   title: 'Movements',   spinner: 'movements',   count_id: 'movement_count',   permission: 'access_movements'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',       title: 'Notes',       spinner: 'notes',       count_id: 'note_count',       permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/inputs/display`, {id: '_bader',      title: 'Bader #'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'rank',        title: 'Rank'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_name',       title: 'Name'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_ini',        title: 'Initials'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'status',      title: 'Status'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_login_id',   title: 'Login ID'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_last_login', title: 'Last Login'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Change password on next login', prepend_size: 50, html: '<div class="input-group-append w-50"><div class="input-group-text w-100"><input type="checkbox" id="_reset" disabled></div></div>'}) %>
+        </div>
+        <% if (permissions.access_permissions) { %>
+            <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-20" onclick="sortTable(0, 'tbl_permissions')">Date</th>
+                        <th class="w-80" onclick="sortTable(1, 'tbl_permissions')">Permission</th>
+                        <% if (permissions.permission_delete) { %>
+                            <th><i class='fas fa-trash-alt'></i></th>
+                        <% } %>
+                    </thead>
+                    <tbody id="tbl_permissions"></tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (permissions.access_movements) { %>
+            <div class="tab-pane fade" id="movements" role="tabpanel" aria-labelledby="movements-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-80" onclick="sortTable(0, 'tbl_movements')">Date</th>
+                        <th class="w-20" onclick="sortTable(1, 'tbl_movements')">Qty</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="tbl_movements"></tbody>
+                </table>
+            </div>
+        <% } %>
+        <%- include(`${partials}/notes/tab_body`) %>
+    </div>
+</section>
+<%- include(`${partials}/foot/full`) %>
+<script src='/js/tabs.js'></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/send.js"></script>
+<script>showTab('<%= tab %>');</script>
+<script src='/js/canteen/users/show/getUser.js'></script>
+<script async>getUser()</script>
+<% if (permissions.access_movements) { %>
+    <script src='/js/canteen/users/show/getMovements.js'></script>
+    <script async>getMovements()</script>
+<% } %>
+<% if (permissions.access_permissions) { %>
+    <script src='/js/canteen/users/show/getPermissions.js'></script>
+    <script async>getPermissions({permissions: {delete: <%= permissions.permission_delete || false %>}})</script>
+<% } %>
+<%- include(`${partials}/foot/htmlClose`) %>

@@ -52,9 +52,9 @@ function Link (options = {}) {
     if (options.float)  this.e.classList.add('float-right');
     if (options.id)     this.e.id = options.id;
 };
-function DeleteButton (options = {}) {
+function Delete_Button (options = {}) {
     this.e = document.createElement('form');
-    let btn   = document.createElement('button');
+    let btn = document.createElement('button');
     btn.classList.add('btn', 'btn-danger');
     btn.innerHTML = _delete();
     if (options.margin) btn.classList.add('m-1');
