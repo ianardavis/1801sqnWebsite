@@ -22,6 +22,21 @@ function add_cell (row, options = {}) {
     if (options.id)        cell.id = options.id;
     if (options.ellipsis)  cell.classList.add('ellipsis1');
 };
+function List_Item (options = {}) {
+    this.e = document.createElement('li');
+    this.e.classList.add('list-group-item', 'text-left');
+    this.e.appendChild(new Input({id: `permission_${options.text}`, type: 'checkbox', name: `permissions[${options.text}]`, small: true, float_right: true}).e);
+    let span = document.createElement('span');
+    span.innerText = options.text.replaceAll('_', ' ') || '';
+    if (options.caret === true) {
+        let ul   = document.createElement('ul');
+        span.classList.add('caret');
+        this.e.appendChild(span);
+        ul.classList.add('nested', 'list-group');
+        ul.setAttribute('id', `ul_${options.text}`)
+        this.e.appendChild(ul);
+    } else this.e.appendChild(span);
+};
 function Div (options = {}) {
     this.e = document.createElement('div');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
@@ -76,6 +91,7 @@ function Input (options = {}) {
         if (!options.type || options.type !==  'hidden') this.e.classList.add('form-control');
     };
     this.e.setAttribute('type', options.type  || 'text');
+    if (options.float_right) this.e.classList.add('w-50', 'float-right');
     if (options.type === 'number') {
         if (options.step)    this.e.setAttribute('step', options.step);
     };

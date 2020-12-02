@@ -41,7 +41,7 @@ select {
 	margin: 10px 5px 5px 5px;
 	margin-bottom: 60px;
 }
-#treeUL {
+#ul_tree {
 	margin: 0;
 	padding: 0;
 }
@@ -53,8 +53,8 @@ select {
 .a-label {
 	font-size: 15px;
 }
-.active {
-	display: block;
+.ul_active {
+	display: block !important;
 	transition: 0.2s;
 }
 .body {

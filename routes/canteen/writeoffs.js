@@ -148,6 +148,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.send(err, res));
     });
+    
     app.delete('/canteen/writeoff_lines/:id', permissions, allowed('writeoff_line_delete',  {send: true}), (req, res) => {
         m.writeoff_lines.update({_status: 0}, {where: {line_id: req.params.id}})
         .then(result => res.send({result: true, message: 'Line deleted'}))

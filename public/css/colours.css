@@ -56,6 +56,9 @@ body {
 	color: var(--main-bg-color-dark);
 	background-color: var(--main-color);
 }
+.list-group-item {
+	color: var(--main-bg-color-dark);
+}
 .modal-header {
 	color: var(--main-bg-color-dark);
 	background-color: var(--main-color)

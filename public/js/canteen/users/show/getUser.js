@@ -1,4 +1,4 @@
-function getUser () {
+function getUser (perms = {}) {
     get(
         function (user, options) {
             for (let [id, value] of Object.entries(user)) {
@@ -16,11 +16,17 @@ function getUser () {
             let breadcrumb = document.querySelector('#breadcrumb');
             breadcrumb.innerText = `${user.rank._rank} ${user.full_name}`;
             breadcrumb.href      = `/canteen/users/${user.user_id}`;
+            let btn_edit_permission = document.querySelector('#btn_edit_permission');
+            if (btn_edit_permission) {
+                if (options.permissions.edit === true) btn_edit_permission.removeAttribute('disabled')
+                else                                   btn_edit_permission.setAttribute('disabled', true);
+            };
         },
         {
             db: 'users',
             table: 'user',
-            query: [`user_id=${path[3]}`]
+            query: [`user_id=${path[3]}`],
+            ...perms
         }
     );
     document.querySelector('#reload').addEventListener('click', getUser);
