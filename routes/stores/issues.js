@@ -46,6 +46,21 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
+    app.get('/stores/get/issue',              permissions, allowed('access_issues',             {send: true}),             (req, res) => {
+        m.issues.findOne({
+            where:      req.query,
+            include:    [
+                inc.users({as: 'user_to'}), 
+                inc.users({as: 'user_by'}),
+                inc.issue_lines()
+            ]
+        })
+        .then(issue => {
+            if (issue) res.send({result: true, issue: issue})
+            else       res.send({result: false, message: 'Issue not found'});
+        })
+        .catch(err => res.error.send(err, res));
+    });
     app.get('/stores/get/issues',             permissions, allowed('access_issues',             {send: true}),             (req, res) => {
         m.issues.findAll({
             where:      req.query,

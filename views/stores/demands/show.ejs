@@ -42,7 +42,7 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
 			<%- include(`${partials}/inputs/display`, {id: 'supplier',  title: 'Supplier',  append: {a: {id: 'supplier_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user',		title: 'Raised By', append: {a: {id: 'user_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user',		title: 'Raised By', append: {a: {id: 'user_link',	   type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: '_status',   title: 'Status'}) %>
@@ -77,64 +77,42 @@
 </section>
 <%- include(`${partials}/foot/full`) %>
 <script src='/js/tabs.js'></script>
-<script src="/js/stores/demands/show/demand.js"></script>
-<script src="/js/stores/demands/show/lines.js"></script>
+<script src="/js/stores/demands/show/getDemand.js"></script>
+<script src="/js/stores/demands/show/getLines.js"></script>
 <script src="/js/stores/stock/list.js"></script>
 <script src="/js/stores/serials/list.js"></script>
 <script src="/js/search/select.js"></script>
 <script src="/js/addSize.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src='/js/utils/select_sel_status.js'></script>
 <script src='/js/utils/getLineNotes.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script>
-	function getDemand() {
-		get(
-			showDemand,
-			{
-				table: 'demands',
-				query: [`demand_id=${path[3]}`],
-				permissions: {
-					edit: 	     <%= permissions.demand_edit  	    || false %>,
-					delete:		 <%= permissions.demand_delete	    || false %>,
-					line_add:	 <%= permissions.demand_line_add	|| false %>,
-					line_delete: <%= permissions.demand_line_delete || false %>
-				}
-			}
-		);
-	};
-    document.querySelector('#reload').addEventListener('click', () => getDemand());
+	let get_demand = getDemand({
+			edit: 	 	 <%= permissions.demand_edit 		|| false %>,
+			delete: 	 <%= permissions.demand_delete 		|| false %>,
+			line_add: 	 <%= permissions.demand_line_add 	|| false %>,
+			line_delete: <%= permissions.demand_line_delete || false %>
+		}),
+		get_lines = getLines({
+			line_edit:	 <%= permissions.demand_line_edit 	|| false %>,
+			line_delete: <%= permissions.demand_line_delete || false %>
+		});
+	document.querySelector('#reload').addEventListener(	   'click',	 () => get_lines);
+	document.querySelector('#sel_status').addEventListener('change', () => get_lines);
+	document.querySelector('#reload').addEventListener(	   'click',  () => get_demand);
 </script>
-<script async>getDemand()</script>
+<script async>get_demand</script>
+<script async>get_lines</script>
 <script>
-    function getLines() {
-		get(
-			showLines,
-			{
-				table: 'demand_lines',
-				query: [`demand_id=${path[3]}`, sel_status.value],
-				permissions: {
-					line_edit:   <%= permissions.demand_line_edit   || false %>,
-					line_delete: <%= permissions.demand_line_delete || false %>
-				}
-			}
-		);
-	};
-	// getdemandlines = getLines;
-    document.querySelector('#reload').addEventListener('click', () => getLines());
-    document.querySelector('#sel_status').addEventListener('change', () => getLines());
-</script>
-<script async>getLines()</script>
-<script>
-    window.addEventListener( "load", function () {
+    window.addEventListener("load", function () {
 		<% if (permissions.demand_delete) { %>
-			addFormListener('form_delete', 'DELETE', `/stores/demands/${path[3]}`,{onComplete: [getDemand, getLines]});
+			addFormListener('form_delete', 	 'DELETE', `/stores/demands/${path[3]}`,	{onComplete: [get_demand, get_lines]});
 		<% } %>
 		<% if (permissions.demand_edit) { %>
-			addFormListener('form_complete', 'PUT', `/stores/demands/${path[3]}`, {onComplete: [getDemand, getLines]});
+			addFormListener('form_complete', 'PUT',	   `/stores/demands/${path[3]}`, 	{onComplete: [get_demand, get_lines]});
 		<% } %>
 		<% if (permissions.demand_line_edit) { %>
-			addFormListener('form_action', 'PUT', `/stores/demnd_lines/${path[3]}`,{onComplete: getLines});
+			addFormListener('form_action',	 'PUT',	   `/stores/demnd_lines/${path[3]}`,{onComplete: get_lines});
 		<% } %>
 	});
 </script>

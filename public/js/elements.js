@@ -24,8 +24,8 @@ function add_cell (row, options = {}) {
 };
 function List_Item (options = {}) {
     this.e = document.createElement('li');
-    this.e.classList.add('list-group-item', 'text-left');
-    this.e.appendChild(new Input({id: `permission_${options.text}`, type: 'checkbox', name: `permissions[${options.text}]`, small: true, float_right: true}).e);
+    this.e.classList.add('list-group-item', 'text-left', 'p-4');
+    this.e.appendChild(new Input({id: `permission_${options.text}`, type: 'checkbox', name: `permissions[]`, value: options.text, small: true, float_right: true}).e);
     let span = document.createElement('span');
     span.innerText = options.text.replaceAll('_', ' ') || '';
     if (options.caret === true) {

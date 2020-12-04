@@ -2,6 +2,7 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
     let permission_tree = [
         {_permission: 'access_canteen',           children: [
+            {_permission: 'access_pos'},
             {_permission: 'access_credits',       children: [
                 {_permission: 'credit_add'},
                 {_permission: 'credit_edit'},
@@ -79,7 +80,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     {_permission: 'writeoff_line_delete'}
                 ]}
             ]},
-            {_permission: 'access_pos'},
             {_permission: 'access_users'}
         ]}
     ];
@@ -91,25 +91,47 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(permissions => res.send({result: true, permissions: {permissions: permissions, tree: permission_tree}}))
         .catch(err => res.error.send(err, res));
     });
-    app.post('/canteen/permissions',       permissions, allowed('permission_add',     {send: true}), (req, res) => {
-        m.permissions.findOrCreate({
-            where: {
-                user_id:     req.body.permission.user_id,
-                _permission: req.body.permission._permission
-            }
+    app.put('/canteen/permissions/:id',    permissions, allowed('permission_edit',    {send: true}), (req, res) => {
+        m.users.findOne({
+            where: {user_id: req.params.id},
+            attributes: ['user_id']
         })
-        .then(([permission, created]) => {
-            if (created) res.send({result: true, message: 'Permission added'})
-            else         res.send({result: true, message: 'User already has permission'});
+        .then(user => {
+            if (user.user_id === req.user.user_id) res.send({result: false, message: 'You can not edit your own permissions'})
+            else {
+                return m.permissions.findAll({
+                    where: {user_id: user.user_id},
+                    attributes: ['permission_id', '_permission']
+                })
+                .then(permissions => {
+                    let actions = [];
+                    permissions.forEach(permission => {
+                        if (!req.body.permissions.includes(permission._permission)) {
+                            actions.push(
+                                m.permissions.destroy({where: {permission_id: permission.permission_id}})
+                            );
+                        }
+                    });
+                    req.body.permissions.forEach(permission => {
+                        actions.push(
+                            m.permissions.findOrCreate({
+                                where: {
+                                    user_id: user.user_id,
+                                    _permission: permission
+                                }
+                            })
+                        );
+                    });
+                    return Promise.allSettled(actions)
+                    .then(results => {
+                        console.log(results);
+                        res.send({result: true, message: 'Permissions edited'});
+                    })
+                    .catch(err => res.error.send(err, res));
+                })
+                .catch(err => res.error.send(err, res));
+            };
         })
         .catch(err => res.error.send(err, res));
-    });
-    app.delete('/canteen/permissions/:id', permissions, allowed('permission_delete',  {send: true}), (req, res) => {
-       m.permissions.destroy({where: {permission_id: req.params.id}})
-       .then(result => {
-           if (result) res.send({result: true,  message: 'Permission added'})
-           else        res.send({result: false, message: 'Permission not added'});
-       })
-       .catch(err => res.error.send(err, res));
     });
 };

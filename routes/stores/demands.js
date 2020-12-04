@@ -17,6 +17,21 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
+    app.get('/stores/get/demand',           loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
+        m.demands.findOne({
+            where: req.query,
+            include: [
+                inc.demand_lines(),
+                inc.users(),
+                inc.suppliers({as: 'supplier'})
+            ]
+        })
+        .then(demand => {
+            if (demand) res.send({result: true, demand: demand})
+            else       res.send({result: false, message: 'Demand not found'});
+        })
+        .catch(err => res.error.send(err, res));
+    });
     app.get('/stores/get/demands',          loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
         m.demands.findAll({
             where:   req.query,

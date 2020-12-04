@@ -19,27 +19,12 @@
 			<th class="w-15" onclick="sortTable(3, 'issueTable')">Status</th>
 			<th><i class="fas fa-search"></i></th>
 		</thead>
-		<tbody id="tbl_issues">
-		</tbody>
+		<tbody id="tbl_issues"></tbody>
 	</table>
 </section>
 <%- include(`${partials}/foot/full`) %>
 <script src='/js/stores/issues/index/issues.js'></script>
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/send.js'></script>
-<script src='/js/utils/select_sel_status.js'></script>
-<script>
-	function getIssues() {
-		get(
-			showIssues,
-			{
-				table: 'issues',
-				query: [sel_status.value]
-			}
-		);
-	};
-</script>
 <script async>getIssues()</script>
-<script>document.querySelector('#reload').addEventListener('click', () => getIssues());</script>
-<script>document.querySelector('#sel_status').addEventListener('change', () => getIssues());</script>
 <%- include(`${partials}/foot/htmlClose`) %>

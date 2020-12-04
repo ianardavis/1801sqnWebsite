@@ -1,9 +1,12 @@
-function getMovements () {
+function getMovements (query_column) {
     get(
         function (movements, options) {
-            clearElement('tbl_movements');
-            let tbl_movements  = document.querySelector('#tbl_movements'),
-                movement_count = document.querySelector('#movement_count');
+            let table = '';
+            if      (query_column === 'user_id_to')   table = 'paid_out'
+            else if (query_column === 'user_id_from') table = 'paid_in'
+            clearElement(`tbl_${table}`);
+            let tbl_movements  = document.querySelector(`#tbl_${table}`),
+                movement_count = document.querySelector(`#${table}_count`);
             movement_count.innerText = movements.length || '0';
             if (tbl_movements) {
                 movements.forEach(e => {
@@ -12,7 +15,8 @@ function getMovements () {
                         text: print_date(e.createdAt),
                         sort: new Date(e.createdAt).getTime()
                     });
-                    add_cell(row, {text: ''});
+                    add_cell(row, {text: `£${Number(e._amount).toFixed(2)}`});
+                    add_cell(row, {text: e._type});
                     add_cell(row, {append: new Link({
                         small: true,
                         href: `/canteen/movements/${e.movement_id}`
@@ -23,7 +27,7 @@ function getMovements () {
         {
             db: 'canteen',
             table: 'movements',
-            query: [`user_id=${path[3]}`]
+            query: [`${query_column}=${path[3]}`]
         }
     );
     document.querySelector('#reload').addEventListener('click', getMovements);

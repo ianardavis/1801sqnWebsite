@@ -96,22 +96,6 @@
 <script src='/js/utils/getLineNotes.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script>
-	function getIssue() {
-		get(
-			showIssue,
-			{
-				table: 'issues',
-				query: [`issue_id=${path[3]}`],
-				permissions: {
-					edit: 	     <%= permissions.issue_edit  	   || false %>,
-					delete:		 <%= permissions.issue_delete	   || false %>,
-					line_add:	 <%= permissions.issue_line_add	   || false %>,
-					line_delete: <%= permissions.issue_line_delete || false %>
-				}
-			}
-		);
-	};
-    document.querySelector('#reload').addEventListener('click', () => getIssue());
 </script>
 <script async>getIssue()</script>
 <script>

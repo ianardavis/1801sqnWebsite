@@ -4,7 +4,6 @@ function getPermissions (perms = {}) {
             clearElement('ul_tree');
             let ul_tree = document.querySelector('#ul_tree');
             if (ul_tree) {
-                console.log(permissions.tree);
                 permissions.tree.forEach(e => {
                     ul_tree.appendChild(new List_Item({text: e._permission, caret: (e.children && e.children.length > 0)}).e)
                     if (e.children && e.children.length > 0) {

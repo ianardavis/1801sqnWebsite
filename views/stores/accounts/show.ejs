@@ -32,11 +32,7 @@
 <script src='/js/edit.js'></script>
 <script src='/js/add.js'></script>
 <script src='/js/tabs.js'></script>
-<script src='/js/stores/accounts/show/account.js'></script>
-<script>
-    getAccount = () => get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]});
-    document.querySelector('#reload').addEventListener('click', () => getAccount());
-</script>
+<script src='/js/stores/accounts/show/getAccount.js'></script>
 <script async>getAccount()</script>
 <script>showTab('<%= tab %>');</script>
 <%- include(`${partials}/foot/htmlClose`) %>

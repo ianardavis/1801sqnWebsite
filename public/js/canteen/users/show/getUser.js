@@ -18,8 +18,9 @@ function getUser (perms = {}) {
             breadcrumb.href      = `/canteen/users/${user.user_id}`;
             let btn_edit_permission = document.querySelector('#btn_edit_permission');
             if (btn_edit_permission) {
-                if (options.permissions.edit === true) btn_edit_permission.removeAttribute('disabled')
-                else                                   btn_edit_permission.setAttribute('disabled', true);
+                if (options.permissions.edit === true) {
+                    btn_edit_permission.removeAttribute('disabled')
+                } else btn_edit_permission.setAttribute('disabled', true);
             };
         },
         {

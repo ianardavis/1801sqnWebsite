@@ -12,6 +12,17 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(accounts => res.send({result: true, accounts: accounts}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/account',       loggedIn, allowed('access_accounts', {send: true}), (req, res) => {
+        return m.accounts.findOne({
+            where:   req.query,
+            include: [inc.users()]
+        })
+        .then(account => {
+            if (account) res.send({result: true,  account: account})
+            else         res.send({result: false, message: 'Account not found'});
+        })
+        .catch(err => res.error.send(err, res));
+    });
 
     app.put('/stores/accounts/:id',      loggedIn, allowed('account_edit',    {send: true}), (req, res) => {
         m.accounts.update(

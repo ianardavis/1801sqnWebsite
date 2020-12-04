@@ -12,6 +12,8 @@ module.exports = (app, m) => {
     .forEach(function(file) {
         if (file === 'includes.js') {
             require(`./${file}`)(inc, m);
+        } else if (file === 'permissions.js') {
+            require(`./${file}`)(app, allowed, inc, permissions, {permissions: m.canteen.permissions, users: m.users.users})
         } else {
             require(`./${file}`)(app, allowed, inc, permissions, m.canteen)
         };
