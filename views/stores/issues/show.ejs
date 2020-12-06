@@ -84,8 +84,8 @@
 <%- include(`${partials}/foot/full`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
-<script src="/js/stores/issues/show/issue.js"></script>
-<script src="/js/stores/issues/show/lines.js"></script>
+<script src="/js/stores/issues/show/getIssue.js"></script>
+<script src="/js/stores/issues/show/getLines.js"></script>
 <script src="/js/stores/nsns/list.js"></script>
 <script src="/js/stores/stock/list.js"></script>
 <script src="/js/stores/serials/list.js"></script>
@@ -99,34 +99,25 @@
 </script>
 <script async>getIssue()</script>
 <script>
-    function getLines() {
-		get(
-			showLines,
-			{
-				table: 'issue_lines',
-				query: [`issue_id=${path[3]}`, sel_status.value],
-				permissions: {
-					line_edit:	 <%= permissions.issue_line_edit   || false %>,
-					line_delete: <%= permissions.issue_line_delete || false %>
-				}
-			}
-		);
-	};
+    let get_lines = getLines({
+            line_edit:	 <%= permissions.issue_line_edit   || false %>,
+            line_delete: <%= permissions.issue_line_delete || false %>
+        })
 	// getissuelines = getLines;
-    document.querySelector('#reload').addEventListener('click', () => getLines());
-    document.querySelector('#sel_status').addEventListener('change', () => getLines());
+    document.querySelector('#reload').addEventListener('click', () => get_lines());
+    document.querySelector('#sel_status').addEventListener('change', () => get_lines());
 </script>
-<script async>getLines()</script>
+<script async>get_lines()</script>
 <script>
     window.addEventListener( "load", () => {
 		<% if (permissions.issue_delete) { %>
-			addFormListener('form_delete', 'DELETE', `/stores/issues/${path[3]}`,{onComplete: [getIssue, getLines]});
+			addFormListener('form_delete',   'DELETE', `/stores/issues/${path[3]}`,      {onComplete: [getIssue, get_lines]});
 		<% } %>
 		<% if (permissions.issue_edit) { %>
-			addFormListener('form_complete', 'PUT', `/stores/issues/${path[3]}`, {onComplete: [getIssue, getLines]});
+			addFormListener('form_complete', 'PUT',    `/stores/issues/${path[3]}`,      {onComplete: [getIssue, get_lines]});
 		<% } %>
 		<% if (permissions.issue_line_edit) { %>
-			addFormListener('form_action', 'PUT', `/stores/issue_lines/${path[3]}`,{onComplete: getLines});
+			addFormListener('form_action',   'PUT',    `/stores/issue_lines/${path[3]}`, {onComplete: get_lines});
 		<% } %>
     });
 </script>

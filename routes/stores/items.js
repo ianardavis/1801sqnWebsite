@@ -1,16 +1,14 @@
 module.exports = (app, allowed, inc, permissions, m) => {
     let utils = require(process.env.ROOT + '/fn/utils');
-    
-    app.get('/stores/items',          permissions, allowed('access_items'),               (req, res) => res.render('stores/items/index'));
-    app.get('/stores/items/new',      permissions, allowed('item_add'),                   (req, res) => res.render('stores/items/new'));
-    app.get('/stores/items/:id',      permissions, allowed('access_items'),               (req, res) => res.render('stores/items/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/items/:id/edit', permissions, allowed('item_edit'),                  (req, res) => {
+    app.get('/stores/items',          permissions, allowed('access_items'),                    (req, res) => res.render('stores/items/index'));
+    app.get('/stores/items/:id',      permissions, allowed('access_items'),                    (req, res) => res.render('stores/items/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/items/:id/edit', permissions, allowed('item_edit'),                       (req, res) => {
         m.items.findOne({where: {item_id: req.params.id}})
         .then(item => res.render('stores/items/edit', {item: item}))
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.get('/stores/get/items',      permissions, allowed('access_items', {send: true}), (req, res) => {
+    app.get('/stores/get/items',      permissions, allowed('access_items',      {send: true}), (req, res) => {
         m.items.findAll({
             where:   req.query,
             include: [
@@ -24,14 +22,39 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(items => res.send({result: true, items: items}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/genders',    permissions, allowed('access_genders',    {send: true}), (req, res) => {
+        m.genders.findAll({where: req.query})
+        .then(genders => res.send({result: true, genders: genders}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/categories', permissions, allowed('access_categories', {send: true}), (req, res) => {
+        m.categories.findAll({where: req.query})
+        .then(categories => res.send({result: true, categories: categories}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/groups',     permissions, allowed('access_groups',     {send: true}), (req, res) => {
+        m.groups.findAll({where: req.query})
+        .then(groups => res.send({result: true, groups: groups}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/types',      permissions, allowed('access_types',      {send: true}), (req, res) => {
+        m.types.findAll({where: req.query})
+        .then(types => res.send({result: true, types: types}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/subtypes',   permissions, allowed('access_subtypes',   {send: true}), (req, res) => {
+        m.subtypes.findAll({where: req.query})
+        .then(subtypes => res.send({result: true, subtypes: subtypes}))
+        .catch(err => res.error.send(err, res));
+    });
 
-    app.post('/stores/items',         permissions, allowed('item_add',     {send: true}), (req, res) => {
+    app.post('/stores/items',         permissions, allowed('item_add',          {send: true}), (req, res) => {
         req.body.item = utils.nullify(req.body.item);
         m.items.create(req.body.item)
         .then(item => res.send({result: true, message: 'Item added'}))
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/items/:id',      permissions, allowed('item_edit',    {send: true}), (req, res) => {
+    app.put('/stores/items/:id',      permissions, allowed('item_edit',         {send: true}), (req, res) => {
         req.body.item = utils.nullify(req.body.item);
         m.items.update(
             req.body.item,
@@ -40,7 +63,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(result => res.send({result: true, message: 'Item saved'}))
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/items/:id',   permissions, allowed('item_delete',  {send: true}), (req, res) => {
+    app.delete('/stores/items/:id',   permissions, allowed('item_delete',       {send: true}), (req, res) => {
         m.sizes.findOne({where: {item_id: req.params.id}})
         .then(sizes => {
             if (!sizes) {
