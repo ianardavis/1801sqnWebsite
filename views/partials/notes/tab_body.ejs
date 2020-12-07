@@ -6,20 +6,18 @@
         <script src="/js/data/send.js"></script>
         <script src="/js/notes/showNotes.js"></script>
         <script>
-            getNotes = () => get(
-                showNotes,
-                {
-                    db:    path[1],
-                    table: 'notes',
-                    query: note_query(),
-                    permissions: {
-                        delete: <%= permissions.note_delete || false %>,
-                        edit:   <%= permissions.note_edit   || false %>
-                    }
-                }
-            );
-            document.querySelector('#reload').addEventListener('click', () => getNotes());
+            document.querySelector('#reload').addEventListener('click', function () {
+                getNotes({
+                    delete: <%= permissions.note_delete || false %>,
+                    edit:   <%= permissions.note_edit   || false %>
+                });
+            });
         </script>
-        <script async>getNotes()</script>
+        <script async>
+            getNotes({
+                delete: <%= permissions.note_delete || false %>,
+                edit:   <%= permissions.note_edit   || false %>
+            });
+        </script>
     </div>
 <% } %>

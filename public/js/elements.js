@@ -12,6 +12,17 @@ function yesno (boolean) {
     if (boolean === 1 || boolean === true) return 'Yes'
     else return 'No'
 };
+function set_breadcrumb(options = {}) {
+    let breadcrumb = document.querySelector('#breadcrumb');
+    if (breadcrumb) {
+        breadcrumb.innerText = options.text || '';
+        breadcrumb.setAttribute('href', options.href || '');
+    };
+};
+function set_count(options = {}) {
+    let _count = document.querySelector(`#${options.id}_count`);
+    if (_count) _count.innerText = options.count || '0';
+};
 function add_cell (row, options = {}) {
     let cell = row.insertCell();
     if (options.sort)      cell.dataset.sort = options.sort;

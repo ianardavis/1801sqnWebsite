@@ -22,6 +22,23 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(items => res.send({result: true, items: items}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/item',       permissions, allowed('access_items',      {send: true}), (req, res) => {
+        m.items.findOne({
+            where:   req.query,
+            include: [
+                inc.categories(),
+                inc.groups(),
+                inc.types(),
+                inc.subtypes(),
+                inc.genders()
+            ]
+        })
+        .then(item => {
+            if (item) res.send({result: true,  item: item})
+            else      res.send({result: false, message: 'Item not found'});
+        })
+        .catch(err => res.error.send(err, res));
+    });
     app.get('/stores/get/genders',    permissions, allowed('access_genders',    {send: true}), (req, res) => {
         m.genders.findAll({where: req.query})
         .then(genders => res.send({result: true, genders: genders}))

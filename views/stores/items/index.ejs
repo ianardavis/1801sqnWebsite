@@ -64,7 +64,7 @@
 <script src="/js/data/XHRsend.js"></script>
 <script src="/js/spinner.js"></script>
 <script src="/js/get.js"></script>
-<% [{table: 'categories', singular: 'category'},{table: 'genders', singular: 'gender'}].forEach(e => { %>
+<% [{table: 'categories', singular: 'category'}, {table: 'genders', singular: 'gender'}].forEach(e => { %>
 	<script async>
 		let sel_<%= e.table %> = document.querySelector(`#sel_<%= e.table %>`);
 		if (sel_<%= e.table %>) {

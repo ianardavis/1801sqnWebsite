@@ -1,23 +1,34 @@
-function showNotes (notes, options = {}) {
-    clearElement('tbl_notes');
-    clearElement('note_modals');
-    let table_body = document.querySelector('#tbl_notes'),
-        note_count = document.querySelector('#note_count');
-    note_count.innerText = notes.length || 0;
-    notes.forEach(note => {
-        let row = table_body.insertRow(-1);
-        add_cell(row, {
-            sort: new Date(note.createdAt).getTime(),
-            text: new Date(note.createdAt).toDateString()
-        });
-        add_cell(row, {text: note._note, ellipsis: true});
-        add_note_modal(note, row, options.permissions);
-    });
-    hide_spinner('notes');
+function getNotes(perms = {}){
+    get(
+        function (notes, options) {
+            clearElement('tbl_notes');
+            clearElement('note_modals');
+            set_count({id: 'note', count: notes.length || 0})
+            let table_body = document.querySelector('#tbl_notes');
+            if (table_body) {
+                notes.forEach(note => {
+                    let row = table_body.insertRow(-1);
+                    add_cell(row, {
+                        sort: new Date(note.createdAt).getTime(),
+                        text: new Date(note.createdAt).toDateString()
+                    });
+                    add_cell(row, {text: note._note, ellipsis: true});
+                    add_note_modal(note, row, options.permissions);
+                });
+            };
+        },
+        {
+            db:    path[1],
+            table: 'notes',
+            query: note_query(),
+            permissions: perms
+        }
+    );
 };
 function note_query () {
-    let sel_notes = document.querySelector('#sel_system'),
-        query     = ['_table=' + path[2], '_id=' + path[3]];
+    let sel_notes = document.querySelector('#sel_system'), query = [];
+    query.push(`_table=${path[2]}`);
+    query.push(`_id=${path[3]}`);
     if (sel_notes.value !== '') query.push(sel_notes.value);
     return query;
 };
@@ -47,7 +58,7 @@ function add_note_modal (note, row, permissions) {
         };
         if (permissions.delete) {
             btn_container.appendChild(
-                new DeleteButton({
+                new Delete_Button({
                     path: `/stores/notes/${note.note_id}`,
                     float: true,
                     descriptor: 'note',

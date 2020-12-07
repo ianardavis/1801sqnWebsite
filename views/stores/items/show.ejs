@@ -5,6 +5,8 @@
             <%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
             <%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
             <%- include(`${partials}/breadcrumb`) %>
+            <%- include(`${partials}/reload`) %>
+            <%- include(`${partials}/spinner`, {id: 'item'}) %>
         </ul>
     </nav>
 </section>
@@ -16,11 +18,11 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.item_edit) { %>
-                    <%- include(`${partials}/edit`) %>
+                    <%- include(`${partials}/menu/edit`, {href: 'javascript:$("#mdl_edit_item").modal("show")'}) %>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.item_delete) { %>
-                    <%- include(`${partials}/delete`) %>
+                    <%- include(`${partials}/menu/delete`) %>
                 <% } %>
                 <% if (permissions.size_add) { %>
                     <a class='dropdown-item' id='add_size'>
@@ -32,11 +34,9 @@
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
         <%- include(`${partials}/tab_head`, {id: 'sizes',   title: 'Sizes', count_id: 'size_count', permission: 'access_sizes'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
-        <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/spinner`, {id: 'items'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_description', title: 'Description'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_category',    title: 'Category'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_group',       title: 'Group'}) %>
@@ -61,24 +61,59 @@
         <% } %>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
+    <% if (permissions.item_edit) { %>
+        <div id='mdl_edit_item' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_edit_item'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Item</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`, {  id: '_description_edit',   title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
+						<%- include(`${partials}/inputs/select`, {id: 'sel_categories_edit', title: 'Category'}) %>
+						<%- include(`${partials}/inputs/select`, {id: 'sel_groups_edit', 	 title: 'Groups'}) %>
+						<%- include(`${partials}/inputs/select`, {id: 'sel_types_edit', 	 title: 'Types'}) %>
+						<%- include(`${partials}/inputs/select`, {id: 'sel_subtypes_edit',   title: 'Subtypes'}) %>
+						<%- include(`${partials}/inputs/select`, {id: 'sel_genders_edit',    title: 'Genders'}) %>
+						<%- include(`${partials}/inputs/text`, {  id: '_size_text_edit',	 title: 'Size Text',   name: 'item[_size_text]',   placeholder: 'Required', maxLength: 45, required: true}) %>
+					</div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Item'>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
 </section>
 <%- include(`${partials}/foot/full`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
-<script src='/js/stores/items/show/item.js'></script>
-<script>showTab('<%= tab %>');</script>
-<script>
-    getItem = () => get(showItem, {table: 'items', query: [`item_id=${path[3]}`]})
-    document.querySelector('#reload').addEventListener('click', () => getItem());
-</script>
+<script src='/js/stores/items/show/getItem.js'></script>
+<script>showTab('<%= tab %>')</script>
 <script async>getItem()</script>
 <% if (permissions.access_sizes) { %>
-    <script src='/js/items/show/sizes.js'></script>
-    <script>
-        getSizes = () => get(showSizes, {table: 'sizes', query: [`item_id=${path[3]}`]})
-        document.querySelector('#reload').addEventListener('click', () => getSizes());
-    </script>
+    <script src='/js/stores/items/show/getSizes.js'></script>
     <script async>getSizes()</script>
+<% } %>
+<% if (permissions.item_edit) { %>
+    <script src='/js/stores/items/show/getItemEdit.js'></script>
+    <script async>getItemEdit()</script>
+    <script>
+        window.addEventListener('load', function () {
+            addFormListener(
+                'form_edit_item',
+                'PUT',
+                `/stores/items/${path[3]}`,
+                {onComplete: [
+                    getItem,
+                    function () {$('#mdl_edit_item').modal('hide')}
+                ]}
+            )
+        });
+    </script>
 <% } %>
 <%- include(`${partials}/foot/htmlClose`) %>
