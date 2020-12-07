@@ -6,7 +6,7 @@ module.exports = (app, m) => {
     require('./includes')(inc, m);
 
     app.get('/users',              permissions, allowed('access_users',    {send: true}), (req, res) => res.render('users/index'));
-    app.get('/users/get/statuses', permissions,                            {send: true}), (req, res) => {
+    app.get('/users/get/statuses', permissions,                                           (req, res) => {
         m.users.statuses.findAll({
             where:      req.query,
             include:    [],
