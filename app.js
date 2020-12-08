@@ -10,7 +10,6 @@ require('dotenv').config();
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
 console.log(`Environment: ${process.env.NODE_ENV}`);
 console.log('   Set')
-console.log(__dirname);
 let port_check = require(`${process.env.ROOT}/fn/utils/port_check`)
 port_check()
 .then(port => {

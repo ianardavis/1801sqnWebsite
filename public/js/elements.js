@@ -19,6 +19,14 @@ function set_breadcrumb(options = {}) {
         breadcrumb.setAttribute('href', options.href || '');
     };
 };
+function enable_button(id) {
+    let button = document.querySelector(`#btn_${id}`);
+    if (button) button.removeAttribute('disabled');
+};
+function disable_button(id) {
+    let button = document.querySelector(`#btn_${id}`);
+    if (button) button.setAttribute('disabled', true);
+};
 function set_count(options = {}) {
     let _count = document.querySelector(`#${options.id}_count`);
     if (_count) _count.innerText = options.count || '0';

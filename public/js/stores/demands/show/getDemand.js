@@ -27,18 +27,12 @@ function getDemand(perms = {}) {
             ['action', 'complete', 'addSize', 'delete'].forEach(e => document.querySelector(`#btn_${e}`).setAttribute('disabled', true));
             if (demand._status === 0) {
             } else if (demand._status === 1) {
-                if (options.permissions.edit) {
-                    document.querySelector('#btn_complete').removeAttribute('disabled');
-                };
-                if (options.permissions.line_add) {
-                    document.querySelector('#div_modals').appendChild(new Modal({id: 'add_size', static: true}).e);
-                    document.querySelector('#btn_addSize').removeAttribute('disabled');
-                    add_size_modal('demand');
-                };
-                if (options.permissions.delete) document.querySelector('#btn_delete').removeAttribute('disabled');
+                enable_button('complete');
+                enable_button('delete');
+                enable_button('addSize');
             } else if (demand._status === 2 || demand._status === 3) {
-                document.querySelector('#btn_download').removeAttribute('disabled');
-                if (demand._status === 2) document.querySelector('#btn_action').removeAttribute('disabled');
+                enable_button('download');
+                if (demand._status === 2) enable_button('action');
             };
         },
         {

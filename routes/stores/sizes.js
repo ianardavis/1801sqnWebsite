@@ -23,6 +23,20 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/size',       permissions, allowed('access_sizes', {send: true}), (req, res) => {
+        m.sizes.findOne({
+            where: req.query,
+            include: [
+                inc.items(),
+                inc.suppliers({as: 'supplier'})
+            ]
+        })
+        .then(size => {
+            if (size) res.send({result: true, sizes: sizes})
+            else      res.send({result: false, message: 'Size not found'});
+        })
+        .catch(err => res.error.send(err, res));
+    });
 
     app.post('/stores/sizes',         permissions, allowed('size_add',     {send: true}), (req, res) => {
         req.body.size._ordering_details = req.body.size._ordering_details.trim()

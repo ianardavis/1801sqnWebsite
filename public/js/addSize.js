@@ -1,56 +1,54 @@
 function search_items() {
     get(
-        item_search_results,
+        function (items, options) {
+            clearElement('sel_items');
+            let sel_items = document.querySelector('#sel_items');
+            if (sel_items) {
+                items.forEach(item => {
+                    if (sel_items) {
+                        sel_items.appendChild(
+                            new Option({
+                                text: item._description,
+                                value: item.item_id
+                            }).e
+                        )
+                    } else console.log('sel_items not found');
+                });
+            } else console.log('sel_items not found');
+        },
         {
             table: 'items',
             query: []
         }
     );
 };
-function item_search_results(items, options) {
-    clearElement('sel_items');
-    let sel_items = document.querySelector('#sel_items');
-    if (sel_items) {
-        items.forEach(item => {
-            if (sel_items) {
-                sel_items.appendChild(
-                    new Option({
-                        text: item._description,
-                        value: item.item_id
-                    }).e
-                )
-            } else console.log('sel_items not found');
-        });
-    } else console.log('sel_items not found');
-};
 function search_sizes(item_id) {
     get(
-        size_search_results,
+        function (sizes, options) {
+            clearElement('sel_sizes');
+            let sel_sizes = document.querySelector('#sel_sizes'),
+                div_sizes = document.querySelector('#div_sizes'),
+                sel_items = document.querySelector('#sel_items');
+            if (sel_sizes) {
+                if (div_sizes) div_sizes.classList.remove('hidden');
+                if (sel_items) sel_items.removeAttribute('size');
+                sizes.forEach(size => {
+                    if (sel_sizes) {
+                        sel_sizes.appendChild(
+                            new Option({
+                                text: size._size,
+                                value: size.size_id
+                            }).e
+                        )
+                    } else console.log('sel_sizes not found');
+                });
+            } else console.log('sel_sizes note found');
+        },
         {
             table: 'sizes',
             query: [`item_id=${item_id}`]
         }
     );
-};
-function size_search_results(sizes, options) {
-    clearElement('sel_sizes');
-    let sel_sizes = document.querySelector('#sel_sizes'),
-        div_sizes = document.querySelector('#div_sizes'),
-        sel_items = document.querySelector('#sel_items');
-    if (sel_sizes) {
-        if (div_sizes) div_sizes.classList.remove('hidden');
-        if (sel_items) sel_items.removeAttribute('size');
-        sizes.forEach(size => {
-            if (sel_sizes) {
-                sel_sizes.appendChild(
-                    new Option({
-                        text: size._size,
-                        value: size.size_id
-                    }).e
-                )
-            } else console.log('sel_sizes not found');
-        });
-    } else console.log('sel_sizes note found');
 };
 function show_details() {
     let sel_sizes = document.querySelector('#sel_sizes'),
@@ -58,7 +56,7 @@ function show_details() {
     if (sel_sizes) {
         if (div_size) div_size.classList.remove('hidden');
         if (sel_sizes) sel_sizes.removeAttribute('size');
-    } else console.log('sel_sizes note found');
+    } else console.log('sel_sizes not found');
 };
 function showSize(sizes, options) {
     clearElement('sel_locations');
