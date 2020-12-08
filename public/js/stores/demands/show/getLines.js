@@ -72,7 +72,7 @@ function getLines() {
                                 new Delete_Button({
                                     path: `/stores/demand_lines/${line.line_id}`,
                                     float: true,
-                                    options: {onComplete: getLines, args: [perms]}
+                                    options: {onComplete: getLines}
                                 }).e
                             );
                         };
