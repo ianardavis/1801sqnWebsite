@@ -132,3 +132,4 @@ function getLines() {
         }
     );
 };
+document.querySelector('#reload').addEventListener('click', getLines);

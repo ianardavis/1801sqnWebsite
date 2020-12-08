@@ -42,3 +42,4 @@ function getDemand(perms = {}) {
         }
     );
 };
+document.querySelector('#reload').addEventListener('click', getDemand);

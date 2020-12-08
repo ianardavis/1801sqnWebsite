@@ -1,9 +1,9 @@
-function search_items() {
+function getItems() {
     get(
         function (items, options) {
-            clearElement('sel_items');
             let sel_items = document.querySelector('#sel_items');
             if (sel_items) {
+                sel_items.innerHTML = '';
                 items.forEach(item => {
                     if (sel_items) {
                         sel_items.appendChild(
@@ -25,11 +25,11 @@ function search_items() {
 function search_sizes(item_id) {
     get(
         function (sizes, options) {
-            clearElement('sel_sizes');
             let sel_sizes = document.querySelector('#sel_sizes'),
                 div_sizes = document.querySelector('#div_sizes'),
                 sel_items = document.querySelector('#sel_items');
             if (sel_sizes) {
+                sel_sizes.innerHTML = '';
                 if (div_sizes) div_sizes.classList.remove('hidden');
                 if (sel_items) sel_items.removeAttribute('size');
                 sizes.forEach(size => {
