@@ -36,7 +36,6 @@ function getItemEdit() {
                             .then(result => {
                                 if (item.subtype_id) {
                                     get(showOptions, {table: 'subtypes', query: [`type_id=${item.type_id}`], singular: 'subtype', selected: item.subtype_id});
-            
                                 } else get(showOptions, {table: 'subtypes', query: [`type_id=${item.type_id}`], singular: 'subtype'});
                             });
                         } else get(showOptions, {table: 'types', query: [`group_id=${item.group_id}`], singular: 'type'});
@@ -44,9 +43,7 @@ function getItemEdit() {
                 } else get(showOptions, {table: 'groups', query: [`category_id=${item.category_id}`], singular: 'group'});
             });
         
-            if (item.gender_id) {
-                get(showOptions, {table: 'genders', query: [], singular: 'gender', selected: item.gender_id});
-            } else get(showOptions, {table: 'genders', query: [], singular: 'gender'});
+            get(showOptions, {table: 'genders', query: [], singular: 'gender', selected: item.gender_id});
             
         },
         {
