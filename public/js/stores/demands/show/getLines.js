@@ -69,7 +69,7 @@ function getLines() {
                         let mdl_header = document.querySelector(`#mdl_${line.line_id}_header`);
                         if (mdl_header) {
                             mdl_header.appendChild(
-                                new DeleteButton({
+                                new Delete_Button({
                                     path: `/stores/demand_lines/${line.line_id}`,
                                     float: true,
                                     options: {onComplete: getLines, args: [perms]}
