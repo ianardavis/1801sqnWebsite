@@ -25,9 +25,7 @@
                     <%- include(`${partials}/menu/delete`) %>
                 <% } %>
                 <% if (permissions.size_add) { %>
-                    <a class='dropdown-item' id='add_size'>
-                        Add Size
-                    </a>
+                    <button id='btn_add_size' class='dropdown-item dropdown_button'>Add Size</button>
                 <% } %>
             </div>
         </li>
@@ -66,9 +64,6 @@
                 <form class="modal-content" id='form_edit_item'>
                     <div class="modal-header">
                         <h5 class="modal-title">Edit Item</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/text`, {  id: '_description_edit',   title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
@@ -81,6 +76,37 @@
 					</div>
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-success w-100 confirm" value='Save Item'>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+    <% if (permissions.size_add) { %>
+        <div id='mdl_add_size' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_add_size'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Size</h5>
+						<a class="float-right btn btn-primary" id='reset_add_size'>
+							<i class='fas fa-redo'></i>
+						</a>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name='size[item_id]' id='item_id_add_size'>
+                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_issueable]',        title: 'Issueable',        id: '_issueable'}) %>
+                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',        title: 'Orderable',        id: '_orderable'}) %>
+                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',          title: 'Has Serial #',     id: '_serials'}) %>
+                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_nsns]',             title: 'Has NSNs',         id: '_nsns'}) %>
+                        <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]',       title: 'Supplier',         id: 'supplier_id', spinner: true, spinner_id: 'suppliers'}) %>
+                        <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_page]',      title: 'Demand Page',      id: '_demand_page',      maxlength: 20}) %>
+                        <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_cell]',      title: 'Cell',             id: '_demand_cell',      maxlength: 3}) %>
+                        <%- include(`${partials}/inputs/textarea`,      {name: 'size[_ordering_details]', title: 'Ordering Details', id: '_ordering_details', maxlength: 1000, rows: 5}) %>
+                        <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size',              maxlength: 15,   placeholder: 'Required', required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     </div>
                 </form>
             </div>
@@ -97,6 +123,61 @@
 <% if (permissions.access_sizes) { %>
     <script src='/js/stores/items/show/getSizes.js'></script>
     <script async>getSizes()</script>
+    <% if (permissions.size_add) { %>
+        <script>
+            function getSuppliers() {
+                get(
+                    function (suppliers, options) {
+                        let sel_suppliers = document.querySelector('#supplier_id');
+                        if (sel_suppliers) {
+                            sel_suppliers.innerHTML = '';
+                            sel_suppliers.appendChild(new Option({value: '', text: '', selected: true}).e);
+                            suppliers.forEach(e => {
+                                sel_suppliers.appendChild(new Option({value: e.supplier_id, text: e._name}).e);
+                            })
+                        }
+                    },
+                    {
+                        table: 'suppliers',
+                        query: []
+                    }
+                );
+            };
+            getSuppliers();
+            document.querySelector('#reset_add_size').addEventListener('click', getSuppliers);
+            function resetAddSize() {
+                ['_issueable', '_orderable', '_nsns', '_serials'].forEach(e => {
+                    let select = document.querySelector(`#${e}`);
+                    if (select) select.value = '0';
+                });
+                ['_demand_page', '_demand_cell', '_size'].forEach(e => {
+                    let select = document.querySelector(`#${e}`);
+                    if (select) select.value = '';
+                });
+                let select1 = document.querySelector('#_ordering_details');
+                if (select1) select1.innerText = '';
+                let select2 = document.querySelector('#supplier_id');
+                if (select2) select2.value = '';
+            };
+            document.querySelector('#reset_add_size').addEventListener('click', resetAddSize);
+            window.addEventListener('load', function () {
+                addFormListener(
+                    'form_add_size',
+                    'POST',
+                    '/stores/sizes',
+                    {onComplete: [
+                        getSizes,
+                        function () {
+                            ['_demand_cell', '_size'].forEach(e => {
+                                let select = document.querySelector(`#${e}`);
+                                if (select) select.value = '';
+                            });
+                        }
+                    ]}
+                );
+            })
+        </script>
+    <% } %>
 <% } %>
 <% if (permissions.item_edit) { %>
     <script src='/js/stores/items/show/getItemEdit.js'></script>

@@ -28,23 +28,21 @@ function getItemEdit() {
             });
             get(showOptions, {table: 'categories', query: [], singular: 'category', selected: item.category_id})
             .then(result => {
-                if (item.group_id) {
+                if (item.category_id) {
                     get(showOptions, {table: 'groups', query: [`category_id=${item.category_id}`], singular: 'group', selected: item.group_id})
                     .then(result => {
-                        if (item.type_id) {
+                        if (item.group_id) {
                             get(showOptions, {table: 'types', query: [`group_id=${item.group_id}`], singular: 'type', selected: item.type_id})
                             .then(result => {
-                                if (item.subtype_id) {
+                                if (item.type_id) {
                                     get(showOptions, {table: 'subtypes', query: [`type_id=${item.type_id}`], singular: 'subtype', selected: item.subtype_id});
-                                } else get(showOptions, {table: 'subtypes', query: [`type_id=${item.type_id}`], singular: 'subtype'});
+                                };
                             });
-                        } else get(showOptions, {table: 'types', query: [`group_id=${item.group_id}`], singular: 'type'});
+                        };
                     });
-                } else get(showOptions, {table: 'groups', query: [`category_id=${item.category_id}`], singular: 'group'});
+                };
             });
-        
             get(showOptions, {table: 'genders', query: [], singular: 'gender', selected: item.gender_id});
-            
         },
         {
             table: 'item',
