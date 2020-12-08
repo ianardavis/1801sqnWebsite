@@ -39,8 +39,8 @@
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', spinner: 'demand_lines', count_id: 'line_count'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', spinner: 'notes', 		 count_id: 'note_count', permission: 'access_notes'}) %>
         <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -58,15 +58,16 @@
 			<% if (permissions.demand_line_edit) { %><form id='form_action'><% } %>
 			<table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
-					<th class='w-10' onclick='sortTable(0, "linesTable")'><%- include(`${partials}/spinner`, {id: 'demand_lines', spinner_sm: true, spinner_float_left: true}) %>Line ID</th>
-					<th class='w-30' onclick="sortTable(1,'linesTable')">Item</th>
-					<th class='w-15' onclick="sortTable(2,'linesTable')">Size</th>
-					<th class='w-5'  onclick="sortTable(3,'linesTable')">Qty</th>
-					<th class='w-20' onclick="sortTable(4,'linesTable')">Status</th>
-					<th class='w-20' onclick="sortTable(5,'linesTable')">Action</th>
+					<th class='w-10' onclick="sortTable(0,'tbl_lines')">Line ID</th>
+					<th class='w-30' onclick="sortTable(1,'tbl_lines')">Item</th>
+					<th class='w-15' onclick="sortTable(2,'tbl_lines')">Size</th>
+					<th class='w-5'  onclick="sortTable(3,'tbl_lines')">Qty</th>
+					<th class='w-20' onclick="sortTable(4,'tbl_lines')">Status</th>
+					<th class='w-20' onclick="sortTable(5,'tbl_lines')">Action</th>
 					<th id='col_view'><i class='fas fa-search'></i></th>
 				</thead>
-				<tbody id='linesTable'></tbody>
+				<tbody id='tbl_lines'></tbody>
+				<div id="div_line_modals"></div>
 			</table>
 			<% if (permissions.demand_line_edit) { %></form><% } %>
 		</div>

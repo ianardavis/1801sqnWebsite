@@ -21,7 +21,7 @@ function enterSerial (line_id) {
     );
 };
 function add_modal (line) {
-    document.querySelector(`#div_modals`).appendChild(
+    document.querySelector(`#div_line_modals`).appendChild(
         new Modal({
             id: line.line_id,
             static: true,
@@ -47,8 +47,9 @@ function getLines() {
     let sel_status = document.querySelector('#sel_status') || {value: ''};
     get(
         function (lines, options) {
-            clearElement('linesTable');
-            let table_body = document.querySelector('#linesTable');
+            clearElement('tbl_lines');
+            clearElement('div_line_modals');
+            let table_body = document.querySelector('#tbl_lines');
             if (lines) document.querySelector('#line_count').innerText = lines.length || '0';
             lines.forEach(line => {
                 try {
@@ -66,13 +67,15 @@ function getLines() {
                     add_modal(line);
                     if (line._status !== 3 && line._status !== 0) {
                         let mdl_header = document.querySelector(`#mdl_${line.line_id}_header`);
-                        mdl_header.appendChild(
-                            new DeleteButton({
-                                path: `/stores/demand_lines/${line.line_id}`,
-                                float: true,
-                                options: {onComplete: getLines, args: [perms]}
-                            }).e
-                        );
+                        if (mdl_header) {
+                            mdl_header.appendChild(
+                                new DeleteButton({
+                                    path: `/stores/demand_lines/${line.line_id}`,
+                                    float: true,
+                                    options: {onComplete: getLines, args: [perms]}
+                                }).e
+                            );
+                        };
                     }; 
                     let cell_status = document.querySelector(`#cell_status_${line.line_id}`),
                         cell_action = document.querySelector(`#cell_action_${line.line_id}`),
