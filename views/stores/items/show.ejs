@@ -18,7 +18,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.item_edit) { %>
-                    <%- include(`${partials}/menu/edit`, {href: 'javascript:$("#mdl_edit_item").modal("show")'}) %>
+                    <button id='btn_edit' class='dropdown-item'>Edit</button>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.item_delete) { %>
@@ -103,6 +103,8 @@
     <script async>getItemEdit()</script>
     <script>
         window.addEventListener('load', function () {
+            let btn_edit = document.querySelector('#btn_edit');
+            if (btn_edit) btn_edit.addEventListener('click', function () {$("#mdl_edit_item").modal("show")});
             addFormListener(
                 'form_edit_item',
                 'PUT',
