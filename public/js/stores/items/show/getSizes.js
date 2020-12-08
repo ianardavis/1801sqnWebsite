@@ -1,10 +1,10 @@
 function getSizes() {
     get(
         function (sizes, options) {
-            clearElement('sizeTable');
             set_count({id: 'size', count: sizes.length || '0'});
-            let table_body = document.querySelector('#sizeTable');
+            let table_body = document.querySelector('#tbl_sizes');
             if (table_body) {
+                table_body.innerHTML = '';
                 sizes.forEach(size => {
                     let row = table_body.insertRow(-1);
                     add_cell(row, {text: size._size});

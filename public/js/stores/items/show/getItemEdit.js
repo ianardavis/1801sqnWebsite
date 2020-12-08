@@ -1,3 +1,17 @@
+function showOptions(results, options) {
+    let select = document.querySelector(`#sel_${options.singular}_edit`);
+    if (select) {
+        select.innerHTML = '';
+        select.appendChild(new Option({value: '', text: '', selected: (options.selected === null)}).e)
+        results.forEach(e => {
+            select.appendChild(new Option({
+                value: e[`${options.singular}_id`],
+                text:  e[`_${options.singular}`],
+                selected: (options.selected === e[`${options.singular}_id`])
+            }).e)
+        });
+    };
+};
 function getItemEdit() {
     get(
         function (item, options) {
@@ -12,10 +26,30 @@ function getItemEdit() {
                     if (item[e]) {_element.innerText = item[e][`_${e}`]};
                 } catch (error) {console.log(error)};
             });
-            set_breadcrumb({text: item._description, href: `/stores/items/${item.item_id}`});
-
-            let add_size = document.querySelector('#add_size');
-            if (add_size) add_size.href = `javascript:add("sizes",{"queries":"item_id=${item.item_id}"})`;
+            if (item.category_id) {
+                get(showOptions, {table: 'categories', query: [], singular: 'category', selected: item.category_id})
+                .then(result => {
+                    if (item.group_id) {
+                        get(showOptions, {table: 'groups', query: [`category_id=${item.category_id}`], singular: 'group', selected: item.group_id})
+                        .then(result => {
+                            if (item.type_id) {
+                                get(showOptions, {table: 'types', query: [`group_id=${item.group_id}`], singular: 'type', selected: item.type_id})
+                                .then(result => {
+                                    if (item.subtype_id) {
+                                        get(showOptions, {table: 'subtypes', query: [`type_id=${item.type_id}`], singular: 'subtype', selected: item.subtype_id});
+                
+                                    } else get(showOptions, {table: 'subtypes', query: [`type_id=${item.type_id}`], singular: 'subtype'});
+                                });
+                            } else get(showOptions, {table: 'types', query: [`group_id=${item.group_id}`], singular: 'type'});
+                        });
+                    } else get(showOptions, {table: 'groups', query: [`category_id=${item.category_id}`], singular: 'group'});
+                });
+            } else get(showOptions, {table: 'categories', query: [], singular: 'category'});
+        
+            if (item.gender_id) {
+                get(showOptions, {table: 'genders', query: [], singular: 'gender', selected: item.gender_id});
+            } else get(showOptions, {table: 'genders', query: [], singular: 'gender'});
+            
         },
         {
             table: 'item',

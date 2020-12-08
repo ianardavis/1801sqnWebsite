@@ -40,7 +40,7 @@ function add_modal (line) {
     nav_body_2.appendChild(new Input_Group({title: 'Added',    text: print_date(line.createdAt, true)}).e);
     nav_body_2.appendChild(new Input_Group({title: 'Added By', text: print_user(line.user), link: `/stores/users/${line.user_id}`}).e);
 };
-function getLines(perms = {}) {
+function getLines() {
     get(
         function (lines, options) {
             clearElement('tbl_lines');
@@ -57,13 +57,13 @@ function getLines(perms = {}) {
                     add_cell(row, {id: `cell_action_${line.line_id}`});
                     add_cell(row, {append: new Modal_Link({id: `${line.line_id}`}).e, id: `mdl_cell_${line.line_id}`});
                     add_modal(line);
-                    if (line._status !== 5 && line._status !== 0 && options.permissions.line_delete) {
+                    if (line._status !== 5 && line._status !== 0) {
                         let mdl_header = document.querySelector(`#mdl_${line.line_id}_header`);
                         mdl_header.appendChild(
                             new DeleteButton({
                                 path: `/stores/issue_lines/${line.line_id}`,
                                 float: true,
-                                options: {onComplete: getLines, args: [perms]}
+                                options: {onComplete: getLines}
                             }).e
                         );
                     }; 
@@ -76,30 +76,30 @@ function getLines(perms = {}) {
                     } else if (line._status === 1) { //If pending
                         //       
                     } else if (line._status === 2) { //If open
-                        if (options.permissions.line_edit && line.issue._status === 2) {
+                        if (line.issue._status === 2) {
                             action_options.push({value: '0', text: 'Cancel'});
                             action_options.push({value: '3', text: 'Demand'});
                             action_options.push({value: '4', text: 'Receive'});
                             if (line.issue.issueed_for !== -1) action_options.push({value: '5', text: 'Issue'});
                         };
                     } else if (line._status === 3) { //If Demanded
-                        if (options.permissions.line_edit && line.issue._status === 2) {
+                        if (line.issue._status === 2) {
                             action_options.push({value: '0', text: 'Cancel'});
                             action_options.push({value: '4', text: 'Receive'});
                             if (line.issue.issueed_for !== -1) action_options.push({value: '5', text: 'Issue'});
                         };
                     } else if (line._status === 4) { //If Received
                         if (line.issue.issueed_for !== -1) {
-                            if (options.permissions.line_edit && line.issue._status === 2) {
+                            if (line.issue._status === 2) {
                                 action_options.push({value: '0', text: 'Cancel'});
                                 action_options.push({value: '5', text: 'Issue'});
                             };
                         } else action_options.push({value: '6', text: 'Mark as Complete'});
                     } else if (line._status === 5) { //If Issued
                         cell_status.innerText = 'Issued';
-                        if (options.permissions.line_edit && line.issue._status === 2) action_options.push({value: '6', text: 'Mark as Complete'});
+                        if (line.issue._status === 2) action_options.push({value: '6', text: 'Mark as Complete'});
                     };
-                    if (options.permissions.line_edit && line.issue._status === 2) {
+                    if (line.issue._status === 2) {
                         let div_actions = document.createElement('div'),
                             div_details = document.createElement('div'),
                             div_stocks  = document.createElement('div'),
@@ -143,8 +143,9 @@ function getLines(perms = {}) {
         },
         {
             table: 'issue_lines',
-            query: [`issue_id=${path[3]}`, sel_status.value],
-            permissions: perms
+            query: [`issue_id=${path[3]}`, sel_status.value]
         }
     );
 };
+document.querySelector('#reload').addEventListener('click', getLines);
+document.querySelector('#sel_status').addEventListener('change', getLines);
