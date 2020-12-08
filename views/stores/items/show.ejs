@@ -18,7 +18,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.item_edit) { %>
-                    <button id='btn_edit' class='dropdown-item'>Edit</button>
+                    <button id='btn_edit' class='dropdown-item dropdown_button'>Edit</button>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.item_delete) { %>
