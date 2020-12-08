@@ -43,7 +43,7 @@ function add_modal (line) {
     if (line.receipt_line_id) nav_body_2.appendChild(new Input_Group({title: 'Receipt Line ID', text: line.receipt_line_id,               link: `/stores/receipt_lines/${line.receipt_line_id}`}).e);
     if (line.receipt_line)    nav_body_2.appendChild(new Input_Group({title: 'Received By',     text: print_user(line.receipt_line.user), link: `/stores/users/${line.receipt_line.user_id}`}).e);
 };
-function getLines(perms = {}) {
+function getLines() {
     let sel_status = document.querySelector('#sel_status') || {value: ''};
     get(
         function (lines, options) {
@@ -64,7 +64,7 @@ function getLines(perms = {}) {
                     add_cell(row, {id: `cell_action_${line.line_id}`});
                     add_cell(row, {append: new Modal_Link({id: `${line.line_id}`}).e, id: `mdl_cell_${line.line_id}`});
                     add_modal(line);
-                    if (line._status !== 3 && line._status !== 0 && options.permissions.line_delete) {
+                    if (line._status !== 3 && line._status !== 0) {
                         let mdl_header = document.querySelector(`#mdl_${line.line_id}_header`);
                         mdl_header.appendChild(
                             new DeleteButton({
@@ -83,12 +83,12 @@ function getLines(perms = {}) {
                     } else if (line._status === 1) { //If pending
                         //       
                     } else if (line._status === 2) { //If open
-                        if (options.permissions.line_edit && line.demand._status === 2) {
+                        if (line.demand._status === 2) {
                             action_options.push({value: '0', text: 'Cancel'});
                             action_options.push({value: '3', text: 'Receive'});
                         };
                     };
-                    if (options.permissions.line_edit && line.demand._status === 2) {
+                    if (line.demand._status === 2) {
                         let div_actions = document.createElement('div'),
                             div_details = document.createElement('div'),
                             div_stocks  = document.createElement('div'),
@@ -125,8 +125,7 @@ function getLines(perms = {}) {
         },
         {
             table: 'demand_lines',
-            query: [`demand_id=${path[3]}`, sel_status.value],
-            permissions: perms
+            query: [`demand_id=${path[3]}`, sel_status.value]
         }
     );
 };
