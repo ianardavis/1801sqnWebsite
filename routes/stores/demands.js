@@ -54,7 +54,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.demands()
             ]
         })
-        .then(demands => res.send({result: true, demands: demands}))
+        .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
 
