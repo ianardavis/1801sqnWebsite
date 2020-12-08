@@ -1,5 +1,6 @@
 get = (onComplete, options = {query: []}) => new Promise(resolve => {
     if (options.table && typeof(options.table) === 'string' && options.table !== '') {
+        console.log(options);
         show_spinner(options.table);
         const XHR = new XMLHttpRequest();
         XHR.addEventListener("load", event => {
