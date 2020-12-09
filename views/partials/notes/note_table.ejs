@@ -1,22 +1,12 @@
 <% if (permissions.access_notes) { %>
-    <div class="input-group mb-2">
-        <div class="input-group-prepend w-30">
-            <label class="input-group-text w-100" for="sel_system">System Notes</label>
-        </div>
-        <select class="custom-select" id='sel_system' onchange=getNotes()>
-            <option value="">Include</option>
-            <option value="_system=0" selected>Exclude</option>
-            <option value="_system=1">Only</option>
-        </select>
-    </div>
+    <%- include(`${partials}/inputs/select`, {id: 'sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '_system=0', selected: true}, {text: 'Only', value: '_system=1'}]}) %>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
             <th class="w-30" onclick="sortTable(0, 'tbl_notes')">Date</th>
             <th class="w-70" onclick="sortTable(1, 'tbl_notes')">Note</th>
             <th><i class="fas fa-search"></i></th>
         </thead>
-        <tbody id="tbl_notes">
-        </tbody>
+        <tbody id="tbl_notes"></tbody>
     </table>
     <div id="note_modals"></div>
     <% if (permissions.note_add) { %>
@@ -38,26 +28,5 @@
                 </form>
             </div>
         </div>
-        <script>
-            let _table = document.querySelector('#_table'),
-                _id    = document.querySelector('#_id');
-            if (_table) _table.setAttribute('value', path[2]);
-            if (_id)    _id.setAttribute('value', path[3]);
-            addFormListener(
-                'form_add_note',
-                'POST',
-                `/${path[1]}/notes`,
-                {
-                    onComplete: [
-                        getNotes,
-                        function () {
-                            let _note = document.querySelector('#_note');
-                            if (_note) _note.innerText = '';
-                            $('#mdl_add_note').modal('hide');
-                        }
-                    ]
-                }
-            );
-        </script>
     <% } %>
 <% } %>

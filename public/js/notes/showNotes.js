@@ -64,4 +64,5 @@ function add_note_modal (note, row) {
         mdl_header.appendChild(btn_container);
     };
 };
+document.querySelector('#sel_system').addEventListener('change', getNotes);
 document.querySelector('#reload').addEventListener('click', getNotes);

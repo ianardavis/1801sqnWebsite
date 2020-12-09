@@ -1,11 +1,14 @@
 <% if (permissions.access_notes) { %>
     <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-        <script src="/js/data/addFormListener.js"></script>
+        <%- include(`${partials}/notes/note_table`) %>
         <script src='/js/add.js'></script>
         <script src='/js/edit.js'></script>
         <script src="/js/data/send.js"></script>
+        <script src="/js/data/addFormListener.js"></script>
         <script src="/js/notes/showNotes.js"></script>
         <script async>getNotes()</script>
-        <%- include(`${partials}/notes/note_table`) %>
+        <% if (permissions.note_add) { %>
+            <script src="/js/notes/addNote.js"></script>
+        <% } %>
     </div>
 <% } %>
