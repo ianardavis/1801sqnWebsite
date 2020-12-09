@@ -68,6 +68,7 @@ port_check()
     console.log('   Set');
 
     console.log('Routes:');
+    require('./routes/common') (app, m);
     require('./routes/stores') (app, m);
     require('./routes/canteen')(app, m);
     require('./routes/users')  (app, m);

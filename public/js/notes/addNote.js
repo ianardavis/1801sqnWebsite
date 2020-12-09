@@ -3,7 +3,6 @@ let _table       = document.querySelector('#_table'),
     btn_add_note = document.querySelector('#btn_add_note');
 if (_table) _table.setAttribute('value', path[2]);
 if (_id)    _id.setAttribute('value', path[3]);
-// if (btn_add_note) btn_add_note.addEventListener('click', function () {$('#mdl_add_note').modal('show')});
 addFormListener(
     'form_add_note',
     'POST',

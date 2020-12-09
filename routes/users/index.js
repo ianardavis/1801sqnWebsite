@@ -4,7 +4,6 @@ module.exports = (app, m) => {
     var allowed  = require(`${process.env.ROOT}/middleware/allowed.js`),
         permissions = require(`${process.env.ROOT}/middleware/permissions.js`)(m.users.permissions);
     require('./includes')(inc, m);
-
     app.get('/users',              permissions, allowed('access_users',    {send: true}), (req, res) => res.render('users/index'));
     app.get('/users/get/statuses', permissions,                                           (req, res) => {
         m.users.statuses.findAll({

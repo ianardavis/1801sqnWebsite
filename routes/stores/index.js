@@ -4,6 +4,7 @@ module.exports = (app, m) => {
         permissions = require(`${process.env.ROOT}/middleware/permissions.js`)(m.stores.permissions),
         utils    = require(`${process.env.ROOT}/fn/utils`),
         fs       = require("fs");
+    require('./includes.js')(inc, m);
     fs
     .readdirSync(__dirname)
     .filter(function(file) {
@@ -11,7 +12,7 @@ module.exports = (app, m) => {
     })
     .forEach(function(file) {
         if (file === 'includes.js') {
-            require(`./${file}`)(inc, m);
+
         } else if (file === 'users.js') {
             require(`./${file}`)(app, allowed, inc, permissions, m);
         } else {
@@ -25,11 +26,11 @@ module.exports = (app, m) => {
         if (req.query.file) utils.download(req.query.file, req, res);
     });
 
-    app.get('/stores/get/notifications', permissions, allowed('access_stores'), (req, res) => {
-        m.stores.notifications.findAll({
-            where: {user_id: req.user.user_id}
-        })
-        .then(notifications => res.send({result: true, notifications: notifications}))
-        .catch(err => res.error.send(err, res));
-    });
+    // app.get('/stores/get/notifications', permissions, allowed('access_stores'), (req, res) => {
+    //     m.stores.notifications.findAll({
+    //         where: {user_id: req.user.user_id}
+    //     })
+    //     .then(notifications => res.send({result: true, notifications: notifications}))
+    //     .catch(err => res.error.send(err, res));
+    // });
 };
