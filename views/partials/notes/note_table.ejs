@@ -10,23 +10,6 @@
     </table>
     <div id="note_modals"></div>
     <% if (permissions.note_add) { %>
-        <div id='mdl_add_note' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_add_note'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Note</h5>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name='note[_table]' id='_table'>
-                        <input type="hidden" name='note[_id]'    id='_id'>
-                        <%- include(`${partials}/inputs/textarea`, {name: 'note[_note]', id: '_note', title: 'Notes', maxlength: 1000, rows: 5, required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Note'>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        
     <% } %>
 <% } %>
