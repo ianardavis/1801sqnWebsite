@@ -1,9 +1,9 @@
 <% if (permissions.note_add) { %>
-    <a id='note_add' class='dropdown-item'>
+    <button id='btn_add_note' class='dropdown-item dropdown_button'>
         Add Note
-    </a>
+    </button>
     <script>
-        let btn_add_note = document.querySelector('#note_add');
-        btn_add_note.setAttribute('href',`javascript:add("notes",{"queries":"table=${path[2]}&id=${path[3]}"})`);
+        let btn_add_note = document.querySelector('#btn_add_note');
+        btn_add_note.addEventListener('click', function () {$('#mdl_add_note').modal('show')});
     </script>
 <% } %>

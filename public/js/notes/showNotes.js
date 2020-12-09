@@ -1,4 +1,4 @@
-function getNotes(perms = {}){
+function getNotes(){
     get(
         function (notes, options) {
             clearElement('tbl_notes');
@@ -13,15 +13,14 @@ function getNotes(perms = {}){
                         text: new Date(note.createdAt).toDateString()
                     });
                     add_cell(row, {text: note._note, ellipsis: true});
-                    add_note_modal(note, row, options.permissions);
+                    add_note_modal(note, row);
                 });
             };
         },
         {
             db:    path[1],
             table: 'notes',
-            query: note_query(),
-            permissions: perms
+            query: note_query()
         }
     );
 };
@@ -32,7 +31,7 @@ function note_query () {
     if (sel_notes.value !== '') query.push(sel_notes.value);
     return query;
 };
-function add_note_modal (note, row, permissions) {
+function add_note_modal (note, row) {
     let div_modals = document.querySelector('#note_modals');
     add_cell(row, {append: new Modal_Link({id: `note_${note.note_id}`}).e, id: `mdl_cell_note_${note.note_id}`});
     div_modals.appendChild(new Modal({id: `note_${note.note_id}`, static: true}).e);
@@ -49,23 +48,20 @@ function add_note_modal (note, row, permissions) {
         let mdl_header = document.querySelector(`#mdl_note_${note.note_id}_header`),
             btn_container = document.createElement('div');
         btn_container.classList.add('float-right');
-        if (permissions.edit) {
-            btn_container.appendChild(new Link({
-                href: `javascript:edit("notes",${note.note_id})`,
+        btn_container.appendChild(new Link({
+            href: `javascript:edit("notes",${note.note_id})`,
+            float: true,
+            type: 'edit'
+        }).e);
+        btn_container.appendChild(
+            new Delete_Button({
+                path: `/stores/notes/${note.note_id}`,
                 float: true,
-                type: 'edit'
-            }).e)
-        };
-        if (permissions.delete) {
-            btn_container.appendChild(
-                new Delete_Button({
-                    path: `/stores/notes/${note.note_id}`,
-                    float: true,
-                    descriptor: 'note',
-                    options: {onComplete: getNotes, args: []}
-                }).e
-            );
-        };
+                descriptor: 'note',
+                options: {onComplete: getNotes}
+            }).e
+        );
         mdl_header.appendChild(btn_container);
     };
 };
+document.querySelector('#reload').addEventListener('click', getNotes);

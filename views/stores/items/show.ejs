@@ -30,8 +30,8 @@
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sizes',   title: 'Sizes', count_id: 'size_count', permission: 'access_sizes'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sizes',   title: 'Sizes', count_id: 'size_count', spinner: 'sizes', permission: 'access_sizes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', spinner: 'notes', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -45,7 +45,6 @@
         </div>
         <% if (permissions.access_sizes) { %>
             <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
-                <%- include(`${partials}/spinner`, {id: 'sizes'}) %>
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
                         <th class='w-50' onclick='sortTable(0, "tbl_sizes")' id='size_text'></th>
@@ -124,78 +123,12 @@
     <script src='/js/stores/items/show/getSizes.js'></script>
     <script async>getSizes()</script>
     <% if (permissions.size_add) { %>
-        <script>
-            function getSuppliers() {
-                get(
-                    function (suppliers, options) {
-                        let sel_suppliers = document.querySelector('#supplier_id');
-                        if (sel_suppliers) {
-                            sel_suppliers.innerHTML = '';
-                            sel_suppliers.appendChild(new Option({value: '', text: '', selected: true}).e);
-                            suppliers.forEach(e => {
-                                sel_suppliers.appendChild(new Option({value: e.supplier_id, text: e._name}).e);
-                            })
-                        }
-                    },
-                    {
-                        table: 'suppliers',
-                        query: []
-                    }
-                );
-            };
-            getSuppliers();
-            document.querySelector('#reset_add_size').addEventListener('click', getSuppliers);
-            function resetAddSize() {
-                ['_issueable', '_orderable', '_nsns', '_serials'].forEach(e => {
-                    let select = document.querySelector(`#${e}`);
-                    if (select) select.value = '0';
-                });
-                ['_demand_page', '_demand_cell', '_size'].forEach(e => {
-                    let select = document.querySelector(`#${e}`);
-                    if (select) select.value = '';
-                });
-                let select1 = document.querySelector('#_ordering_details');
-                if (select1) select1.innerText = '';
-                let select2 = document.querySelector('#supplier_id');
-                if (select2) select2.value = '';
-            };
-            document.querySelector('#reset_add_size').addEventListener('click', resetAddSize);
-            window.addEventListener('load', function () {
-                addFormListener(
-                    'form_add_size',
-                    'POST',
-                    '/stores/sizes',
-                    {onComplete: [
-                        getSizes,
-                        function () {
-                            ['_demand_cell', '_size'].forEach(e => {
-                                let select = document.querySelector(`#${e}`);
-                                if (select) select.value = '';
-                            });
-                        }
-                    ]}
-                );
-            })
-        </script>
+        <script src='/js/stores/items/show/addSize.js'></script>
+        <script async>getSuppliers()</script>
     <% } %>
 <% } %>
 <% if (permissions.item_edit) { %>
     <script src='/js/stores/items/show/getItemEdit.js'></script>
     <script async>getItemEdit()</script>
-    <script>
-        window.addEventListener('load', function () {
-            let btn_edit = document.querySelector('#btn_edit');
-            if (btn_edit) btn_edit.addEventListener('click', function () {$("#mdl_edit_item").modal("show")});
-            addFormListener(
-                'form_edit_item',
-                'PUT',
-                `/stores/items/${path[3]}`,
-                {onComplete: [
-                    getItem,
-                    function () {$('#mdl_edit_item').modal('hide')}
-                ]}
-            )
-        });
-    </script>
 <% } %>
 <%- include(`${partials}/foot/htmlClose`) %>

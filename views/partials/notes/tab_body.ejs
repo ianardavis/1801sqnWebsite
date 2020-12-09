@@ -5,19 +5,6 @@
         <script src='/js/edit.js'></script>
         <script src="/js/data/send.js"></script>
         <script src="/js/notes/showNotes.js"></script>
-        <script>
-            document.querySelector('#reload').addEventListener('click', function () {
-                getNotes({
-                    delete: <%= permissions.note_delete || false %>,
-                    edit:   <%= permissions.note_edit   || false %>
-                });
-            });
-        </script>
-        <script async>
-            getNotes({
-                delete: <%= permissions.note_delete || false %>,
-                edit:   <%= permissions.note_edit   || false %>
-            });
-        </script>
+        <script async>getNotes()</script>
     </div>
 <% } %>

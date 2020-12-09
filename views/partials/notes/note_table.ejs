@@ -11,7 +11,7 @@
     </div>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-30" onclick="sortTable(0, 'tbl_notes')"><%- include(`${partials}/spinner`, {id: 'notes', spinner_sm: true, spinner_float_left: true}) %>Date</th>
+            <th class="w-30" onclick="sortTable(0, 'tbl_notes')">Date</th>
             <th class="w-70" onclick="sortTable(1, 'tbl_notes')">Note</th>
             <th><i class="fas fa-search"></i></th>
         </thead>
@@ -19,4 +19,45 @@
         </tbody>
     </table>
     <div id="note_modals"></div>
+    <% if (permissions.note_add) { %>
+        <div id='mdl_add_note' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_add_note'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Note</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name='note[_table]' id='_table'>
+                        <input type="hidden" name='note[_id'     id='_id'>
+                        <%- include(`${partials}/inputs/textarea`, {name: 'note[_note]', id: '_note', title: 'Notes', maxlength: 1000, rows: 5, required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Note'>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            let _table = document.querySelector('#_table'),
+                _id    = document.querySelector('#_id');
+            if (_table) _table.setAttribute('value', path[2]);
+            if (_id)    _id.setAttribute('value', path[3]);
+            addFormListener(
+                'form_add_note',
+                'POST',
+                `/${path[1]}/notes`,
+                {
+                    onComplete: [
+                        getNotes,
+                        function () {
+                            let _note = document.querySelector('#_note');
+                            if (_note) _note.innerText = '';
+                            $('#mdl_add_note').modal('hide');
+                        }
+                    ]
+                }
+            );
+        </script>
+    <% } %>
 <% } %>
