@@ -25,12 +25,4 @@ module.exports = (app, m) => {
     app.get('/stores/download',          permissions, allowed('file_download'), (req, res) => {
         if (req.query.file) utils.download(req.query.file, req, res);
     });
-
-    // app.get('/stores/get/notifications', permissions, allowed('access_stores'), (req, res) => {
-    //     m.stores.notifications.findAll({
-    //         where: {user_id: req.user.user_id}
-    //     })
-    //     .then(notifications => res.send({result: true, notifications: notifications}))
-    //     .catch(err => res.error.send(err, res));
-    // });
 };
