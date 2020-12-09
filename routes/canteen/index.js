@@ -26,9 +26,4 @@ module.exports = (app, m) => {
         .then(settings => res.send({result: true, settings: settings}))
         .catch(err => res.error.send(err, res));
     });
-    // app.get('/canteen/get/notifications', permissions, allowed('access_canteen'), (req, res) => {
-    //     m.canteen.notifications.findAll({where: {user_id: req.user.user_id}})
-    //     .then(notifications => res.send({result: true, notifications: notifications}))
-    //     .catch(err => res.error.send(err, res));
-    // });
 };
