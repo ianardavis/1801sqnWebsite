@@ -1,4 +1,4 @@
-module.exports = (app, allowed, inc, permissions, m, db) => {
+module.exports = (app, allowed, permissions, m, db) => {
     let permission_tree = {
         stores: [
             {_permission: 'access_stores', children: [
