@@ -18,4 +18,8 @@ module.exports = (app, m) => {
     require(`./permissions`)(app, allowed, permissions_stores,  m.stores,  'stores');
     require(`./permissions`)(app, allowed, permissions_canteen, m.canteen, 'canteen');
     require(`./permissions`)(app, allowed, permissions_users,   m.users,   'users');
+    
+    require(`./users`)(app, allowed, permissions_stores,  'stores');
+    require(`./users`)(app, allowed, permissions_canteen, 'canteen');
+    require(`./users`)(app, allowed, permissions_users,   'users');
 };
