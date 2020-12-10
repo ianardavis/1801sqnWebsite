@@ -5,7 +5,7 @@
             <%- include(`${partials}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
             <%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
 			<% if (permissions.item_add) { %>
-				<%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', href: 'javascript:$("#mdl_add_item").modal("show")'}) %>
+				<%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_item'}) %>
 			<% } %>
 			<%- include(`${partials}/reload`) %>
             <%- include(`${partials}/spinner`, {id: 'items'}) %>
@@ -24,8 +24,7 @@
 			<th class='w-100' onclick='sortTable(0, "tbl_items")'>Description</th>
 			<th><i class='fas fa-search'></i></th>
 		</thead>
-		<tbody id='tbl_items'>
-		</tbody>
+		<tbody id='tbl_items'></tbody>
 	</table>
     <% if (permissions.item_add) { %>
         <div id='mdl_add_item' class="modal" tabindex="-1" role="dialog">
@@ -115,6 +114,12 @@
 		</script>
 	<% } %>
 <% }) %>
+<% if (permissions.item_add) { %>
+	<script>
+		let btn_add_item = document.querySelector('#btn_add_item');
+		if (btn_add_item) btn_add_item.addEventListener('click', function () {$('#mdl_add_item').modal('show')});
+	</script>
+<% } %>
 <script>
 	window.addEventListener( "load", () => {
 		let sel_categories = document.querySelector('#sel_categories'),

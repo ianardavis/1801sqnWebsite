@@ -1,11 +1,6 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
     let utils = require(process.env.ROOT + '/fn/utils');
-    app.get('/stores/sizes/new',      permissions, allowed('size_add'),                   (req, res) => {
-        m.items.findOne({where: {item_id: req.query.item_id}})
-        .then(item => res.render('stores/sizes/new', {item: item}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
     app.get('/stores/sizes/:id',      permissions, allowed('access_sizes'),               (req, res) => res.render('stores/sizes/show', {tab:  req.query.tab || 'details'}));
     app.get('/stores/sizes/:id/edit', permissions, allowed('size_edit'),                  (req, res) => res.render('stores/sizes/edit'));
 

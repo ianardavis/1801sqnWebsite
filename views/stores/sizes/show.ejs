@@ -45,14 +45,14 @@
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'nsns',     title: 'NSNs',     count_id: 'nsn_count',     permission: 'access_nsns',     _class: '_nsns_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'serials',  title: 'Serials',  count_id: 'serial_count',  permission: 'access_serials',  _class: '_serials_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock_count',   permission: 'access_stock',    _class: '_stock_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'requests', title: 'Requests', count_id: 'request_count', permission: 'access_requests', _class: '_issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'orders',   title: 'Orders',   count_id: 'order_count',   permission: 'access_orders',   _class: '_orderable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', permission: 'access_receipts', _class: '_orderable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues',   count_id: 'issue_count',   permission: 'access_issues',   _class: '_issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    count_id: 'note_count',    permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'nsns',     title: 'NSNs',     count_id: 'nsn_count',     spinner: 'nsns',          permission: 'access_nsns',     _class: '_nsns_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'serials',  title: 'Serials',  count_id: 'serial_count',  spinner: 'serials',       permission: 'access_serials',  _class: '_serials_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock_count',   spinner: 'stock',         permission: 'access_stock',    _class: '_stock_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'requests', title: 'Requests', count_id: 'request_count', spinner: 'request_lines', permission: 'access_requests', _class: '_issueable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'orders',   title: 'Orders',   count_id: 'order_count',   spinner: 'order_lines',   permission: 'access_orders',   _class: '_orderable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', spinner: 'receipt_lines', permission: 'access_receipts', _class: '_orderable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues',   count_id: 'issue_count',   spinner: 'issue_lines',   permission: 'access_issues',   _class: '_issueable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    count_id: 'note_count',    spinner: 'notes',         permission: 'access_notes'}) %>
         <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -69,173 +69,167 @@
         </div>
         <% if (permissions.access_nsns) { %>
             <div class="tab-pane fade" id="nsns" role="tabpanel" aria-labelledby="nsns-tab">
-                <%- include(`${partials}/spinner`, {id: 'nsns'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-80' onclick='sortTable(0, "nsnTable")' >NSN</th>
+                        <th class='w-80' onclick='sortTable(0, "tbl_nsns")'>NSN</th>
                         <th class='w-20'>Default</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
-                    <tbody id='nsnTable'>
-                    </tbody>
+                    <tbody id='tbl_nsns'></tbody>
                 </table>
             </div>
         <% } %>
         <% if (permissions.access_serials) { %>
             <div class="tab-pane fade serial_element" id="serials" role="tabpanel" aria-labelledby="serials-tab">
-                <%- include(`${partials}/spinner`, {id: 'serials'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-50' onclick='sortTable(0, "serialTable")' >Serial #</th>
-                        <th class='w-50' onclick='sortTable(1, "serialTable")'>Location</th>
+                        <th class='w-50' onclick='sortTable(0, "tbl_serials")' >Serial #</th>
+                        <th class='w-50' onclick='sortTable(1, "tbl_serials")'>Location</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
-                    <tbody id='serialTable'>
-                    </tbody>
+                    <tbody id='tbl_serials'></tbody>
                 </table>
             </div>
         <% } %>
         <% if (permissions.access_stock) { %>
             <div class="tab-pane fade" id="stock" role="tabpanel" aria-labelledby="stock-tab">
-                <%- include(`${partials}/spinner`, {id: 'stock'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-80' onclick='sortTable(0, "stockTable")'>Location</th>
-                        <th class='w-20' onclick='sortTable(1, "stockTable")'>Qty</th>
+                        <th class='w-80' onclick='sortTable(0, "tbl_stock")'>Location</th>
+                        <th class='w-20' onclick='sortTable(1, "tbl_stock")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
-                    <tbody id='stockTable'>
-                    </tbody>
+                    <tbody id='tbl_stock'></tbody>
                 </table>
             </div>
         <% } %>
         <% if (permissions.access_requests) { %>
             <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
-                <%- include(`${partials}/spinner`, {id: 'request_lines'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-80' onclick='sortTable(0, "requestTable")'>For</th>
-                        <th class='w-20' onclick='sortTable(1, "requestTable")'>Qty</th>
+                        <th class='w-80' onclick='sortTable(0, "tbl_requests")'>For</th>
+                        <th class='w-20' onclick='sortTable(1, "tbl_requests")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
-                    <tbody id='requestTable'>
-                    </tbody>
+                    <tbody id='tbl_requests'></tbody>
                 </table>
             </div>
         <% } %>
         <% if (permissions.access_orders) { %>
             <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-                <%- include(`${partials}/spinner`, {id: 'order_lines'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-80' onclick='sortTable(0, "orderTable")'>For</th>
-                        <th class='w-20' onclick='sortTable(1, "orderTable")'>Qty</th>
+                        <th class='w-80' onclick='sortTable(0, "tbl_orders")'>For</th>
+                        <th class='w-20' onclick='sortTable(1, "tbl_orders")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
-                    <tbody id='orderTable'>
-                    </tbody>
+                    <tbody id='tbl_orders'></tbody>
                 </table>
             </div>
         <% } %>
         <% if (permissions.access_receipts) { %>
             <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
-                <%- include(`${partials}/spinner`, {id: 'receipt_lines'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-80' onclick='sortTable(0, "receiptTable")'>Date</th>
-                        <th class='w-20' onclick='sortTable(1, "receiptTable")'>Location</th>
-                        <th class='w-20' onclick='sortTable(2, "receiptTable")'>Qty</th>
+                        <th class='w-80' onclick='sortTable(0, "tbl_receipts")'>Date</th>
+                        <th class='w-20' onclick='sortTable(1, "tbl_receipts")'>Location</th>
+                        <th class='w-20' onclick='sortTable(2, "tbl_receipts")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
-                    <tbody id='receiptTable'>
-                    </tbody>
+                    <tbody id='tbl_receipts'></tbody>
                 </table>
             </div>
         <% } %>
         <% if (permissions.access_issues) { %>
             <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-                <%- include(`${partials}/spinner`, {id: 'issue_lines'}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-20' onclick='sortTable(0, "issueTable")'>Date</th>
-                        <th class='w-60' onclick='sortTable(1, "issueTable")'>To</th>
-                        <th class='w-20' onclick='sortTable(2, "issueTable")'>Qty</th>
+                        <th class='w-20' onclick='sortTable(0, "tbl_issues")'>Date</th>
+                        <th class='w-60' onclick='sortTable(1, "tbl_issues")'>To</th>
+                        <th class='w-20' onclick='sortTable(2, "tbl_issues")'>Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
-                    <tbody id='issueTable'>
-                    </tbody>
+                    <tbody id='tbl_issues'></tbody>
                 </table>
             </div>
         <% } %>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
+    <% if (permissions.size_edit) { %>
+        <div id='mdl_edit_size' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_edit_size'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Size</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_issueable]',        title: 'Issueable',        id: '_issueable_edit'}) %>
+                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',        title: 'Orderable',        id: '_orderable_edit'}) %>
+                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',          title: 'Has Serial #',     id: '_serials_edit'}) %>
+                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_nsns]',             title: 'Has NSNs',         id: '_nsns_edit'}) %>
+                        <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]',       title: 'Supplier',         id: 'supplier_id_edit', spinner: true, spinner_id: 'suppliers'}) %>
+                        <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_page]',      title: 'Demand Page',      id: '_demand_page_edit',      maxlength: 20}) %>
+                        <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_cell]',      title: 'Cell',             id: '_demand_cell_edit',      maxlength: 3}) %>
+                        <%- include(`${partials}/inputs/textarea`,      {name: 'size[_ordering_details]', title: 'Ordering Details', id: '_ordering_details_edit', maxlength: 1000, rows: 5}) %>
+                        <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size_edit',              maxlength: 15,   placeholder: 'Required', required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
 </section>
 <%- include(`${partials}/foot/full`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
-<script src='/js/show.js'></script>
-<script src="/js/stores/sizes/show/size.js"></script>
 <script>showTab('<%= tab %>');</script>
-<script>
-    getSize = () => get(showSize, {table: 'sizes', query: [`size_id=${path[3]}`]})
-    document.querySelector('#reload').addEventListener('click', () => getSize());
-</script>
+<script src='/js/show.js'></script>
+<script src="/js/stores/sizes/show/getSize.js"></script>
 <script async>getSize()</script>
 <% if (permissions.access_nsns) {%>
-    <script src="/js/sizes/show/nsns.js"></script>
-    <script>
-        getNSNs = () => get(showNSNs, {table: 'nsns', query: [`size_id=${path[3]}`]});
-        document.querySelector('#reload').addEventListener('click', () => getNSNs());
-    </script>
+    <script src="/js/stores/sizes/show/getNSNs.js"></script>
     <script async>getNSNs()</script>
 <% } %>
 <% if (permissions.access_serials) {%>
-    <script src="/js/sizes/show/serials.js"></script>
-    <script>
-        getSerials = () => get(showSerials, {table: 'serials', query: [`size_id=${path[3]}`]});
-        document.querySelector('#reload').addEventListener('click', () => getSerials());
-    </script>
+    <script src="/js/stores/sizes/show/getSerials.js"></script>
     <script async>getSerials()</script>
 <% } %>
 <% if (permissions.access_stock) {%>
-    <script src="/js/sizes/show/stock.js"></script>
-    <script>
-        getStock = () => get(showStock, {table: 'stock', query: [`size_id=${path[3]}`]});
-        document.querySelector('#reload').addEventListener('click', () => getStock());
-    </script>
+    <script src="/js/stores/sizes/show/getStock.js"></script>
     <script async>getStock()</script>
 <% } %>
 <% if (permissions.access_requests) {%>
-    <script src="/js/sizes/show/requests.js"></script>
-    <script>
-        getRequests = () => get(showRequests, {table: 'request_lines', query: [`size_id=${path[3]}`]});
-        document.querySelector('#reload').addEventListener('click', () => getRequests());
-    </script>
+    <script src="/js/stores/sizes/show/getRequests.js"></script>
     <script async>getRequests()</script>
 <% } %>
 <% if (permissions.access_orders) {%>
-    <script src="/js/sizes/show/orders.js"></script>
-    <script>
-        getOrders = () => get(showOrders, {table: 'order_lines', query: [`size_id=${path[3]}`]});
-        document.querySelector('#reload').addEventListener('click', () => getOrders());
-    </script>
+    <script src="/js/stores/sizes/show/getOrders.js"></script>
     <script async>getOrders()</script>
 <% } %>
 <% if (permissions.access_receipts) {%>
-    <script src="/js/sizes/show/receipts.js"></script>
-    <script>
-        getReceipts = () => get(showReceipts, {table: 'receipt_lines', query: [`size_id=${path[3]}`]});
-        document.querySelector('#reload').addEventListener('click', () => getReceipts());
-    </script>
+    <script src="/js/stores/sizes/show/getReceipts.js"></script>
     <script async>getReceipts()</script>
 <% } %>
 <% if (permissions.access_issues) {%>
-    <script src="/js/sizes/show/issues.js"></script>
-    <script>
-        getIssues = () => get(showIssues, {table: 'issue_lines', query: [`size_id=${path[3]}`]});
-        document.querySelector('#reload').addEventListener('click', () => getIssues());
-    </script>
+    <script src="/js/stores/sizes/show/getIssues.js"></script>
     <script async>getIssues()</script>
+<% } %>
+<% if (permissions.size_edit) { %>
+    <script src="/js/stores/sizes/show/getSizeEdit.js"></script>
+    <script async>getSizeEdit()</script>
+    <script>
+        window.addEventListener('load', function () {
+            addFormListener(
+                'form_edit_size',
+                'PUT',
+                `/stores/sizes/${path[3]}`,
+                {onComplete: [getSize, getSizeEdit]}
+            );
+        });
+    </script>
 <% } %>
 <%- include(`${partials}/foot/htmlClose`) %>

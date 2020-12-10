@@ -52,8 +52,6 @@ function getItemEdit() {
 };
 document.querySelector('#reload').addEventListener('click', getItemEdit);
 window.addEventListener('load', function () {
-    let btn_edit = document.querySelector('#btn_edit');
-    if (btn_edit) btn_edit.addEventListener('click', function () {$("#mdl_edit_item").modal("show")});
     addFormListener(
         'form_edit_item',
         'PUT',

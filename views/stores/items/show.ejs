@@ -6,7 +6,6 @@
             <%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
             <%- include(`${partials}/breadcrumb`) %>
             <%- include(`${partials}/reload`) %>
-            <%- include(`${partials}/spinner`, {id: 'item'}) %>
         </ul>
     </nav>
 </section>
@@ -18,18 +17,18 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.item_edit) { %>
-                    <button id='btn_edit' class='dropdown-item dropdown_button'>Edit</button>
+                    <button id='btn_edit' class='dropdown-item dropdown_button' data-toggle="modal" data-target="#mdl_edit_item">Edit</button>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.item_delete) { %>
                     <%- include(`${partials}/menu/delete`) %>
                 <% } %>
                 <% if (permissions.size_add) { %>
-                    <button id='btn_add_size' class='dropdown-item dropdown_button'>Add Size</button>
+                    <button id='btn_add_size' class='dropdown-item dropdown_button' data-toggle="modal" data-target="#mdl_add_size">Add Size</button>
                 <% } %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details',                       spinner: 'item'}) %>
         <%- include(`${partials}/tab_head`, {id: 'sizes',   title: 'Sizes', count_id: 'size_count', spinner: 'sizes', permission: 'access_sizes'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', spinner: 'notes', permission: 'access_notes'}) %>
     </ul>
