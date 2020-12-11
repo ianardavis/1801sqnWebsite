@@ -60,7 +60,7 @@ function getNSNs() {
                             nav_bodies.appendChild(nav_body_1)
                             nav_bodies.appendChild(nav_body_2);
                             nav.appendChild(nav_bodies);
-                            mdl_body.appendChild(nav);
+                            modal_body.appendChild(nav);
                         };
                     }
                 });
