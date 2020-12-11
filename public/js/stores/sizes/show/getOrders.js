@@ -2,8 +2,8 @@ function getOrders() {
     get(
         function (lines, options) {
             try {
-                clearElement('orderTable');
-                let table_body  = document.querySelector('#orderTable');
+                clearElement('tbl_orders');
+                let table_body  = document.querySelector('#tbl_orders');
                 set_count({id: 'order', count: lines.length});
                 lines.forEach(line => {
                     let row = table_body.insertRow(-1);

@@ -2,8 +2,8 @@ function getRequests() {
     get(
         function (lines, options) {
             try {
-                clearElement('requestTable');
-                let table_body    = document.querySelector('#requestTable');
+                clearElement('tbl_requests');
+                let table_body = document.querySelector('#tbl_requests');
                 set_count({id: 'request', count: lines.length});
                 lines.forEach(line => {
                     let row = table_body.insertRow(-1);

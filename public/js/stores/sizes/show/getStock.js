@@ -2,8 +2,8 @@ function getStock() {
     get(
         function (stock, options) {
             try {
-                clearElement('stockTable');
-                let table_body  = document.querySelector('#stockTable');
+                clearElement('tbl_stock');
+                let table_body  = document.querySelector('#tbl_stock');
                 set_count({id: 'stock', count: stock.length});
                 stock.forEach(stk => {
                     let row = table_body.insertRow(-1);

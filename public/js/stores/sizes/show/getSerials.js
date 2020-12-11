@@ -2,8 +2,8 @@ function getSerials() {
     get(
         function (serials, options) {
             try {
-                clearElement('serialTable');
-                let table_body = document.querySelector('#serialTable');
+                clearElement('tbl_serials');
+                let table_body = document.querySelector('#tbl_serials');
                 set_count({id: 'serial', count: serials.length});
                 serials.forEach(serial => {
                     let row = table_body.insertRow(-1);

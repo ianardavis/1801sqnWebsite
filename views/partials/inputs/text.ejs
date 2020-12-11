@@ -5,6 +5,7 @@
         <% } else { %>
         <span class="input-group-text w-100"><%= title %></span>
         <% } %>
+        <% if (locals.spinner === true) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %><% } %>
     </div>
     <input
         class="form-control"
