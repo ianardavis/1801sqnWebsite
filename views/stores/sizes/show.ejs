@@ -241,6 +241,10 @@
 <% if (permissions.access_serials) { %>
     <script src="/js/stores/sizes/show/getSerials.js"></script>
     <script async>getSerials()</script>
+    <% if (permissions.serial_add) { %>
+        <script src="/js/stores/sizes/show/addSerials.js"></script>
+        <script async>getLocations()</script>
+    <% } %>
 <% } %>
 <% if (permissions.access_stock) { %>
     <script src="/js/stores/sizes/show/getStock.js"></script>
