@@ -13,6 +13,7 @@ function getNSNGroups() {
                     }).e);
                 });
             };
+            getNSNClassifications();
         },
         {
             table: 'nsn_groups',
@@ -45,12 +46,12 @@ function getNSNClassifications() {
     };
 };
 function getNSNCountries() {
-    let nsn_country_id        = document.querySelector('#nsn_country_id');
+    let nsn_country_id = document.querySelector('#nsn_country_id');
         if (nsn_country_id) {
         nsn_country_id.innerHTML = '';
         get(
             function (nsn_countries, options) {
-                nsn_countries.appendChild(new Option().e);
+                nsn_country_id.appendChild(new Option().e);
                 nsn_countries.forEach(e => {
                     nsn_countries_id.appendChild(new Option({
                         text: e._country,
