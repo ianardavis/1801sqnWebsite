@@ -8,7 +8,7 @@ function getNSNGroups() {
                 nsn_groups.forEach(e => {
                     nsn_group_id.appendChild(new Option({
                         text: `${e._code} | ${e._group}`,
-                        value: e._code,
+                        value: e.nsn_group_id,
                         selected: (e._code === 84)
                     }).e);
                 });
@@ -33,7 +33,7 @@ function getNSNClassifications() {
                     nsn_classifications.forEach(e => {
                         nsn_classification_id.appendChild(new Option({
                             text: `${e._code} | ${e._classification}`,
-                            value: e._code
+                            value: e.nsn_classification_id
                         }).e);
                     });
                 },
@@ -55,7 +55,7 @@ function getNSNCountries() {
                 nsn_countries.forEach(e => {
                     nsn_country_id.appendChild(new Option({
                         text: `${e._code} | ${e._country}`,
-                        value: e._code,
+                        value: e.nsn_country_id,
                         selected: (e._code === 99)
                     }).e);
                 });
