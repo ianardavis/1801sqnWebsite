@@ -188,8 +188,8 @@
                             <%- include(`${partials}/inputs/select`, {title: 'Group',          id: 'nsn_group_id',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Classification', id: 'nsn_classification_id', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Country',        id: 'nsn_country_id',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[_item_number]',   placeholder: 'Required', required: true, inputmode: 'numeric' maxLength: '8'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Default?',       name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',                                 name: 'nsn[_item_number]',          placeholder: 'Required', required: true, inputmode: 'numeric' maxLength: '8'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Default?',                                    name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
@@ -229,36 +229,36 @@
 <script src='/js/show.js'></script>
 <script src="/js/stores/sizes/show/getSize.js"></script>
 <script async>getSize()</script>
-<% if (permissions.access_nsns) {%>
+<% if (permissions.access_nsns) { %>
     <script src="/js/stores/sizes/show/getNSNs.js"></script>
     <script async>getNSNs()</script>
-    <% if (permissions.nsn_add) {%>
+    <% if (permissions.nsn_add) { %>
         <script src="/js/stores/sizes/show/addNSNs.js"></script>
         <script async>getNSNGroups()</script>
         <script async>getNSNCountries()</script>
     <% } %>
 <% } %>
-<% if (permissions.access_serials) {%>
+<% if (permissions.access_serials) { %>
     <script src="/js/stores/sizes/show/getSerials.js"></script>
     <script async>getSerials()</script>
 <% } %>
-<% if (permissions.access_stock) {%>
+<% if (permissions.access_stock) { %>
     <script src="/js/stores/sizes/show/getStock.js"></script>
     <script async>getStock()</script>
 <% } %>
-<% if (permissions.access_requests) {%>
+<% if (permissions.access_requests) { %>
     <script src="/js/stores/sizes/show/getRequests.js"></script>
     <script async>getRequests()</script>
 <% } %>
-<% if (permissions.access_orders) {%>
+<% if (permissions.access_orders) { %>
     <script src="/js/stores/sizes/show/getOrders.js"></script>
     <script async>getOrders()</script>
 <% } %>
-<% if (permissions.access_receipts) {%>
+<% if (permissions.access_receipts) { %>
     <script src="/js/stores/sizes/show/getReceipts.js"></script>
     <script async>getReceipts()</script>
 <% } %>
-<% if (permissions.access_issues) {%>
+<% if (permissions.access_issues) { %>
     <script src="/js/stores/sizes/show/getIssues.js"></script>
     <script async>getIssues()</script>
 <% } %>

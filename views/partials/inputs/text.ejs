@@ -1,11 +1,13 @@
 <div class="input-group mb-1">
     <div class="input-group-prepend w-<%= locals.prepend_size || 30 %>">
         <% if (locals.id) { %>          
-        <label class="input-group-text w-100" for='<%= id %>'><%= title %></label>
+            <label class="input-group-text w-100" for='<%= id %>'><%= title %></label>
         <% } else { %>
-        <span class="input-group-text w-100"><%= title %></span>
+            <span class="input-group-text w-100"><%= title %></span>
         <% } %>
-        <% if (locals.spinner === true) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %><% } %>
+        <% if (locals.spinner === true) { %>
+            <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
+        <% } %>
     </div>
     <input
         class="form-control"
