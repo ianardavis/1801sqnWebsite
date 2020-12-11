@@ -11,7 +11,9 @@ function getNSNs() {
                     let row  = table_body.insertRow(-1),
                         _nsn = `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`;
                     add_cell(row, {text: _nsn});
-                    add_cell(row, {id: `default${nsn.nsn_id}`, append: d_form});
+                    if (nsn.size.nsn_id === nsn.nsn_id) {
+                        add_cell(row, {html: '<i class="fas fa-check"></i>'});
+                    } else add_cell(row);
                     add_cell(row, {append: new Link({
                         href: `javascript:$('#mdl_nsn_${nsn.nsn_id}').modal('show')`,
                         small: true}).e}

@@ -4,11 +4,12 @@ module.exports = (app, allowed, inc, permissions, m) => {
     
     app.get('/stores/get/nsns',                permissions, allowed('access_nsns', {send: true}), (req, res) => {
         m.nsns.findAll({
-            where:   req.query,
+            where: req.query,
             include: [
                 inc.nsn_groups(),
                 inc.nsn_classifications(),
-                inc.nsn_countries()
+                inc.nsn_countries(),
+                inc.sizes({attributes: ['nsn_id']})
             ]
         })
         .then(nsns => res.send({result: true, nsns: nsns}))
