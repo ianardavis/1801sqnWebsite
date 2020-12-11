@@ -26,7 +26,7 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
     
     app.put(`/${db}/notes/:id`,      permissions, allowed('note_edit',    {send: true}), (req, res) => {
         m.notes.findOne({
-            where: {note_id: req.param.id},
+            where: {note_id: req.params.id},
             attributes: ['note_id', '_system']
         })
         .then(note => {
@@ -43,7 +43,7 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
     
     app.delete(`/${db}/notes/:id`,   permissions, allowed('note_delete',  {send: true}), (req, res) => {
         m.notes.findOne({
-            where: {note_id: req.param.id},
+            where: {note_id: req.params.id},
             attributes: ['note_id', '_system']
         })
         .then(note => {

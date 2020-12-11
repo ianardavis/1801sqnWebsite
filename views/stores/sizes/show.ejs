@@ -179,28 +179,83 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.nsn_add) { %>
-            <div id='mdl_add_nsn' class="modal" tabindex="-1" role="dialog">
+        <% if (permissions.access_nsns) { %>
+            <div id='mdl_view_nsn' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_add_nsn'>
+                    <form class="modal-content" id='form_view_nsn'>
                         <div class="modal-header">
-                            <h5 class="modal-title">Add NSN</h5>
+                            <h5 class="modal-title" id="_nsn_view"></h5>
                         </div>
                         <div class="modal-body">
-                            <input type="hidden" class='size_id' name='nsn[size_id]'>
-                            <%- include(`${partials}/inputs/select`, {title: 'Group',          id: 'nsn_group_id',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Classification', id: 'nsn_classification_id', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Country',        id: 'nsn_country_id',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',                                 name: 'nsn[_item_number]',          placeholder: 'Required', required: true, inputmode: 'numeric', maxLength: '8'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Default?',                                    name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
+                            <ul class="nav nav-tabs" id="nsnTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="nsn-view-tab" data-toggle="tab" href="#nsn-view" role="tab" aria-controls="nsn-view" aria-selected="true">
+                                        NSN
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="nsn-notes-tab" data-toggle="tab" href="#nsn-notes" role="tab" aria-controls="nsn-nottes" aria-selected="true">
+                                        Notes <span id="nsn_note_count"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content pt-3" id="nsnContent">
+                                <div class="tab-pane fade show active" id="nsn-view" role="tabpanel" aria-labelledby="nsn-view-tab">
+                                    <form id='form_nsn_edit'>
+                                        <%- include(`${partials}/inputs/select`,  {id: '_group',          title: 'Group',          disabled: true, name: 'nsn[_group]'}) %>
+                                        <%- include(`${partials}/inputs/select`,  {id: '_classification', title: 'Classification', disabled: true, name: 'nsn[_classification]'}) %>
+                                        <%- include(`${partials}/inputs/select`,  {id: '_country',        title: 'Country',        disabled: true, name: 'nsn[_country]'}) %>
+                                        <%- include(`${partials}/inputs/text`,    {id: '_item_number',    title: 'Item Number',    disabled: true, name: 'nsn[_item_number]'}) %>
+                                        <%- include(`${partials}/inputs/display`, {id: '_default',        title: 'Is Default?'}) %>
+                                        <a class='float-left hidden' id='nsn_edit_cancel'>Cancel</a>
+                                    </form>
+                                </div>
+                                <div class="tab-pane fade" id="nsn-notes" role="tabpanel" aria-labelledby="nsn-notes-tab">
+                                    <%- include(`${partials}/inputs/select`, {id: 'nsn_sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '_system=0', selected: true}, {text: 'Only', value: '_system=1'}]}) %>
+                                    <table class="table table-sm table-hover">
+                                        <thead class="thead-dark">
+                                            <th class="w-20" onclick="sortTable(0, 'tbl_nsn_notes')">Date</th>
+                                            <th class="w-10" onclick="sortTable(1, 'tbl_nsn_notes')">Sys</th>
+                                            <th class="w-40" onclick="sortTable(2, 'tbl_nsn_notes')">Note</th>
+                                            <th class="w-30" onclick="sortTable(3, 'tbl_nsn_notes')">User</th>
+                                            <th><i class="fas fa-pencil-alt"></i></th>
+                                            <th><i class="fas fa-trash-alt"></i></th>
+                                        </thead>
+                                        <tbody id="tbl_nsn_notes"></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                            <input type="submit" form='form_nsn_edit' class="btn btn-success w-100 hidden confirm" value='Save Size'>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </form>
                 </div>
             </div>
+            <% if (permissions.nsn_add) { %>
+                <div id='mdl_add_nsn' class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <form class="modal-content" id='form_add_nsn'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add NSN</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" class='size_id' name='nsn[size_id]'>
+                                <%- include(`${partials}/inputs/select`, {title: 'Group',          id: 'nsn_group_id',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Classification', id: 'nsn_classification_id', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Country',        id: 'nsn_country_id',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',                                 name: 'nsn[_item_number]',          placeholder: 'Required', required: true, inputmode: 'numeric', maxLength: '8'}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Default?',                                    name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
         <% } %>
         <% if (permissions.serial_add) { %>
             <div id='mdl_add_serial' class="modal" tabindex="-1" role="dialog">
@@ -230,6 +285,7 @@
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/show.js'></script>
+<script src='/js/utils/getLineNotes.js'></script>
 <script src="/js/stores/sizes/show/getSize.js"></script>
 <script async>getSize()</script>
 <% if (permissions.access_nsns) { %>

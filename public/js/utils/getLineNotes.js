@@ -1,11 +1,11 @@
-function get_line_notes(options = {}) {
-    let select = document.querySelector(`#sel_system_modal_line_${options.id}`),
+function getLineNotes(options = {}) {
+    let select = document.querySelector(`#mdl_${options.line_id}_sel_system`),
         query  = [`_table=${options.table}`, `_id=${options.id}`];
     if (select && select.value) query.push(select.value);
     get(
         function (notes, options = {}) {
-            clearElement(`note_lines_mdl_line_${options.line_id}`);
-            let table_body = document.querySelector(`#note_lines_mdl_line_${options.line_id}`);
+            clearElement(`mdl_${options.line_id}_note_lines`);
+            let table_body = document.querySelector(`#mdl_${options.line_id}_note_lines`);
             notes.forEach(note => {
                 let row = table_body.insertRow(-1);
                 add_cell(row, {
@@ -20,7 +20,7 @@ function get_line_notes(options = {}) {
         {
             table: 'notes',
             query: query,
-            line_id: options.id
+            line_id: options.line_id
         }
     );
 };

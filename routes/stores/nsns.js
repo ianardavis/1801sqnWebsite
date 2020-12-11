@@ -15,6 +15,22 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(nsns => res.send({result: true, nsns: nsns}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/nsn',                 permissions, allowed('access_nsns', {send: true}), (req, res) => {
+        m.nsns.findOne({
+            where: req.query,
+            include: [
+                inc.nsn_groups(),
+                inc.nsn_classifications(),
+                inc.nsn_countries(),
+                inc.sizes({attributes: ['nsn_id']})
+            ]
+        })
+        .then(nsn => {
+            if (nsn) res.send({result: true, nsn: nsn})
+            else     res.send({result: false, message: 'NSN not found'});
+        })
+        .catch(err => res.error.send(err, res));
+    });
     app.get('/stores/get/nsn_groups',          permissions, allowed('access_nsns', {send: true}), (req, res) => {
         m.nsn_groups.findAll({
             where: req.query

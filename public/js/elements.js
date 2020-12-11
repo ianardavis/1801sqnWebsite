@@ -84,6 +84,7 @@ function Link (options = {}) {
     else if (options.modal) {
         this.e.setAttribute('data-toggle', 'modal');
         this.e.setAttribute('data-target', `#mdl_${options.modal}`);
+        if (options.data) this.e.setAttribute('data-nsn_id', options.data);
     };
     if (options.id)     this.e.setAttribute('id', options.id);
     if (options.margin) this.e.classList.add('m-1');
@@ -405,7 +406,7 @@ function Modal_Notes (options = {}) {
         new Input_Group({
             title: 'System Notes',
             append: new Select({
-                id: `sel_system_modal_${options.id}`,
+                id: `mdl_${options.id}_sel_system`,
                 options: [
                     {value: '',          text: 'Include', selected: true},
                     {value: '_system=0', text: 'Exclude'},
@@ -416,25 +417,22 @@ function Modal_Notes (options = {}) {
     );
     let table = document.createElement('table'),
         head  = document.createElement('thead'),
-        col1  = document.createElement('th'),
-        col2  = document.createElement('th'),
-        col3  = document.createElement('th'),
         body  = document.createElement('tbody');
     table.classList.add('table', 'table-sm', 'table-hover');
     head.classList.add('thead-dark');
-    col1.classList.add('w-30');
-    col1.innerText = 'Date';
-    head.appendChild(col1);
-    col2.classList.add('w-40');
-    col2.innerText = 'Note';
-    head.appendChild(col2);
-    col3.classList.add('w-30');
-    col3.innerText = 'User';
-    head.appendChild(col3);
+    head.appendChild(new TH({width: '30', text: 'Date'}).e);
+    head.appendChild(new TH({width: '40', text: 'Note'}).e);
+    head.appendChild(new TH({width: '30', text: 'User'}).e);
     table.appendChild(head);
-    body.setAttribute('id', `note_lines_mdl_${options.id}`);
+    body.setAttribute('id', `mdl_${options.id}_note_lines`);
     table.appendChild(body);
     this.e.appendChild(table);
+};
+function TH (options = {}) {
+    this.e = document.createElement('th');
+    if (options.width) this.e.classList.add(`w-${options.width}`);
+    if      (options.text) this.e.innerText = options.text
+    else if (options.html) this.e.innerHTML = options.html;
 };
 function Tab (options = {}) {
     this.e = document.createElement('a');

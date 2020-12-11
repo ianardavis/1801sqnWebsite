@@ -17,6 +17,7 @@
         <% if (locals.value) { %>       value='<%= value %>'<% } %>
         <% if (locals.required) { %>    required<% } %>
         <% if (locals.readonly) { %>    readonly<% } %>
+        <% if (locals.disabled) { %>    disabled<% } %>
         <% if (locals.minLength) { %>   minlength='<%= minLength %>'<% } %>
         <% if (locals.maxLength) { %>   maxlength='<%= maxLength %>'<% } %>
         <% if (locals.inputmode) { %>   inputMode='<%= inputmode %>'<% } %>
