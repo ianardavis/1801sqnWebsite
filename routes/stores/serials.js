@@ -16,7 +16,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         else {
             m.locations.findOrCreate({where: {_location: req.body._location}})
             .then(([location, created]) => {
-                m.serials.create({...req.body.serial, ...{location_id: location.location_id}})
+                return m.serials.create({...req.body.serial, ...{location_id: location.location_id}})
                 .then(serial => res.send({result: true, message: 'Serial saved'}))
                 .catch(err => res.error.send(err, res));
             })

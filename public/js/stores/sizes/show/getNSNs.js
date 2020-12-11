@@ -3,7 +3,9 @@ function getNSNs() {
         function (nsns, options) {
             try {
                 clearElement('tbl_nsns');
-                let table_body = document.querySelector('#tbl_nsns');
+                clearElement('nsn_modals');
+                let table_body = document.querySelector('#tbl_nsns'),
+                    nsn_modals = document.querySelector('#nsn_modals');
                 set_count({id: 'nsn', count: nsns.length});
                 nsns.forEach(nsn => {
                     let row      = table_body.insertRow(-1),
@@ -27,8 +29,15 @@ function getNSNs() {
                         {onComplete: getNSNs}
                     )
                     add_cell(row, {append: new Link({
-                        href: `javascript:show("nsns",${nsn.nsn_id})`,
-                        small: true}).e});
+                        href: `javascript:$('#mdl_nsn_${nsn.nsn_id}').modal('show')`,
+                        small: true}).e}
+                    );
+                    if (nsn_modals) {
+                        nsn_modals.appendChild(new Modal({
+                            id: `nsn_${nsn.nsn_id}`,
+                            title: 'NSN'
+                        }).e)
+                    }
                 });
                 const XHR = new XMLHttpRequest();
                 XHR.addEventListener("load", event => {
