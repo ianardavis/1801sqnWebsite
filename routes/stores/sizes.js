@@ -64,11 +64,11 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(stock => {
             if (stock) res.error.send('Cannot delete a size whilst it has stock', res)
             else {
-                m.nsns.findOne({where: {size_id: req.params.id}})
+                return m.nsns.findOne({where: {size_id: req.params.id}})
                 .then(nsn => {
                     if (nsn) res.error.send('Cannot delete a size whilst it has NSNs assigned', res)
                     else {
-                        m.sizes.destroy({where: {size_id: req.params.id}})
+                        return m.sizes.destroy({where: {size_id: req.params.id}})
                         .then(result => res.send({result: true, message: 'Size deleted'}))
                         .catch(err => res.error.send(err, res));
                     };

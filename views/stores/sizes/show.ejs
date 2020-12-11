@@ -23,19 +23,13 @@
                 <div class="dropdown-divider"></div>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.nsn_add) { %> 
-                    <a class='dropdown-item' data-toggle="modal" data-target="#mdl_add_nsn">
-                        Add NSN
-                    </a> 
+                    <a class='dropdown-item'                  data-toggle="modal" data-target="#mdl_add_nsn"   >Add NSN</a> 
                 <% } %>
                 <% if (permissions.serial_add) { %> 
-                    <a class='dropdown-item _serials_element' data-toggle="modal" data-target="#mdl_add_serial">
-                        Add Serial
-                    </a> 
+                    <a class='dropdown-item _serials_element' data-toggle="modal" data-target="#mdl_add_serial">Add Serial</a> 
                 <% } %>
                 <% if (permissions.stock_add) { %>
-                    <a class='dropdown-item _stock_element'  data-toggle="modal" data-target="#mdl_add_stock">
-                        Add Stock Location
-                    </a>
+                    <a class='dropdown-item _stock_element'   data-toggle="modal" data-target="#mdl_add_stock" >Add Stock Location</a>
                 <% } %>
                 <% if (permissions.order_add) { %>
                     <a class='dropdown-item' id='add_order'>Add Order</a>
@@ -190,6 +184,7 @@
                             <h5 class="modal-title">Add NSN</h5>
                         </div>
                         <div class="modal-body">
+                            <input type="hidden" class='size_id' name='nsn[size_id]'>
                             <%- include(`${partials}/inputs/select`, {title: 'Group',          id: 'nsn_group_id',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Classification', id: 'nsn_classification_id', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Country',        id: 'nsn_country_id',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true}) %>

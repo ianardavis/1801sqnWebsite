@@ -22,16 +22,16 @@ function getSize() {
                     else if (element) element.innerText = value;
                 } catch (error) {console.log(error)};
             };
-            let breadcrumb = document.querySelector('#breadcrumb'),
-                _item      = document.querySelector('#_item'),
+            let _item      = document.querySelector('#_item'),
                 add_order  = document.querySelector('#add_order'),
-                _edit      = document.querySelector('#edit_link');
-            _item.innerText      = size.item._description;
-            _item.href           = `/stores/items/${size.item_id}`;
-            breadcrumb.innerText = `Size: ${size._size}`;
-            breadcrumb.href      = `/stores/sizes/${size.size_id}`;
-            if (add_order)  add_order.href  = '/stores/orders/new?user=-1';
-            if (_edit)      _edit.href      = `javascript:edit("sizes",${size.size_id})`;
+                _edit      = document.querySelector('#edit_link'),
+                size_IDs   = document.querySelectorAll('.size_id');
+            set_breadcrumb({text: `Size: ${size._size}`, href: `/stores/sizes/${size.size_id}`});
+            size_IDs.forEach(e => e.setAttribute('value', size.size_id));
+            _item.innerText = size.item._description;
+            _item.href      = `/stores/items/${size.item_id}`;
+            if (add_order) add_order.href  = '/stores/orders/new?user=-1';
+            if (_edit)     _edit.href      = `javascript:edit("sizes",${size.size_id})`;
         },
         {
             table: 'size',
