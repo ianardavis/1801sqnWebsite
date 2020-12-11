@@ -22,17 +22,17 @@
                 <div class="dropdown-divider"></div>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.nsn_add) { %> 
-                    <a class='dropdown-item' id='add_nsn' data-toggle="modal" data-target="#mdl_add_nsn">
+                    <a class='dropdown-item' data-toggle="modal" data-target="#mdl_add_nsn">
                         Add NSN
                     </a> 
                 <% } %>
                 <% if (permissions.serial_add) { %> 
-                    <a class='dropdown-item _serials_element' id='add_serial'>
+                    <a class='dropdown-item _serials_element' data-toggle="modal" data-target="#mdl_add_serial">
                         Add Serial
                     </a> 
                 <% } %>
                 <% if (permissions.stock_add) { %>
-                    <a class='dropdown-item _stock_element' id='add_stock'>
+                    <a class='dropdown-item _stock_element'  data-toggle="modal" data-target="#mdl_add_stock">
                         Add Stock Location
                     </a>
                 <% } %>
@@ -155,51 +155,56 @@
         <% } %>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
-    <% if (permissions.size_edit) { %>
-        <div id='mdl_edit_size' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_edit_size'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Size</h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_issueable]',        title: 'Issueable',        id: '_issueable_edit'}) %>
-                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',        title: 'Orderable',        id: '_orderable_edit'}) %>
-                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',          title: 'Has Serial #',     id: '_serials_edit'}) %>
-                        <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_nsns]',             title: 'Has NSNs',         id: '_nsns_edit'}) %>
-                        <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]',       title: 'Supplier',         id: 'supplier_id_edit',       spinner: true, spinner_id: 'suppliers'}) %>
-                        <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_page]',      title: 'Demand Page',      id: '_demand_page_edit',      maxlength: 20}) %>
-                        <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_cell]',      title: 'Cell',             id: '_demand_cell_edit',      maxlength: 3}) %>
-                        <%- include(`${partials}/inputs/textarea`,      {name: 'size[_ordering_details]', title: 'Ordering Details', id: '_ordering_details_edit', maxlength: 1000, rows: 5}) %>
-                        <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size_edit',              maxlength: 15,   placeholder: 'Required', required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                </form>
+    <div id="div_modals">
+        <% if (permissions.size_edit) { %>
+            <div id='mdl_edit_size' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_edit_size'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Size</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_issueable]',        title: 'Issueable',        id: '_issueable_edit'}) %>
+                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',        title: 'Orderable',        id: '_orderable_edit'}) %>
+                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',          title: 'Has Serial #',     id: '_serials_edit'}) %>
+                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_nsns]',             title: 'Has NSNs',         id: '_nsns_edit'}) %>
+                            <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]',       title: 'Supplier',         id: 'supplier_id_edit',       spinner: true, spinner_id: 'suppliers'}) %>
+                            <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_page]',      title: 'Demand Page',      id: '_demand_page_edit',      maxlength: 20}) %>
+                            <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_cell]',      title: 'Cell',             id: '_demand_cell_edit',      maxlength: 3}) %>
+                            <%- include(`${partials}/inputs/textarea`,      {name: 'size[_ordering_details]', title: 'Ordering Details', id: '_ordering_details_edit', maxlength: 1000, rows: 5}) %>
+                            <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size_edit',              maxlength: 15,   placeholder: 'Required', required: true}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-    <% } %>
-    <% if (permissions.nsn_add) { %>
-        <div id='mdl_add_nsn' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_add_nsn'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add NSN</h5>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`,          {title: 'NSN',      name: 'nsn[_nsn]', placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
-                        <%- include(`${partials}/inputs/select_yes_no`, {title: 'Default?', name: 'default',   selected: 0}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                </form>
+        <% } %>
+        <% if (permissions.nsn_add) { %>
+            <div id='mdl_add_nsn' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_add_nsn'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add NSN</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/select`, {title: 'NSN Group',          id: 'nsn_group_id',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'NSN Classification', id: 'nsn_classification_id', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'NSN Country',        id: 'nsn_country_id',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'NSN Item Number',    name: 'nsn[_item_number]',   placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Default?',           name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-    <% } %>
+        <% } %>
+    </div>
 </section>
 <%- include(`${partials}/foot/full`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
@@ -212,6 +217,11 @@
 <% if (permissions.access_nsns) {%>
     <script src="/js/stores/sizes/show/getNSNs.js"></script>
     <script async>getNSNs()</script>
+    <% if (permissions.nsn_add) {%>
+        <script src="/js/stores/sizes/show/addNSNs.js"></script>
+        <script async>getNSNGroups()</script>
+        <script async>getNSNCountries()</script>
+    <% } %>
 <% } %>
 <% if (permissions.access_serials) {%>
     <script src="/js/stores/sizes/show/getSerials.js"></script>
@@ -240,20 +250,5 @@
 <% if (permissions.size_edit) { %>
     <script src="/js/stores/sizes/show/getSizeEdit.js"></script>
     <script async>getSizeEdit()</script>
-    <script>
-        window.addEventListener('load', function () {
-            addFormListener(
-                'form_edit_size',
-                'PUT',
-                `/stores/sizes/${path[3]}`,
-                {
-                    onComplete: [
-                        getSize,
-                        getSizeEdit
-                    ]
-                }
-            );
-        });
-    </script>
 <% } %>
 <%- include(`${partials}/foot/htmlClose`) %>

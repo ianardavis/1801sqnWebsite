@@ -14,4 +14,17 @@ function getSizeEdit() {
         }
     );
 };
+window.addEventListener('load', function () {
+    addFormListener(
+        'form_edit_size',
+        'PUT',
+        `/stores/sizes/${path[3]}`,
+        {
+            onComplete: [
+                getSize,
+                getSizeEdit
+            ]
+        }
+    );
+});
 document.querySelector('#reload').addEventListener('click', getSizeEdit);

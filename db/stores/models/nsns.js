@@ -37,9 +37,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     '_nsn': {
       type: DataTypes.STRING(20),
-      allowNull: false,
-      comment: "null",
-      unique: true
+      allowNull: true,
+      comment: "null"
     },
     'createdAt': {
       type: DataTypes.DATE,

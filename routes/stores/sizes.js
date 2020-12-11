@@ -27,7 +27,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(size => {
-            if (size) res.send({result: true, sizes: sizes})
+            if (size) res.send({result: true, size: size})
             else      res.send({result: false, message: 'Size not found'});
         })
         .catch(err => res.error.send(err, res));
