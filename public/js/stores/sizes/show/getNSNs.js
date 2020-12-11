@@ -31,19 +31,10 @@ function getNSNs() {
                                 nav_body_1 = new Tab_Pane({id:{tab:`mdl_nsn_${nsn.nsn_id}_tab_1`,body:`mdl_nsn_${nsn.nsn_id}_body_1`},active:true}).e,
                                 nav_body_2 = new Tab_Pane({id:{tab:`mdl_nsn_${nsn.nsn_id}_tab_3`,body:`mdl_nsn_${nsn.nsn_id}_body_3`}}).e,
                                 modal_head = document.querySelector(`#mdl_nsn_${nsn.nsn_id}_header`),
-                                d_form   = document.createElement('form'),
-                                d_input  = document.createElement('input'),
-                                d_button = document.createElement('button');
-                            d_form.id     = `form_default_${nsn.nsn_id}`;
-                            d_form.classList.add('float-right');
-                            d_input.value = nsn.nsn_id;
-                            d_input.name  = 'size[nsn_id]';
-                            d_input.type  = 'hidden';
-                            d_form.appendChild(d_input);
-                            d_button.innerText = 'Make Default';
-                            d_button.classList.add('btn', 'btn-success', 'confirm');
-                            d_form.appendChild(d_button);
-                            modal_head.append(d_form);
+                                form       = new Form({id: `form_default_${nsn.nsn_id}`, classes: ['float-right']}).e;
+                            form.appendChild(new Input({ type: 'hidden',  name: 'size[nsn_id]', value: nsn.nsn_id}).e);
+                            form.appendChild(new Button({type: 'success', text: 'Make Default', confirm: true}).e);
+                            modal_head.append(form);
                             modal_head.appendChild(new Delete_Button({float: true, descriptor: 'NSN', path: `/stores/nsns/${nsn.nsn_id}`, options: {onComplete: getNSNs}}).e)
                             addFormListener(
                                 `form_default_${nsn.nsn_id}`,

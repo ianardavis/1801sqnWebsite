@@ -62,7 +62,7 @@ function Div (options = {}) {
 };
 function Form (options = {}) {
     this.e = document.createElement('form');
-    if (options.id) this.e.setAttribute('id', options.id);
+    if (options.id)      this.e.setAttribute('id', options.id);
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
     if (options.submit)  this.e.addEventListener('submit', options.submit);
     if (options.append)  options.append.forEach(a => this.e.appendChild(a));
@@ -158,14 +158,15 @@ function Button (options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
     if (options.classes)   options.classes.forEach(e => this.e.classList.add(e));
-    if (options.type)      this.e.classList.add(`btn-${options.type}`);
-    else                   this.e.classList.add('btn-primary');
-    if (options.small)     this.e.classList.add('btn-sm');
-    if      (options.text) this.e.innerText = options.text
-    else if (options.html) this.e.innerHTML = options.html;
-    if (options.id)        this.e.setAttribute('id', options.id);
-    if (options.disabled)  this.e.setAttribute('disabled', true);
-    if (options.click)     this.e.addEventListener('click', options.click);
+    if (options.type)              this.e.classList.add(`btn-${options.type}`);
+    if (options.confirm === true)  this.e.classList.add('confirm');
+    else                           this.e.classList.add('btn-primary');
+    if (options.small === true)    this.e.classList.add('btn-sm');
+    if      (options.text)         this.e.innerText = options.text
+    else if (options.html)         this.e.innerHTML = options.html;
+    if (options.id)                this.e.setAttribute('id', options.id);
+    if (options.disabled === true) this.e.setAttribute('disabled', true);
+    if (options.click)             this.e.addEventListener('click', options.click);
 };
 function Select (options = {}) {
     this.e = document.createElement('select');
