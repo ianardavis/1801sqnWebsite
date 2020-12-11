@@ -40,7 +40,7 @@
                     <a class='dropdown-item' id='add_order'>Add Order</a>
                 <% } %>
                 <% if (permissions.size_delete) { %>
-                    <%- include(`${partials}/delete`, {redirect: '/stores/items'}) %>
+                    <%- include(`${partials}/menu/delete`, {redirect: '/stores/items'}) %>
                 <% } %>
             </div>
         </li>
