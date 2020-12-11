@@ -20,7 +20,8 @@ function getNSNs() {
                     d_button.innerText = 'Make Default';
                     d_button.classList.add('btn', 'btn-sm', 'btn-success', 'confirm');
                     d_form.appendChild(d_button);
-                    add_cell(row, {text: `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`});
+                    let _nsn = `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`;
+                    add_cell(row, {text: _nsn});
                     add_cell(row, {id: `default${nsn.nsn_id}`, append: d_form});
                     addFormListener(
                         `form_default_${nsn.nsn_id}`,
@@ -36,7 +37,31 @@ function getNSNs() {
                         nsn_modals.appendChild(new Modal({
                             id: `nsn_${nsn.nsn_id}`,
                             title: 'NSN'
-                        }).e)
+                        }).e);
+                        let modal_body = document.querySelector(`#mdl_nsn_${nsn.nsn_id}_body`);
+                        if (modal_body) {
+                            let nav        = document.createElement('nav'),
+                                nav_tabs   = document.createElement('div'),
+                                nav_bodies = document.createElement('div'),
+                                nav_body_1 = new Tab_Pane({id:{tab:`mdl_nsn_${nsn.nsn_id}_tab_1`,body:`mdl_nsn_${nsn.nsn_id}_body_1`},active:true}).e,
+                                nav_body_2 = new Tab_Pane({id:{tab:`mdl_nsn_${nsn.nsn_id}_tab_3`,body:`mdl_nsn_${nsn.nsn_id}_body_3`}}).e;
+                            nav_tabs.classList.add('nav', 'nav-tabs');
+                            nav_tabs.setAttribute('role', 'tablist');
+                            nav_tabs.appendChild(new Tab({id:{tab:`mdl_nsn_${nsn.nsn_id}_tab_1`,body: `mdl_nsn_${nsn.nsn_id}_body_1`},text: 'Item',active: true}).e);
+                            nav_tabs.appendChild(new Tab({id:{tab:`mdl_nsn_${nsn.nsn_id}_tab_3`,body: `mdl_nsn_${nsn.nsn_id}_body_3`},text: 'Notes'}).e);
+                            nav.appendChild(nav_tabs);
+                            nav_bodies.classList.add('tab-content');
+                            nav_body_2.appendChild(new Modal_Notes({id: `nsn_${nsn.nsn_id}`}).e);
+                            nav_body_1.appendChild(new Input_Group({title: 'NSN', text: _nsn}).e);
+                            nav_body_1.appendChild(new Input_Group({title: 'Group',          text: nsn.group._group}).e);
+                            nav_body_1.appendChild(new Input_Group({title: 'Classification', text: nsn.classification._classification}).e);
+                            nav_body_1.appendChild(new Input_Group({title: 'Country',        text: nsn.country._country}).e);
+                            nav_body_1.appendChild(new Input_Group({title: 'Item Number',    text: nsn._item_number}).e);
+                            nav_bodies.appendChild(nav_body_1)
+                            nav_bodies.appendChild(nav_body_2);
+                            nav.appendChild(nav_bodies);
+                            mdl_body.appendChild(nav);
+                        };
                     }
                 });
                 const XHR = new XMLHttpRequest();

@@ -346,7 +346,8 @@ function Modal (options = {}) {
             nav_bodies = document.createElement('div'),
             nav_body_1 = new Tab_Pane({id:{tab:`mdl_line_${options.id}_tab_1`,body:`mdl_line_${options.id}_body_1`},active:true}).e,
             nav_body_2 = new Tab_Pane({id:{tab:`mdl_line_${options.id}_tab_2`,body:`mdl_line_${options.id}_body_2`}}).e,
-            nav_body_3 = new Tab_Pane({id:{tab:`mdl_line_${options.id}_tab_3`,body:`mdl_line_${options.id}_body_3`}}).e;nav_tabs.classList.add('nav', 'nav-tabs');
+            nav_body_3 = new Tab_Pane({id:{tab:`mdl_line_${options.id}_tab_3`,body:`mdl_line_${options.id}_body_3`}}).e;
+        nav_tabs.classList.add('nav', 'nav-tabs');
         nav_tabs.setAttribute('role', 'tablist');
         nav_tabs.appendChild(new Tab({id:{tab:`mdl_line_${options.id}_tab_1`,body: `mdl_line_${options.id}_body_1`},text: 'Item',active: true}).e);
         nav_tabs.appendChild(new Tab({id:{tab:`mdl_line_${options.id}_tab_2`,body: `mdl_line_${options.id}_body_2`},text: 'Dates'}).e);
