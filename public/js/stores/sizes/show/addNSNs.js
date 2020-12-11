@@ -4,7 +4,7 @@ function getNSNGroups() {
             let nsn_group_id = document.querySelector('#nsn_group_id');
             if (nsn_group_id) {
                 nsn_group_id.innerHTML = '';
-                nsn_group_id.appendChild(new Option().e);
+                nsn_group_id.appendChild(new Option({text: 'Select Group Code'}).e);
                 nsn_groups.forEach(e => {
                     nsn_group_id.appendChild(new Option({
                         text: `${e._code} | ${e._group}`,
@@ -29,7 +29,7 @@ function getNSNClassifications() {
         if (nsn_group_id.value !== '') {
             get(
                 function (nsn_classifications, options) {
-                    nsn_classification_id.appendChild(new Option({selected: true}).e);
+                    nsn_classification_id.appendChild(new Option({text: 'Select Classification Code', selected: true}).e);
                     nsn_classifications.forEach(e => {
                         nsn_classification_id.appendChild(new Option({
                             text: `${e._code} | ${e._classification}`,
@@ -51,7 +51,7 @@ function getNSNCountries() {
         nsn_country_id.innerHTML = '';
         get(
             function (nsn_countries, options) {
-                nsn_country_id.appendChild(new Option().e);
+                nsn_country_id.appendChild(new Option({text: 'Select Country Code'}).e);
                 nsn_countries.forEach(e => {
                     nsn_country_id.appendChild(new Option({
                         text: `${e._code} | ${e._country}`,
