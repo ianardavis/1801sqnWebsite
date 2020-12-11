@@ -53,7 +53,7 @@ function getNSNCountries() {
             function (nsn_countries, options) {
                 nsn_country_id.appendChild(new Option().e);
                 nsn_countries.forEach(e => {
-                    nsn_countries_id.appendChild(new Option({
+                    nsn_country_id.appendChild(new Option({
                         text: e._country,
                         value: e._code,
                         selected: (e._code === 99)
