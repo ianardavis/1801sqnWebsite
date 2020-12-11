@@ -187,7 +187,7 @@ function Option (options = {}) {
         } else if (options.default === true) _text = ' (default)';
     };
     this.e.value     = options.value || '';
-    this.e.innerText = pre_text + options.text || '' + _text;
+    this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
 };
 function Card (options = {}) {
     this.e = document.createElement('div');

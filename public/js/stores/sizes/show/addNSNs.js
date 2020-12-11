@@ -7,7 +7,7 @@ function getNSNGroups() {
                 nsn_group_id.appendChild(new Option().e);
                 nsn_groups.forEach(e => {
                     nsn_group_id.appendChild(new Option({
-                        text: e._group,
+                        text: `${e._code} | ${e._group}`,
                         value: e._code,
                         selected: (e._code === 84)
                     }).e);
@@ -32,7 +32,7 @@ function getNSNClassifications() {
                     nsn_classification_id.appendChild(new Option({selected: true}).e);
                     nsn_classifications.forEach(e => {
                         nsn_classification_id.appendChild(new Option({
-                            text: e._classification,
+                            text: `${e._code} | ${e._classification}`,
                             value: e._code
                         }).e);
                     });
@@ -54,7 +54,7 @@ function getNSNCountries() {
                 nsn_country_id.appendChild(new Option().e);
                 nsn_countries.forEach(e => {
                     nsn_country_id.appendChild(new Option({
-                        text: e._country,
+                        text: `${e._code} | ${e._country}`,
                         value: e._code,
                         selected: (e._code === 99)
                     }).e);
