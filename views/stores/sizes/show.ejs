@@ -6,7 +6,8 @@
             <%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
             <%- include(`${partials}/breadcrumb`, {id: '_item'}) %>
             <%- include(`${partials}/breadcrumb`) %>
-        </ul>
+            <%- include(`${partials}/reload`) %>
+    </ul>
     </nav>
 </section>
 <section class='container'>
@@ -53,7 +54,6 @@
         <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', spinner: 'receipt_lines', permission: 'access_receipts', _class: '_orderable_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues',   count_id: 'issue_count',   spinner: 'issue_lines',   permission: 'access_issues',   _class: '_issueable_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    count_id: 'note_count',    spinner: 'notes',         permission: 'access_notes'}) %>
-        <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -190,11 +190,11 @@
                             <h5 class="modal-title">Add NSN</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/select`, {title: 'NSN Group',          id: 'nsn_group_id',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'NSN Classification', id: 'nsn_classification_id', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'NSN Country',        id: 'nsn_country_id',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'NSN Item Number',    name: 'nsn[_item_number]',   placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Default?',           name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Group',          id: 'nsn_group_id',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Classification', id: 'nsn_classification_id', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Country',        id: 'nsn_country_id',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[_item_number]',   placeholder: 'Required', required: true, inputmode: 'numeric'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Default?',       name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
