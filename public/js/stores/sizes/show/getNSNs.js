@@ -15,7 +15,7 @@ function getNSNs() {
                         add_cell(row, {html: '<i class="fas fa-check"></i>'});
                     } else add_cell(row);
                     add_cell(row, {append: new Link({
-                        href: `javascript:$('#mdl_nsn_${nsn.nsn_id}').modal('show')`,
+                        modal: `nsn_${nsn.nsn_id}`,
                         small: true}).e}
                     );
                     if (nsn_modals) {
@@ -41,7 +41,7 @@ function getNSNs() {
                             d_input.type  = 'hidden';
                             d_form.appendChild(d_input);
                             d_button.innerText = 'Make Default';
-                            d_button.classList.add('btn', 'btn-sm', 'btn-success', 'confirm');
+                            d_button.classList.add('btn', 'btn-success', 'confirm');
                             d_form.appendChild(d_button);
                             modal_head.append(d_form);
                             modal_head.appendChild(new Delete_Button({float: true, descriptor: 'NSN', path: `/stores/nsns/${nsn.nsn_id}`, options: {onComplete: getNSNs}}).e)

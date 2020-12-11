@@ -68,8 +68,7 @@ function Form (options = {}) {
     if (options.append)  options.append.forEach(a => this.e.appendChild(a));
 };
 function Link (options = {}) {
-    this.e      = document.createElement('a');
-    this.e.href = options.href;
+    this.e = document.createElement('a');
     this.e.classList.add('btn');
     if (options.type === 'edit') {
         this.e.classList.add('btn-success');
@@ -81,10 +80,15 @@ function Link (options = {}) {
         this.e.classList.add('btn-primary');
         this.e.innerHTML = _search();
     };
+    if      (options.href)  this.e.setAttribute('href', options.href)
+    else if (options.modal) {
+        this.e.setAttribute('data-toggle', 'modal');
+        this.e.setAttribute('data-target', `#mdl_${options.modal}`);
+    };
+    if (options.id)     this.e.setAttribute('id', options.id);
     if (options.margin) this.e.classList.add('m-1');
     if (options.small)  this.e.classList.add('btn-sm');
     if (options.float)  this.e.classList.add('float-right');
-    if (options.id)     this.e.id = options.id;
 };
 function Delete_Button (options = {}) {
     this.e = document.createElement('form');
@@ -153,15 +157,14 @@ function Tab_Body (options = {}) {
 function Button (options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
-    if (options.classes)   options.classes.forEach(e => this.e.classList.add(e))
-    if (options.type)      this.e.classList.add(`btn-${options.type}`)
+    if (options.classes)   options.classes.forEach(e => this.e.classList.add(e));
+    if (options.type)      this.e.classList.add(`btn-${options.type}`);
     else                   this.e.classList.add('btn-primary');
     if (options.small)     this.e.classList.add('btn-sm');
     if      (options.text) this.e.innerText = options.text
     else if (options.html) this.e.innerHTML = options.html;
     if (options.id)        this.e.setAttribute('id', options.id);
     if (options.disabled)  this.e.setAttribute('disabled', true);
-    // if (options.click)     this.e.addEventListener('click', function (event) {options.click()});
     if (options.click)     this.e.addEventListener('click', options.click);
 };
 function Select (options = {}) {
