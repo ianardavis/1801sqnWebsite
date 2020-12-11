@@ -17,7 +17,7 @@ function getLocations() {
 };
 window.addEventListener( "load", () => {
     addFormListener(
-        'form_add_Serial',
+        'form_add_serial',
         'POST',
         '/stores/serials',
         {onComplete: getSerials}

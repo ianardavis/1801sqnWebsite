@@ -208,7 +208,7 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" class='size_id' name='serial[size_id]'>
-                            <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: '_serial',    name: 'serial[_serial]', maxlength: 20, required: true}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: '_serial',    name: 'serial[_serial]', maxlength: 45, required: true}) %>
                             <%- include(`${partials}/inputs/text`, {title: 'Location', id: '_locations', name: '_location',       maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
                         </div>
                         <div class="modal-footer">
