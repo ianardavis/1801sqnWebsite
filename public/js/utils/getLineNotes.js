@@ -15,7 +15,6 @@ function getLineNotes(options = {}) {
                 add_cell(row, {text: note._note});
                 add_cell(row, {text: print_user(note.user)});
             });
-            hide_spinner('notes');
         },
         {
             table: 'notes',

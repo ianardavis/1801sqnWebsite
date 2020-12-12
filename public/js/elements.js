@@ -41,6 +41,22 @@ function add_cell (row, options = {}) {
     if (options.id)        cell.id = options.id;
     if (options.ellipsis)  cell.classList.add('ellipsis1');
 };
+function show(id) {
+    let element = document.querySelector(`#${id}`);
+    if (element) element.classList.remove('hidden');
+};
+function hide(id) {
+    let element = document.querySelector(`#${id}`);
+    if (element) element.classList.add('hidden');
+};
+function set_innerText(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element) element.innerText = options.text || '';
+};
+function set_attribute(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element) element.setAttribute(options.attribute || '', options.value || '');
+};
 function List_Item (options = {}) {
     this.e = document.createElement('li');
     this.e.classList.add('list-group-item', 'text-left', 'p-4');
@@ -84,7 +100,7 @@ function Link (options = {}) {
     else if (options.modal) {
         this.e.setAttribute('data-toggle', 'modal');
         this.e.setAttribute('data-target', `#mdl_${options.modal}`);
-        if (options.data) this.e.setAttribute('data-nsn_id', options.data);
+        if (options.data) this.e.setAttribute(`data-${options.data.field}`, options.data.value);
     };
     if (options.id)     this.e.setAttribute('id', options.id);
     if (options.margin) this.e.classList.add('m-1');
@@ -158,16 +174,19 @@ function Tab_Body (options = {}) {
 function Button (options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
-    if (options.classes)   options.classes.forEach(e => this.e.classList.add(e));
-    if (options.type)              this.e.classList.add(`btn-${options.type}`);
-    if (options.confirm === true)  this.e.classList.add('confirm');
-    else                           this.e.classList.add('btn-primary');
-    if (options.small === true)    this.e.classList.add('btn-sm');
-    if      (options.text)         this.e.innerText = options.text
-    else if (options.html)         this.e.innerHTML = options.html;
-    if (options.id)                this.e.setAttribute('id', options.id);
-    if (options.disabled === true) this.e.setAttribute('disabled', true);
-    if (options.click)             this.e.addEventListener('click', options.click);
+    if      (options.disabled === true) this.e.setAttribute('disabled', true);
+    if      (options.confirm === true)  this.e.classList.add('confirm');
+    if      (options.small === true)    this.e.classList.add('btn-sm');
+
+    if      (options.classes)           options.classes.forEach(e => this.e.classList.add(e));
+    if      (options.click)             this.e.addEventListener('click', options.click);
+    if      (options.id)                this.e.setAttribute('id', options.id);
+
+    if      (options.type)              this.e.classList.add(`btn-${options.type}`)
+    else                                this.e.classList.add('btn-primary');
+
+    if      (options.text)              this.e.innerText = options.text
+    else if (options.html)              this.e.innerHTML = options.html;
 };
 function Select (options = {}) {
     this.e = document.createElement('select');
@@ -467,6 +486,11 @@ function print_date (date, time = false) {
         let str = new Date(date).toDateString();
         if (time) str += ` ${new Date(date).toLocaleTimeString()}`;
         return str
+    } else return '';
+};
+function print_nsn (nsn) {
+    if (nsn && nsn.group && nsn.classification && nsn.country) {
+        return `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`
     } else return '';
 };
 function Password_Requirements () {
