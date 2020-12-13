@@ -26,10 +26,10 @@
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',  spinner: 'item'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipt_lines',  count_id: 'receipt_count',  permission: 'access_receipts'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoff_lines', count_id: 'writeoff_count', permission: 'access_writeoffs'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines',     count_id: 'sale_count',     permission: 'access_sales'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',    spinner: 'notes',          count_id: 'note_count',     permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipt_lines',  count_id: 'receipt',  permission: 'access_receipts'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoff_lines', count_id: 'writeoff', permission: 'access_writeoffs'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines',     count_id: 'sale',     permission: 'access_sales'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',    spinner: 'notes',          count_id: 'note',     permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">

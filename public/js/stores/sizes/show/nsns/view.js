@@ -3,7 +3,6 @@ function getNSNs() {
         function (nsns, options) {
             try {
                 clearElement('tbl_nsns');
-                clearElement('nsn_modals');
                 let tbl_nsns = document.querySelector('#tbl_nsns');
                 set_count({id: 'nsn', count: nsns.length});
                 if (tbl_nsns) {
@@ -14,7 +13,7 @@ function getNSNs() {
                             add_cell(row, {html: '<i class="fas fa-check"></i>'});
                         } else add_cell(row);
                         add_cell(row, {append: new Link({
-                            modal: `nsn_view`,
+                            modal: 'nsn_view',
                             data:  {field: 'nsn_id', value: nsn.nsn_id},
                             small: true
                         }).e}
@@ -29,14 +28,13 @@ function getNSNs() {
         }
     );
 };
-document.querySelector('#reload').addEventListener('click', getNSNs);
 function getNSNNotes(nsn_id) {
     get(
         function(notes, options) {
             let tbl_nsn_notes = document.querySelector('#tbl_nsn_notes');
             if (tbl_nsn_notes) {
                 tbl_nsn_notes.innerHTML = '';
-                set_count('nsn_note', notes.length);
+                set_count({id: 'nsn_note', count: notes.length});
                 notes.forEach(note => {
                     let row = tbl_nsn_notes.insertRow(-1);
                     add_cell(row, {
@@ -113,4 +111,5 @@ function getNSNView(nsn_id, permissions) {
         }
     );
 };
+document.querySelector('#reload').addEventListener('click', getNSNs);
 $('#mdl_nsn_view').on('show.bs.modal', function(event) {getNSNNotes(event.relatedTarget.dataset.nsn_id)});

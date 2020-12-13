@@ -1,7 +1,4 @@
 module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/stores/nsns/:id',                permissions, allowed('access_nsns'),               (req, res) => res.render('stores/nsns/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/nsns/:id/edit',           permissions, allowed('nsn_edit'),                  (req, res) => res.render('stores/nsns/edit'));
-    
     app.get('/stores/get/nsns',                permissions, allowed('access_nsns', {send: true}), (req, res) => {
         m.nsns.findAll({
             where: req.query,
@@ -69,12 +66,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
+    
     app.put('/stores/nsns/:id',                permissions, allowed('nsn_edit',    {send: true}), (req, res) => {
         m.nsns.findOne({where: {nsn_id: req.params.id}})
         .then(nsn => {
             if (!nsn) res.send({result: false, message: 'NSN not found'})
             else {
-                nsn.update(req.body.nsn)
+                return nsn.update(req.body.nsn)
                 .then(result => res.send({result: true, message: 'NSN saved'}))
                 .catch(err => res.error.send(err, res));
             };

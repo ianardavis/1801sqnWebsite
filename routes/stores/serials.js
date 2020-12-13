@@ -1,13 +1,18 @@
 module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/stores/serials/:id',      permissions, allowed('access_serials'),               (req, res) => res.render('stores/serials/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/serials/:id/edit', permissions, allowed('serial_edit'),                  (req, res) => res.render('stores/serials/edit'));
-
     app.get('/stores/get/serials',      permissions, allowed('access_serials', {send: true}), (req, res) => {
         m.serials.findAll({
             where:   req.query,
             include: [inc.locations({as: 'location'})]
         })
         .then(serials => res.send({result: true, serials: serials}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/serial',       permissions, allowed('access_serials', {send: true}), (req, res) => {
+        m.serials.findOne({
+            where:   req.query,
+            include: [inc.locations({as: 'location'})]
+        })
+        .then(serial => res.send({result: true, serial: serial}))
         .catch(err => res.error.send(err, res));
     });
 

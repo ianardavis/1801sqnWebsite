@@ -28,9 +28,9 @@
                 <% } %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details',                       spinner: 'item'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sizes',   title: 'Sizes', count_id: 'size_count', spinner: 'sizes', permission: 'access_sizes'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', spinner: 'notes', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details',                 spinner: 'item'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sizes',   title: 'Sizes', count_id: 'size', spinner: 'sizes', permission: 'access_sizes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note', spinner: 'notes', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">

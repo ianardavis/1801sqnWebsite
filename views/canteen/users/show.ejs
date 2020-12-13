@@ -21,10 +21,10 @@
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details',     spinner: 'user'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'permissions', title: 'Permissions', spinner: 'permissions', count_id: 'permission_count', permission: 'access_permissions'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'paid_in',     title: 'Paid In',     spinner: 'paid_in',     count_id: 'paid_in_count',    permission: 'access_movements'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'paid_out',    title: 'Paid Out',    spinner: 'paid_out',    count_id: 'paid_out_count',   permission: 'access_movements'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',       title: 'Notes',       spinner: 'notes',       count_id: 'note_count',       permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'permissions', title: 'Permissions', spinner: 'permissions', count_id: 'permission', permission: 'access_permissions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'paid_in',     title: 'Paid In',     spinner: 'paid_in',     count_id: 'paid_in',    permission: 'access_movements'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'paid_out',    title: 'Paid Out',    spinner: 'paid_out',    count_id: 'paid_out',   permission: 'access_movements'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',       title: 'Notes',       spinner: 'notes',       count_id: 'note',       permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">

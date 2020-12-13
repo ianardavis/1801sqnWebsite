@@ -24,11 +24,11 @@
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'adjusts',  title: 'Adjustments', count_id: 'adjust_count',  permission: 'access_adjusts'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts',    count_id: 'receipt_count', permission: 'access_receipts'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues', 	   count_id: 'issue_count',   permission: 'access_issues'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'returns',  title: 'Returns', 	   count_id: 'return_count',  permission: 'access_returns'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',       count_id: 'note_count',    permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'adjusts',  title: 'Adjustments', count_id: 'adjust',  permission: 'access_adjusts'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts',    count_id: 'receipt', permission: 'access_receipts'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues', 	   count_id: 'issue',   permission: 'access_issues'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'returns',  title: 'Returns', 	   count_id: 'return',  permission: 'access_returns'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',       count_id: 'note',    permission: 'access_notes'}) %>
         <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">

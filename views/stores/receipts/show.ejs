@@ -39,8 +39,8 @@
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line_count'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note', permission: 'access_notes'}) %>
         <%- include(`${partials}/reload`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">

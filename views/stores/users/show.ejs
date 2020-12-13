@@ -5,6 +5,7 @@
             <%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
             <%- include(`${partials}/breadcrumb`, {href: '/stores/users', text: 'Users'}) %>
             <%- include(`${partials}/breadcrumb`) %>
+            <%- include(`${partials}/reload`) %>
         </ul>
     </nav>
 </section>
@@ -68,19 +69,18 @@
                 <% } %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'tab_permissions', title: 'Permissions', count_id: 'permission_count', permission: 'access_permissions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',         title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'tab_permissions', title: 'Permissions', count_id: 'permission', permission: 'access_permissions'}) %>
         <% if (permissions.access_requests || user.user_id === user_id) { %>
-            <%- include(`${partials}/tab_head`, {id: 'requests',   title: 'Requests', count_id: 'request_count'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'requests',        title: 'Requests',    count_id: 'request'}) %>
         <% } %>
         <% if (permissions.access_orders || user.user_id === user_id) { %>
-            <%- include(`${partials}/tab_head`, {id: 'orders',   title: 'Orders', count_id: 'order_count'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'orders',          title: 'Orders',      count_id: 'order'}) %>
         <% } %>
         <% if (permissions.access_issues || user.user_id === user_id) { %>
-            <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues', count_id: 'issue_count'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',          title: 'Issues',      count_id: 'issue'}) %>
         <% } %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note_count', permission: 'access_notes'}) %>
-        <%- include(`${partials}/reload`) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',           title: 'Notes',       count_id: 'note',       permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">

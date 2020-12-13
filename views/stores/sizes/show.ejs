@@ -40,14 +40,14 @@
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'nsns',     title: 'NSNs',     count_id: 'nsn_count',     spinner: 'nsns',          permission: 'access_nsns',     _class: '_nsns_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'serials',  title: 'Serials',  count_id: 'serial_count',  spinner: 'serials',       permission: 'access_serials',  _class: '_serials_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock_count',   spinner: 'stock',         permission: 'access_stock',    _class: '_stock_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'requests', title: 'Requests', count_id: 'request_count', spinner: 'request_lines', permission: 'access_requests', _class: '_issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'orders',   title: 'Orders',   count_id: 'order_count',   spinner: 'order_lines',   permission: 'access_orders',   _class: '_orderable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt_count', spinner: 'receipt_lines', permission: 'access_receipts', _class: '_orderable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues',   count_id: 'issue_count',   spinner: 'issue_lines',   permission: 'access_issues',   _class: '_issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    count_id: 'note_count',    spinner: 'notes',         permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'nsns',     title: 'NSNs',     count_id: 'nsn',     spinner: 'nsns',          permission: 'access_nsns',     _class: '_nsns_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'serials',  title: 'Serials',  count_id: 'serial',  spinner: 'serials',       permission: 'access_serials',  _class: '_serials_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock',   spinner: 'stock',         permission: 'access_stock',    _class: '_stock_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'requests', title: 'Requests', count_id: 'request', spinner: 'request_lines', permission: 'access_requests', _class: '_issueable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'orders',   title: 'Orders',   count_id: 'order',   spinner: 'order_lines',   permission: 'access_orders',   _class: '_orderable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt', spinner: 'receipt_lines', permission: 'access_receipts', _class: '_orderable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues',   count_id: 'issue',   spinner: 'issue_lines',   permission: 'access_issues',   _class: '_issueable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    count_id: 'note',    spinner: 'notes',         permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -72,7 +72,6 @@
                     <tbody id='tbl_nsns'></tbody>
                 </table>
             </div>
-            <div id="nsn_modals"></div>
         <% } %>
         <% if (permissions.access_serials) { %>
             <div class="tab-pane fade serial_element" id="serials" role="tabpanel" aria-labelledby="serials-tab">
@@ -85,7 +84,6 @@
                     <tbody id='tbl_serials'></tbody>
                 </table>
             </div>
-            <div id="serial_modals"></div>
         <% } %>
         <% if (permissions.access_stock) { %>
             <div class="tab-pane fade" id="stock" role="tabpanel" aria-labelledby="stock-tab">
@@ -98,7 +96,6 @@
                     <tbody id='tbl_stock'></tbody>
                 </table>
             </div>
-            <div id="stock_modals"></div>
         <% } %>
         <% if (permissions.access_requests) { %>
             <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
@@ -189,28 +186,21 @@
                         </div>
                         <div class="modal-body">
                             <ul class="nav nav-tabs" id="nsnTab" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="nsn-view-tab" data-toggle="tab" href="#nsn-view" role="tab" aria-controls="nsn-view" aria-selected="true">
-                                        NSN
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="nsn-notes-tab" data-toggle="tab" href="#nsn-notes" role="tab" aria-controls="nsn-nottes" aria-selected="true">
-                                        Notes <span id="nsn_note_count"></span>
-                                    </a>
-                                </li>
+                                <%- include(`${partials}/tab_head`, {id: 'nsn-view',  title: 'NSN', active: true}) %>
+                                <%- include(`${partials}/tab_head`, {id: 'nsn-notes', title: 'Notes', count_id: 'nsn_note'}) %>
+                               
                             </ul>
                             <div class="tab-content pt-3" id="nsnContent">
                                 <div class="tab-pane fade show active" id="nsn-view" role="tabpanel" aria-labelledby="nsn-view-tab">
                                     <% if (permissions.nsn_edit) { %>
                                         <div id="div_nsn_edit" class='hidden'>
                                             <form id='form_nsn_edit'>
-                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_group_id_edit',          title: 'Group',          name: 'nsn[_group]'}) %>
-                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_classification_id_edit', title: 'Classification', name: 'nsn[_classification]'}) %>
-                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_country_id_edit',        title: 'Country',        name: 'nsn[_country]'}) %>
-                                                <%- include(`${partials}/inputs/text`,   {id: '_item_number',               title: 'Item Number',    name: 'nsn[_item_number]'}) %>
+                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_group_id_edit',          title: 'Group',          name: 'nsn[nsn_group_id]'}) %>
+                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_classification_id_edit', title: 'Classification', name: 'nsn[nsn_classification_id]'}) %>
+                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_country_id_edit',        title: 'Country',        name: 'nsn[nsn_country_id]'}) %>
+                                                <%- include(`${partials}/inputs/text`,   {id: '_item_number_edit',          title: 'Item Number',    name: 'nsn[_item_number]'}) %>
                                                 <input class="btn btn-success w-100 confirm" type="submit" value="Save">
-                                                <a class='float-left' href='javascript:edit_reset()'>Cancel</a>
+                                                <a class='float-left' href='javascript:edit_nsn_reset()'>Cancel</a>
                                             </form>
                                         </div>
                                     <% } %>
@@ -222,20 +212,7 @@
                                         <%- include(`${partials}/inputs/display`, {id: '_default',              classes: ['text-left'], title: 'Is Default?'}) %>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="nsn-notes" role="tabpanel" aria-labelledby="nsn-notes-tab">
-                                    <%- include(`${partials}/inputs/select`, {id: 'nsn_sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '_system=0', selected: true}, {text: 'Only', value: '_system=1'}]}) %>
-                                    <table class="table table-sm table-hover">
-                                        <thead class="thead-dark">
-                                            <th class="w-20" onclick="sortTable(0, 'tbl_nsn_notes')">Date</th>
-                                            <th class="w-10" onclick="sortTable(1, 'tbl_nsn_notes')">Sys</th>
-                                            <th class="w-40" onclick="sortTable(2, 'tbl_nsn_notes')">Note</th>
-                                            <th class="w-30" onclick="sortTable(3, 'tbl_nsn_notes')">User</th>
-                                            <th><i class="fas fa-pencil-alt"></i></th>
-                                            <th><i class="fas fa-trash-alt"></i></th>
-                                        </thead>
-                                        <tbody id="tbl_nsn_notes"></tbody>
-                                    </table>
-                                </div>
+                                <%- include(`${partials}/notes/line_note_table`, {line: 'nsn'}) %>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -268,25 +245,65 @@
                 </div>
             <% } %>
         <% } %>
-        <% if (permissions.serial_add) { %>
-            <div id='mdl_add_serial' class="modal" tabindex="-1" role="dialog">
+        <% if (permissions.access_serials) { %>
+            <div id='mdl_serial_view' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_add_serial'>
+                    <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Add Serial</h5>
+                            <h5   class="modal-title" id="_serial_view"></h5>
+                            <span class='float-right' id='serial_buttons'></span>
                         </div>
                         <div class="modal-body">
-                            <input type="hidden" class='size_id' name='serial[size_id]'>
-                            <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: '_serial',    name: 'serial[_serial]', maxlength: 45, required: true}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', id: '_locations', name: '_location',       maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
+                            <ul class="nav nav-tabs" id="serialTab" role="tablist">
+                                <%- include(`${partials}/tab_head`, {id: 'serial-view',  title: 'Serial', active: true}) %>
+                                <%- include(`${partials}/tab_head`, {id: 'serial-notes', title: 'Notes', count_id: 'serial_note'}) %>
+                               
+                            </ul>
+                            <div class="tab-content pt-3" id="serialContent">
+                                <div class="tab-pane fade show active" id="serial-view" role="tabpanel" aria-labelledby="serial-view-tab">
+                                    <% if (permissions.serial_edit) { %>
+                                        <div id="div_serial_edit" class='hidden'>
+                                            <form id='form_serial_edit'>
+                                                <%- include(`${partials}/inputs/text`, {id: '_serial_edit',   title: 'Serial #', name: 'serial[_serial]', maxlength: 45, required: true}) %>
+                                                <%- include(`${partials}/inputs/text`, {id: '_location_edit', title: 'Location', name: '_location',       maxlength: 20, required: true, list: true}) %>
+                                                <input class="btn btn-success w-100 confirm" type="submit" value="Save">
+                                                <a class='float-left' href='javascript:edit_serial_reset()'>Cancel</a>
+                                            </form>
+                                        </div>
+                                    <% } %>
+                                    <div id="div_serial_view">
+                                        <%- include(`${partials}/inputs/display`, {id: '_location', classes: ['text-left'], title: 'Location'}) %>
+                                   </div>
+                                </div>
+                                <%- include(`${partials}/notes/line_note_table`, {line: 'serial'}) %>
+                            </div>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
+            <% if (permissions.serial_add) { %>
+                <div id='mdl_add_serial' class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <form class="modal-content" id='form_add_serial'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Serial</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" class='size_id' name='serial[size_id]'>
+                                <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: '_serial',    name: 'serial[_serial]', maxlength: 45, required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: '_locations', name: '_location',       maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
         <% } %>
     </div>
 </section>
@@ -310,7 +327,7 @@
                     edit:   <%= permissions.nsn_edit   || false %>,
                     delete: <%= permissions.nsn_delete || false %>
                 }
-            )
+            );
         });
     </script>
     <% if (permissions.nsn_add || permissions.nsn_edit) { %>
@@ -322,15 +339,27 @@
     <% if (permissions.nsn_add) { %>
         <script src="/js/stores/sizes/show/nsns/add.js"></script>
     <% } %>
-    <% if (permissions.nsn_delete) { %>
-        <script src="/js/stores/sizes/show/nsns/delete.js"></script>
-    <% } %>
 <% } %>
 <% if (permissions.access_serials) { %>
-    <script src="/js/stores/sizes/show/getSerials.js"></script>
+    <script src="/js/stores/sizes/show/serials/view.js"></script>
     <script async>getSerials()</script>
+    <script>
+        $('#mdl_serial_view').on('show.bs.modal', function(event) {
+            getSerialView(
+                event.relatedTarget.dataset.serial_id,
+                {
+                    edit:   <%= permissions.serial_edit   || false %>,
+                    delete: <%= permissions.serial_delete || false %>
+                }
+            );
+        });
+    </script>
+    <% if (permissions.serial_edit) { %>
+        <script src="/js/stores/sizes/show/serials/edit.js"></script>
+        <script async>getLocationsEdit();</script>
+    <% } %>
     <% if (permissions.serial_add) { %>
-        <script src="/js/stores/sizes/show/addSerial.js"></script>
+        <script src="/js/stores/sizes/show/serials/add.js"></script>
         <script async>getLocations()</script>
     <% } %>
 <% } %>

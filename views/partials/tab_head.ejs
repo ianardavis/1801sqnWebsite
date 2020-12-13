@@ -1,7 +1,7 @@
 <% if (!locals.permission || permissions[locals.permission]) { %>
     <li class="nav-item">
         <a
-    class="nav-link<% if (locals._class) { %> <%= _class %><% } %>"
+    class="nav-link<% if (locals._class) { %> <%= _class %><% } %><% if (locals.active) { %> active<% } %>"
             id="<%= id %>-tab"
             data-toggle="tab"
             href="#<%= id %>"
@@ -9,7 +9,7 @@
             aria-controls="<%= id %>"
             aria-selected="true"
         >
-            <%= title %><% if (locals.count_id) { %> (<span id='<%= count_id %>'></span>)<% } %>
+            <%= title %><% if (locals.count_id) { %> (<span id='<%= count_id %>_count'></span>)<% } %>
             <% if (locals.spinner) { %><%- include(`${partials}/spinner`, {id: spinner}) %><% } %>
         </a>
     </li>
