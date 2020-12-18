@@ -65,8 +65,8 @@ function getSerialNotes(serial_id) {
 function getSerialView(serial_id, permissions) {
     get(
         function(serial, options) {
-            set_innerText({id: '_location',    text: serial.location._location});
-            set_innerText({id: '_serial_view', text: serial._serial});
+            set_innerText({id: 'serial_location', text: serial.location._location});
+            set_innerText({id: '_serial_view',    text: serial._serial});
             if (permissions.edit === true || permissions.delete === true) {
                 let serial_buttons = document.querySelector('#serial_buttons');
                 if (serial_buttons) {
@@ -74,9 +74,9 @@ function getSerialView(serial_id, permissions) {
                     if (permissions.delete) {
                         serial_buttons.appendChild(
                             new Delete_Button({
-                                path: `/stores/serials/${serial.serial_id}`,
+                                path:       `/stores/serials/${serial.serial_id}`,
                                 descriptor: 'Serial',
-                                float: true,
+                                float:      true,
                                 options: {
                                     onComplete: [
                                         getSerials,
@@ -89,7 +89,7 @@ function getSerialView(serial_id, permissions) {
                     if (permissions.edit) {
                         serial_buttons.appendChild(
                             new Button({
-                                id: 'btn_serial_edit',
+                                id:   'btn_serial_edit',
                                 type: 'success',
                                 html: '<i class="fas fa-pencil-alt"></i>',
                                 click: edit_serial

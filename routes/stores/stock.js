@@ -17,12 +17,20 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.get('/stores/get/stock',      permissions, allowed('access_stock', {send: true}), (req, res) => {
+    app.get('/stores/get/stocks',     permissions, allowed('access_stock', {send: true}), (req, res) => {
         m.stock.findAll({
             where:   req.query,
             include: [inc.locations({as: 'location'})],
         })
         .then(stocks => res.send({result: true, stocks: stocks}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/stock',      permissions, allowed('access_stock', {send: true}), (req, res) => {
+        m.stock.findOne({
+            where:   req.query,
+            include: [inc.locations({as: 'location'})],
+        })
+        .then(stock => res.send({result: true, stock: stock}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -46,16 +54,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.put('/stores/stock/:id',      permissions, allowed('stock_edit',   {send: true}), (req, res) => {
         m.stock.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
-            m.locations.findOne({where: {_location: req.body._location}})
-            .then(location => {
-                if (location) {
-                    if (Number(location.location_id) !== Number(stock.location_id)) {
+            m.locations.findOrCreate({where: {_location: req.body._location}})
+            .then(([location, created]) => {
+                if (created) updateStockLocation(new_location.location_id, req.params.id, res)
+                else {
+                    if (location.location_id !== stock.location_id) {
                         updateStockLocation(location.location_id, req.params.id, res)
-                    } else res.error.send('No changes', res);
-                } else {
-                    m.locations.create({_location: req.body._location})
-                    .then(new_location => updateStockLocation(new_location.location_id, req.params.id, res))
-                    .catch(err => res.error.send(err, res));
+                    } else res.send({result: false, message: 'No changes'});
                 };
             })
             .catch(err => res.error.send(err, res));

@@ -1,18 +1,3 @@
-function getLocations() {
-    get(
-        function (locations, options) {
-            let _locations_list = document.querySelector('#_locations_list');
-            if (_locations_list) {
-                _locations_list.innerHTML = '';
-                locations.forEach(e => _locations_list.appendChild(new Option({value: e._location}).e));
-            }
-        },
-        {
-            table: 'locations',
-            query: []
-        }
-    );
-};
 window.addEventListener( "load", () => {
     addFormListener(
         'form_add_serial',
@@ -21,3 +6,4 @@ window.addEventListener( "load", () => {
         {onComplete: getSerials}
     );
 });
+$('#mdl_serial_add').on('show.bs.modal', function() {getLocations()});

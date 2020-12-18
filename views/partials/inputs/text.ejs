@@ -23,12 +23,12 @@
         <% if (locals.inputmode) { %>   inputMode='<%= inputmode %>'<% } %>
         <% if (locals.placeholder) { %> placeholder='<%= placeholder %>'<% } %>
         <% if (locals.autocomplete) { %>autocomplete='<%= autocomplete %>'<% } %>
-        <% if (locals.list) { %>       
-            list='<%= id %>_list'
+        <% if (locals.list_id) { %>       
+            list='<%= list_id %>'
             autocomplete='off'
         <% } %>
     >
-    <% if (locals.list) { %>
+    <!-- <% if (locals.list) { %>
         <datalist id='<%= id %>_list'></datalist>
-    <% } %>
+    <% } %> -->
 </div>

@@ -39,7 +39,7 @@
                 <% } %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',                       spinner: 'size'}) %>
         <%- include(`${partials}/tab_head`, {id: 'nsns',     title: 'NSNs',     count_id: 'nsn',     spinner: 'nsns',          permission: 'access_nsns',     _class: '_nsns_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'serials',  title: 'Serials',  count_id: 'serial',  spinner: 'serials',       permission: 'access_serials',  _class: '_serials_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock',   spinner: 'stock',         permission: 'access_stock',    _class: '_stock_element'}) %>
@@ -51,7 +51,6 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/spinner`, {id: 'sizes'}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_issueable',        title: 'Issueable'}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_orderable',        title: 'Orderable'}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_serials',          title: 'Has Serials'}) %>
@@ -150,8 +149,11 @@
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
     <div id="div_modals">
+        <% if (permissions.nsn_add || permissions.nsn_edit || permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
+            <datalist id="locations_list"></datalist>
+        <% } %>
         <% if (permissions.size_edit) { %>
-            <div id='mdl_edit_size' class="modal" tabindex="-1" role="dialog">
+            <div     id='mdl_edit_size'   class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_edit_size'>
                         <div class="modal-header">
@@ -177,7 +179,7 @@
             </div>
         <% } %>
         <% if (permissions.access_nsns) { %>
-            <div id='mdl_nsn_view' class="modal fade" tabindex="-1" role="dialog">
+            <div     id='mdl_nsn_view'    class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -186,7 +188,7 @@
                         </div>
                         <div class="modal-body">
                             <ul class="nav nav-tabs" id="nsnTab" role="tablist">
-                                <%- include(`${partials}/tab_head`, {id: 'nsn-view',  title: 'NSN', active: true}) %>
+                                <%- include(`${partials}/tab_head`, {id: 'nsn-view',  title: 'NSN',   active: true}) %>
                                 <%- include(`${partials}/tab_head`, {id: 'nsn-notes', title: 'Notes', count_id: 'nsn_note'}) %>
                                
                             </ul>
@@ -222,7 +224,7 @@
                 </div>
             </div>
             <% if (permissions.nsn_add) { %>
-                <div id='mdl_nsn_add' class="modal" tabindex="-1" role="dialog">
+                <div id='mdl_nsn_add'     class="modal fade" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <form class="modal-content" id='form_nsn_add'>
                             <div class="modal-header">
@@ -246,7 +248,7 @@
             <% } %>
         <% } %>
         <% if (permissions.access_serials) { %>
-            <div id='mdl_serial_view' class="modal fade" tabindex="-1" role="dialog">
+            <div     id='mdl_serial_view' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -256,7 +258,7 @@
                         <div class="modal-body">
                             <ul class="nav nav-tabs" id="serialTab" role="tablist">
                                 <%- include(`${partials}/tab_head`, {id: 'serial-view',  title: 'Serial', active: true}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'serial-notes', title: 'Notes', count_id: 'serial_note'}) %>
+                                <%- include(`${partials}/tab_head`, {id: 'serial-notes', title: 'Notes',  count_id: 'serial_note'}) %>
                                
                             </ul>
                             <div class="tab-content pt-3" id="serialContent">
@@ -264,15 +266,15 @@
                                     <% if (permissions.serial_edit) { %>
                                         <div id="div_serial_edit" class='hidden'>
                                             <form id='form_serial_edit'>
-                                                <%- include(`${partials}/inputs/text`, {id: '_serial_edit',   title: 'Serial #', name: 'serial[_serial]', maxlength: 45, required: true}) %>
-                                                <%- include(`${partials}/inputs/text`, {id: '_location_edit', title: 'Location', name: '_location',       maxlength: 20, required: true, list: true}) %>
+                                                <%- include(`${partials}/inputs/text`, {id: '_serial_edit',          title: 'Serial #', name: 'serial[_serial]', maxlength: 45, required: true}) %>
+                                                <%- include(`${partials}/inputs/text`, {id: 'serial_edit_locations', title: 'Location', name: '_location',       maxlength: 20, required: true, list_id: 'locations_list'}) %>
                                                 <input class="btn btn-success w-100 confirm" type="submit" value="Save">
                                                 <a class='float-left' href='javascript:edit_serial_reset()'>Cancel</a>
                                             </form>
                                         </div>
                                     <% } %>
                                     <div id="div_serial_view">
-                                        <%- include(`${partials}/inputs/display`, {id: '_location', classes: ['text-left'], title: 'Location'}) %>
+                                        <%- include(`${partials}/inputs/display`, {id: 'serial_location', classes: ['text-left'], title: 'Location'}) %>
                                    </div>
                                 </div>
                                 <%- include(`${partials}/notes/line_note_table`, {line: 'serial'}) %>
@@ -285,7 +287,7 @@
                 </div>
             </div>
             <% if (permissions.serial_add) { %>
-                <div id='mdl_add_serial' class="modal" tabindex="-1" role="dialog">
+                <div id='mdl_add_serial'  class="modal fade" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <form class="modal-content" id='form_add_serial'>
                             <div class="modal-header">
@@ -293,11 +295,11 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" class='size_id' name='serial[size_id]'>
-                                <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: '_serial',    name: 'serial[_serial]', maxlength: 45, required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: '_locations', name: '_location',       maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
+                                <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: '_serial',          name: 'serial[_serial]', maxlength: 45, required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_locations', name: '_location',       maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
                             </div>
                             <div class="modal-footer">
-                                <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                                <input  type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </form>
@@ -306,7 +308,7 @@
             <% } %>
         <% } %>
         <% if (permissions.access_stock) { %>
-            <div id='mdl_stock_view' class="modal fade" tabindex="-1" role="dialog">
+            <div     id='mdl_stock_view'  class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -317,21 +319,20 @@
                             <ul class="nav nav-tabs" id="stockTab" role="tablist">
                                 <%- include(`${partials}/tab_head`, {id: 'stock-view',  title: 'Stock', active: true}) %>
                                 <%- include(`${partials}/tab_head`, {id: 'stock-notes', title: 'Notes', count_id: 'stock_note'}) %>
-                               
                             </ul>
                             <div class="tab-content pt-3" id="stockContent">
                                 <div class="tab-pane fade show active" id="stock-view" role="tabpanel" aria-labelledby="stock-view-tab">
                                     <% if (permissions.stock_edit) { %>
                                         <div id="div_stock_edit" class='hidden'>
                                             <form id='form_stock_edit'>
-                                                <%- include(`${partials}/inputs/text`, {id: '_location_edit', title: 'Location', name: '_location',       maxlength: 20, required: true, list: true}) %>
+                                                <%- include(`${partials}/inputs/text`, {id: 'stock_edit_location', title: 'Location', name: '_location', maxlength: 20, required: true, list_id: 'locations_list'}) %>
                                                 <input class="btn btn-success w-100 confirm" type="submit" value="Save">
                                                 <a class='float-left' href='javascript:edit_stock_reset()'>Cancel</a>
                                             </form>
                                         </div>
                                     <% } %>
                                     <div id="div_stock_view">
-                                        <%- include(`${partials}/inputs/display`, {id: '_location', classes: ['text-left'], title: 'Location'}) %>
+                                        <%- include(`${partials}/inputs/display`, {id: 'stock_location', classes: ['text-left'], title: 'Location'}) %>
                                    </div>
                                 </div>
                                 <%- include(`${partials}/notes/line_note_table`, {line: 'stock'}) %>
@@ -344,7 +345,7 @@
                 </div>
             </div>
             <% if (permissions.stock_add) { %>
-                <div id='mdl_add_stock' class="modal" tabindex="-1" role="dialog">
+                <div id='mdl_add_stock'   class="modal fade" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <form class="modal-content" id='form_add_stock'>
                             <div class="modal-header">
@@ -352,10 +353,10 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" class='size_id' name='stock[size_id]'>
-                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: '_locations', name: '_location', maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
+                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: '_location', maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
                             </div>
                             <div class="modal-footer">
-                                <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                                <input  type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </form>
@@ -374,6 +375,9 @@
 <script src='/js/utils/getLineNotes.js'></script>
 <script src="/js/stores/sizes/show/getSize.js"></script>
 <script async>getSize()</script>
+<% if (permissions.nsn_add || permissions.nsn_edit || permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
+    <script src="/js/stores/locations/getLocations.js"></script>
+<% } %>
 <% if (permissions.access_nsns) { %>
     <script src="/js/stores/sizes/show/nsns/view.js"></script>
     <script async>getNSNs()</script>
@@ -414,16 +418,31 @@
     </script>
     <% if (permissions.serial_edit) { %>
         <script src="/js/stores/sizes/show/serials/edit.js"></script>
-        <script async>getLocationsEdit();</script>
     <% } %>
     <% if (permissions.serial_add) { %>
         <script src="/js/stores/sizes/show/serials/add.js"></script>
-        <script async>getLocations()</script>
     <% } %>
 <% } %>
 <% if (permissions.access_stock) { %>
-    <script src="/js/stores/sizes/show/getStock.js"></script>
-    <script async>getStock()</script>
+    <script src="/js/stores/sizes/show/stock/view.js"></script>
+    <script async>getStocks()</script>
+    <script>
+        $('#mdl_stock_view').on('show.bs.modal', function(event) {
+            getStockView(
+                event.relatedTarget.dataset.stock_id,
+                {
+                    edit:   <%= permissions.stock_edit   || false %>,
+                    delete: <%= permissions.stock_delete || false %>
+                }
+            );
+        });
+    </script>
+    <% if (permissions.stock_edit) { %>
+        <script src="/js/stores/sizes/show/stock/edit.js"></script>
+    <% } %>
+    <% if (permissions.serial_add) { %>
+        <script src="/js/stores/sizes/show/serials/add.js"></script>
+    <% } %>
 <% } %>
 <% if (permissions.access_requests) { %>
     <script src="/js/stores/sizes/show/getRequests.js"></script>
