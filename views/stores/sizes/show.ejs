@@ -305,6 +305,64 @@
                 </div>
             <% } %>
         <% } %>
+        <% if (permissions.access_stock) { %>
+            <div id='mdl_stock_view' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5   class="modal-title" id="_stock_view"></h5>
+                            <span class='float-right' id='stock_buttons'></span>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="nav nav-tabs" id="stockTab" role="tablist">
+                                <%- include(`${partials}/tab_head`, {id: 'stock-view',  title: 'Stock', active: true}) %>
+                                <%- include(`${partials}/tab_head`, {id: 'stock-notes', title: 'Notes', count_id: 'stock_note'}) %>
+                               
+                            </ul>
+                            <div class="tab-content pt-3" id="stockContent">
+                                <div class="tab-pane fade show active" id="stock-view" role="tabpanel" aria-labelledby="stock-view-tab">
+                                    <% if (permissions.stock_edit) { %>
+                                        <div id="div_stock_edit" class='hidden'>
+                                            <form id='form_stock_edit'>
+                                                <%- include(`${partials}/inputs/text`, {id: '_location_edit', title: 'Location', name: '_location',       maxlength: 20, required: true, list: true}) %>
+                                                <input class="btn btn-success w-100 confirm" type="submit" value="Save">
+                                                <a class='float-left' href='javascript:edit_stock_reset()'>Cancel</a>
+                                            </form>
+                                        </div>
+                                    <% } %>
+                                    <div id="div_stock_view">
+                                        <%- include(`${partials}/inputs/display`, {id: '_location', classes: ['text-left'], title: 'Location'}) %>
+                                   </div>
+                                </div>
+                                <%- include(`${partials}/notes/line_note_table`, {line: 'stock'}) %>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% if (permissions.stock_add) { %>
+                <div id='mdl_add_stock' class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <form class="modal-content" id='form_add_stock'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Serial</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" class='size_id' name='stock[size_id]'>
+                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: '_locations', name: '_location', maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+        <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/full`) %>
