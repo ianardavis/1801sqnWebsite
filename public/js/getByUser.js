@@ -9,7 +9,11 @@ getByUser = (onComplete, options = {query: []}) => new Promise(resolve => {
             hide_spinner(options.table);
             resolve(true);
         });
-        XHR_send(XHR, options.table, `/stores/get/${options.table}/${options.user_id}?${options.query.join('&')}`);
+        XHR_send({
+            XHR:      XHR,
+            table:    options.table,
+            location: `/stores/get/${options.table}/${options.user_id}?${options.query.join('&')}`
+        });
     } catch (error) {
         console.log(`Error getting from ${options.table}`)
     };

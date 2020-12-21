@@ -1,8 +1,8 @@
-XHR_send = (XHR, table, location, method = 'GET') => {
-    XHR.addEventListener("error", event => {
-        alert('Oops! Something went wrong getting ' + table)
-        hide_spinner(table);
+XHR_send = (options = {}) => {
+    options.XHR.addEventListener("error", event => {
+        alert(`Something went wrong getting ${options.table}`)
+        hide_spinner(options.spinner || options.table);
     });
-    XHR.open(method, location);
-    XHR.send();
+    options.XHR.open(options.method || 'GET', options.location);
+    options.XHR.send();
 };

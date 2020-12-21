@@ -73,7 +73,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(issues => res.send({result: true, issues: issues}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/issue_lines',        permissions, allowed('access_issues',             {send: true}),             (req, res) => {
+    app.get('/stores/get/issue_lines',        permissions, allowed('access_issue_lines',        {send: true}),             (req, res) => {
         m.issue_lines.findAll({
             where:      req.query,
             include:    [
@@ -105,13 +105,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
         m.issue_line_returns.findAll({
             where:   req.query,
             include: [
-                inc.issue_lines(),
-                inc.stock(),
-                inc.locations(),
+                inc.issue_lines({as: 'issue_line'}),
+                inc.stock({as: 'stock'}),
+                inc.locations({as: 'location'}),
                 inc.users()
             ]
         })
-        .then(returns => res.send({result: true, returns: returns}))
+        .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/issues/:id',             permissions, allowed('issue_edit',                {send: true}),             (req, res) => {

@@ -1,22 +1,24 @@
 function getOrders() {
     get(
         function (lines, options) {
-            try {
-                clearElement('tbl_orders');
-                let table_body  = document.querySelector('#tbl_orders');
-                set_count({id: 'order', count: lines.length});
+            let table_body  = document.querySelector('#tbl_orders');
+            set_count({id: 'order', count: lines.length});
+            if (table_body) {
+                table_body.innerHTML = '';
                 lines.forEach(line => {
-                    let row = table_body.insertRow(-1);
-                    if (Number(line.order.ordered_for) === -1) add_cell(row, {text: 'Backing Stock'})
-                    else add_cell(row, {text: print_user(line.order._for)});
-                    add_cell(row, {text: line._qty});
-                    add_cell(row, {append: new Link({
-                        href: `/stores/orders/${line.order_id}`,
-                        small: true
-                    }).e});
+                    try {
+                        let row = table_body.insertRow(-1);
+                        if (Number(line.order.ordered_for) === -1) add_cell(row, {text: 'Backing Stock'})
+                        else add_cell(row, {text: print_user(line.order.user_for)});
+                        add_cell(row, {text: line._qty});
+                        add_cell(row, {append: new Link({
+                            href: `/stores/orders/${line.order_id}`,
+                            small: true
+                        }).e});
+                    } catch (error) {
+                        console.log(error);
+                    };
                 });
-            } catch (error) {
-                console.log(error);
             };
         },
         {

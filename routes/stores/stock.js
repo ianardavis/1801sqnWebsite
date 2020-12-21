@@ -1,22 +1,4 @@
 module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/stores/stock/new',      permissions, allowed('stock_add'),                  (req, res) => {
-        m.sizes.findOne({
-            where: {size_id: req.query.size_id},
-            include: []
-        })
-        .then(item => res.render('stores/stock/new', {item: item}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/stores/stock/:id',      permissions, allowed('access_stock'),               (req, res) => res.render('stores/stock/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/stock/:id/edit', permissions, allowed('stock_edit'),                 (req, res) => {
-        m.stock.findOne({
-            where: {stock_id: req.params.id},
-            include: [m.locations]
-        })
-        .then(stock => res.render('stores/stock/edit', {stock: stock}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    
     app.get('/stores/get/stocks',     permissions, allowed('access_stock', {send: true}), (req, res) => {
         m.stock.findAll({
             where:   req.query,

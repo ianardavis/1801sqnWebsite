@@ -26,47 +26,12 @@ function getSerials() {
         }
     );
 };
-function getSerialNotes(serial_id) {
-    get(
-        function(notes, options) {
-            let tbl_serial_notes = document.querySelector('#tbl_serial_notes');
-            if (tbl_serial_notes) {
-                tbl_serial_notes.innerHTML = '';
-                set_count({id: 'serial_note', count: notes.length});
-                notes.forEach(note => {
-                    let row = tbl_serial_notes.insertRow(-1);
-                    add_cell(row, {
-                        text: print_date(note.createdAt, true),
-                        sort: new Date (note.createdAt).getTime()
-                    });
-                    if (note._system === 1) add_cell(row, {html: '<i class="fas fa-check"></i>'})
-                    else                    add_cell(row);
-                    add_cell(row, {text: note._note});
-                    add_cell(row, {text: print_user(note.user)});
-                    add_cell(row, {append: new Link({type: 'edit', small: true}).e});
-                    add_cell(row, {append: new Delete_Button({
-                        descriptor: 'note',
-                        small: true,
-                        path: `/stores/notes/${note.note_id}`,
-                        options: {
-                            onComplete: getSerialNotes,
-                            args: [serial_id]
-                        }
-                    }).e});
-                });
-            }
-        },
-        {
-            table: 'notes',
-            query: ['_table=serials',`_id=${serial_id}`]
-        }
-    );
-};
 function getSerialView(serial_id, permissions) {
     get(
         function(serial, options) {
             set_innerText({id: 'serial_location', text: serial.location._location});
             set_innerText({id: '_serial_view',    text: serial._serial});
+            set_innerText({id: 'serial_id',       text: serial.serial_id});
             if (permissions.edit === true || permissions.delete === true) {
                 let serial_buttons = document.querySelector('#serial_buttons');
                 if (serial_buttons) {
@@ -101,9 +66,9 @@ function getSerialView(serial_id, permissions) {
         },
         {
             table: 'serial',
-            query: [`serial_id=${serial_id}`]
+            query: [`serial_id=${serial_id}`],
+            spinner: 'serial_view'
         }
     );
 };
 document.querySelector('#reload').addEventListener('click', getSerials);
-$('#mdl_serial_view').on('show.bs.modal', function(event) {getSerialNotes(event.relatedTarget.dataset.serial_id)});

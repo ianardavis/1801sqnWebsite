@@ -1,25 +1,29 @@
 function getReceipts() {
     get(
         function (lines, options) {
-            try {
-                clearElement('tbl_receipts');
-                let table_body = document.querySelector('#tbl_receipts');
-                set_count({id: 'receipt', count: lines.length});
+            let table_body = document.querySelector('#tbl_receipts');
+            set_count({id: 'receipt', count: lines.length});
+            if (table_body) {
+                table_body.innerHTML = '';
                 lines.forEach(line => {
-                    let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        sort: print_date(line.receipt.createdAt),
-                        text: new Date(line.receipt.createdAt).toDateString()
-                    });
-                    add_cell(row, {text: line.stock.location._location});
-                    add_cell(row, {text: line._qty});
-                    add_cell(row, {append: new Link({
-                        href: `/stores/receipts/${line.receipt_id}`,
-                        small: true
-                    }).e});
+                    try {
+                        let row = table_body.insertRow(-1);
+                        add_cell(row, {
+                            sort: print_date(line.receipt.createdAt),
+                            text: new Date(line.receipt.createdAt).toDateString()
+                        });
+                        if      (line.stock)  add_cell(row, {text: line.stock.location._location})
+                        else if (line.serial) add_cell(row, {text: line.serial.location._location})
+                        else add_cell(row, {text: 'Unknown'});
+                        add_cell(row, {text: line._qty});
+                        add_cell(row, {append: new Link({
+                            href: `/stores/receipts/${line.receipt_id}`,
+                            small: true
+                        }).e});
+                    } catch (error) {
+                        console.log(error);
+                    };
                 });
-            } catch (error) {
-                console.log(error);
             };
         },
         {

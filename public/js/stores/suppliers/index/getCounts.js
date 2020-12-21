@@ -12,6 +12,10 @@ getCounts = () => {
             } else alert(`Error: ${response.error}`);
             hide_spinner('suppliers');
         });
-        XHR_send(XHR, 'suppliers', `/stores/count/sizes?supplier_id=${supplier_id}`);
+        XHR_send({
+            XHR:      XHR,
+            table:    'suppliers',
+            location: `/stores/count/sizes?supplier_id=${supplier_id}`
+        });
     });
 };
