@@ -30,3 +30,8 @@ function getStockAdjusts(stock_id) {
     );
 };
 $('#mdl_stock_view').on('show.bs.modal', function(event) {getStockAdjusts(event.relatedTarget.dataset.stock_id)});
+window.addEventListener('load', function () {
+    stock_reload.addEventListener('click', function () {
+        getStockAdjusts(stock_id.innerText);
+    });
+});

@@ -448,21 +448,21 @@
     <script src="/js/stores/sizes/show/nsns/view.js"></script>
     <script async>getNSNs()</script>
     <script>
-        let get_NSN = function (nsn_id) {
-            getNSNView(
-                nsn_id,
-                {
-                    edit:   <%= permissions.nsn_edit   || false %>,
-                    delete: <%= permissions.nsn_delete || false %>
-                }
-            );
-        };
+        let nsn_id     = document.querySelector('#nsn_id'),
+            nsn_reload = document.querySelector('#nsn_reload'),
+            get_NSN    = function (nsn_id) {
+                getNSNView(
+                    nsn_id,
+                    {
+                        edit:   <%= permissions.nsn_edit   || false %>,
+                        delete: <%= permissions.nsn_delete || false %>
+                    }
+                );
+            };
         $('#mdl_nsn_view').on('show.bs.modal', function(event) {
             get_NSN(event.relatedTarget.dataset.nsn_id);
         });
         window.addEventListener('load', function () {
-            let nsn_id     = document.querySelector('#nsn_id'),
-                nsn_reload = document.querySelector('#nsn_reload');
             nsn_reload.addEventListener('click', function () {
                 get_NSN(nsn_id.innerText);
             });
@@ -508,21 +508,21 @@
     <script src="/js/stores/sizes/show/serials/view.js"></script>
     <script async>getSerials()</script>
     <script>
-        let get_serial = function (serial_id) {
-            getSerialView(
-                serial_id,
-                {
-                    edit:   <%= permissions.serial_edit   || false %>,
-                    delete: <%= permissions.serial_delete || false %>
-                }
-            );
-        };
+        let serial_id     = document.querySelector('#serial_id'),
+            serial_reload = document.querySelector('#serial_reload'),
+            get_serial    = function (serial_id) {
+                getSerialView(
+                    serial_id,
+                    {
+                        edit:   <%= permissions.serial_edit   || false %>,
+                        delete: <%= permissions.serial_delete || false %>
+                    }
+                );
+            };
         $('#mdl_serial_view').on('show.bs.modal', function(event) {
             get_serial(event.relatedTarget.dataset.serial_id);
         });
         window.addEventListener('load', function () {
-            let serial_id     = document.querySelector('#serial_id'),
-                serial_reload = document.querySelector('#serial_reload');
             serial_reload.addEventListener('click', function () {
                 get_serial(serial_id.innerText);
             });
@@ -565,21 +565,21 @@
     <script src="/js/stores/sizes/show/stock/view.js"></script>
     <script async>getStocks()</script>
     <script>
-        let get_stock = function (stock_id) {
-            getStockView(
-                stock_id,
-                {
-                    edit:   <%= permissions.stock_edit   || false %>,
-                    delete: <%= permissions.stock_delete || false %>
-                }
-            );
-        };
+        let stock_id     = document.querySelector('#stock_id'),
+            stock_reload = document.querySelector('#stock_reload'),
+            get_stock    = function (stock_id) {
+                getStockView(
+                    stock_id,
+                    {
+                        edit:   <%= permissions.stock_edit   || false %>,
+                        delete: <%= permissions.stock_delete || false %>
+                    }
+                );
+            };
         $('#mdl_stock_view').on('show.bs.modal', function(event) {
             get_stock(event.relatedTarget.dataset.stock_id);
         });
         window.addEventListener('load', function () {
-            let stock_id     = document.querySelector('#stock_id'),
-                stock_reload = document.querySelector('#stock_reload');
             stock_reload.addEventListener('click', function () {
                 get_stock(stock_id.innerText);
             });

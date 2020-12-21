@@ -34,3 +34,8 @@ function getStockReturns(stock_id) {
     );
 };
 $('#mdl_stock_view').on('show.bs.modal', function(event) {getStockReturns(event.relatedTarget.dataset.stock_id)});
+window.addEventListener('load', function () {
+    stock_reload.addEventListener('click', function () {
+        getStockReturns(stock_id.innerText);
+    });
+});

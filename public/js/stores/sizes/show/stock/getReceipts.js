@@ -34,3 +34,8 @@ function getStockReceipts(stock_id) {
     );
 };
 $('#mdl_stock_view').on('show.bs.modal', function(event) {getStockReceipts(event.relatedTarget.dataset.stock_id)});
+window.addEventListener('load', function () {
+    stock_reload.addEventListener('click', function () {
+        getStockReceipts(stock_id.innerText);
+    });
+});
