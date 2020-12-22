@@ -57,6 +57,10 @@ function set_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);
     if (element) element.setAttribute(options.attribute || '', options.value || '');
 };
+function remove_attribute(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element && options.attribute) element.removeAttribute(options.attribute);
+};
 function List_Item (options = {}) {
     this.e = document.createElement('li');
     this.e.classList.add('list-group-item', 'text-left', 'p-4');
@@ -86,6 +90,7 @@ function Form (options = {}) {
 function Link (options = {}) {
     this.e = document.createElement('a');
     this.e.classList.add('btn');
+    if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
     if (options.type === 'edit') {
         this.e.classList.add('btn-success');
         this.e.innerHTML = _edit();
@@ -100,7 +105,8 @@ function Link (options = {}) {
     else if (options.modal) {
         this.e.setAttribute('data-toggle', 'modal');
         this.e.setAttribute('data-target', `#mdl_${options.modal}`);
-        if (options.data) this.e.setAttribute(`data-${options.data.field}`, options.data.value);
+        if (options.source) this.e.setAttribute(`data-source`, options.source);
+        if (options.data)   this.e.setAttribute(`data-${options.data.field}`, options.data.value);
     };
     if (options.id)     this.e.setAttribute('id', options.id);
     if (options.margin) this.e.classList.add('m-1');
@@ -177,6 +183,7 @@ function Button (options = {}) {
     if      (options.disabled === true) this.e.setAttribute('disabled', true);
     if      (options.confirm === true)  this.e.classList.add('confirm');
     if      (options.small === true)    this.e.classList.add('btn-sm');
+    if      (options.float === true)    this.e.classList.add('float-right');
 
     if      (options.classes)           options.classes.forEach(e => this.e.classList.add(e));
     if      (options.click)             this.e.addEventListener('click', options.click);

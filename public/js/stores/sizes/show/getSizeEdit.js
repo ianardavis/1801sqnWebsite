@@ -16,13 +16,14 @@ function getSizeEdit() {
 };
 window.addEventListener('load', function () {
     addFormListener(
-        'form_edit_size',
+        'form_size_edit',
         'PUT',
         `/stores/sizes/${path[3]}`,
         {
             onComplete: [
                 getSize,
-                getSizeEdit
+                getSizeEdit,
+                function () {$('#mdl_size_edit').modal('hide')}
             ]
         }
     );

@@ -1,6 +1,15 @@
 <% if (permissions.access_notes) { %>
     <div class="tab-pane fade" id="<%= line %>-notes" role="tabpanel" aria-labelledby="<%= line %>-notes-tab">
-        <%- include(`${partials}/inputs/select`, {id: `${line}_sel_system`, title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '_system=0', selected: true}, {text: 'Only', value: '_system=1'}]}) %>
+        <div class="row">
+            <% if (permissions.note_add) { %><div class="col-2">
+                <button id='btn_<%= line %>_note_add' class='btn btn-success w-100' data-toggle='modal' data-target='#mdl_note_add'>
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="col-10"><% } %>
+                <%- include(`${partials}/inputs/select`, {id: `${line}_sel_system`, title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '_system=0', selected: true}, {text: 'Only', value: '_system=1'}]}) %>
+            <% if (permissions.note_add) { %></div><% } %>
+        </div>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
                 <th class="w-20" onclick="sortTable(0, 'tbl_<%= line %>_notes')">Date</th>

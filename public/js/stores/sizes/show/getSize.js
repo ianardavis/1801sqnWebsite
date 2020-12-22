@@ -1,37 +1,33 @@
 function getSize() {
     get(
         function (size, options) {
-            for (let [id, value] of Object.entries(size)) {
-                try {
-                    let element = document.querySelector('#' + id);
-                    if (['_issueable', '_orderable', '_nsns', '_serials'].includes(id)) {
-                        if (id === '_serials') {
-                            let stock_elements = document.querySelectorAll('._stock_element');
-                            if (value === 1) stock_elements.forEach(e => e.style.display = 'none');
-                            else stock_elements.forEach(e => e.style.display = 'in-line block');
-                        };
-                        let to_hide = document.querySelectorAll(`.${id}_element`);
-                        if (value === 1) {
-                            to_hide.forEach(e => e.style.display = 'block');
-                            element.innerText = 'Yes';
-                        } else if (value === 0) {
-                            to_hide.forEach(e => e.style.display = 'none');
-                            element.innerText = 'No';
-                        };
-                    } else if (id === 'supplier') element.innerText = value._name
-                    else if (element) element.innerText = value;
-                } catch (error) {console.log(error)};
+            set_innerText({id: '_issueable',        text: yesno(size._issueable)});
+            set_innerText({id: '_orderable',        text: yesno(size._orderable)});
+            set_innerText({id: '_serials',          text: yesno(size._serials)});
+            set_innerText({id: '_nsns',             text: yesno(size._nsns)});
+            set_innerText({id: 'supplier',          text: size.supplier._name});
+            set_attribute({id: 'supplier_link',     attribute: 'href', value: `/stores/suppliers/${size.supplier_id}`});
+            set_innerText({id: '_demand_page',      text: size._demand_page});
+            set_innerText({id: '_demand_cell',      text: size._demand_cell});
+            set_innerText({id: '_ordering_details', text: size._ordering_details});
+            let stock_elements  = document.querySelectorAll('._stock_element'),
+                serial_elements = document.querySelectorAll('._serials_element');
+            if (size._serials) {
+                stock_elements.forEach(e => e.classList.add('hidden'));
+                serial_elements.forEach(e => e.classList.remove('hidden'));
+            } else {
+                stock_elements.forEach(e => e.classList.remove('hidden'));
+                serial_elements.forEach(e => e.classList.add('hidden'));
             };
-            let _item    = document.querySelector('#_item'),
-                size_IDs = document.querySelectorAll('.size_id');
-            set_breadcrumb({text: `Size: ${size._size}`, href: `/stores/sizes/${size.size_id}`});
+            ['_issueable', '_orderable', '_nsns'].forEach(e => {
+                if (size[e]) document.querySelectorAll(`.${e}_element`).forEach(e => e.classList.remove('hidden'))
+                else         document.querySelectorAll(`.${e}_element`).forEach(e => e.classList.add('hidden'));
+            });
+            let _item = document.querySelector('#_item');
             _item.innerText = size.item._description;
             _item.href      = `/stores/items/${size.item_id}`;
-            size_IDs.forEach(e => e.setAttribute('value', size.size_id));
-            set_attribute({id: 'add_order',     attribute: 'href', value: '/stores/orders/new?user=-1'});
-            set_attribute({id: 'edit_link',     attribute: 'href', value: `javascript:edit("sizes",${size.size_id})`});
-            set_attribute({id: 'supplier_link', attribute: 'href', value: `/stores/suppliers/${size.supplier_id}`});
-
+            set_breadcrumb({text: `Size: ${size._size}`, href: `/stores/sizes/${size.size_id}`});
+            document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
         },
         {
             table: 'size',

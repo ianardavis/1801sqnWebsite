@@ -51,7 +51,7 @@ function getNSNView(nsn_id, permissions) {
                                 options: {
                                     onComplete: [
                                         getNSNs,
-                                        function () {$('mdl_nsn_view').modal('hide')}
+                                        function () {$('#mdl_nsn_view').modal('hide')}
                                     ]
                                 }
                             }).e
@@ -63,7 +63,9 @@ function getNSNView(nsn_id, permissions) {
                                 id: 'btn_nsn_edit',
                                 type: 'success',
                                 html: '<i class="fas fa-pencil-alt"></i>',
-                                click: edit_nsn
+                                click: edit_nsn,
+                                float:      true,
+                                classes: ['mr-1']
                             }).e
                         );
                     };

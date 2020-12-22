@@ -1,5 +1,10 @@
 function getStockNotes(stock_id, permissions) {
     let stock_sel_system = document.querySelector('#stock_sel_system') || {value: ''};
+    if (permissions.add) {
+        set_attribute({id: 'btn_stock_note_add', attribute: 'data-_table', value: 'stock'});
+        set_attribute({id: 'btn_stock_note_add', attribute: 'data-_id',    value: stock_id});
+        set_attribute({id: 'btn_stock_note_add', attribute: 'data-source', value: 'Stock'});
+    };
     get(
         function(notes, options) {
             let tbl_stock_notes = document.querySelector('#tbl_stock_notes');

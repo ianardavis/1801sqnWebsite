@@ -57,7 +57,9 @@ function getSerialView(serial_id, permissions) {
                                 id:   'btn_serial_edit',
                                 type: 'success',
                                 html: '<i class="fas fa-pencil-alt"></i>',
-                                click: edit_serial
+                                click: edit_serial,
+                                float:      true,
+                                classes: ['mr-1']
                             }).e
                         );
                     };

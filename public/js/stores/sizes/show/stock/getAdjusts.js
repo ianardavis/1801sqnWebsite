@@ -1,3 +1,4 @@
+let sel_stock_adjust_type = document.querySelector('#sel_stock_adjust_type') || {value: ''};
 function getStockAdjusts(stock_id) {
     get(
         function(adjusts, options) {
@@ -24,14 +25,13 @@ function getStockAdjusts(stock_id) {
         },
         {
             table: 'adjusts',
-            query: [`stock_id=${stock_id}`],
+            query: [`stock_id=${stock_id}`, sel_stock_adjust_type.value],
             spinner: 'stock_adjusts'
         }
     );
 };
 $('#mdl_stock_view').on('show.bs.modal', function(event) {getStockAdjusts(event.relatedTarget.dataset.stock_id)});
 window.addEventListener('load', function () {
-    stock_reload.addEventListener('click', function () {
-        getStockAdjusts(stock_id.innerText);
-    });
+    sel_stock_adjust_type.addEventListener('change', function () {getStockAdjusts(stock_id.innerText)});
+    stock_reload.addEventListener(         'click',  function () {getStockAdjusts(stock_id.innerText)});
 });

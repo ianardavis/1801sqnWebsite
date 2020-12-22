@@ -26,7 +26,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .then(line => {
             if (!line) res.error.redirect(new Error('Order line not found'), req, res)
-            else res.redirect('/stores/orders/' + line.order_id)
+            else       res.redirect('/stores/orders/' + line.order_id)
         })
         .catch(err => res.error.redirect(err, req, res));
     });
@@ -97,20 +97,45 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.post('/stores/order_lines',        permissions, allowed('order_line_add',     {send: true}),              (req, res) => {
-        orders.createLine({
-            m: {
-                order_lines: m.order_lines,
-                orders:      m.orders,
-                sizes:       m.sizes,
-                notes:       m.notes
-            },
-            order_id: req.body.line.order_id,
-            size_id:  req.body.line.size_id,
-            _qty:     req.body.line._qty,
-            user_id:  req.user.user_id
-        })
-        .then(result => res.send({result: true, message: `Item added: ${result.line.line_id}`}))
-        .catch(err => res.error.send(err, res));
+        if (req.body.line.order_id) {
+            orders.createLine({
+                m: {
+                    order_lines: m.order_lines,
+                    orders:      m.orders,
+                    sizes:       m.sizes,
+                    notes:       m.notes
+                },
+                order_id: req.body.line.order_id,
+                size_id:  req.body.line.size_id,
+                _qty:     req.body.line._qty,
+                user_id:  req.user.user_id
+            })
+            .then(result => res.send({result: true, message: `Item added: ${result.line.line_id}`}))
+            .catch(err => res.error.send(err, res));
+        } else if (req.body.ordered_for) {
+            m.orders.findOrCreate({
+                where:    {ordered_for: req.body.ordered_for},
+                defaults: {user_id:     req.user.user_id}
+            })
+            .then(order => {
+                console.log(order);
+                return orders.createLine({
+                    m: {
+                        order_lines: m.order_lines,
+                        orders:      m.orders,
+                        sizes:       m.sizes,
+                        notes:       m.notes
+                    },
+                    order_id: order.order_id,
+                    size_id:  req.body.line.size_id,
+                    _qty:     req.body.line._qty,
+                    user_id:  req.user.user_id
+                })
+                .then(result => res.send({result: true, message: `Item added: ${result.line.line_id}`}))
+                .catch(err => res.error.send(err, res));
+            })
+            .catch(err => res.error.send(err, res))
+        } else res.send({result: false, message: 'No order ID or user ID specified'});
     });
 
     app.put('/stores/orders/addtodemand',  permissions, allowed('demand_line_add',    {send: true}),              (req, res) => {

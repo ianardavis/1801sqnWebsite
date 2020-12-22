@@ -18,7 +18,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.size_edit) { %>
-                    <%- include(`${partials}/menu/edit`) %>
+                    <a class='dropdown-item'                  data-toggle='modal' data-target='#mdl_size_edit'>Edit</a>
                 <% } %>
                 <div class="dropdown-divider"></div>
                 <%- include(`${partials}/notes/menu_add`) %>
@@ -26,28 +26,28 @@
                     <a class='dropdown-item'                  data-toggle="modal" data-target="#mdl_nsn_add"   >Add NSN</a> 
                 <% } %>
                 <% if (permissions.serial_add) { %> 
-                    <a class='dropdown-item _serials_element' data-toggle="modal" data-target="#mdl_serial_add">Add Serial</a> 
+                    <a class='dropdown-item _serials_element' data-toggle="modal" data-target="#mdl_serial_add">Add Serial #</a> 
                 <% } %>
                 <% if (permissions.stock_add) { %>
                     <a class='dropdown-item _stock_element'   data-toggle="modal" data-target="#mdl_stock_add" >Add Stock Location</a>
                 <% } %>
                 <% if (permissions.order_add) { %>
-                    <a class='dropdown-item' id='add_order'>Add Order</a>
+                    <a class='dropdown-item'                  data-toggle="modal" data-target="#mdl_order_add" >Order</a>
                 <% } %>
                 <% if (permissions.size_delete) { %>
                     <%- include(`${partials}/menu/delete`, {redirect: '/stores/items'}) %>
                 <% } %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',                       spinner: 'size'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'nsns',     title: 'NSNs',     count_id: 'nsn',     spinner: 'nsns',          permission: 'access_nsns',          _class: '_nsns_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'serials',  title: 'Serials',  count_id: 'serial',  spinner: 'serials',       permission: 'access_serials',       _class: '_serials_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'stock',    title: 'Stock',    count_id: 'stock',   spinner: 'stock',         permission: 'access_stock',         _class: '_stock_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'requests', title: 'Requests', count_id: 'request', spinner: 'request_lines', permission: 'access_request_lines', _class: '_issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'orders',   title: 'Orders',   count_id: 'order',   spinner: 'order_lines',   permission: 'access_order_lines',   _class: '_orderable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts', count_id: 'receipt', spinner: 'receipt_lines', permission: 'access_receipt_lines', _class: '_orderable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues',   count_id: 'issue',   spinner: 'issue_lines',   permission: 'access_issue_lines',   _class: '_issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    count_id: 'note',    spinner: 'notes',         permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',  spinner: 'size'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'nsns',     title: 'NSNs',     spinner: 'nsns',          count_id: 'nsn',     permission: 'access_nsns',          _class: '_nsns_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'serials',  title: 'Serials',  spinner: 'serials',       count_id: 'serial',  permission: 'access_serials',       _class: '_serials_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'stock',    title: 'Stock',    spinner: 'stock',         count_id: 'stock',   permission: 'access_stock',         _class: '_stock_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'requests', title: 'Requests', spinner: 'request_lines', count_id: 'request', permission: 'access_request_lines', _class: '_issueable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'orders',   title: 'Orders',   spinner: 'order_lines',   count_id: 'order',   permission: 'access_order_lines',   _class: '_orderable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts', spinner: 'receipt_lines', count_id: 'receipt', permission: 'access_receipt_lines', _class: '_orderable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues',   spinner: 'issue_lines',   count_id: 'issue',   permission: 'access_issue_lines',   _class: '_issueable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    spinner: 'notes',         count_id: 'note',    permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -61,7 +61,7 @@
             <%- include(`${partials}/inputs/textarea`, {id: '_ordering_details', title: 'Ordering Details', rows: 5, readonly: true}) %>
         </div>
         <% if (permissions.access_nsns) { %>
-            <div class="tab-pane fade" id="nsns" role="tabpanel" aria-labelledby="nsns-tab">
+            <div id="nsns"     role="tabpanel" aria-labelledby="nsns-tab"     class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_nsns")'>NSN</th>
@@ -73,7 +73,7 @@
             </div>
         <% } %>
         <% if (permissions.access_serials) { %>
-            <div class="tab-pane fade serial_element" id="serials" role="tabpanel" aria-labelledby="serials-tab">
+            <div id="serials"  role="tabpanel" aria-labelledby="serials-tab"  class="tab-pane fade serial_element">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-50' onclick='sortTable(0, "tbl_serials")' >Serial #</th>
@@ -85,7 +85,7 @@
             </div>
         <% } %>
         <% if (permissions.access_stock) { %>
-            <div class="tab-pane fade" id="stock" role="tabpanel" aria-labelledby="stock-tab">
+            <div id="stock"    role="tabpanel" aria-labelledby="stock-tab"    class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_stock")'>Location</th>
@@ -97,7 +97,7 @@
             </div>
         <% } %>
         <% if (permissions.access_request_lines) { %>
-            <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
+            <div id="requests" role="tabpanel" aria-labelledby="requests-tab" class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_requests")'>For</th>
@@ -109,7 +109,7 @@
             </div>
         <% } %>
         <% if (permissions.access_order_lines) { %>
-            <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+            <div id="orders"   role="tabpanel" aria-labelledby="orders-tab"   class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_orders")'>For</th>
@@ -121,7 +121,7 @@
             </div>
         <% } %>
         <% if (permissions.access_receipt_lines) { %>
-            <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
+            <div id="receipts" role="tabpanel" aria-labelledby="receipts-tab" class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_receipts")'>Date</th>
@@ -134,7 +134,7 @@
             </div>
         <% } %>
         <% if (permissions.access_issue_lines) { %>
-            <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+            <div id="issues"   role="tabpanel" aria-labelledby="issues-tab"   class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-20' onclick='sortTable(0, "tbl_issues")'>Date</th>
@@ -149,13 +149,13 @@
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
     <div id="div_modals">
-        <% if (permissions.nsn_add || permissions.nsn_edit || permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
+        <% if (permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
             <datalist id="locations_list"></datalist>
         <% } %>
         <% if (permissions.size_edit) { %>
-            <div     id='mdl_edit_size'   class="modal fade" tabindex="-1" role="dialog">
+            <div     id='mdl_size_edit'   class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
-                    <form class="modal-content" id='form_edit_size'>
+                    <form class="modal-content" id='form_size_edit'>
                         <div class="modal-header">
                             <h5 class="modal-title">Edit Size</h5>
                         </div>
@@ -178,14 +178,34 @@
                 </div>
             </div>
         <% } %>
+        <% if (permissions.order_line_add) { %>
+            <div     id='mdl_order_add'   class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <form class="modal-content" id='form_order_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Order Item</h5>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name='line[size_id]' class='size_id'>
+                            <input type="hidden" name='ordered_for'   value='-1'>
+                            <%- include(`${partials}/inputs/number`, {name: 'line[_qty]', title: 'Quantity', maxlength: 8, placeholder: 'Required', required: true}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100 confirm" value='Save Order'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
         <% if (permissions.access_nsns) { %>
             <div     id='mdl_nsn_view'    class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5   class="modal-title">Serial ID: <span id="nsn_id"></span> | <span id="_nsn_view"></span></h5>
+                            <h5   class="modal-title">NSN ID: <span id="nsn_id"></span> | <span id="_nsn_view"></span></h5>
                             <span class='float-right'>
-                                <a class="btn btn-primary" id="nsn_reload"><i class="fas fa-redo"></i></a>
+                                <a class="btn btn-primary mr-1" id="nsn_reload"><i class="fas fa-redo"></i></a>
                                 <span id='nsn_buttons'></span>
                             </span>
                         </div>
@@ -256,7 +276,7 @@
                         <div class="modal-header">
                             <h5   class="modal-title">Serial ID: <span id="serial_id"></span> | <span id="_serial_view"></span></h5>
                             <span class='float-right'>
-                                <a class="btn btn-primary" id="serial_reload"><i class="fas fa-redo"></i></a>
+                                <a class="btn btn-primary mr-1" id="serial_reload"><i class="fas fa-redo"></i></a>
                                 <span id='serial_buttons'></span>
                             </span>
                         </div>
@@ -293,7 +313,7 @@
             <% if (permissions.serial_add) { %>
                 <div id='mdl_serial_add'  class="modal fade" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-lg" role="document">
-                        <form class="modal-content" id='form_add_serial'>
+                        <form class="modal-content" id='form_serial_add'>
                             <div class="modal-header">
                                 <h5 class="modal-title">Add Serial</h5>
                             </div>
@@ -318,7 +338,7 @@
                         <div class="modal-header">
                             <h5   class="modal-title" id="_stock_view">Stock ID: <span id="stock_id"></span></h5>
                             <span class='float-right'>
-                                <a class="btn btn-primary" id="stock_reload"><i class="fas fa-redo"></i></a>
+                                <a class="btn btn-primary mr-1" id="stock_reload"><i class="fas fa-redo"></i></a>
                                 <span id='stock_buttons'></span>
                             </span>
                         </div>
@@ -349,6 +369,16 @@
                                 </div>
                                 <% if (permissions.access_adjusts) { %>
                                     <div class="tab-pane fade" id="stock-adjusts" role="tabpanel" aria-labelledby="stock-adjusts-tab">
+                                        <div class="row">
+                                            <% if (permissions.adjust_add) { %><div class="col-2">
+                                                <button id='btn_stock_adjust_add' class='btn btn-success w-100' data-toggle='modal' data-target='#mdl_adjust_add'>
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                            <div class="col-10"><% } %>
+                                                <%- include(`${partials}/inputs/select`, {id: `sel_stock_adjust_type`, title: 'Adjustment Types', options: [{text: 'All', value: '', selected: true}, {text: 'Count', value: '_type=Count'}, {text: 'Scrap', value: '_type=Scrap'}]}) %>
+                                            <% if (permissions.adjust_add) { %></div><% } %>
+                                        </div>
                                         <table class="table table-sm table-hover">
                                             <thead class="thead-dark">
                                                 <th class="w-25" onclick="sortTable(0, 'tbl_stock_adjusts')">Date</th>
@@ -410,19 +440,43 @@
                     </div>
                 </div>
             </div>
-            <% if (permissions.stock_add) { %>
-                <div id='mdl_add_stock'   class="modal fade" tabindex="-1" role="dialog">
+            <% if (permissions.adjust_add) { %>
+                <div id='mdl_adjust_add'  class="modal fade" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-lg" role="document">
-                        <form class="modal-content" id='form_add_stock'>
+                        <form class="modal-content" id='form_adjust_add'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Adjustment</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" class='stock_id' name='adjust[stock_id]'>
+                                <%- include(`${partials}/inputs/display`, {id: 'adjust_item',     title: 'Item'}) %>
+                                <%- include(`${partials}/inputs/display`, {id: 'adjust_size',     title: 'Size'}) %>
+                                <%- include(`${partials}/inputs/display`, {id: 'adjust_location', title: 'Location'}) %>
+                                <%- include(`${partials}/inputs/display`, {id: 'adjust_qty',      title: 'Current Quantity'}) %>
+                                <%- include(`${partials}/inputs/number`,  {id: 'adjust_new_qty',  title: 'Quantity', name: 'adjust[_qty]',  required: true}) %>
+                                <%- include(`${partials}/inputs/select`,  {id: 'adjust_type',     title: 'Type',     name: 'adjust[_type]', required: true, options: [{text: 'Select Adjustment Type...', selected: true},{text: 'Count', value: 'Count'},{text: 'Scrap', value: 'Scrap'}]}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <input  type="submit" class="btn btn-success w-100 confirm" value='Save Adjustment'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+            <% if (permissions.stock_add) { %>
+                <div id='mdl_stock_add'   class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <form class="modal-content" id='form_stock_add'>
                             <div class="modal-header">
                                 <h5 class="modal-title">Add Serial</h5>
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" class='size_id' name='stock[size_id]'>
-                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: '_location', maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
+                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: '_location', maxlength: 20, required: true, list_id: 'locations_list', spinner: true, spinner_id: 'locations'}) %>
                             </div>
                             <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                                <input  type="submit" class="btn btn-success w-100 confirm" value='Save Location'>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </form>
@@ -443,6 +497,7 @@
 <script async>getSize()</script>
 <% if (permissions.nsn_add || permissions.nsn_edit || permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
     <script src="/js/stores/locations/getLocations.js"></script>
+    <script async>getLocations()</script>
 <% } %>
 <% if (permissions.access_nsns) { %>
     <script src="/js/stores/sizes/show/nsns/view.js"></script>
@@ -475,6 +530,7 @@
                 getNSNNotes(
                     nsn_id,
                     {
+                        add:    <%= permissions.note_add    || false %>,
                         edit:   <%= permissions.note_edit   || false %>,
                         delete: <%= permissions.note_delete || false %>
                     }
@@ -535,6 +591,7 @@
                 getSerialNotes(
                     serial_id,
                     {
+                        add:    <%= permissions.note_add    || false %>,
                         edit:   <%= permissions.note_edit   || false %>,
                         delete: <%= permissions.note_delete || false %>
                     }
@@ -592,6 +649,7 @@
                 getStockNotes(
                     stock_id,
                     {
+                        add:    <%= permissions.note_add    || false %>,
                         edit:   <%= permissions.note_edit   || false %>,
                         delete: <%= permissions.note_delete || false %>
                     }
@@ -613,6 +671,9 @@
     <% } %>
     <% if (permissions.access_adjusts) { %>
         <script src="/js/stores/sizes/show/stock/getAdjusts.js"></script>
+        <% if (permissions.adjust_add) { %>
+            <script src="/js/stores/sizes/show/stock/addAdjust.js"></script>
+        <% } %>
     <% } %>
     <% if (permissions.access_receipt_lines) { %>
         <script src="/js/stores/sizes/show/stock/getReceipts.js"></script>
@@ -622,6 +683,9 @@
     <% } %>
     <% if (permissions.access_issue_line_returns) { %>
         <script src="/js/stores/sizes/show/stock/getReturns.js"></script>
+    <% } %>
+    <% if (permissions.stock_add) { %>
+        <script src="/js/stores/sizes/show/stock/add.js"></script>
     <% } %>
     <% if (permissions.stock_edit) { %>
         <script src="/js/stores/sizes/show/stock/edit.js"></script>
@@ -637,6 +701,9 @@
 <% if (permissions.access_orders) { %>
     <script src="/js/stores/sizes/show/getOrders.js"></script>
     <script async>getOrders()</script>
+    <% if (permissions.order_line_add) { %>
+        <script src="/js/stores/sizes/show/orders/add.js"></script>
+    <% } %>
 <% } %>
 <% if (permissions.access_receipts) { %>
     <script src="/js/stores/sizes/show/getReceipts.js"></script>

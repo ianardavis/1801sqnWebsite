@@ -11,6 +11,7 @@ get = (onComplete, options = {query: []}) => new Promise(resolve => {
                 if (response.result === true) onComplete(response[options.table] || response.lines, options);
                 else {
                     alert(`Error: ${response.message || response.error || 'unknown'}`);
+                    if (options.onFail) options.onFail();
                     onComplete(response[options.table] || response.lines, options)
                 };
                 hide_spinner(options.spinner || options.table);
@@ -25,5 +26,5 @@ get = (onComplete, options = {query: []}) => new Promise(resolve => {
             location: `/${options.db || 'stores'}/get/${options.table}?${options.query.join('&')}`,
             spinner:  options.spinner || ''
         });
-    } else console.log('public/js/get.js:13', 'No/Invalid table specified');
+    } else console.log('public/js/get.js:29', 'No/Invalid table specified');
 });

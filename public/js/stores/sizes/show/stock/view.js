@@ -9,7 +9,7 @@ function getStocks() {
                     stocks.forEach(stock => {
                         let row = tbl_stock.insertRow(-1);
                         add_cell(row, {text: stock.location._location});
-                        add_cell(row, {text: stock._qty});
+                        add_cell(row, {text: stock._qty || '0'});
                         add_cell(row, {append: new Link({
                             modal: 'stock_view',
                             data:  {field: 'stock_id', value: stock.stock_id},
@@ -27,11 +27,14 @@ function getStocks() {
     );
 };
 function getStockView(stock_id, permissions) {
+    let stock_ids = document.querySelectorAll('.stock_id');
+    if (stock_ids) stock_ids.forEach(e => e.setAttribute('value', stock_id));
     get(
         function(stock, options) {
-            set_innerText({id: 'stock_location', text: stock.location._location});
-            set_innerText({id: '_qty',           text: stock._qty});
-            set_innerText({id: 'stock_id',       text: stock.stock_id});
+            set_innerText({id: 'stock_location',       text: stock.location._location});
+            set_innerText({id: '_qty',                 text: stock._qty});
+            set_innerText({id: 'stock_id',             text: stock.stock_id});
+            set_attribute({id: 'btn_stock_adjust_add', attribute: 'data-stock_id', value: stock_id});
             if (permissions.edit === true || permissions.delete === true) {
                 let stock_buttons = document.querySelector('#stock_buttons');
                 if (stock_buttons) {
@@ -57,7 +60,9 @@ function getStockView(stock_id, permissions) {
                                 id:   'btn_stock_edit',
                                 type: 'success',
                                 html: '<i class="fas fa-pencil-alt"></i>',
-                                click: edit_stock
+                                click: edit_stock,
+                                float:      true,
+                                classes: ['mr-1']
                             }).e
                         );
                     };

@@ -1,4 +1,4 @@
-XHR_send = (options = {}) => {
+function XHR_send(options = {}) {
     options.XHR.addEventListener("error", event => {
         alert(`Something went wrong getting ${options.table}`)
         hide_spinner(options.spinner || options.table);

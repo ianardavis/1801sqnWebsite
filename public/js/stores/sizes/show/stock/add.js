@@ -1,6 +1,6 @@
-window.addEventListener( "load", () => {
+window.addEventListener( "load", function () {
     addFormListener(
-        'form_add_stock',
+        'form_stock_add',
         'POST',
         '/stores/stock',
         {onComplete: getStocks}

@@ -68,7 +68,7 @@ module.exports = {
             } else {
                 return options.m.orders.findOne({
                     where: {order_id: options.order_id},
-                    attributes: ['_status', 'order_id']
+                    attributes: ['order_id', '_status']
                 })
                 .then(order => {
                     if (!order) {

@@ -1,6 +1,6 @@
 window.addEventListener( "load", () => {
     addFormListener(
-        'form_add_serial',
+        'form_serial_add',
         'POST',
         '/stores/serials',
         {onComplete: getSerials}
