@@ -18,6 +18,7 @@ module.exports = () => {
         res.locals.danger   = req.flash('danger');
         res.locals.success  = req.flash('success');
         res.locals.partials = process.env.PARTIALS;
+        res.locals.tab      = req.query.tab || 'details';
         next();
     };
 };

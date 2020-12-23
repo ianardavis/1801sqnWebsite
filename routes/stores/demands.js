@@ -1,17 +1,21 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, loggedIn, m) => {
-    let receipts = require(process.env.ROOT + '/fn/stores/receipts'),
-        demands  = require(process.env.ROOT + '/fn/stores/demands'),
-        utils    = require(process.env.ROOT + '/fn/utils');
+    let receipts = {}, demands = {},
+        promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`),
+        counter        = require(`${process.env.ROOT}/fn/utils/counter`),
+        download       = require(`${process.env.ROOT}/fn/utils/download`),
+        timestamp      = require(`${process.env.ROOT}/fn/utils/timestamps`);
+    require(`${process.env.ROOT}/fn/stores/receipts`)(m, receipts),
+    require(`${process.env.ROOT}/fn/stores/demands`) (m, demands),
     app.get('/stores/demands',              loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/index'));
-    app.get('/stores/demands/:id',          loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/demands/:id',          loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/show'));
     app.get('/stores/demands/:id/download', loggedIn, allowed('access_demands'),                    (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['_filename']
         })
         .then(demand => {
-            if (demand._filename && demand._filename !== '') utils.download(demand._filename, req, res);
+            if (demand._filename && demand._filename !== '') download(demand._filename, req, res);
             else res.error.redirect(new Error('No file found'), req, res);
         })
         .catch(err => res.error.redirect(err, req, res));
@@ -60,7 +64,6 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
 
     app.post('/stores/demands',             loggedIn, allowed('demand_add',          {send: true}), (req, res) => {
         demands.create({
-            m: {suppliers: m.suppliers, demands: m.demands},
             demand: {
                 supplier_id: req.body.supplier_id,
                 user_id: req.user.user_id
@@ -75,12 +78,6 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     });
     app.post('/stores/demand_lines',        loggedIn, allowed('demand_line_add',     {send: true}), (req, res) => {
         demands.createLine({
-            m: {
-                sizes: m.sizes,
-                demands: m.demands,
-                demand_lines: m.demand_lines,
-                notes: m.notes
-            },
             line: req.body.line,
             user_id: req.user.user_id
         })
@@ -220,7 +217,6 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 if (receives.length > 0) {
                     actions = [];
                     receipts.create({
-                        m: {receipts: m.receipts},
                         receipt: {
                             supplier_id: demand.supplier_id,
                             user_id:     req.user.user_id
@@ -238,7 +234,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                         });
                         Promise.allSettled(actions)
                         .then(receive_results => {
-                            if (utils.promiseResults(cancel_results.concat(receive_results))) {
+                            if (promiseResults(cancel_results.concat(receive_results))) {
                                 res.send({result: true, message: 'Lines actioned'}); /////////////////
                             } else {
                                 res.error.send('Some actions failed', res); ////////////////
@@ -248,7 +244,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                         
                     })
                     .catch(err => res.error.send(err, res));
-                } else if (utils.promiseResults(cancel_results)) {
+                } else if (promiseResults(cancel_results)) {
                     res.send({result: true, message: 'Lines actioned'}); ///////////////////////
                 } else {
                     res.error.send('Some actions failed', res); ////////////////
@@ -451,7 +447,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             let fs = require('fs');
             if (file) {
                 let path       = `${process.env.ROOT}/public/res/`,
-                    newDemand  = `demands/${utils.timestamp()}_demand-${demand_id}.xlsx`,
+                    newDemand  = `demands/${timestamp()}_demand-${demand_id}.xlsx`,
                     demandFile = `${path}files/${file}`;
                     console.log(path, newDemand, demandFile);
                 fs.copyFile(demandFile, path + newDemand, err => {
@@ -499,7 +495,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
 
                     let cell_date = worksheet.getCell(supplier.file._date),
                         now       = new Date(),
-                        line      = utils.counter();
+                        line      = counter();
                     cell_date.value = now.toDateString();
 
                     if (users) {
@@ -569,16 +565,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                     user_id:    user_id
                 };
                 if (line._serial) new_receipt_line._serial = line._serial
-                receipts.createLine({
-                    m: {
-                        receipt_lines: m.receipt_lines,
-                        receipts:      m.receipts,
-                        serials:       m.serials,
-                        sizes:         m.sizes,
-                        stock:         m.stock
-                    },
-                    line: new_receipt_line
-                })
+                receipts.createLine({line: new_receipt_line})
                 .then(receipt_line_id => {
                     let actions = [];
                     actions.push(
@@ -598,10 +585,10 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                     );
                     Promise.allSettled(actions)
                     .then(results => {
-                        if (utils.promiseResults(results)) {
+                        if (promiseResults(results)) {
                             resolve(receipt_line_id);
                         } else {
-                            reject(new Error('Receipt created: ' + receipt_line_id + ', some lines failed updating order and demand lines'));
+                            reject(new Error(`'Receipt created: ${receipt_line_id}, some lines failed updating order and demand lines`));
                         }
                     });
                 })

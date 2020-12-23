@@ -2,19 +2,20 @@ const op = require('sequelize').Op,
       { scryptSync, randomBytes } = require("crypto");
 module.exports = (app, allowed, inc, permissions, m) => {
     app.post('/users/users',         permissions, allowed('user_add',      {send: true}),              (req, res) => {
-        let user = req.body.user;
+        let _user = req.body.user;
         if (
-            (user._bader    && user._bader !== '')    &&
-            (user._name     && user._name !== '')     &&
-            (user.status_id && user.status_id !== '') &&
-            (user._login_id && user._login_id !== '')
+            (_user._bader    && _user._bader !== '')    &&
+            (_user._name     && _user._name !== '')     &&
+            (_user.status_id && _user.status_id !== '') &&
+            (_user._login_id && _user._login_id !== '')
         ) {
-            m.users.findOne({where: {_bader: user._bader}})
+            m.users.findOne({where: {_bader: _user._bader}})
             .then(user => {
                 if (user) res.send({result: false, message: 'There is already a user with this Bader/Service #'})
                 else {
                     let _password = generatePassword();
-                    m.users.create({...user, ...{_reset: 1}, ...encryptPassword(_password.plain)})
+                    console.log({..._user, ...{_reset: 1}, ...encryptPassword(_password.plain)});
+                    m.users.create({..._user, ...{_reset: 1}, ...encryptPassword(_password.plain)})
                     .then(user => res.send({result: true, message: `User added. Password: ${_password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
                     .catch(err => res.error.send(err, res));
                 }

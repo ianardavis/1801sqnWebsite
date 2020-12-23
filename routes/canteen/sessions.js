@@ -3,7 +3,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     let canteen  = require(`${process.env.ROOT}/fn/canteen`),
         settings = require(`${process.env.ROOT}/fn/settings`);
     app.get('/canteen/sessions',     permissions, allowed('access_canteen'),                (req, res) => res.render('canteen/sessions/index'));
-    app.get('/canteen/sessions/:id', permissions, allowed('access_canteen'),                (req, res) => res.render('canteen/sessions/show', {tab: req.query.tab || 'details'}));
+    app.get('/canteen/sessions/:id', permissions, allowed('access_canteen'),                (req, res) => res.render('canteen/sessions/show'));
 
     app.get('/canteen/get/sessions', permissions, allowed('access_sessions', {send: true}), (req, res) => {
         m.sessions.findAll({

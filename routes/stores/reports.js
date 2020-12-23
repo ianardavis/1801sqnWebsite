@@ -1,7 +1,8 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let orders = require(process.env.ROOT + '/fn/stores/orders'),
-        stock  = require(process.env.ROOT + '/fn/stores/stock');
+    let orders = {}, stock = {};
+    require(`${process.env.ROOT}/fn/stores/stock`) (m, stock);
+    require(`${process.env.ROOT}/fn/stores/orders`)(m, orders)
     app.get('/stores/reports',     permissions, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
 
     app.get('/stores/reports/:id', permissions, allowed('access_reports'), (req, res) => {
@@ -84,7 +85,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
         };
         if (selected.length > 0) {
             orders.create({
-                m: {orders: m.orders},
                 order: {
                     ordered_for: req.body.ordered_for,
                     user_id: req.user.user_id
@@ -94,15 +94,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 let actions = [];
                 selected.forEach(line => {
                     line.order_id = result.order_id
-                    actions.push(orders.createLine({
-                        m: {
-                            sizes: m.sizes,
-                            orders: m.orders,
-                            order_lines: m.order_lines,
-
-                        },
-                        line: line
-                    }))
+                    actions.push(orders.createLine({line: line}))
                 })
                 Promise.allSettled(actions)
                 .then(results => res.redirect('/stores/reports/3'))

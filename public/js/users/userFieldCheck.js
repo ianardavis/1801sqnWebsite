@@ -1,7 +1,7 @@
-var _bader    = document.querySelector("#_bader"),
-    _name     = document.querySelector("#_name"),
-    _ini      = document.querySelector("#_ini"),
-    _login_id = document.querySelector("#_login_id"),
+var _bader    = document.querySelector("#_bader_inp"),
+    _name     = document.querySelector("#_name_inp"),
+    _ini      = document.querySelector("#_ini_inp"),
+    _login_id = document.querySelector("#_login_id_inp"),
     _save     = document.querySelector("#_save");
 check_fields = () => {
     if (_bader.value    !== '' && 

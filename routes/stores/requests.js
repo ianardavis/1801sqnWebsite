@@ -1,9 +1,10 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let requests = require(process.env.ROOT + '/fn/stores/requests'),
-        orders   = require(process.env.ROOT + '/fn/stores/orders'),
-        issues   = require(process.env.ROOT + '/fn/stores/issues'),
-        utils    = require(process.env.ROOT + '/fn/utils');
+    let requests = {}, orders = {}, issues = {},
+    promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`);
+    require(`${process.env.ROOT}/fn/stores/requests`)(m, requests);
+    require(`${process.env.ROOT}/fn/stores/orders`)  (m, orders);
+    require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
     app.get('/stores/requests',              permissions, allowed('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
     app.get('/stores/requests/:id',          permissions, allowed('access_requests',     {allow: true}),             (req, res) => {
         m.requests.findOne({
@@ -11,13 +12,9 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['requested_for']
         })
         .then(request => {
-            if (!request) {
-                res.error.redirect(new Error('Request not found'), req, res);
-            } else if (!req.allowed && request.requested_for !== req.user.user_id) {
-                res.error.redirect(new Error('Permission denied'), req, res);
-            } else {
-                res.render('stores/requests/show', {tab: req.query.tab || 'details'});
-            };
+            if      (!request)                                                   res.error.redirect(new Error('Request not found'), req, res);
+            else if (!req.allowed && request.requested_for !== req.user.user_id) res.error.redirect(new Error('Permission denied'), req, res);
+            else res.render('stores/requests/show');
         })
         .catch(err => res.error.redirect(err, req, res));
     });
@@ -76,7 +73,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
 
     app.post('/stores/requests',             permissions, allowed('request_add',                      {send: true}), (req, res) => {
         requests.create({
-            m: {requests: m.requests, users: m.users},
             requested_for: req.body.requested_for,
             user_id:       req.user.user_id
         })
@@ -90,12 +86,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     app.post('/stores/request_lines',        permissions, allowed('request_line_add',                 {send: true}), (req, res) => {
         requests.createLine({
-            m: {
-                sizes: m.sizes,
-                notes: m.notes,
-                requests: m.requests,
-                request_lines: m.request_lines
-            },
             line: req.body.line,
             user_id: req.user.user_id
         })
@@ -333,7 +323,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 );
                 Promise.allSettled(actions)
                 .then(result => {
-                    if (utils.promiseResults(result)) res.send({result: true, message: 'Request cancelled'})
+                    if (promiseResults(result)) res.send({result: true, message: 'Request cancelled'})
                     else res.send({result: true, message: 'Some actions have failed'});
                 })
                 .catch(err => res.error.send(err, res));
@@ -368,7 +358,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 );
                 return Promise.allSettled(actions)
                 .then(result => {
-                    if (utils.promiseResults(result)) res.send({result: true, message: 'Line cancelled'})
+                    if (promiseResults(result)) res.send({result: true, message: 'Line cancelled'})
                     else res.send({result: true, message: 'Some actions have failed'});
                 })
                 .catch(err => res.error.send(err, res));
@@ -392,12 +382,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     });
                 } else {
                     return orders.createLine({
-                        m: {
-                            order_lines: m.order_lines,
-                            orders:      m.orders,
-                            sizes:       m.sizes,
-                            notes:       m.notes
-                        },
                         order_id: order_id,
                         size_id:  request_line.size_id,
                         _qty:     request_line._qty,
@@ -458,13 +442,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
             .then(request_line => {
                 // Create issue line for size
                 return issues.createLine({
-                    m: {
-                        issue_lines: m.issue_lines,
-                        serials:     m.serials,
-                        issues:      m.issues,
-                        sizes:       m.sizes,
-                        stock:       m.stock
-                    },
                     line: {
                         serial_id: line.serial_id || null,
                         stock_id:  line.stock_id  || null,

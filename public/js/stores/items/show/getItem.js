@@ -13,10 +13,8 @@ function getItem() {
                 } catch (error) {console.log(error)};
             });
             set_breadcrumb({text: item._description, href: `/stores/items/${item.item_id}`});
-            let btn_add_size = document.querySelector('#btn_add_size'),
-                item_id_add_size = document.querySelector('#item_id_add_size');
+            let item_id_add_size = document.querySelector('#item_id_add_size');
             if (item_id_add_size) item_id_add_size.setAttribute('value', item.item_id);
-            if (btn_add_size) btn_add_size.addEventListener('click', function () {$("#mdl_add_size").modal("show")});
         },
         {
             table: 'item',

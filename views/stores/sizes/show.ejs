@@ -18,21 +18,21 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.size_edit) { %>
-                    <a class='dropdown-item'                  data-toggle='modal' data-target='#mdl_size_edit'>Edit</a>
+                    <button class='dropdown-item'                  data-toggle='modal' data-target='#mdl_size_edit'>Edit</button>
                 <% } %>
                 <div class="dropdown-divider"></div>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.nsn_add) { %> 
-                    <a class='dropdown-item'                  data-toggle="modal" data-target="#mdl_nsn_add"   >Add NSN</a> 
+                    <button class='dropdown-item'                  data-toggle="modal" data-target="#mdl_nsn_add"   >Add NSN</button> 
                 <% } %>
                 <% if (permissions.serial_add) { %> 
-                    <a class='dropdown-item _serials_element' data-toggle="modal" data-target="#mdl_serial_add">Add Serial #</a> 
+                    <button class='dropdown-item _serials_element' data-toggle="modal" data-target="#mdl_serial_add">Add Serial #</button> 
                 <% } %>
                 <% if (permissions.stock_add) { %>
-                    <a class='dropdown-item _stock_element'   data-toggle="modal" data-target="#mdl_stock_add" >Add Stock Location</a>
+                    <button class='dropdown-item _stock_element'   data-toggle="modal" data-target="#mdl_stock_add" >Add Stock Location</button>
                 <% } %>
                 <% if (permissions.order_add) { %>
-                    <a class='dropdown-item'                  data-toggle="modal" data-target="#mdl_order_add" >Order</a>
+                    <button class='dropdown-item'                  data-toggle="modal" data-target="#mdl_order_add" >Order</button>
                 <% } %>
                 <% if (permissions.size_delete) { %>
                     <%- include(`${partials}/menu/delete`, {redirect: '/stores/items'}) %>
@@ -188,7 +188,7 @@
                         <div class="modal-body">
                             <input type="hidden" name='line[size_id]' class='size_id'>
                             <input type="hidden" name='ordered_for'   value='-1'>
-                            <%- include(`${partials}/inputs/number`, {name: 'line[_qty]', title: 'Quantity', maxlength: 8, placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/number`, {name: 'line[_qty]', title: 'Quantity', value: '1', maxlength: 8, placeholder: 'Required', required: true}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100 confirm" value='Save Order'>

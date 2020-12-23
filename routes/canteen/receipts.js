@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/canteen/receipts',             permissions, allowed('access_receipts'),                    (req, res) => res.render('canteen/receipts/index'));
-    app.get('/canteen/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('canteen/receipts/show', {tab: req.query.tab || 'details'}));
+    app.get('/canteen/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('canteen/receipts/show'));
     
     app.get('/canteen/get/receipts',         permissions, allowed('access_receipts',      {send: true}), (req, res) => {
         m.receipts.findAll({

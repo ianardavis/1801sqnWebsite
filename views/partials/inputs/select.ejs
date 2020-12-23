@@ -9,7 +9,7 @@
         </label>
     </div>
     <select
-        class="custom-select"
+        class="custom-select<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
         <% if (locals.id) { %>id='<%= id %>'<% } %>
         <% if (locals.name) { %>name=<%= name %><% } %>
         <% if (locals.required) { %>required<% } %>

@@ -16,18 +16,18 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/notes/menu_add`) %>
-				<input id='btn_action' form='form_approve' class='dropdown-item dropdown_button confirm' type="submit" value='Action Lines' disabled>
+				<input id='btn_action' form='form_approve' class='dropdown-item confirm' type="submit" value='Action Lines' disabled>
 				<form id='form_complete'>
-					<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
+					<input id='btn_complete' class='dropdown-item confirm' type="submit" value='Complete' disabled>
 				</form>
 				<div id='form_addSize'>
-					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled>
+					<button type='button' class='dropdown-item' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled>
 						Add Item
 					</button>
 				</div>
 				<div class="dropdown-divider"></div>
 				<form id='form_delete'>
-					<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Cancel' disabled>
+					<input id='btn_delete' type="submit" class="dropdown-item confirm" value='Cancel' disabled>
 				</form>
             </div>
         </li>
@@ -52,7 +52,7 @@
 			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}]}) %>
 			<table class="table table-sm table-hover mx-auto w-100">
 				<thead id='table_header_lines' class="thead-dark">
-					<th class='w-10' onclick="sortTable(0,'linesTable')"><%- include(`${partials}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true, small: true}) %>Line ID</th>
+					<th class='w-10' onclick="sortTable(0,'linesTable')"><%- include(`${partials}/spinner`, {id: 'request_lines', float_left: true, small: true}) %>Line ID</th>
 					<th class='w-30' onclick="sortTable(1,'linesTable')">Item</th>
 					<th class='w-30' onclick="sortTable(2,'linesTable')">Size</th>
 					<th class='w-10' onclick="sortTable(3,'linesTable')">Qty</th>

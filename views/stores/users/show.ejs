@@ -31,7 +31,7 @@
                 <% if (permissions.user_edit) { %>
                     <form id='resetPasswordForm'>
                         <input type="hidden" name='user[_reset]' id="btn_pwd_rst">
-                        <button class='dropdown-item dropdown_button confirm'>
+                        <button class='dropdown-item confirm'>
                             Reset Password
                         </button>
                     </form>
@@ -45,7 +45,7 @@
                     <% if (permissions.order_add) { %>
                         <form id="newOrderForm">
                             <input type="hidden" class='user_id' name='ordered_for'>
-                            <button class='dropdown-item dropdown_button confirm'>
+                            <button class='dropdown-item confirm'>
                                 New Order
                             </button>
                         </form>
@@ -53,7 +53,7 @@
                     <% if (permissions.issue_add) { %>
                         <form id="newIssueForm">
                             <input type="hidden" class='user_id' name='issued_to'>
-                            <button class='dropdown-item dropdown_button confirm'>
+                            <button class='dropdown-item confirm'>
                                 New Issue
                             </button>
                         </form>
@@ -62,7 +62,7 @@
                 <% if (user.user_id === user_id || permissions.request_add) { %>
                     <form id="newRequestForm">
                         <input type="hidden" class='user_id' name='requested_for'>
-                        <button class='dropdown-item dropdown_button confirm'>
+                        <button class='dropdown-item confirm'>
                             New Request
                         </button>
                     </form>
@@ -97,15 +97,15 @@
         </div>
         <% if (permissions.access_permissions || user.user_id === user_id) { %>
             <div class="tab-pane fade" id="tab_permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Granted Permissions', id: 'permissions', size: '11', spinner: true, spinner_sm: true, spinner_float_right: true}) %>
+                <%- include(`${partials}/inputs/select`, {title: 'Granted Permissions', id: 'permissions', size: '11', spinner: true}) %>
             </div>
         <% } %>
         <% if (permissions.access_requests || user.user_id === user_id) { %>
             <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'request_status', options: [{value: '', text: 'All'}, {value: '_status=Pending', text: 'Pending'}, {value: '_status=Approved', text: 'Approved'}, {value: '_status=Declined', text: 'Declined'}], spinner: true, spinner_sm: true, spinner_float_right: true}) %>
+                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'request_status', options: [{value: '', text: 'All'}, {value: '_status=Pending', text: 'Pending'}, {value: '_status=Approved', text: 'Approved'}, {value: '_status=Declined', text: 'Declined'}], spinner: true}) %>
                 <table class='table table-sm table-hover'>
                     <thead class="thead-dark">
-                        <th class="w-20" onclick="sortTable(0, 'requestTable')"><%- include(`${partials}/spinner`, {id: 'request_lines', spinner_sm: true, spinner_float_left: true}) %>Date</th>
+                        <th class="w-20" onclick="sortTable(0, 'requestTable')"><%- include(`${partials}/spinner`, {id: 'request_lines', small: true, float_left: true}) %>Date</th>
                         <th class="w-30" onclick="sortTable(1, 'requestTable')">Item</th>
                         <th class="w-20" onclick="sortTable(2, 'requestTable')">Size</th>
                         <th class="w-10" onclick="sortTable(3, 'requestTable')">Qty</th>
@@ -120,10 +120,10 @@
         <% } %>
         <% if (permissions.access_orders || user.user_id === user_id) { %>
             <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'order_status', options: [{value: '', text: 'All'}, {value: '_status=Open', text: 'Open'}, {value: '_status=Demanded', text: 'Demanded'}, {value: '_status=Received', text: 'Received'}, {value: '_status=Complete', text: 'Complete'}, {value: '_status=Cancelled', text: 'Cancelled'}], spinner: true, spinner_sm: true, spinner_float_right: true}) %>
+                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'order_status', options: [{value: '', text: 'All'}, {value: '_status=Open', text: 'Open'}, {value: '_status=Demanded', text: 'Demanded'}, {value: '_status=Received', text: 'Received'}, {value: '_status=Complete', text: 'Complete'}, {value: '_status=Cancelled', text: 'Cancelled'}], spinner: true}) %>
                 <table class='table table-sm table-hover'>
                     <thead class="thead-dark">
-                        <th class="w-25" onclick="sortTable(0, 'tableOrders')"><%- include(`${partials}/spinner`, {id: 'order_lines', spinner_sm: true, spinner_float_left: true}) %>Date</th>
+                        <th class="w-25" onclick="sortTable(0, 'tableOrders')"><%- include(`${partials}/spinner`, {id: 'order_lines', small: true, float_left: true}) %>Date</th>
                         <th class="w-25" onclick="sortTable(1, 'tableOrders')">Item</th>
                         <th class="w-20" onclick="sortTable(2, 'tableOrders')">Size</th>
                         <th class="w-10" onclick="sortTable(3, 'tableOrders')">Qty</th>
@@ -141,14 +141,14 @@
         <% } %>
         <% if (permissions.access_issues || user.user_id === user_id) { %>
             <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Returned Lines', id: 'returned_lines', options: [{value: '1', text: 'Include'}, {value: '2', text: 'Exclude', selected: true}, {value: '3', text: 'Only'}], spinner: true, spinner_sm: true, spinner_float_right: true}) %>
+                <%- include(`${partials}/inputs/select`, {title: 'Returned Lines', id: 'returned_lines', options: [{value: '1', text: 'Include'}, {value: '2', text: 'Exclude', selected: true}, {value: '3', text: 'Only'}], spinner: true}) %>
                 <% if (permissions.return_add && user.user_id !== user_id) { %>
                     <form id='returnForm'>
                         <input class="btn btn-sm btn-primary confirm mb-1" type="submit" value="Return Selected Lines">
                 <% } %>
                 <table class='table table-sm table-hover'>
                     <thead class="thead-dark">
-                        <th class="w-20" onclick="sortTable(0, 'tableIssues')"><%- include(`${partials}/spinner`, {id: 'issue_lines', spinner_sm: true, spinner_float_left: true}) %>Date Due</th>
+                        <th class="w-20" onclick="sortTable(0, 'tableIssues')"><%- include(`${partials}/spinner`, {id: 'issue_lines', small: true, float_left: true}) %>Date Due</th>
                         <th class="w-30" onclick="sortTable(1, 'tableIssues')">Item</th>
                         <th class="w-20" onclick="sortTable(2, 'tableIssues')">Size</th>
                         <th class="w-10" onclick="sortTable(3, 'tableIssues')">Qty</th>

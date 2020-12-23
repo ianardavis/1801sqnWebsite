@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, loggedIn, m) => {
     app.get('/stores/accounts/new',      loggedIn, allowed('account_add'),                   (req, res) => res.render('stores/accounts/new'));
-    app.get('/stores/accounts/:id',      loggedIn, allowed('access_accounts'),               (req, res) => res.render('stores/accounts/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/accounts/:id',      loggedIn, allowed('access_accounts'),               (req, res) => res.render('stores/accounts/show'));
     app.get('/stores/accounts/:id/edit', loggedIn, allowed('account_edit'),                  (req, res) => res.render('stores/accounts/edit'));
     
     app.get('/stores/get/accounts',      loggedIn, allowed('access_accounts', {send: true}), (req, res) => {

@@ -17,14 +17,14 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.writeoff_line_add) { %>
-                    <button class="dropdown-item dropdown_button" id='btn_add_item' disabled>Add Item</button>
+                    <button class="dropdown-item" id='btn_add_item' disabled>Add Item</button>
                 <% } %>
                 <% if (permissions.writeoff_edit) { %>
                     <form id='form_cancel'>
-                        <button class="dropdown-item dropdown_button" id='btn_cancel' disabled>Cancel</button>
+                        <button class="dropdown-item" id='btn_cancel' disabled>Cancel</button>
                     </form>
                     <form id='form_complete'>
-                        <button class="dropdown-item dropdown_button" id='btn_complete' disabled>Complete</button>
+                        <button class="dropdown-item" id='btn_complete' disabled>Complete</button>
                     </form>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>

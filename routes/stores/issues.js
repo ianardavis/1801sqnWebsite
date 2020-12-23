@@ -1,7 +1,9 @@
 module.exports = (app, allowed, inc, permissions, m) => {
-    let loancard = require(process.env.ROOT + '/fn/stores/loancard'),
-        issues   = require(process.env.ROOT + '/fn/stores/issues'),
-        utils    = require(process.env.ROOT + '/fn/utils');
+    let loancard = {}, issues = {},
+        addYears       = require(`${process.env.ROOT}/fn/utils/add_years`),
+        promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`);
+        require(`${process.env.ROOT}/fn/stores/loancard`)(m, loancard);
+        require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
     app.get('/stores/issues',                 permissions, allowed('access_issues'),                                (req, res) => res.render('stores/issues/index'));
     app.get('/stores/issues/:id',             permissions, allowed('access_issues',                        {allow: true}), (req, res) => {
         m.issues.findOne({
@@ -11,8 +13,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(issue => {
             if (req.allowed || issue.issued_to === req.user.user_id) {
                 res.render('stores/issues/show', {
-                    download: req.query.download || null,
-                    tab: req.query.tab || 'details'
+                    download: req.query.download || null
                 })
             } else res.error.redirect(new Error('Permission denied'), req, res);
         })
@@ -35,10 +36,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             if (issue._filename && issue._filename !== '') {
                 res.redirect(`/stores/issues/${issue.issue_id}?download=${issue._filename}`);
             } else {
-                loancard.create({
-                    m: {issues: m.issues},
-                    issue_id: issue.issue_id
-                })
+                loancard.create({issue_id: issue.issue_id})
                 .then(filename => res.redirect(`/stores/issues/${issue.issue_id}?download=${filename}`))
                 .catch(err => res.error.redirect(err, req, res));
             }
@@ -137,11 +135,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
 
     app.post('/stores/issues',                permissions, allowed('issue_add',                 {send: true}),             (req, res) => {
         issues.create({
-            m: {issues: m.issues},
             issue: {
                 issued_to: req.body.issued_to,
                 user_id:   req.user.user_id,
-                _date_due: utils.addYears(7)
+                _date_due: addYears(7)
             }
         })
         .then(result => {
@@ -154,16 +151,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.post('/stores/issue_lines/:id',       permissions, allowed('issue_line_add',            {send: true}),             (req, res) => {
         req.body.line.user_id  = req.user.user_id;
         req.body.line.issue_id = req.params.id;
-        issues.createLine({
-            m: {
-                issue_lines: m.issue_lines,
-                serials:     m.serials,
-                issues:      m.issues,
-                sizes:       m.sizes,
-                stock:       m.stock
-            },
-            line: req.body.line
-        })
+        issues.createLine({line: req.body.line})
         .then(line_id => res.send({result: true, message: `Line added: ${line_id}`}))
         .catch(err => res.error.send(err, res))
     });
@@ -177,7 +165,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         };
         Promise.allSettled(actions)
         .then(results => {
-            if (utils.promiseResults(results)) res.send({result: true, message: 'Lines returned'})
+            if (promiseResults(results)) res.send({result: true, message: 'Lines returned'})
             else res.error.send('Some lines failed', res);
         })
         .catch(err => res.error.send(err, res));
@@ -291,7 +279,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             actions.push(m.issue_lines.create(new_issue_line));
                             Promise.allSettled(actions)
                             .then(results => {
-                                if (utils.promiseResults(results)) resolve(return_line_id)
+                                if (promiseResults(results)) resolve(return_line_id)
                                 else reject(new Error('Some actions failed'));
                             })
                             .catch(err => reject(err));

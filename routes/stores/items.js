@@ -1,12 +1,7 @@
 module.exports = (app, allowed, inc, permissions, m) => {
-    let utils = require(process.env.ROOT + '/fn/utils');
+    let nullify = require(`${process.env.ROOT}/fn/utils/nullify`);
     app.get('/stores/items',          permissions, allowed('access_items'),                    (req, res) => res.render('stores/items/index'));
-    app.get('/stores/items/:id',      permissions, allowed('access_items'),                    (req, res) => res.render('stores/items/show', {tab: req.query.tab || 'details'}));
-    app.get('/stores/items/:id/edit', permissions, allowed('item_edit'),                       (req, res) => {
-        m.items.findOne({where: {item_id: req.params.id}})
-        .then(item => res.render('stores/items/edit', {item: item}))
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/stores/items/:id',      permissions, allowed('access_items'),                    (req, res) => res.render('stores/items/show'));
     
     app.get('/stores/get/items',      permissions, allowed('access_items',      {send: true}), (req, res) => {
         m.items.findAll({
@@ -66,13 +61,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     app.post('/stores/items',         permissions, allowed('item_add',          {send: true}), (req, res) => {
-        req.body.item = utils.nullify(req.body.item);
+        req.body.item = nullify(req.body.item);
         m.items.create(req.body.item)
         .then(item => res.send({result: true, message: 'Item added'}))
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/items/:id',      permissions, allowed('item_edit',         {send: true}), (req, res) => {
-        req.body.item = utils.nullify(req.body.item);
+        req.body.item = nullify(req.body.item);
         m.items.update(
             req.body.item,
             {where: {item_id: req.params.id}}

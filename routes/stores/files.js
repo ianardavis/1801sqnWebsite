@@ -1,6 +1,6 @@
 const fs = require('fs');
 module.exports = (app, allowed, inc, loggedIn, m) => {
-    app.get('/stores/files/:id',      loggedIn, allowed('access_files'),               (req, res) => res.render('stores/files/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/files/:id',      loggedIn, allowed('access_files'),               (req, res) => res.render('stores/files/show'));
     app.get('/stores/files/:id/edit', loggedIn, allowed('file_edit'),                  (req, res) => res.render('stores/files/edit'));
     
     app.get('/stores/get/files',      loggedIn, allowed('access_files', {send: true}), (req, res) => {

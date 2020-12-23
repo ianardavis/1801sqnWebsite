@@ -104,6 +104,10 @@ table, th, td, thead {
 	background-color: var(--main-color);
 	color: var(--main-bg-color-dark)
 }
+ul.navbar-nav li.nav-item a.nav-link {
+	color: var(--main-bg-color) !important;
+	background-color: var(--main-color);
+}
 .stores_nav {
 	color: var(--main-bg-color) !important;
 	background-color: var(--main-color);

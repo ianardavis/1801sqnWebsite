@@ -1,7 +1,9 @@
 module.exports = (app, allowed, inc, permissions, m) => {
-    let receipts = require(process.env.ROOT + '/fn/stores/receipts');;
+    let receipts = {};
+    require(`${process.env.ROOT}/fn/stores/receipts`)(m, receipts);
+
     app.get('/stores/receipts',             permissions, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/index'));
-    app.get('/stores/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/show'));
     
     app.get('/stores/get/receipts',         permissions, allowed('access_receipts',      {send: true}), (req, res) => {
         m.receipts.findAll({
@@ -34,10 +36,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.post('/stores/receipts',            permissions, allowed('receipt_add',          {send: true}), (req, res) => {
         if (req.body.supplier_id && String(req.body.supplier_id).trim() !== '') 
             receipts.create({
-                m: {
-                    suppliers: m.suppliers,
-                    receipts:  m.receipts
-                },
                 supplier_id: req.body.supplier_id,
                 user_id:     req.user.user_id
             })
@@ -51,14 +49,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     app.post('/stores/receipt_lines',       permissions, allowed('receipt_line_add',     {send: true}), (req, res) => {
         receipts.createLine({
-            m: {
-                receipt_lines: m.receipt_lines,
-                receipts:      m.receipts,
-                locations:     m.locations,
-                serials:       m.serials,
-                sizes:         m.sizes,
-                notes:         m.notes
-            },
             // location_id: req.body.line.location_id,
             // location:    req.body.line.location,
             // receipt_id:  req.body.line.receipt_id,

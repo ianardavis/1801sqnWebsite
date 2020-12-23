@@ -20,19 +20,19 @@
 					<form id='form_complete'>
 				<% } %>
 						<input type="hidden" name='_status' value='2'>
-						<input id='btn_complete' class='dropdown-item dropdown_button confirm' type="submit" value='Complete' disabled>
+						<input id='btn_complete' class='dropdown-item confirm' type="submit" value='Complete' disabled>
 				<% if (permissions.receipt_edit) { %>
 					</form>
 				<% } %>
 				<div id='form_addSize'>
-					<button type='button' class='dropdown-item dropdown_button' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
+					<button type='button' class='dropdown-item' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
 						Add Item
 					</button>
 				</div>
 				<% if (permissions.receipt_delete) { %>
 					<form id='form_delete'>
 				<% } %>
-						<input id='btn_delete' type="submit" class="dropdown-item dropdown_button confirm" value='Cancel' disabled>
+						<input id='btn_delete' type="submit" class="dropdown-item confirm" value='Cancel' disabled>
 				<% if (permissions.receipt_edit) { %>
 					</form>
 				<% } %>

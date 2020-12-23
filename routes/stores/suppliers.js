@@ -1,9 +1,9 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let utils = require(process.env.ROOT + '/fn/utils');
+    let nullify = require(`${process.env.ROOT}/fn/utils`);
     app.get('/stores/suppliers',          permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/index'));
     app.get('/stores/suppliers/new',      permissions, allowed('supplier_add'),                   (req, res) => res.render('stores/suppliers/new'));
-    app.get('/stores/suppliers/:id',      permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/show', {tab: req.query.tab || 'details'}));
+    app.get('/stores/suppliers/:id',      permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/show'));
     app.get('/stores/suppliers/:id/edit', permissions, allowed('supplier_edit'),                  (req, res) => res.render('stores/suppliers/edit'));
 
     app.get('/stores/get/suppliers',      permissions, allowed('access_suppliers', {send: true}), (req, res) => {
@@ -16,7 +16,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     app.post('/stores/suppliers',         permissions, allowed('supplier_add',     {send: true}), (req, res) => {
-        req.body.supplier = utils.nullify(req.body.supplier);
+        req.body.supplier = nullify(req.body.supplier);
         m.suppliers.create(req.body.supplier)
         .then(supplier => res.send({result: true, message: 'Supplier added'}))
         .catch(err => res.error.send(err, res));
@@ -57,4 +57,4 @@ module.exports = (app, allowed, inc, permissions, m) => {
             .catch(err => res.error.send(err.message, res));
         } else res.error.send('This supplier can not be deleted!', res);
     });
-    };
+};

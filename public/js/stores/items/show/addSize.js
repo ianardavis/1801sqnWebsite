@@ -30,11 +30,11 @@ function resetAddSize() {
     let select2 = document.querySelector('#supplier_id');
     if (select2) select2.value = '';
 };
-document.querySelector('#reset_add_size').addEventListener('click', getSuppliers);
-document.querySelector('#reset_add_size').addEventListener('click', resetAddSize);
+document.querySelector('#reset_size_add').addEventListener('click', getSuppliers);
+document.querySelector('#reset_size_add').addEventListener('click', resetAddSize);
 window.addEventListener('load', function () {
     addFormListener(
-        'form_add_size',
+        'form_size_add',
         'POST',
         '/stores/sizes',
         {onComplete: [

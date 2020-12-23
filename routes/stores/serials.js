@@ -1,5 +1,5 @@
 module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/stores/get/serials',      permissions, allowed('access_serials', {send: true}), (req, res) => {
+    app.get('/stores/get/serials',    permissions, allowed('access_serials', {send: true}), (req, res) => {
         m.serials.findAll({
             where:   req.query,
             include: [inc.locations({as: 'location'})]
@@ -7,7 +7,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(serials => res.send({result: true, serials: serials}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/serial',       permissions, allowed('access_serials', {send: true}), (req, res) => {
+    app.get('/stores/get/serial',     permissions, allowed('access_serials', {send: true}), (req, res) => {
         m.serials.findOne({
             where:   req.query,
             include: [inc.locations({as: 'location'})]
@@ -16,7 +16,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/serials',         permissions, allowed('serial_add',     {send: true}), (req, res) => {
+    app.post('/stores/serials',       permissions, allowed('serial_add',     {send: true}), (req, res) => {
         if (!req.body._location) res.send({result: false, message: 'No location entered'})
         else {
             m.locations.findOrCreate({where: {_location: req.body._location}})
@@ -29,7 +29,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         };
     });
     
-    app.put('/stores/serials/:id',      permissions, allowed('serial_edit',    {send: true}), (req, res) => {
+    app.put('/stores/serials/:id',    permissions, allowed('serial_edit',    {send: true}), (req, res) => {
         m.locations.findOrCreate({where: {_location: req.body._location}})
         .then(([location, created]) => {
             m.serials.update(
@@ -42,7 +42,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.delete('/stores/serials/:id',   permissions, allowed('serial_delete',  {send: true}), (req, res) => { //////
+    app.delete('/stores/serials/:id', permissions, allowed('serial_delete',  {send: true}), (req, res) => {
         m.serials.destroy({where: {serial_id: req.params.id}})
         .then(result => res.send({result: true, message: 'Serial deleted'}))
         .catch(err => res.error.send(err, res));

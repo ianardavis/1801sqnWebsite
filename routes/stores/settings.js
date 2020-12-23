@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, permissions, m) => {
     let options     = require(process.env.ROOT + '/fn/options'),
-        singularise = require(process.env.ROOT + '/fn/utils').singularise;
+        singularise = require(process.env.ROOT + '/fn/utils/singularise');
     _options = () => {
         return [
             {table: 'categories'},

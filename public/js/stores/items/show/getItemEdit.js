@@ -53,12 +53,12 @@ function getItemEdit() {
 document.querySelector('#reload').addEventListener('click', getItemEdit);
 window.addEventListener('load', function () {
     addFormListener(
-        'form_edit_item',
+        'form_item_edit',
         'PUT',
         `/stores/items/${path[3]}`,
         {onComplete: [
             getItem,
-            function () {$('#mdl_edit_item').modal('hide')}
+            function () {$('#mdl_item_edit').modal('hide')}
         ]}
     )
 });

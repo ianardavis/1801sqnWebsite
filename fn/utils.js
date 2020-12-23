@@ -1,11 +1,11 @@
 module.exports = {
-    counter: () => {
+    counter: function () {
         let count = 0;
         return () => {
             return ++count;
         };
     },
-    timestamp: () => {
+    timestamp: function () {
         let current = new Date(),
             year   = String(current.getFullYear()),
             month  = String(current.getMonth() + 1).padStart(2, '0'),
@@ -15,13 +15,13 @@ module.exports = {
             second = String(current.getSeconds()).padStart(2, '0');
         return year + month + day + ' ' + hour + minute + second;
     },
-    promiseResults: results => {
+    promiseResults: function(results) {
         let rejects = results.filter(e => e.status === 'rejected');
         rejects.forEach(reject => console.log(reject));
         return (rejects.length === 0);
     },
-    download: (file, req, res) => {
-        let path = process.env.ROOT + '/public/res/';
+    download: function(file, req, res) {
+        let path = `${process.env.ROOT}/public/res/`;
         res.download(path + file, path + file, err => {
             if (err) {
                 console.log(err);
@@ -29,7 +29,7 @@ module.exports = {
             };
         });
     },
-    addYears: (addYears = 0) => {
+    addYears: function(addYears = 0) {
         var newDate = new Date();
         var dd = String(newDate.getDate()).padStart(2, '0');
         var MM = String(newDate.getMonth() + 1).padStart(2, '0');
@@ -37,13 +37,13 @@ module.exports = {
         newDate = yyyy + '-' + MM + '-' + dd;
         return newDate;
     },
-    summer: items => {
+    summer: function(items) {
         if (items == null) return 0;
         return items.reduce((a, b) => {
             return b['_qty'] == null ? a : a + b['_qty'];
         }, 0);
     },
-    singularise: str => {
+    singularise: function(str) {
         if (str.endsWith('lines')) {
             return str.substring(0, str.length - 1);
         } else if (str.endsWith('ies')) {
@@ -54,7 +54,7 @@ module.exports = {
            return str.substring(0, str.length - 1);
         };
     },
-    nullify: record => {
+    nullify: function(record) {
         for (let [key, value] of Object.entries(record)) {
             if (value === '') record[key] = null;
         };

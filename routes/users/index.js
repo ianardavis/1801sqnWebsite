@@ -1,36 +1,19 @@
 const inc = {},
       op = require('sequelize').Op;
 module.exports = (app, m) => {
-    var allowed  = require(`${process.env.ROOT}/middleware/allowed.js`),
+    var allowed     = require(`${process.env.ROOT}/middleware/allowed.js`),
         permissions = require(`${process.env.ROOT}/middleware/permissions.js`)(m.users.permissions);
     require('./includes')(inc, m);
+    require(`./users`)(app, allowed, inc, permissions, m.users);
     app.get('/users',              permissions, allowed('access_users',    {send: true}), (req, res) => res.render('users/index'));
     app.get('/users/get/statuses', permissions,                                           (req, res) => {
-        m.users.statuses.findAll({
-            where:      req.query,
-            include:    [],
-            attributes: null
-        })
-        .then(statuses => {
-            res.send({
-                result: true,
-                statuses: statuses
-            });
-        })
+        m.users.statuses.findAll({where: req.query})
+        .then(statuses => res.send({result: true, statuses: statuses}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/users/get/statuses', permissions, allowed('access_statuses', {send: true}), (req, res) => {
-        m.users.ranks.findAll({
-            where:      req.query,
-            include:    [],
-            attributes: null
-        })
-        .then(ranks => {
-            res.send({
-                result: true,
-                ranks: ranks
-            });
-        })
+    app.get('/users/get/ranks',    permissions,                                           (req, res) => {
+        m.users.ranks.findAll({where: req.query})
+        .then(ranks => res.send({result: true, ranks: ranks}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/users/get/users',    permissions, allowed('access_users',    {send: true}), (req, res) => {

@@ -19,7 +19,7 @@
                     <%- include(`${partials}/edit`) %>
                     <form id='defaultForm'>
                         <input class='supplier_id' type="hidden" name='setting[_value]'>
-                        <button id='default_button' class="dropdown-item dropdown_button confirm">
+                        <button id='default_button' class="dropdown-item confirm">
                             Make Default
                         </button>
                     </form>
@@ -28,7 +28,7 @@
                 <% if (permissions.demand_add) { %>
                     <form id='newDemandForm'>
                         <input class='supplier_id' type="hidden" name='supplier_id'>
-                        <button class="dropdown-item dropdown_button confirm">
+                        <button class="dropdown-item confirm">
                             New Demand
                         </button>
                     </form>
@@ -36,7 +36,7 @@
                 <% if (permissions.receipt_add) { %>
                     <form id='newReceiptForm'>
                         <input class='supplier_id' type="hidden" name='supplier_id'>
-                        <button class="dropdown-item dropdown_button confirm">
+                        <button class="dropdown-item confirm">
                             New Receipt
                         </button>
                     </form>

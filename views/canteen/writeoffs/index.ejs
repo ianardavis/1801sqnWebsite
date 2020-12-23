@@ -6,9 +6,9 @@
             <%- include(`${partials}/breadcrumb`, {href: '/canteen/writeoffs', text: 'Writeoffs'}) %>
             <% if (permissions.writeoff_add) { %>
                 <li class="nav-item">
-                    <button class="nav-link stores_nav dropdown_button confirm" id='btn_add_writeoff'>
+                    <a class="nav-link confirm" id='btn_add_writeoff'>
                         <i class="fas fa-plus"></i>
-                    </button>
+                    </a>
                 </li>
 			<% } %>
             <%- include(`${partials}/reload`) %>

@@ -1,0 +1,49 @@
+<div id='mdl_user_add' class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content" id='form_user_add'>
+            <div class="modal-header">
+                <h5 class="modal-title">Add User</h5>
+            </div>
+            <div class="modal-body">
+                <%- include(`${partials}/inputs/text`,   {title: 'Bader #',  name: 'user[_bader]', 	  required: true, id: '_bader_inp',    placeholder: 'Required', maxLength: 20}) %>
+                <%- include(`${partials}/inputs/select`, {title: 'Rank',     name: 'user[rank_id]',   required: true, id: 'rank_id_inp',   spinner: true, spinner_id: 'ranks', classes: ['ranks']}) %>
+                <%- include(`${partials}/inputs/text`,   {title: 'Surname',  name: 'user[_name]', 	  required: true, id: '_name_inp',     placeholder: 'Required', maxLength: 50}) %>
+                <%- include(`${partials}/inputs/text`,   {title: 'Initials', name: 'user[_ini]',  	  required: true, id: '_ini_inp',      placeholder: 'Required', maxLength: 5}) %>
+                <%- include(`${partials}/inputs/select`, {title: 'Status',   name: 'user[status_id]', required: true, id: 'status_id_inp', spinner: true, spinner_id: 'statuses', classes: ['statuses']}) %>
+                <%- include(`${partials}/inputs/text`,   {title: 'Login ID', name: 'user[_login_id]', required: true, id: '_login_id_inp', placeholder: 'Required', maxLength: 30}) %>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" id='_save' class="btn btn-success w-100 confirm" value='Save User' disabled>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/js/users/loginBaderMirror.js"></script>
+<script src="/js/users/userFieldCheck.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script src="/js/data/XHRsend.js"></script>
+<script src="/js/data/send.js"></script>
+<!-- <script src="/js/get.js"></script> -->
+<!-- <script src="/js/spinner.js"></script> -->
+<script>
+    window.addEventListener( "load", function () {
+        $('#mdl_user_add').on('show.bs.modal', function () {
+            ['_bader', 'rank_id', '_name', '_ini', 'status_id', '_login_id'].forEach(e => {
+                let ele = document.querySelector(`#${e}_inp`)
+                if (ele) ele.value = '';
+            })
+        });
+        addFormListener(
+            'form_user_add',
+            'POST',
+            '/users/users',
+            {
+                onComplete: [
+                    getUsers,
+                    function () {$('#mdl_user_add').modal('hide')}
+                ]
+            }
+        );
+    });
+</script>

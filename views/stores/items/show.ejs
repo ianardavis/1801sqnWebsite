@@ -17,14 +17,14 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.item_edit) { %>
-                    <button id='btn_edit' class='dropdown-item dropdown_button' data-toggle="modal" data-target="#mdl_edit_item">Edit</button>
+                    <button class='dropdown-item' data-toggle="modal" data-target="#mdl_item_edit">Edit</button>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <% if (permissions.item_delete) { %>
                     <%- include(`${partials}/menu/delete`) %>
                 <% } %>
                 <% if (permissions.size_add) { %>
-                    <button id='btn_add_size' class='dropdown-item dropdown_button' data-toggle="modal" data-target="#mdl_add_size">Add Size</button>
+                    <button class='dropdown-item' data-toggle="modal" data-target="#mdl_size_add">Add Size</button>
                 <% } %>
             </div>
         </li>
@@ -57,9 +57,9 @@
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
     <% if (permissions.item_edit) { %>
-        <div id='mdl_edit_item' class="modal" tabindex="-1" role="dialog">
+        <div id='mdl_item_edit' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_edit_item'>
+                <form class="modal-content" id='form_item_edit'>
                     <div class="modal-header">
                         <h5 class="modal-title">Edit Item</h5>
                     </div>
@@ -81,17 +81,18 @@
         </div>
     <% } %>
     <% if (permissions.size_add) { %>
-        <div id='mdl_add_size' class="modal" tabindex="-1" role="dialog">
+        <div id='mdl_size_add' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_add_size'>
+                <form class="modal-content" id='form_size_add'>
                     <div class="modal-header">
                         <h5 class="modal-title">Add Size</h5>
-						<a class="float-right btn btn-primary" id='reset_add_size'>
+						<a class="float-right btn btn-primary" id='reset_size_add'>
 							<i class='fas fa-redo'></i>
 						</a>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name='size[item_id]' id='item_id_add_size'>
+                        <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size',              maxlength: 15,   placeholder: 'Required', required: true}) %>
                         <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_issueable]',        title: 'Issueable',        id: '_issueable'}) %>
                         <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',        title: 'Orderable',        id: '_orderable'}) %>
                         <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',          title: 'Has Serial #',     id: '_serials'}) %>
@@ -100,7 +101,6 @@
                         <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_page]',      title: 'Demand Page',      id: '_demand_page',      maxlength: 20}) %>
                         <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_cell]',      title: 'Cell',             id: '_demand_cell',      maxlength: 3}) %>
                         <%- include(`${partials}/inputs/textarea`,      {name: 'size[_ordering_details]', title: 'Ordering Details', id: '_ordering_details', maxlength: 1000, rows: 5}) %>
-                        <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size',              maxlength: 15,   placeholder: 'Required', required: true}) %>
                     </div>
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>

@@ -17,17 +17,17 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.receipt_line_add) { %>
-                    <button class="dropdown-item dropdown_button" id='btn_add_item' disabled>Add Item</button>
+                    <button class="dropdown-item" id='btn_add_item' disabled>Add Item</button>
                     <!-- <a class='dropdown-item' href='javascript:$("#mdl_add_item").modal("show")'>
                         Add Item
                     </a> -->
                 <% } %>
                 <% if (permissions.receipt_edit) { %>
                     <form id='form_cancel'>
-                        <button class="dropdown-item dropdown_button" id='btn_cancel' disabled>Cancel</button>
+                        <button class="dropdown-item" id='btn_cancel' disabled>Cancel</button>
                     </form>
                     <form id='form_complete'>
-                        <button class="dropdown-item dropdown_button" id='btn_complete' disabled>Complete</button>
+                        <button class="dropdown-item" id='btn_complete' disabled>Complete</button>
                     </form>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>

@@ -1,10 +1,11 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let orders   = require(process.env.ROOT + '/fn/stores/orders'),
-        demands  = require(process.env.ROOT + '/fn/stores/demands'),
-        receipts = require(process.env.ROOT + '/fn/stores/receipts'),
-        issues   = require(process.env.ROOT + '/fn/stores/issues'),
-        utils    = require(process.env.ROOT + '/fn/utils');
+    let orders = {}, demands = {}, receipts = {}, issues = {},
+        promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`);
+    require(`${process.env.ROOT}/fn/stores/orders`)  (m, orders);
+    require(`${process.env.ROOT}/fn/stores/demands`) (m, demands);
+    require(`${process.env.ROOT}/fn/stores/receipts`)(m, receipts);
+    require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
     app.get('/stores/orders',              permissions, allowed('access_orders'),                                 (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
     app.get('/stores/orders/:id',          permissions, allowed('access_orders'),                                 (req, res) => {
         m.orders.findOne({
@@ -13,9 +14,9 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['ordered_for']
         })
         .then(order => {
-            if (!order) res.error.redirect(new Error('Order not found'), req, res)
+            if      (!order)                                                 res.error.redirect(new Error('Order not found'), req, res)
             else if (!req.allowed && order.ordered_for !== req.user.user_id) res.error.redirect(new Error('Permission Denied'), req, res)
-            else res.render('stores/orders/show', {tab: req.query.tab || 'details'});
+            else res.render('stores/orders/show');
         })
         .catch(err => res.error.redirect(err, req, res));
     });
@@ -73,10 +74,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
 
     app.post('/stores/orders',             permissions, allowed('order_add',          {send: true}),              (req, res) => {
         orders.create({
-            m: {
-                orders: m.orders,
-                users:  m.users
-            },
             ordered_for: req.body.ordered_for,
             user_id: req.user.user_id
         })
@@ -99,12 +96,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.post('/stores/order_lines',        permissions, allowed('order_line_add',     {send: true}),              (req, res) => {
         if (req.body.line.order_id) {
             orders.createLine({
-                m: {
-                    order_lines: m.order_lines,
-                    orders:      m.orders,
-                    sizes:       m.sizes,
-                    notes:       m.notes
-                },
                 order_id: req.body.line.order_id,
                 size_id:  req.body.line.size_id,
                 _qty:     req.body.line._qty,
@@ -117,15 +108,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 where:    {ordered_for: req.body.ordered_for},
                 defaults: {user_id:     req.user.user_id}
             })
-            .then(order => {
-                console.log(order);
+            .then(([order, created]) => {
                 return orders.createLine({
-                    m: {
-                        order_lines: m.order_lines,
-                        orders:      m.orders,
-                        sizes:       m.sizes,
-                        notes:       m.notes
-                    },
                     order_id: order.order_id,
                     size_id:  req.body.line.size_id,
                     _qty:     req.body.line._qty,
@@ -166,7 +150,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 });
                 Promise.allSettled(actions)
                 .then(results => {
-                    if (utils.promiseResults(results)) {
+                    if (promiseResults(results)) {
                         res.send({result: true, message: order_lines.length + ' lines added to demand'});
                     } else res.error.send(new Error('Some lines failed', res));
                 })
@@ -318,7 +302,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 })
                 .then(order_lines => {
                     if (order_lines && order_lines.length > 0) {
-                        if (utils.promiseResults(results)) res.send({result: true, message: 'Lines actioned'})
+                        if (promiseResults(results)) res.send({result: true, message: 'Lines actioned'})
                         else res.error.send('Some lines failed', res);
                     } else {
                         actions = [];
@@ -335,7 +319,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         );
                         return Promise.allSettled(actions)
                         .then(results2 => {
-                            if (utils.promiseResults(results)) res.send({result: true, message: 'Lines actioned, order closed'})
+                            if (promiseResults(results)) res.send({result: true, message: 'Lines actioned, order closed'})
                             else res.error.send('Some lines failed', res);
                         })
                         .catch(err => res.error.send(err, res));
@@ -394,23 +378,19 @@ module.exports = (app, allowed, inc, permissions, m) => {
         return new Promise((resolve, reject) => {
             let actions = [];
             if (line._status === 1 || line._status === 2 || line._status === 4) {
-                actions.push(
-                    m.order_lines.update({_status: 0}, {where: {line_id: line.line_id}})
-                );
-                actions.push(
-                    m.notes.create({
-                        _id: line.line_id,
-                        _table: 'order_lines',
-                        _note: `cancelled`,
-                        _system: 1,
-                        user_id: user_id
-                    })
-                );
+                actions.push(m.order_lines.update({_status: 0}, {where: {line_id: line.line_id}}));
+                actions.push(m.notes.create({
+                    _id: line.line_id,
+                    _table: 'order_lines',
+                    _note: `cancelled`,
+                    _system: 1,
+                    user_id: user_id
+                }));
             } else if (line._status === 3) { // if demanded
                 if (line.actions && line.actions.length > 0) {
-                    demands = line.actions.filter(e => e.action.toLowerCase() === 'demand')
-                    if (demands.length > 0) {
-                        demands.forEach(demand => {
+                    let _demands = line.actions.filter(e => e.action.toLowerCase() === 'demand')
+                    if (_demands.length > 0) {
+                        _demands.forEach(demand => {
                             actions.push(
                                 new Promise((resolve, reject) => {
                                     return m.demand_lines.findOne({
@@ -446,7 +426,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                             if (demand_actions.length > 0) {
                                                 Promise.allSettled(demand_actions)
                                                 .then(results => {
-                                                    if (utils.promiseResults(results)) resolve({result: true, message: 'Demand line cancelled'})
+                                                    if (promiseResults(results)) resolve({result: true, message: 'Demand line cancelled'})
                                                     else resolve({result: false, message: 'Some demand actions failed'})
                                                 })
                                                 .catch(err => reject(err));
@@ -459,22 +439,18 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         });
                     };
                 };
-                actions.push(
-                    m.order_lines.update({_status: 0}, {where: {line_id: line.line_id}})
-                );
-                actions.push(
-                    m.notes.create({
-                        _id: line.line_id,
-                        _table: 'order_lines',
-                        _note: `cancelled`,
-                        _system: 1,
-                        user_id: user_id
-                    })
-                );
+                actions.push(m.order_lines.update({_status: 0}, {where: {line_id: line.line_id}}));
+                actions.push(m.notes.create({
+                    _id: line.line_id,
+                    _table: 'order_lines',
+                    _note: `cancelled`,
+                    _system: 1,
+                    user_id: user_id
+                }));
             };
             Promise.allSettled(actions)
             .then(results => {
-                if (utils.promiseResults(results)) resolve({result: true, message: 'Line cancelled'})
+                if (promiseResults(results)) resolve({result: true, message: 'Line cancelled'})
                 else resolve({result: false, message: 'Some actions failed cancelling line'});
             })
             .catch(err => reject(err));
@@ -488,39 +464,17 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 attributes: ['line_id', 'size_id', '_qty']
             })
             .then(order_line => {
-                if (!order_line) {
-                    resolve({
-                        success: false,
-                        message: 'Order line not found'
-                    });
-                } else if (!order_line.size) {
-                    resolve({
-                        success: false,
-                        message: 'Size not found'
-                    });
-                } else if (!order_line.size.supplier_id || order_line.size.supplier_id === '') {
-                    resolve({
-                        success: false,
-                        message: 'Size does not have a supplier specified'
-                    });
+                if      (!order_line)                                                         resolve({success: false, message: 'Order line not found'});
+                else if (!order_line.size)                                                    resolve({success: false, message: 'Size not found'});
+                else if (!order_line.size.supplier_id || order_line.size.supplier_id === '') {resolve({success: false, message: 'Size does not have a supplier specified'});
                 } else {
                     demands.create({
-                        m: {
-                            suppliers: m.supplier,
-                            demands:   m.demands
-                        },
                         supplier_id: order_line.size.supplier_id,
                         user_id:     user_id
                     })
                     .then(demand_result => {
                         if (demand_result.success) {
                             demands.createLine({
-                                m: {
-                                    demand_lines: m.demand_lines,
-                                    demands:      m.deman_lines,
-                                    sizes:        m.sizes,
-                                    notes:        m.notes
-                                },
                                 demand_id: demand_result.demand.demand_id,
                                 size_id:   order_line.size_id,
                                 _qty:      order_line._qty,
@@ -530,37 +484,27 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             .then(line_result => {
                                 if (line_result.success) {
                                     let actions = [];
-                                    actions.push(
-                                        order_line.update({_status: 3})
-                                    );
-                                    actions.push(
-                                        m.order_line_actions.create({
-                                            _action:        'Demand',
-                                            order_line_id:  order_line.line_id,
-                                            action_line_id: line_result.line.line_id,
-                                            user_id:        user_id
-                                        })
-                                    );
+                                    actions.push(order_line.update({_status: 3}));
+                                    actions.push(m.order_line_actions.create({
+                                        _action:        'Demand',
+                                        order_line_id:  order_line.line_id,
+                                        action_line_id: line_result.line.line_id,
+                                        user_id:        user_id
+                                    }));
                                     if (line_result.line.created) {
-                                        actions.push(
-                                            m.notes.create({
-                                                _id:     line_result.line.line_id,
-                                                _table:  'demand_lines',
-                                                _note:   `Created from order line ${order_line.line_id}`,
-                                                user_id: req.user.user_id,
-                                                _system: 1
-                                            })
-                                        );
+                                        actions.push(m.notes.create({
+                                            _id:     line_result.line.line_id,
+                                            _table:  'demand_lines',
+                                            _note:   `Created from order line ${order_line.line_id}`,
+                                            user_id: req.user.user_id,
+                                            _system: 1
+                                        }));
                                     };
                                     Promise.allSettled(actions)
                                     .then(new_note => resolve(line_result))
                                     .catch(err => {
                                         console.log(err);
-                                        resolve({
-                                            success: true,
-                                            message: 'Line demanded. Some errors occured',
-                                            line:    {line_id: line_result.line_Id}
-                                        });
+                                        resolve({success: true, message: 'Line demanded. Some errors occured', line: {line_id: line_result.line_Id}});
                                     });
                                 } else resolve(line_result);
                             })
@@ -581,40 +525,17 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 attributes: ['line_id', 'size_id', '_qty']
             })
             .then(order_line => {
-                if (!order_line) {
-                    resolve({
-                        success: false,
-                        message: 'Order line not found'
-                    });
-                } else if (!order_line.size) {
-                    resolve({
-                        success: false,
-                        message: 'Size not found'
-                    });
-                } else if (!order_line.size.supplier_id || order_line.size.supplier_id === '') {
-                    resolve({
-                        success: false,
-                        message: 'Size does not have a supplier specified'
-                    });
-                } else {
+                if      (!order_line)                                                        resolve({success: false, message: 'Order line not found'});
+                else if (!order_line.size)                                                   resolve({success: false, message: 'Size not found'});
+                else if (!order_line.size.supplier_id || order_line.size.supplier_id === '') resolve({success: false, message: 'Size does not have a supplier specified'});
+                else {
                     receipts.create({
-                        m: {
-                            suppliers: m.supplier,
-                            receipts: m.receipts
-                        },
                         supplier_id: order_line.size.supplier_id,
                         user_id: user_id
                     })
                     .then(receipt_result => {
                         if (receipt_result.success) {
-                            console.log('orders.js:332:', line);
                             receipts.createLine({
-                                m: {
-                                    sizes:         m.sizes,
-                                    receipts:      m.receipt_lines,
-                                    receipt_lines: m.receipt_lines,
-                                    notes:         m.notes
-                                },
                                 size_id:    order_line.size_id,
                                 _qty:       order_line._qty,
                                 receipt_id: receipt_result.receipt.receipt_id,
@@ -626,37 +547,27 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             .then(line_result => {
                                 if (line_result.success) {
                                     let actions = [];
-                                    actions.push(
-                                        order_line.update({_status: 4})
-                                    )
-                                    actions.push(
-                                        m.order_line_actions.create({
-                                            _action:        'Receipt',
-                                            order_line_id:  order_line.line_id,
-                                            action_line_id: line_result.line.line_id,
-                                            user_id:        user_id
-                                        })
-                                    );
+                                    actions.push(order_line.update({_status: 4}))
+                                    actions.push(m.order_line_actions.create({
+                                        _action:        'Receipt',
+                                        order_line_id:  order_line.line_id,
+                                        action_line_id: line_result.line.line_id,
+                                        user_id:        user_id
+                                    }));
                                     if (line_result.line.created) {
-                                        actions.push(
-                                            m.notes.create({
-                                                _id: line_result.line.line_id,
-                                                _table:  'receipt_lines',
-                                                _note:   `Created from order line ${order_line.line_id}`,
-                                                user_id: user_id,
-                                                _system: 1
-                                            })
-                                        );
+                                        actions.push(m.notes.create({
+                                            _id: line_result.line.line_id,
+                                            _table:  'receipt_lines',
+                                            _note:   `Created from order line ${order_line.line_id}`,
+                                            user_id: user_id,
+                                            _system: 1
+                                        }));
                                     };
                                     Promise.allSettled(actions)
                                     .then(new_note => resolve(line_result))
                                     .catch(err => {
                                         console.log(err);
-                                        resolve({
-                                            success: true,
-                                            message: 'Line received. Note not created',
-                                            line: {line_id: line_result.line_Id}
-                                        });
+                                        resolve({success: true, message: 'Line received. Note not created', line: {line_id: line_result.line_Id}});
                                     })
                                 } else resolve(line_result);
                             })
@@ -677,26 +588,15 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 attributes: ['line_id', 'size_id', 'order_id', '_qty']
             })
             .then(order_line => {
-                if (!order_line) {
-                    resolve({
-                        success: false,
-                        message: 'Order line not found'
-                    })
-                } else {
+                if (!order_line) resolve({success: false, message: 'Order line not found'})
+                else {
                     return issues.createLine({
-                        m: {
-                            sizes:       m.sizes,
-                            issues:      m.issues,
-                            issue_lines: m.issue_lines,
-                            serials:     m.serials,
-                            stock:       m.stock
-                        },
-                        serial_id: line.serial_id  || null,
+                        serial_id: line.serial_id || null,
                         issue_id:  issue.issue_id,
-                        stock_id:  line.stock_id   || null,
+                        stock_id:  line.stock_id  || null,
                         size_id:   order_line.size_id,
                         user_id:   user_id,
-                        nsn_id:    line.nsn_id     || null,
+                        nsn_id:    line.nsn_id    || null,
                         _line:     issue.count + line.offset + 1,
                         _qty:      order_line._qty
                     })
@@ -709,12 +609,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         })
                         .then(action_result => {
                             return order_line.update({_status: 6})
-                            .then(order_line_result => {
-                                resolve({
-                                    success: true,
-                                    message: 'Order line created'
-                                });
-                            })
+                            .then(order_line_result => resolve({success: true, message: 'Order line created'}))
                             .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
@@ -723,6 +618,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 };
             })
             .catch(err => reject(err));
-        })
+        });
     };
 };
