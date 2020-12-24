@@ -1,4 +1,4 @@
-addFormListener = (form_id, method, location, options = {reload: false, reload_opener: true, _close: true}, log = false) => {
+function addFormListener(form_id, method, location, options = {reload: false, reload_opener: true, _close: true}, log = false) {
     try {
         let form = document.querySelector(`#${form_id}`);
         if (form) {

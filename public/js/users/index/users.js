@@ -11,7 +11,7 @@ function getUsers() {
                     add_cell(row, {text: user._name});
                     add_cell(row, {text: user._ini});
                     add_cell(row, {append: new Link({
-                        href: `/stores/users/${user.user_id}`,
+                        href: `/${path[1]}/users/${user.user_id}`,
                         small: true
                     }).e});
                 });

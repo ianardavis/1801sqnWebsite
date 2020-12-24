@@ -1,17 +1,25 @@
-var _bader    = document.querySelector("#_bader_inp"),
-    _name     = document.querySelector("#_name_inp"),
-    _ini      = document.querySelector("#_ini_inp"),
-    _login_id = document.querySelector("#_login_id_inp"),
-    _save     = document.querySelector("#_save");
-check_fields = () => {
+var _bader    = document.querySelector("#inp_bader"),
+    _name     = document.querySelector("#inp_name"),
+    _ini      = document.querySelector("#inp_ini"),
+    _login_id = document.querySelector("#inp_login_id"),
+    rank_id   = document.querySelector("#inp_status_id"),
+    status_id = document.querySelector("#inp_rank_id"),
+    _save     = document.querySelector("#save_user");
+function check_fields() {
     if (_bader.value    !== '' && 
         _name.value     !== '' && 
         _ini.value      !== '' && 
-        _login_id.value !== '') {
+        _login_id.value !== '' && 
+        rank_id.value   !== '' && 
+        status_id.value !== '') {
         _save.disabled = false
     } else _save.disabled = true;
 };
-_bader.addEventListener('input',    check_fields);
-_name.addEventListener('input',     check_fields);
-_ini.addEventListener('input',      check_fields);
-_login_id.addEventListener('input', check_fields);
+window.addEventListener('load', function () {
+    _bader.addEventListener('input',     check_fields);
+    _name.addEventListener('input',      check_fields);
+    _ini.addEventListener('input',       check_fields);
+    _login_id.addEventListener('input',  check_fields);
+    rank_id.addEventListener('change',   check_fields);
+    status_id.addEventListener('change', check_fields);
+});

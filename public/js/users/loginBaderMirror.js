@@ -1,5 +1,5 @@
-var input_login = document.querySelector("#_login_id_inp"),
-    input_bader = document.querySelector("#_bader_inp");
+var input_login = document.querySelector("#inp_login_id"),
+    input_bader = document.querySelector("#inp_bader");
 
 input_bader.addEventListener("input", () => {
     input_login.value = input_bader.value;

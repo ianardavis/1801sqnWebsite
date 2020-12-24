@@ -8,12 +8,10 @@ function password_ok () {
     } else return false;
 };
 function pwd_compare () {
-    let _save = document.querySelector("#password_save");
-    if (password_ok()) {
-        _save.removeAttribute('disabled');
-    } else {
-        _save.setAttribute('disabled', true);
-    };
+    let _save = document.querySelector("#save_password");
+    if (password_ok()) _save.removeAttribute('disabled')
+    else               _save.setAttribute('disabled', true);
+
     let _password = document.querySelector('#_password'),
         _confirm  = document.querySelector("#_confirm"),
         _special  = /^(?=.*[!?@#$£%^&*])/,
@@ -40,3 +38,7 @@ function display_checker (id, status) {
         _id.innerHTML = '<i class="fas fa-times"></i>';
     };
 };
+window.addEventListener('load', function () {
+    document.querySelector('#_password').addEventListener('input', pwd_compare);
+    document.querySelector('#_confirm').addEventListener('input', pwd_compare);
+});

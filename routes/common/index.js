@@ -15,9 +15,9 @@ module.exports = (app, m) => {
     require(`./notifications`)(app, allowed, permissions_canteen, m.canteen, 'canteen');
     require(`./notifications`)(app, allowed, permissions_users,   m.users,   'users');
     
-    require(`./permissions`)(app, allowed, permissions_stores,  m.stores,  'stores');
-    require(`./permissions`)(app, allowed, permissions_canteen, m.canteen, 'canteen');
-    require(`./permissions`)(app, allowed, permissions_users,   m.users,   'users');
+    require(`./permissions`)(app, allowed, permissions_stores,  m, 'stores');
+    require(`./permissions`)(app, allowed, permissions_canteen, m, 'canteen');
+    require(`./permissions`)(app, allowed, permissions_users,   m, 'users');
     
     require(`./users`)(app, allowed, permissions_stores,  'stores');
     require(`./users`)(app, allowed, permissions_canteen, 'canteen');

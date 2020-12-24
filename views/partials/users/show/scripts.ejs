@@ -1,0 +1,38 @@
+<script src='/js/users/show/view.js'></script>
+<script async>getUser()</script>
+<script>
+    window.addEventListener('load', function () {
+        addFormListener(
+            'form_user_password',
+            'PUT',
+            `/users/password/${path[3]}`,
+            {
+                onComplete: [
+                    getUser,
+                    function () {$('#mdl_user_password').modal('hide')}
+                ]
+            }
+        );
+    });
+</script>
+<% if (permissions.user_edit) { %>
+    <script src="/js/users/show/edit/userEdit.js"></script>
+    <script>
+        window.addEventListener('load', function () {
+            addFormListener(
+                'form_password_reset',
+                'PUT',
+                `/users/users/${path[3]}`,
+                {onComplete: getUser}
+            );
+        });
+    </script>
+<% } %>
+<% if (permissions.access_permissions) { %>
+    <script src='/js/users/show/permissions/view.js'></script>
+    <script async>getPermissions()</script>
+    <% if (permissions.permission_edit) { %>
+        <script src='/js/users/show/permissions/edit.js'></script>
+        <script async>getPermissionsEdit()</script>
+    <% } %>
+<% } %>

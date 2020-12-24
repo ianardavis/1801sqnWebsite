@@ -1,0 +1,111 @@
+<% if (permissions.user_edit) { %>
+    <div id='mdl_user_edit' class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_user_edit'>
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User: <span id="full_name_edit"></span></h5>
+                </div>
+                <div class="modal-body">
+                    <%- include(`${partials}/inputs/text`,   {title: 'Bader #',  name: 'user[_bader]', 	  required: true, id: 'inp_bader',     placeholder: 'Required', maxLength: 20}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Rank',     name: 'user[rank_id]',   required: true, id: 'inp_rank_id',   spinner: true, spinner_id: 'ranks', classes: ['ranks']}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Surname',  name: 'user[_name]', 	  required: true, id: 'inp_name',      placeholder: 'Required', maxLength: 50}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Initials', name: 'user[_ini]',  	  required: true, id: 'inp_ini',       placeholder: 'Required', maxLength: 5}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Status',   name: 'user[status_id]', required: true, id: 'inp_status_id', spinner: true, spinner_id: 'statuses', classes: ['statuses']}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Login ID', name: 'user[_login_id]', required: true, id: 'inp_login_id',  placeholder: 'Required', maxLength: 30}) %>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" id='save_user' class="btn btn-success w-100 confirm" value='Save User'>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="/js/statuses/listStatuses.js"></script>
+    <script src="/js/ranks/listRanks.js"></script>
+<% } %>
+<div id='mdl_user_password' class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content" id='form_user_password'>
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password: <span class="full_name"></span></h5>
+            </div>
+            <div class="modal-body">
+                <%- include(`${partials}/inputs/text`, {title: 'Password', type: 'password', required: true, id: '_password', placeholder: 'Required', minlength: 8, name: '_password'}) %>
+                <%- include(`${partials}/inputs/text`, {title: 'Confirm',  type: 'password', required: true, id: '_confirm',  placeholder: 'Required', minlength: 8}) %>
+                <div>
+                    <p class='my-1'>
+                        Password MUST NOT be the current password
+                        Password MUST include:
+                    </p>
+                    <ul class='list-group mb-3'>
+                        <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                            At Least 8 characters
+                            <span class='badge badge-danger badge-pill' id='pwd_length'>
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </li>
+                        <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                            A number
+                            <span class='badge badge-danger badge-pill' id='pwd_number'>
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </li>
+                        <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                            An upper case letter
+                            <span class='badge badge-danger badge-pill' id='pwd_upper'>
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </li>
+                        <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                            A lower case letter
+                            <span class='badge badge-danger badge-pill' id='pwd_lower'>
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </li>
+                        <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                            A special character ( ! ? @ # $ £ % ^ & * )
+                            <span class='badge badge-danger badge-pill' id='pwd_special'>
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </li>
+                        <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                            Entered and confirmed passwords must match
+                            <span class='badge badge-danger badge-pill' id='pwd_match'>
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" id='save_password' class="btn btn-success w-100 confirm" value='Save Password' disabled>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/js/users/show/checkPassword.js"></script>
+<% if (permissions.permission_edit) { %>
+    <div id='mdl_permissions_edit' class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content" id='form_permissions_edit'>
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Edit Permissions
+                        <%- include(`${partials}/spinner`, {id: 'permission_edit'}) %>
+                    </h5>
+                    <a class="float-right btn btn-primary" id='reload_permission_edit'>
+                        <i class='fas fa-redo'></i>
+                    </a>
+                </div>
+                <div class="modal-body">
+                    <ul id="ul_tree" class='list-group'></ul>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-success w-100 confirm" value='Save Permissions'>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<% } %>

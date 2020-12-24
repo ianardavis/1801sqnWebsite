@@ -3,7 +3,7 @@ module.exports = (app, allowed, permissions, m, db) => {
         stores: [
             {_permission: 'access_stores', children: [
                 {_permission: 'access_accounts',   children: [
-                    {_permission: 'accountt_add'},
+                    {_permission: 'account_add'},
                     {_permission: 'account_edit'},
                     {_permission: 'account_delete'}
                 ]},
@@ -22,7 +22,7 @@ module.exports = (app, allowed, permissions, m, db) => {
                         {_permission: 'group_delete'},
                         {_permission: 'access_types', children: [
                             {_permission: 'type_add'},
-                            {_permission: 'typep_edit'},
+                            {_permission: 'type_edit'},
                             {_permission: 'type_delete'},
                             {_permission: 'access_subtypes', children: [
                                 {_permission: 'subtype_add'},
@@ -249,7 +249,7 @@ module.exports = (app, allowed, permissions, m, db) => {
         ]
     };
     app.get(`/${db}/get/permissions`,    permissions, allowed('access_permissions', {send: true}), (req, res) => {
-        m.permissions.findAll({
+        m[db].permissions.findAll({
             where: req.query,
             attributes: ['permission_id', '_permission', 'createdAt']
         })
@@ -257,7 +257,7 @@ module.exports = (app, allowed, permissions, m, db) => {
         .catch(err => res.error.send(err, res));
     });
     app.put(`/${db}/permissions/:id`,    permissions, allowed('permission_edit',    {send: true}), (req, res) => {
-        m.users.findOne({
+        m.users.users.findOne({
             where: {user_id: req.params.id},
             attributes: ['user_id']
         })
@@ -266,7 +266,7 @@ module.exports = (app, allowed, permissions, m, db) => {
             else if (user.user_id === req.user.user_id) res.send({result: false, message: 'You can not edit your own permissions'})
             else if (user.user_id === 1)                res.send({result: false, message: 'You can not edit the admin user permissions'})
             else {
-                return m.permissions.findAll({
+                return m[db].permissions.findAll({
                     where: {user_id: user.user_id},
                     attributes: ['permission_id', '_permission']
                 })
@@ -275,13 +275,13 @@ module.exports = (app, allowed, permissions, m, db) => {
                     permissions.forEach(permission => {
                         if (!req.body.permissions.includes(permission._permission)) {
                             actions.push(
-                                m.permissions.destroy({where: {permission_id: permission.permission_id}})
+                                m[db].permissions.destroy({where: {permission_id: permission.permission_id}})
                             );
                         }
                     });
                     req.body.permissions.forEach(permission => {
                         actions.push(
-                            m.permissions.findOrCreate({
+                            m[db].permissions.findOrCreate({
                                 where: {
                                     user_id: user.user_id,
                                     _permission: permission
@@ -290,10 +290,7 @@ module.exports = (app, allowed, permissions, m, db) => {
                         );
                     });
                     return Promise.allSettled(actions)
-                    .then(results => {
-                        console.log(results);
-                        res.send({result: true, message: 'Permissions edited'});
-                    })
+                    .then(results => res.send({result: true, message: 'Permissions edited'}))
                     .catch(err => res.error.send(err, res));
                 })
                 .catch(err => res.error.send(err, res));
@@ -301,5 +298,4 @@ module.exports = (app, allowed, permissions, m, db) => {
         })
         .catch(err => res.error.send(err, res));
     });
-
 };

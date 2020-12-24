@@ -85,18 +85,24 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_lines/:id',    permissions, allowed('access_issue_lines',        {send: true}),             (req, res) => {
-        m.issue_lines.findAll({
-            include: [
-                inc.users(),
-                inc.sizes({stock: true}),
-                inc.stock({as: 'stock'}),
-                inc.issues({
-                    where: {issued_to: req.params.id},
-                    required: true
-                })
-            ]
-        })
-        .then(lines => res.send({result: true, lines: lines}))
+        let include = [
+            inc.users(),
+            inc.sizes({stock: true}),
+            inc.stock({as: 'stock'}),
+            inc.issues({
+                where: {issued_to: req.params.id},
+                required: true
+            })
+        ];
+        if (req.query.returned) {
+            if (req.query.returned === '0') {
+                
+            } else if (req.query.returned === '1') {
+                include.push(inc.issue_line_returns({required: true}))
+            };
+        };
+        m.issue_lines.findAll({include: include})
+        .then(issue_lines => res.send({result: true, issue_lines: issue_lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_line_returns', permissions, allowed('access_issue_line_returns', {send: true}),             (req, res) => {

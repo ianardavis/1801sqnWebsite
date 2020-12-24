@@ -1,0 +1,17 @@
+<% if (permissions.user_edit) { %>
+    <button class="dropdown-item" id='btn_user_edit' data-toggle='modal' data-target='#mdl_user_edit'>
+        Edit User
+    </button>
+    <form id='form_password_reset'>
+        <button class='dropdown-item confirm'>
+            Toggle Reset Password
+        </button>
+    </form>
+<% } %>
+<button class="dropdown-item" data-toggle='modal' data-target='#mdl_user_password'>
+    Change Password
+</button>
+<% if (permissions.permission_edit) { %>
+    <button class='dropdown-item' data-toggle='modal' data-target='#mdl_permissions_edit'>Edit Permissions</button>
+<% } %>
+<div class="dropdown-divider"></div>

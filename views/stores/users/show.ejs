@@ -16,278 +16,160 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.user_edit) { %>
-                    <%- include(`${partials}/edit`) %>
-                <% } %>
+                <%- include(`${partials}/users/show/menu_buttons`) %>
                 <%- include(`${partials}/notes/menu_add`) %>
-                <% if (permissions.user_delete) { %>
-                    <%- include(`${partials}/delete`) %>
-                <% } %>
-                <% if (permissions.user_edit || user.user_id === user_id) { %>
-                    <a class="dropdown-item" id="btn_pwd_chg">
-                        Change Password
-                    </a>
-                <% } %>
-                <% if (permissions.user_edit) { %>
-                    <form id='resetPasswordForm'>
-                        <input type="hidden" name='user[_reset]' id="btn_pwd_rst">
+                <div class="dropdown-divider"></div>
+                <% if (permissions.order_add) { %>
+                    <form id="form_order_add">
+                        <input type="hidden" class='user_id' name='ordered_for'>
                         <button class='dropdown-item confirm'>
-                            Reset Password
+                            New Order
                         </button>
                     </form>
+                    <script>
+                        window.addEventListener( "load", function () {
+                            addFormListener('form_order_add', 'POST', '/stores/orders', {onComplete: getOrders});
+                        });
+                    </script>
                 <% } %>
-                <% if (user.user_id !== user_id) { %>
-                    <% if (permissions.permission_edit) { %>
-                        <a class="dropdown-item" id='btn_perm_edit'>
-                            Edit Permissions
-                        </a>
-                    <% } %>
-                    <% if (permissions.order_add) { %>
-                        <form id="newOrderForm">
-                            <input type="hidden" class='user_id' name='ordered_for'>
-                            <button class='dropdown-item confirm'>
-                                New Order
-                            </button>
-                        </form>
-                    <% } %>
-                    <% if (permissions.issue_add) { %>
-                        <form id="newIssueForm">
-                            <input type="hidden" class='user_id' name='issued_to'>
-                            <button class='dropdown-item confirm'>
-                                New Issue
-                            </button>
-                        </form>
-                    <% } %>
+                <% if (permissions.issue_add) { %>
+                    <form id="form_issue_add">
+                        <input type="hidden" class='user_id' name='issued_to'>
+                        <button class='dropdown-item confirm'>
+                            New Issue
+                        </button>
+                    </form>
+                    <script>
+                        window.addEventListener( "load", function () {
+                            addFormListener('form_issue_add', 'POST', '/stores/issues', {onComplete: getIssues});
+                        });
+                    </script>
                 <% } %>
-                <% if (user.user_id === user_id || permissions.request_add) { %>
-                    <form id="newRequestForm">
+                <% if (permissions.request_add) { %>
+                    <form id="form_request_add">
                         <input type="hidden" class='user_id' name='requested_for'>
                         <button class='dropdown-item confirm'>
                             New Request
                         </button>
                     </form>
+                    <script>
+                        window.addEventListener( "load", function () {
+                            addFormListener('form_request_add', 'POST', '/stores/requests', {onComplete: getRequests});
+                        });
+                    </script>
                 <% } %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',         title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'tab_permissions', title: 'Permissions', count_id: 'permission', permission: 'access_permissions'}) %>
-        <% if (permissions.access_requests || user.user_id === user_id) { %>
-        <%- include(`${partials}/tab_head`, {id: 'requests',        title: 'Requests',    count_id: 'request'}) %>
-        <% } %>
-        <% if (permissions.access_orders || user.user_id === user_id) { %>
-        <%- include(`${partials}/tab_head`, {id: 'orders',          title: 'Orders',      count_id: 'order'}) %>
-        <% } %>
-        <% if (permissions.access_issues || user.user_id === user_id) { %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',          title: 'Issues',      count_id: 'issue'}) %>
-        <% } %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',           title: 'Notes',       count_id: 'note',       permission: 'access_notes'}) %>
+        <%- include(`${partials}/users/show/tab_heads`) %>
+        <%- include(`${partials}/tab_head`, {id: 'requests', spinner: 'request_lines', title: 'Requests', count_id: 'request'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'orders',   spinner: 'order_lines',   title: 'Orders',   count_id: 'order'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',   spinner: 'issue_lines',   title: 'Issues',   count_id: 'issue'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',    spinner: 'notes',         title: 'Notes',    count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/spinner`, {id: 'users'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_bader',      title: 'Bader #'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'rank',        title: 'Rank'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_name',       title: 'Name'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_ini',        title: 'Initials'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'status',      title: 'Status'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_login_id',   title: 'Login ID'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_last_login', title: 'Last Login'}) %>
-            <%- include(`${partials}/inputs/display`, {title: 'Change password on next login', prepend_size: 50, html: '<div class="input-group-append w-50"><div class="input-group-text w-100"><input type="checkbox" id="_reset" disabled></div></div>'}) %>
-            <div id="modals_user"></div>
+        <%- include(`${partials}/users/show/tab_bodies`) %>
+        <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
+            <div class="card text-white bg-primary my-1 hidden" id='crd_draft_request'>
+                <div class="card-body">
+                    <h5 class="card-title">Draft Request</h5>
+                    <p class="card-text f-10">This user has <span id="draft_request_count"></span> request(s) in draft. Follow the links below to go to these requests.</p>
+                    <div id="draft_requests"></div>
+                </div>
+            </div>
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'request_status', options: [{value: '', text: 'All'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open', selected: true}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}], spinner: true}) %>
+            <table class='table table-sm table-hover'>
+                <thead class="thead-dark">
+                    <th class="w-20" onclick="sortTable(0, 'tbl_requests')">Date</th>
+                    <th class="w-30" onclick="sortTable(1, 'tbl_requests')">Item</th>
+                    <th class="w-20" onclick="sortTable(2, 'tbl_requests')">Size</th>
+                    <th class="w-10" onclick="sortTable(3, 'tbl_requests')">Qty</th>
+                    <th class="w-20" onclick="sortTable(4, 'tbl_requests')">Status</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_requests"></tbody>
+            </table>
         </div>
-        <% if (permissions.access_permissions || user.user_id === user_id) { %>
-            <div class="tab-pane fade" id="tab_permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Granted Permissions', id: 'permissions', size: '11', spinner: true}) %>
+        <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+            <div class="card text-white bg-primary my-1 hidden" id='crd_draft_order'>
+                <div class="card-body">
+                    <h5 class="card-title">Draft Order</h5>
+                    <p class="card-text f-10">This user has <span id="draft_order_count"></span> order(s) in draft. Follow the links below to go to these orders.</p>
+                    <div id="draft_orders"></div>
+                </div>
             </div>
-        <% } %>
-        <% if (permissions.access_requests || user.user_id === user_id) { %>
-            <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'request_status', options: [{value: '', text: 'All'}, {value: '_status=Pending', text: 'Pending'}, {value: '_status=Approved', text: 'Approved'}, {value: '_status=Declined', text: 'Declined'}], spinner: true}) %>
-                <table class='table table-sm table-hover'>
-                    <thead class="thead-dark">
-                        <th class="w-20" onclick="sortTable(0, 'requestTable')"><%- include(`${partials}/spinner`, {id: 'request_lines', small: true, float_left: true}) %>Date</th>
-                        <th class="w-30" onclick="sortTable(1, 'requestTable')">Item</th>
-                        <th class="w-20" onclick="sortTable(2, 'requestTable')">Size</th>
-                        <th class="w-10" onclick="sortTable(3, 'requestTable')">Qty</th>
-                        <th class="w-20" onclick="sortTable(4, 'requestTable')">Status</th>
-                        <th><i class="fas fa-search"></i></th>
-                    </thead>
-                    <tbody id="requestTable">
-                    </tbody>
-                </table>
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'order_status', options: [{value: '', text: 'All'}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Demanded'}, {value: '_status=4', text: 'Received'}, {value: '_status=5', text: 'Issued'}, {value: '_status=6', text: 'Complete'}], spinner: true}) %>
+            <table class='table table-sm table-hover'>
+                <thead class="thead-dark">
+                    <th class="w-25" onclick="sortTable(0, 'tbl_orders')">Date</th>
+                    <th class="w-25" onclick="sortTable(1, 'tbl_orders')">Item</th>
+                    <th class="w-20" onclick="sortTable(2, 'tbl_orders')">Size</th>
+                    <th class="w-10" onclick="sortTable(3, 'tbl_orders')">Qty</th>
+                    <th class="w-10" onclick="sortTable(4, 'tbl_orders')">Status</th>
+                    <th class="w-5"  onclick="sortTable(5, 'tbl_orders')" data-toggle="tooltip" data-placement="bottom" title="Demanded">D</th>
+                    <th class="w-5"  onclick="sortTable(6, 'tbl_orders')" data-toggle="tooltip" data-placement="bottom" title="Received">R</th>
+                    <th class="w-5"  onclick="sortTable(7, 'tbl_orders')" data-toggle="tooltip" data-placement="bottom" title="Issued">I</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_orders"></tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+            <div class="card text-white bg-primary my-1 hidden" id='crd_draft_issue'>
+                <div class="card-body">
+                    <h5 class="card-title">Draft Issue</h5>
+                    <p class="card-text f-10">This user has <span id="draft_issue_count"></span> issue(s) in draft. Follow the links below to go to these issues.</p>
+                    <div id="draft_issues"></div>
+                </div>
             </div>
-            <div id="modals_requests"></div>
-        <% } %>
-        <% if (permissions.access_orders || user.user_id === user_id) { %>
-            <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'order_status', options: [{value: '', text: 'All'}, {value: '_status=Open', text: 'Open'}, {value: '_status=Demanded', text: 'Demanded'}, {value: '_status=Received', text: 'Received'}, {value: '_status=Complete', text: 'Complete'}, {value: '_status=Cancelled', text: 'Cancelled'}], spinner: true}) %>
-                <table class='table table-sm table-hover'>
-                    <thead class="thead-dark">
-                        <th class="w-25" onclick="sortTable(0, 'tableOrders')"><%- include(`${partials}/spinner`, {id: 'order_lines', small: true, float_left: true}) %>Date</th>
-                        <th class="w-25" onclick="sortTable(1, 'tableOrders')">Item</th>
-                        <th class="w-20" onclick="sortTable(2, 'tableOrders')">Size</th>
-                        <th class="w-10" onclick="sortTable(3, 'tableOrders')">Qty</th>
-                        <th class="w-10" onclick="sortTable(4, 'tableOrders')">Status</th>
-                        <th class="w-5"  onclick="sortTable(5, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Demanded">D</th>
-                        <th class="w-5"  onclick="sortTable(6, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Received">R</th>
-                        <th class="w-5"  onclick="sortTable(7, 'tableOrders')" data-toggle="tooltip" data-placement="bottom" title="Issued">I</th>
-                        <th><i class="fas fa-search"></i></th>
-                    </thead>
-                    <tbody id="orderTable">
-                    </tbody>
-                </table>
-            </div>
-            <div id="modals_orders"></div>
-        <% } %>
-        <% if (permissions.access_issues || user.user_id === user_id) { %>
-            <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Returned Lines', id: 'returned_lines', options: [{value: '1', text: 'Include'}, {value: '2', text: 'Exclude', selected: true}, {value: '3', text: 'Only'}], spinner: true}) %>
-                <% if (permissions.return_add && user.user_id !== user_id) { %>
-                    <form id='returnForm'>
-                        <input class="btn btn-sm btn-primary confirm mb-1" type="submit" value="Return Selected Lines">
-                <% } %>
-                <table class='table table-sm table-hover'>
-                    <thead class="thead-dark">
-                        <th class="w-20" onclick="sortTable(0, 'tableIssues')"><%- include(`${partials}/spinner`, {id: 'issue_lines', small: true, float_left: true}) %>Date Due</th>
-                        <th class="w-30" onclick="sortTable(1, 'tableIssues')">Item</th>
-                        <th class="w-20" onclick="sortTable(2, 'tableIssues')">Size</th>
-                        <th class="w-10" onclick="sortTable(3, 'tableIssues')">Qty</th>
-                        <th class="w-20" onclick="sortTable(4, 'tableIssues')">Return Location</th>
-                        <th><i class="fas fa-search"></i></th>
-                    </thead>
-                    <tbody id="issueTable">
-                    </tbody>
-                </table>
-                <div id="modals_issues"></div>
-                <% if (permissions.return_add) { %></form><% } %>
-            </div>
-        <% } %>
+            <%- include(`${partials}/inputs/select`, {title: 'Returned Lines', id: 'returned_lines', options: [{value: '', text: 'Include'}, {value: 'returned=0', text: 'Exclude', selected: true}, {value: 'returned=1', text: 'Only'}], spinner: true}) %>
+            <% if (permissions.return_add) { %>
+                <form id='form_issue_return'>
+                    <input class="btn btn-sm btn-primary confirm mb-1" type="submit" value="Return Selected Lines">
+            <% } %>
+            <table class='table table-sm table-hover'>
+                <thead class="thead-dark">
+                    <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Date Due</th>
+                    <th class="w-30" onclick="sortTable(1, 'tbl_issues')">Item</th>
+                    <th class="w-20" onclick="sortTable(2, 'tbl_issues')">Size</th>
+                    <th class="w-10" onclick="sortTable(3, 'tbl_issues')">Qty</th>
+                    <th class="w-20" onclick="sortTable(4, 'tbl_issues')">Return Location</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_issues"></tbody>
+            </table>
+            <% if (permissions.return_add) { %>
+                </form>
+                <script>
+                    window.addEventListener( "load", function () {
+                        addFormListener('form_issue_return', 'POST', '/stores/returns', {onComplete: getIssues});
+                    });
+                </script>
+            <% } %>
+        </div>
         <%- include(`${partials}/notes/tab_body`) %>
+    </div>
+    <div id="div_modals">
+        <%- include(`${partials}/users/show/modals`) %>
     </div>
 </section>
 <%- include(`${partials}/foot/full`) %>
-<script src="/js/users/show/changePassword.js"></script>
-<% if (permissions.user_edit) { %>
-    <script src="/js/users/show/checkPassword.js"></script>
-<% } %>
-<script src='/js/users/show/permissions.js'></script>
-<script src='/js/users/show/requests.js'></script>
-<script src='/js/users/show/orders.js'></script>
-<script src='/js/users/show/issues.js'></script>
-<script src='/js/users/show/user.js'></script>
 <script src="/js/getByUser.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
-<script>
-    function getUser() {
-        get(
-            showUser,
-            {
-                table: 'users',
-                query: [`user_id=${path[3]}`],
-                permissions: {
-                    user: {
-                        edit: <%= permissions.user_edit || false %>
-                    }
-                }
-            }
-        );
-    };
-    document.querySelector('#reload').addEventListener('click', () => getUser());
-</script>
-<script async>getUser()</script>
-<% if (permissions.access_permissions || user.user_id === user_id) { %>
-    <script>
-        function getPermissions () {
-            get(
-                showPermissions,
-                {
-                    table: 'permissions',
-                    query: [`user_id=${path[3]}`]
-                }
-            )
-        };
-        document.querySelector('#reload').addEventListener('click', () => getPermissions());
-    </script>
-    <script async>getPermissions()</script>
-<% } %>
-<% if (permissions.access_requests || user.user_id === user_id) { %>
-    <script>
-        function getRequests () {
-            let request_status = document.querySelector('#request_status');
-            getByUser(
-                showRequests,
-                {
-                    table: 'request_lines',
-                    user_id: path[3],
-                    query: [request_status.value]
-                }
-            );
-        };
-        document.querySelector('#reload').addEventListener('click', () => getRequests());
-        document.querySelector('#request_status').addEventListener('change', () => getRequests());
-    </script>
-    <script async>getRequests()</script>
-<% } %>
-<% if (permissions.access_orders || user.user_id === user_id) { %>
-    <script>
-        function getOrders () {
-            let order_status = document.querySelector('#order_status');
-            getByUser(
-                showOrders,
-                {
-                    table: 'order_lines',
-                    user_id: path[3],
-                    query: [order_status.value]
-                }
-            );
-        };
-        document.querySelector('#reload').addEventListener('click', () => getOrders());
-        document.querySelector('#order_status').addEventListener('change', () => getOrders());
-    </script>
-    <script async>getOrders()</script>
-<% } %>
-<% if (permissions.access_issues || user.user_id === user_id) { %>
-    <script>
-        function getIssues () {
-            let returned_lines = document.querySelector('#returned_lines');
-            getByUser(
-                showIssues,
-                {
-                    table: 'issue_lines',
-                    user_id: path[3],
-                    query: [returned_lines.value]
-                }
-            );
-        };
-        document.querySelector('#reload').addEventListener('click', () => getIssues());
-        document.querySelector('#returned_lines').addEventListener('change', () => getIssues());
-    </script>
-    <script async>getIssues()</script>
-<% } %>
-<script>
-    window.addEventListener( "load", function () {
-        <% if (permissions.user_edit) { %>
-            addFormListener('resetPasswordForm', 'PUT', '/stores/users/<%= user_id %>', {reload: true});
-        <% } %>
-        <% if (user.user_id === user_id || permissions.request_add) { %>
-            addFormListener('newRequestForm', 'POST', '/stores/requests', {reload: true});
-        <% } %>
-        <% if (user.user_id !== user_id) { %>
-            <% if (permissions.return_add) { %>
-                addFormListener('returnForm', 'POST', '/stores/returns', {reload: true});
-            <% } %>
-            <% if (permissions.issue_add) { %>
-                addFormListener('newIssueForm', 'POST', '/stores/issues', {reload: true});
-            <% } %>
-            <% if (permissions.order_add) { %>
-                addFormListener('newOrderForm', 'POST', '/stores/orders', {reload: true});
-            <% } %>
-            <% if (permissions.user_delete) { %>
-                addFormListener('deleteForm', 'DELETE', '/stores/users/<%= user_id %>', {redirect: '/stores/users'});
-            <% } %>
-        <% } %>
-    });
-</script>
+
+<%- include(`${partials}/users/show/scripts`) %>
+
+<script src='/js/stores/users/requests.js'></script>
+<script async>getRequests()</script>
+<script async>getDraftRequests()</script>
+
+<script src='/js/stores/users/orders.js'></script>
+<script async>getOrders()</script>
+<script async>getDraftOrders()</script>
+
+<script src='/js/stores/users/issues.js'></script>
+<script async>getIssues()</script>
+<script async>getDraftIssues()</script>
+
 <%- include(`${partials}/foot/htmlClose`) %>

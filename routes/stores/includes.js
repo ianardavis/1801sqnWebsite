@@ -447,20 +447,4 @@ module.exports = (inc, m) => {
             required: options.required || false
         };
     };
-    
-    inc.issue_line_returns = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
-        else {
-            include.push(inc.users());
-        };
-        return {
-            model:      m.stores.issue_line_returns,
-            attributes: options.attributes || null,
-            include:    include,
-            as:         options.as         || 'return',
-            where:      options.where      || null,
-            required:   options.required   || false
-        };
-    };
 };

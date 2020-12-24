@@ -4,9 +4,7 @@
 		<ul class="navbar-nav mr-auto">
             <%- include(`${partials}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
             <%- include(`${partials}/breadcrumb`, {href: '/stores/users', text: 'Users'}) %>
-			<% if (permissions.user_add) { %>
-				<%- include(`${partials}/users/menu_add`) %>
-			<% } %>
+			<%- include(`${partials}/users/index/add_button`) %>
 			<%- include(`${partials}/reload`) %>
 			<%- include(`${partials}/spinner`, {id: 'users'}) %>
 		</ul>
@@ -25,15 +23,14 @@
 		</thead>
 		<tbody id="tbl_users"></tbody>
 	</table>
-	<% if (permissions.user_add) { %>
-		<%- include(`${partials}/users/add`) %>
-    <% } %>
+	<div id="div_modals">
+		<%- include(`${partials}/users/index/add_modal`) %>
+	</div>
 </section>
 <%- include(`${partials}/foot/full`) %>
 <script src="/js/spinner.js"></script>
 <script src="/js/data/XHRsend.js"></script>
 <script src="/js/get.js"></script>
-<script src="/js/add.js"></script>
 <script src="/js/statuses/listStatuses.js"></script>
 <script src="/js/ranks/listRanks.js"></script>
 <script src="/js/users/index/users.js"></script>

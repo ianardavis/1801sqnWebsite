@@ -454,6 +454,20 @@ function Modal_Notes (options = {}) {
     table.appendChild(body);
     this.e.appendChild(table);
 };
+function A (options = {}) {
+    this.e = document.createElement('a');
+    if      (options.classes) options.classes.forEach(e => this.e.classList.add(e));
+    if      (options.href)   this.e.setAttribute('href', options.href)
+    if      (options.text)   this.e.innerText   = options.text
+    else if (options.html)   this.e.innerHTML   = options.html
+    else if (options.append) this.e.appendChild(options.append);
+};
+function P (options = {}) {
+    this.e = document.createElement('p');
+    if      (options.text)   this.e.innerText   = options.text
+    else if (options.html)   this.e.innerHTML   = options.html
+    else if (options.append) this.e.appendChild(options.append);
+};
 function TH (options = {}) {
     this.e = document.createElement('th');
     if (options.width) this.e.classList.add(`w-${options.width}`);

@@ -1,0 +1,22 @@
+<div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+    <%- include(`${partials}/spinner`, {id: 'users'}) %>
+    <%- include(`${partials}/inputs/display`, {id: '_bader',      title: 'Bader #'}) %>
+    <%- include(`${partials}/inputs/display`, {id: 'rank',        title: 'Rank'}) %>
+    <%- include(`${partials}/inputs/display`, {id: '_name',       title: 'Name'}) %>
+    <%- include(`${partials}/inputs/display`, {id: '_ini',        title: 'Initials'}) %>
+    <%- include(`${partials}/inputs/display`, {id: 'status',      title: 'Status'}) %>
+    <%- include(`${partials}/inputs/display`, {id: '_login_id',   title: 'Login ID'}) %>
+    <%- include(`${partials}/inputs/display`, {id: '_last_login', title: 'Last Login'}) %>
+    <%- include(`${partials}/inputs/display`, {id: '_reset',      title: 'Change password on next login'}) %>
+</div>
+<% if (permissions.access_permissions) { %>
+    <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+                <th class="w-20" onclick="sortTable(0, 'tbl_permissions')">Date Granted</th>
+                <th class="w-80" onclick="sortTable(1, 'tbl_permissions')">Permission</th>
+            </thead>
+            <tbody id="tbl_permissions"></tbody>
+        </table>
+    </div>
+<% } %>
