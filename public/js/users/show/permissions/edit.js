@@ -12,7 +12,7 @@ function getPermissionsEdit () {
                         });
                     };
                 });
-            };
+            }; 
             configure_tree();
             permissions.permissions.forEach(e => {
                 let checkbox = document.querySelector(`#permission_${e._permission}`);
