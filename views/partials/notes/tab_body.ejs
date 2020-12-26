@@ -23,7 +23,7 @@
                 </div>
                 <div class="modal-body">
                     <%- include(`${partials}/inputs/display`,  {id: 'note_createdAt', title: 'Added'}) %>
-                    <%- include(`${partials}/inputs/display`,  {id: 'note_user',      title: 'Added By', append: {a: {id: 'note_user_link', text: "<i class='fas fa-search'></i>"}}}) %>
+                    <%- include(`${partials}/inputs/display`,  {id: 'note_user',      title: 'Added By', link: true}) %>
                     <%- include(`${partials}/inputs/display`,  {id: 'note_system',    title: 'System'}) %>
                     <%- include(`${partials}/inputs/textarea`, {id: 'note_note',      title: 'Note',     rows: 5}) %>
                 </div>

@@ -1,13 +1,8 @@
-<%- include(`${partials}/head/full`) %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-			<%- include(`${partials}/breadcrumb`, {href: '/canteen', text: 'Canteen'}) %>
-			<%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
-			<%- include(`${partials}/spinner`,    {id: 'sessions'}) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen', text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+<%- include(`${partials}/spinner`,    {id: 'sessions'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<div class="row m-auto p-0 menu">
         <%- include(`${partials}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos'}) %>
@@ -19,7 +14,7 @@
         <%- include(`${partials}/card`, {title: 'Users',         image: 'user',          href: '/canteen/users'}) %>
 	</div>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/index/checkSession.js"></script>
 <script async>checkSession()</script>
-<%- include(`${partials}/foot/htmlClose`) %>    
+<%- include(`${partials}/foot/elements/htmlClose`) %>    

@@ -1,13 +1,8 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-	<nav class='navbar navbar-expand navbar-light bg-nav'>
-		<ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Demands'}) %>
-			<%- include(`${partials}/reload`) %>
-		</ul>
-	</nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Demands'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<%- include('../../partials/spinner', {id: 'suppliers'}) %>
 	<%- include(`${partials}/inputs/select`, {title: 'Supplier', id: 'sel_suppliers'}) %>
@@ -24,11 +19,11 @@
 		<tbody id="tbl_demands"></tbody>
 	</table>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/demands/index/getDemands.js'></script>
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/send.js'></script>
 <script src='/js/stores/suppliers/list.js'></script>
 <script async>getSuppliers()</script>
 <script async>getDemands()</script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

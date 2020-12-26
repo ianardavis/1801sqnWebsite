@@ -1,0 +1,12 @@
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <% if (!user) { %>
+                <%- include('./login') %>
+            <% } else { %>
+                <%- include('./notifications') %>
+                <%- include('./user') %>
+            <% } %>  
+        </ul>
+    </div>
+</nav>
+<%- include('../flash') %>

@@ -1,14 +1,9 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
-            <%- include(`${partials}/breadcrumb`) %>
-            <%- include(`${partials}/reload`) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -111,7 +106,7 @@
         </div>
     <% } %>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
@@ -130,4 +125,4 @@
     <script src='/js/stores/items/show/getItemEdit.js'></script>
     <script async>getItemEdit()</script>
 <% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

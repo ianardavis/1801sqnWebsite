@@ -1,19 +1,14 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
-			<% if (permissions.item_add) { %>
-				<li class="nav-item">
-					<a class='nav-link' data-toggle="modal" data-target="#mdl_item_add"><i class="fas fa-plus"></i></a>
-				</li>
-			<% } %>
-			<%- include(`${partials}/reload`) %>
-            <%- include(`${partials}/spinner`, {id: 'items'}) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
+<% if (permissions.item_add) { %>
+	<li class="nav-item">
+		<a class='nav-link' data-toggle="modal" data-target="#mdl_item_add"><i class="fas fa-plus"></i></a>
+	</li>
+<% } %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'items'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<%- include(`${partials}/inputs/select`, {id: 'sel_categories', title: 'Category'}) %>
 	<%- include(`${partials}/inputs/select`, {id: 'sel_groups', 	title: 'Groups'}) %>
@@ -53,7 +48,7 @@
         </div>
     <% } %>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <!-- get, XHRsend and spinner from item options -->
 <script src="/js/add.js"></script>
 <script src="/js/search/table.js"></script>
@@ -117,4 +112,4 @@
 <% if (permissions.item_add) { %>
 	<script src="/js/stores/items/index/itemAdd.js"></script>
 <% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

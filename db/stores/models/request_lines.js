@@ -31,26 +31,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '1',
       comment: "null"
     },
-    '_action': {
-      type: DataTypes.STRING(15),
-      allowNull: true,
-      comment: "null"
-    },
-    '_date': {
-      type: DataTypes.DATE,
-      allowNull: true,
-      comment: "null"
-    },
-    '_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'approved_by': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
     'user_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,

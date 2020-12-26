@@ -1,15 +1,10 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen/users', text: 'Users'}) %>
-			<%- include(`${partials}/users/index/add_button`) %>
-			<%- include(`${partials}/reload`) %>
-            <%- include(`${partials}/spinner`, {id: 'users'}) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen/users', text: 'Users'}) %>
+<%- include(`${partials}/users/index/add_button`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'users'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 classes: ['ranks'], 	id: 'rank_id',   spinner: true, spinner_id: 'ranks'}) %>
 	<%- include(`${partials}/inputs/select`, {title: 'Statuses', classes: ['statuses'], id: 'status_id', spinner: true, spinner_id: 'statuses'}) %>
@@ -27,13 +22,13 @@
 		<%- include(`${partials}/users/index/add_modal`) %>
 	</div>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src="/js/spinner.js"></script>
 <script src="/js/data/XHRsend.js"></script>
 <script src="/js/get.js"></script>
-<script src="/js/statuses/listStatuses.js"></script>
-<script src="/js/ranks/listRanks.js"></script>
+<script src="/js/users/statuses/listStatuses.js"></script>
+<script src="/js/users/ranks/listRanks.js"></script>
 <script src="/js/users/index/users.js"></script>
 <script async>listStatuses()</script>
 <script async>listRanks()</script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

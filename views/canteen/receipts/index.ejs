@@ -1,23 +1,18 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen/receipts', text: 'Receipts'}) %>
-            <% if (permissions.receipt_add) { %>
-                <li class="nav-item">
-                    <form id='form_add_receipt'>
-                        <button class="nav-link stores_nav confirm">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </form>
-                </li>
-			<% } %>
-            <%- include(`${partials}/reload`) %>
-            <%- include(`${partials}/spinner`, {id: 'receipts'}) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen/receipts', text: 'Receipts'}) %>
+<% if (permissions.receipt_add) { %>
+    <li class="nav-item">
+        <form id='form_add_receipt'>
+            <button class="nav-link confirm">
+                <i class="fas fa-plus"></i>
+            </button>
+        </form>
+    </li>
+<% } %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'receipts'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <%- include(`${partials}/inputs/select`, {title: 'Complete Receipts', id: 'sel_status', options: [{value:'', text: 'Include'},{value:'_status=1', text: 'Exclude', selected: true},{value:'_status=2', text: 'Only'}]}) %>
     <table class="table table-sm table-hover">
@@ -30,7 +25,7 @@
         <tbody id="tbl_receipts"></tbody>
     </table>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/receipts/index/getReceipts.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
@@ -47,4 +42,4 @@
         });
     </script>
 <% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

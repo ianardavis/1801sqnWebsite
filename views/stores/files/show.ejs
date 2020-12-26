@@ -1,4 +1,4 @@
-<%- include(`${partials}/head/head`) %>
+<%- include(`${partials}/head/app`) %>
 <body>
 <%- include(`${partials}/head/flash`) %>
 <section id='body'>
@@ -36,7 +36,7 @@
         </div>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
-<%- include(`${partials}/foot/noNav`) %>
+<%- include(`${partials}/foot/app`) %>
 <!-- Get/spinner/XHRsend from notes include -->
 <script src='/js/edit.js'></script>
 <script src='/js/add.js'></script>
@@ -47,4 +47,4 @@
 </script>
 <script async>getFile()</script>
 <script>showTab('<%= tab %>');</script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

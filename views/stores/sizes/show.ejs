@@ -1,15 +1,10 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
-            <%- include(`${partials}/breadcrumb`, {id: '_item'}) %>
-            <%- include(`${partials}/breadcrumb`) %>
-            <%- include(`${partials}/reload`) %>
-    </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
+<%- include(`${partials}/breadcrumb`, {id: '_item'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -55,7 +50,7 @@
             <%- include(`${partials}/inputs/display`,  {id: '_orderable',        title: 'Orderable'}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_serials',          title: 'Has Serials'}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_nsns',             title: 'Has NSNs'}) %>
-            <%- include(`${partials}/inputs/display`,  {id: 'supplier',          title: 'Supplier', append: {a: {id: 'supplier_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+            <%- include(`${partials}/inputs/display`,  {id: 'supplier',          title: 'Supplier', link: true}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_demand_page',      title: 'Demand Page'}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_demand_cell',      title: 'Demand Cell'}) %>
             <%- include(`${partials}/inputs/textarea`, {id: '_ordering_details', title: 'Ordering Details', rows: 5, readonly: true}) %>
@@ -486,7 +481,7 @@
         <% } %>
     </div>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
@@ -717,4 +712,4 @@
     <script src="/js/stores/sizes/show/getSizeEdit.js"></script>
     <script async>getSizeEdit()</script>
 <% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

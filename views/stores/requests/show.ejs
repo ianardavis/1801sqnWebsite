@@ -1,14 +1,10 @@
-<%- include(`${partials}/head/full`) %>
-<section class="mb-2">
-	<nav class="navbar navbar-expand navbar-light bg-nav">
-		<ul class="navbar-nav mr-auto">
-            <%- include(`${partials}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
-			<%- include(`${partials}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
-			<%- include(`${partials}/breadcrumb`) %> 
-		</ul>
-	</nav>
-</section>
-<section class="container" id='main_container'>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class="container">
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -16,31 +12,26 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/notes/menu_add`) %>
-				<input id='btn_action' form='form_approve' class='dropdown-item confirm' type="submit" value='Action Lines' disabled>
+				<button id='btn_action' form='form_approve' class='dropdown-item confirm' disabled>Action Lines</button>
 				<form id='form_complete'>
-					<input id='btn_complete' class='dropdown-item confirm' type="submit" value='Complete' disabled>
+					<button id='btn_complete' class='dropdown-item confirm' disabled>Complete</button>
 				</form>
-				<div id='form_addSize'>
-					<button type='button' class='dropdown-item' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled>
-						Add Item
-					</button>
-				</div>
+				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'request_line_add'}) %>
 				<div class="dropdown-divider"></div>
 				<form id='form_delete'>
-					<input id='btn_delete' type="submit" class="dropdown-item confirm" value='Cancel' disabled>
+					<button id='btn_delete' class="dropdown-item confirm" disabled>Cancel</button>
 				</form>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note', permission: 'access_notes'}) %>
-        <%- include(`${partials}/reload`) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'request'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'request_lines', count_id: 'line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 		count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
 			<%- include(`${partials}/spinner`, {id: 'requests'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user_for', 	title: 'For', append: {a: {id: 'user_for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user_by', 	title: 'By',  append: {a: {id: 'user_by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_for', 	title: 'For', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_by', 	title: 'By',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: '_status',   title: 'Status'}) %>
@@ -52,15 +43,13 @@
 			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}]}) %>
 			<table class="table table-sm table-hover mx-auto w-100">
 				<thead id='table_header_lines' class="thead-dark">
-					<th class='w-10' onclick="sortTable(0,'linesTable')"><%- include(`${partials}/spinner`, {id: 'request_lines', float_left: true, small: true}) %>Line ID</th>
-					<th class='w-30' onclick="sortTable(1,'linesTable')">Item</th>
-					<th class='w-30' onclick="sortTable(2,'linesTable')">Size</th>
-					<th class='w-10' onclick="sortTable(3,'linesTable')">Qty</th>
-					<th class='w-20' onclick="sortTable(4,'linesTable')">Status</th>
+					<th class='w-35' onclick="sortTable(1,'tbl_lines')">Item</th>
+					<th class='w-35' onclick="sortTable(2,'tbl_lines')">Size</th>
+					<th class='w-10' onclick="sortTable(3,'tbl_lines')">Qty</th>
+					<th class='w-20' onclick="sortTable(4,'tbl_lines')">Status</th>
 					<th id='col_view'><i class='fas fa-search'></i></th>
 				</thead>
-				<tbody id="linesTable">
-				</tbody>
+				<tbody id="tbl_lines"></tbody>
 			</table>
 			<% if (permissions.request_line_edit) { %>
 				</form>
@@ -68,9 +57,54 @@
 		</div>
         <%- include(`${partials}/notes/tab_body`) %>
 	</div>
-	<div id="div_modals"></div>
+	<div id="div_modals">
+		<%- include(`${partials}/stores/sizes/select`, {permission: 'request_line_add'}) %>
+		<% if (permissions.access_request_lines) { %>
+			<div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Request Line <span id="line_id_view"></span></h5>
+						</div>
+						<div class="modal-body">
+							<ul class="nav nav-tabs" role="tablist">
+								<%- include(`${partials}/tab_head`, {id: 'request_line', 	    title: 'Details', 		spinner: 'request_line_view', active: true}) %>
+								<%- include(`${partials}/tab_head`, {id: 'dates',  		 	    title: 'Dates/Actions', spinner: 'request_line_actions', count_id: 'line_actions'}) %>
+								<%- include(`${partials}/tab_head`, {id: 'request_lines-notes', title: 'Notes',   		spinner: 'request_line_notes',	 count_id: 'request_lines_note', permission: 'access_notes'}) %>
+							</ul>
+							<div class="tab-content pt-3" id="myTabContent">
+								<div class="tab-pane fade active show" id="request_line" role="tabpanel" aria-labelledby="request_line-tab">
+									<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Quantity', 	  id: 'line_qty_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Raised',	  	  id: 'line_createdAt_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt_view'}) %>
+								</div>
+								<div class="tab-pane fade" id="dates" role="tabpanel" aria-labelledby="dates-tab">
+									<table class="table table-sm table-hover mx-auto w-100">
+										<thead id='table_header_lines' class="thead-dark">
+											<th class='w-30' onclick="sortTable(0,'tbl_line_dates')">Date</th>
+											<th class='w-40' onclick="sortTable(1,'tbl_line_dates')">Action</th>
+											<th class='w-30' onclick="sortTable(2,'tbl_line_dates')">User</th>
+											<th><i class='fas fa-search'></i></th>
+										</thead>
+										<tbody id="tbl_line_dates"></tbody>
+									</table>
+								</div>
+								<%- include(`${partials}/notes/line_note_table`, {line: 'request_lines'}) %>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% } %>
+	</div>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
 <script src='/js/addSize.js'></script>
@@ -78,50 +112,50 @@
 <script src="/js/stores/stock/list.js"></script>
 <script src="/js/stores/serials/list.js"></script>
 <script src="/js/search/select.js"></script>
-<script src="/js/stores/requests/show/request.js"></script>
-<script src="/js/stores/requests/show/lines.js"></script>
 <script src='/js/data/addFormListener.js'></script>
-<script src='/js/utils/select_sel_status.js'></script>
-<script src='/js/utils/getLineNotes.js'></script>
 <script>showTab('<%= tab %>')</script>
-<script>
-	function getRequest() {
-		get(
-			showRequest,
-			{
-				table: 'requests',
-				query: [`request_id=${path[3]}`],
-				permissions: {
-					edit: 	     <%= permissions.request_edit  		 || false %>,
-					delete:		 <%= permissions.request_delete		 || false %>,
-					line_add:	 <%= permissions.request_line_add	 || false %>,
-					line_delete: <%= permissions.request_line_delete || false %>
-				}
-			}
-		);
-	};
-</script>
+
+<script src="/js/stores/requests/show/request.js"></script>
 <script async>getRequest()</script>
-<script>
-    function getLines() {
-		get(
-			showLines,
-			{
-				table: 'request_lines',
-				query: [`request_id=${path[3]}`, sel_status.value],
-				permissions: {
-					delete:	   <%= permissions.request_line_delete || false %>,
-					line_edit: <%= permissions.request_line_edit   || false %>
-				}
-			}
-		);
-	};
-	getrequestlines = getLines;
-    document.querySelector('#reload').addEventListener('click', () => getLines());
-    document.querySelector('#reload').addEventListener('click', () => getRequest());
-    document.querySelector('#sel_status').addEventListener('change', () => getLines());
-</script>
-<script async>getLines()</script>
+
+<% if (permissions.access_request_lines) { %>
+	<script src="/js/stores/requests/show/lines.js"></script>
+	<script>let lines_loaded = false;</script>
+	<script async>getLines()</script>
+
+	<% if (permissions.access_notes) { %>
+		<script>
+            set_attribute({id: 'btn_request_lines_note_add', attribute: 'data-source', value: 'line_view'});
+			$('#mdl_line_view').on('show.bs.modal', function (event) {
+				set_attribute({id: 'btn_request_lines_note_add', attribute: 'data-_table', value: 'request_lines'});
+				set_attribute({id: 'btn_request_lines_note_add', attribute: 'data-_id',    value: event.relatedTarget.dataset.request_line_id});
+				getLineNotes({
+					line_id: 'request_lines',
+					table: 'request_lines',
+					id: event.relatedTarget.dataset.request_line_id
+				})
+			});
+		</script>
+	<% } %>
+	<% if (permissions.request_line_add) { %>
+		<script src="/js/stores/requests/show/lineAdd.js"></script>
+	<% } %>
+	<% if (permissions.request_line_edit) { %>
+		<script src="/js/stores/requests/show/lineEdit.js"></script>
+		<script>
+			let actions_interval = window.setInterval(
+				function () {
+					if (lines_loaded === true) {
+						getLineActions();
+						clearInterval(actions_interval);
+					}
+				},
+				500
+			);
+		</script>
+	<% } %>
+<% } %>
+
 <script>
     window.addEventListener( "load", () => {
 		<% if (permissions.request_delete) { %>
@@ -133,4 +167,4 @@
 		<% } %>
 	});
 </script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

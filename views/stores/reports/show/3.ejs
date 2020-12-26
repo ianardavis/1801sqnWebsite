@@ -1,19 +1,14 @@
-<% include ../../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/stores">Stores</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/stores/reports">Reports</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/stores/reports/3">Orderable Stock</a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<li class="nav-item">
+    <a class="nav-link" href="/stores">Stores</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/stores/reports">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/stores/reports/3">Orderable Stock</a>
+</li>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class="container mb-2">
     <div class="input-group mb-2">
         <div class="input-group-prepend">
@@ -101,7 +96,7 @@
         </div>
     </form>
 </section>
-<% include ../../../partials/foot/full %>
+<% include ../../../partials/foot/app %>
 <script>
     <% for (let [key, value] of Object.entries(totals)) { %>
         document.querySelector('#<%= key %>').innerText = <%= value %>
@@ -113,4 +108,4 @@
         sortTable(0, 'table<%= item.item_id %>')
     <% }) %>   
 </script>
-<% include ../../../partials/foot/htmlClose %>
+<% include ../../../partials/foot/elements/htmlClose %>

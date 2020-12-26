@@ -1,14 +1,9 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	       text: 'Canteen'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen/movements', text: 'Movements'}) %>
-            <%- include(`${partials}/reload`) %>
-            <%- include(`${partials}/spinner`, {id: 'movements'}) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen',	       text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen/movements', text: 'Movements'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'movements'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <%- include(`${partials}/inputs/select`, {title: 'Confirmed Movements', id: 'sel_confirmed', options: [{value:'', text: 'Include'},{value:'_status=1', text: 'Exclude', selected: true},{value:'_status=2', text: 'Only'}]}) %>
     <table class="table table-sm table-hover">
@@ -24,7 +19,7 @@
         </tbody>
     </table>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/movements/index/movements.js"></script>
 <script async>getMovements()</script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

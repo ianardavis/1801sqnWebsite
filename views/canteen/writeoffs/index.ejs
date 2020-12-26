@@ -1,21 +1,16 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	       text: 'Canteen'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen/writeoffs', text: 'Writeoffs'}) %>
-            <% if (permissions.writeoff_add) { %>
-                <li class="nav-item">
-                    <a class="nav-link confirm" id='btn_add_writeoff'>
-                        <i class="fas fa-plus"></i>
-                    </a>
-                </li>
-			<% } %>
-            <%- include(`${partials}/reload`) %>
-            <%- include(`${partials}/spinner`, {id: 'writeoffs'}) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen',	       text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen/writeoffs', text: 'Writeoffs'}) %>
+<% if (permissions.writeoff_add) { %>
+    <li class="nav-item">
+        <a class="nav-link confirm" id='btn_add_writeoff'>
+            <i class="fas fa-plus"></i>
+        </a>
+    </li>
+<% } %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'writeoffs'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <%- include(`${partials}/inputs/select`, {title: 'Complete Writeoffs', id: 'sel_status', options: [{value:'', text: 'Include'},{value:'_status=1', text: 'Exclude', selected: true},{value:'_status=2', text: 'Only'}]}) %>
     <table class="table table-sm table-hover">
@@ -49,7 +44,7 @@
         </div>
     <% } %>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/writeoffs/index/getWriteoffs.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
@@ -68,4 +63,4 @@
     });
 </script>
 <% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

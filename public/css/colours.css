@@ -70,29 +70,29 @@ body {
 .modal-content {
 	background-color: var(--main-bg-color)
 }
-.navbar-light .navbar-nav .nav-link {
-	 color: var(--main-bg-color);
- }
+
+
 .navbar-light .navbar-brand {
-    color: var(--alt-color);
-}
-.nav-link:hover {
-	background-color: var(--main-bg-color-dark);
-	color: var(--main-color) !important;
-}
-table, th, td, thead {
-	border: 1px solid var(--main-color);
-}
-.navbar-dark .navbar-nav .nav-link {
-	color: var(--main-color);
+    color: var(--main-bg-color);
 }
 .navbar-dark .navbar-text {
 	color: var(--main-color);
 }
-.stores .nav-link:hover {
-   background-color: var(--main-color);
-   color: var(--main-bg-color-dark) !important; 
+
+.nav-tabs .nav-item .nav-link:hover {
+	background-color: var(--main-bg-color-dark);
+	color: var(--main-color) !important;
 }
+.navbar-nav .nav-item .nav-link:hover {
+   background-color: var(--main-bg-color-dark);
+   color: var(--main-color); 
+}
+.navbar-nav .nav-item .nav-link {
+	background-color: var(--main-color);
+	color: var(--main-bg-color);
+}
+
+
 .pwd_warn {
 	background: #f95056;
 }
@@ -104,13 +104,9 @@ table, th, td, thead {
 	background-color: var(--main-color);
 	color: var(--main-bg-color-dark)
 }
-ul.navbar-nav li.nav-item a.nav-link {
-	color: var(--main-bg-color) !important;
-	background-color: var(--main-color);
-}
-.stores_nav {
-	color: var(--main-bg-color) !important;
-	background-color: var(--main-color);
+
+table, th, td, thead {
+	border: 1px solid var(--main-color);
 }
 .table {
 	color: var(--main-color);
@@ -126,6 +122,8 @@ ul.navbar-nav li.nav-item a.nav-link {
 .table-hover tbody tr:hover {
 	color: var(--main-color);
 }
+
+
 .input-group-text {
 	color: var(--alt-color2);
 	background-color: var(--main-color);

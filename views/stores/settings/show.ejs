@@ -1,16 +1,11 @@
-<% include ../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/stores">Stores</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/stores/settings">Settings</a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<li class="nav-item">
+    <a class="nav-link" href="/stores">Stores</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/stores/settings">Settings</a>
+</li>
+<%- include(`${partials}/head/navbar/close`) %>
 <section>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item">
@@ -403,9 +398,9 @@
         </div>
     </div>
 </section>
-<% include ../../partials/foot/full %>
+<% include ../../partials/foot/app %>
 <script src="/js/settings.js"></script>
 <script>
     showTab('<%= showtab %>');
 </script>
-<% include ../../partials/foot/htmlClose %>
+<% include ../../partials/foot/elements/htmlClose %>

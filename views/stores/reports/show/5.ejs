@@ -1,19 +1,14 @@
-<% include ../../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/stores">Stores</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/stores/reports">Reports</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/stores/reports/1">Stock - By Location</a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<li class="nav-item">
+    <a class="nav-link" href="/stores">Stores</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/stores/reports">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/stores/reports/1">Stock - By Location</a>
+</li>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class="mb-2">
     <div class="container">
         <form action="/stores/reports/5" method="POST">
@@ -69,10 +64,10 @@
         </form>
     </div>
 </section>
-<% include ../../../partials/foot/full %>
+<% include ../../../partials/foot/app %>
 <script>
     <% locations.forEach(location => { %>
         sortTable(1, 'table<%= location.location_id %>')
     <% }) %>  
 </script>
-<% include ../../../partials/foot/htmlClose %>
+<% include ../../../partials/foot/elements/htmlClose %>

@@ -1,13 +1,8 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-	<nav class='navbar navbar-expand navbar-light bg-nav'>
-		<ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
-			<%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
-			<%- include(`${partials}/breadcrumb`) %>
-		</ul>
-	</nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
 		<li class="nav-item dropdown">
@@ -38,8 +33,8 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/spinner`, {id: 'orders'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user_for', 	title: 'For', append: {a: {id: 'user_for_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user_by', 	title: 'By',  append: {a: {id: 'user_by_link',  type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_for', 	title: 'For', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_by', 	title: 'By',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: '_status', 	title: 'Status'}) %>
@@ -73,7 +68,7 @@
     </div>
 	<div id="div_modals"></div>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
 <script src="/js/stores/orders/show/order.js"></script>
@@ -138,4 +133,4 @@
 		<% } %>
     });
 </script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

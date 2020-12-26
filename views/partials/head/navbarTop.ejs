@@ -1,89 +1,16 @@
 <nav class="navbar sticky-top navbar-expand-sm navbar-light bg-light">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#pageNav" aria-controls="pageNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-        Menu
     </button>
     <div class="collapse navbar-collapse" id="pageNav">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item dropdown">
-                <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="navbarDropdown"
-                    role="button"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                >
-                    About Us
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="/whoWeAre">Who We Are</a>
-                    <a class="dropdown-item" href="/whatWeDo">What We Do</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/gallery"><strong>Gallery</strong></a>
-            </li>
-            <li class="nav-item dropdown">
-                <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="navbarDropdown"
-                    role="button"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                >
-                Join Us
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="/joinCadet">As a Cadet</a>
-                    <a class="dropdown-item" href="/joinStaff">As Staff</a>
-                </div>
-            </li>
         </ul>
         <ul class="navbar-nav ml-auto">
             <% if (!user) { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/login"><strong>Login</strong></a>
-                </li>
+                <%- include('./navbar/login') %>
             <% } else { %>
-                <li class="nav-item dropleft">
-                    <a class="nav-link dropdown-toggle" href="#" id="dd_notification" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <%- include(`${partials}/spinner`, {id: 'notifications', float_left: true}) %>
-                        <i class='fas fa-bell'></i>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dd_notification" id='ul_notifications'></ul>
-                </li>
-                <script src="/js/notifications/show.js"></script>
-                <script src="/js/get.js"></script>
-                <script src="/js/spinner.js"></script>
-                <script src="/js/data/XHRsend.js"></script>
-                <script>
-                    function getNotifications() {
-                        get(
-                            showNotifications,
-                            {
-                                db: path[1],
-                                table: 'notifications',
-                                query: []
-                            }
-                        );
-                    };
-                    // window.setInterval(getNotifications, 2000);
-                </script>
-                <script async>getNotifications()</script>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <%= user.rank._rank %> <%= user.full_name %>
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/stores/users/<%= user.user_id %>">Profile</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout">Logout</a>
-                    </div>
-                </li>
+                <%- include('./navbar/notifications') %>
+                <%- include('./navbar/user') %>
             <% } %>  
         </ul>
     </div>

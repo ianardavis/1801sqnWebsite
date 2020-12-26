@@ -1,14 +1,9 @@
-<%- include(`${partials}/head/full`) %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores/users', text: 'Users'}) %>
-            <%- include(`${partials}/breadcrumb`) %>
-            <%- include(`${partials}/reload`) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/users', text: 'Users'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -152,7 +147,7 @@
         <%- include(`${partials}/users/show/modals`) %>
     </div>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src="/js/getByUser.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
@@ -172,4 +167,4 @@
 <script async>getIssues()</script>
 <script async>getDraftIssues()</script>
 
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

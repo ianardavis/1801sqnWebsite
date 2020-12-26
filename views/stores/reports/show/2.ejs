@@ -1,19 +1,14 @@
-<% include ../../../partials/head/full %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/stores">Stores</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/stores/reports">Reports</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/stores/reports/2">Issues Due Back</a>
-            </li>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<li class="nav-item">
+    <a class="nav-link" href="/stores">Stores</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/stores/reports">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/stores/reports/2">Issues Due Back</a>
+</li>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class="mb-2">
     <div class="container">
         <table class="table table-sm table-hover">
@@ -49,5 +44,5 @@
         </table>
     </div>
 </section>
-<% include ../../../partials/foot/full %>
-<% include ../../../partials/foot/htmlClose %>
+<% include ../../../partials/foot/app %>
+<% include ../../../partials/foot/elements/htmlClose %>

@@ -1,14 +1,9 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen', text: 'Canteen'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen', text: 'Sales'}) %>
-            <%- include(`${partials}/breadcrumb`) %>
-			<%- include(`${partials}/reload`) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen', text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen', text: 'Sales'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',  spinner: 'sale'}) %>
@@ -50,7 +45,7 @@
         <% } %>
     </div>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/canteen/sales/show/getSale.js'></script>
@@ -63,4 +58,4 @@
     <script src='/js/canteen/sales/show/getPayments.js'></script>
     <script async>getPayments()</script>
 <% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

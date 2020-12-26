@@ -1,63 +1,58 @@
-<%- include(`${partials}/head/full`) %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-			<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
-        </ul>
-    </nav>
-</section>
-<section>
-	<% let cards = [] %>
-	<% if (permissions.access_suppliers) cards.push({href: 'stores/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
-	<% if (permissions.access_items)	 cards.push({href: 'stores/items', 	   title: 'Items', 	   image: 'tshirt'}) %>
-	<% if (permissions.access_users) { %>
-		<% cards.push({href: 'stores/users', title: 'Users', image: 'users'}) %>
-	<% } else { %>
-		<% cards.push({href: 'stores/users/' + user.user_id, title: 'Your Account', image: 'user'}) %>
-	<% } %>
-	<% if (permissions.access_requests) cards.push({href: '/stores/requests', title: 'Requests', image: 'question'}) %>
-	<% if (permissions.access_orders)   cards.push({href: '/stores/orders',	  title: 'Orders',   image: 'list'}) %>
-	<% if (permissions.access_demands)  cards.push({href: '/stores/demands',  title: 'Demands',  image: 'stream'}) %>
-	<% if (permissions.access_receipts) cards.push({href: '/stores/receipts', title: 'Receipts', image: 'receipt'}) %>
-	<% if (permissions.access_issues)   cards.push({href: '/stores/issues',   title: 'Issues',   image: 'address-card'}) %>
-	<% if (permissions.access_reports) 	cards.push({href: '/stores/reports',  title: 'Reports',  image: 'chart-pie'}) %>
-	<% if (permissions.access_settings) cards.push({href: '/stores/settings', title: 'Settings', image: 'cog'}) %>
-	<div class="row container m-auto p-0 menu">
-		<% cards.forEach(card => { %>
-			<div class="col-md-6 col-lg-4 col-xl-3">
-				<div class="card m-3">
-					<a href="<%= card.href %>">
-						<div class="card-header">
-							<h3><%= card.title %></h3>
-							<p id='subtitle<%= card.title %>'></p>
-						</div>
-						<div class="card-body">
-							<i class="fas fa-<%= card.image %> fa-5x"></i>
-						</div>
-					</a>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
+	<section>
+		<% let cards = [] %>
+		<% if (permissions.access_suppliers) cards.push({href: 'stores/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
+		<% if (permissions.access_items)	 cards.push({href: 'stores/items', 	   title: 'Items', 	   image: 'tshirt'}) %>
+		<% if (permissions.access_users) { %>
+			<% cards.push({href: 'stores/users', title: 'Users', image: 'users'}) %>
+		<% } else { %>
+			<% cards.push({href: 'stores/users/' + user.user_id, title: 'Your Account', image: 'user'}) %>
+		<% } %>
+		<% if (permissions.access_requests) cards.push({href: '/stores/requests', title: 'Requests', image: 'question'}) %>
+		<% if (permissions.access_orders)   cards.push({href: '/stores/orders',	  title: 'Orders',   image: 'list'}) %>
+		<% if (permissions.access_demands)  cards.push({href: '/stores/demands',  title: 'Demands',  image: 'stream'}) %>
+		<% if (permissions.access_receipts) cards.push({href: '/stores/receipts', title: 'Receipts', image: 'receipt'}) %>
+		<% if (permissions.access_issues)   cards.push({href: '/stores/issues',   title: 'Issues',   image: 'address-card'}) %>
+		<% if (permissions.access_reports) 	cards.push({href: '/stores/reports',  title: 'Reports',  image: 'chart-pie'}) %>
+		<% if (permissions.access_settings) cards.push({href: '/stores/settings', title: 'Settings', image: 'cog'}) %>
+		<div class="row container m-auto p-0 menu">
+			<% cards.forEach(card => { %>
+				<div class="col-md-6 col-lg-4 col-xl-3">
+					<div class="card m-3">
+						<a href="<%= card.href %>">
+							<div class="card-header">
+								<h3><%= card.title %></h3>
+								<p id='subtitle<%= card.title %>'></p>
+							</div>
+							<div class="card-body">
+								<i class="fas fa-<%= card.image %> fa-5x"></i>
+							</div>
+						</a>
+					</div>
 				</div>
-			</div>
-		<% }) %>
-	</div>
-</section>
-<%- include(`${partials}/foot/full`) %>
-<script src="/js/stores/index/show.js"></script>
-<% if (permissions.access_requests) { %>
-	<script async>getCount('requests', ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
-	<script async>getCount('requests', ['_status=2'], {text: 'Open',  colour: 'danger',  float: 'right'})</script>
-<% } %>
-<% if (permissions.access_orders) { %>
-	<script async>getCount('orders',   ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
-	<script async>getCount('orders',   ['_status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
-<% } %>
-<% if (permissions.access_demands) { %>
-	<script async>getCount('demands',  ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
-	<script async>getCount('demands',  ['_status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
-<% } %>
-<% if (permissions.access_receipts) { %>
-	<script async>getCount('receipts', ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
-<% } %>
-<% if (permissions.access_issues) { %>
-	<script async>getCount('issues',   ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
-<% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+			<% }) %>
+		</div>
+	</section>
+	<%- include(`${partials}/foot/app`) %>
+	<script src="/js/stores/index/show.js"></script>
+	<% if (permissions.access_requests) { %>
+		<script async>getCount('requests', ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
+		<script async>getCount('requests', ['_status=2'], {text: 'Open',  colour: 'danger',  float: 'right'})</script>
+	<% } %>
+	<% if (permissions.access_orders) { %>
+		<script async>getCount('orders',   ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
+		<script async>getCount('orders',   ['_status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
+	<% } %>
+	<% if (permissions.access_demands) { %>
+		<script async>getCount('demands',  ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
+		<script async>getCount('demands',  ['_status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
+	<% } %>
+	<% if (permissions.access_receipts) { %>
+		<script async>getCount('receipts', ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
+	<% } %>
+	<% if (permissions.access_issues) { %>
+		<script async>getCount('issues',   ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
+	<% } %>
+	<%- include(`${partials}/foot/elements/htmlClose`) %>

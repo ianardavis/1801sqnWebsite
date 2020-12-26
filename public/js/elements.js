@@ -33,12 +33,13 @@ function set_count(options = {}) {
 };
 function add_cell (row, options = {}) {
     let cell = row.insertCell();
-    if (options.sort)      cell.dataset.sort = options.sort;
+    if (options.sort)      cell.setAttribute('data-sort', options.sort);
     if (options.text)      cell.innerText = options.text || '';
     else if (options.html) cell.innerHTML = options.html || '';
     if (options.classes)   options.classes.forEach(e => cell.classList.add(e));
     if (options.append)    cell.appendChild(options.append);
-    if (options.id)        cell.id = options.id;
+    if (options.id)        cell.setAttribute('id', options.id);
+    if (options.data)      cell.setAttribute(`data-${options.data.field}`, options.data.value)
     if (options.ellipsis)  cell.classList.add('ellipsis1');
 };
 function show(id) {
@@ -294,27 +295,6 @@ function Spinner (options = {}) {
     this.e.classList.add('spinner-border', 'text-primary', 'hidden');
     this.e.setAttribute('role', 'status');
     this.e.innerHTML = '<span class="sr-only">Loading...</span>';
-};
-function Notification (options = {}) {
-    this.e = document.createElement('li');
-    this.e.classList.add('alert', 'my-1', 'p-1', 'notification');
-    if (options.urgency === 1) this.e.classList.add('alert-success')
-    else if (options.urgency === 2) this.e.classList.add('alert-warning')
-    else if (options.urgency === 3) this.e.classList.add('alert-danger')
-    else this.e.classList.add('alert-info')
-    this.e.setAttribute('role', 'alert', 'my-1', 'p-1', 'notification');
-    let heading = document.createElement('h4'),
-        date = document.createElement('span'),
-        body = document.createElement('p');
-    heading.classList.add('alert-heading');
-    heading.innerText = options.title || '';
-    date.classList.add('float-right', 'f-10');
-    date.innerText = options.date || '';
-    heading.appendChild(date);
-    body.classList.add('f-09', 'm-0');
-    body.innerText = options.text || '';
-    this.e.appendChild(heading);
-    this.e.appendChild(body);
 };
 function Input_Group (options = {}) {
     this.e = document.createElement('div')

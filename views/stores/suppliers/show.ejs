@@ -1,13 +1,8 @@
-<%- include(`${partials}/head/full`) %>
-<section class="mb-2">
-    <nav class="navbar navbar-expand navbar-light bg-nav">
-        <ul class="navbar-nav mr-auto">
-            <%- include(`${partials}/breadcrumb`, {href: '/stores',           text: 'Stores'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/stores/suppliers', text: 'Suppliers'}) %>
-            <%- include(`${partials}/breadcrumb`) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',           text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/suppliers', text: 'Suppliers'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -139,7 +134,7 @@
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <!-- Get/spinner/XHRsend/send from notes include -->
 <script src='/js/add.js'></script>
 <script src='/js/show.js'></script>
@@ -222,4 +217,4 @@
         <% } %>
     });
 </script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

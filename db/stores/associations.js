@@ -49,6 +49,8 @@ module.exports = function (m) {
     m.requests.hasMany(m.request_lines, {foreignKey: 'request_id', targetKey: 'request_id',                        as: 'lines'});
     m.request_lines.hasOne(   m.sizes,    {foreignKey: 'size_id',    sourceKey: 'size_id',     constraints: false});
     m.request_lines.belongsTo(m.requests, {foreignKey: 'request_id', targetKey: 'request_id'});
+    m.request_lines.hasMany(  m.request_line_actions, {foreignKey: 'request_line_id', targetKey: 'line_id', as: 'actions'});
+    m.request_line_actions.belongsTo(m.request_lines, {foreignKey: 'request_line_id', targetKey: 'line_id'});
     m.receipts.hasOne( m.suppliers,     {foreignKey: 'supplier_id', sourceKey: 'supplier_id', constraints: false});
     m.receipts.hasMany(m.receipt_lines, {foreignKey: 'receipt_id',  targetKey: 'receipt_id',  as: 'lines'});
     m.receipt_lines.hasOne(   m.stock,     {foreignKey: 'stock_id',    sourceKey: 'stock_id',    constraints: false});

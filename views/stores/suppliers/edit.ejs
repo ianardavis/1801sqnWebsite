@@ -1,4 +1,4 @@
-<%- include(`${partials}/head/head`) %>
+<%- include(`${partials}/head/app`) %>
 <body>
 <%- include(`${partials}/head/flash`) %>
 <section id='body'>
@@ -17,7 +17,7 @@
         <%- include(`${partials}/inputs/select_yes_no`, {id: '_stores',        title: 'RAF Stores?',   name: 'supplier[_stores]'}) %>
         <%- include(`${partials}/save_cancel`) %>
     </form>
-<%- include(`${partials}/foot/noNav`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src="/js/spinner.js"></script>
 <script src="/js/add.js"></script>
 <script src="/js/data/addFormListener.js"></script>
@@ -41,4 +41,4 @@
         );
     });
 </script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

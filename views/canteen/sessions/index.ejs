@@ -1,17 +1,12 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen/sessions', text: 'Sessions'}) %>
-			<% if (permissions.session_add) { %>
-				<%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_session'}) %>
-			<% } %>
-			<%- include(`${partials}/reload`) %>
-            <%- include(`${partials}/spinner`, {id: 'sessions'}) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen/sessions', text: 'Sessions'}) %>
+<% if (permissions.session_add) { %>
+    <%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_session'}) %>
+<% } %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'sessions'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
@@ -91,7 +86,7 @@
         </div>
     <% } %>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/send.js'></script>
 <script src='/js/canteen/sessions/index/getSessions.js'></script>
@@ -108,4 +103,4 @@
         );
     </script>
 <% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

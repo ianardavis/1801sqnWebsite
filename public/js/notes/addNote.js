@@ -17,7 +17,7 @@ window.addEventListener('load', function() {
         }
     );
     $('#mdl_note_add').on('show.bs.modal', function(event) {
-        if (event.relatedTarget.dataset.source) $(`#mdl_${event.relatedTarget.dataset.source.toLowerCase()}_view`).modal('hide');
+        if (event.relatedTarget.dataset.source) $(`#mdl_${event.relatedTarget.dataset.source.toLowerCase()}`).modal('hide');
         set_attribute({id: '_table', attribute: 'value', value: event.relatedTarget.dataset._table});
         set_attribute({id: '_id',    attribute: 'value', value: event.relatedTarget.dataset._id});
     });

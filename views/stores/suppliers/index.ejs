@@ -1,20 +1,17 @@
-<%- include(`${partials}/head/full`) %>
-<nav class="navbar navbar-expand navbar-light bg-nav">
-	<ul class="navbar-nav mr-auto">
-		<%- include(`${partials}/breadcrumb`, {href: '/stores', 			 text: 'Stores'}) %>
-		<%- include(`${partials}/breadcrumb`, {href: '/stores/suppliers', text: 'Suppliers'}) %>
-		<% if (permissions.supplier_add) { %>
-			<%- include(`${partials}/breadcrumb`, {href: 'javascript:add("suppliers")', text: '<i class="fas fa-plus"></i>'}) %>
-		<% } %>
-	</ul>
-</nav>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', 			 text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/suppliers', text: 'Suppliers'}) %>
+<% if (permissions.supplier_add) { %>
+	<%- include(`${partials}/breadcrumb`, {href: 'javascript:add("suppliers")', text: '<i class="fas fa-plus"></i>'}) %>
+<% } %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class="container">
 	<input class='form-control mt-1' type='text' id='supplierSearch' onkeyup='searchCards(this)' placeholder='Search by name...'>
 	<%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
 	<div class='menu row' id="suppliers">
 	</div>
 	</section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src='/js/add.js'></script>
 <script src='/js/spinner.js'></script>
 <script src='/js/data/XHRsend.js'></script>
@@ -26,4 +23,4 @@
 <script src='/js/stores/suppliers/index/getCounts.js'></script>
 <script src='/js/stores/suppliers/index/setDefault.js'></script>
 <script async>get(asCards, {table: 'suppliers', query: []})</script>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

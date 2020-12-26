@@ -1,17 +1,12 @@
-<%- include(`${partials}/head/full`) %>
-<section class='mb-2'>
-    <nav class='navbar navbar-expand navbar-light bg-nav'>
-        <ul class='navbar-nav mr-auto'>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
-            <%- include(`${partials}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
-			<% if (permissions.item_add) { %>
-				<%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', href: 'javascript:$("#mdl_add_item").modal("show")'}) %>
-			<% } %>
-            <%- include(`${partials}/reload`) %>
-            <%- include(`${partials}/spinner`, {id: 'items'}) %>
-        </ul>
-    </nav>
-</section>
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
+<% if (permissions.item_add) { %>
+    <%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', href: 'javascript:$("#mdl_add_item").modal("show")'}) %>
+<% } %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'items'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <%- include(`${partials}/inputs/select`, {title: 'Non-Current Items', id: '_current', options: [{value:'', text: 'Include', selected: true},{value:'_current=1', text: 'Exclude'},{value:'_current=0', text: 'Only'}]}) %>
 	<table class="table table-sm table-hover">
@@ -22,8 +17,7 @@
             <th class="w-10" onclick="sortTable(3, 'tbl_items')">Current</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
-        <tbody id="tbl_items">
-        </tbody>
+        <tbody id="tbl_items"></tbody>
     </table>
     <% if (permissions.item_add) { %>
         <div id='mdl_add_item' class="modal" tabindex="-1" role="dialog">
@@ -50,7 +44,7 @@
         </div>
     <% } %>
 </section>
-<%- include(`${partials}/foot/full`) %>
+<%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/items/index/getItems.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src="/js/data/send.js"></script>
@@ -72,4 +66,4 @@
         })
     </script>
 <% } %>
-<%- include(`${partials}/foot/htmlClose`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>
