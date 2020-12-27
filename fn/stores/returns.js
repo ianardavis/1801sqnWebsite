@@ -5,7 +5,7 @@ module.exports = function (m, returns) {
         return new Promise((resolve, reject) => {
             if (Number(options.return.from) === Number(options.return.user_id)) resolve({result: true, message: 'You cannot return items issued to yourself'})
             else {
-                m.returns.findOrCreate({
+                m.stores.returns.findOrCreate({
                     where: {
                         from: options.return.from,
                         _complete: 0,
@@ -19,17 +19,17 @@ module.exports = function (m, returns) {
     };
     returns.createLine = function (options = {}) {
         return new Promise((resolve, reject) => {
-            m.returns.findOne({where: {return_id: options.line.return_id}})
+            m.stores.returns.findOne({where: {return_id: options.line.return_id}})
             .then(_return => {
                 if      (!_return)          resolve({result: false, message: 'Return not found'})
                 else if (_return._complete) resolve({result: false, message: 'Lines can not be added to completed returns'})
                 else {
-                    m.return_lines.create(options.line)
+                    m.stores.return_lines.create(options.line)
                     .then(return_line => {
                         let actions = [];
-                        actions.push(increment({table: m.stock, id: return_line.stock_id, by: return_line._qty}));
+                        actions.push(increment({table: m.stores.stock, id: return_line.stock_id, by: return_line._qty}));
                         if (options.line.serial_id) {
-                            actions.push(m.serials.update({issue_line_id: null}, {where: {serial_id: options.line.serial_id}}));
+                            actions.push(m.stores.serials.update({issue_line_id: null}, {where: {serial_id: options.line.serial_id}}));
                         };
                         Promise.allSettled(actions)
                         .then(result => {

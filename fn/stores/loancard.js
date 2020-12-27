@@ -1,7 +1,7 @@
 module.exports = function (m, loancard) {
     loancard.create = function (options = {}) {
         return new Promise((resolve, reject) => {
-            m.issues.findOne({
+            m.stores.issues.findOne({
                 where: {issue_id: options.issue_id},
                 include: [
                     inc.users({as: '_to'}),
@@ -132,7 +132,7 @@ module.exports = function (m, loancard) {
                         doc.end();
                         writeStream.on('finish', () => {
                             fn.update(
-                                m.issues,
+                                m.stores.issues,
                                 { _filename: file },
                                 { issue_id: issue.issue_id}
                             )

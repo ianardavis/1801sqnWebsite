@@ -5,7 +5,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/sizes/:id',    permissions, allowed('access_sizes'),               (req, res) => res.render('stores/sizes/show'));
 
     app.get('/stores/get/sizes',    permissions, allowed('access_sizes', {send: true}), (req, res) => {
-        m.sizes.findAll({
+        m.stores.sizes.findAll({
             where: req.query,
             include: [
                 inc.items(),
@@ -19,7 +19,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/size',     permissions, allowed('access_sizes', {send: true}), (req, res) => {
-        m.sizes.findOne({
+        m.stores.sizes.findOne({
             where: req.query,
             include: [
                 inc.items(),
@@ -36,7 +36,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.post('/stores/sizes',       permissions, allowed('size_add',     {send: true}), (req, res) => {
         req.body.size._ordering_details = req.body.size._ordering_details.trim()
         req.body.size = nullify(req.body.size);
-        m.sizes.findOrCreate({
+        m.stores.sizes.findOrCreate({
             where: {
                 item_id: req.body.size.item_id,
                 _size: req.body.size._size
@@ -51,7 +51,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/sizes/:id',    permissions, allowed('size_edit',    {send: true}), (req, res) => {
-        m.sizes.update(
+        m.stores.sizes.update(
             req.body.size,
             {where: {size_id: req.params.id}}
         )
@@ -60,15 +60,15 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     app.delete('/stores/sizes/:id', permissions, allowed('size_delete',  {send: true}), (req, res) => {
-        m.stock.findOne({where: {size_id: req.params.id}})
+        m.stores.stock.findOne({where: {size_id: req.params.id}})
         .then(stock => {
             if (stock) res.error.send('Cannot delete a size whilst it has stock', res)
             else {
-                return m.nsns.findOne({where: {size_id: req.params.id}})
+                return m.stores.nsns.findOne({where: {size_id: req.params.id}})
                 .then(nsn => {
                     if (nsn) res.error.send('Cannot delete a size whilst it has NSNs assigned', res)
                     else {
-                        return m.sizes.destroy({where: {size_id: req.params.id}})
+                        return m.stores.sizes.destroy({where: {size_id: req.params.id}})
                         .then(result => res.send({result: true, message: 'Size deleted'}))
                         .catch(err => res.error.send(err, res));
                     };

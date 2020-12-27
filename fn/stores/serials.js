@@ -2,7 +2,7 @@ module.exports = function (m, serials) {
     serials.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.serial && options.size_id) {
-                return m.sizes.findOne({
+                return m.stores.sizes.findOne({
                     where: {size_id: options.size_id},
                     attributes: ['size_id', '_serials']
                 })
@@ -10,7 +10,7 @@ module.exports = function (m, serials) {
                     if      (!size)          resolve({success: false, message: 'Size not found'});
                     else if (!size._serials) resolve({success: false, message: 'This size does not have serials'});
                     else {
-                        return m.serials.findOrCreate({
+                        return m.stores.serials.findOrCreate({
                             where: {
                                 size_id: size.size_id,
                                 _serial: options.serial

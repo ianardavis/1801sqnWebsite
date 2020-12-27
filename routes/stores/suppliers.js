@@ -7,7 +7,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/suppliers/:id/edit', permissions, allowed('supplier_edit'),                  (req, res) => res.render('stores/suppliers/edit'));
 
     app.get('/stores/get/suppliers',      permissions, allowed('access_suppliers', {send: true}), (req, res) => {
-        m.suppliers.findAll({
+        m.stores.suppliers.findAll({
             where:      req.query,
             include:    [inc.accounts(), inc.files()]
         })
@@ -17,13 +17,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
 
     app.post('/stores/suppliers',         permissions, allowed('supplier_add',     {send: true}), (req, res) => {
         req.body.supplier = nullify(req.body.supplier);
-        m.suppliers.create(req.body.supplier)
+        m.stores.suppliers.create(req.body.supplier)
         .then(supplier => res.send({result: true, message: 'Supplier added'}))
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/suppliers/:id',      permissions, allowed('supplier_edit',    {send: true}), (req, res) => {
         if (req.body.supplier.account_id === '') {req.body.supplier.account_id = null};
-        m.suppliers.update(
+        m.stores.suppliers.update(
             req.body.supplier,
             {where: {supplier_id: req.params.id}}
         )
@@ -33,7 +33,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
 
     app.delete('/stores/suppliers/:id',   permissions, allowed('supplier_delete',  {send: true}), (req, res) => {
         if (req.params.id !== '1' && req.params.id !== '2') {
-            m.suppliers.destroy({where: {supplier_id: req.params.id}})
+            m.stores.suppliers.destroy({where: {supplier_id: req.params.id}})
             .then(result => {
                 settings.get({
                     name: 'default_supplier',

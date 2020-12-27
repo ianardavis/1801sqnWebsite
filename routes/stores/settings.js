@@ -4,16 +4,16 @@ module.exports = (app, allowed, inc, permissions, m) => {
     _options = () => {
         return [
             {table: 'categories'},
-            {table: 'groups', include: m.categories},
-            {table: 'types', include: m.groups},
-            {table: 'subtypes', include: m.types},
+            {table: 'groups', include: m.stores.categories},
+            {table: 'types', include: m.stores.groups},
+            {table: 'subtypes', include: m.stores.types},
             {table: 'genders'},
             {table: 'ranks'},
             {table: 'statuses'}
         ]
     };
     app.get('/stores/settings',                permissions, allowed('access_settings'),               (req, res) => {
-        m.settings.findAll()
+        m.stores.settings.findAll()
         .then(settings => {
             options.get(_options())
             .then(classes => {
@@ -28,7 +28,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     app.get('/stores/get/settings',            permissions, allowed('access_settings', {send: true}), (req, res) => {
-        m.settings.findAll({
+        m.stores.settings.findAll({
             where:      req.query,
             attributes: ['_name', '_value']
         })
@@ -41,7 +41,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         console.log(req.query);
         if (!req.query) res.send({result: false, message: 'No query specified'})
         else {
-            m.settings.update(
+            m.stores.settings.update(
                 req.body.setting,
                 {where: req.query}
             )
@@ -92,9 +92,9 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.delete('/stores/options/statuses/:id', permissions, allowed('option_delete',   {send: true}), (req, res) => deleteSetting('statuses', req, res));
     app.delete('/stores/options/:table/:id',   permissions, allowed('option_delete',   {send: true}), (req, res) => {
         let check_table;
-        if (req.params.table === 'categories')  check_table = m.groups
-        else if (req.params.table === 'groups') check_table = m.types
-        else if (req.params.table === 'types')  check_table = m.subtypes;
+        if (req.params.table === 'categories')  check_table = m.stores.groups
+        else if (req.params.table === 'groups') check_table = m.stores.types
+        else if (req.params.table === 'types')  check_table = m.stores.subtypes;
         if (req.params.table !== 'subtypes') {
             let where = {};
             where[req.singularise(req.params.table) + '_id'] = req.params.id;
@@ -113,7 +113,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         } else {
             let id_field = {};
             id_field[singularise(table) + '_id'] = req.params.id;
-            m.users.findOne({where: id_field})
+            m.users.users.findOne({where: id_field})
             .then(record => {
                 if (!record) _delete(table, req, res)
                 else {

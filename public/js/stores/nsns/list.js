@@ -15,7 +15,7 @@ getNSNs = (size_id, line_id, cell, nsn_id = null) => {
             }));
             let _nsns = new Select({
                 small: true,
-                name: `actions[line_id${line_id}][nsn_id]`,
+                name: `actions[${line_id}][nsn_id]`,
                 required: response.result.required,
                 options: nsn_options
             }).e;

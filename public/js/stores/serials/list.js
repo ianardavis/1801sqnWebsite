@@ -10,7 +10,7 @@ getSerials = (size_id, line_id, cell) => {
             response.serials.forEach(e => serials.push({value: e.serial_id, text: e._serial}));
             let _serials = new Select({
                 small: true,
-                name: `actions[line_id${line_id}][serial_id]`,
+                name: `actions[${line_id}][serial_id]`,
                 required: response.result.required,
                 options: serials
             }).e;

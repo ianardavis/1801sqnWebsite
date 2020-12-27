@@ -12,7 +12,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/notes/menu_add`) %>
-				<button id='btn_action' form='form_approve' class='dropdown-item confirm' disabled>Action Lines</button>
+				<button id='btn_action' form='form_action' class='dropdown-item confirm' disabled>Action Lines</button>
 				<form id='form_complete'>
 					<button id='btn_complete' class='dropdown-item confirm' disabled>Complete</button>
 				</form>
@@ -38,7 +38,7 @@
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
 			<% if (permissions.request_line_edit) { %>
-				<form id='form_approve'>
+				<form id='form_action'>
 			<% } %>
 			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}]}) %>
 			<table class="table table-sm table-hover mx-auto w-100">
@@ -114,15 +114,31 @@
 <script src="/js/search/select.js"></script>
 <script src='/js/data/addFormListener.js'></script>
 <script>showTab('<%= tab %>')</script>
-
 <script src="/js/stores/requests/show/request.js"></script>
 <script async>getRequest()</script>
-
+<% if (permissions.request_edit) { %>
+	<script src="/js/stores/requests/show/requestEdit.js"></script>
+	<script async>setRequestButtons()</script>
+	<script>
+		window.addEventListener( "load", () => {
+			addFormListener(
+				'form_complete',
+				'PUT',
+				`/stores/requests/${path[3]}`,
+				{
+					onComplete: [
+						getRequest,
+						getLines
+					]
+				}
+			);
+		});
+	</script>
+<% } %>
 <% if (permissions.access_request_lines) { %>
 	<script src="/js/stores/requests/show/lines.js"></script>
 	<script>let lines_loaded = false;</script>
 	<script async>getLines()</script>
-
 	<% if (permissions.access_notes) { %>
 		<script>
             set_attribute({id: 'btn_request_lines_note_add', attribute: 'data-source', value: 'line_view'});
@@ -131,8 +147,8 @@
 				set_attribute({id: 'btn_request_lines_note_add', attribute: 'data-_id',    value: event.relatedTarget.dataset.request_line_id});
 				getLineNotes({
 					line_id: 'request_lines',
-					table: 'request_lines',
-					id: event.relatedTarget.dataset.request_line_id
+					table: 	 'request_lines',
+					id:		 event.relatedTarget.dataset.request_line_id
 				})
 			});
 		</script>
@@ -143,28 +159,54 @@
 	<% if (permissions.request_line_edit) { %>
 		<script src="/js/stores/requests/show/lineEdit.js"></script>
 		<script>
-			let actions_interval = window.setInterval(
-				function () {
-					if (lines_loaded === true) {
-						getLineActions();
-						clearInterval(actions_interval);
+			function setActions() {
+				let actions_interval = window.setInterval(
+					function () {
+						if (lines_loaded === true) {
+							getLineActions();
+							clearInterval(actions_interval);
+						}
+					},
+					500
+				);
+			};
+			document.querySelector('#reload').addEventListener('click', setActions);
+		</script>
+		<script async>setActions()</script>
+		<script async>setLineButtons()</script>
+		<script>
+			window.addEventListener( "load", () => {
+				addFormListener(
+					'form_action',
+					'PUT',
+					`/stores/request_lines/${path[3]}`,
+					{
+						onComplete: [
+							getLines,
+							setActions,
+							setLineButtons
+						]
 					}
-				},
-				500
-			);
+				);
+			});
 		</script>
 	<% } %>
 <% } %>
-
-<script>
-    window.addEventListener( "load", () => {
-		<% if (permissions.request_delete) { %>
-			addFormListener('form_delete', 'DELETE', `/stores/requests/${path[3]}`, {onComplete: [getRequest, getLines]});
-		<% } %>
-		<% if (permissions.request_edit) { %>
-			addFormListener('form_complete', 'PUT', `/stores/requests/${path[3]}`,		{onComplete: [getRequest, getLines]});
-			addFormListener('form_approve',  'PUT', `/stores/request_lines/${path[3]}`, {onComplete: getLines});
-		<% } %>
-	});
-</script>
+<% if (permissions.request_delete) { %>
+	<script>
+		window.addEventListener( "load", () => {
+			addFormListener(
+				'form_delete',
+				'DELETE',
+				`/stores/requests/${path[3]}`,
+				{
+					onComplete: [
+						getRequest,
+						getLines
+					]
+				}
+			);
+		});
+	</script>
+<% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

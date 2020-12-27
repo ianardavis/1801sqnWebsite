@@ -6,7 +6,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/show'));
     
     app.get('/stores/get/receipts',         permissions, allowed('access_receipts',      {send: true}), (req, res) => {
-        m.receipts.findAll({
+        m.stores.receipts.findAll({
             where:      req.query,
             include:    [
                 inc.suppliers({as: 'supplier'}),
@@ -18,7 +18,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/receipt_lines',    permissions, allowed('access_receipt_lines', {send: true}), (req, res) => {
-        m.receipt_lines.findAll({
+        m.stores.receipt_lines.findAll({
             where:      req.query,
             include:    [
                 inc.serials({as: 'serial'}),
@@ -78,7 +78,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     app.delete('/stores/receipts/:id',      permissions, allowed('receipt_delete',       {send: true}), (req, res) => {
-        return m.receipts.findOne({
+        return m.stores.receipts.findOne({
             where: {receipt_id: req.params.id},
             attributes: ['receipt_id', '_status']
         })
@@ -86,7 +86,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             if (receipt._status !== 1) {
                 res.send({result: false, message: 'Only draft receipts can be cancelled'});
             } else {
-                return m.receipt_lines.findAll({
+                return m.stores.receipt_lines.findAll({
                     where: {
                         receipt_id: receipt.receipt_id,
                         _status: 1
@@ -97,7 +97,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     let actions = [];
                     lines.forEach(line => {
                         actions.push(
-                            m.notes.create({
+                            m.stores.notes.create({
                                 _id:     line.line_id,
                                 _table:  'receipt_lines',
                                 _note:   'Receipt cancelled',
@@ -107,7 +107,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         );
                     });
                     actions.push(
-                        m.receipt_lines.update(
+                        m.stores.receipt_lines.update(
                             {_status: 0},
                             {where: {
                                 receipt_id: receipt.receipt_id,
@@ -117,7 +117,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     );
                     actions.push(receipt.update({_status: 0}));
                     actions.push(
-                        m.notes.create({
+                        m.stores.notes.create({
                             _id:     receipt.receipt_id,
                             _table:  'receipts',
                             _note:   'Cancelled',
@@ -137,7 +137,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.send.error(err, res));
     });
     app.delete('/stores/receipt_lines/:id', permissions, allowed('receipt_line_delete',  {send: true}), (req, res) => {
-        return m.receipt_lines.findOne({
+        return m.stores.receipt_lines.findOne({
             where: {line_id: req.params.id},
             include: [inc.receipts({attributes: ['_status']})],
             attributes: ['line_id', '_status']
@@ -151,7 +151,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 return line.update({_status: 0})
                 .then(result => {
                     if (result) {
-                        m.notes.create({
+                        m.stores.notes.create({
                             _id: line.line_id,
                             _table: 'receipt_lines',
                             _note: 'Cancelled',

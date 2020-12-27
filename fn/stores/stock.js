@@ -18,16 +18,16 @@ module.exports = function (m, stock) {
     stock.adjust = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (String(options.adjustment._type).toLowerCase() === 'count') {
-                m.stock.findOne({where: {stock_id: options.adjustment.stock_id}})
+                m.stores.stock.findOne({where: {stock_id: options.adjustment.stock_id}})
                 .then(stock => {
                     if (stock) {
                         options.adjustment._variance = options.adjustment._qty - stock._qty
-                        m.stock.update(
+                        m.stores.stock.update(
                             {_qty: options.adjustment._qty},
                             {where: {stock_id: options.adjustment.stock_id}}
                         )
                         .then(results => {
-                            m.adjusts.create(options.adjustment)
+                            m.stores.adjusts.create(options.adjustment)
                             .then(results => resolve(results))
                             .catch(err => reject(err));
                         })
@@ -36,14 +36,14 @@ module.exports = function (m, stock) {
                 })
                 .catch(err => reject(err));
             } else if (String(options.adjustment._type).toLowerCase() === 'scrap') {
-                m.stock.findOne({where: {stock_id: options.adjustment.stock_id}})
+                m.stores.stock.findOne({where: {stock_id: options.adjustment.stock_id}})
                 .then(stock => {
                     if (stock) {
                         options.adjustment._variance = options.adjustment._qty - stock._qty
-                        m.stock.findByPk(options.adjustment.stock_id)
+                        m.stores.stock.findByPk(options.adjustment.stock_id)
                         .then(stock => stock.decrement('_qty', {by: options.adjustment._qty}))
                         .then(results => {
-                            m.adjusts.create(options.adjustment)
+                            m.stores.adjusts.create(options.adjustment)
                             .then(results => resolve(results))
                             .catch(err => reject(err));
                         })

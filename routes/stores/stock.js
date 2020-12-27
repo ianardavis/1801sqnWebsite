@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/get/stocks',   permissions, allowed('access_stock', {send: true}), (req, res) => {
-        m.stock.findAll({
+        m.stores.stock.findAll({
             where:   req.query,
             include: [inc.locations({as: 'location'})],
         })
@@ -8,7 +8,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/stock',    permissions, allowed('access_stock', {send: true}), (req, res) => {
-        m.stock.findOne({
+        m.stores.stock.findOne({
             where:   req.query,
             include: [
                 inc.sizes(),
@@ -20,19 +20,19 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     app.post('/stores/stock',       permissions, allowed('stock_add',    {send: true}), (req, res) => {
-        m.locations.findOrCreate({where: {_location: req.body._location}})
+        m.stores.locations.findOrCreate({where: {_location: req.body._location}})
         .then(([location, created]) => {
             req.body.stock.location_id = location.location_id;
-            return m.stock.create(req.body.stock)
+            return m.stores.stock.create(req.body.stock)
             .then(stock => res.send({result: true, message: 'Stock added'}))
             .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/stock/:id',    permissions, allowed('stock_edit',   {send: true}), (req, res) => {
-        m.stock.findOne({where: {stock_id: req.params.id}})
+        m.stores.stock.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
-            return m.locations.findOrCreate({where: {_location: req.body._location}})
+            return m.stores.locations.findOrCreate({where: {_location: req.body._location}})
             .then(([location, created]) => {
                 if (created) updateStockLocation(new_location.location_id, req.params.id, res)
                 else {
@@ -48,7 +48,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     
     app.delete('/stores/stock/:id', permissions, allowed('stock_delete', {send: true}), (req, res) => {
-        m.stock.findOne({where: {stock_id: req.params.id}})
+        m.stores.stock.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             if (stock._qty === 0) {
                 return stock.destroy()
@@ -63,7 +63,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     
     updateStockLocation = (location_id, stock_id, res) => {
-        m.stock.update(
+        m.stores.stock.update(
             {location_id: location_id},
             {where: {stock_id: stock_id}}
         )

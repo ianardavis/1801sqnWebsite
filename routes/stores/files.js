@@ -10,7 +10,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     });
 
     app.put('/stores/files/:id',      loggedIn, allowed('file_edit',    {send: true}), (req, res) => {
-        m.files.update(
+        m.stores.files.update(
             req.body.file,
             {where: {file_id: req.params.id}}
         )
@@ -26,9 +26,9 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 process.env.ROOT + `/public/res/files/${uploaded.filename}`,
                 err => {
                     if (err) throw err
-                    m.files.findOrCreate({where: {_path: uploaded.filename}})
+                    m.stores.files.findOrCreate({where: {_path: uploaded.filename}})
                     .then(([file, created]) => {
-                        return m.suppliers.update(
+                        return m.stores.suppliers.update(
                             {file_id: file.file_id},
                             {where: {supplier_id: req.body.supplier_id}}
                         )
@@ -42,11 +42,11 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     });
 
     app.delete('/stores/files/:id',   loggedIn, allowed('file_delete',  {send: true}), (req, res) => {
-        m.files.findOne({where: {file_id: req.params.id}})
+        m.stores.files.findOne({where: {file_id: req.params.id}})
         .then(file => {
             file.destroy()
             .then(result => {
-                m.suppliers.update(
+                m.stores.suppliers.update(
                     {file_id: null},
                     {where: {file_id: req.params.id}}
                 )

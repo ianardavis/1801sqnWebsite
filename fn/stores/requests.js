@@ -1,14 +1,14 @@
 module.exports = function (m, requests) {
     requests.create = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return m.users.findOne(
+            return m,users.users.findOne(
                 {where: {user_id: options.requested_for}},
                 {attributes: ['user_id']}
             )
             .then(user => {
                 if (!user) resolve({result: false, message: 'User not found'})
                 else {
-                    return m.requests.findOrCreate({
+                    return m.stores.requests.findOrCreate({
                         where: {
                             requested_for: user.user_id,
                             _status: 1
@@ -24,14 +24,14 @@ module.exports = function (m, requests) {
     };
     requests.createLine = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return m.sizes.findOne({
+            return m.stores.sizes.findOne({
                 where: {size_id: options.line.size_id},
                 attributes: ['size_id']
             })
             .then(size => {
                 if (!size) resolve({result: false, message: 'Size not found'})
                 else {
-                    return m.requests.findOne({
+                    return m.stores.requests.findOne({
                         where: {request_id: options.line.request_id},
                         attributes: ['_status', 'request_id']
                     })
@@ -39,7 +39,7 @@ module.exports = function (m, requests) {
                         if      (!request)              resolve({result: false, message: 'Request not found'})
                         else if (request._status !== 1) resolve({result: false, message: 'Lines can only be added to draft requests'})
                         else {
-                            return m.request_lines.findOrCreate({
+                            return m.stores.request_lines.findOrCreate({
                                 where: {
                                     request_id: request.request_id,
                                     size_id: size.size_id
@@ -54,7 +54,7 @@ module.exports = function (m, requests) {
                                 else {
                                     return line.increment('_qty', {by: options.line._qty})
                                     .then(result => {
-                                        return m.notes.create({
+                                        return m.stores.notes.create({
                                             _id: line.line_id,
                                             _table: 'request_lines',
                                             _system: 1,

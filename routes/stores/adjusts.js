@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, loggedIn, m) => {
     app.get('/stores/get/adjusts', loggedIn, allowed('access_adjusts', {send: true}), (req, res) => {
-        m.adjusts.findAll({
+        m.stores.adjusts.findAll({
             where:   req.query,
             include: [
                 inc.users(), 
@@ -13,7 +13,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
 
     app.post('/stores/adjusts',    loggedIn, allowed('adjust_add',     {send: true}), (req, res) => {
         if (req.body.adjust.stock_id && req.body.adjust._qty && req.body.adjust._type) {
-            m.stock.findOne({
+            m.stores.stock.findOne({
                 where: {stock_id: req.body.adjust.stock_id},
                 attributes: ['stock_id', 'size_id', '_qty']
             })
@@ -32,7 +32,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                     if (action) {
                         return action
                         .then(result => {
-                            return m.adjusts.create(req.body.adjust)
+                            return m.stores.adjusts.create(req.body.adjust)
                             .then(adjust => res.send({result: true, message: 'Adjustment added'}))
                             .catch(err => res.error.send(err, res));
                         })

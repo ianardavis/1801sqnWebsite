@@ -13,11 +13,7 @@ module.exports = (app, m) => {
     .forEach(function(file) {
         if (file === 'includes.js') {
 
-        } else if (file === 'users.js') {
-            require(`./${file}`)(app, allowed, inc, permissions, m);
-        } else {
-            require(`./${file}`)(app, allowed, inc, permissions, m.stores)
-        };
+        } else require(`./${file}`)(app, allowed, inc, permissions, m);
     });
 
     app.get('/stores',                   permissions, allowed('access_stores'), (req, res) => res.render('stores/index'));

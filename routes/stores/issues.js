@@ -6,7 +6,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
     app.get('/stores/issues',                 permissions, allowed('access_issues'),                                (req, res) => res.render('stores/issues/index'));
     app.get('/stores/issues/:id',             permissions, allowed('access_issues',                        {allow: true}), (req, res) => {
-        m.issues.findOne({
+        m.stores.issues.findOne({
             where: {issue_id: req.params.id},
             attributes: ['issued_to']
         })
@@ -20,7 +20,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/stores/issue_lines/:id',        permissions, allowed('access_issues',                        {allow: true}), (req, res) => {
-        m.issue_lines.findOne({
+        m.stores.issue_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['issue_id']
         })
@@ -28,7 +28,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/stores/issues/:id/download',    permissions, allowed('access_issues'),                                       (req, res) => {
-        m.issues.findOne({
+        m.stores.issues.findOne({
             where: {issue_id: req.params.id},
             attributes: ['issue_id', '_filename']
         })
@@ -45,7 +45,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     
     app.get('/stores/get/issue',              permissions, allowed('access_issues',             {send: true}),             (req, res) => {
-        m.issues.findOne({
+        m.stores.issues.findOne({
             where:      req.query,
             include:    [
                 inc.users({as: 'user_to'}), 
@@ -60,7 +60,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issues',             permissions, allowed('access_issues',             {send: true}),             (req, res) => {
-        m.issues.findAll({
+        m.stores.issues.findAll({
             where:      req.query,
             include:    [
                 inc.users({as: 'user_to'}), 
@@ -72,7 +72,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_lines',        permissions, allowed('access_issue_lines',        {send: true}),             (req, res) => {
-        m.issue_lines.findAll({
+        m.stores.issue_lines.findAll({
             where:      req.query,
             include:    [
                 inc.users(),
@@ -101,12 +101,12 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 include.push(inc.issue_line_returns({required: true}))
             };
         };
-        m.issue_lines.findAll({include: include})
+        m.stores.issue_lines.findAll({include: include})
         .then(issue_lines => res.send({result: true, issue_lines: issue_lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_line_returns', permissions, allowed('access_issue_line_returns', {send: true}),             (req, res) => {
-        m.issue_line_returns.findAll({
+        m.stores.issue_line_returns.findAll({
             where:   req.query,
             include: [
                 inc.issue_lines({as: 'issue_line'}),
@@ -120,14 +120,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     app.put('/stores/issues/:id',             permissions, allowed('issue_edit',                {send: true}),             (req, res) => {
         if (req.body.issue) {
-            m.issues.findOne({
+            m.stores.issues.findOne({
                 where: {issue_id: req.params.id},
                 include: [inc.issue_lines()],
                 attributes: ['issue_id']
             })
             .then(issue => {
                 if (issue.lines.length > 0) {
-                    m.issues.update(
+                    m.stores.issues.update(
                         req.body.issue,
                         {where: {issue_id: issue.issue_id}}
                     )
@@ -178,7 +178,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     app.delete('/stores/issues/:id',          permissions, allowed('issue_delete',              {send: true}),             (req, res) => {
-        m.issues.findOne({
+        m.stores.issues.findOne({
             where: {issue_id: req.params.id},
             include: [inc.issue_lines()]
         })
@@ -186,7 +186,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             if (issue._complete || issue._closed) res.error.send('Completed/closed issues can not be deleted');
             else {
                 if (issue.lines.filter(e => e.return_line_id).length === 0) {
-                    m.issue_lines.destroy({where: {issue_id: req.params.id}})
+                    m.stores.issue_lines.destroy({where: {issue_id: req.params.id}})
                     .then(result => {
                         issue.destroy()
                         .then(result => res.send({result: true, message: 'Issue deleted'}))
@@ -199,7 +199,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/issue_lines/:id',     permissions, allowed('issue_line_delete',         {send: true}),             (req, res) => { 
-        m.issue_lines.findOne({where: {line_id: req.params.id}})
+        m.stores.issue_lines.findOne({where: {line_id: req.params.id}})
         .then(line => {
             if (line.return_line_id) res.error.send('Returned issue lines can not be deleted')
             else {
@@ -212,7 +212,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     return_issue_line = (line, user_id) => new Promise((resolve, reject) => {
-        m.issue_lines.findOne({
+        m.stores.issue_lines.findOne({
             where: {line_id: line.line_id},
             include: [inc.issues()]
         })
@@ -221,7 +221,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 reject(new Error('Returned quantity greater than issued quantity'));
             } else {
                 returns.create({
-                    m: {returns: m.returns},
                     return: {
                         from: issue_line.issue.issued_to,
                         user_id: user_id
@@ -229,12 +228,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 })
                 .then(_return => {
                     returns.createLine({
-                        m: {
-                            returns: m.returns,
-                            return_lines: m.return_lines,
-                            stock: m.stock,
-                            serials: m.serials
-                        },
                         line: {
                             return_id: _return.return_id,
                             size_id: issue_line.size_id,
@@ -247,7 +240,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     })
                     .then(return_line_id => {
                         if (Number(line._qty) === Number(issue_line._qty)) {
-                            m.issue_lines.update(
+                            m.stores.issue_lines.update(
                                 {return_line_id: return_line_id},
                                 {where: {line_id: issue_line.line_id}}
                             )
@@ -257,13 +250,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             let actions = [];
                             actions.push(
                                 stock.decrement({
-                                    table: m.issue_lines,
+                                    table: m.stores.issue_lines,
                                     id: issue_line.line_id,
                                     by: line._qty
                                 })
                             );
                             actions.push(
-                                m.notes.create({
+                                m.stores.notes.create({
                                     _table: 'issues',
                                     _id: issue_line.issue_id,
                                     _note: 'Line partially returned: ' + issue_line._line,
@@ -282,7 +275,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                 return_line_id: return_line_id,
                                 user_id:        user_id
                             };
-                            actions.push(m.issue_lines.create(new_issue_line));
+                            actions.push(m.stores.issue_lines.create(new_issue_line));
                             Promise.allSettled(actions)
                             .then(results => {
                                 if (promiseResults(results)) resolve(return_line_id)

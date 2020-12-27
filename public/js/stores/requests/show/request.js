@@ -10,7 +10,6 @@ function getRequest() {
             set_innerText({id: 'updatedAt',     text: print_date(request.updatedAt, true)});
             set_innerText({id: '_status',       text: request_statuses[request._status]});
             set_breadcrumb({text: request.request_id, href: `/stores/requests/${request.request_id}`});
-            ['action', 'complete', 'sizeSelect', 'delete'].forEach(e => set_attribute({id: `btn_${e}`, attribute: 'disabled', value: true}));
         },
         {
             table: 'request',

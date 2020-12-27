@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/get/serials',    permissions, allowed('access_serials', {send: true}), (req, res) => {
-        m.serials.findAll({
+        m.stores.serials.findAll({
             where:   req.query,
             include: [inc.locations({as: 'location'})]
         })
@@ -8,7 +8,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/serial',     permissions, allowed('access_serials', {send: true}), (req, res) => {
-        m.serials.findOne({
+        m.stores.serials.findOne({
             where:   req.query,
             include: [inc.locations({as: 'location'})]
         })
@@ -19,9 +19,9 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.post('/stores/serials',       permissions, allowed('serial_add',     {send: true}), (req, res) => {
         if (!req.body._location) res.send({result: false, message: 'No location entered'})
         else {
-            m.locations.findOrCreate({where: {_location: req.body._location}})
+            m.stores.locations.findOrCreate({where: {_location: req.body._location}})
             .then(([location, created]) => {
-                return m.serials.create({...req.body.serial, ...{location_id: location.location_id}})
+                return m.stores.serials.create({...req.body.serial, ...{location_id: location.location_id}})
                 .then(serial => res.send({result: true, message: 'Serial saved'}))
                 .catch(err => res.error.send(err, res));
             })
@@ -30,9 +30,9 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     
     app.put('/stores/serials/:id',    permissions, allowed('serial_edit',    {send: true}), (req, res) => {
-        m.locations.findOrCreate({where: {_location: req.body._location}})
+        m.stores.locations.findOrCreate({where: {_location: req.body._location}})
         .then(([location, created]) => {
-            m.serials.update(
+            m.stores.serials.update(
                 {...req.body.serial, ...{location_id: location.location_id}},
                 {where: {serial_id: req.params.id}}
             )
@@ -43,7 +43,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
 
     app.delete('/stores/serials/:id', permissions, allowed('serial_delete',  {send: true}), (req, res) => {
-        m.serials.destroy({where: {serial_id: req.params.id}})
+        m.stores.serials.destroy({where: {serial_id: req.params.id}})
         .then(result => res.send({result: true, message: 'Serial deleted'}))
         .catch(err => res.error.send(err, res));
     });

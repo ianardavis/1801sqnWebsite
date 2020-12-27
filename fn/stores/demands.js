@@ -1,14 +1,14 @@
 module.exports = function (m, demands) {
     demands.create = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return m.suppliers.findOne({
+            return m.stores.suppliers.findOne({
                 where: {supplier_id: options.supplier_id},
                 attributes: ['supplier_id']
             })
             .then(supplier => {
                 if (!supplier) resolve({success: false, message: 'Supplier not found'})
                 else {
-                    return m.demands.findOrCreate({
+                    return m.stores.demands.findOrCreate({
                         where: {
                             supplier_id: supplier.supplier_id,
                             _status: 1
@@ -27,7 +27,7 @@ module.exports = function (m, demands) {
     };
     demands.createLine = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return m.sizes.findOne({
+            return m.stores.sizes.findOne({
                 where: {size_id: options.size_id},
                 attributes: ['size_id', 'supplier_id', '_demand_page', '_demand_cell']
             })
@@ -36,7 +36,7 @@ module.exports = function (m, demands) {
                 else if (!size._demand_page || size._demand_page === '') resolve({success: false, message: 'No demand page for this size'})
                 else if (!size._demand_cell || size._demand_cell === '') resolve({success: false, message: 'No demand cell for this size'})
                 else {
-                    return m.demands.findOne({
+                    return m.stores.demands.findOne({
                         where: {demand_id: options.demand_id},
                         attributes: ['demand_id', 'supplier_id', '_status']
                     })
@@ -45,7 +45,7 @@ module.exports = function (m, demands) {
                         else if (demand._status !== 1)                    resolve({success: false, message: 'Lines can only be added to draft demands'})
                         else if (size.supplier_id !== demand.supplier_id) resolve({success: false, message: 'Size is not from this supplier'})
                         else {
-                            return m.demand_lines.findOrCreate({
+                            return m.stores.demand_lines.findOrCreate({
                                 where: {
                                     demand_id: demand.demand_id,
                                     size_id: size.size_id
@@ -60,7 +60,7 @@ module.exports = function (m, demands) {
                                 else {
                                     return line.increment('_qty', {by: options._qty})
                                     .then(result => {
-                                        return m.notes.create({
+                                        return m.stores.notes.create({
                                             _id: line.line_id,
                                             _table: 'demand_lines',
                                             _note: `Incremented by ${options._qty}${options.note || ''}`,

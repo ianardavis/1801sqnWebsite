@@ -17,16 +17,24 @@ function getLineActions() {
                     div_action  = document.createElement('div'),
                     div_details = document.createElement('div'),
                     _status = new Select({
-                        name: `actions[line_id${line.line_id}][_status]`,
+                        name: `actions[${line.line_id}][_status]`,
                         id:   `sel_${line.line_id}`,
                         small: true,
                         options: opts
                     }).e;
                 _status.addEventListener("change", function () {
-                    if (this.value === '3') showActions(line.size_id, line.line_id)
-                    else {
-                        clearElement(`action_${line.line_id}`);
-                        clearElement(`details_${line.line_id}`);
+                    clearElement(`action_${line.line_id}`);
+                    clearElement(`details_${line.line_id}`);
+                    if (this.value === '0' || this.value === '4') {
+                        div_action.appendChild(
+                            new Input({
+                                type: 'hidden',
+                                name: `actions[${line.line_id}][line_id]`,
+                                value: line.line_id
+                            }).e
+                        );
+                    } else if (this.value === '3') {
+                        showActions(line.size_id, line.line_id);
                     };
                 });
                 div_action.setAttribute( 'id', `action_${line.line_id}`);
@@ -44,10 +52,17 @@ function getLineActions() {
         );
     });
 };
-function showActions (size_id, line_id) {
+function showActions(size_id, line_id) {
     let _cell = document.querySelector(`#action_${line_id}`);
     if (_cell) {
         _cell.innerHTML = '';
+        _cell.appendChild(
+            new Input({
+                type: 'hidden',
+                name: `actions[${line_id}][line_id]`,
+                value: line_id
+            }).e
+        );
         add_spinner(_cell, {id: line_id});
         get(
             function (size, options) {
@@ -56,7 +71,7 @@ function showActions (size_id, line_id) {
                 if (size._issueable) opts.push({value: 'Issue', text: 'Issue'});
                 let _action = new Select({
                     small: true,
-                    name: `actions[line_id${line_id}][_action]`,
+                    name: `actions[${line_id}][_action]`,
                     required: true,
                     options: opts
                 }).e;
@@ -76,4 +91,20 @@ function showActions (size_id, line_id) {
             }
         );
     };
+};
+function setLineButtons() {
+    get(
+        function(request, options) {
+            ['action', 'sizeSelect'].forEach(e => set_attribute({id: `btn_${e}`, attribute: 'disabled', value: true}));
+            if (request._status === 1) {
+                remove_attribute({id: `btn_sizeSelect`, attribute: 'disabled'});
+            } else if (request._status === 2) {
+                remove_attribute({id: 'btn_action',     attribute: 'disabled'});
+            };
+        },
+        {
+            table: 'request',
+            query: [`request_id=${path[3]}`]
+        }
+    );
 };

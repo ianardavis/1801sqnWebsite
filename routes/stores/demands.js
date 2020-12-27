@@ -10,7 +10,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     app.get('/stores/demands',              loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/index'));
     app.get('/stores/demands/:id',          loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/show'));
     app.get('/stores/demands/:id/download', loggedIn, allowed('access_demands'),                    (req, res) => {
-        m.demands.findOne({
+        m.stores.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['_filename']
         })
@@ -22,7 +22,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     });
 
     app.get('/stores/get/demand',           loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
-        m.demands.findOne({
+        m.stores.demands.findOne({
             where: req.query,
             include: [
                 inc.demand_lines(),
@@ -32,12 +32,12 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .then(demand => {
             if (demand) res.send({result: true, demand: demand})
-            else       res.send({result: false, message: 'Demand not found'});
+            else        res.send({result: false, message: 'Demand not found'});
         })
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/demands',          loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
-        m.demands.findAll({
+        m.stores.demands.findAll({
             where:   req.query,
             include: [
                 inc.demand_lines(),
@@ -49,7 +49,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/demand_lines',     loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
-        m.demand_lines.findAll({
+        m.stores.demand_lines.findAll({
             where:   req.query,
             include: [
                 inc.sizes({stock: true}),
@@ -86,7 +86,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     });
 
     app.put('/stores/demands/:id',          loggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
-        m.demands.findOne({
+        m.stores.demands.findOne({
             where: {demand_id: req.params.id},
             include: [inc.suppliers({as: 'supplier', file: true})],
             attributes: ['demand_id', '_status']
@@ -98,7 +98,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                     let actions = [];
                     actions.push(demand.update({_status: 2}));
                     actions.push(
-                        m.demand_lines.update(
+                        m.stores.demand_lines.update(
                             {_status: 2},
                             {where: {
                                 demand_id: demand.demand_id,
@@ -107,7 +107,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                         )
                     );
                     actions.push(
-                        m.notes.create({
+                        m.stores.notes.create({
                             _table:  'demands',
                             _id:     demand.demand_id,
                             _note:   'Completed',
@@ -138,7 +138,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             } else if (Number(req.body._status) === 3) {
                 if (demand._status !== 2) res.send_error('Only complete demands can be completed', res)
                 else {
-                    m.demand_lines.findAll({
+                    m.stores.demand_lines.findAll({
                         where: {
                             demand_id: demand.demand_id,
                             _status: {[op.or]: [1, 2]}
@@ -150,7 +150,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                             let actions = [];
                             actions.push(demand.update({_status: 3}));
                             actions.push(
-                                m.demand_lines.update(
+                                m.stores.demand_lines.update(
                                     {_status: 3},
                                     {where: {
                                         demand_id: demand.demand_id,
@@ -159,7 +159,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                                 )
                             );
                             actions.push(
-                                m.notes.create({
+                                m.stores.notes.create({
                                     _table:  'demands',
                                     _id:     demand.demand_id,
                                     _note:   'Closed',
@@ -178,7 +178,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/demand_lines/:id',     loggedIn, allowed('receipt_add',         {send: true}), (req, res) => {
-        m.demands.findOne({
+        m.stores.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['demand_id', 'supplier_id']
         })
@@ -190,19 +190,19 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                     receives.push(line);
                 } else if (line._status === 0) {
                     actions.push(
-                        m.demand_lines.update(
+                        m.stores.demand_lines.update(
                             {_status: 0},
                             {where: {line_id: line.line_id}}
                         )
                     );
                     actions.push(
-                        m.order_lines.update(
+                        m.stores.order_lines.update(
                             {demand_line_id: null},
                             {where: {demand_line_id: line.line_id}}
                         )
                     );
                     actions.push(
-                        m.notes.create({
+                        m.stores.notes.create({
                             _id:     demand.demand_id,
                             _table:  'demands',
                             _note:   'Line ' + line.line_id + ' cancelled',
@@ -256,22 +256,22 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     });
     
     app.delete('/stores/demands/:id',       loggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
-        m.demand_lines.destroy({where: {demand_id: req.params.id}})
+        m.stores.demand_lines.destroy({where: {demand_id: req.params.id}})
         .then(result => {
-            m.demands.destroy({where: {demand_id: req.params.id}})
+            m.stores.demands.destroy({where: {demand_id: req.params.id}})
             .then(result => res.send({result: true, message: 'Demand deleted'}))
             .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/demand_lines/:id',  loggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => {
-        m.demand_lines.findOne({where: {line_id: req.params.id}})
+        m.stores.demand_lines.findOne({where: {line_id: req.params.id}})
         .then(line => {
             line.update({_status: 0})
             .then(result => {
-                m.notes.create({
+                m.stores.notes.create({
                     _table:  'demands',
-                    _note:   'Line ' + req.params.id + ' cancelled',
+                    _note:   `Line ${req.params.id} cancelled`,
                     _id:     line.demand_id,
                     user_id: req.user.user_id,
                     system:  1
@@ -286,7 +286,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
 
     function raise_demand(demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return m.demands.findOne({
+            return m.stores.demands.findOne({
                 where: {demand_id: demand_id},
                 include: [
                     inc.demand_lines({
@@ -333,7 +333,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                                     .then(cover_sheet_result => {
                                         return writeItems(create_file_result.file, correlate_results.items)
                                         .then(items_result => {
-                                            return m.notes.create({
+                                            return m.stores.notes.create({
                                                 _id: demand_id,
                                                 _table: 'demands',
                                                 _note: 'Demand file created',
@@ -384,7 +384,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                     });
                 } else {
                     order_actions.push(
-                        m.order_line_actions.findAll({
+                        m.stores.order_line_actions.findAll({
                             where: {
                                 _action: 'Demand',
                                 action_line_id: line.line_id
@@ -552,7 +552,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     
     function receive_demand_line (line, receipt_id, user_id) {
         return new Promise((resolve, reject) => {
-            m.demand_lines.findOne({
+            m.stores.demand_lines.findOne({
                 where: {line_id: line.line_id},
                 attributes: ['size_id', '_qty']
             })
@@ -569,7 +569,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 .then(receipt_line_id => {
                     let actions = [];
                     actions.push(
-                        m.demand_lines.update(
+                        m.stores.demand_lines.update(
                             {
                                 receipt_line_id: receipt_line_id,
                                 _status:         3
@@ -578,18 +578,15 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                         )
                     );
                     actions.push(
-                        m.order_lines.update(
+                        m.stores.order_lines.update(
                             {receipt_line_id: receipt_line_id},
                             {where: {demand_line_id: line.line_id}}
                         )
                     );
                     Promise.allSettled(actions)
                     .then(results => {
-                        if (promiseResults(results)) {
-                            resolve(receipt_line_id);
-                        } else {
-                            reject(new Error(`'Receipt created: ${receipt_line_id}, some lines failed updating order and demand lines`));
-                        }
+                        if (promiseResults(results)) resolve(receipt_line_id);
+                        else reject(new Error(`'Receipt created: ${receipt_line_id}, some lines failed updating order and demand lines`));
                     });
                 })
                 .catch(err => reject(err));

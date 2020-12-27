@@ -7,16 +7,16 @@ module.exports = (app, allowed, inc, permissions, m) => {
 
     app.get('/stores/reports/:id', permissions, allowed('access_reports'), (req, res) => {
         if (Number(req.params.id) === 1) {
-            m.stock.findAll({
+            m.stores.stock.findAll({
                 where: {_qty: {[op.lt]: 0}},
                 include: [
-                    m.locations,
+                    m.stores.locations,
                     inc.sizes()
             ]})
             .then(stock => res.render('stores/reports/show/1', {stock: stock}))
             .catch(err => res.error.redirect(err, req, res));
         } else if (Number(req.params.id) === 2) {
-            m.issues.findAll({
+            m.stores.issues.findAll({
                 where: {
                     _date_due: {[op.lte]: Date.now()},
                     _complete: 0
@@ -29,33 +29,33 @@ module.exports = (app, allowed, inc, permissions, m) => {
             .then(issues => res.render('stores/reports/show/2', {issues: issues}))
             .catch(err => res.error.redirect(err, req, res));
         } else if (Number(req.params.id) === 3) {
-            m.items.findAll({
+            m.stores.items.findAll({
                 include: [{
-                    model: m.sizes,
+                    model: m.stores.sizes,
                     where: {_orderable: 1},
                     include: [
-                        m.stock,
+                        m.stores.stock,
                         inc.suppliers({where: {supplier_id: Number(req.query.supplier_id) || 1}}),
                         inc.order_lines({as: 'orders', where: {demand_line_id: null}}),
                         inc.request_lines({as: 'requests', where: {_status: 'Pending'}})
             ]}]})
             .then(items => {
-                m.suppliers.findAll()
+                m.stores.suppliers.findAll()
                 .then(suppliers => res.render('stores/reports/show/3', {items: items, suppliers: suppliers, supplier_id: req.query.supplier_id || 1}))
                 .catch(err => res.error.redirect(err, req, res));
             })
             .catch(err => res.error.redirect(err, req, res));
         } else if (Number(req.params.id) === 4) {
-            m.items.findAll({
+            m.stores.items.findAll({
                 include: [{
-                    model: m.sizes,
+                    model: m.stores.sizes,
                     include: [inc.stock({size: true})]
                 }]
             })
             .then(items => res.render('stores/reports/show/4', {items: items}))
             .catch(err => res.error.redirect(err, req, res));
         } else if (Number(req.params.id) === 5) {
-            m.locations.findAll({
+            m.stores.locations.findAll({
                 include: [inc.stock({size: true})]
             })
             .then(locations => {
@@ -114,10 +114,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 let stock_id = Number(String(key).replace('stock_id_', ''));
                 actions.push(
                     stock.adjust({
-                        m: {
-                            stock: m.stock,
-                            adjusts: m.adjusts
-                        },
                         adjustment: {
                             stock_id: stock_id,
                             _type:    'Count',

@@ -51,12 +51,6 @@ function getLines() {
         }
     );
 };
-window.addEventListener('load', function () {
-    document.querySelector('#reload').addEventListener('click', getLines);
-    document.querySelector('#sel_status').addEventListener('change', getLines);
-    $('#mdl_line_view').on('show.bs.modal', showLine);
-    $('#mdl_line_view').on('show.bs.modal', showLineActions);
-});
 function showLine(event) {
     get(
         function (request_line, options) {
@@ -114,3 +108,9 @@ function showLineActions(event) {
         }
     );
 };
+window.addEventListener('load', function () {
+    document.querySelector('#reload').addEventListener('click', getLines);
+    document.querySelector('#sel_status').addEventListener('change', getLines);
+    $('#mdl_line_view').on('show.bs.modal', showLine);
+    $('#mdl_line_view').on('show.bs.modal', showLineActions);
+});

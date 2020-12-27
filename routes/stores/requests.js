@@ -1,13 +1,14 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
     let requests = {}, orders = {}, issues = {},
-    promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`);
+    promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`),
+    counter        = require(`${process.env.ROOT}/fn/utils/counter`);
     require(`${process.env.ROOT}/fn/stores/requests`)(m, requests);
     require(`${process.env.ROOT}/fn/stores/orders`)  (m, orders);
     require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
     app.get('/stores/requests',                 permissions, allowed('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
     app.get('/stores/requests/:id',             permissions, allowed('access_requests',     {allow: true}),             (req, res) => {
-        m.requests.findOne({
+        m.stores.requests.findOne({
             where: {request_id: req.params.id},
             attributes: ['requested_for', '_status']
         })
@@ -20,7 +21,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     app.get('/stores/request_lines/:id',        permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
-        m.request_lines.findOne({
+        m.stores.request_lines.findOne({
             where: {line_id: req.params.id},
             attribute: ['request_id']
         })
@@ -33,7 +34,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     
     app.get('/stores/get/requests',             permissions, allowed('access_requests',     {allow: true, send: true}), (req, res) => {
         if (!allowed) req.query.requested_for = req.user.user_id;
-        m.requests.findAll({
+        m.stores.requests.findAll({
             where: req.query,
             include: [
                 inc.request_lines(),
@@ -46,7 +47,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     app.get('/stores/get/request',              permissions, allowed('access_requests',     {allow: true, send: true}), (req, res) => {
         if (!allowed) req.query.requested_for = req.user.user_id;
-        m.requests.findOne({
+        m.stores.requests.findOne({
             where: req.query,
             include: [
                 inc.request_lines(),
@@ -58,7 +59,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request_lines',        permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
-        m.request_lines.findAll({
+        m.stores.request_lines.findAll({
             where:      req.query,
             include:    [
                 inc.sizes(),
@@ -70,7 +71,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request_line',         permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
-        m.request_lines.findOne({
+        m.stores.request_lines.findOne({
             where:      req.query,
             include:    [
                 inc.sizes(),
@@ -84,7 +85,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request_line_actions', permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
-        m.request_line_actions.findAll({
+        m.stores.request_line_actions.findAll({
             where:      req.query,
             include:    [
                 inc.request_lines({as: 'request_line'}),
@@ -95,7 +96,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request_lines/:id',    permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
-        m.request_lines.findAll({
+        m.stores.request_lines.findAll({
             where: req.query,
             include: [
                 inc.sizes(),
@@ -132,7 +133,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     
     app.put('/stores/requests/:id',             permissions, allowed('request_edit',        {allow: true, send: true}), (req, res) => {
-        m.requests.findOne({
+        m.stores.requests.findOne({
             where: {request_id: req.params.id},
             include: [inc.request_lines({where: {_status: 1}, attributes: ['line_id']})],
             attributes: ['requested_for', '_status', 'request_id']
@@ -150,7 +151,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 let actions = [];
                 actions.push(request.update({_status: 2}));
                 actions.push(
-                    m.request_lines.update(
+                    m.stores.request_lines.update(
                         {_status: 2},
                         {where:{
                             request_id: request.request_id,
@@ -159,7 +160,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     )
                 );
                 actions.push(
-                    m.notes.create({
+                    m.stores.notes.create({
                         _id:     req.params.id,
                         _table:  'requests',
                         _note:   'Completed',
@@ -175,131 +176,116 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/request_lines/:id',        permissions, allowed('request_line_edit',                {send: true}), (req, res) => {
-        m.requests.findOne({
+        m.stores.requests.findOne({
             where: { request_id: req.params.id },
             attributes: ['request_id', 'requested_for' , '_status']
         })
         .then(request => {
-            if (request.requested_for === req.user.user_id) {
-                res.error.send('You can not approve requests for yourself', res);
-            } else if (request._status !== 2) {
-                res.error.send('This request is not Open', res);
-            } else {
-                let _orders = [], _issues = [], actions = [];
-                for (let [lineID, line] of Object.entries(req.body.actions)) {
-                    line.line_id = Number(String(lineID).replace('line_id', ''));
-                    if (line._status === '3') { // If Approved
-                        if (line._action === 'Order') _orders.push(line)
-                        else if (line._action === 'Issue') {
-                            line.offset = _issues.length;
-                            _issues.push(line);
-                        }
-                    } else if (line._status === '4') { // If Declined
-                        // Update request line to declined
-                        actions.push(
-                            m.request_lines.update(
-                                {
-                                    _status: 4,
-                                    _date: Date.now(),
-                                    approved_by: req.user.user_id
-                                },
-                                {where: {line_id: line.line_id}}
-                            )
-                        );
-                    };
-                };
+            if      (request.requested_for === req.user.user_id) res.send({result: false, message: 'You can not approve requests for yourself'})
+            else if (request._status !== 2)                      res.send({result: false, message: 'This request is not open'})
+            else {
+                let actions = [],
+                    _cancels  = req.body.actions.filter(e => e._status === '0'),
+                    _issues   = req.body.actions.filter(e => e._status === '3' && e._action === 'Issue'),
+                    _orders   = req.body.actions.filter(e => e._status === '3' && e._action === 'Order'),
+                    _declines = req.body.actions.filter(e => e._status === '4');
+                _cancels.forEach(e => {
+                    actions.push(
+                        m.stores.request_line_actions.create({
+                            request_line_id: e.line_id,
+                            _action: 'Cancelled',
+                            user_id: req.user.user_id
+                        })
+                    );
+                    actions.push(
+                        m.stores.request_lines.update(
+                            {_status: 0},
+                            {where: {line_id: e.line_id}}
+                        )
+                    );
+                });
                 if (_orders.length > 0) {
-                    actions.push(new Promise((resolve, reject) => {
-                        return orders.create({
-                            m: {
-                                orders: m.orders,
-                                users: m.users
-                            },
-                            ordered_for: request.requested_for,
-                            user_id:     req.user.user_id
+                    actions.push(
+                        new Promise((resolve, reject) => {
+                            orders.create(
+                                request.requested_for,
+                                req.user.user_id
+                            )
+                            .then(result => {
+                                if (result.success) {
+                                    _orders.forEach(i => {
+                                        let order_actions = [];
+                                        _orders.forEach(_order => {
+                                            order_actions.push(
+                                                order_request_line(
+                                                    result.order_id,
+                                                    _order.line_id,
+                                                    req.user.user_id
+                                                )
+                                            );
+                                        });
+                                        return Promise.all(order_actions)
+                                        .then(results => resolve({success: true, message: 'Orders processed', results: results}))
+                                        .catch(err => reject(err));
+                                    });
+                                } else resolve({success: false, message: result.message});
+                            })
+                            .catch(err => reject(err));
                         })
-                        .then(result => {
-                            if (result.success) {
-                                let order_actions = [];
-                                _orders.forEach(_order => {
-                                    order_actions.push(
-                                        order_request_line(
-                                            result.order.order_id,
-                                            _order.line_id,
-                                            req.user.user_id
-                                        )
-                                    );
-                                });
-                                return Promise.all(order_actions)
-                                .then(results => {
-                                    resolve({
-                                        success: true,
-                                        message: 'Orders processed',
-                                        results: results
-                                    })
-                                })
-                                .catch(err => reject(err));
-                            } else {
-                                resolve({
-                                    success: false,
-                                    message: result.message
-                                })
-                            };
-                        })
-                        .catch(err => reject(err));
-                    }));
+                    );
                 };
                 if (_issues.length > 0) {
-                    actions.push(new Promise((resolve, reject) => {
-                        return issues.create({
-                            m: {
-                                issues: m.issues,
-                                users: m.users
-                            },
-                            issued_to: request.requested_for,
-                            user_id:   req.user.user_id
-                        })
+                    actions.push(
+                        issues.create(
+                            request.requested_for,
+                            req.user.user_id
+                        )
                         .then(result => {
                             if (result.success) {
-                                return m.issue_lines.count({where: {issue_id: result.issue.issue_id}})
+                                return m.stores.issue_lines.count({where: {issue_id: result.issue.issue_id}})
                                 .then(line_count => {
-                                    let issue_actions = [];
                                     _issues.forEach(_issue => {
+                                        let issue_actions = [];
+                                        _issue.offset = counter();
                                         issue_actions.push(
                                             issue_request_line(
                                                 {
-                                                    issue_id: result.issue.issue_id,
+                                                    issue_id: result.issue_id,
                                                     line_count: line_count
                                                 },
                                                 _issue,
                                                 req.user.user_id
                                             )
                                         );
+                                        return Promise.all(issue_actions)
+                                        .then(results => resolve({success: true, message: 'Issuess processed', results: results}))
+                                        .catch(err => reject(err));
                                     });
-                                    return Promise.all(issue_actions)
-                                    .then(results => {
-                                        resolve({
-                                            success: true,
-                                            message: 'Issues processed',
-                                            results: results
-                                        })
-                                    })
-                                    .catch(err => reject(err));
                                 })
                                 .catch(err => reject(err));
-                            } else {
-                                resolve({
-                                    success: false,
-                                    message: result.message
-                                })
-                            };
+                            } else resolve({success: false, message: result.message});
                         })
-                        .catch(err => reject(err));
-                    }));
+                        .catch(err => reject(err))
+                    );
                 };
+                _declines.forEach(e => {
+                    actions.push(
+                        m.stores.request_line_actions.create({
+                            request_line_id: e.line_id,
+                            _action: 'Declined',
+                            user_id: req.user.user_id
+                        })
+                    );
+                    actions.push(
+                        m.stores.request_lines.update(
+                            {_status: 4},
+                            {where: {line_id: e.line_id}}
+                        )
+                    );
+                });
                 return Promise.all(actions)
                 .then(results => {
-                    return m.request_lines.count({
+                    return m.stores.request_lines.count({
                         where: {
                             request_id: request.request_id,
                             _status:    2
@@ -308,13 +294,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     .then(open_lines => {
                         if (open_lines > 0) return res.send({result: true, message: 'Lines actioned'})
                         else {
-                            return m.requests.update(
-                                {_status: 3},
-                                {where: {request_id: request.request_id}}
-                            )
+                            return request.update({_status: 3})
                             .then(result => {
                                 if (result) res.send({result: true, message: 'All lines actioned, request closed'})
-                                else res.send({result: true, message: 'Lines actioned, could not close request'});
+                                else        res.send({result: true, message: 'Lines actioned, could not close request'});
                             })
                             .catch(err => res.error.send(err, res));
                         };
@@ -328,7 +311,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     });
     
     app.delete('/stores/requests/:id',          permissions, allowed('request_delete',      {allow: true, send: true}), (req, res) => {
-        m.requests.findOne({
+        m.stores.requests.findOne({
             where: {request_id: req.params.id},
             attributes: ['request_id', '_status', 'requested_for'],
             include: [inc.request_lines({attributes: ['line_id'], where: {_status: 1}})]
@@ -340,14 +323,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
             else {
                 let actions = [];
                 actions.push(
-                    m.request_lines.update(
+                    m.stores.request_lines.update(
                         {_status: 0},
                         {where: {request_id: request.request_id}}
                     )
                 );
                 request.lines.forEach(line => {
                     actions.push(
-                        m.notes.create({
+                        m.stores.notes.create({
                             _id: line.line_id,
                             _table: 'request_lines',
                             _note: 'Request cancelled',
@@ -370,7 +353,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     app.delete('/stores/request_lines/:id',     permissions, allowed('request_line_delete', {allow: true, send: true}), (req, res) => {
-        m.request_lines.findOne({
+        m.stores.request_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status'],
             include: [inc.requests({attributes:['_status', 'requested_for']})]
@@ -386,7 +369,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 let actions = [];
                 actions.push(line.update({_status: 0}))
                 actions.push(
-                    m.notes.create({
+                    m.stores.notes.create({
                         _id: line.line_id,
                         _table: 'request_lines',
                         _note: 'Cancelled',
@@ -407,60 +390,49 @@ module.exports = (app, allowed, inc, permissions, m) => {
     
     function order_request_line (order_id, request_line_id, user_id) {
         return new Promise((resolve, reject) => {
-            //Get request line
-            return m.request_lines.findOne({
-                where: {line_id: request_line_id},
-                attributes: ['size_id','_qty','line_id']
+            return m.stores.request_lines.findOne({
+                where:      {line_id: request_line_id},
+                attributes: ['line_id', '_status', 'size_id', '_qty']
             })
-            .then(request_line => {
-                if (!request_line) {
-                    resolve({
-                        success: false,
-                        message: 'Request line not found'
-                    });
-                } else {
+            .then(line => {
+                if     (!line)               resolve({success: false, message: 'Request line not found'})
+                else if (line._status !== 2) resolve({success: false, message: 'Only open lines can be actioned'})
+                else {
                     return orders.createLine({
                         order_id: order_id,
-                        size_id:  request_line.size_id,
-                        _qty:     request_line._qty,
+                        size_id:  line.size_id,
+                        _qty:     line._qty,
                         user_id:  user_id,
-                        note:     ` from request line ${request_line.line_id}`
+                        note:     ` from request line ${line.line_id}`
                     })
                     .then(result => {
                         if (!result.success) resolve(result)
                         else {
-                            let actions = [
-                                request_line.update(
-                                    {
-                                        _status: 3,
-                                        _action: 'Order',
-                                        _date: Date.now(),
-                                        _id: result.line.line_id,
-                                        approved_by: user_id
-                                    }
-                                )
-                            ];
-                            if (result.line.created) {
+                            let actions = []
+                            actions.push(
+                                line.update({_status: 3})
+                            );
+                            actions.push(
+                                m.stores.request_line_actions.create({
+                                    request_line_id: line.line_id,
+                                    action_line_id:  result.line_id,
+                                    _action:         'Order',
+                                    user_id:         user_id
+                                })
+                            );
+                            if (result.created) {
                                 actions.push(
-                                    m.notes.create({
-                                        _id: result.line.line_id,
+                                    m.stores.notes.create({
+                                        _id: result.line_id,
                                         _table: 'order_lines',
-                                        _note: `Created from request line ${request_line.line_id}`,
+                                        _note: `Created from request line ${line.line_id}`,
                                         user_id: user_id,
                                         _system: 1
                                     })
                                 );
                             };
                             Promise.all(actions)
-                            .then(results => {
-                                resolve({
-                                    success: true,
-                                    message: 'Request line ordered',
-                                    order_line: {
-                                        line_id: result.line.line_id
-                                    }
-                                })
-                            })
+                            .then(results => resolve({success: true, message: 'Request line ordered', line_id: result.line_id}))
                             .catch(err => reject(err));
                         };
                     })
@@ -473,78 +445,63 @@ module.exports = (app, allowed, inc, permissions, m) => {
     function issue_request_line (issue, line, user_id){
         return new Promise((resolve, reject) => {
             // Get request line
-            return m.request_lines.findOne({
+            return m.stores.request_lines.findOne({
                 where: {line_id: line.line_id},
-                attributes: ['size_id','_qty','line_id']
+                attributes: ['line_id', '_status', 'size_id', '_qty']
             })
-            .then(request_line => {
-                // Create issue line for size
-                return issues.createLine({
-                    line: {
-                        serial_id: line.serial_id || null,
-                        stock_id:  line.stock_id  || null,
-                        nsn_id:    line.nsn_id    || null,
-                        issue_id:  issue.issue_id,
-                        size_id:   request_line.size_id,
-                        user_id:   user_id,
-                        _qty:      request_line._qty,
-                        _line:     issue.line_count + line.offset
-                    }
-                })
-                .then(result => {
-                    //update request line to approved and add issue line details
-                    return request_line.update(
-                        {
-                            _status: 3,
-                            _action: 'Issue',
-                            _date: Date.now(),
-                            _id: result.line.line_id,
-                            approved_by: user_id
+            .then(line => {
+                if     (!line)               resolve({success: false, message: 'Request line not found'})
+                else if (line._status !== 2) resolve({success: false, message: 'Only open lines can be actioned'})
+                else {
+                    // Create issue line for size
+                    return issues.createLine({
+                        line: {
+                            serial_id: line.serial_id || null,
+                            stock_id:  line.stock_id  || null,
+                            nsn_id:    line.nsn_id    || null,
+                            issue_id:  issue.issue_id,
+                            size_id:   line.size_id,
+                            user_id:   user_id,
+                            _qty:      line._qty,
+                            _line:     issue.line_count + line.offset
                         }
-                    )
-                    .then(noteresult => {
-                        if (result) {
-                            return m.notes.create({
-                                _id:     result.line.line_id,
-                                _table:  'issue_lines',
-                                _note:   `Created from request line ${request_line.line_id}`,
-                                user_id: user_id,
-                                _system:  1
-                            })
-                            .then(note => {
-                                resolve({
-                                    success: true,
-                                    message: 'Request line issued',
-                                    issue_line: {
-                                        line_id: result.line.line_id
-                                    }
-                                });
-                            })
-                            .catch(err => {
-                                resolve({
-                                    success: true,
-                                    message: 'Request line issued, Note not created',
-                                    issue_line: {
-                                        line_id: result.line.line_id
-                                    }
-                                });
-                            });
-
-                        } else {
-                            resolve({
-                                success: true,
-                                message: 'Request line not updated',
-                                issue_line: {
-                                    line_id: result.line.line_id
-                                }
-                            });
+                    })
+                    .then(result => {
+                        //update request line to approved and add issue line details
+                        if (!result.success) resolve(result)
+                        else {
+                            let actions = [];
+                            actions.push(
+                                line.update({_status: 3})
+                            );
+                            actions.push(
+                                m.stores.request_line_actions.create({
+                                    request_line_id: line.line_id,
+                                    action_line_id:  result.line_id,
+                                    _action:         'Issue',
+                                    user_id:         user_id
+                                })
+                            );
+                            if (result.created) {
+                                actions.push(
+                                    m.stores.notes.create({
+                                        _id: result.line_id,
+                                        _table: 'issue_lines',
+                                        _note: `Created from request line ${line.line_id}`,
+                                        user_id: user_id,
+                                        _system: 1
+                                    })
+                                );
+                            };
+                            Promise.all(actions)
+                            .then(results => resolve({success: true, message: 'Request line issued', line_id: result.line_id}))
+                            .catch(err => reject(err));
                         };
                     })
                     .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
+                };
             })
-        .catch(err => reject(err));
+            .catch(err => reject(err));
         });
     };
 };    
