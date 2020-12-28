@@ -8,25 +8,20 @@
                 </div>
                 <div class="modal-body">
                     <div id="div_items">
-                        <%- include(`${partials}/inputs/text`,           {title: 'Search Items',   id: 'inp_item',      autocomplete: 'off'}) %>
-                        <%- include(`${partials}/inputs/select`,         {title: 'Item',           id: 'sel_items',     size: '10', spinner: true, spinner_id: 'items'}) %>
+                        <%- include(`${partials}/inputs/text`,       {title: 'Search Items',   id: 'inp_item',      autocomplete: 'off'}) %>
+                        <%- include(`${partials}/inputs/select`,     {title: 'Item',           id: 'sel_items',     size: '10', spinner: true, spinner_id: 'items'}) %>
                     </div>
                     <form id="form_line">
                         <input type="hidden" class='request_id'>
                         <div id="div_sizes" class='hidden'>
-                            <%- include(`${partials}/inputs/text`,       {title: 'Search Sizes',   id: 'inp_size',      autocomplete: 'off'}) %>
-                            <%- include(`${partials}/inputs/select`,     {title: 'Size',           id: 'sel_sizes',     name: 'line[size_id]',     required: true, size: '10', spinner: true, spinner_id: 'sizes'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Search Sizes',   id: 'inp_size',      autocomplete: 'off'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Size',           id: 'sel_sizes',     name: 'line[size_id]',     required: true, size: '10', spinner: true, spinner_id: 'sizes'}) %>
                         </div>
                         <div id="div_size" class='hidden'>
-                            <%- include(`${partials}/inputs/number`,     {title: 'Quantity',       id: 'size_add_qty',  name: 'line[_qty]',        required: true, value: '1', min: '1'}) %>
-                            <% if (locals.location) { %>
-                                <%- include(`${partials}/inputs/select`, {title: 'Location',       id: 'sel_locations', name: 'line[location_id]', size: '3'}) %>
-                                <%- include(`${partials}/inputs/text`,   {title: 'Enter Location', id: 'inp_location',  name: 'line[location]',    autocomplete: 'off'}) %>
-                            <% } %>
-                            <% if (locals.serial) { %>
-                                <div id="div_serials"></div>
-                            <% } %>
-                            <button type="button" class="btn btn-success w-100">Save changes</button>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',       id: 'size_add_qty',  name: 'line[_qty]',        required: true, value: '1', min: '1'}) %>
+                            <div id="div_locations" class='hidden'></div>
+                            <div id="div_serials"   class='hidden'></div>
+                            <button type="button" class="btn btn-success w-100">Add</button>
                         </div>
                     </form>
                 </div>
@@ -39,23 +34,24 @@
     <script>
         window.addEventListener('load', function () {
             $('#mdl_size_select').on('show.bs.modal', reset_add_size);
-            addFormListener('form_line', 'POST', `/stores/${table}_lines`, {onComplete: [getLines, reset_add_size]});
+            addFormListener(
+                'form_line',
+                'POST',
+                `/stores/${path[2]}_lines`,
+                {
+                    onComplete: [
+                        getLines,
+                        reset_add_size
+                    ]
+                }
+            );
             document.querySelector('#reload_size_select').addEventListener('click', reset_add_size);
-            document.querySelector('#inp_item').addEventListener(   'keyup',  function (event) {searchSelect('inp_item',"sel_items")});
-            document.querySelector('#inp_size').addEventListener(   'keyup',  function (event) {searchSelect('inp_size',"sel_sizes")});
-            document.querySelector('#sel_items').addEventListener(  'change', function (event) {search_sizes(this.value)});
-            document.querySelector('#sel_sizes').addEventListener(  'change', show_details);
-            document.querySelector('#sel_sizes').addEventListener(  'change', () => {
-                let sel_sizes = document.querySelector('#sel_sizes');
-                get(
-                    showSize,
-                    {
-                        table: 'sizes',
-                        query: [`size_id=${sel_sizes.value}`],
-                        options: options
-                    }
-                );
-            });
+            document.querySelector('#inp_item')          .addEventListener('keyup', function (event) {searchSelect('inp_item',"sel_items")});
+            document.querySelector('#inp_size')          .addEventListener('keyup', function (event) {searchSelect('inp_size',"sel_sizes")});
+            document.querySelector('#sel_items')         .addEventListener('change', getSizes);
+            document.querySelector('#sel_sizes')         .addEventListener('change', getSize);
+            document.querySelector('#size_add_qty')      .addEventListener('input',  getSize);
+            document.querySelector('#sel_sizes')         .addEventListener('change', show_details);
         });
     </script>
 <% } %>

@@ -28,14 +28,13 @@ module.exports = function (m, issues) {
     };
     issues.createLine = function (options = {}) {
         return new Promise((resolve, reject) => {
-            // Find size
             return m.stores.sizes.findOne({
                 where: {size_id: options.size_id},
                 attributes: ['size_id', '_issueable', '_serials', '_nsns']
             })
             .then(size => {
                 if      (!size)            resolve({success: false, message: 'Size not found'});
-                else if (!size._issueable) resolve({success: false, message: 'Size not issueable'});
+                else if (!size._issueable) resolve({success: false, message: 'This size can not be issued'});
                 else {
                     return m.stores.issues.findOne({
                         where: {issue_id: options.issue_id},
@@ -47,8 +46,9 @@ module.exports = function (m, issues) {
                         else {
                             return m.stores.issue_lines.count({where: {issue_id: issue.issue_id}})
                             .then(lines => {
-                                if      (size._serials && (!options.serial_id || options.serial_id === '')) resolve({success: false, message: 'You must specify a serial #'})
-                                else if (size._nsns && (!options.nsn_id || options.nsn_id === ''))          resolve({success: false, message: 'You must specify an NSN'})
+                                console.log(options);
+                                if      (size._serials && (!options.serial_id || String(options.serial_id) === '')) resolve({success: false, message: 'You must specify a serial #'})
+                                else if (size._nsns    && (!options.nsn_id    || String(options.nsn_id) === ''))    resolve({success: false, message: 'You must specify an NSN'})
                                 else {
                                     if (!options._line) options._line = lines + 1; //Add line number if not present
                                     let verify_search = null;
@@ -56,7 +56,7 @@ module.exports = function (m, issues) {
                                         verify_search = m.stores.serials.findOne({
                                             where: {
                                                 serial_id: options.serial_id,
-                                                size_id: options.size_id
+                                                size_id:   options.size_id
                                             },
                                             attributes: ['serial_id', 'location_id']
                                         });
@@ -74,7 +74,6 @@ module.exports = function (m, issues) {
                                         .then(result => {
                                             if (!result) resolve({success: false, message: 'Stock/Serial not found'});
                                             else {
-                                                //create issue line
                                                 return m.stores.issue_lines.create({
                                                     issue_id:    options.issue_id,
                                                     size_id:     options.size_id,

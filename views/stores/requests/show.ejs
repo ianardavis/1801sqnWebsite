@@ -74,10 +74,10 @@
 							</ul>
 							<div class="tab-content pt-3" id="myTabContent">
 								<div class="tab-pane fade active show" id="request_line" role="tabpanel" aria-labelledby="request_line-tab">
-									<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item_view'}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item_view', link: true}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size_view', link: true}) %>
 									<%- include(`${partials}/inputs/display`, {title: 'Quantity', 	  id: 'line_qty_view'}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user_view', link: true}) %>
 									<%- include(`${partials}/inputs/display`, {title: 'Raised',	  	  id: 'line_createdAt_view'}) %>
 									<%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt_view'}) %>
 								</div>

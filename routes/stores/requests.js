@@ -2,7 +2,7 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
     let requests = {}, orders = {}, issues = {},
     promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`),
-    counter        = require(`${process.env.ROOT}/fn/utils/counter`);
+    Counter        = require(`${process.env.ROOT}/fn/utils/counter`);
     require(`${process.env.ROOT}/fn/stores/requests`)(m, requests);
     require(`${process.env.ROOT}/fn/stores/orders`)  (m, orders);
     require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
@@ -130,6 +130,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .then(line_id => res.send({result: true, message: `Item added: ${line_id}`}))
         .catch(err => res.error.send(err, res))
+    });//duplicated below for add size modal
+    app.post('/stores/requests_lines',          permissions, allowed('request_line_add',                 {send: true}), (req, res) => {
+        requests.createLine({
+            line: req.body.line,
+            user_id: req.user.user_id
+        })
+        .then(line_id => res.send({result: true, message: `Item added: ${line_id}`}))
+        .catch(err => res.error.send(err, res))
     });
     
     app.put('/stores/requests/:id',             permissions, allowed('request_edit',        {allow: true, send: true}), (req, res) => {
@@ -211,23 +219,66 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                 request.requested_for,
                                 req.user.user_id
                             )
-                            .then(result => {
-                                if (result.success) {
-                                    _orders.forEach(i => {
-                                        let order_actions = [];
-                                        _orders.forEach(_order => {
-                                            order_actions.push(
-                                                order_request_line(
-                                                    result.order_id,
-                                                    _order.line_id,
-                                                    req.user.user_id
-                                                )
-                                            );
-                                        });
-                                        return Promise.all(order_actions)
-                                        .then(results => resolve({success: true, message: 'Orders processed', results: results}))
-                                        .catch(err => reject(err));
+                            .then(order => {
+                                if (order.success) {
+                                    let order_actions = [];
+                                    _orders.forEach(_order => {
+                                        order_actions.push(
+                                            new Promise((resolve, reject) => {
+                                                m.stores.request_lines.findOne({
+                                                    where:      {line_id: _order.line_id},
+                                                    attributes: ['line_id', '_status', 'size_id', '_qty']
+                                                })
+                                                .then(line => {
+                                                    if     (!line)               resolve({success: false, message: 'Request line not found'})
+                                                    else if (line._status !== 2) resolve({success: false, message: 'Only open lines can be actioned'})
+                                                    else {
+                                                        return orders.createLine({
+                                                            order_id: order.order_id,
+                                                            size_id:  line.size_id,
+                                                            _qty:     line._qty,
+                                                            user_id:  req.user.user_id,
+                                                            note:     ` from request line ${_order.line_id}`
+                                                        })
+                                                        .then(result => {
+                                                            if (!result.success) resolve(result)
+                                                            else {
+                                                                let actions = []
+                                                                actions.push(line.update({_status: 3}));
+                                                                actions.push(
+                                                                    m.stores.request_line_actions.create({
+                                                                        request_line_id: _order.line_id,
+                                                                        action_line_id:  result.line_id,
+                                                                        _action:         'Order',
+                                                                        user_id:         req.user.user_id
+                                                                    })
+                                                                );
+                                                                if (result.created) {
+                                                                    actions.push(
+                                                                        m.stores.notes.create({
+                                                                            _id: result.line_id,
+                                                                            _table: 'order_lines',
+                                                                            _note: `Created from request line ${_order.line_id}`,
+                                                                            user_id: req.user.user_id,
+                                                                            _system: 1
+                                                                        })
+                                                                    );
+                                                                };
+                                                                Promise.all(actions)
+                                                                .then(results => resolve({success: true, message: 'Request line ordered', line_id: result.line_id}))
+                                                                .catch(err => reject(err));
+                                                            };
+                                                        })
+                                                        .catch(err => reject(err));
+                                                    };
+                                                })
+                                                .catch(err => reject(err));
+                                            })
+                                        );
                                     });
+                                    return Promise.all(order_actions)
+                                    .then(results => resolve({success: true, message: 'Orders processed', results: results}))
+                                    .catch(err => reject(err));
                                 } else resolve({success: false, message: result.message});
                             })
                             .catch(err => reject(err));
@@ -236,36 +287,82 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 };
                 if (_issues.length > 0) {
                     actions.push(
-                        issues.create(
-                            request.requested_for,
-                            req.user.user_id
-                        )
-                        .then(result => {
-                            if (result.success) {
-                                return m.stores.issue_lines.count({where: {issue_id: result.issue.issue_id}})
-                                .then(line_count => {
-                                    _issues.forEach(_issue => {
-                                        let issue_actions = [];
-                                        _issue.offset = counter();
-                                        issue_actions.push(
-                                            issue_request_line(
-                                                {
-                                                    issue_id: result.issue_id,
-                                                    line_count: line_count
-                                                },
-                                                _issue,
-                                                req.user.user_id
-                                            )
-                                        );
+                        new Promise((resolve, reject) => {
+                            issues.create(
+                                request.requested_for,
+                                req.user.user_id
+                            )
+                            .then(issue => {
+                                if (issue.success) {
+                                    return m.stores.issue_lines.count({where: {issue_id: issue.issue_id}})
+                                    .then(line_count => {
+                                        let issue_actions = [], offset = new Counter;
+                                        _issues.forEach(_issue => {
+                                            issue_actions.push(
+                                                new Promise((resolve, reject) => {
+                                                    m.stores.request_lines.findOne({
+                                                        where:      {line_id: _issue.line_id},
+                                                        attributes: ['line_id', '_status', 'size_id', '_qty']
+                                                    })
+                                                    .then(line => {
+                                                        if     (!line)               resolve({success: false, message: 'Request line not found'})
+                                                        else if (line._status !== 2) resolve({success: false, message: 'Only open lines can be actioned'})
+                                                        else {
+                                                            return issues.createLine({
+                                                                serial_id: _issue.serial_id || null,
+                                                                stock_id:  _issue.stock_id  || null,
+                                                                nsn_id:    _issue.nsn_id    || null,
+                                                                issue_id:  issue.issue_id,
+                                                                size_id:   line.size_id,
+                                                                user_id:   req.user.user_id,
+                                                                _qty:      line._qty,
+                                                                _line:     Number(line_count) + offset()
+                                                            })
+                                                            .then(result => {
+                                                                if (!result.success) resolve(result)
+                                                                else {
+                                                                    let actions = [];
+                                                                    actions.push(line.update({_status: 3}));
+                                                                    actions.push(
+                                                                        m.stores.request_line_actions.create({
+                                                                            request_line_id: line.line_id,
+                                                                            action_line_id:  result.line_id,
+                                                                            _action:         'Issue',
+                                                                            user_id:         req.user.user_id
+                                                                        })
+                                                                    );
+                                                                    if (result.created) {
+                                                                        actions.push(
+                                                                            m.stores.notes.create({
+                                                                                _id:     result.line_id,
+                                                                                _table:  'issue_lines',
+                                                                                _note:   `Created from request line ${line.line_id}`,
+                                                                                user_id: req.user.user_id,
+                                                                                _system: 1
+                                                                            })
+                                                                        );
+                                                                    };
+                                                                    Promise.all(actions)
+                                                                    .then(results => resolve({success: true, message: 'Request line issued', line_id: result.line_id}))
+                                                                    .catch(err => reject(err));
+                                                                };
+                                                            })
+                                                            .catch(err => reject(err));
+                                                        };
+                                                    })
+                                                    .catch(err => reject(err));
+                                                })
+                                            );
+                                        });
                                         return Promise.all(issue_actions)
-                                        .then(results => resolve({success: true, message: 'Issuess processed', results: results}))
+                                        .then(results => resolve({success: true, message: 'Issues processed', results: results}))
                                         .catch(err => reject(err));
-                                    });
-                                })
-                                .catch(err => reject(err));
-                            } else resolve({success: false, message: result.message});
+                                    })
+                                    .catch(err => reject(err));
+                                } else resolve(result);
+                            })
+                            .catch(err => reject(err));
                         })
-                        .catch(err => reject(err))
                     );
                 };
                 _declines.forEach(e => {
@@ -387,121 +484,4 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    
-    function order_request_line (order_id, request_line_id, user_id) {
-        return new Promise((resolve, reject) => {
-            return m.stores.request_lines.findOne({
-                where:      {line_id: request_line_id},
-                attributes: ['line_id', '_status', 'size_id', '_qty']
-            })
-            .then(line => {
-                if     (!line)               resolve({success: false, message: 'Request line not found'})
-                else if (line._status !== 2) resolve({success: false, message: 'Only open lines can be actioned'})
-                else {
-                    return orders.createLine({
-                        order_id: order_id,
-                        size_id:  line.size_id,
-                        _qty:     line._qty,
-                        user_id:  user_id,
-                        note:     ` from request line ${line.line_id}`
-                    })
-                    .then(result => {
-                        if (!result.success) resolve(result)
-                        else {
-                            let actions = []
-                            actions.push(
-                                line.update({_status: 3})
-                            );
-                            actions.push(
-                                m.stores.request_line_actions.create({
-                                    request_line_id: line.line_id,
-                                    action_line_id:  result.line_id,
-                                    _action:         'Order',
-                                    user_id:         user_id
-                                })
-                            );
-                            if (result.created) {
-                                actions.push(
-                                    m.stores.notes.create({
-                                        _id: result.line_id,
-                                        _table: 'order_lines',
-                                        _note: `Created from request line ${line.line_id}`,
-                                        user_id: user_id,
-                                        _system: 1
-                                    })
-                                );
-                            };
-                            Promise.all(actions)
-                            .then(results => resolve({success: true, message: 'Request line ordered', line_id: result.line_id}))
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
-                };
-            })
-        .catch(err => reject(err));
-        });
-    };
-    function issue_request_line (issue, line, user_id){
-        return new Promise((resolve, reject) => {
-            // Get request line
-            return m.stores.request_lines.findOne({
-                where: {line_id: line.line_id},
-                attributes: ['line_id', '_status', 'size_id', '_qty']
-            })
-            .then(line => {
-                if     (!line)               resolve({success: false, message: 'Request line not found'})
-                else if (line._status !== 2) resolve({success: false, message: 'Only open lines can be actioned'})
-                else {
-                    // Create issue line for size
-                    return issues.createLine({
-                        line: {
-                            serial_id: line.serial_id || null,
-                            stock_id:  line.stock_id  || null,
-                            nsn_id:    line.nsn_id    || null,
-                            issue_id:  issue.issue_id,
-                            size_id:   line.size_id,
-                            user_id:   user_id,
-                            _qty:      line._qty,
-                            _line:     issue.line_count + line.offset
-                        }
-                    })
-                    .then(result => {
-                        //update request line to approved and add issue line details
-                        if (!result.success) resolve(result)
-                        else {
-                            let actions = [];
-                            actions.push(
-                                line.update({_status: 3})
-                            );
-                            actions.push(
-                                m.stores.request_line_actions.create({
-                                    request_line_id: line.line_id,
-                                    action_line_id:  result.line_id,
-                                    _action:         'Issue',
-                                    user_id:         user_id
-                                })
-                            );
-                            if (result.created) {
-                                actions.push(
-                                    m.stores.notes.create({
-                                        _id: result.line_id,
-                                        _table: 'issue_lines',
-                                        _note: `Created from request line ${line.line_id}`,
-                                        user_id: user_id,
-                                        _system: 1
-                                    })
-                                );
-                            };
-                            Promise.all(actions)
-                            .then(results => resolve({success: true, message: 'Request line issued', line_id: result.line_id}))
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
 };    

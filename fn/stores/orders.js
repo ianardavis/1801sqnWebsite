@@ -1,13 +1,13 @@
 module.exports = function (m, orders) {
     orders.create = function (ordered_for, user_id) {
         return new Promise((resolve, reject) => {
-            return m.users.users.findOne(
-                {where: {user_id: ordered_for}},
-                {attributes: ['user_id', 'status_id']}
-            )
+            return m.users.users.findOne({
+                where: {user_id: ordered_for},
+                attributes: ['user_id', 'status_id']
+            })
             .then(user => {
                 if      (!user)                                        resolve({success: false, message: 'User not found'});
-                else if (user.status_id === 1 || user_status_id === 2) resolve({success: false, message: 'Orders can only be made for current cadets or staff'});
+                else if (user.status_id !== 1 && user_status_id !== 2) resolve({success: false, message: 'Orders can only be made for current cadets or staff'});
                 else {
                     return m.stores.orders.findOrCreate({
                         where: {

@@ -56,9 +56,12 @@ function showLine(event) {
         function (request_line, options) {
             set_innerText({id: 'line_id_view',        text: request_line.line_id});
             set_innerText({id: 'line_item_view',      text: request_line.size.item._description});
+            set_attribute({id: 'line_item_view_link', attribute: 'href', value: request_line.size.item_id});
             set_innerText({id: 'line_size_view',      text: request_line.size._size});
+            set_attribute({id: 'line_size_view_link', attribute: 'href', value: request_line.size_id});
             set_innerText({id: 'line_qty_view',       text: request_line._qty});
             set_innerText({id: 'line_user_view',      text: print_user(request_line.user)});
+            set_attribute({id: 'line_user_view_link', attribute: 'href', value: request_line.user_id});
             set_innerText({id: 'line_createdAt_view', text: print_date(request_line.createdAt, true)});
             set_innerText({id: 'line_updatedAt_view', text: print_date(request_line.updatedAt, true)});
         },

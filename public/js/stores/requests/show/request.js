@@ -5,7 +5,7 @@ function getRequest() {
             set_innerText({id: 'user_for',      text: print_user(request.user_for)});
             set_innerText({id: 'user_by',       text: print_user(request.user_by)});
             set_attribute({id: 'user_for_link', attribute: 'href', value: `/stores/users/${request.requested_for}`});
-            set_attribute({id: 'user_for_by',   attribute: 'href', value: `/stores/users/${request.user_id}`});
+            set_attribute({id: 'user_by_link',  attribute: 'href', value: `/stores/users/${request.user_id}`});
             set_innerText({id: 'createdAt',     text: print_date(request.createdAt, true)});
             set_innerText({id: 'updatedAt',     text: print_date(request.updatedAt, true)});
             set_innerText({id: '_status',       text: request_statuses[request._status]});

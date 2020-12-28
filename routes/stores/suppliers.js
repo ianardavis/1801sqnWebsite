@@ -1,6 +1,6 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let nullify = require(`${process.env.ROOT}/fn/utils`);
+    let nullify = require(`${process.env.ROOT}/fn/utils/nullify`);
     app.get('/stores/suppliers',          permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/index'));
     app.get('/stores/suppliers/new',      permissions, allowed('supplier_add'),                   (req, res) => res.render('stores/suppliers/new'));
     app.get('/stores/suppliers/:id',      permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/show'));
