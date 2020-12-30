@@ -13,10 +13,12 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['requested_for', '_status']
         })
         .then(request => {
-            if (request._status && request._status === 1) req.flash('danger', "This request is still in draft, no items on this request will be actioned or considered until the request is marked as 'Complete'")
-            if      (!request)                                                   res.error.redirect(new Error('Request not found'), req, res);
-            else if (!req.allowed && request.requested_for !== req.user.user_id) res.error.redirect(new Error('Permission denied'), req, res);
-            else res.render('stores/requests/show');
+            if      (!request)                                                   res.error.redirect(new Error('Request not found'), req, res)
+            else if (!req.allowed && request.requested_for !== req.user.user_id) res.error.redirect(new Error('Permission denied'), req, res)
+            else {
+                if (request._status === 1) req.flash('danger', "This request is still in draft, no items on this request will be actioned or considered until the request is marked as 'Complete'");
+                res.render('stores/requests/show');
+            };
         })
         .catch(err => res.error.redirect(err, req, res));
     });
@@ -27,7 +29,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .then(line => {
             if (!line) res.error.redirect(new Error('Request line not found'), req, res);
-            else res.redirect(`/stores/requests/${line.request_id}`)
+            else        res.redirect(`/stores/requests/${line.request_id}`)
         })
         .catch(err => res.error.send(err, res));
     });
@@ -116,10 +118,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
             user_id:       req.user.user_id
         })
         .then(result => {
-            let message = '';
-            if (result.created) message = `Request raised: ${result.request_id}`
-            else message = `Request already in draft for this user: ${result.request_id}`;
-            res.send({result: true, message: message})
+            if (result.result) {
+                if (result.created) res.send({result: true, message: `Request raised: ${result.request_id}`})
+                else                res.send({result: true, message: `Request already in draft for this user: ${result.request_id}`});
+            } else res.send(result);
         })
         .catch(err => res.error.send(err, res));
     });
@@ -128,42 +130,37 @@ module.exports = (app, allowed, inc, permissions, m) => {
             line: req.body.line,
             user_id: req.user.user_id
         })
-        .then(line_id => res.send({result: true, message: `Item added: ${line_id}`}))
-        .catch(err => res.error.send(err, res))
-    });//duplicated below for add size modal
-    app.post('/stores/requests_lines',          permissions, allowed('request_line_add',                 {send: true}), (req, res) => {
-        requests.createLine({
-            line: req.body.line,
-            user_id: req.user.user_id
-        })
-        .then(line_id => res.send({result: true, message: `Item added: ${line_id}`}))
+        .then(line_id => res.send({result: true, message: 'Item added'}))
         .catch(err => res.error.send(err, res))
     });
     
     app.put('/stores/requests/:id',             permissions, allowed('request_edit',        {allow: true, send: true}), (req, res) => {
         m.stores.requests.findOne({
-            where: {request_id: req.params.id},
-            include: [inc.request_lines({where: {_status: 1}, attributes: ['line_id']})],
-            attributes: ['requested_for', '_status', 'request_id']
+            where:      {request_id: req.params.id},
+            attributes: ['requested_for', '_status', 'request_id'],
+            include:    [inc.request_lines({where: {_status: 1}, attributes: ['line_id']})]
         })
         .then(request => {
-            if (!request) {
-                res.error.send('Request not found', res);
-            } else if (!req.allowed && req.user.user_id !== request.requested_for) {
-                res.error.send('Permission denied', res);
-            } else if (request._status !== 1) {
-                res.error.send('Request must be in draft to be completed', res);
-            } else if (!request.lines || request.lines.length === 0) {
-                res.error.send('A request must have at least one open line before you can complete it', res);
-            } else {
+            if      (!request)                                                   res.send({result: false, message: 'Request not found'});
+            else if (!req.allowed && req.user.user_id !== request.requested_for) res.send({result: false, message: 'Permission denied'});
+            else if (request._status !== 1)                                      res.send({result: false, message: 'Request must be in draft to be completed'});
+            else if (!request.lines || request.lines.length === 0)               res.send({result: false, message: 'A request must have at least one open line before you can complete it'});
+            else {
                 let actions = [];
                 actions.push(request.update({_status: 2}));
+                request.lines.forEach(line => {
+                    m.stores.request_line_actions.create({
+                        request_line_id: line.line_id,
+                        _action: 'Request completed',
+                        user_id: req.user.user_id
+                    })
+                });
                 actions.push(
                     m.stores.request_lines.update(
                         {_status: 2},
                         {where:{
                             request_id: request.request_id,
-                            _status: 1
+                            _status:    1
                         }}
                     )
                 );
@@ -193,25 +190,9 @@ module.exports = (app, allowed, inc, permissions, m) => {
             else if (request._status !== 2)                      res.send({result: false, message: 'This request is not open'})
             else {
                 let actions = [],
-                    _cancels  = req.body.actions.filter(e => e._status === '0'),
                     _issues   = req.body.actions.filter(e => e._status === '3' && e._action === 'Issue'),
                     _orders   = req.body.actions.filter(e => e._status === '3' && e._action === 'Order'),
                     _declines = req.body.actions.filter(e => e._status === '4');
-                _cancels.forEach(e => {
-                    actions.push(
-                        m.stores.request_line_actions.create({
-                            request_line_id: e.line_id,
-                            _action: 'Cancelled',
-                            user_id: req.user.user_id
-                        })
-                    );
-                    actions.push(
-                        m.stores.request_lines.update(
-                            {_status: 0},
-                            {where: {line_id: e.line_id}}
-                        )
-                    );
-                });
                 if (_orders.length > 0) {
                     actions.push(
                         new Promise((resolve, reject) => {
@@ -409,14 +390,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
     
     app.delete('/stores/requests/:id',          permissions, allowed('request_delete',      {allow: true, send: true}), (req, res) => {
         m.stores.requests.findOne({
-            where: {request_id: req.params.id},
+            where:      {request_id: req.params.id},
             attributes: ['request_id', '_status', 'requested_for'],
-            include: [inc.request_lines({attributes: ['line_id'], where: {_status: 1}})]
+            include:    [inc.request_lines({attributes: ['line_id'], where: {_status: 1}})]
         })
         .then(request => {
-            if (!request) return res.error.send('Request not found', res)
-            else if (!allowed && request.requested_for !== req.user.user_id) return res.error.send('Permission denied', res)
-            else if (request._status !== 1) return res.error.send('Only draft requests can be cancelled', res)
+            if      (!request)                                               res.send({result: false, message: 'Request not found'})
+            else if (!allowed && request.requested_for !== req.user.user_id) res.send({result: false, message: 'Permission denied'})
+            else if (request._status !== 1)                                  res.send({result: false, message: 'Only draft requests can be cancelled'})
             else {
                 let actions = [];
                 actions.push(
@@ -427,22 +408,18 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 );
                 request.lines.forEach(line => {
                     actions.push(
-                        m.stores.notes.create({
-                            _id: line.line_id,
-                            _table: 'request_lines',
-                            _note: 'Request cancelled',
-                            _system: 1,
+                        m.stores.request_line_actions.create({
+                            request_line_id: line.line_id,
+                            _action: 'Request cancelled',
                             user_id: req.user.user_id
                         })
                     )
                 });
-                actions.push(
-                    request.update({_status: 0})
-                );
+                actions.push(request.update({_status: 0}));
                 Promise.allSettled(actions)
                 .then(result => {
                     if (promiseResults(result)) res.send({result: true, message: 'Request cancelled'})
-                    else res.send({result: true, message: 'Some actions have failed'});
+                    else                        res.send({result: true, message: 'Some actions have failed'});
                 })
                 .catch(err => res.error.send(err, res));
             };
@@ -456,28 +433,23 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.requests({attributes:['_status', 'requested_for']})]
         })
         .then(line => {
-            if (!allowed && line.request.requested_for !== req.user.user_id) {
-                res.error.send('Permission denied', res);
-            } else if (line.request._status !== 1) {
-                res.error.send('Lines can only be cancelled whilst a request is in draft', res);
-            } else if (line._status !== 1) {
-                res.error.send('Only pending lines can be cancelled', res);
-            } else {
+            if      (!allowed && line.request.requested_for !== req.user.user_id) res.send({result: false, message: 'Permission denied'});
+            else if (line.request._status !== 1)                                  res.send({result: false, message: 'Lines can only be cancelled whilst a request is in draft'});
+            else if (line._status !== 1)                                          res.send({result: false, message: 'Only pending lines can be cancelled'});
+            else {
                 let actions = [];
                 actions.push(line.update({_status: 0}))
                 actions.push(
-                    m.stores.notes.create({
-                        _id: line.line_id,
-                        _table: 'request_lines',
-                        _note: 'Cancelled',
-                        _system: 1,
+                    m.stores.request_line_actions.create({
+                        request_line_id: line.line_id,
+                        _action: 'Cancelled',
                         user_id: req.user.user_id
                     })
                 );
                 return Promise.allSettled(actions)
                 .then(result => {
                     if (promiseResults(result)) res.send({result: true, message: 'Line cancelled'})
-                    else res.send({result: true, message: 'Some actions have failed'});
+                    else                        res.send({result: true, message: 'Some actions have failed'});
                 })
                 .catch(err => res.error.send(err, res));
             };

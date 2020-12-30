@@ -8,7 +8,7 @@ function getRequests() {
                 lines.forEach(line => {
                     try {
                         let row = table_body.insertRow(-1);
-                        add_cell(row, {text: print_user(line.request.user_for)});
+                        add_cell(row, {text: print_user(line.request.user_id_request)});
                         add_cell(row, {text: line._qty});
                         add_cell(row, {append: new Link({
                             href: `/stores/requests/${line.request_id}`,

@@ -39,12 +39,12 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/spinner`, {id: 'issuess'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user_to', 	title: 'To',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user_by', 	title: 'By',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_date_due', title: 'Date Due Back'}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_status', 	title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_issue', title: 'To',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user', 		 title: 'By',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'createdAt',	 title: 'Date'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'updatedAt',	 title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_date_due',	 title: 'Date Due Back'}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_status', 	 title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
             <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=5', text: 'Closed'}]}) %>

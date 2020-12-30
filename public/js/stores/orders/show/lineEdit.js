@@ -42,7 +42,7 @@ function getLineActions() {
                 };
             },
             {
-                table: 'request_line',
+                table: 'order_line',
                 query: [`line_id=${e.dataset.line_id}`]
             }
         );

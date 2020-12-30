@@ -7,7 +7,10 @@ var express  = require('express'),
     memStore = require('memorystore')(session);
 console.log('Setting Environment Variables');
 require('dotenv').config();
-if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
+if (!process.env.NODE_ENV) {
+    console.log(`No environment set.... setting: ${process.env.NODE_ENV}`);
+    process.env.NODE_ENV = 'development';
+};
 console.log(`Environment: ${process.env.NODE_ENV}`);
 console.log('   Set')
 let port_check = require(`${process.env.ROOT}/fn/utils/port_check`)

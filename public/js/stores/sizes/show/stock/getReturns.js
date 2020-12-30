@@ -12,7 +12,7 @@ function getStockReturns(stock_id) {
                             text: print_date(line.createdAt, true),
                             sort: new Date (line.createdAt).getTime()
                         });
-                        add_cell(row, {text: print_user(line.issue.user_to)});
+                        add_cell(row, {text: print_user(line.issue.user_issue)});
                         add_cell(row, {text: line._qty});
                         add_cell(row, {append:
                             new Link({

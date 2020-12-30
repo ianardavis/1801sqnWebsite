@@ -5,10 +5,11 @@
 	<%- include(`${partials}/breadcrumb`, {href: '/stores/orders/new?user=-1', html: '<i class="fas fa-plus"></i>'}) %>
 <% } %>
 <%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'orders'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<% if (permissions.demand_line_add) { %>
-		<form class='mb-1' id='demandForm'>
+		<form class='mb-1' id='form_demand'>
 			<div class="input-group">
 				<div class="input-group-prepend w-30">
 					<button class="btn btn-success text-left w-100 confirm">
@@ -23,65 +24,40 @@
 	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
-			<th class='w-40' onclick='sortTable(0, "tbl_orders")'>
-				<%- include(`${partials}/spinner`, {id: 'orders', float_left: true, small: true}) %>
-				Ordered For
-			</th>
+			<th class='w-40' onclick='sortTable(0, "tbl_orders")'>Ordered For</th>
 			<th class='w-40' onclick='sortTable(1, "tbl_orders")'>Order Date</th>
 			<th class='w-10' onclick='sortTable(2, "tbl_orders")'>Lines</th>
 			<th class='w-10' onclick='sortTable(3, "tbl_orders")'>Status</th>
 			<th><i class='fas fa-search'></i></th>
 		</thead>
-		<tbody id='tbl_orders'>
-		</tbody>
+		<tbody id='tbl_orders'></tbody>
 	</table>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/stores/orders/index/orders.js'></script>
 <script src='/js/spinner.js'></script>
 <script src='/js/get.js'></script>
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/XHRsend.js'></script>
 <script src='/js/data/send.js'></script>
-<script src='/js/utils/select_sel_status.js'></script>
-<% if (permissions.demand_line_add) { %>
-	<script src='/js/suppliers/list.js'></script>
-	<script>
-		function getSuppliers() {
-			get(
-				listSuppliers,
-				{
-					table: 'suppliers',
-					query: []
-				}
-			);
-		};
-	</script>
-	<script async>getSuppliers()</script>
-	<script>document.querySelector('#reload').addEventListener('click', () => getSuppliers());</script>
-<% } %>
-<script>
-	function getOrders() {
-		get(
-			showOrders,
-			{
-				table: 'orders',
-				query: [sel_status.value]
-			}
-		);
-	};
-</script>
+<script src='/js/stores/orders/index/orders.js'></script>
 <script async>getOrders()</script>
-<script>
-    window.addEventListener( "load", () => {
-		<% if (permissions.demand_line_add) { %>
-			addFormListener('demandForm', 'PUT', '/stores/orders/addtodemand',{reload: true});
-		<% } %>
-	})
-	<% if (download) { %>
+<% if (permissions.demand_line_add) { %>
+	<script src='/js/stores/suppliers/list.js'></script>
+	<script async>getSuppliers()</script>
+	<script>
+		window.addEventListener( "load", function () {
+			addFormListener(
+				'form_demand',
+				'PUT',
+				'/stores/orders/addtodemand',
+				{onComplete: getOrders}
+			);
+		});
+	</script>
+<% } %>
+<% if (download) { %>
+	<script>
 		download_file('<%= download %>');
-	<% } %>
-</script>
-<script>document.querySelector('#reload').addEventListener('click', () => getOrders());</script>
-<script>document.querySelector('#sel_status').addEventListener('change', () => getOrders());</script>
+	</script>
+<% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

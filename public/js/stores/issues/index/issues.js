@@ -7,7 +7,7 @@ function getIssues() {
             let table_body = document.querySelector('#tbl_issues');
             issues.forEach(issue => {
                 let row = table_body.insertRow(-1);
-                add_cell(row, {text: print_user(issue.user_to)});
+                add_cell(row, {text: print_user(issue.user_issue)});
                 add_cell(row, {
                     sort: new Date(issue.createdAt).getTime(),
                     text: print_date(issue.createdAt)

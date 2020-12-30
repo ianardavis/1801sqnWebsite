@@ -54,11 +54,9 @@ module.exports = function (m, requests) {
                                 else {
                                     return line.increment('_qty', {by: options.line._qty})
                                     .then(result => {
-                                        return m.stores.notes.create({
-                                            _id: line.line_id,
-                                            _table: 'request_lines',
-                                            _system: 1,
-                                            _note: `Incremented by ${options.line._qty}`,
+                                        return m.stores.request_line_actions.create({
+                                            request_line_id: line.line_id,
+                                            _action: `Incremented by ${options.line._qty}`,
                                             user_id: options.user_id
                                         })
                                         .then(result => resolve({result: true, line_id: line.line_id}))

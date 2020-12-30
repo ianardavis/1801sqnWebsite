@@ -73,7 +73,7 @@ function getDraftOrders() {
         },
         {
             table: 'orders',
-            query: [`ordered_for=${path[3]}`,'_status=1']
+            query: [`user_id_order=${path[3]}`,'_status=1']
         }
     );
 };

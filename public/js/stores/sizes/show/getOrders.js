@@ -8,8 +8,8 @@ function getOrders() {
                 lines.forEach(line => {
                     try {
                         let row = table_body.insertRow(-1);
-                        if (Number(line.order.ordered_for) === -1) add_cell(row, {text: 'Backing Stock'})
-                        else add_cell(row, {text: print_user(line.order.user_for)});
+                        if (Number(line.order.user_id_order) === -1) add_cell(row, {text: 'Backing Stock'})
+                        else add_cell(row, {text: print_user(line.order.user_id_order)});
                         add_cell(row, {text: line._qty});
                         add_cell(row, {append: new Link({
                             href: `/stores/orders/${line.order_id}`,

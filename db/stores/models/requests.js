@@ -6,11 +6,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
-      primaryKey: true,
       comment: "null",
       autoIncrement: true
     },
-    'requested_for': {
+    'user_id_request': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"

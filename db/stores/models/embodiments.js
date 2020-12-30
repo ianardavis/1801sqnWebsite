@@ -1,37 +1,28 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('pos_layouts', {
-    'pos_layout_id': {
+  return sequelize.define('stock', {
+    'embodiment_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       comment: "null",
       autoIncrement: true
     },
-    'item_id': {
+    'size_id_parent': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'page_id': {
+    'size_id_child': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_column': {
+    '_qty': {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    '_row': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    '_colour': {
-      type: DataTypes.STRING(10),
-      allowNull: true,
+      allowNull: false,
+      defaultValue: '1',
       comment: "null"
     },
     'createdAt': {
@@ -45,7 +36,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'pos_layouts',
-    schema: 'canteen'
+    tableName: 'stock',
+    schema: 'stores'
   });
 };

@@ -24,7 +24,7 @@
                     <% issues.forEach(issue => { %>
                         <tr>
                             <td>
-                                <a class="btn btn-sm btn-primary float-right" href="/stores/users/<%= issue.issued_to %>"><i class="fas fa-search"></i></a>
+                                <a class="btn btn-sm btn-primary float-right" href="/stores/users/<%= issue.user_id_issue %>"><i class="fas fa-search"></i></a>
                                 <%= issue._to.rank._rank %> <%= issue._to.full_name %>
                             </td>
                             <td data-sort="<%= issue._date.getTime() %>">

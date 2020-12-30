@@ -1,4 +1,4 @@
-function getLines() {
+function getLines(table) {
     lines_loaded = false;
     let sel_status = document.querySelector('#sel_status') || {value: ''};
     get(
@@ -14,8 +14,8 @@ function getLines() {
                         add_cell(row, {text: line.size._size});
                         add_cell(row, {text: line._qty});
                         if (
-                            (line._status === 1 && line.request._status === 1) ||
-                            (line._status === 2 && line.request._status === 2)
+                            (line._status === 1 && line[table]._status === 1) ||
+                            (line._status === 2 && line[table]._status === 2)
                         ) {
                             add_cell(row, {
                                 text: line_statuses[line._status],
@@ -31,7 +31,7 @@ function getLines() {
                                 small: true,
                                 modal: 'line_view',
                                 data: {
-                                    field: 'request_line_id',
+                                    field: `${table}_line_id`,
                                     value: line.line_id
                                 }
                             }).e
@@ -45,14 +45,14 @@ function getLines() {
             lines_loaded = true;
         },
         {
-            table: 'request_lines',
-            query: [`request_id=${path[3]}`, sel_status.value]
+            table: `${table}_lines`,
+            query: [`${table}_id=${path[3]}`, sel_status.value]
         }
     );
 };
 window.addEventListener('load', function () {
     document.querySelector('#reload')    .addEventListener('click',  getLines);
     document.querySelector('#sel_status').addEventListener('change', getLines);
-    $('#mdl_line_view').on('show.bs.modal', function (event) {showLine(       'request', event.relatedTarget.dataset.request_line_id)});
-    $('#mdl_line_view').on('show.bs.modal', function (event) {showLineActions('request', event.relatedTarget.dataset.request_line_id)});
+    $('#mdl_line_view').on('show.bs.modal', function (event) {showLine(       table, event.relatedTarget.dataset[`${table}_line_id`])});
+    $('#mdl_line_view').on('show.bs.modal', function (event) {showLineActions(table, event.relatedTarget.dataset[`${table}_line_id`])});
 });

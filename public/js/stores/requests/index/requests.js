@@ -8,7 +8,7 @@ function getRequests() {
                 table_body.innerHTML = '';
                 requests.forEach(request => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {text: print_user(request.user_for)});
+                    add_cell(row, {text: print_user(request.user_request)});
                     add_cell(row, {
                         sort: print_date(request.createdAt),
                         text: new Date(request.createdAt).toDateString()

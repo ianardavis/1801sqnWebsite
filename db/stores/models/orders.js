@@ -6,11 +6,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
-      primaryKey: true,
       comment: "null",
       autoIncrement: true
     },
-    'ordered_for': {
+    'user_id_order': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       defaultValue: '-1',

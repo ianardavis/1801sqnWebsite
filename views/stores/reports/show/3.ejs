@@ -27,7 +27,7 @@
     </div>
     <form id="orders" action="/stores/reports/3" method="POST">
         <div class="row">
-            <input type="hidden" name="ordered_for" value="-1">
+            <input type="hidden" name="user_id_order" value="-1">
             <% var totals = {}; %>
             <% items.forEach(item => { %>
                 <div class="col-12 bordered">

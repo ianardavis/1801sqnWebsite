@@ -2,42 +2,38 @@
 <%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
 <%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
 		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				Menu
 			</a>
-			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				<%- include(`${partials}/notes/menu_add`) %>
+				<button id='btn_action' form='form_action' class='dropdown-item confirm' disabled>Action Lines</button>
 				<% if (permissions.order_edit) { %><form id='form_complete'><% } %>
-					<input id='btn_complete' class='dropdown-item confirm' type="submit" value='Complete' disabled>
+					<button id='btn_complete' class='dropdown-item confirm' disabled>Complete</button>
 				<% if (permissions.order_edit) { %></form><% } %>
-				<div id='form_addSize'>
-					<button type='button' class='dropdown-item' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
-						Add Item
-					</button>
-				</div>
+				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'order_line_add'}) %>
+				<div class="dropdown-divider"></div>
 				<% if (permissions.order_delete) { %><form id='form_delete'><% } %>
 					<input id='btn_delete' type="submit" class="dropdown-item confirm" value='Cancel' disabled>
 				<% if (permissions.order_edit) { %></form><% } %>
-				<input id='btn_action' form='form_action' class='dropdown-item confirm' type="submit" value='Action Lines' disabled>
 			</div>
 		</li>
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note', permission: 'access_notes'}) %>
-        <%- include(`${partials}/reload`) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'order'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',   spinner: 'order_lines', count_id: 'line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes', 	  count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/spinner`, {id: 'orders'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user_for', 	title: 'For', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user_by', 	title: 'By',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_status', 	title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_order', title: 'For', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user', 	     title: 'By',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'createdAt',  title: 'Date'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'updatedAt',  title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_status',  	title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
 			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Demanded'}, {value: '_status=4', text: 'Received'}, {value: '_status=5', text: 'Closed'}]}) %>
@@ -46,19 +42,13 @@
 			<% } %>
 			<table class='table table-sm table-hover mx-auto w-100'>
 				<thead id='table_header_lines' class='thead-dark'>
-					<th class='w-10' onclick='sortTable(0, "tbl_lines")'>
-						<%- include(`${partials}/spinner`, {id: 'order_lines', float_left: true, small: true}) %>
-						Line ID
-					</th>
-					<th class='w-30' onclick="sortTable(1,'tbl_lines')">Item</th>
-					<th class='w-15' onclick="sortTable(2,'tbl_lines')">Size</th>
-					<th class='w-5'  onclick="sortTable(3,'tbl_lines')">Qty</th>
-					<th class='w-20' onclick="sortTable(4,'tbl_lines')">Status</th>
-					<th class='w-20' onclick="sortTable(5,'tbl_lines')">Action</th>
-					<th id='col_view'><i class='fas fa-search'></i></th>
+					<th class='w-30' onclick="sortTable(0, 'tbl_lines')">Item</th>
+					<th class='w-15' onclick="sortTable(1, 'tbl_lines')">Size</th>
+					<th class='w-5'  onclick="sortTable(2, 'tbl_lines')">Qty</th>
+					<th class='w-20' onclick="sortTable(3, 'tbl_lines')">Status</th>
+					<th><i class='fas fa-search'></i></th>
 				</thead>
-				<tbody id='tbl_lines'>
-				</tbody>
+				<tbody id='tbl_lines'></tbody>
 			</table>
 			<% if (permissions.order_line_edit) { %>
 				</form>
@@ -66,71 +56,120 @@
 		</div>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
-	<div id="div_modals"></div>
+	<div id="div_modals">
+		<%- include(`${partials}/stores/sizes/select`,  {permission: 'order_line_add', 	   table: 'Order'}) %>
+		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_order_lines', table: 'Order'}) %>
+	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
-<script src="/js/stores/orders/show/order.js"></script>
-<script src="/js/stores/orders/show/lines.js"></script>
+<script src="/js/addSize.js"></script>
 <script src="/js/stores/nsns/list.js"></script>
 <script src="/js/stores/stock/list.js"></script>
 <script src="/js/stores/serials/list.js"></script>
 <script src="/js/search/select.js"></script>
-<script src="/js/addSize.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src='/js/utils/select_sel_status.js'></script>
-<script src='/js/utils/getLineNotes.js'></script>
 <script>showTab('<%= tab %>');</script>
-<script>
-	function getOrder() {
-		get(
-			showOrder,
-			{
-				table: 'orders',
-				query: [`order_id=${path[3]}`],
-				permissions: {
-					edit: 	     <%= permissions.order_edit  	   || false %>,
-					delete:		 <%= permissions.order_delete	   || false %>,
-					line_add:	 <%= permissions.order_line_add	   || false %>,
-					line_delete: <%= permissions.order_line_delete || false %>
-				}
-			}
-		);
-	};
-    document.querySelector('#reload').addEventListener('click', () => getOrder());
-</script>
+
+<script src="/js/stores/orders/show/order.js"></script>
+<script>let order_statuses = {"0": "Cancelled", "1": "Draft", "2": "Open", "3": "Complete"};</script>
 <script async>getOrder()</script>
-<script>
-    function getLines() {
-		get(
-			showLines,
-			{
-				table: 'order_lines',
-				query: [`order_id=${path[3]}`, sel_status.value],
-				permissions: {
-					line_edit:	 <%= permissions.order_line_edit   || false %>,
-					line_delete: <%= permissions.order_line_delete || false %>
+
+<% if (permissions.order_edit) { %>
+	<script src="/js/stores/utils/setButtons.js"></script>
+	<script async>setButtons('order')</script>
+	<script>
+		window.addEventListener( "load", function () {
+			addFormListener(
+				'form_complete',
+				'PUT',
+				`/stores/orders/${path[3]}`,
+				{
+					onComplete: [
+						getOrder<% if (permissions.access_order_lines) { %>,
+						getLines<% } %>
+					]
 				}
-			}
-		);
-	};
-	// getorderlines = getLines;
-    document.querySelector('#reload').addEventListener('click', () => getLines());
-    document.querySelector('#sel_status').addEventListener('change', () => getLines());
-</script>
-<script async>getLines()</script>
-<script>
-    window.addEventListener( "load", function () {
-		<% if (permissions.order_delete) { %>
-			addFormListener('form_delete', 'DELETE', `/stores/orders/${path[3]}`,{onComplete: [getOrder, getLines]});
-		<% } %>
-		<% if (permissions.order_edit) { %>
-			addFormListener('form_complete', 'PUT', `/stores/orders/${path[3]}`, {onComplete: [getOrder, getLines]});
-		<% } %>
-		<% if (permissions.order_line_edit) { %>
-			addFormListener('form_action', 'PUT', `/stores/order_lines/${path[3]}`,{onComplete: getLines});
-		<% } %>
-    });
-</script>
+			);
+		});
+	</script>
+<% } %>
+<% if (permissions.access_order_lines) { %>
+	<script src="/js/stores/utils/showLine.js"></script>
+	<script src="/js/stores/utils/showLineActions.js"></script>
+	<script src="/js/stores/orders/show/lines.js"></script>
+	<script>
+		let lines_loaded  = false,
+			line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Demanded', '4': 'Received', '5': 'Issued', '6': 'Closed'};
+	</script>
+	<script async>getLines()</script>
+	<% if (permissions.access_notes) { %>
+		<script>
+            set_attribute({id: 'btn_order_lines_note_add', attribute: 'data-source', value: 'line_view'});
+			$('#mdl_line_view').on('show.bs.modal', function (event) {
+				set_attribute({id: 'btn_order_lines_note_add', attribute: 'data-_table', value: 'order_lines'});
+				set_attribute({id: 'btn_order_lines_note_add', attribute: 'data-_id',    value: event.relatedTarget.dataset.order_line_id});
+				getLineNotes({
+					line_id: 'order_lines',
+					table: 	 'order_lines',
+					id:		 event.relatedTarget.dataset.order_line_id
+				})
+			});
+		</script>
+	<% } %>
+	<% if (permissions.order_line_edit) { %>
+		<script src="/js/stores/orders/show/lineEdit.js"></script>
+		<script src="/js/stores/utils/setLineButtons.js"></script>
+		<script>
+			function setActions() {
+				let actions_interval = window.setInterval(
+					function () {
+						if (lines_loaded === true) {
+							getLineActions();
+							clearInterval(actions_interval);
+						}
+					},
+					500
+				);
+			};
+			document.querySelector('#reload').addEventListener('click', setActions);
+		</script>
+		<script async>setActions()</script>
+		<script async>setLineButtons('order')</script>
+		<script>
+			window.addEventListener( "load", function () {
+				addFormListener(
+					'form_action',
+					'PUT',
+					`/stores/order_lines/${path[3]}`,
+					{
+						onComplete: [
+							getLines,
+							setActions,
+							function () {setLineButtons('order')}
+						]
+					}
+				);
+			});
+		</script>
+	<% } %>
+<% } %>
+<% if (permissions.order_delete) { %>
+	<script>
+		window.addEventListener( "load", function () {
+			addFormListener(
+				'form_delete',
+				'DELETE',
+				`/stores/orders/${path[3]}`,
+				{
+					onComplete: [
+						getOrder<% if (permissions.access_order_lines) { %>,
+						getLines<% } %>
+					]
+				}
+			);
+		});
+	</script>
+<% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

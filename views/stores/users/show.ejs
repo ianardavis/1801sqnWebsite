@@ -16,7 +16,7 @@
                 <div class="dropdown-divider"></div>
                 <% if (permissions.order_add) { %>
                     <form id="form_order_add">
-                        <input type="hidden" class='user_id' name='ordered_for'>
+                        <input type="hidden" class='user_id' name='user_id_order'>
                         <button class='dropdown-item confirm'>
                             New Order
                         </button>
@@ -29,7 +29,7 @@
                 <% } %>
                 <% if (permissions.issue_add) { %>
                     <form id="form_issue_add">
-                        <input type="hidden" class='user_id' name='issued_to'>
+                        <input type="hidden" class='user_id' name='user_id_issue'>
                         <button class='dropdown-item confirm'>
                             New Issue
                         </button>
@@ -42,7 +42,7 @@
                 <% } %>
                 <% if (permissions.request_add) { %>
                     <form id="form_request_add">
-                        <input type="hidden" class='user_id' name='requested_for'>
+                        <input type="hidden" class='user_id' name='user_id_request'>
                         <button class='dropdown-item confirm'>
                             New Request
                         </button>

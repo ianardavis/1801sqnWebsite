@@ -12,7 +12,7 @@ function getIssues() {
                             sort: print_date(line.issue.createdAt),
                             text: new Date(line.issue.createdAt).toDateString()
                         });
-                        add_cell(row, {text: print_user(line.issue.user_to)});
+                        add_cell(row, {text: print_user(line.issue.user_issue)});
                         add_cell(row, {text: line._qty});
                         add_cell(row, {append: new Link({
                             href: `/stores/issues/${line.issue_id}`,

@@ -5,7 +5,7 @@ function getIssue() {
             for (let [id, value] of Object.entries(issue)) {
                 try {
                     let element = document.querySelector(`#${id}`);
-                    if (id === 'user_to' || id === 'user_by')  {
+                    if (id === 'user_issue' || id === 'user')  {
                         element.innerText = print_user(value);
                         let link = document.querySelector(`#${id}_link`);
                         link.setAttribute('href', `/stores/users/${value.user_id}`);

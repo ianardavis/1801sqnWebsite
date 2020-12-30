@@ -60,7 +60,7 @@ function getDraftRequests() {
         },
         {
             table: 'requests',
-            query: [`requested_for=${path[3]}`,'_status=1']
+            query: [`user_id_request=${path[3]}`,'_status=1']
         }
     );
 };

@@ -91,7 +91,7 @@ function getDraftIssues() {
         },
         {
             table: 'issues',
-            query: [`issued_to=${path[3]}`,'_status=1']
+            query: [`user_id_issue=${path[3]}`,'_status=1']
         }
     );
 };
