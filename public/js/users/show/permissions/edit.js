@@ -5,7 +5,12 @@ function getPermissionsEdit () {
             if (ul_tree) {
                 ul_tree.innerHTML = '';
                 permissions.tree.forEach(e => {
-                    ul_tree.appendChild(new List_Item({text: e._permission, caret: (e.children && e.children.length > 0)}).e)
+                    ul_tree.appendChild(
+                        new List_Item({
+                            text:  e._permission,
+                            caret: (e.children && e.children.length > 0)
+                        }).e
+                    );
                     if (e.children && e.children.length > 0) {
                         e.children.forEach(f => {
                             add_permission(document.querySelector(`#ul_${e._permission}`), f)
@@ -29,7 +34,12 @@ function getPermissionsEdit () {
 };
 function add_permission(parent, e) {
     if (parent) {
-        parent.appendChild(new List_Item({text: e._permission, caret: (e.children && e.children.length > 0)}).e)
+        parent.appendChild(
+            new List_Item({
+                text:  e._permission,
+                caret: (e.children && e.children.length > 0)
+            }).e
+        );
         if (e.children && e.children.length > 0) {
             e.children.forEach(f => {
                 add_permission(document.querySelector(`#ul_${e._permission}`), f)

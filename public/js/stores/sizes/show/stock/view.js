@@ -57,7 +57,9 @@ function getStockView(stock_id, permissions) {
                     if (permissions.edit) {
                         stock_buttons.appendChild(
                             new Button({
-                                id:   'btn_stock_edit',
+                                attributes: [
+                                    {field: 'id', value: 'btn_stock_edit'}
+                                ],
                                 type: 'success',
                                 html: '<i class="fas fa-pencil-alt"></i>',
                                 click: edit_stock,

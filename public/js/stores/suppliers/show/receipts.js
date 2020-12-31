@@ -15,8 +15,7 @@ showReceipts = (receipts, na) => {
         add_cell(row, {text: receipt.user.rank._rank + ' ' + receipt.user.full_name});
         add_cell(row, {append: new Link({
             href: '/stores/receipts/' + receipt.receipt_id,
-            small: true,
-            type: 'show'
+            small: true
         }).e});
     });
 };

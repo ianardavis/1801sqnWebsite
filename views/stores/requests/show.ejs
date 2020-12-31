@@ -65,16 +65,17 @@
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
 <script src='/js/addSize.js'></script>
-<script src="/js/stores/nsns/list.js"></script>
-<script src="/js/stores/stock/list.js"></script>
-<script src="/js/stores/serials/list.js"></script>
 <script src="/js/search/select.js"></script>
 <script src='/js/data/addFormListener.js'></script>
-<script>showTab('<%= tab %>')</script>
+<script>
+	let statuses = {'0': 'Cancelled', '1': 'Draft', '2': 'Open', '3': 'Closed'};
+	showTab('<%= tab %>');
+</script>
 
-<script src="/js/stores/requests/show/request.js"></script>
-<script>let statuses = {'0': 'Cancelled', '1': 'Draft', '2': 'Open', '3':'Closed'};</script>
-<script async>getRequest()</script>
+<script src="/js/stores/utils/getResult.js"></script>
+<script></script>
+<script async>getResult('request')</script>
+<script>document.querySelector('#reload').addEventListener('click', function () {getResult('request')});</script>
 
 <% if (permissions.request_edit) { %>
 	<script src="/js/stores/utils/setButtons.js"></script>
@@ -87,8 +88,8 @@
 				`/stores/requests/${path[3]}`,
 				{
 					onComplete: [
-						getRequest<% if (permissions.access_request_lines) { %>,
-						getLines<% } %>
+						function () {getResult('request')}<% if (permissions.access_request_lines) { %>,
+						function () {getLines('request')}<% } %>
 					]
 				}
 			);
@@ -98,12 +99,18 @@
 <% if (permissions.access_request_lines) { %>
 	<script src="/js/stores/utils/showLine.js"></script>
 	<script src="/js/stores/utils/showLineActions.js"></script>
-	<script src="/js/stores/requests/show/lines.js"></script>
+	<script src="/js/stores/utils/getLines.js"></script>
 	<script>
-		let lines_loaded = false,
+		let lines_loaded  = false,
 			line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3':'Approved', '4':'Declined'};
+		window.addEventListener('load', function () {
+			document.querySelector('#reload')    .addEventListener('click',  function () {getLines('request')});
+			document.querySelector('#sel_status').addEventListener('change', function () {getLines('request')});
+			$('#mdl_line_view').on('show.bs.modal', function (event) {showLine(       'request', event.relatedTarget.dataset[`request_line_id`])});
+			$('#mdl_line_view').on('show.bs.modal', function (event) {showLineActions('request', event.relatedTarget.dataset[`request_line_id`])});
+		});
 	</script>
-	<script async>getLines()</script>
+	<script async>getLines('request')</script>
 	<% if (permissions.access_notes) { %>
 		<script>
             set_attribute({id: 'btn_request_lines_note_add', attribute: 'data-source', value: 'line_view'});
@@ -114,11 +121,14 @@
 					line_id: 'request_lines',
 					table: 	 'request_lines',
 					id:		 event.relatedTarget.dataset.request_line_id
-				})
+				});
 			});
 		</script>
 	<% } %>
 	<% if (permissions.request_line_edit) { %>
+		<script src="/js/stores/nsns/list.js"></script>
+		<script src="/js/stores/stock/list.js"></script>
+		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/requests/show/lineEdit.js"></script>
 		<script src="/js/stores/utils/setLineButtons.js"></script>
 		<script>
@@ -145,7 +155,7 @@
 					`/stores/request_lines/${path[3]}`,
 					{
 						onComplete: [
-							getLines,
+							function () {getLines('request')},
 							setActions,
 							function () {setLineButtons('request')}
 						]
@@ -164,8 +174,8 @@
 				`/stores/requests/${path[3]}`,
 				{
 					onComplete: [
-						getRequest<% if (permissions.access_request_lines) { %>,
-						getLines<% } %>
+						function () {getResult('request')}<% if (permissions.access_request_lines) { %>,
+						function () {getLines('request')}<% } %>
 					]
 				}
 			);

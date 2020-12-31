@@ -269,8 +269,8 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            include.push(inc.users({as: 'user_for'}));
-            include.push(inc.users({as: 'user_by'}));
+            include.push(inc.users({as: 'user_request'}));
+            include.push(inc.users({as: 'user'}));
             if (options.lines) include.push(inc.request_lines());
         };
         return {
@@ -319,8 +319,8 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            include.push(inc.users({as: 'user_for'}));
-            include.push(inc.users({as: 'user_by'}));
+            include.push(inc.users({as: 'user_order'}));
+            include.push(inc.users({as: 'user'}));
             if (options.lines) include.push(inc.order_lines());
         };
         return {
@@ -434,8 +434,8 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            include.push(inc.users({as: 'user_to'}));
-            include.push(inc.users({as: 'user_by'}));
+            include.push(inc.users({as: 'user_issue'}));
+            include.push(inc.users({as: 'user'}));
             if (options.lines) include.push(inc.issue_lines());
         };
         return {

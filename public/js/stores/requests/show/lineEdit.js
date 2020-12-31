@@ -12,20 +12,23 @@ function getLineActions() {
                     opts.push({value: '3', text: 'Approve'});
                     opts.push({value: '4', text: 'Decline'});
                     let _status = new Select({
-                            name: `actions[${line.line_id}][_status]`,
-                            id:   `sel_${line.line_id}`,
-                            small: true,
-                            options: opts
-                        }).e;
+                        attributes: [
+                            {field: 'id',   value: `sel_${line.line_id}`},
+                            {field: 'name', value: `actions[${line.line_id}][_status]`}
+                        ],
+                        small: true,
+                        options: opts
+                    }).e;
                     _status.addEventListener("change", function () {
                         clearElement(`action_${line.line_id}`);
                         clearElement(`details_${line.line_id}`);
                         if (this.value === '4') {
                             div_action.appendChild(
-                                new Input({
-                                    type: 'hidden',
-                                    name: `actions[${line.line_id}][line_id]`,
-                                    value: line.line_id
+                                new Hidden({
+                                    attributes: [
+                                        {field: 'name',  value: `actions[${line.line_id}][line_id]`},
+                                        {field: 'value', value: line.line_id}
+                                    ]
                                 }).e
                             );
                         } else if (this.value === '3') {
@@ -53,10 +56,11 @@ function showActions(size_id, line_id) {
     if (_cell) {
         _cell.innerHTML = '';
         _cell.appendChild(
-            new Input({
-                type: 'hidden',
-                name: `actions[${line_id}][line_id]`,
-                value: line_id
+            new Hidden({
+                attributes: [
+                    {field: 'name',  value: `actions[${line_id}][line_id]`},
+                    {field: 'value', value: line_id}
+                ]
             }).e
         );
         add_spinner(_cell, {id: line_id});
@@ -66,9 +70,11 @@ function showActions(size_id, line_id) {
                 if (size._orderable) opts.push({value: 'Order', text: 'Order'});
                 if (size._issueable) opts.push({value: 'Issue', text: 'Issue'});
                 let _action = new Select({
+                    attributes: [
+                        {field: 'name',     value: `actions[${line_id}][_action]`},
+                        {field: 'required', value: true}
+                    ],
                     small: true,
-                    name: `actions[${line_id}][_action]`,
-                    required: true,
                     options: opts
                 }).e;
                 _action.addEventListener("change", function () {

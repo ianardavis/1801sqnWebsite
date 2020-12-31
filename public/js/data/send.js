@@ -24,7 +24,7 @@ sendData = (form, method, _location, options = {reload: false, reload_opener: tr
             console.log(error)
         };
     });
-    XHR.addEventListener("error", event => alert('Oops! Something went wrong.'));
+    XHR.addEventListener("error", function () {alert('Oops! Something went wrong.')});
     XHR.open(method, _location);
     XHR.send(FD);
 };

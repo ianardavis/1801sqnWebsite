@@ -417,13 +417,13 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                     order_results.forEach(order_action => {
                         if (order_action.status === 'fulfilled') {
                             order_action.value.forEach(action => {
-                                if (action.order_line.order.ordered_for !== -1) {
-                                    if (users.findIndex(e => e.id === action.order_line.order.ordered_for) === -1) {
+                                if (action.order_line.order.user_id_order !== -1) {
+                                    if (users.findIndex(e => e.id === action.order_line.order.user_id_order) === -1) {
                                         orders.push({line_id: action.order_line.order_line_id})
                                         users.push({
-                                            id: action.order_line.order.ordered_for,
-                                            rank: action.order_line.order.user_for.rank._rank,
-                                            name: action.order_line.order.user_for._name
+                                            id: action.order_line.order.user_id_order,
+                                            rank: action.order_line.order.user_order.rank._rank,
+                                            name: action.order_line.order.user_order._name
                                         });
                                     };
                                 };

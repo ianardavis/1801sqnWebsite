@@ -7,8 +7,11 @@ function getResult(table) {
             set_attribute({id: 'user_link',          attribute: 'href', value: `/stores/users/${result.user_id}`});
             set_innerText({id: 'createdAt',          text: print_date(result.createdAt, true)});
             set_innerText({id: 'updatedAt',          text: print_date(result.updatedAt, true)});
-            set_innerText({id: '_status',            text: result_statuses[result._status]});
-            set_breadcrumb({text: result[`${result}_id`], href: `/stores/${table}s/${result[`${result}_id`]}`});
+            set_innerText({id: '_status',            text: statuses[result._status]});
+            set_breadcrumb({
+                text: result[`${table}_id`],
+                href: `/stores/${table}s/${result[`${table}_id`]}`
+            });
         },
         {
             table: table,
@@ -16,4 +19,4 @@ function getResult(table) {
         }
     );
 };
-document.querySelector('#reload').addEventListener('click', getResult);
+// document.querySelector('#reload').addEventListener('click', getResult);

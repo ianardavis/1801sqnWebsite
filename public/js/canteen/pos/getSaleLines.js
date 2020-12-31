@@ -22,11 +22,26 @@ function getSaleLines() {
                     add_cell(row, {text: `£${Number(line._qty * line._price).toFixed(2)}`});
                     let form = document.createElement('form');
                     form.setAttribute('id', `form_${line.line_id}_minus`)
-                    form.appendChild(new Input({type: 'hidden', name: 'line[line_id]', value: line.line_id}).e);
-                    form.appendChild(new Input({type: 'hidden', name: 'line[_qty]',    value: -1}).e);
+                    form.appendChild(new Hidden({
+                        attributes: [
+                            {field: 'name', value: 'line[line_id]'},
+                            {field: 'value', value: line.line_id}
+                        ]}).e
+                    );
+                    form.appendChild(new Hidden({
+                        attributes: [
+                            {field: 'name', value: 'line[_qty]'},
+                            {field: 'value', value: -1}
+                        ]}).e
+                    );
                     form.appendChild(new Button({html: '<i class="fas fa-minus"></i>', small: true}).e);
                     add_cell(row, {append: form});
-                    addFormListener(`form_${line.line_id}_minus`, 'PUT', `/canteen/sale_lines`, {noConfirm: true, onComplete: [getSaleLines]});
+                    addFormListener(
+                        `form_${line.line_id}_minus`,
+                        'PUT',
+                        `/canteen/sale_lines`,
+                        {noConfirm: true, onComplete: [getSaleLines]}
+                    );
                 });
             };
             totals.forEach(e => {

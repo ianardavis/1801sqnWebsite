@@ -50,9 +50,3 @@ function getLines(table) {
         }
     );
 };
-window.addEventListener('load', function () {
-    document.querySelector('#reload')    .addEventListener('click',  getLines);
-    document.querySelector('#sel_status').addEventListener('change', getLines);
-    $('#mdl_line_view').on('show.bs.modal', function (event) {showLine(       table, event.relatedTarget.dataset[`${table}_line_id`])});
-    $('#mdl_line_view').on('show.bs.modal', function (event) {showLineActions(table, event.relatedTarget.dataset[`${table}_line_id`])});
-});

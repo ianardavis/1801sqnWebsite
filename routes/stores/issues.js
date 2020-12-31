@@ -8,10 +8,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/issues/:id',             permissions, allowed('access_issues',                        {allow: true}), (req, res) => {
         m.stores.issues.findOne({
             where: {issue_id: req.params.id},
-            attributes: ['issued_to']
+            attributes: ['user_id_issue']
         })
         .then(issue => {
-            if (req.allowed || issue.issued_to === req.user.user_id) {
+            if (req.allowed || issue.user_id_issue === req.user.user_id) {
                 res.render('stores/issues/show', {
                     download: req.query.download || null
                 })
@@ -48,8 +48,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
         m.stores.issues.findOne({
             where:      req.query,
             include:    [
-                inc.users({as: 'user_to'}), 
-                inc.users({as: 'user_by'}),
+                inc.users({as: 'user_issue'}), 
+                inc.users({as: 'user'}),
                 inc.issue_lines()
             ]
         })
@@ -63,8 +63,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
         m.stores.issues.findAll({
             where:      req.query,
             include:    [
-                inc.users({as: 'user_to'}), 
-                inc.users({as: 'user_by'}),
+                inc.users({as: 'user_issue'}), 
+                inc.users({as: 'user'}),
                 inc.issue_lines()
             ]
         })
@@ -90,7 +90,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             inc.sizes({stock: true}),
             inc.stock({as: 'stock'}),
             inc.issues({
-                where: {issued_to: req.params.id},
+                where: {user_id_issue: req.params.id},
                 required: true
             })
         ];
@@ -142,7 +142,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.post('/stores/issues',                permissions, allowed('issue_add',                 {send: true}),             (req, res) => {
         issues.create({
             issue: {
-                issued_to: req.body.issued_to,
+                user_id_issue: req.body.user_id_issue,
                 user_id:   req.user.user_id,
                 _date_due: addYears(7)
             }
@@ -222,7 +222,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             } else {
                 returns.create({
                     return: {
-                        from: issue_line.issue.issued_to,
+                        from: issue_line.issue.user_id_issue,
                         user_id: user_id
                     }
                 })

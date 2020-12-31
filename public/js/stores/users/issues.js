@@ -42,7 +42,9 @@ function getIssues () {
                         });
                         add_cell(row, {
                             append: new Select({
-                                name: `returns[line_id${line.line_id}][stock_id]`,
+                                attributes: [
+                                    {field: 'name', value: `returns[line_id${line.line_id}][stock_id]`}
+                                ],
                                 small: true,
                                 options: options
                             }).e

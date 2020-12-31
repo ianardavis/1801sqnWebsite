@@ -60,12 +60,14 @@ function getNSNView(nsn_id, permissions) {
                     if (permissions.edit) {
                         nsn_buttons.appendChild(
                             new Button({
-                                id: 'btn_nsn_edit',
+                                attributes: [
+                                    {field: 'id', value: 'btn_nsn_edit'}
+                                ],
+                                classes: ['mr-1'],
                                 type: 'success',
                                 html: '<i class="fas fa-pencil-alt"></i>',
                                 click: edit_nsn,
-                                float:      true,
-                                classes: ['mr-1']
+                                float: true
                             }).e
                         );
                     };

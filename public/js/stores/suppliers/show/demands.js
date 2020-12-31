@@ -17,8 +17,7 @@ showDemands = (demands, na) => {
         add_cell(row, {text: demand.user.rank._rank + ' ' + demand.user.full_name});
         add_cell(row, {append: new Link({
             href: `/stores/demands/${demand.demand_id}`,
-            small: true,
-            type: 'show'
+            small: true
         }).e});
     });
 };

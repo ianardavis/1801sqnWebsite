@@ -1,20 +1,20 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, permissions, m) => {
+module.exports = (app, al, inc, pm, m) => {
     let requests = {}, orders = {}, issues = {},
     promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`),
     Counter        = require(`${process.env.ROOT}/fn/utils/counter`);
     require(`${process.env.ROOT}/fn/stores/requests`)(m, requests);
     require(`${process.env.ROOT}/fn/stores/orders`)  (m, orders);
     require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
-    app.get('/stores/requests',                 permissions, allowed('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
-    app.get('/stores/requests/:id',             permissions, allowed('access_requests',     {allow: true}),             (req, res) => {
+    app.get('/stores/requests',                 pm, al('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
+    app.get('/stores/requests/:id',             pm, al('access_requests',     {allow: true}),             (req, res) => {
         m.stores.requests.findOne({
             where: {request_id: req.params.id},
-            attributes: ['requested_for', '_status']
+            attributes: ['user_id_request', '_status']
         })
         .then(request => {
             if      (!request)                                                   res.error.redirect(new Error('Request not found'), req, res)
-            else if (!req.allowed && request.requested_for !== req.user.user_id) res.error.redirect(new Error('Permission denied'), req, res)
+            else if (!req.allowed && request.user_id_request !== req.user.user_id) res.error.redirect(new Error('Permission denied'), req, res)
             else {
                 if (request._status === 1) req.flash('danger', "This request is still in draft, no items on this request will be actioned or considered until the request is marked as 'Complete'");
                 res.render('stores/requests/show');
@@ -22,7 +22,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/request_lines/:id',        permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
+    app.get('/stores/request_lines/:id',        pm, al('access_request_lines',             {send: true}), (req, res) => {
         m.stores.request_lines.findOne({
             where: {line_id: req.params.id},
             attribute: ['request_id']
@@ -34,33 +34,33 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.get('/stores/get/requests',             permissions, allowed('access_requests',     {allow: true, send: true}), (req, res) => {
-        if (!allowed) req.query.requested_for = req.user.user_id;
+    app.get('/stores/get/requests',             pm, al('access_requests',     {allow: true, send: true}), (req, res) => {
+        if (!req.allowed) req.query.user_id_request = req.user.user_id;
         m.stores.requests.findAll({
             where: req.query,
             include: [
                 inc.request_lines(),
-                inc.users({as: 'user_for'}),
-                inc.users({as: 'user_by'})
+                inc.users({as: 'user_request'}),
+                inc.users({as: 'user'})
             ]
         })
         .then(requests => res.send({result: true, requests: requests}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/request',              permissions, allowed('access_requests',     {allow: true, send: true}), (req, res) => {
-        if (!allowed) req.query.requested_for = req.user.user_id;
+    app.get('/stores/get/request',              pm, al('access_requests',     {allow: true, send: true}), (req, res) => {
+        if (!req.allowed) req.query.user_id_request = req.user.user_id;
         m.stores.requests.findOne({
             where: req.query,
             include: [
                 inc.request_lines(),
-                inc.users({as: 'user_for'}),
-                inc.users({as: 'user_by'})
+                inc.users({as: 'user_request'}),
+                inc.users({as: 'user'})
             ]
         })
         .then(request => res.send({result: true, request: request}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/request_lines',        permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
+    app.get('/stores/get/request_lines',        pm, al('access_request_lines',             {send: true}), (req, res) => {
         m.stores.request_lines.findAll({
             where:      req.query,
             include:    [
@@ -72,7 +72,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/request_line',         permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
+    app.get('/stores/get/request_line',         pm, al('access_request_lines',             {send: true}), (req, res) => {
         m.stores.request_lines.findOne({
             where:      req.query,
             include:    [
@@ -86,7 +86,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/request_line_actions', permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
+    app.get('/stores/get/request_line_actions', pm, al('access_request_lines',             {send: true}), (req, res) => {
         m.stores.request_line_actions.findAll({
             where:      req.query,
             include:    [
@@ -97,13 +97,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(request_line_actions => res.send({result: true, request_line_actions: request_line_actions}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/request_lines/:id',    permissions, allowed('access_request_lines',             {send: true}), (req, res) => {
+    app.get('/stores/get/request_lines/:id',    pm, al('access_request_lines',             {send: true}), (req, res) => {
         m.stores.request_lines.findAll({
             where: req.query,
             include: [
                 inc.sizes(),
                 inc.requests({
-                    where: {requested_for: req.params.id},
+                    where: {user_id_request: req.params.id},
                     required: true
                 })
             ]
@@ -112,9 +112,9 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/requests',                permissions, allowed('request_add',                      {send: true}), (req, res) => {
+    app.post('/stores/requests',                pm, al('request_add',                      {send: true}), (req, res) => {
         requests.create({
-            requested_for: req.body.requested_for,
+            user_id_request: req.body.user_id_request,
             user_id:       req.user.user_id
         })
         .then(result => {
@@ -125,7 +125,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/request_lines',           permissions, allowed('request_line_add',                 {send: true}), (req, res) => {
+    app.post('/stores/request_lines',           pm, al('request_line_add',                 {send: true}), (req, res) => {
         requests.createLine({
             line: req.body.line,
             user_id: req.user.user_id
@@ -134,15 +134,15 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res))
     });
     
-    app.put('/stores/requests/:id',             permissions, allowed('request_edit',        {allow: true, send: true}), (req, res) => {
+    app.put('/stores/requests/:id',             pm, al('request_edit',        {allow: true, send: true}), (req, res) => {
         m.stores.requests.findOne({
             where:      {request_id: req.params.id},
-            attributes: ['requested_for', '_status', 'request_id'],
+            attributes: ['user_id_request', '_status', 'request_id'],
             include:    [inc.request_lines({where: {_status: 1}, attributes: ['line_id']})]
         })
         .then(request => {
             if      (!request)                                                   res.send({result: false, message: 'Request not found'});
-            else if (!req.allowed && req.user.user_id !== request.requested_for) res.send({result: false, message: 'Permission denied'});
+            else if (!req.allowed && req.user.user_id !== request.user_id_request) res.send({result: false, message: 'Permission denied'});
             else if (request._status !== 1)                                      res.send({result: false, message: 'Request must be in draft to be completed'});
             else if (!request.lines || request.lines.length === 0)               res.send({result: false, message: 'A request must have at least one open line before you can complete it'});
             else {
@@ -180,13 +180,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/request_lines/:id',        permissions, allowed('request_line_edit',                {send: true}), (req, res) => {
+    app.put('/stores/request_lines/:id',        pm, al('request_line_edit',                {send: true}), (req, res) => {
         m.stores.requests.findOne({
             where: { request_id: req.params.id },
-            attributes: ['request_id', 'requested_for' , '_status']
+            attributes: ['request_id', 'user_id_request' , '_status']
         })
         .then(request => {
-            if      (request.requested_for === req.user.user_id) res.send({result: false, message: 'You can not approve requests for yourself'})
+            if      (request.user_id_request === req.user.user_id) res.send({result: false, message: 'You can not approve requests for yourself'})
             else if (request._status !== 2)                      res.send({result: false, message: 'This request is not open'})
             else {
                 let actions = [],
@@ -197,7 +197,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     actions.push(
                         new Promise((resolve, reject) => {
                             orders.create(
-                                request.requested_for,
+                                request.user_id_request,
                                 req.user.user_id
                             )
                             .then(order => {
@@ -270,7 +270,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     actions.push(
                         new Promise((resolve, reject) => {
                             issues.create(
-                                request.requested_for,
+                                request.user_id_request,
                                 req.user.user_id
                             )
                             .then(issue => {
@@ -388,15 +388,15 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/requests/:id',          permissions, allowed('request_delete',      {allow: true, send: true}), (req, res) => {
+    app.delete('/stores/requests/:id',          pm, al('request_delete',      {allow: true, send: true}), (req, res) => {
         m.stores.requests.findOne({
             where:      {request_id: req.params.id},
-            attributes: ['request_id', '_status', 'requested_for'],
+            attributes: ['request_id', '_status', 'user_id_request'],
             include:    [inc.request_lines({attributes: ['line_id'], where: {_status: 1}})]
         })
         .then(request => {
             if      (!request)                                               res.send({result: false, message: 'Request not found'})
-            else if (!allowed && request.requested_for !== req.user.user_id) res.send({result: false, message: 'Permission denied'})
+            else if (!req.allowed && request.user_id_request !== req.user.user_id) res.send({result: false, message: 'Permission denied'})
             else if (request._status !== 1)                                  res.send({result: false, message: 'Only draft requests can be cancelled'})
             else {
                 let actions = [];
@@ -426,14 +426,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/request_lines/:id',     permissions, allowed('request_line_delete', {allow: true, send: true}), (req, res) => {
+    app.delete('/stores/request_lines/:id',     pm, al('request_line_delete', {allow: true, send: true}), (req, res) => {
         m.stores.request_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status'],
-            include: [inc.requests({attributes:['_status', 'requested_for']})]
+            include: [inc.requests({attributes:['_status', 'user_id_request']})]
         })
         .then(line => {
-            if      (!allowed && line.request.requested_for !== req.user.user_id) res.send({result: false, message: 'Permission denied'});
+            if      (!req.allowed && line.request.user_id_request !== req.user.user_id) res.send({result: false, message: 'Permission denied'});
             else if (line.request._status !== 1)                                  res.send({result: false, message: 'Lines can only be cancelled whilst a request is in draft'});
             else if (line._status !== 1)                                          res.send({result: false, message: 'Only pending lines can be cancelled'});
             else {

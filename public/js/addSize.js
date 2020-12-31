@@ -96,8 +96,10 @@ function getSize() {
                                                 new Input_Group({
                                                     title: `Enter Serial #: ${i + 1}`,
                                                     append: new Input({
-                                                        name: `line[serials][][${i}][serial_id]`,
-                                                        completeOff: true
+                                                        attributes: [
+                                                            {field: 'name',         value: `line[serials][][${i}][serial_id]`},
+                                                            {field: 'autocomplete', value: 'off'}
+                                                        ]
                                                     }).e
                                                 }).e
                                             );
@@ -105,8 +107,10 @@ function getSize() {
                                                 new Input_Group({
                                                     title: `Select Location: ${i + 1}`,
                                                     append: new Select({
-                                                        name: `line[serials][][${i}][location_id]`,
-                                                        size: 3,
+                                                        attributes: [
+                                                            {field: 'name', value: `line[serials][][${i}][location_id]`},
+                                                            {field: 'size', value: 3}
+                                                        ],
                                                         options: opts
                                                     }).e
                                                 }).e
@@ -115,8 +119,10 @@ function getSize() {
                                                 new Input_Group({
                                                     title: `Enter Location: ${i + 1}`,
                                                     append: new Input({
-                                                        name: `line[serials][][${i}][location]`,
-                                                        completeOff: true
+                                                        attributes: [
+                                                            {field: 'name',         value: `line[serials][][${i}][location]`},
+                                                            {field: 'autocomplete', value: 'off'}
+                                                        ]
                                                     }).e
                                                 }).e
                                             );
@@ -140,9 +146,11 @@ function getSize() {
                                                 new Input_Group({
                                                     title: `Select Serial: ${i + 1}`,
                                                     append: new Select({
-                                                        name: `line[serials][][${i}][serial_id]`,
-                                                        size: 3,
-                                                        required: true,
+                                                        attributes: [
+                                                            {field: 'name',     value: `line[serials][][${i}][serial_id]`},
+                                                            {field: 'size',     value: 3},
+                                                            {field: 'required', value: true}
+                                                        ],
                                                         options: opts
                                                     }).e
                                                 }).e
@@ -169,8 +177,10 @@ function getSize() {
                                         new Input_Group({
                                             title: 'Select Location:',
                                             append: new Select({
-                                                name: `line[location_id]`,
-                                                size: 3,
+                                                attributes: [
+                                                    {field: 'name', value: 'line[location_id]'},
+                                                    {field: 'size', value: 3}
+                                                ],
                                                 options: opts
                                             }).e
                                         }).e
@@ -179,8 +189,10 @@ function getSize() {
                                         new Input_Group({
                                             title: 'Enter Location:',
                                             append: new Input({
-                                                name: `line[location]`,
-                                                completeOff: true
+                                                attributes: [
+                                                    {field: 'name',         value: `line[location]`},
+                                                    {field: 'autocomplete', value: 'off'}
+                                                ]
                                             }).e
                                         }).e
                                     );

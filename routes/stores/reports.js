@@ -86,7 +86,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         if (selected.length > 0) {
             orders.create({
                 order: {
-                    ordered_for: req.body.ordered_for,
+                    user_id_order: req.body.user_id_order,
                     user_id: req.user.user_id
                 }
             })

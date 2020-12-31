@@ -3,33 +3,54 @@ function getLineActions() {
     actions.forEach(e => {
         get(
             function (line, options) {
-                if (line._status === 2) {
+                if ([2, 3, 4].includes(line._status)) {
                     let opts = [],
-                        div_actions = document.createElement('div'),
                         div_action  = document.createElement('div'),
+                        div_actions = document.createElement('div'),
                         div_details = document.createElement('div');
-                    opts.push({            text: 'Open', selected: true});
-                    opts.push({value: '3', text: 'Approve'});
-                    opts.push({value: '4', text: 'Decline'});
+                    opts.push({text: line_statuses[line._status], selected: true});
+                    if (line._status === 2) opts.push({value: '3', text: 'Demand'});
+                    if (line._status <= 3)  opts.push({value: '4', text: 'Receive'});
+                    if (
+                        line._status <= 4 &&
+                        line.size._issueable
+                                          ) opts.push({value: '5', text: 'Issue'});
+                    if (line._status === 5) opts.push({value: '6', text: 'Close'});
                     let _status = new Select({
-                            name: `actions[${line.line_id}][_status]`,
-                            id:   `sel_${line.line_id}`,
-                            small: true,
-                            options: opts
-                        }).e;
+                        attributes: [
+                            {field: 'id',   value: `sel_${line.line_id}`},
+                            {field: 'name', value: `actions[${line.line_id}][_status]`}
+                        ],
+                        small:   true,
+                        options: opts
+                    }).e;
                     _status.addEventListener("change", function () {
                         clearElement(`action_${line.line_id}`);
                         clearElement(`details_${line.line_id}`);
-                        if (this.value === '4') {
-                            div_action.appendChild(
-                                new Input({
-                                    type: 'hidden',
-                                    name: `actions[${line.line_id}][line_id]`,
-                                    value: line.line_id
-                                }).e
+                        div_action.appendChild(
+                            new Hidden({
+                                attributes: [
+                                    {field: 'name',  value: `actions[${line.line_id}][line_id]`},
+                                    {field: 'value', value: line.line_id}
+                                ]
+                            }).e
+                        );
+                        let _cell = document.querySelector(`#details_${line.line_id}`);
+                        if (_cell) {
+                            _cell.innerHTML = '';
+                            add_spinner(_cell, {id: line.line_id});
+                            get(
+                                function (size, options) {
+                                    if      (options.action === '4') showReceiptActions(size, line.line_id);
+                                    else if (options.action === '5') showIssueActions(  size, line.line_id);
+                                    remove_spinner(line.line_id);
+                                },
+                                {
+                                    table: 'size',
+                                    query: [`size_id=${line.size_id}`],
+                                    action: this.value
+                                }
                             );
-                        } else if (this.value === '3') {
-                            showActions(line.size_id, line.line_id);
                         };
                     });
                     div_action.setAttribute( 'id', `action_${line.line_id}`);
@@ -48,43 +69,12 @@ function getLineActions() {
         );
     });
 };
-function showActions(size_id, line_id) {
-    let _cell = document.querySelector(`#action_${line_id}`);
-    if (_cell) {
-        _cell.innerHTML = '';
-        _cell.appendChild(
-            new Input({
-                type: 'hidden',
-                name: `actions[${line_id}][line_id]`,
-                value: line_id
-            }).e
-        );
-        add_spinner(_cell, {id: line_id});
-        get(
-            function (size, options) {
-                let opts = [{text: '... Select Action', selected: true}];
-                if (size._orderable) opts.push({value: 'Order', text: 'Order'});
-                if (size._issueable) opts.push({value: 'Issue', text: 'Issue'});
-                let _action = new Select({
-                    small: true,
-                    name: `actions[${line_id}][_action]`,
-                    required: true,
-                    options: opts
-                }).e;
-                _action.addEventListener("change", function () {
-                    if (this.value === 'Issue') {
-                        getStock(size_id, line_id, 'details');
-                        if (size._nsns)    getNSNs(   size_id, line_id, 'details', size.nsn_id);
-                        if (size._serials) getSerials(size_id, line_id, 'details');
-                    } else clearElement(`details_${line_id}`);
-                });
-                _cell.appendChild(_action);
-                remove_spinner(line_id);
-            },
-            {
-                table: 'size',
-                query: [`size_id=${size_id}`]
-            }
-        );
-    };
+function showReceiptActions(size, line_id) {
+    getStock(size.size_id, line_id, 'details', true);
+    if (size._serials) getSerials(size.size_id, line_id, 'details', true);
+};
+function showIssueActions(size, line_id) {
+    getStock(size.size_id, line_id, 'details');
+    if (size._nsns)    getNSNs(   size.size_id, line_id, 'details', size.nsn_id);
+    if (size._serials) getSerials(size.size_id, line_id, 'details');
 };

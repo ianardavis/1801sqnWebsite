@@ -42,9 +42,9 @@
 			<% } %>
 			<table class='table table-sm table-hover mx-auto w-100'>
 				<thead id='table_header_lines' class='thead-dark'>
-					<th class='w-30' onclick="sortTable(0, 'tbl_lines')">Item</th>
-					<th class='w-15' onclick="sortTable(1, 'tbl_lines')">Size</th>
-					<th class='w-5'  onclick="sortTable(2, 'tbl_lines')">Qty</th>
+					<th class='w-40' onclick="sortTable(0, 'tbl_lines')">Item</th>
+					<th class='w-30' onclick="sortTable(1, 'tbl_lines')">Size</th>
+					<th class='w-10' onclick="sortTable(2, 'tbl_lines')">Qty</th>
 					<th class='w-20' onclick="sortTable(3, 'tbl_lines')">Status</th>
 					<th><i class='fas fa-search'></i></th>
 				</thead>
@@ -65,16 +65,16 @@
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
 <script src="/js/addSize.js"></script>
-<script src="/js/stores/nsns/list.js"></script>
-<script src="/js/stores/stock/list.js"></script>
-<script src="/js/stores/serials/list.js"></script>
 <script src="/js/search/select.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script>showTab('<%= tab %>');</script>
+<script>
+	let statuses = {"0": "Cancelled", "1": "Draft", "2": "Open", "3": "Closed"};
+	showTab('<%= tab %>');
+</script>
 
-<script src="/js/stores/orders/show/order.js"></script>
-<script>let order_statuses = {"0": "Cancelled", "1": "Draft", "2": "Open", "3": "Complete"};</script>
-<script async>getOrder()</script>
+<script src="/js/stores/utils/getResult.js"></script>
+<script async>getResult('order')</script>
+<script>document.querySelector('#reload').addEventListener('click', function () {getResult('order')});</script>
 
 <% if (permissions.order_edit) { %>
 	<script src="/js/stores/utils/setButtons.js"></script>
@@ -87,8 +87,8 @@
 				`/stores/orders/${path[3]}`,
 				{
 					onComplete: [
-						getOrder<% if (permissions.access_order_lines) { %>,
-						getLines<% } %>
+						function () {getResult('order')}<% if (permissions.access_order_lines) { %>,
+						function () {getLines('order')}<% } %>
 					]
 				}
 			);
@@ -98,12 +98,18 @@
 <% if (permissions.access_order_lines) { %>
 	<script src="/js/stores/utils/showLine.js"></script>
 	<script src="/js/stores/utils/showLineActions.js"></script>
-	<script src="/js/stores/orders/show/lines.js"></script>
+	<script src="/js/stores/utils/getLines.js"></script>
 	<script>
 		let lines_loaded  = false,
 			line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Demanded', '4': 'Received', '5': 'Issued', '6': 'Closed'};
+		window.addEventListener('load', function () {
+			document.querySelector('#reload')    .addEventListener('click',  function () {getLines('order')});
+			document.querySelector('#sel_status').addEventListener('change', function () {getLines('order')});
+			$('#mdl_line_view').on('show.bs.modal', function (event) {showLine(       'order', event.relatedTarget.dataset[`order_line_id`])});
+			$('#mdl_line_view').on('show.bs.modal', function (event) {showLineActions('order', event.relatedTarget.dataset[`order_line_id`])});
+		});
 	</script>
-	<script async>getLines()</script>
+	<script async>getLines('order')</script>
 	<% if (permissions.access_notes) { %>
 		<script>
             set_attribute({id: 'btn_order_lines_note_add', attribute: 'data-source', value: 'line_view'});
@@ -119,6 +125,9 @@
 		</script>
 	<% } %>
 	<% if (permissions.order_line_edit) { %>
+		<script src="/js/stores/nsns/list.js"></script>
+		<script src="/js/stores/stock/list.js"></script>
+		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/orders/show/lineEdit.js"></script>
 		<script src="/js/stores/utils/setLineButtons.js"></script>
 		<script>
@@ -136,7 +145,7 @@
 			document.querySelector('#reload').addEventListener('click', setActions);
 		</script>
 		<script async>setActions()</script>
-		<script async>setLineButtons('order')</script>
+		<script async>setLineButtons('order');</script>
 		<script>
 			window.addEventListener( "load", function () {
 				addFormListener(
@@ -145,7 +154,7 @@
 					`/stores/order_lines/${path[3]}`,
 					{
 						onComplete: [
-							getLines,
+							function () {getLines('order')},
 							setActions,
 							function () {setLineButtons('order')}
 						]
@@ -164,8 +173,8 @@
 				`/stores/orders/${path[3]}`,
 				{
 					onComplete: [
-						getOrder<% if (permissions.access_order_lines) { %>,
-						getLines<% } %>
+						function () {getResult('order')}<% if (permissions.access_order_lines) { %>,
+						function () {getLines('order')}<% } %>
 					]
 				}
 			);

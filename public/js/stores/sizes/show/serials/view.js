@@ -54,7 +54,9 @@ function getSerialView(serial_id, permissions) {
                     if (permissions.edit) {
                         serial_buttons.appendChild(
                             new Button({
-                                id:   'btn_serial_edit',
+                                attributes: [
+                                    {field: 'id', value: 'btn_serial_edit'}
+                                ],
                                 type: 'success',
                                 html: '<i class="fas fa-pencil-alt"></i>',
                                 click: edit_serial,

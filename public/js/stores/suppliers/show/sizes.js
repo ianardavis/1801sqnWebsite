@@ -10,7 +10,6 @@ showSizes = (sizes, options) => {
         add_cell(row, {text: size.locationStock});
         add_cell(row, {append: new Link({
             href: '/stores/sizes/' + size.size_id,
-            type: 'show',
             small: true
         }).e});
     });

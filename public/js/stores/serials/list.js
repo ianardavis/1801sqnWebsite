@@ -1,29 +1,36 @@
-getSerials = (size_id, line_id, cell) => {
-    clearElement(`${cell}_${line_id}`);
+function getSerials(size_id, line_id, cell, entry = false) {
     let _cell = document.querySelector(`#${cell}_${line_id}`);
     add_spinner(_cell, {id: `serials_${line_id}`});
-    const XHR = new XMLHttpRequest();
-    XHR.addEventListener("load", event => {
-        let response = JSON.parse(event.target.responseText);
-        if (response.result) {
-            let serials = [{value: '', text:  '... Select Serial #'}];
-            response.serials.forEach(e => serials.push({value: e.serial_id, text: e._serial}));
-            let _serials = new Select({
-                small: true,
-                name: `actions[${line_id}][serial_id]`,
-                required: response.result.required,
-                options: serials
-            }).e;
-            _cell.insertBefore(_serials, document.querySelector(`#spn_serials_${line_id}`));
-        } else {
-            alert(`Error: ${response.error}`);
-        };
-        remove_spinner(`serials_${line_id}`);
-    });
-    XHR.addEventListener("error", () => {
-        remove_spinner(`serials_${line_id}`);
-        alert('Oops! Something went wrong.');
-    });
-    XHR.open('GET', `/stores/get/serials?size_id=${size_id}`);
-    XHR.send();
+    get(
+        function (serials, options) {
+            let _serials = [{value: '', text:  '... Select Serial #'}];
+            serials.forEach(e => _serials.push({value: e.serial_id, text: e._serial}));
+            _cell.appendChild(
+                new Select({
+                    attributes: [
+                        {field: 'name',     value: `actions[${line_id}][serial_id]`},
+                        {field: 'required', value: (entry === false)}
+                    ],
+                    small: true,
+                    options: _serials
+                }).e
+            );
+            if (entry === true) {
+                _cell.appendChild(
+                    new Input({
+                        attributes: [
+                            {field: 'name',        value: `actions[${line_id}][serial]`},
+                            {field: 'placeholder', value: 'Enter Serial #'}
+                        ],
+                        small: true
+                    }).e
+                );
+            };
+            remove_spinner(`serials_${line_id}`);
+        },
+        {
+            table: 'serials',
+            query: [`size_id=${size_id}`]
+        }
+    );
 };

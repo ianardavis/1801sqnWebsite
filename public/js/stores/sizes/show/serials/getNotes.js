@@ -37,10 +37,7 @@ function getSerialNotes(serial_id, permissions) {
                                 descriptor: 'note',
                                 small: true,
                                 path: `/stores/notes/${note.note_id}`,
-                                options: {
-                                    onComplete: getStockNotes,
-                                    args: [stock_id]
-                                }
+                                options: {onComplete: function () {getStockNotes(stock_id)}}
                             }).e
                         });
                     } else add_cell(row);

@@ -1,4 +1,4 @@
-asCards = suppliers => {
+function asCards(suppliers) {
     clearElement('suppliers');
     let _suppliers = document.querySelector('#suppliers');
     suppliers.forEach(supplier => {

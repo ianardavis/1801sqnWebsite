@@ -12,9 +12,22 @@ function getPages() {
                         new Form({
                             classes: ['col-6', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2', 'h-100'],
                             append: [
-                                new Input({type: 'hidden', name: 'line[sale_id]', value: '', classes: ['sale_id']}).e,
-                                new Input({type: 'hidden', name: 'line[item_id]', value: String(item.item_id)}).e,
-                                new Button({text: `${item.item._name}\n£${Number(item.item._price).toFixed(2)}`, classes: ['w-100', 'h-100', 'btn', 'btn-primary']}).e
+                                new Hidden({
+                                    attributes:[
+                                        {field: 'name', value: 'line[sale_id]'}
+                                    ],
+                                    classes: ['sale_id']
+                                }).e,
+                                new Hidden({
+                                    attributes:[
+                                        {field: 'name', value: 'line[item_id]'},
+                                        {field: 'value', value: String(item.item_id)}
+                                    ]
+                                }).e,
+                                new Button({
+                                    text: `${item.item._name}\n£${Number(item.item._price).toFixed(2)}`,
+                                    classes: ['w-100', 'h-100', 'btn', 'btn-primary']
+                                }).e
                             ],
                             submit: function(event) {
                                 event.preventDefault();

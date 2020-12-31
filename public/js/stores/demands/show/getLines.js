@@ -3,20 +3,24 @@ function enterSerial (line_id) {
     let _cell = document.querySelector(`#serials_${line_id}`);
     _cell.appendChild(
         new Input({
-            name: `actions[line_id${line_id}][_serial]`,
+            attributes: [
+                {field: 'name',        value: `actions[line_id${line_id}][_serial]`},
+                {field: 'placeholder', value: 'Serial #'},
+                {field: 'required',    value: true},
+                {field: 'maxlength',   value: '45'}
+            ],
             small: true,
-            placeholder: 'Serial #',
-            required: true,
-            maxlength: '45'
         }).e
     );
     _cell.appendChild(
         new Input({
-            name: `actions[line_id${line_id}][_location]`,
+            attributes: [
+                {field: 'name',        value: `actions[line_id${line_id}][_location]`},
+                {field: 'placeholder', value: 'Location'},
+                {field: 'required',    value: true},
+                {field: 'maxlength',   value: '20'}
+            ],
             small: true,
-            placeholder: 'Location',
-            required: true,
-            maxlength: '20'
         }).e
     );
 };
@@ -97,8 +101,10 @@ function getLines() {
                             div_stocks  = document.createElement('div'),
                             div_serials = document.createElement('div');
                         let _status = new Select({
-                            name: `actions[line_id${line.line_id}][_status]`,
-                            id: `sel_${line.line_id}`,
+                            attributes: [
+                                {field: 'id',   value: `sel_${line.line_id}`},
+                                {field: 'name', value: `actions[line_id${line.line_id}][_status]`}
+                            ],
                             small: true,
                             options: action_options
                         }).e;

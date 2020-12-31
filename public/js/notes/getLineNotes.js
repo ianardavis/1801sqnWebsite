@@ -34,10 +34,7 @@ function getLineNotes(options = {}) {
                             append: new Delete_Button({
                                 small: true,
                                 path: `/stores/notes/${note.note_id}`,
-                                options: {
-                                    onComplete:getLineNotes,
-                                    args: [options]
-                                }
+                                options: {onComplete: function () {getLineNotes(options)}}
                             }).e
                         });
                     };

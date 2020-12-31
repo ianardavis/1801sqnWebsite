@@ -30,10 +30,7 @@ function getStockNotes(stock_id, permissions) {
                                     descriptor: 'note',
                                     small: true,
                                     path: `/stores/notes/${note.note_id}`,
-                                    options: {
-                                        onComplete: getStockNotes,
-                                        args: [stock_id, permissions]
-                                    }
+                                    options: {onComplete: function () {getStockNotes(stock_id, permissions)}}
                                 }).e
                             });
                         } else add_cell(row);
