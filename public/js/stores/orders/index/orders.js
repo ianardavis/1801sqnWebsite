@@ -9,7 +9,7 @@ function getOrders() {
                 orders.forEach(order => {
                     let row = table_body.insertRow(-1);
                     if (Number(order.user_id_order) === -1) add_cell(row, {text: 'Backing Stock'}) 
-                    else add_cell(row, {text: print_user(order.user_order)});
+                    else                                    add_cell(row, {text: print_user(order.user_order)});
                     add_cell(row, {
                         sort: new Date(order.createdAt).getTime(),
                         text: print_date(order.createdAt)
@@ -26,5 +26,5 @@ function getOrders() {
         }
     );
 };
-document.querySelector('#reload').addEventListener('click', getOrders);
+document.querySelector('#reload')    .addEventListener('click',  getOrders);
 document.querySelector('#sel_status').addEventListener('change', getOrders);

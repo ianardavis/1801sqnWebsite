@@ -6,7 +6,6 @@ showLines = (lines, options) => {
     lines.forEach(line => {
         try {
             let row = table_body.insertRow(-1);
-            add_cell(row, {text: line.line_id});
             add_cell(row, {text: line.size.item._description});
             add_cell(row, {text: line.size._size});
             add_cell(row, {text: line._qty});

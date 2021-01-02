@@ -23,7 +23,13 @@
         <% }) %>
     <% } %>
     </select>
-    <% if (locals.append) { %>
+    <% if (locals.reload_id) { %>
+        <div class="input-group-append">
+            <a class='btn btn-primary' id='<%= reload_id %>'>
+                <i class="fas fa-redo"></i>
+            </a>
+        </div>
+    <% } else if (locals.append) { %>
         <%- include('append', {append: locals.append}) %>
     <% } %>
 </div>

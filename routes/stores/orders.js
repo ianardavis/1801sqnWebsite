@@ -6,8 +6,8 @@ module.exports = (app, al, inc, pm, m) => {
     require(`${process.env.ROOT}/fn/stores/demands`) (m, demands);
     require(`${process.env.ROOT}/fn/stores/receipts`)(m, receipts);
     require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
-    app.get('/stores/orders',              pm, al('access_orders'),                                 (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
-    app.get('/stores/orders/:id',          pm, al('access_orders'),                                 (req, res) => {
+    app.get('/stores/orders',                 pm, al('access_orders'),                                 (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
+    app.get('/stores/orders/:id',             pm, al('access_orders'),                                 (req, res) => {
         m.stores.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.users({as: 'user_order', attributes: ['user_id']})],
@@ -20,7 +20,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/stores/order_lines/:id',     pm, al('access_orders',                   {allow: true}),(req, res) => {
+    app.get('/stores/order_lines/:id',        pm, al('access_orders',                   {allow: true}),(req, res) => {
         m.stores.order_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['order_id']
@@ -32,7 +32,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
     
-    app.get('/stores/get/orders',          pm, al('access_orders',      {send: true}),              (req, res) => {
+    app.get('/stores/get/orders',             pm, al('access_orders',      {send: true}),              (req, res) => {
         m.stores.orders.findAll({
             where:   req.query,
             include: [
@@ -44,7 +44,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(orders => res.send({result: true, orders: orders}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order',           pm, al('access_orders',      {send: true}),              (req, res) => {
+    app.get('/stores/get/order',              pm, al('access_orders',      {send: true}),              (req, res) => {
         m.stores.orders.findOne({
             where:   req.query,
             include: [
@@ -56,7 +56,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(order => res.send({result: true, order: order}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order_lines',     pm, al('access_order_lines', {send: true}),              (req, res) => {
+    app.get('/stores/get/order_lines',        pm, al('access_order_lines', {send: true}),              (req, res) => {
         m.stores.order_lines.findAll({
             where:   req.query,
             include: [
@@ -69,7 +69,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order_line',      pm, al('access_order_lines', {send: true}),              (req, res) => {
+    app.get('/stores/get/order_line',         pm, al('access_order_lines', {send: true}),              (req, res) => {
         m.stores.order_lines.findOne({
             where:   req.query,
             include: [
@@ -82,7 +82,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(order_line => res.send({result: true, order_line: order_line}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order_lines/:id', pm, al('access_order_lines', {send: true}),              (req, res) => {
+    app.get('/stores/get/order_lines/:id',    pm, al('access_order_lines', {send: true}),              (req, res) => {
         m.stores.order_lines.findAll({
             where: req.query,
             include: [
@@ -96,8 +96,19 @@ module.exports = (app, al, inc, pm, m) => {
         .then(lines => res.send({result: true, order_lines: lines}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/order_line_actions', pm, al('access_order_lines', {send: true}),              (req, res) => {
+        m.stores.order_line_actions.findAll({
+            where:   req.query,
+            include: [
+                inc.order_lines({as: 'order_line'}),
+                inc.users()
+            ]
+        })
+        .then(order_line_actions => res.send({result: true, order_line_actions: order_line_actions}))
+        .catch(err => res.error.send(err, res));
+    });
 
-    app.post('/stores/orders',             pm, al('order_add',          {send: true}),              (req, res) => {
+    app.post('/stores/orders',                pm, al('order_add',          {send: true}),              (req, res) => {
         orders.create(
             req.body.user_id_order,
             req.user.user_id
@@ -118,7 +129,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/order_lines',        pm, al('order_line_add',     {send: true}),              (req, res) => {
+    app.post('/stores/order_lines',           pm, al('order_line_add',     {send: true}),              (req, res) => {
         if (req.body.line.order_id) {
             orders.createLine({
                 order_id: req.body.line.order_id,
@@ -147,7 +158,7 @@ module.exports = (app, al, inc, pm, m) => {
         } else res.send({result: false, message: 'No order ID or user ID specified'});
     });
 
-    app.put('/stores/orders/addtodemand',  pm, al('demand_line_add',    {send: true}),              (req, res) => {
+    app.put('/stores/orders/addtodemand',     pm, al('demand_line_add',    {send: true}),              (req, res) => {
         m.stores.order_lines.findAll({
             where: {
                 _status:        'Open',
@@ -186,20 +197,17 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/orders/:id',          pm, al('order_edit',         {send: true}),              (req, res) => {
+    app.put('/stores/orders/:id',             pm, al('order_edit',         {send: true}),              (req, res) => {
         m.stores.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.order_lines({where: {_status: 1}, attributes: ['line_id']})],
             attributes: ['order_id', 'user_id_order', '_status']
         })
         .then(order => {
-            if (!order) {
-                res.error.send('Order not found', res);
-            } else if (order._status !== 1) {
-                res.error.send(`Order must be in draft to be completed`, res);
-            } else if (!order.lines || order.lines.length === 0) {
-                res.error.send('A order must have at least one open line before you can complete it', res);
-            } else {
+            if      (!order)                                   res.send({result: false, message: 'Order not found'});
+            else if (order._status !== 1)                      res.send({result: false, message: `Order must be in draft to be completed`});
+            else if (!order.lines || order.lines.length === 0) res.send({result: false, message: 'A order must have at least one open line before you can complete it'});
+            else {
                 let actions = [];
                 actions.push(order.update({_status: 2}));
                 actions.push(
@@ -227,7 +235,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/order_lines/:id',     pm, al('order_edit',         {send: true}),              (req, res) => {
+    app.put('/stores/order_lines/:id',        pm, al('order_edit',         {send: true}),              (req, res) => {
         return m.stores.orders.findOne({
             where: {order_id: req.params.id},
             attributes: ['order_id', '_status', 'user_id_order']
@@ -236,11 +244,9 @@ module.exports = (app, al, inc, pm, m) => {
             let actions = [], _demands = [], _receipts = [], _issues = [];
             for (let [lineID, line] of Object.entries(req.body.actions)) {
                 line.line_id = Number(String(lineID).replace('line_id', ''));
-                if (line._status === '3') { // if demand
-                    _demands.push(line);
-                } else if (line._status === '4') { //if receipt
-                    _receipts.push(line);
-                } else if (line._status === '5')   { // if issued
+                if      (line._status === '3') _demands.push(line);
+                else if (line._status === '4') _receipts.push(line);
+                else if (line._status === '5')   { // if issued
                     line.offset = _issues.length;
                     _issues.push(line)
                 } else if (line._status === '6' || line._status === '0')   { // if complete
@@ -251,15 +257,13 @@ module.exports = (app, al, inc, pm, m) => {
                         )
                     );
                     let note = '';
-                    if (line._status === 0) note = 'Cancelled'
-                    else if (line._status === 0) note = 'Completed'
+                    if      (line._status === 0) note = 'Cancelled'
+                    else if (line._status === 6) note = 'Closed'
                     actions.push(
-                        m.stores.notes.create({
-                            _id:     line.line_id,
-                            _table:  'order_lines',
-                            _note:   note,
-                            user_id: req.user.user_id,
-                            _system:  1
+                        m.stores.order_line_actions.create({
+                            order_line_id: line.line_id,
+                            _action:   note,
+                            user_id: req.user.user_id
                         })
                     );
                 };
@@ -353,7 +357,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/orders/:id',       pm, al('order_delete',       {send: true}),              (req, res) => {
+    app.delete('/stores/orders/:id',          pm, al('order_delete',       {send: true}),              (req, res) => {
         m.stores.orders.findOne({
             where: {order_id: req.params.id},
             include: [inc.order_lines({actions: true, attributes: ['line_id', '_status', '_qty']})],
@@ -381,7 +385,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/order_lines/:id',  pm, al('order_line_delete',  {send: true}),              (req, res) => { //
+    app.delete('/stores/order_lines/:id',     pm, al('order_line_delete',  {send: true}),              (req, res) => { //
         m.stores.order_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status', '_qty'],
@@ -400,11 +404,9 @@ module.exports = (app, al, inc, pm, m) => {
             let actions = [];
             if (line._status === 1 || line._status === 2 || line._status === 4) {
                 actions.push(m.stores.order_lines.update({_status: 0}, {where: {line_id: line.line_id}}));
-                actions.push(m.stores.notes.create({
-                    _id: line.line_id,
-                    _table: 'order_lines',
-                    _note: `cancelled`,
-                    _system: 1,
+                actions.push(m.stores.order_line_actions.create({
+                    order_line_id: line.line_id,
+                    _action: `cancelled`,
                     user_id: user_id
                 }));
             } else if (line._status === 3) { // if demanded
@@ -424,22 +426,20 @@ module.exports = (app, al, inc, pm, m) => {
                                             if (line._qty < demand_line._qty) {
                                                 demand_actions.push(demand_line.decrement('_qty', {by: line._qty}));
                                                 demand_actions.push(
-                                                    m.stores.notes.create({
-                                                        _id: demand_line.line_id,
-                                                        _table: 'demand_lines',
-                                                        _note: `Decremented by ${line._qty} from order line ${line.line_id} cancellation`,
-                                                        _system: 1,
+                                                    m.stores.demand_line_actions.create({
+                                                        demand_line_id: demand_line.line_id,
+                                                        action_line_id: line.line_id,
+                                                        _action: `Decremented by ${line._qty} from order line cancellation`,
                                                         user_id: user_id
                                                     })
                                                 );
                                             } else if (line._qty === demand_line._qty) {
                                                 demand_actions.push(demand_line.update({_status: 0}));
                                                 demand_actions.push(
-                                                    m.stores.notes.create({
-                                                        _id: demand_line.line_id,
-                                                        _table: 'demand_lines',
-                                                        _note: `Cancelled from order line ${line.line_id} cancellation`,
-                                                        _system: 1,
+                                                    m.stores.demand_line_actions.create({
+                                                        demand_line_id: demand_line.line_id,
+                                                        action_line_id: line.line_id,
+                                                        _action: `Cancelled from order line cancellation`,
                                                         user_id: user_id
                                                     })
                                                 );
@@ -461,11 +461,9 @@ module.exports = (app, al, inc, pm, m) => {
                     };
                 };
                 actions.push(m.stores.order_lines.update({_status: 0}, {where: {line_id: line.line_id}}));
-                actions.push(m.stores.notes.create({
-                    _id: line.line_id,
-                    _table: 'order_lines',
-                    _note: `cancelled`,
-                    _system: 1,
+                actions.push(m.stores.order_line_actions.create({
+                    order_line_id: line.line_id,
+                    _action: `Cancelled`,
                     user_id: user_id
                 }));
             };
@@ -513,12 +511,11 @@ module.exports = (app, al, inc, pm, m) => {
                                         user_id:        user_id
                                     }));
                                     if (line_result.line.created) {
-                                        actions.push(m.stores.notes.create({
-                                            _id:     line_result.line.line_id,
-                                            _table:  'demand_lines',
-                                            _note:   `Created from order line ${order_line.line_id}`,
-                                            user_id: req.user.user_id,
-                                            _system: 1
+                                        actions.push(m.stores.demand_line_actions.create({
+                                            demand_line_id: line_result.line.line_id,
+                                            action_line_id:  order_line.line_id,
+                                            _action:   `Created from order line`,
+                                            user_id: req.user.user_id
                                         }));
                                     };
                                     Promise.allSettled(actions)
@@ -576,12 +573,11 @@ module.exports = (app, al, inc, pm, m) => {
                                         user_id:        user_id
                                     }));
                                     if (line_result.line.created) {
-                                        actions.push(m.stores.notes.create({
-                                            _id: line_result.line.line_id,
-                                            _table:  'receipt_lines',
-                                            _note:   `Created from order line ${order_line.line_id}`,
-                                            user_id: user_id,
-                                            _system: 1
+                                        actions.push(m.stores.receipt_line_actions.create({
+                                            receipt_line_id: line_result.line.line_id,
+                                            action_line_id: order_line.line_id,
+                                            _action:   `Created from order line`,
+                                            user_id: user_id
                                         }));
                                     };
                                     Promise.allSettled(actions)

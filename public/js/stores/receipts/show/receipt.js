@@ -18,7 +18,7 @@ showReceipt = (receipts, options) => {
                     else if (value === 1) element.innerText = 'Draft';
                     else if (value === 2) element.innerText = 'Open'
                     else if (value === 3) element.innerText = 'Closed'
-                    else element.innerText = 'Unknown';
+                    else                  element.innerText = 'Unknown';
                 };
             } catch (error) {console.log(error)};
         };

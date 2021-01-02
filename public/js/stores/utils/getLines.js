@@ -1,3 +1,4 @@
+let lines_loaded = false;
 function getLines(table) {
     lines_loaded = false;
     let sel_status = document.querySelector('#sel_status') || {value: ''};

@@ -8,14 +8,11 @@ function getLineActions() {
                         div_actions = document.createElement('div'),
                         div_action  = document.createElement('div'),
                         div_details = document.createElement('div');
-                    opts.push({            text: 'Open', selected: true});
-                    opts.push({value: '3', text: 'Approve'});
-                    opts.push({value: '4', text: 'Decline'});
+                    opts.push({text: 'Open',    selected: true});
+                    opts.push({text: 'Approve', value: '3'});
+                    opts.push({text: 'Decline', value: '4'});
                     let _status = new Select({
-                        attributes: [
-                            {field: 'id',   value: `sel_${line.line_id}`},
-                            {field: 'name', value: `actions[${line.line_id}][_status]`}
-                        ],
+                        attributes: [{field: 'id', value: `sel_${line.line_id}`}],
                         small: true,
                         options: opts
                     }).e;
@@ -23,6 +20,14 @@ function getLineActions() {
                         clearElement(`action_${line.line_id}`);
                         clearElement(`details_${line.line_id}`);
                         if (this.value === '4') {
+                            div_action.appendChild(
+                                new Hidden({
+                                    attributes: [
+                                        {field: 'name',  value: `actions[${line.line_id}][_status]`},
+                                        {field: 'value', value: '4'}
+                                    ]
+                                }).e
+                            );
                             div_action.appendChild(
                                 new Hidden({
                                     attributes: [
@@ -55,6 +60,14 @@ function showActions(size_id, line_id) {
     let _cell = document.querySelector(`#action_${line_id}`);
     if (_cell) {
         _cell.innerHTML = '';
+        _cell.appendChild(
+            new Hidden({
+                attributes: [
+                    {field: 'name',  value: `actions[${line_id}][_status]`},
+                    {field: 'value', value: '3'}
+                ]
+            }).e
+        );
         _cell.appendChild(
             new Hidden({
                 attributes: [

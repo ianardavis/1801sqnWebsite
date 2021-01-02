@@ -7,20 +7,16 @@
 <section class="container">
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Menu
             </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/notes/menu_add`) %>
-				<button id='btn_action' form='form_action' class='dropdown-item confirm' disabled>Action Lines</button>
-				<% if (permissions.request_edit) { %><form id='form_complete'><% } %>
-					<button id='btn_complete' class='dropdown-item confirm' disabled>Complete</button>
-				<% if (permissions.request_edit) { %></form><% } %>
+            <div class="dropdown-menu" aria-labelledby="optionsDropdown">
+				<%- include(`${partials}/notes/menu_add`) %>
+				<%- include(`${partials}/menu/action`) %>
+				<%- include(`${partials}/menu/complete`, {permission: 'request_edit'}) %>
 				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'request_line_add'}) %>
 				<div class="dropdown-divider"></div>
-				<% if (permissions.request_edit) { %><form id='form_delete'><% } %>
-					<button id='btn_delete' class="dropdown-item confirm" disabled>Cancel</button>
-				<% if (permissions.request_edit) { %></form><% } %>
+				<%- include(`${partials}/menu/delete`, {permission: 'request_edit'}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'request'}) %>
@@ -101,8 +97,7 @@
 	<script src="/js/stores/utils/showLineActions.js"></script>
 	<script src="/js/stores/utils/getLines.js"></script>
 	<script>
-		let lines_loaded  = false,
-			line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3':'Approved', '4':'Declined'};
+		let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3':'Approved', '4':'Declined'};
 		window.addEventListener('load', function () {
 			document.querySelector('#reload')    .addEventListener('click',  function () {getLines('request')});
 			document.querySelector('#sel_status').addEventListener('change', function () {getLines('request')});

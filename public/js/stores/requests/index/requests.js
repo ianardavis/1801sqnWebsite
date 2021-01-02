@@ -25,5 +25,5 @@ function getRequests() {
         }
     );
 };
-document.querySelector('#reload').addEventListener('click', getRequests);
+document.querySelector('#reload')    .addEventListener('click', getRequests);
 document.querySelector('#sel_status').addEventListener('change', getRequests);

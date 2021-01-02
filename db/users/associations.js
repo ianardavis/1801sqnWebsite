@@ -27,6 +27,7 @@ module.exports = function (m) {
     m.stores.receipt_lines.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',         constraints: false});
     m.stores.demands.hasOne(             m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',         constraints: false});
     m.stores.demand_lines.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',         constraints: false});
+    m.stores.demand_line_actions.hasOne( m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',         constraints: false});
     
     m.canteen.sessions.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_open',    constraints: false, as: 'user_open'});
     m.canteen.sessions.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_close',   constraints: false, as: 'user_close'});

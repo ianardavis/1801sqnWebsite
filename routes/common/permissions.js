@@ -2,57 +2,7 @@ module.exports = (app, allowed, permissions, m, db) => {
     let permission_tree = {
         stores: [
             {_permission: 'access_stores', children: [
-                {_permission: 'access_accounts',   children: [
-                    {_permission: 'account_add'},
-                    {_permission: 'account_edit'},
-                    {_permission: 'account_delete'}
-                ]},
-                {_permission: 'access_adjusts',    children: [
-                    {_permission: 'adjust_add'},
-                    {_permission: 'adjust_edit'},
-                    {_permission: 'adjust_delete'}
-                ]},
-                {_permission: 'access_categories', children: [
-                    {_permission: 'category_add'},
-                    {_permission: 'category_edit'},
-                    {_permission: 'category_delete'},
-                    {_permission: 'access_groups', children: [
-                        {_permission: 'group_add'},
-                        {_permission: 'group_edit'},
-                        {_permission: 'group_delete'},
-                        {_permission: 'access_types', children: [
-                            {_permission: 'type_add'},
-                            {_permission: 'type_edit'},
-                            {_permission: 'type_delete'},
-                            {_permission: 'access_subtypes', children: [
-                                {_permission: 'subtype_add'},
-                                {_permission: 'subtype_edit'},
-                                {_permission: 'subtype_delete'}
-                            ]}
-                        ]}
-                    ]}
-                ]},
-                {_permission: 'access_demands',    children: [
-                    {_permission: 'demand_add'},
-                    {_permission: 'demand_edit'},
-                    {_permission: 'demand_delete'},
-                    {_permission: 'access_demand_lines', children: [
-                        {_permission: 'demand_line_add'},
-                        {_permission: 'demand_line_edit'},
-                        {_permission: 'demand_line_delete'}
-                    ]}
-                ]},
-                {_permission: 'access_files',      children: [
-                    {_permission: 'file_add'},
-                    {_permission: 'file_edit'},
-                    {_permission: 'file_delete'}
-                ]},
-                {_permission: 'access_genders',    children: [
-                    {_permission: 'gender_add'},
-                    {_permission: 'gender_edit'},
-                    {_permission: 'gender_delete'}
-                ]},
-                {_permission: 'access_issues',     children: [
+                {_permission: 'access_issues',    children: [
                     {_permission: 'issue_add'},
                     {_permission: 'issue_edit'},
                     {_permission: 'issue_delete'},
@@ -67,7 +17,7 @@ module.exports = (app, allowed, permissions, m, db) => {
                         ]}
                     ]}
                 ]},
-                {_permission: 'access_items',      children: [
+                {_permission: 'access_items',     children: [
                     {_permission: 'item_add'},
                     {_permission: 'item_edit'},
                     {_permission: 'item_delete'},
@@ -75,17 +25,22 @@ module.exports = (app, allowed, permissions, m, db) => {
                         {_permission: 'size_add'},
                         {_permission: 'size_edit'},
                         {_permission: 'size_delete'},
-                        {_permission: 'access_stock',   children: [
+                        {_permission: 'access_stock',       children: [
                             {_permission: 'stock_add'},
                             {_permission: 'stock_edit'},
-                            {_permission: 'stock_delete'}
+                            {_permission: 'stock_delete'},
+                            {_permission: 'access_adjusts',    children: [
+                                {_permission: 'adjust_add'},
+                                {_permission: 'adjust_edit'},
+                                {_permission: 'adjust_delete'}
+                            ]}
                         ]},
-                        {_permission: 'access_serials', children: [
+                        {_permission: 'access_serials',     children: [
                             {_permission: 'serial_add'},
                             {_permission: 'serial_edit'},
                             {_permission: 'serial_delete'}
                         ]},
-                        {_permission: 'access_nsns',    children: [
+                        {_permission: 'access_nsns',        children: [
                             {_permission: 'nsn_add'},
                             {_permission: 'nsn_edit'},
                             {_permission: 'nsn_delete'},
@@ -104,20 +59,50 @@ module.exports = (app, allowed, permissions, m, db) => {
                                 {_permission: 'nsn_group_edit'},
                                 {_permission: 'nsn_group_delete'}
                             ]}
+                        ]},
+                        {_permission: 'access_embodiments', children: [
+                            {_permission: 'embodiment_add'},
+                            {_permission: 'embodiment_edit'},
+                            {_permission: 'embodiment_delete'}
+                        ]},
+                    ]},
+                    {_permission: 'access_categories', children: [
+                        {_permission: 'category_add'},
+                        {_permission: 'category_edit'},
+                        {_permission: 'category_delete'},
+                        {_permission: 'access_groups', children: [
+                            {_permission: 'group_add'},
+                            {_permission: 'group_edit'},
+                            {_permission: 'group_delete'},
+                            {_permission: 'access_types', children: [
+                                {_permission: 'type_add'},
+                                {_permission: 'type_edit'},
+                                {_permission: 'type_delete'},
+                                {_permission: 'access_subtypes', children: [
+                                    {_permission: 'subtype_add'},
+                                    {_permission: 'subtype_edit'},
+                                    {_permission: 'subtype_delete'}
+                                ]}
+                            ]}
                         ]}
+                    ]},
+                    {_permission: 'access_genders',   children: [
+                        {_permission: 'gender_add'},
+                        {_permission: 'gender_edit'},
+                        {_permission: 'gender_delete'}
                     ]}
                 ]},
-                {_permission: 'access_locations',  children: [
+                {_permission: 'access_locations', children: [
                     {_permission: 'location_add'},
                     {_permission: 'location_edit'},
                     {_permission: 'location_delete'}
                 ]},
-                {_permission: 'access_notes',      children: [
+                {_permission: 'access_notes',     children: [
                     {_permission: 'note_add'},
                     {_permission: 'note_edit'},
                     {_permission: 'note_delete'}
                 ]},
-                {_permission: 'access_orders',     children: [
+                {_permission: 'access_orders',    children: [
                     {_permission: 'order_add'},
                     {_permission: 'order_edit'},
                     {_permission: 'order_delete'},
@@ -132,37 +117,62 @@ module.exports = (app, allowed, permissions, m, db) => {
                         ]}
                     ]}
                 ]},
-                {_permission: 'access_receipts',   children: [
-                    {_permission: 'receipt_add'},
-                    {_permission: 'receipt_edit'},
-                    {_permission: 'receipt_delete'},
-                    {_permission: 'access_receipt_lines', children: [
-                        {_permission: 'receipt_line_add'},
-                        {_permission: 'receipt_line_edit'},
-                        {_permission: 'receipt_line_delete'}
-                    ]}
-                ]},
-                {_permission: 'access_requests',   children: [
+                {_permission: 'access_requests',  children: [
                     {_permission: 'request_add'},
                     {_permission: 'request_edit'},
                     {_permission: 'request_delete'},
                     {_permission: 'access_request_lines', children: [
                         {_permission: 'request_line_add'},
                         {_permission: 'request_line_edit'},
-                        {_permission: 'request_line_delete'}
+                        {_permission: 'request_line_delete'},
+                        {_permission: 'access_request_line_actions', children: [
+                            {_permission: 'request_line_action_add'},
+                            {_permission: 'request_line_action_edit'},
+                            {_permission: 'request_line_action_delete'}
+                        ]}
                     ]}
                 ]},
-                {_permission: 'access_settings',   children: [
+                {_permission: 'access_settings',  children: [
                     {_permission: 'setting_add'},
                     {_permission: 'setting_edit'},
                     {_permission: 'setting_delete'}
                 ]},
-                {_permission: 'access_suppliers',  children: [
+                {_permission: 'access_suppliers', children: [
                     {_permission: 'supplier_add'},
                     {_permission: 'supplier_edit'},
-                    {_permission: 'supplier_delete'}
+                    {_permission: 'supplier_delete'},
+                    {_permission: 'access_files',    children: [
+                        {_permission: 'file_add'},
+                        {_permission: 'file_edit'},
+                        {_permission: 'file_delete'}
+                    ]},
+                    {_permission: 'access_accounts', children: [
+                        {_permission: 'account_add'},
+                        {_permission: 'account_edit'},
+                        {_permission: 'account_delete'}
+                    ]},
+                    {_permission: 'access_demands',  children: [
+                        {_permission: 'demand_add'},
+                        {_permission: 'demand_edit'},
+                        {_permission: 'demand_delete'},
+                        {_permission: 'access_demand_lines', children: [
+                            {_permission: 'demand_line_add'},
+                            {_permission: 'demand_line_edit'},
+                            {_permission: 'demand_line_delete'}
+                        ]}
+                    ]},
+                    {_permission: 'access_receipts',  children: [
+                        {_permission: 'receipt_add'},
+                        {_permission: 'receipt_edit'},
+                        {_permission: 'receipt_delete'},
+                        {_permission: 'access_receipt_lines', children: [
+                            {_permission: 'receipt_line_add'},
+                            {_permission: 'receipt_line_edit'},
+                            {_permission: 'receipt_line_delete'}
+                        ]}
+                    ]}
                 ]},
-                {_permission: 'access_users',      children: [
+                {_permission: 'access_users',     children: [
                     {_permission: 'access_permissions', children: [
                         {_permission: 'permission_edit'}
                     ]}
@@ -244,7 +254,11 @@ module.exports = (app, allowed, permissions, m, db) => {
                         {_permission: 'writeoff_line_delete'}
                     ]}
                 ]},
-                {_permission: 'access_users'}
+                {_permission: 'access_users',     children: [
+                    {_permission: 'access_permissions', children: [
+                        {_permission: 'permission_edit'}
+                    ]}
+                ]}
             ]}
         ]
     };

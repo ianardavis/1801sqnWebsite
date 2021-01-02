@@ -7,9 +7,9 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         timestamp      = require(`${process.env.ROOT}/fn/utils/timestamps`);
     require(`${process.env.ROOT}/fn/stores/receipts`)(m, receipts),
     require(`${process.env.ROOT}/fn/stores/demands`) (m, demands),
-    app.get('/stores/demands',              loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/index'));
-    app.get('/stores/demands/:id',          loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/show'));
-    app.get('/stores/demands/:id/download', loggedIn, allowed('access_demands'),                    (req, res) => {
+    app.get('/stores/demands',                 loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/index'));
+    app.get('/stores/demands/:id',             loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/show'));
+    app.get('/stores/demands/:id/download',    loggedIn, allowed('access_demands'),                    (req, res) => {
         m.stores.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['_filename']
@@ -21,7 +21,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.get('/stores/get/demand',           loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
+    app.get('/stores/get/demand',              loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
         m.stores.demands.findOne({
             where: req.query,
             include: [
@@ -36,7 +36,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/demands',          loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
+    app.get('/stores/get/demands',             loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
         m.stores.demands.findAll({
             where:   req.query,
             include: [
@@ -48,12 +48,11 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(demands => res.send({result: true, demands: demands}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/demand_lines',     loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
+    app.get('/stores/get/demand_lines',        loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
         m.stores.demand_lines.findAll({
             where:   req.query,
             include: [
-                inc.sizes({stock: true}),
-                inc.receipt_lines({as: 'receipt_line', receipts: true, include: [inc.users()]}),
+                inc.sizes(),
                 inc.users(),
                 inc.demands()
             ]
@@ -61,8 +60,31 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(lines => res.send({result: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/demand_line',         loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
+        m.stores.demand_lines.findOne({
+            where:   req.query,
+            include: [
+                inc.sizes(),
+                inc.users(),
+                inc.demands()
+            ]
+        })
+        .then(demand_line => res.send({result: true, demand_line: demand_line}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/demand_line_actions', loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
+        m.stores.demand_line_actions.findAll({
+            where:   req.query,
+            include: [
+                inc.demand_lines({as: 'demand_line'}),
+                inc.users()
+            ]
+        })
+        .then(demand_line_actions => res.send({result: true, demand_line_actions: demand_line_actions}))
+        .catch(err => res.error.send(err, res));
+    });
 
-    app.post('/stores/demands',             loggedIn, allowed('demand_add',          {send: true}), (req, res) => {
+    app.post('/stores/demands',                loggedIn, allowed('demand_add',          {send: true}), (req, res) => {
         demands.create({
             demand: {
                 supplier_id: req.body.supplier_id,
@@ -76,7 +98,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/demand_lines',        loggedIn, allowed('demand_line_add',     {send: true}), (req, res) => {
+    app.post('/stores/demand_lines',           loggedIn, allowed('demand_line_add',     {send: true}), (req, res) => {
         demands.createLine({
             line: req.body.line,
             user_id: req.user.user_id
@@ -85,7 +107,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.put('/stores/demands/:id',          loggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
+    app.put('/stores/demands/:id',             loggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
         m.stores.demands.findOne({
             where: {demand_id: req.params.id},
             include: [inc.suppliers({as: 'supplier', file: true})],
@@ -122,13 +144,9 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                             .then(raise_result => {
                                 if (raise_result.success) {
                                     demand.update({_filename: raise_result.file})
-                                    .then(update_result => {
-                                        res.send({result: true, message: `Demand completed, filename: ${raise_result.file}`})
-                                    })
+                                    .then(update_result => res.send({result: true, message: `Demand completed, filename: ${raise_result.file}`}))
                                     .catch(err => res.error.send(err, res));
-                                } else {
-                                    res.error.send(raise_result.message, res)
-                                };
+                                } else res.error.send(raise_result.message, res);
                             })
                             .catch(err => res.error.send(err, res));
                         } else res.send({result: true, message: 'Demand completed'});
@@ -177,7 +195,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/demand_lines/:id',     loggedIn, allowed('receipt_add',         {send: true}), (req, res) => {
+    app.put('/stores/demand_lines/:id',        loggedIn, allowed('receipt_add',         {send: true}), (req, res) => {
         m.stores.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['demand_id', 'supplier_id']
@@ -185,10 +203,8 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(demand => {
             let actions = [], receives = [];
             for (let [lineID, line] of Object.entries(req.body.actions)) {
-                line.line_id = Number(String(lineID).replace('line_id', ''));
-                if (line._status === 3) {
-                    receives.push(line);
-                } else if (line._status === 0) {
+                if      (line._status === '3') receives.push(line);
+                else if (line._status === '0') {
                     actions.push(
                         m.stores.demand_lines.update(
                             {_status: 0},
@@ -196,66 +212,92 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                         )
                     );
                     actions.push(
-                        m.stores.order_lines.update(
-                            {demand_line_id: null},
-                            {where: {demand_line_id: line.line_id}}
-                        )
+                        new Promise((resolve, reject) => {
+                            m.stores.order_line_actions.findAll({
+                                where: {
+                                    _action: 'Demand',
+                                    action_line_id: line.line_id
+                                },
+                                attributes: ['order_line_id']
+                            })
+                            .then(actions => {
+                                if (actions.length > 0) {
+                                    let order_actions = [];
+                                    actions.forEach(e => {
+                                        order_actions.push(
+                                            m.stores.order_lines.update(
+                                                {_status: 2},
+                                                {where: {
+                                                    line_id: e.order_line_id,
+                                                    _status: 3
+                                                }}
+                                            )
+                                        );
+                                        order_actions.push(
+                                            m.stores.order_line_actions.create({
+                                                order_line_id:  e.order_line_id,
+                                                action_line_id: line.line_id,
+                                                _action:        'Demand line cancelled',
+                                                user_id:        req.user.user_id
+                                            })
+                                        );
+                                    });
+                                    Promise.all(order_actions)
+                                    .then(result => resolve(result))
+                                    .catch(err => reject(err));
+                                } else resolve(true);
+                            })
+                            .catch(err => reject(err));
+                        }),
                     );
                     actions.push(
-                        m.stores.notes.create({
-                            _id:     demand.demand_id,
-                            _table:  'demands',
-                            _note:   'Line ' + line.line_id + ' cancelled',
-                            user_id: req.user.user_id,
-                            _system:  1
+                        m.stores.demand_line_actions.create({
+                            demand_line_id: line.line_id,
+                            _action:        `Cancelled`,
+                            user_id:        req.user.user_id
                         })
                     );
                 };
             };
-            Promise.allSettled(actions)
-            .then(cancel_results => {
-                if (receives.length > 0) {
-                    actions = [];
-                    receipts.create({
-                        receipt: {
-                            supplier_id: demand.supplier_id,
-                            user_id:     req.user.user_id
-                        }
-                    })
-                    .then(result => {
-                        receives.forEach(line => {
-                            actions.push(
-                                receive_demand_line(
-                                    line,
-                                    result.receipt_id,
-                                    req.user.user_id
-                                )
-                            );
-                        });
-                        Promise.allSettled(actions)
-                        .then(receive_results => {
-                            if (promiseResults(cancel_results.concat(receive_results))) {
-                                res.send({result: true, message: 'Lines actioned'}); /////////////////
-                            } else {
-                                res.error.send('Some actions failed', res); ////////////////
-                            };
+            if (receives.length > 0) {
+                actions.push(
+                    new Promise((resolve, reject) => {
+                        receipts.create({
+                            receipt: {
+                                supplier_id: demand.supplier_id,
+                                user_id:     req.user.user_id
+                            }
                         })
-                        .catch(err => res.error.send(err, res));
-                        
+                        .then(result => {
+                            let receive_actions = [];
+                            receives.forEach(line => {
+                                receive_actions.push(
+                                    receive_demand_line(
+                                        line,
+                                        result.receipt_id,
+                                        req.user.user_id
+                                    )
+                                );
+                            });
+                            Promise.all(receive_actions)
+                            .then(results => resolve(results))
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
                     })
-                    .catch(err => res.error.send(err, res));
-                } else if (promiseResults(cancel_results)) {
-                    res.send({result: true, message: 'Lines actioned'}); ///////////////////////
-                } else {
-                    res.error.send('Some actions failed', res); ////////////////
-                };
+                );
+            };
+            Promise.allSettled(actions)
+            .then(results => {
+                if (promiseResults(results)) res.send({result: true,  message: 'Lines actioned'})
+                else                         res.send({result: false, message: 'Some actions failed'});
             })
             .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/demands/:id',       loggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
+    app.delete('/stores/demands/:id',          loggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
         m.stores.demand_lines.destroy({where: {demand_id: req.params.id}})
         .then(result => {
             m.stores.demands.destroy({where: {demand_id: req.params.id}})
@@ -264,7 +306,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/demand_lines/:id',  loggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => {
+    app.delete('/stores/demand_lines/:id',     loggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => {
         m.stores.demand_lines.findOne({where: {line_id: req.params.id}})
         .then(line => {
             line.update({_status: 0})

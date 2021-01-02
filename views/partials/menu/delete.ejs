@@ -1,20 +1,3 @@
-<form id='form_delete'>
-    <button class="dropdown-item confirm">
-        Delete
-    </button>
-</form>
-<script>
-    window.onload = () => {
-        addFormListener(
-            'form_delete',
-            'DELETE',
-            `/${path[1]}/${path[2]}/${path[3]}`,
-            {<% if (locals.close) { %>
-                onComplete: window.opener['<%- onComplete %>'],
-                _close: true
-            <% } else { %>
-                redirect: <% if (locals.redirect) { %>'<%= redirect %>'<% } else { %>`'/${path[1]}/${path[2]}`<% } %>
-            <% } %>}
-        );
-    };
-</script>
+<% if (permissions[permission]) { %><form id='form_delete'><% } %>
+    <button id='btn_delete' class="dropdown-item confirm" disabled>Cancel</button>
+<% if (permissions[permission]) { %></form><% } %>

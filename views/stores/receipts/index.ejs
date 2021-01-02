@@ -2,62 +2,27 @@
 <%- include(`${partials}/breadcrumb`, {href: '/stores',		     text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores/receipts', text: 'Receipts'}) %>
 <%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'receipts'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section>
 	<div class="container">
-		<%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Suppliers'}) %>
+		<%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Suppliers', spinner: true, spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
 		<%- include(`${partials}/inputs/select`, {id: 'sel_status',    title: 'Status', options: [{text: 'All', value: '', selected: true}, {text: 'Cancelled', value: '_status=0'}, {text: 'Draft', value: '_status=1'}, {text: 'Open', value: '_status=2'}, {text: 'Closed', value: '_status=3'}]}) %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class="w-40" onclick="sortTable(0, 'receiptTable')">
-					<%- include(`${partials}/spinner`, {id: 'receipts', float_left: true, small: true}) %>
-					Supplier
-				</th>
+				<th class="w-40" onclick="sortTable(0, 'receiptTable')">Supplier</th>
 				<th class="w-30" onclick="sortTable(1, 'receiptTable')">Receipt Date</th>
 				<th class="w-15" onclick="sortTable(2, 'receiptTable')">Lines</th>
 				<th class="w-15" onclick="sortTable(3, 'receiptTable')">Status</th>
 				<th><i class='fas fa-search'></i></th>
 			</thead>
-			<tbody id="tbl_receipts">
-			</tbody>
+			<tbody id="tbl_receipts"></tbody>
 		</table>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/receipts/index/receipts.js'></script>
-<script src='/js/spinner.js'></script>
-<script src='/js/get.js'></script>
-<script src='/js/data/addFormListener.js'></script>
-<script src='/js/data/XHRsend.js'></script>
-<script src='/js/data/send.js'></script>
 <script src='/js/stores/suppliers/list.js'></script>
-<script src='/js/utils/select_sel_status.js'></script>
-<script>
-	function getSuppliers() {
-		get(
-			listSuppliers,
-			{
-				table: 'suppliers',
-				query: []
-			}
-		)
-	};
-</script>
 <script async>getSuppliers()</script>
-<script>
-	function getReceipts() {
-		let sel_suppliers = document.querySelector('#sel_suppliers');;
-		get(
-			showReceipts,
-			{
-				table: 'receipts',
-				query: [sel_status.value, sel_suppliers.value]
-			}
-		);
-	};
-</script>
 <script async>getReceipts()</script>
-<script>document.querySelector('#reload').addEventListener('click', () => getReceipts());</script>
-<script>document.querySelector('#sel_status').addEventListener('change', () => getReceipts());</script>
-<script>document.querySelector('#sel_suppliers').addEventListener('change', () => getReceipts());</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

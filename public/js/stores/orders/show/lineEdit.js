@@ -17,24 +17,31 @@ function getLineActions() {
                                           ) opts.push({value: '5', text: 'Issue'});
                     if (line._status === 5) opts.push({value: '6', text: 'Close'});
                     let _status = new Select({
-                        attributes: [
-                            {field: 'id',   value: `sel_${line.line_id}`},
-                            {field: 'name', value: `actions[${line.line_id}][_status]`}
-                        ],
+                        attributes: [{field: 'id', value: `sel_${line.line_id}`}],
                         small:   true,
                         options: opts
                     }).e;
                     _status.addEventListener("change", function () {
                         clearElement(`action_${line.line_id}`);
                         clearElement(`details_${line.line_id}`);
-                        div_action.appendChild(
-                            new Hidden({
-                                attributes: [
-                                    {field: 'name',  value: `actions[${line.line_id}][line_id]`},
-                                    {field: 'value', value: line.line_id}
-                                ]
-                            }).e
-                        );
+                        if (['3', '4', '5', '6'].includes(this.value)) {
+                            div_action.appendChild(
+                                new Hidden({
+                                    attributes: [
+                                        {field: 'name',  value: `actions[${line.line_id}][_status]`},
+                                        {field: 'value', value: this.value}
+                                    ]
+                                }).e
+                            );
+                            div_action.appendChild(
+                                new Hidden({
+                                    attributes: [
+                                        {field: 'name',  value: `actions[${line.line_id}][line_id]`},
+                                        {field: 'value', value: line.line_id}
+                                    ]
+                                }).e
+                            );
+                        };
                         let _cell = document.querySelector(`#details_${line.line_id}`);
                         if (_cell) {
                             _cell.innerHTML = '';

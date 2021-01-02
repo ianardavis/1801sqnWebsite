@@ -139,7 +139,7 @@ function Checkbox (options = {}) {
     if (options.small)   this.e.classList.add('form-control-sm');
     if (options.float)   this.e.classList.add('w-50', 'float-right');
 
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(e.field, e.value));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 
     if (options.onChange)    this.e.addEventListener('change', function (event) {options.onChange()});
     if (options.keyUp)       this.e.addEventListener('keyup',  function (event) {options.keyUp()});
@@ -148,14 +148,14 @@ function Hidden (options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'hidden');
     if (options.classes)    options.classes.forEach(   e => this.e.classList.add(e));
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(e.field, e.value));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Input (options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'text');
     this.e.classList.add('form-control');
     if (options.small) this.e.classList.add('form-control-sm');
-    if (options.attributes)  options.attributes.forEach(a => this.e.setAttribute(e.field, e.value));
+    if (options.attributes)  options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Tab_Header (options = {}) { 
     this.e = document.createElement('li');
@@ -189,7 +189,7 @@ function Button (options = {}) {
     if      (options.click)          this.e.addEventListener('click', options.click);//
     if      (options.text)           this.e.innerText = options.text//
     else if (options.html)           this.e.innerHTML = options.html;//
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(e.field, e.value));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Select (options = {}) {
     this.e = document.createElement('select');
@@ -197,7 +197,7 @@ function Select (options = {}) {
     else this.e.classList.add('form-control');
     if (options.small)      this.e.classList.add('form-control-sm');
     if (options.options)    options.options.forEach(e => this.e.appendChild(new Option(e).e));
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(e.field, e.value));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Option (options = {}) {
     this.e = document.createElement('option');
@@ -209,7 +209,7 @@ function Option (options = {}) {
             pre_text = '***'
         } else if (options.default === true) _text = ' (default)';
     };
-    this.e.value     = options.value || '';
+    if (options.value) this.e.setAttribute('value', options.value);
     this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
 };
 function Card (options = {}) {

@@ -1,23 +1,26 @@
+let suppliers_loaded = false;
 function getSuppliers(query = []) {
-    get(
-        function (suppliers, options) {
-            let select = document.querySelector('#sel_suppliers');
-            if (select) {
-                select.innerHTML = '';
-                suppliers.forEach(supplier => {
+    suppliers_loaded = false;
+    let select = document.querySelector('#sel_suppliers');
+    if (select) {
+        select.innerHTML = '';
+        get(
+            function (suppliers, options) {
+                suppliers.forEach(e => {
                     select.appendChild(
                         new Option({
-                            value: `supplier_id=${supplier.supplier_id}`,
-                            text:  supplier._name
+                            value: `supplier_id=${e.supplier_id}`,
+                            text:  e._name
                         }).e
                     );
                 });
-            };
-        },
-        {
-            table: 'suppliers',
-            query: query
-        }
-    );
+                suppliers_loaded = true;
+            },
+            {
+                table: 'suppliers',
+                query: query
+            }
+        );
+    };
 };
-document.querySelector('#reload').addEventListener('click', getSuppliers);
+document.querySelector('#reload_suppliers').addEventListener('click', function () {getSuppliers()});
