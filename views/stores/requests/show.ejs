@@ -15,7 +15,6 @@
 				<%- include(`${partials}/menu/action`) %>
 				<%- include(`${partials}/menu/complete`, {permission: 'request_edit'}) %>
 				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'request_line_add'}) %>
-				<div class="dropdown-divider"></div>
 				<%- include(`${partials}/menu/delete`, {permission: 'request_edit'}) %>
             </div>
         </li>
@@ -60,7 +59,7 @@
 <%- include(`${partials}/foot/app`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
-<script src='/js/addSize.js'></script>
+<script src='/js/stores/sizes/select.js'></script>
 <script src="/js/search/select.js"></script>
 <script src='/js/data/addFormListener.js'></script>
 <script>

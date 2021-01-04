@@ -1,6 +1,6 @@
 function getIssues() {
     let sel_status = document.querySelector('#sel_status') || {value: ''},
-        statuses = {"0": "Cancelled", "1": "Draft", "2": "Open", "3":"Complete"};
+        statuses = {"0": "Cancelled", "1": "Draft", "2": "Open", "3": "Closed"};
     get(
         function (issues, options) {
             clearElement('tbl_issues');
@@ -23,5 +23,5 @@ function getIssues() {
         }
     );
 };
-document.querySelector('#reload').addEventListener('click', () => getIssues());
-document.querySelector('#sel_status').addEventListener('change', () => getIssues());
+document.querySelector('#reload')    .addEventListener('click',  getIssues);
+document.querySelector('#sel_status').addEventListener('change', getIssues);

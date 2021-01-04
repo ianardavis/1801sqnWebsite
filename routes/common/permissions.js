@@ -9,12 +9,7 @@ module.exports = (app, allowed, permissions, m, db) => {
                     {_permission: 'access_issue_lines', children: [
                         {_permission: 'issue_line_add'},
                         {_permission: 'issue_line_edit'},
-                        {_permission: 'issue_line_delete'},
-                        {_permission: 'access_issue_line_returns', children: [
-                            {_permission: 'issue_line_return_add'},
-                            {_permission: 'issue_line_return_edit'},
-                            {_permission: 'issue_line_return_delete'}
-                        ]}
+                        {_permission: 'issue_line_delete'}
                     ]}
                 ]},
                 {_permission: 'access_items',     children: [

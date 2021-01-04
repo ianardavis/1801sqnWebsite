@@ -17,6 +17,20 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(receipts => res.send({result: true, receipts: receipts}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/receipt',          permissions, allowed('access_receipts',      {send: true}), (req, res) => {
+        m.stores.receipts.findOne({
+            where:      req.query,
+            include:    [
+                inc.suppliers({as: 'supplier'}),
+                inc.users()
+            ]
+        })
+        .then(receipt => {
+            if (receipt) res.send({result: true,  receipt: receipt})
+            else         res.send({result: false, message: 'Receipt not found'});
+        })
+        .catch(err => res.error.send(err, res));
+    });
     app.get('/stores/get/receipt_lines',    permissions, allowed('access_receipt_lines', {send: true}), (req, res) => {
         m.stores.receipt_lines.findAll({
             where:      req.query,
@@ -30,6 +44,24 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(lines => res.send({result: true, lines: lines}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/receipt_line',     permissions, allowed('access_receipt_lines', {send: true}), (req, res) => {
+        m.stores.receipt_lines.findOne({
+            where:      req.query,
+            include:    [
+                inc.serials({as: 'serial'}),
+                inc.locations({as: 'location'}),
+                inc.sizes(),
+                inc.receipts(),
+                inc.users(),
+                inc.stock({as: 'stock'})
+            ]
+        })
+        .then(receipt_line => {
+            if (receipt_line) res.send({result: true,  receipt_line: receipt_line})
+            else              res.send({result: false, message: 'Line not found'});
+        })
         .catch(err => res.error.send(err, res));
     });
 
@@ -97,12 +129,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     let actions = [];
                     lines.forEach(line => {
                         actions.push(
-                            m.stores.notes.create({
-                                _id:     line.line_id,
-                                _table:  'receipt_lines',
-                                _note:   'Receipt cancelled',
-                                user_id: req.user.user_id,
-                                _system: 1
+                            m.stores.receipt_line_actions.create({
+                                receipt_line_id: line.line_id,
+                                _action:         'Receipt cancelled',
+                                user_id:         req.user.user_id,
                             })
                         );
                     });
@@ -151,12 +181,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 return line.update({_status: 0})
                 .then(result => {
                     if (result) {
-                        m.stores.notes.create({
-                            _id: line.line_id,
-                            _table: 'receipt_lines',
-                            _note: 'Cancelled',
-                            user_id: req.user.user_id,
-                            _system: 1
+                        m.stores.receipt_line_actions.create({
+                            receipt_line_id: line.line_id,
+                            _action: 'Cancelled',
+                            user_id: req.user.user_id
                         })
                         .then(note => res.send({result: true, message: 'Line cancelled'}))
                         .catch(err => res.error.send(err, res));

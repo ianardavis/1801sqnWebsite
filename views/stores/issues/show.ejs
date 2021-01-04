@@ -2,6 +2,7 @@
 <%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores/issues', text: 'Issues'}) %>
 <%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
@@ -11,30 +12,16 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="optionsDropdown">
                 <%- include(`${partials}/notes/menu_add`) %>
-				<% if (permissions.issue_edit) { %><form id='form_complete'><% } %>
-					<input type="hidden" name='_status' value='2'>
-					<input id='btn_complete' class='dropdown-item confirm' type="submit" value='Complete' disabled>
-                <% if (permissions.issue_edit) { %>
-                    </form>
-                <% } %>
-				<div id='form_addSize'>
-					<button type='button' class='dropdown-item' id='btn_addSize' data-toggle='modal' data-target='#mdl_add_size' disabled >
-						Add Item
-					</button>
-				</div>
-				<% if (permissions.issue_delete) { %><form id='form_delete'><% } %>
-					<input id='btn_delete' type="submit" class="dropdown-item confirm" value='Cancel' disabled>
-				<% if (permissions.issue_edit) { %></form><% } %>
-				<input id='btn_action' form='form_action' class='dropdown-item confirm' type="submit" value='Action Lines' disabled>
-                <a class='dropdown-item' id='btn_loancard'>
-                    Download Loancard
-                </a>
+				<%- include(`${partials}/menu/action`) %>
+				<%- include(`${partials}/menu/complete`, {permission: 'issue_edit'}) %>
+				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'issue_line_add'}) %>
+				<button class='dropdown-item' id='btn_loancard' disabled>Download Loancard</button>
+				<%- include(`${partials}/menu/delete`, {permission: 'issue_edit'}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines', count_id: 'line'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note', permission: 'access_notes'}) %>
-        <%- include(`${partials}/reload`) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'issue_lines', count_id: 'line', permission: 'access_issue_lines'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes',		  count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -47,140 +34,57 @@
 			<%- include(`${partials}/inputs/display`, {id: '_status', 	 title: 'Status'}) %>
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=5', text: 'Closed'}]}) %>
-			<%- include(`${partials}/spinner`, {id: 'issues'}) %>
-            <% if (permissions.return_line_add) { %>
-                <form id='form_action'>
-            <% } %>
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Issued'}, {value: '_status=3', text: 'Returned'}]}) %>
+			<% if (permissions.issue_line_edit) { %><form id='form_action'><% } %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-10' onclick='sortTable(0, "tbl_lines")'>
-                            <%- include(`${partials}/spinner`, {id: 'issue_lines', float_left: true, small: true}) %>
-                            Line
-                        </th>
-                        <th class='w-20' onclick='sortTable(1, "tbl_lines")'>Item</th>
-                        <th class='w-20' onclick='sortTable(2, "tbl_lines")'>Size</th>
-                        <th class='w-10'  onclick='sortTable(3, "tbl_lines")'>Qty</th>
-                        <th class='w-20'  onclick='sortTable(4, "tbl_lines")'>Status</th>
-                        <th class='w-20' onclick='sortTable(5, "tbl_lines")'>Action</th>
+                        <th class='w-10' onclick='sortTable(0, "tbl_lines")'>Line</th>
+                        <th class='w-30' onclick='sortTable(1, "tbl_lines")'>Item</th>
+                        <th class='w-30' onclick='sortTable(2, "tbl_lines")'>Size</th>
+                        <th class='w-10' onclick='sortTable(3, "tbl_lines")'>Qty</th>
+                        <th class='w-20' onclick='sortTable(4, "tbl_lines")'>Status</th>
                         <th><i class="fas fa-search"></i></th>
                     </thead>
-                    <tbody id='tbl_lines'>
-                    </tbody>
+                    <tbody id='tbl_lines'></tbody>
                 </table>
-            <% if (permissions.return_line_add) { %>
-                </form>
-            <% } %>
-            <div id="div_modals"></div>
+            <% if (permissions.issue_line_edit) { %></form><% } %>
         </div>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
-	<% if (permissions.issue_line_add) { %>
-		<div id='mdl_add_size' class="modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Add to Issue</h5>
-						<div id='spn_items' class="spinner-border text-primary hidden float-right" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
-						<div id='spn_sizes' class="spinner-border text-primary hidden float-right" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
-						<a class="float-right" id='reset'>
-							<i class='fas fa-redo'></i>
-						</a>
-					</div>
-					<form id='form_line'>
-						<input type="hidden" name='line[issue_id]' id='line_issued_id'>
-						<div class="modal-body">
-							<div id="div_items">
-								<%- include(`${partials}/inputs/text`,	 {id: 'inp_item',  title: 'Search Items', autocomplete: 'off'}) %>
-								<%- include(`${partials}/inputs/select`, {id: 'sel_items', title: 'Select Item',  size: '10'}) %>
-							</div>
-							<div id="div_sizes" class='hidden'>
-								<%- include(`${partials}/inputs/text`,	 {id: 'inp_size',  title: 'Search Sizes', autocomplete: 'off'}) %>
-								<%- include(`${partials}/inputs/select`, {id: 'sel_sizes', title: 'Select Size',  size: '10', name: 'line[size_id]', required: true}) %>
-							</div>
-							<div id="div_size" class='hidden'>
-								<%- include(`${partials}/inputs/number`, {id: 'add_size_qty', title: 'Qty', name: 'line[_qty]', value: '1', min: '1', required: true}) %>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-success">Add</button>
-							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	<% } %>
+    <div id="div_modals">
+		<%- include(`${partials}/stores/sizes/select`,  {permission: 'issue_line_add', 	   table: 'Issue'}) %>
+		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_issue_lines', table: 'Issue'}) %>
+	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <!-- get/spinner/XHRsend/send from notes include -->
 <script src='/js/tabs.js'></script>
-<script src="/js/stores/issues/show/getIssue.js"></script>
-<script src="/js/stores/issues/show/getLines.js"></script>
-<script src="/js/stores/nsns/list.js"></script>
-<script src="/js/stores/stock/list.js"></script>
-<script src="/js/stores/serials/list.js"></script>
 <script src="/js/search/select.js"></script>
-<script src="/js/addSize.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src='/js/utils/select_sel_status.js'></script>
-<script src='/js/utils/getLineNotes.js'></script>
 <script>showTab('<%= tab %>');</script>
+
+<script src="/js/stores/issues/show/View.js"></script>
 <script async>getIssue()</script>
-<script async>getLines()</script>
-<% if (permissions.issue_line_add) { %>
-	<script src="/js/addSize.js"></script>
-	<script>
-		function reset_add_size() {
-			let div_sizes    = document.querySelector('#div_sizes'),
-				div_size     = document.querySelector('#div_size'),
-				sel_items    = document.querySelector('#sel_items'),
-				sel_sizes    = document.querySelector('#sel_sizes'),
-				inp_item     = document.querySelector('#inp_item'),
-				inp_size     = document.querySelector('#inp_size');
-			sel_items.setAttribute('size', 10);
-			sel_items.value = '';
-			sel_sizes.setAttribute('size', 10);
-			sel_sizes.value = '';
-			div_size.classList.add('hidden');
-			div_sizes.classList.add('hidden');
-			inp_item.value = '';
-			inp_size.value = '';
-		};
-		addFormListener('form_line', 'POST', `/stores/issue_lines`, {onComplete: [getLines, reset_add_size]});
-		document.querySelector('#inp_item').addEventListener('keyup', function (event) {searchSelect('inp_item',"sel_items")});
-		document.querySelector('#inp_size').addEventListener('keyup', function (event) {searchSelect('inp_size',"sel_sizes")});
-		document.querySelector('#sel_items').addEventListener('change', function (event) {search_sizes(this.value)});
-		document.querySelector('#sel_sizes').addEventListener('change', function () {
-			let sel_sizes = document.querySelector('#sel_sizes'),
-				div_size  = document.querySelector('#div_size');
-			if (sel_sizes) {
-				if (div_size) div_size.classList.remove('hidden');
-				if (sel_sizes) sel_sizes.removeAttribute('size');
-			} else console.log('sel_sizes not found');
-		});
-		let line_issue_id = document.querySelector('#line_issue_id');
-		if (line_issue_id) line_issue_id.setAttribute('value', path[3]);
-		getItems();
-	</script>
+<% if (permissions.issue_edit) { %>
+	<script src="/js/stores/issues/show/Edit.js"></script>
 <% } %>
 <% if (permissions.issue_delete) { %>
-    <script>
-        window.addEventListener( "load", () => {addFormListener('form_delete', 'DELETE', `/stores/issues/${path[3]}`, {onComplete: [getIssue, getLines]})});
-    </script>
+	<script src="/js/stores/issues/show/Delete.js"></script>
 <% } %>
-<% if (permissions.issue_edit) { %>
-    <script>
-        window.addEventListener( "load", () => {addFormListener('form_complete', 'PUT', `/stores/issues/${path[3]}`, {onComplete: [getIssue, getLines]})});
-    </script>
-<% } %>
-<% if (permissions.issue_line_edit) { %>
-    <script>
-        window.addEventListener( "load", () => {addFormListener('form_action', 'PUT', `/stores/issue_lines/${path[3]}`, {onComplete: getLines})});
-    </script>
+<% if (permissions.access_issue_lines) { %>
+	<script src="/js/stores/issues/show/linesView.js"></script>
+	<script src="/js/stores/stock/list.js"></script>
+	<script async>getLines()</script>
+	<% if (permissions.issue_line_add) { %>
+		<script src="/js/stores/nsns/list.js"></script>
+		<script src="/js/stores/serials/list.js"></script>
+		<script src="/js/stores/sizes/select.js"></script>
+	<% } %>
+	<% if (permissions.issue_line_edit) { %>
+		<script src="/js/stores/issues/show/linesEdit.js"></script>
+	<% } %>
+	<% if (permissions.issue_line_delete) { %>
+		<script src="/js/stores/issues/show/linesDelete.js"></script>
+	<% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

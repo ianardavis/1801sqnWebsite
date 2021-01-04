@@ -2,10 +2,10 @@
 <%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores/issues', text: 'Issues'}) %>
 <%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'issues'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All'}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft', selected: true}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
-	<%- include(`${partials}/spinner`, {id: 'issues'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-40" onclick="sortTable(0, 'issueTable')">Issued To</th>
@@ -19,7 +19,5 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/issues/index/issues.js'></script>
-<script src='/js/data/addFormListener.js'></script>
-<script src='/js/data/send.js'></script>
 <script async>getIssues()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

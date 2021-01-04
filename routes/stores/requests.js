@@ -236,12 +236,11 @@ module.exports = (app, al, inc, pm, m) => {
                                                                 );
                                                                 if (result.created) {
                                                                     actions.push(
-                                                                        m.stores.notes.create({
-                                                                            _id: result.line_id,
-                                                                            _table: 'order_lines',
-                                                                            _note: `Created from request line ${_order.line_id}`,
-                                                                            user_id: req.user.user_id,
-                                                                            _system: 1
+                                                                        m.stores.order_line_actions.create({
+                                                                            order_line_id: result.line_id,
+                                                                            action_line_id: _order.line_id,
+                                                                            _note: `Created from request line`,
+                                                                            user_id: req.user.user_id
                                                                         })
                                                                     );
                                                                 };

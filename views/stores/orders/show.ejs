@@ -15,7 +15,6 @@
 				<%- include(`${partials}/menu/action`) %>
 				<%- include(`${partials}/menu/complete`, {permission: 'order_edit'}) %>
 				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'order_line_add'}) %>
-				<div class="dropdown-divider"></div>
 				<%- include(`${partials}/menu/delete`, {permission: 'order_delete'}) %>
 			</div>
 		</li>
@@ -96,7 +95,7 @@
 	<script src="/js/stores/utils/showLine.js"></script>
 	<script src="/js/stores/utils/showLineActions.js"></script>
 	<script src="/js/stores/utils/getLines.js"></script>
-	<script src="/js/addSize.js"></script>
+	<script src="/js/stores/sizes/select.js"></script>
 	<script>
 		let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Demanded', '4': 'Received', '5': 'Issued', '6': 'Closed'};
 		window.addEventListener('load', function () {
