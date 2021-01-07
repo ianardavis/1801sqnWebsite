@@ -1,23 +1,6 @@
 function showLine(table, id) {
     get(
         function (line, options) {
-            let span_view_buttons = document.querySelector('#span_view_buttons');
-            if (span_view_buttons) {
-                span_view_buttons.innerHTML = '';
-                if (line._status === 1) {
-                    span_view_buttons.appendChild(
-                        new Delete_Button({
-                            path: `/stores/${table}_lines/${line.line_id}`,
-                            options: {
-                                onComplete: [
-                                    getLines,
-                                    function () {$('#mdl_line_view').modal('hide')}
-                                ]
-                            }
-                        }).e
-                    );
-                };
-            };
             set_innerText({id: 'line_id_view',        text: line.line_id});
             set_innerText({id: 'line_item_view',      text: line.size.item._description});
             set_attribute({id: 'line_item_view_link', attribute: 'href', value: line.size.item_id});

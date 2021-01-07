@@ -94,7 +94,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.issues()
             ]
         })
-        .then(issue_line => res.send({result: true, issue_line: issue_line}))
+        .then(line => {
+            if (line) res.send({result: true,  issue_line: line})
+            else      res.send({result: false, message: 'Line not found'});
+        })
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_lines/:id',    permissions, allowed('access_issue_lines', {send: true}),             (req, res) => {

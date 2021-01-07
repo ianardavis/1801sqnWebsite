@@ -13,7 +13,7 @@ module.exports = (app, al, inc, pm, m) => {
             attributes: ['user_id_request', '_status']
         })
         .then(request => {
-            if      (!request)                                                   res.error.redirect(new Error('Request not found'), req, res)
+            if      (!request)                                                     res.error.redirect(new Error('Request not found'), req, res)
             else if (!req.allowed && request.user_id_request !== req.user.user_id) res.error.redirect(new Error('Permission denied'), req, res)
             else {
                 if (request._status === 1) req.flash('danger', "This request is still in draft, no items on this request will be actioned or considered until the request is marked as 'Complete'");
@@ -433,8 +433,9 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .then(line => {
             if      (!req.allowed && line.request.user_id_request !== req.user.user_id) res.send({result: false, message: 'Permission denied'});
-            else if (line.request._status !== 1)                                  res.send({result: false, message: 'Lines can only be cancelled whilst a request is in draft'});
-            else if (line._status !== 1)                                          res.send({result: false, message: 'Only pending lines can be cancelled'});
+            else if (line.request._status !== 1)                                        res.send({result: false, message: 'Lines can only be cancelled whilst a request is in draft'});
+            else if (line._status === 0)                                                res.send({result: false, message: 'This line has already been cancelled'});
+            else if (line._status !== 1)                                                res.send({result: false, message: 'Only pending lines can be cancelled'});
             else {
                 let actions = [];
                 actions.push(line.update({_status: 0}))

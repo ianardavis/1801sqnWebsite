@@ -63,16 +63,19 @@
 <script src="/js/data/addFormListener.js"></script>
 <script>showTab('<%= tab %>');</script>
 
-<script src="/js/stores/issues/show/View.js"></script>
+<script src="/js/stores/issues/show/view.js"></script>
 <script async>getIssue()</script>
 <% if (permissions.issue_edit) { %>
-	<script src="/js/stores/issues/show/Edit.js"></script>
+    <script src="/js/stores/issues/show/edit.js"></script>
+    <script src="/js/stores/utils/setButtons.js"></script>
+    <script async>setButtons('issue')</script>
 <% } %>
-<% if (permissions.issue_delete) { %>
-	<script src="/js/stores/issues/show/Delete.js"></script>
-<% } %>
+<% if (permissions.issue_delete) { %><script src="/js/stores/issues/show/delete.js"></script><% } %>
 <% if (permissions.access_issue_lines) { %>
-	<script src="/js/stores/issues/show/linesView.js"></script>
+    <% if (permissions.access_notes) { %><script src="/js/stores/issues/show/notesView.js"></script><% } %>
+	<script src="/js/stores/utils/showLine.js"></script>
+	<script src="/js/stores/utils/showLineActions.js"></script>
+	<script src="/js/stores/issues/show/lineView.js"></script>
 	<script src="/js/stores/stock/list.js"></script>
 	<script async>getLines()</script>
 	<% if (permissions.issue_line_add) { %>
@@ -80,11 +83,13 @@
 		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/sizes/select.js"></script>
 	<% } %>
-	<% if (permissions.issue_line_edit) { %>
-		<script src="/js/stores/issues/show/linesEdit.js"></script>
-	<% } %>
-	<% if (permissions.issue_line_delete) { %>
-		<script src="/js/stores/issues/show/linesDelete.js"></script>
-	<% } %>
+    <% if (permissions.issue_line_edit) { %>
+        <script src="/js/stores/issues/show/lineEdit.js"></script>
+		<script src="/js/stores/utils/setLineButtons.js"></script>
+		<script src="/js/stores/utils/setActions.js"></script>
+		<script async>setActions()</script>
+		<script async>setLineButtons('issue')</script>
+    <% } %>
+	<% if (permissions.issue_line_delete) { %><script src="/js/stores/issues/show/lineDelete.js"></script><% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

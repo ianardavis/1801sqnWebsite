@@ -1,5 +1,8 @@
-let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Returned'};
+let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Returned'},
+    lines_loaded = false;
 function getLines() {
+    lines_loaded = false;
+    let sel_status = document.querySelector('#sel_status') || {value: ''};
     get(
         function (lines, options) {
             let table_body = document.querySelector('#tbl_lines');
@@ -13,13 +16,23 @@ function getLines() {
                         add_cell(row, {text: line.size.item._description});
                         add_cell(row, {text: line.size._size});
                         add_cell(row, {text: line._qty});
-                        add_cell(row, {text: line_statuses[line._status], id: `status_${line.line_id}`});
+                        if (line._status === 2 && line.issue._status === 2) {
+                            add_cell(row, {
+                                text: line_statuses[line._status],
+                                classes: ['actions'],
+                                data: {
+                                    field: 'line_id',
+                                    value: line.line_id
+                                }
+                            })
+                        } else add_cell(row, {text: line_statuses[line._status]});
+                        // add_cell(row, {text: line_statuses[line._status], id: `status_${line.line_id}`});
                         add_cell(row, {append: 
                             new Link({
                                 small: true,
                                 modal: 'line_view',
                                 data: {
-                                    field: `issue_line_id`,
+                                    field: `line_id`,
                                     value: line.line_id
                                 }
                             }).e
@@ -30,6 +43,7 @@ function getLines() {
                     };
                 });
             };
+            lines_loaded = true;
         },
         {
             table: 'issue_lines',
@@ -37,5 +51,9 @@ function getLines() {
         }
     );
 };
-document.querySelector('#reload')    .addEventListener('click',  getLines);
-document.querySelector('#sel_status').addEventListener('change', getLines);
+window.addEventListener('load', function () {
+    document.querySelector('#reload')    .addEventListener('click',  getLines);
+    document.querySelector('#sel_status').addEventListener('change', getLines);
+    $('#mdl_line_view').on('show.bs.modal', function (event) {showLine(       'issue', event.relatedTarget.dataset.line_id)});
+    $('#mdl_line_view').on('show.bs.modal', function (event) {showLineActions('issue', event.relatedTarget.dataset.line_id)});
+});

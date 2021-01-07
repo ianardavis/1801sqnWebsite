@@ -198,6 +198,7 @@ function Select (options = {}) {
     if (options.small)      this.e.classList.add('form-control-sm');
     if (options.options)    options.options.forEach(e => this.e.appendChild(new Option(e).e));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.listener)   this.e.addEventListener(options.listener.event, options.listener.func);
 };
 function Option (options = {}) {
     this.e = document.createElement('option');
