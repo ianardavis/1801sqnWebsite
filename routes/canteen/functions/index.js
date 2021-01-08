@@ -1,5 +1,5 @@
 let settings = require(process.env.ROOT + '/fn/settings'),
-    stock    = require(process.env.ROOT + '/fn/stores/stock');
+    stock    = require('../../stores/functions/stock');
 module.exports = {
     getSession: (req, res, options = {}) => new Promise(resolve => {
         options.m.settings.findOrCreate({

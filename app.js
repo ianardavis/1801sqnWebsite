@@ -13,7 +13,7 @@ if (!process.env.NODE_ENV) {
 };
 console.log(`Environment: ${process.env.NODE_ENV}`);
 console.log('   Set')
-let port_check = require(`${process.env.ROOT}/fn/utils/port_check`)
+let port_check = require(`${process.env.ROOT}/fn/port_check`)
 port_check()
 .then(port => {
     console.log('Models:');

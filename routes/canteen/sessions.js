@@ -1,7 +1,6 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let canteen  = require(`${process.env.ROOT}/fn/canteen`),
-        settings = require(`${process.env.ROOT}/fn/settings`);
+    let settings = require(`${process.env.ROOT}/fn/settings`);
     app.get('/canteen/sessions',     permissions, allowed('access_canteen'),                (req, res) => res.render('canteen/sessions/index'));
     app.get('/canteen/sessions/:id', permissions, allowed('access_canteen'),                (req, res) => res.render('canteen/sessions/show'));
 
@@ -13,7 +12,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.users({as: 'user_close'}),
             ]
         })
-        .then(sessions => res.send({result: true, sessions: sessions}))
+        .then(sessions => res.send({success: true, sessions: sessions}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/canteen/get/session',  permissions, allowed('access_sessions', {send: true}), (req, res) => {
@@ -26,7 +25,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .then(session => {
             return getSessionSales(session.session_id)
-            .then(sales => res.send({result: true, session: {...session.dataValues, ...sales}}))
+            .then(sales => res.send({success: true, session: {...session.dataValues, ...sales}}))
             .catch(err => res.error.send(err, res))
         })
         .catch(err => res.error.send(err, res));
@@ -76,8 +75,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     defaults: {user_id_open: req.user.user_id}
                 })
                 .then(([session, created]) => {
-                    if (created) res.send({result: true, message: `Session opened\nSession ID: ${session.session_id}`})
-                    else         res.send({result: true, message: `Session already open\nSession ID: ${session.session_id}`})
+                    if (created) res.send({success: true, message: `Session opened\nSession ID: ${session.session_id}`})
+                    else         res.send({success: true, message: `Session already open\nSession ID: ${session.session_id}`})
                 })
                 .catch(err => res.error.send(err, res));
             })
@@ -92,7 +91,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['session_id', '_status']
         })
         .then(session => {
-            if (session._status !== 1) res.send({result: false, message: 'This session is not open'})
+            if (session._status !== 1) res.send({success: false, message: 'This session is not open'})
             else {
                 return m.sales.findAll({
                     where: {
@@ -156,7 +155,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                                 user_id_close: req.user.user_id
                                             }
                                         )
-                                        .then(result => res.send({result: true, message: `Session closed.\nTakings: £${sales.takings.toFixed(2)}.\nPaid Out: £${sales.paid_out.toFixed(2)}.\nPaid In: £${sales.paid_in.toFixed(2)}.\nCash Returned: £${Number(balance.cash).toFixed(2)}.\nCheques Returned: £${Number(balance.cheques).toFixed(2)}`}))
+                                        .then(result => res.send({success: true, message: `Session closed.\nTakings: £${sales.takings.toFixed(2)}.\nPaid Out: £${sales.paid_out.toFixed(2)}.\nPaid In: £${sales.paid_in.toFixed(2)}.\nCash Returned: £${Number(balance.cash).toFixed(2)}.\nCheques Returned: £${Number(balance.cheques).toFixed(2)}`}))
                                         .catch(err => res.error.redirect(err, req, res));
                                     })
                                     .catch(err => res.error.send(err, res));

@@ -14,7 +14,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.holdings({as: 'holding_from'})
             ]
         })
-        .then(movements => res.send({result: true, movements: movements}))
+        .then(movements => res.send({success: true, movements: movements}))
         .catch(err => res.error.send(err, res));
     });
 };

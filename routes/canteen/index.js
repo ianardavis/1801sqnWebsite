@@ -10,7 +10,7 @@ module.exports = (app, m) => {
         return (file.indexOf(".") !== 0) && (file !== "index.js");
     })
     .forEach(function(file) {
-        if (file === 'includes.js') {
+        if (file === 'includes.js' || file === 'functions') {
             
         } else if (file === 'permissions.js') {
             require(`./${file}`)(app, allowed, inc, permissions, {permissions: m.canteen.permissions, users: m.users.users})
@@ -23,7 +23,7 @@ module.exports = (app, m) => {
 
     app.get('/canteen/get/settings',      permissions, allowed('access_canteen'), (req, res) => {
         m.canteen.settings.findOne({where: req.query})
-        .then(settings => res.send({result: true, settings: settings}))
+        .then(settings => res.send({success: true, settings: settings}))
         .catch(err => res.error.send(err, res));
     });
 };

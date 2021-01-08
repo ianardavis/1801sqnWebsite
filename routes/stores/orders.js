@@ -1,11 +1,11 @@
 const op = require('sequelize').Op;
 module.exports = (app, al, inc, pm, m) => {
     let orders = {}, demands = {}, receipts = {}, issues = {},
-        promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`);
-    require(`${process.env.ROOT}/fn/stores/orders`)  (m, orders);
-    require(`${process.env.ROOT}/fn/stores/demands`) (m, demands);
-    require(`${process.env.ROOT}/fn/stores/receipts`)(m, receipts);
-    require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
+        promiseResults = require(`../functions/promise_results`);
+    require(`./functions/orders`)  (m, orders);
+    require(`./functions/demands`) (m, demands);
+    require(`./functions/receipts`)(m, receipts);
+    require(`./functions/issues`)  (m, issues);
     app.get('/stores/orders',                 pm, al('access_orders'),                                 (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
     app.get('/stores/orders/:id',             pm, al('access_orders'),                                 (req, res) => {
         m.stores.orders.findOne({
@@ -41,7 +41,7 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.order_lines()
             ]
         })
-        .then(orders => res.send({result: true, orders: orders}))
+        .then(orders => res.send({success: true, orders: orders}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/order',              pm, al('access_orders',      {send: true}),              (req, res) => {
@@ -53,7 +53,7 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.order_lines()
             ]
         })
-        .then(order => res.send({result: true, order: order}))
+        .then(order => res.send({success: true, order: order}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/order_lines',        pm, al('access_order_lines', {send: true}),              (req, res) => {
@@ -66,7 +66,7 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.users()
             ]
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/order_line',         pm, al('access_order_lines', {send: true}),              (req, res) => {
@@ -79,7 +79,7 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.users()
             ]
         })
-        .then(order_line => res.send({result: true, order_line: order_line}))
+        .then(order_line => res.send({success: true, order_line: order_line}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/order_lines/:id',    pm, al('access_order_lines', {send: true}),              (req, res) => {
@@ -93,7 +93,7 @@ module.exports = (app, al, inc, pm, m) => {
                 })
             ]
         })
-        .then(lines => res.send({result: true, order_lines: lines}))
+        .then(lines => res.send({success: true, order_lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/order_line_actions', pm, al('access_order_lines', {send: true}),              (req, res) => {
@@ -104,7 +104,7 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.users()
             ]
         })
-        .then(order_line_actions => res.send({result: true, order_line_actions: order_line_actions}))
+        .then(order_line_actions => res.send({success: true, order_line_actions: order_line_actions}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -137,7 +137,7 @@ module.exports = (app, al, inc, pm, m) => {
                 _qty:     req.body.line._qty,
                 user_id:  req.user.user_id
             })
-            .then(result => res.send({result: true, message: `Item added: ${result.line.line_id}`}))
+            .then(result => res.send({success: true, message: `Item added: ${result.line.line_id}`}))
             .catch(err => res.error.send(err, res));
         } else if (req.body.user_id_order) {
             m.stores.orders.findOrCreate({
@@ -151,11 +151,11 @@ module.exports = (app, al, inc, pm, m) => {
                     _qty:     req.body.line._qty,
                     user_id:  req.user.user_id
                 })
-                .then(result => res.send({result: true, message: `Item added: ${result.line.line_id}`}))
+                .then(result => res.send({success: true, message: `Item added: ${result.line.line_id}`}))
                 .catch(err => res.error.send(err, res));
             })
             .catch(err => res.error.send(err, res))
-        } else res.send({result: false, message: 'No order ID or user ID specified'});
+        } else res.send({success: false, message: 'No order ID or user ID specified'});
     });
 
     app.put('/stores/orders/addtodemand',     pm, al('demand_line_add',    {send: true}),              (req, res) => {
@@ -187,12 +187,12 @@ module.exports = (app, al, inc, pm, m) => {
                 Promise.allSettled(actions)
                 .then(results => {
                     if (promiseResults(results)) {
-                        res.send({result: true, message: order_lines.length + ' lines added to demand'});
+                        res.send({success: true, message: order_lines.length + ' lines added to demand'});
                     } else res.error.send(new Error('Some lines failed', res));
                 })
                 .catch(err => res.error.send(err, res));
             } else {
-                res.send({result: true, message: 'No order lines to demand'})
+                res.send({success: true, message: 'No order lines to demand'})
             };
         })
         .catch(err => res.error.send(err, res));
@@ -204,9 +204,9 @@ module.exports = (app, al, inc, pm, m) => {
             attributes: ['order_id', 'user_id_order', '_status']
         })
         .then(order => {
-            if      (!order)                                   res.send({result: false, message: 'Order not found'});
-            else if (order._status !== 1)                      res.send({result: false, message: `Order must be in draft to be completed`});
-            else if (!order.lines || order.lines.length === 0) res.send({result: false, message: 'A order must have at least one open line before you can complete it'});
+            if      (!order)                                   res.send({success: false, message: 'Order not found'});
+            else if (order._status !== 1)                      res.send({success: false, message: `Order must be in draft to be completed`});
+            else if (!order.lines || order.lines.length === 0) res.send({success: false, message: 'A order must have at least one open line before you can complete it'});
             else {
                 let actions = [];
                 actions.push(order.update({_status: 2}));
@@ -229,7 +229,7 @@ module.exports = (app, al, inc, pm, m) => {
                     })
                 );
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: `Order completed`}))
+                .then(result => res.send({success: true, message: `Order completed`}))
                 .catch(err => res.error.send(err, res));
             };
         })
@@ -327,7 +327,7 @@ module.exports = (app, al, inc, pm, m) => {
                 })
                 .then(order_lines => {
                     if (order_lines && order_lines.length > 0) {
-                        if (promiseResults(results)) res.send({result: true, message: 'Lines actioned'})
+                        if (promiseResults(results)) res.send({success: true, message: 'Lines actioned'})
                         else res.error.send('Some lines failed', res);
                     } else {
                         actions = [];
@@ -344,7 +344,7 @@ module.exports = (app, al, inc, pm, m) => {
                         );
                         return Promise.allSettled(actions)
                         .then(results2 => {
-                            if (promiseResults(results)) res.send({result: true, message: 'Lines actioned, order closed'})
+                            if (promiseResults(results)) res.send({success: true, message: 'Lines actioned, order closed'})
                             else res.error.send('Some lines failed', res);
                         })
                         .catch(err => res.error.send(err, res));

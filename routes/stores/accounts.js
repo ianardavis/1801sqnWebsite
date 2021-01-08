@@ -9,7 +9,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             where:   req.query,
             include: [inc.users()]
         })
-        .then(accounts => res.send({result: true, accounts: accounts}))
+        .then(accounts => res.send({success: true, accounts: accounts}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/account',       loggedIn, allowed('access_accounts', {send: true}), (req, res) => {
@@ -18,8 +18,8 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             include: [inc.users()]
         })
         .then(account => {
-            if (account) res.send({result: true,  account: account})
-            else         res.send({result: false, message: 'Account not found'});
+            if (account) res.send({success: true,  account: account})
+            else         res.send({success: false, message: 'Account not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -29,13 +29,13 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             req.body.account,
             {where: {account_id: req.params.id}}
         )
-        .then(result => res.send({result: true, message: 'Account saved'}))
+        .then(result => res.send({success: true, message: 'Account saved'}))
         .catch(err => res.error.send(err, res));
     });
     
     app.post('/stores/accounts',         loggedIn, allowed('account_add',     {send: true}), (req, res) => {
         m.stores.accounts.create(req.body.account)
-        .then(account => res.send({result: true, message: 'Account created'}))
+        .then(account => res.send({success: true, message: 'Account created'}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -46,7 +46,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 {account_id: null},
                 {where: {supplier_id: req.body.supplier_id}}
             )
-            .then(result => res.send({result: true, message: 'Account deleted and supplier updated'}))
+            .then(result => res.send({success: true, message: 'Account deleted and supplier updated'}))
             .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res));

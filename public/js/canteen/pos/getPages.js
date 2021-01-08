@@ -13,17 +13,13 @@ function getPages() {
                             classes: ['col-6', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2', 'h-100'],
                             append: [
                                 new Hidden({
-                                    attributes:[
-                                        {field: 'name', value: 'line[sale_id]'}
-                                    ],
+                                    attributes:[{field: 'name', value: 'line[sale_id]'}],
                                     classes: ['sale_id']
                                 }).e,
-                                new Hidden({
-                                    attributes:[
-                                        {field: 'name', value: 'line[item_id]'},
-                                        {field: 'value', value: String(item.item_id)}
-                                    ]
-                                }).e,
+                                new Hidden({attributes:[
+                                    {field: 'name', value: 'line[item_id]'},
+                                    {field: 'value', value: String(item.item_id)}
+                                ]}).e,
                                 new Button({
                                     text: `${item.item._name}\n£${Number(item.item._price).toFixed(2)}`,
                                     classes: ['w-100', 'h-100', 'btn', 'btn-primary']

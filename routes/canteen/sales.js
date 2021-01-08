@@ -10,7 +10,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.users()
             ]
         })
-        .then(sales => res.send({result: true, sales: sales}))
+        .then(sales => res.send({success: true, sales: sales}))
         .catch(err => res.error.send(err, res))
     });
     app.get('/canteen/get/sale',       permissions, allowed('access_sales', {send: true}), (req, res) => {
@@ -19,8 +19,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()]
         })
         .then(sale => {
-            if (sale) res.send({result: true,  sale: sale})
-            else      res.send({result: false, message: 'Sale not found'})
+            if (sale) res.send({success: true,  sale: sale})
+            else      res.send({success: false, message: 'Sale not found'})
         })
         .catch(err => res.error.send(err, res))
     });
@@ -30,7 +30,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['session_id']
         })
         .then(sessions => {
-            if (sessions.length !== 1) res.send({result: false, message: `${sessions.length} session(s) open`})
+            if (sessions.length !== 1) res.send({success: false, message: `${sessions.length} session(s) open`})
             else {
                 return m.sales.findOrCreate({
                     where: {
@@ -39,7 +39,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         _status:    1
                     }
                 })
-                .then(([sale, created]) => res.send({result: true, user_sale: sale.sale_id}))
+                .then(([sale, created]) => res.send({success: true, user_sale: sale.sale_id}))
                 .catch(err => res.error.send(err, res));
             };
         })
@@ -50,7 +50,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:   req.query,
             include: [inc.items()]
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res))
     });
 
@@ -62,15 +62,15 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 attributes: ['sale_id']
             })
             .then(sale => {
-                if      (!sale)                      res.send({result: false, message: 'Sale not found'})
-                else if (sale.session._status !== 1) res.send({result: false, message: 'Session for this sale is not open'})
+                if      (!sale)                      res.send({success: false, message: 'Sale not found'})
+                else if (sale.session._status !== 1) res.send({success: false, message: 'Session for this sale is not open'})
                 else {
                     return m.items.findOne({
                         where: {item_id: req.body.line.item_id},
                         attributes: ['item_id', '_price']
                     })
                     .then(item => {
-                        if (!item) res.send({result: false, message: 'Item not found'})
+                        if (!item) res.send({success: false, message: 'Item not found'})
                         else {
                             return m.sale_lines.findOrCreate({
                                 where: {
@@ -83,12 +83,12 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                 }
                             })
                             .then(([line, created]) => {
-                                if (created) res.send({result: true, message: 'Line added'})
+                                if (created) res.send({success: true, message: 'Line added'})
                                 else {
                                     return line.increment('_qty', {by: req.body.line._qty})
                                     .then(result => {
-                                        if (result) res.send({result: true, message: 'Line updated'})
-                                        else res.send({result: false, message: 'Line not updated'});
+                                        if (result) res.send({success: true, message: 'Line updated'})
+                                        else res.send({success: false, message: 'Line not updated'});
                                     })
                                     .catch(err => res.error.send(err, res));
                                 };
@@ -100,7 +100,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 };
             })
             .catch(err => res.error.send(err, res));
-        } else res.send({result: false, message: 'No line specified'});
+        } else res.send({success: false, message: 'No line specified'});
     });
     
     app.put('/canteen/sale_lines',     permissions, allowed('access_pos',   {send: true}), (req, res) => {
@@ -117,8 +117,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 attributes: ['line_id', '_qty']
             })
             .then(line => {
-                if      (!line)                           res.send({result: false, message: 'Line not found'})
-                else if (line.sale.session._status !== 1) res.send({result: false, message: 'Session for this line is not open'})
+                if      (!line)                           res.send({success: false, message: 'Line not found'})
+                else if (line.sale.session._status !== 1) res.send({success: false, message: 'Session for this line is not open'})
                 else {
                     return line.increment('_qty', {by: req.body.line._qty})
                     .then(result => {
@@ -130,11 +130,11 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                     actions.push(line.destroy());
                                     return Promise.all(actions)
                                     .then(result => { 
-                                        if (result) res.send({result: true,  message: 'Line updated'})
-                                        else res.send({result: false, message: 'Line not updated'});
+                                        if (result) res.send({success: true,  message: 'Line updated'})
+                                        else res.send({success: false, message: 'Line not updated'});
                                     })
-                                } else res.send({result: true,  message: 'Line updated'});
-                            } else res.send({result: false, message: 'Line not updated'});
+                                } else res.send({success: true,  message: 'Line updated'});
+                            } else res.send({success: false, message: 'Line not updated'});
                         })
                         .catch(err => res.error.send(err, res))
                     })
@@ -142,7 +142,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 };
             })
             .catch(err => res.error.send(err, res));
-        } else res.send({result: false, message: 'No line specified'});
+        } else res.send({success: false, message: 'No line specified'});
     });
     app.put('/canteen/sales',          permissions, allowed('access_pos',   {send: true}), (req, res) => {
         m.sales.findOne({
@@ -150,7 +150,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['sale_id', '_status']
         })
         .then(sale => {
-            if (sale._status !== 1) res.send({result: false, message: 'Sale is not open'})
+            if (sale._status !== 1) res.send({success: false, message: 'Sale is not open'})
             else {
                 return m.sale_lines.findAll({
                     where: {
@@ -161,7 +161,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 })
                 .then(lines => {
                     if (lines.length === 0) {
-                        res.send({result: false, message: 'No open lines on this sale'});
+                        res.send({success: false, message: 'No open lines on this sale'});
                     } else {
                         let total = 0.00;
                         lines.forEach(line => {
@@ -172,7 +172,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                 return m.credits.findOne({where: {user_id: req.body.sale.debit_user_id}})
                                 .then(account => {
                                     if (account) {
-                                        if (account._credit < (total - req.body.sale.tendered)) res.send({result: false, message: 'Not enough on account'})
+                                        if (account._credit < (total - req.body.sale.tendered)) res.send({success: false, message: 'Not enough on account'})
                                         else {
                                             let debit_amount = Number(total - req.body.sale.tendered)
                                             return account.decrement('_credit', {by: debit_amount})
@@ -218,7 +218,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                                         );
                                                     })
                                                     return Promise.all(actions)
-                                                    .then(result => res.send({result: true, message: 'Sale completed', change: 0.00}))
+                                                    .then(result => res.send({success: true, message: 'Sale completed', change: 0.00}))
                                                     .catch(err => res.error.send(err, res));
                                                 })
                                                 .catch(err => res.error.send(err, res));
@@ -228,7 +228,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                     } else res.error.send(err, res);
                                 })
                                 .catch(err => res.error.send(err, res));
-                            } else res.send({result: false, message: 'Not enough tendered'});
+                            } else res.send({success: false, message: 'Not enough tendered'});
                         } else {
                             let actions = [],
                                 change  = Number(req.body.sale.tendered - total);
@@ -279,7 +279,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                 );
                             };
                             return Promise.all(actions)
-                            .then(result => res.send({result: true, message: 'Sale completed', change: change}))
+                            .then(result => res.send({success: true, message: 'Sale completed', change: change}))
                             .catch(err => res.error.send(err, res));
                         };
                     };

@@ -1,11 +1,11 @@
 const op = require('sequelize').Op;
 module.exports = (app, al, inc, pm, m) => {
     let requests = {}, orders = {}, issues = {},
-    promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`),
-    Counter        = require(`${process.env.ROOT}/fn/utils/counter`);
-    require(`${process.env.ROOT}/fn/stores/requests`)(m, requests);
-    require(`${process.env.ROOT}/fn/stores/orders`)  (m, orders);
-    require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
+    promiseResults = require('../functions/promise_results'),
+    Counter        = require('../functions/counter');
+    require('./functions/requests')(m, requests);
+    require('./functions/orders')  (m, orders);
+    require('./functions/issues')  (m, issues);
     app.get('/stores/requests',                 pm, al('access_requests',     {allow: true}),             (req, res) => res.render('stores/requests/index'));
     app.get('/stores/requests/:id',             pm, al('access_requests',     {allow: true}),             (req, res) => {
         m.stores.requests.findOne({
@@ -28,12 +28,19 @@ module.exports = (app, al, inc, pm, m) => {
             attribute: ['request_id']
         })
         .then(line => {
-            if (!line) res.error.redirect(new Error('Request line not found'), req, res);
-            else        res.redirect(`/stores/requests/${line.request_id}`)
+            if (!line) {
+                req.flash('danger', 'Request line not found');
+                res.redirect('/stores/requests');
+            } else res.redirect(`/stores/requests/${line.request_id}`);
         })
         .catch(err => res.error.send(err, res));
     });
     
+    app.get('/stores/count/requests',           pm, al('access_requests',                  {send: true}), (req, res) => {
+        m.stores.requests.count({where: req.query})
+        .then(count => res.send({success: true, result: count}))
+        .catch(err => res.error.send(err, res));
+    });
     app.get('/stores/get/requests',             pm, al('access_requests',     {allow: true, send: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_request = req.user.user_id;
         m.stores.requests.findAll({
@@ -44,7 +51,7 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.users({as: 'user'})
             ]
         })
-        .then(requests => res.send({result: true, requests: requests}))
+        .then(requests => res.send({success: true, result: requests}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request',              pm, al('access_requests',     {allow: true, send: true}), (req, res) => {
@@ -52,12 +59,14 @@ module.exports = (app, al, inc, pm, m) => {
         m.stores.requests.findOne({
             where: req.query,
             include: [
-                inc.request_lines(),
                 inc.users({as: 'user_request'}),
                 inc.users({as: 'user'})
             ]
         })
-        .then(request => res.send({result: true, request: request}))
+        .then(request => {
+            if (request) res.send({success: true,  result: request})
+            else         res.send({success: false, message: 'Request not Found'});
+        })
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request_lines',        pm, al('access_request_lines',             {send: true}), (req, res) => {
@@ -69,7 +78,7 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.users()
             ]
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request_line',         pm, al('access_request_lines',             {send: true}), (req, res) => {
@@ -80,9 +89,9 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.users()
             ]
         })
-        .then(request_line => {
-            if (request_line) res.send({result: true,  request_line: request_line})
-            else              res.send({result: false, message: 'Line not found'});
+        .then(line => {
+            if (line) res.send({success: true,  result: line})
+            else      res.send({success: false, message: 'Line not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -94,7 +103,7 @@ module.exports = (app, al, inc, pm, m) => {
                 inc.users()
             ]
         })
-        .then(request_line_actions => res.send({result: true, request_line_actions: request_line_actions}))
+        .then(actions => res.send({success: true, result: actions}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/request_lines/:id',    pm, al('access_request_lines',             {send: true}), (req, res) => {
@@ -108,7 +117,7 @@ module.exports = (app, al, inc, pm, m) => {
                 })
             ]
         })
-        .then(lines => res.send({result: true, request_lines: lines}))
+        .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -119,8 +128,8 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .then(result => {
             if (result.result) {
-                if (result.created) res.send({result: true, message: `Request raised: ${result.request_id}`})
-                else                res.send({result: true, message: `Request already in draft for this user: ${result.request_id}`});
+                if (result.created) res.send({success: true, message: `Request raised: ${result.request_id}`})
+                else                res.send({success: true, message: `Request already in draft for this user: ${result.request_id}`});
             } else res.send(result);
         })
         .catch(err => res.error.send(err, res));
@@ -130,7 +139,7 @@ module.exports = (app, al, inc, pm, m) => {
             line: req.body.line,
             user_id: req.user.user_id
         })
-        .then(line_id => res.send({result: true, message: 'Item added'}))
+        .then(line_id => res.send({success: true, message: 'Item added'}))
         .catch(err => res.error.send(err, res))
     });
     
@@ -141,10 +150,10 @@ module.exports = (app, al, inc, pm, m) => {
             include:    [inc.request_lines({where: {_status: 1}, attributes: ['line_id']})]
         })
         .then(request => {
-            if      (!request)                                                   res.send({result: false, message: 'Request not found'});
-            else if (!req.allowed && req.user.user_id !== request.user_id_request) res.send({result: false, message: 'Permission denied'});
-            else if (request._status !== 1)                                      res.send({result: false, message: 'Request must be in draft to be completed'});
-            else if (!request.lines || request.lines.length === 0)               res.send({result: false, message: 'A request must have at least one open line before you can complete it'});
+            if      (!request)                                                   res.send({success: false, message: 'Request not found'});
+            else if (!req.allowed && req.user.user_id !== request.user_id_request) res.send({success: false, message: 'Permission denied'});
+            else if (request._status !== 1)                                      res.send({success: false, message: 'Request must be in draft to be completed'});
+            else if (!request.lines || request.lines.length === 0)               res.send({success: false, message: 'A request must have at least one open line before you can complete it'});
             else {
                 let actions = [];
                 actions.push(request.update({_status: 2}));
@@ -174,7 +183,7 @@ module.exports = (app, al, inc, pm, m) => {
                     })
                 );
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: `Request completed`}))
+                .then(result => res.send({success: true, message: `Request completed`}))
                 .catch(err => res.error.send(err, res));
             };
         })
@@ -186,8 +195,8 @@ module.exports = (app, al, inc, pm, m) => {
             attributes: ['request_id', 'user_id_request' , '_status']
         })
         .then(request => {
-            if      (request.user_id_request === req.user.user_id) res.send({result: false, message: 'You can not approve requests for yourself'})
-            else if (request._status !== 2)                      res.send({result: false, message: 'This request is not open'})
+            if      (request.user_id_request === req.user.user_id) res.send({success: false, message: 'You can not approve requests for yourself'})
+            else if (request._status !== 2)                      res.send({success: false, message: 'This request is not open'})
             else {
                 let actions = [],
                     _issues   = req.body.actions.filter(e => e._status === '3' && e._action === 'Issue'),
@@ -369,12 +378,12 @@ module.exports = (app, al, inc, pm, m) => {
                         }
                     })
                     .then(open_lines => {
-                        if (open_lines > 0) return res.send({result: true, message: 'Lines actioned'})
+                        if (open_lines > 0) return res.send({success: true, message: 'Lines actioned'})
                         else {
                             return request.update({_status: 3})
                             .then(result => {
-                                if (result) res.send({result: true, message: 'All lines actioned, request closed'})
-                                else        res.send({result: true, message: 'Lines actioned, could not close request'});
+                                if (result) res.send({success: true, message: 'All lines actioned, request closed'})
+                                else        res.send({success: true, message: 'Lines actioned, could not close request'});
                             })
                             .catch(err => res.error.send(err, res));
                         };
@@ -394,9 +403,9 @@ module.exports = (app, al, inc, pm, m) => {
             include:    [inc.request_lines({attributes: ['line_id'], where: {_status: 1}})]
         })
         .then(request => {
-            if      (!request)                                               res.send({result: false, message: 'Request not found'})
-            else if (!req.allowed && request.user_id_request !== req.user.user_id) res.send({result: false, message: 'Permission denied'})
-            else if (request._status !== 1)                                  res.send({result: false, message: 'Only draft requests can be cancelled'})
+            if      (!request)                                               res.send({success: false, message: 'Request not found'})
+            else if (!req.allowed && request.user_id_request !== req.user.user_id) res.send({success: false, message: 'Permission denied'})
+            else if (request._status !== 1)                                  res.send({success: false, message: 'Only draft requests can be cancelled'})
             else {
                 let actions = [];
                 actions.push(
@@ -417,8 +426,8 @@ module.exports = (app, al, inc, pm, m) => {
                 actions.push(request.update({_status: 0}));
                 Promise.allSettled(actions)
                 .then(result => {
-                    if (promiseResults(result)) res.send({result: true, message: 'Request cancelled'})
-                    else                        res.send({result: true, message: 'Some actions have failed'});
+                    if (promiseResults(result)) res.send({success: true, message: 'Request cancelled'})
+                    else                        res.send({success: true, message: 'Some actions have failed'});
                 })
                 .catch(err => res.error.send(err, res));
             };
@@ -432,10 +441,10 @@ module.exports = (app, al, inc, pm, m) => {
             include: [inc.requests({attributes:['_status', 'user_id_request']})]
         })
         .then(line => {
-            if      (!req.allowed && line.request.user_id_request !== req.user.user_id) res.send({result: false, message: 'Permission denied'});
-            else if (line.request._status !== 1)                                        res.send({result: false, message: 'Lines can only be cancelled whilst a request is in draft'});
-            else if (line._status === 0)                                                res.send({result: false, message: 'This line has already been cancelled'});
-            else if (line._status !== 1)                                                res.send({result: false, message: 'Only pending lines can be cancelled'});
+            if      (!req.allowed && line.request.user_id_request !== req.user.user_id) res.send({success: false, message: 'Permission denied'});
+            else if (line.request._status !== 1)                                        res.send({success: false, message: 'Lines can only be cancelled whilst a request is in draft'});
+            else if (line._status === 0)                                                res.send({success: false, message: 'This line has already been cancelled'});
+            else if (line._status !== 1)                                                res.send({success: false, message: 'Only pending lines can be cancelled'});
             else {
                 let actions = [];
                 actions.push(line.update({_status: 0}))
@@ -448,8 +457,8 @@ module.exports = (app, al, inc, pm, m) => {
                 );
                 return Promise.allSettled(actions)
                 .then(result => {
-                    if (promiseResults(result)) res.send({result: true, message: 'Line cancelled'})
-                    else                        res.send({result: true, message: 'Some actions have failed'});
+                    if (promiseResults(result)) res.send({success: true, message: 'Line cancelled'})
+                    else                        res.send({success: true, message: 'Some actions have failed'});
                 })
                 .catch(err => res.error.send(err, res));
             };

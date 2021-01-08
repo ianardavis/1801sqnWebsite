@@ -9,7 +9,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.sizes({attributes: ['nsn_id']})
             ]
         })
-        .then(nsns => res.send({result: true, nsns: nsns}))
+        .then(nsns => res.send({success: true, nsns: nsns}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/nsn',                 permissions, allowed('access_nsns', {send: true}), (req, res) => {
@@ -23,8 +23,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(nsn => {
-            if (nsn) res.send({result: true, nsn: nsn})
-            else     res.send({result: false, message: 'NSN not found'});
+            if (nsn) res.send({success: true, nsn: nsn})
+            else     res.send({success: false, message: 'NSN not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -32,21 +32,21 @@ module.exports = (app, allowed, inc, permissions, m) => {
         m.stores.nsn_groups.findAll({
             where: req.query
         })
-        .then(nsn_groups => res.send({result: true, nsn_groups: nsn_groups}))
+        .then(nsn_groups => res.send({success: true, nsn_groups: nsn_groups}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/nsn_classifications', permissions, allowed('access_nsns', {send: true}), (req, res) => {
         m.stores.nsn_classifications.findAll({
             where: req.query
         })
-        .then(nsn_classifications => res.send({result: true, nsn_classifications: nsn_classifications}))
+        .then(nsn_classifications => res.send({success: true, nsn_classifications: nsn_classifications}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/nsn_countries',       permissions, allowed('access_nsns', {send: true}), (req, res) => {
         m.stores.nsn_countries.findAll({
             where: req.query
         })
-        .then(nsn_countries => res.send({result: true, nsn_countries: nsn_countries}))
+        .then(nsn_countries => res.send({success: true, nsn_countries: nsn_countries}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -61,8 +61,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             defaults: {size_id: req.body.nsn.size_id}
         })
         .then(([nsn, created]) => {
-            if (!created) res.send({result: false, message: 'NSN already exists'})
-            else          res.send({result: true,  message: 'NSN added'});
+            if (!created) res.send({success: false, message: 'NSN already exists'})
+            else          res.send({success: true,  message: 'NSN added'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -70,10 +70,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.put('/stores/nsns/:id',                permissions, allowed('nsn_edit',    {send: true}), (req, res) => {
         m.stores.nsns.findOne({where: {nsn_id: req.params.id}})
         .then(nsn => {
-            if (!nsn) res.send({result: false, message: 'NSN not found'})
+            if (!nsn) res.send({success: false, message: 'NSN not found'})
             else {
                 return nsn.update(req.body.nsn)
-                .then(result => res.send({result: true, message: 'NSN saved'}))
+                .then(result => res.send({success: true, message: 'NSN saved'}))
                 .catch(err => res.error.send(err, res));
             };
         })
@@ -86,7 +86,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['nsn_id']
         })
         .then(nsn => {
-            if (!nsn) res.send({result: false, message: 'NSN not found'})
+            if (!nsn) res.send({success: false, message: 'NSN not found'})
             else {
                 return nsn.destroy()
                 .then(result => {
@@ -94,7 +94,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         {nsn_id: null},
                         {where: {nsn_id: req.params.id}}
                     )
-                    .then(result => res.send({result: true, message: 'NSN deleted'}))
+                    .then(result => res.send({success: true, message: 'NSN deleted'}))
                     .catch(err => res.error.send(err, res));
                 })
                 .catch(err => res.error.send(err, res));

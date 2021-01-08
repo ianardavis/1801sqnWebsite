@@ -8,7 +8,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()],
             where: req.query
         })
-        .then(writeoffs => res.send({result: true, writeoffs: writeoffs}))
+        .then(writeoffs => res.send({success: true, writeoffs: writeoffs}))
         .catch(err => res.error.send(err, res))
     });
     app.get('/canteen/get/writeoff',          permissions, allowed('access_writeoffs',      {send: true}), (req, res) => {
@@ -17,8 +17,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()]
         })
         .then(writeoff => {
-            if (writeoff) res.send({result: true,  writeoff: writeoff})
-            else         res.send({result: false, message: 'Writeoff not found'});
+            if (writeoff) res.send({success: true,  writeoff: writeoff})
+            else         res.send({success: false, message: 'Writeoff not found'});
         })
         .catch(err => res.error.send(err, res))
     });
@@ -30,7 +30,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ],
             where: req.query
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res))
     });
 
@@ -43,8 +43,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             defaults: {user_id: req.user.user_id}
         })
         .then(([writeoff, created]) => {
-            if (created) res.send({result: true,  message: 'Writeoff created'})
-            else         res.send({result: false, message: 'Writeoff already open'});
+            if (created) res.send({success: true,  message: 'Writeoff created'})
+            else         res.send({success: false, message: 'Writeoff already open'});
         })
     
     });
@@ -67,7 +67,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     }
                 })
                 .then(([line, created]) => {
-                    if (created) res.send({result: true, message: 'Line added'})
+                    if (created) res.send({success: true, message: 'Line added'})
                     else {
                         let actions = [line.increment('_qty', {by: req.body.line._qty})];
                         if (line._cost !== req.body.line._cost) {
@@ -78,12 +78,12 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             );
                         };
                         return Promise.all(actions)
-                        .then(result => res.send({result: true, message: 'Line updated'}))
+                        .then(result => res.send({success: true, message: 'Line updated'}))
                         .catch(err => res.error.send(err, res));
                     };
                 })
                 .catch(err => res.error.send(err, res));
-            } else res.send({result: false, message: 'Writeoff not found'});
+            } else res.send({success: false, message: 'Writeoff not found'});
         })
         .catch(err => res.error.send(err, res));
     
@@ -96,8 +96,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.writeoff_lines({as: 'lines'})]
         })
         .then(writeoff => {
-            if      (!writeoff)              res.send({result: false, message: 'Writeoff not found'})
-            else if (writeoff._status !== 1) res.send({result: false, message: 'Writeoff is not open'})
+            if      (!writeoff)              res.send({success: false, message: 'Writeoff not found'})
+            else if (writeoff._status !== 1) res.send({success: false, message: 'Writeoff is not open'})
             else {
                 let actions = [];
                 actions.push(
@@ -142,7 +142,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     })
                 );
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: `Writeoff completed`}))
+                .then(result => res.send({success: true, message: `Writeoff completed`}))
                 .catch(err => res.error.send(err, res));
             };
         })
@@ -151,7 +151,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     
     app.delete('/canteen/writeoff_lines/:id', permissions, allowed('writeoff_line_delete',  {send: true}), (req, res) => {
         m.writeoff_lines.update({_status: 0}, {where: {line_id: req.params.id}})
-        .then(result => res.send({result: true, message: 'Line deleted'}))
+        .then(result => res.send({success: true, message: 'Line deleted'}))
         .catch(err => res.error.send(err, res));
     });
     app.delete('/canteen/writeoffs/:id',      permissions, allowed('writeoff_delete',       {send: true}), (req, res) => {
@@ -160,8 +160,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['writeoff_id', '_status']
         })
         .then(writeoff => {
-            if      (!writeoff)              res.send({result: false, message: 'Writeoff not found'})
-            else if (writeoff._status !== 1) res.send({result: false, message: 'Writeoff is not open'})
+            if      (!writeoff)              res.send({success: false, message: 'Writeoff not found'})
+            else if (writeoff._status !== 1) res.send({success: false, message: 'Writeoff is not open'})
             else {
                 let actions = [];
                 actions.push(writeoff.update({_status: 0}));
@@ -176,7 +176,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     })
                 );
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: 'Writeoff cancelled'}))
+                .then(result => res.send({success: true, message: 'Writeoff cancelled'}))
                 .catch(err => res.error.send(err, res));
             }
         })

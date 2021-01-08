@@ -43,20 +43,16 @@ function add_hidden(line_id, _status) {
     let div_hidden = document.querySelector(`#hidden_${line_id}`);
     if (div_hidden) {
         div_hidden.appendChild(
-            new Hidden({
-                attributes: [
-                    {field: 'name',  value: `actions[${line_id}][_status]`},
-                    {field: 'value', value: _status}
-                ]
-            }).e
+            new Hidden({attributes: [
+                {field: 'name',  value: `actions[${line_id}][_status]`},
+                {field: 'value', value: _status}
+            ]}).e
         );
         div_hidden.appendChild(
-            new Hidden({
-                attributes: [
-                    {field: 'name',  value: `actions[${line_id}][line_id]`},
-                    {field: 'value', value: line_id}
-                ]
-            }).e
+            new Hidden({attributes: [
+                {field: 'name',  value: `actions[${line_id}][line_id]`},
+                {field: 'value', value: line_id}
+            ]}).e
         );
     };
 };
@@ -98,6 +94,19 @@ function showActions(size_id, line_id) {
         );
     };
 };
+function setLineButtons() {
+    get(
+        function(request, options) {
+            ['action', 'sizeSelect'].forEach(e => set_attribute({id: `btn_${e}`, attribute: 'disabled', value: true}));
+            if      (request._status === 1) remove_attribute({id: `btn_sizeSelect`, attribute: 'disabled'});
+            else if (request._status === 2) remove_attribute({id: 'btn_action',     attribute: 'disabled'});
+        },
+        {
+            table: 'request',
+            query: [`request_id=${path[3]}`]
+        }
+    );
+};
 window.addEventListener( "load", function () {
     addFormListener(
         'form_action',
@@ -105,8 +114,8 @@ window.addEventListener( "load", function () {
         `/stores/request_lines/${path[3]}`,
         {
             onComplete: [
-                getLines,
-                setActions,
+                showLines,
+                loadActions,
                 function () {setLineButtons('request')}
             ]
         }

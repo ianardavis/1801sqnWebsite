@@ -8,7 +8,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()],
             where: req.query
         })
-        .then(receipts => res.send({result: true, receipts: receipts}))
+        .then(receipts => res.send({success: true, receipts: receipts}))
         .catch(err => res.error.send(err, res))
     });
     app.get('/canteen/get/receipt',          permissions, allowed('access_receipts',      {send: true}), (req, res) => {
@@ -17,8 +17,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()]
         })
         .then(receipt => {
-            if (receipt) res.send({result: true,  receipt: receipt})
-            else         res.send({result: false, message: 'Receipt not found'});
+            if (receipt) res.send({success: true,  receipt: receipt})
+            else         res.send({success: false, message: 'Receipt not found'});
         })
         .catch(err => res.error.send(err, res))
     });
@@ -30,7 +30,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ],
             where: req.query
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res))
     });
 
@@ -40,8 +40,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             defaults: {user_id: req.user.user_id}
         })
         .then(([writeoff, created]) => {
-            if (created) res.send({result: true,  message: 'Receipt created'})
-            else         res.send({result: false, message: 'Receipt already open'});
+            if (created) res.send({success: true,  message: 'Receipt created'})
+            else         res.send({success: false, message: 'Receipt already open'});
         })
     
     });
@@ -64,7 +64,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     }
                 })
                 .then(([line, created]) => {
-                    if (created) res.send({result: true, message: 'Line added'})
+                    if (created) res.send({success: true, message: 'Line added'})
                     else {
                         let actions = [line.increment('_qty', {by: req.body.line._qty})];
                         if (line._cost !== req.body.line._cost) {
@@ -75,12 +75,12 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             );
                         };
                         return Promise.all(actions)
-                        .then(result => res.send({result: true, message: 'Line updated'}))
+                        .then(result => res.send({success: true, message: 'Line updated'}))
                         .catch(err => res.error.send(err, res));
                     };
                 })
                 .catch(err => res.error.send(err, res));
-            } else res.send({result: false, message: 'Receipt not found'});
+            } else res.send({success: false, message: 'Receipt not found'});
         })
         .catch(err => res.error.send(err, res));
     
@@ -93,8 +93,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.receipt_lines({as: 'lines'})]
         })
         .then(receipt => {
-            if      (!receipt)              res.send({result: false, message: 'Receipt not found'})
-            else if (receipt._status !== 1) res.send({result: false, message: 'Receipt is not open'})
+            if      (!receipt)              res.send({success: false, message: 'Receipt not found'})
+            else if (receipt._status !== 1) res.send({success: false, message: 'Receipt is not open'})
             else {
                 let actions = [];
                 actions.push(
@@ -153,7 +153,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     })
                 );
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: `Receipt completed`}))
+                .then(result => res.send({success: true, message: `Receipt completed`}))
                 .catch(err => res.error.send(err, res));
             };
         })
@@ -162,7 +162,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     
     app.delete('/canteen/receipt_lines/:id', permissions, allowed('receipt_line_delete',  {send: true}), (req, res) => {
         m.receipt_lines.update({_status: 0}, {where: {line_id: req.params.id}})
-        .then(result => res.send({result: true, message: 'Line cancelled'}))
+        .then(result => res.send({success: true, message: 'Line cancelled'}))
         .catch(err => res.error.send(err, res));
     });
     app.delete('/canteen/receipts/:id',      permissions, allowed('receipt_delete',       {send: true}), (req, res) => {
@@ -171,8 +171,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['receipt_id', '_status']
         })
         .then(receipt => {
-            if      (!receipt)              res.send({result: false, message: 'Receipt not found'})
-            else if (receipt._status !== 1) res.send({result: false, message: 'Receipt is not open'})
+            if      (!receipt)              res.send({success: false, message: 'Receipt not found'})
+            else if (receipt._status !== 1) res.send({success: false, message: 'Receipt is not open'})
             else {
                 let actions = [];
                 actions.push(receipt.update({_status: 0}));
@@ -187,7 +187,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     })
                 );
                 return Promise.all(actions)
-                .then(result => res.send({result: true, message: 'Receipt cancelled'}))
+                .then(result => res.send({success: true, message: 'Receipt cancelled'}))
                 .catch(err => res.error.send(err, res));
             }
         })

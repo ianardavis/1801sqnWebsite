@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, permissions, m) => {
     let options     = require(process.env.ROOT + '/fn/options'),
-        singularise = require(process.env.ROOT + '/fn/utils/singularise');
+        singularise = require('../functions/singularise');
     _options = () => {
         return [
             {table: 'categories'},
@@ -32,14 +32,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:      req.query,
             attributes: ['_name', '_value']
         })
-        .then(settings => res.send({result: true, settings: settings}))
+        .then(settings => res.send({success: true, settings: settings}))
         .catch(err => res.error.send(err, res));
     });
 
     app.put('/stores/settings',                permissions, allowed('setting_edit',    {send: true}), (req, res) => {
         console.log(req.body);
         console.log(req.query);
-        if (!req.query) res.send({result: false, message: 'No query specified'})
+        if (!req.query) res.send({success: false, message: 'No query specified'})
         else {
             m.stores.settings.update(
                 req.body.setting,
@@ -49,7 +49,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 let message = '';
                 if (result) message = 'Setting updated'
                 else message = 'Setting not updated';
-                res.send({result: true, message: message})
+                res.send({success: true, message: message})
             })
             .catch(err => res.error.redirect(err, req, res));
         };
@@ -59,7 +59,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         let allowed_tables = ['ranks', 'genders', 'statuses', 'categories', 'groups', 'types', 'subtypes']
         if (allowed_tables.includes(req.params.table)) {
             m[req.params.table].findAll({where: req.query})
-            .then(results => res.send({result: true, results: results}))
+            .then(results => res.send({success: true, results: results}))
             .catch(err => res.error.send(err, res));
         } else res.error.send(new Error('Invalid request', res));
     });

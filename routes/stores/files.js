@@ -5,7 +5,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     
     app.get('/stores/get/files',      loggedIn, allowed('access_files', {send: true}), (req, res) => {
         m.stores.files.findAll({where: req.query})
-        .then(files => res.send({result: true, files: files}))
+        .then(files => res.send({success: true, files: files}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -14,7 +14,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             req.body.file,
             {where: {file_id: req.params.id}}
         )
-        .then(result => res.send({result: true, message: 'File details saved'}))
+        .then(result => res.send({success: true, message: 'File details saved'}))
         .catch(err => res.error.send(err, res));
     });
     app.post('/stores/files',         loggedIn, allowed('file_add',     {send: true}), (req, res) => {
@@ -32,7 +32,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                             {file_id: file.file_id},
                             {where: {supplier_id: req.body.supplier_id}}
                         )
-                        .then(result => res.send({result: true, message: 'File uploaded'}))
+                        .then(result => res.send({success: true, message: 'File uploaded'}))
                         .catch(err => res.error.send(err, res));
                     })
                     .catch(err => res.error.send(err, res));
@@ -53,7 +53,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 .then(result => {
                     try {
                         fs.unlinkSync(process.env.ROOT + '/public/res/files/' + file._path)
-                        res.send({result: true, message: 'File deleted'});
+                        res.send({success: true, message: 'File deleted'});
                     } catch(err) {
                         res.error.send(err, res);
                     };

@@ -4,7 +4,7 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
             where:   req.query,
             include: [inc.users()]
         })
-        .then(notes => res.send({result: true, notes: notes}))
+        .then(notes => res.send({success: true, notes: notes}))
         .catch(err => res.error.send(err, res));
     });
     app.get(`/${db}/get/note`,     permissions, allowed('access_notes', {send: true}), (req, res) => {
@@ -12,14 +12,14 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
             where:   req.query,
             include: [inc.users()]
         })
-        .then(note => res.send({result: true, note: note}))
+        .then(note => res.send({success: true, note: note}))
         .catch(err => res.error.send(err, res));
     });
 
     app.post(`/${db}/notes`,       permissions, allowed('note_add',     {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         m.notes.create(req.body.note)
-        .then(note => res.send({result: true, message: 'Note added'}))
+        .then(note => res.send({success: true, message: 'Note added'}))
         .catch(err => res.error.send(err, res));
     });
     
@@ -29,11 +29,11 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
             attributes: ['note_id', '_system']
         })
         .then(note => {
-            if     (!note)               res.send({result: false, message: 'Note not found'})
-            else if (note._system === 1) res.send({result: false, message: 'System generated notes can not be edited'})
+            if     (!note)               res.send({success: false, message: 'Note not found'})
+            else if (note._system === 1) res.send({success: false, message: 'System generated notes can not be edited'})
             else {
                 return note.update(req.body.note)
-                .then(note => res.send({result: true, message: 'Note saved'}))
+                .then(note => res.send({success: true, message: 'Note saved'}))
                 .catch(err => res.error.send(err, res));
             };
         })
@@ -46,11 +46,11 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
             attributes: ['note_id', '_system']
         })
         .then(note => {
-            if      (!note)              res.send({result: false, message: 'Note not found'})
-            else if (note._system === 1) res.send({result: false, message: 'System generated notes can not be deleted'})
+            if      (!note)              res.send({success: false, message: 'Note not found'})
+            else if (note._system === 1) res.send({success: false, message: 'System generated notes can not be deleted'})
             else {
                 return note.destroy()
-                .then(result => res.send({result: true, message: 'Note deleted'}))
+                .then(result => res.send({success: true, message: 'Note deleted'}))
                 .catch(err => res.error.send(err, res));
             };
         })

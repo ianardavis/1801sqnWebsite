@@ -1,12 +1,12 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, loggedIn, m) => {
     let receipts = {}, demands = {},
-        promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`),
-        counter        = require(`${process.env.ROOT}/fn/utils/counter`),
-        download       = require(`${process.env.ROOT}/fn/utils/download`),
-        timestamp      = require(`${process.env.ROOT}/fn/utils/timestamps`);
-    require(`${process.env.ROOT}/fn/stores/receipts`)(m, receipts),
-    require(`${process.env.ROOT}/fn/stores/demands`) (m, demands),
+        promiseResults = require('../functions/promise_results'),
+        counter        = require('../functions/counter'),
+        download       = require('../functions/download'),
+        timestamp      = require('../functions/timestamps');
+    require('./functions/receipts')(m, receipts),
+    require('./functions/demands') (m, demands),
     app.get('/stores/demands',                 loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/index'));
     app.get('/stores/demands/:id',             loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/show'));
     app.get('/stores/demands/:id/download',    loggedIn, allowed('access_demands'),                    (req, res) => {
@@ -31,8 +31,8 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             ]
         })
         .then(demand => {
-            if (demand) res.send({result: true, demand: demand})
-            else        res.send({result: false, message: 'Demand not found'});
+            if (demand) res.send({success: true, demand: demand})
+            else        res.send({success: false, message: 'Demand not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -45,7 +45,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.suppliers({as: 'supplier'})
             ]
         })
-        .then(demands => res.send({result: true, demands: demands}))
+        .then(demands => res.send({success: true, demands: demands}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/demand_lines',        loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
@@ -57,7 +57,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.demands()
             ]
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/demand_line',         loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
@@ -69,7 +69,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.demands()
             ]
         })
-        .then(demand_line => res.send({result: true, demand_line: demand_line}))
+        .then(demand_line => res.send({success: true, demand_line: demand_line}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/demand_line_actions', loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
@@ -80,7 +80,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.users()
             ]
         })
-        .then(demand_line_actions => res.send({result: true, demand_line_actions: demand_line_actions}))
+        .then(demand_line_actions => res.send({success: true, demand_line_actions: demand_line_actions}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -94,7 +94,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(result => {
             let message = 'Demand raised: ';
             if (!result.created) message = 'There is already a demand open for this supplier: ';
-            res.send({result: true, message: message + result.demand_id});
+            res.send({success: true, message: message + result.demand_id});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -103,7 +103,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             line: req.body.line,
             user_id: req.user.user_id
         })
-        .then(result => res.send({result: true, message: `Item added: ${result.line_id}`}))
+        .then(result => res.send({success: true, message: `Item added: ${result.line_id}`}))
         .catch(err => res.error.send(err, res))
     });
 
@@ -144,12 +144,12 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                             .then(raise_result => {
                                 if (raise_result.success) {
                                     demand.update({_filename: raise_result.file})
-                                    .then(update_result => res.send({result: true, message: `Demand completed, filename: ${raise_result.file}`}))
+                                    .then(update_result => res.send({success: true, message: `Demand completed, filename: ${raise_result.file}`}))
                                     .catch(err => res.error.send(err, res));
                                 } else res.error.send(raise_result.message, res);
                             })
                             .catch(err => res.error.send(err, res));
-                        } else res.send({result: true, message: 'Demand completed'});
+                        } else res.send({success: true, message: 'Demand completed'});
                     })
                     .catch(err => res.error.send(err, res));
                 };
@@ -186,7 +186,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                                 })
                             );
                             Promise.allSettled(actions)
-                            .then(result => res.send({result: true, message: 'Demand Closed'}))
+                            .then(result => res.send({success: true, message: 'Demand Closed'}))
                             .catch(err => res.error.send(err, res));
                         };
                     })
@@ -289,8 +289,8 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             };
             Promise.allSettled(actions)
             .then(results => {
-                if (promiseResults(results)) res.send({result: true,  message: 'Lines actioned'})
-                else                         res.send({result: false, message: 'Some actions failed'});
+                if (promiseResults(results)) res.send({success: true,  message: 'Lines actioned'})
+                else                         res.send({success: false, message: 'Some actions failed'});
             })
             .catch(err => res.error.send(err, res));
         })
@@ -301,7 +301,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         m.stores.demand_lines.destroy({where: {demand_id: req.params.id}})
         .then(result => {
             m.stores.demands.destroy({where: {demand_id: req.params.id}})
-            .then(result => res.send({result: true, message: 'Demand deleted'}))
+            .then(result => res.send({success: true, message: 'Demand deleted'}))
             .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res));
@@ -318,7 +318,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                     user_id: req.user.user_id,
                     system:  1
                 })
-                .then(result => res.send({result: true, message: 'Line cancelled'}))
+                .then(result => res.send({success: true, message: 'Line cancelled'}))
                 .catch(err => res.error.send(err, res));
             })
             .catch(err => res.error.send(err, res));

@@ -9,8 +9,8 @@ function serial_details_present(serial) {
 };
 module.exports = function (m, receipts) {
     var serials = {}, locations = {};
-    require(`${process.env.ROOT}/fn/stores/serials`)  (m, serials),
-    require(`${process.env.ROOT}/fn/stores/locations`)(m, locations);
+    require(`./serials`)  (m, serials),
+    require(`./locations`)(m, locations);
     receipts.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             if ( //Check all required fields are present

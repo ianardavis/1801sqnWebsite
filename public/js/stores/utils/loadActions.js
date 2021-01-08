@@ -1,4 +1,4 @@
-function setActions() {
+function loadActions() {
     let actions_interval = window.setInterval(
         function () {
             if (lines_loaded === true) {
@@ -9,4 +9,4 @@ function setActions() {
         500
     );
 };
-document.querySelector('#reload').addEventListener('click', setActions);
+document.querySelector('#reload').addEventListener('click', loadActions);

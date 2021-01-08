@@ -7,7 +7,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.stock({as: 'stock'})
             ]
         })
-        .then(adjusts => res.send({result: true, adjusts: adjusts}))
+        .then(adjusts => res.send({success: true, adjusts: adjusts}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -33,14 +33,14 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                         return action
                         .then(result => {
                             return m.stores.adjusts.create(req.body.adjust)
-                            .then(adjust => res.send({result: true, message: 'Adjustment added'}))
+                            .then(adjust => res.send({success: true, message: 'Adjustment added'}))
                             .catch(err => res.error.send(err, res));
                         })
                         .catch(err => res.error.send(err, res));
-                    } else res.send({result: false, message: 'Could not set adjustment action'});
-                } else res.send({result: false, message: 'Stock not found'});
+                    } else res.send({success: false, message: 'Could not set adjustment action'});
+                } else res.send({success: false, message: 'Stock not found'});
             })
             .catch(err => res.error.send(err, res));
-        } else res.send({result: false, message: 'Not all required details submitted'}); 
+        } else res.send({success: false, message: 'Not all required details submitted'}); 
     });
 };

@@ -9,7 +9,7 @@ $('#mdl_line_view').on('show.bs.modal', function (event) {
                             float:   true,
                             path:    `/stores/request_lines/${event.relatedTarget.dataset.line_id}`,
                             options: {onComplete: [
-                                getLines,
+                                showLines,
                                 function () {$('#mdl_line_view').modal('hide')}
                             ]}
                         }).e

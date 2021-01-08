@@ -1,6 +1,6 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let nullify = require(`${process.env.ROOT}/fn/utils/nullify`);
+    let nullify = require(`../functions/nullify`);
     app.get('/stores/suppliers',          permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/index'));
     app.get('/stores/suppliers/new',      permissions, allowed('supplier_add'),                   (req, res) => res.render('stores/suppliers/new'));
     app.get('/stores/suppliers/:id',      permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/show'));
@@ -11,14 +11,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:      req.query,
             include:    [inc.accounts(), inc.files()]
         })
-        .then(suppliers => res.send({result: true, suppliers: suppliers}))
+        .then(suppliers => res.send({success: true, suppliers: suppliers}))
         .catch(err => res.error.send(err, res));
     });
 
     app.post('/stores/suppliers',         permissions, allowed('supplier_add',     {send: true}), (req, res) => {
         req.body.supplier = nullify(req.body.supplier);
         m.stores.suppliers.create(req.body.supplier)
-        .then(supplier => res.send({result: true, message: 'Supplier added'}))
+        .then(supplier => res.send({success: true, message: 'Supplier added'}))
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/suppliers/:id',      permissions, allowed('supplier_edit',    {send: true}), (req, res) => {
@@ -27,7 +27,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             req.body.supplier,
             {where: {supplier_id: req.params.id}}
         )
-        .then(result => res.send({result: true, message: 'Supplier saved'}))
+        .then(result => res.send({success: true, message: 'Supplier saved'}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -46,11 +46,11 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             value: -1
                         })
                         .then(result => {
-                            if (result) res.send({result: true, message: 'Default supplier deleted, settings updated'})
-                            else res.send({result: false, message: 'Default supplier deleted, settings NOT updated'});
+                            if (result) res.send({success: true, message: 'Default supplier deleted, settings updated'})
+                            else res.send({success: false, message: 'Default supplier deleted, settings NOT updated'});
                         })
                         .catch(err => res.error.send(err.message, res));
-                    } else res.send({result: true, message: 'Supplier deleted'});
+                    } else res.send({success: true, message: 'Supplier deleted'});
                 })
                 .catch(err => res.error.send(err.message, res));
             })

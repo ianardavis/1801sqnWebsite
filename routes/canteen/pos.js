@@ -17,14 +17,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
         m.pos_pages.findAll({
             include: [inc.pos_layouts()]
         })
-        .then(pos_pages => res.send({result: true, pos_pages: pos_pages}))
+        .then(pos_pages => res.send({success: true, pos_pages: pos_pages}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/canteen/get/pos_layouts', permissions, allowed('access_pos', {send: true}), (req, res) => {
         m.pos_layouts.findAll({
             include: [inc.items()]
         })
-        .then(pos_layouts => res.send({result: true, pos_layouts: pos_layouts}))
+        .then(pos_layouts => res.send({success: true, pos_layouts: pos_layouts}))
         .catch(err => res.error.send(err, res));
     });
 };

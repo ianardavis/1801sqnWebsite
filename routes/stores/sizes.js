@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let summer  = require(`${process.env.ROOT}/fn/utils/summer`),
-        nullify = require(`${process.env.ROOT}/fn/utils/nullify`);
+    let summer  = require(`../functions/summer`),
+        nullify = require(`../functions/nullify`);
     app.get('/stores/sizes/:id',    permissions, allowed('access_sizes'),               (req, res) => res.render('stores/sizes/show'));
 
     app.get('/stores/get/sizes',    permissions, allowed('access_sizes', {send: true}), (req, res) => {
@@ -14,7 +14,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .then(sizes => {
             sizes.forEach(size => size.dataValues.locationStock = summer(size.stocks));
-            res.send({result: true, sizes: sizes})
+            res.send({success: true, sizes: sizes})
         })
         .catch(err => res.error.send(err, res));
     });
@@ -27,8 +27,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(size => {
-            if (size) res.send({result: true, size: size})
-            else      res.send({result: false, message: 'Size not found'});
+            if (size) res.send({success: true, size: size})
+            else      res.send({success: false, message: 'Size not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -46,7 +46,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(([size, created]) => {
             let message = 'Size added';
             if (!created) message = 'Size already exists'
-            res.send({result: true, message: message})
+            res.send({success: true, message: message})
         })
         .catch(err => res.error.send(err, res));
     });
@@ -55,7 +55,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             req.body.size,
             {where: {size_id: req.params.id}}
         )
-        .then(result => res.send({result: true, message: 'Size saved'}))
+        .then(result => res.send({success: true, message: 'Size saved'}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -69,7 +69,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     if (nsn) res.error.send('Cannot delete a size whilst it has NSNs assigned', res)
                     else {
                         return m.stores.sizes.destroy({where: {size_id: req.params.id}})
-                        .then(result => res.send({result: true, message: 'Size deleted'}))
+                        .then(result => res.send({success: true, message: 'Size deleted'}))
                         .catch(err => res.error.send(err, res));
                     };
                 })

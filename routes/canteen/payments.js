@@ -8,7 +8,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.users()
             ]
         })
-        .then(payments => res.send({result: true, payments: payments}))
+        .then(payments => res.send({success: true, payments: payments}))
         .catch(err => res.error.send(err, res))
     });
 };

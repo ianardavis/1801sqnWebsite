@@ -4,7 +4,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:   req.query,
             include: [inc.locations({as: 'location'})],
         })
-        .then(stocks => res.send({result: true, stocks: stocks}))
+        .then(stocks => res.send({success: true, stocks: stocks}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/stock',    permissions, allowed('access_stock', {send: true}), (req, res) => {
@@ -15,7 +15,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.locations({as: 'location'})
             ],
         })
-        .then(stock => res.send({result: true, stock: stock}))
+        .then(stock => res.send({success: true, stock: stock}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -24,7 +24,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(([location, created]) => {
             req.body.stock.location_id = location.location_id;
             return m.stores.stock.create(req.body.stock)
-            .then(stock => res.send({result: true, message: 'Stock added'}))
+            .then(stock => res.send({success: true, message: 'Stock added'}))
             .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res));
@@ -38,7 +38,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 else {
                     if (location.location_id !== stock.location_id) {
                         updateStockLocation(location.location_id, req.params.id, res)
-                    } else res.send({result: false, message: 'No changes'});
+                    } else res.send({success: false, message: 'No changes'});
                 };
             })
             .catch(err => res.error.send(err, res));
@@ -53,7 +53,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             if (stock._qty === 0) {
                 return stock.destroy()
                 .then(result => {
-                    if (result) res.send({result: true, message: 'Stock deleted'})
+                    if (result) res.send({success: true, message: 'Stock deleted'})
                     else res.error.send('Stock NOT deleted', res);
                 })
                 .catch(err => res.error.send(err, res));
@@ -67,7 +67,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             {location_id: location_id},
             {where: {stock_id: stock_id}}
         )
-        .then(result => res.send({result: true, message: 'Stock saved'}))
+        .then(result => res.send({success: true, message: 'Stock saved'}))
         .catch(err => res.error.send(err, res));
     };
 };

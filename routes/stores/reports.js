@@ -1,8 +1,8 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
     let orders = {}, stock = {};
-    require(`${process.env.ROOT}/fn/stores/stock`) (m, stock);
-    require(`${process.env.ROOT}/fn/stores/orders`)(m, orders)
+    require(`./functions/stock`) (m, stock);
+    require(`./functions/orders`)(m, orders)
     app.get('/stores/reports',     permissions, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
 
     app.get('/stores/reports/:id', permissions, allowed('access_reports'), (req, res) => {

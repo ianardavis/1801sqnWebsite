@@ -2,7 +2,7 @@ const inc = {};
 module.exports = (app, m) => {
     var allowed     = require(`${process.env.ROOT}/middleware/allowed.js`),
         permissions = require(`${process.env.ROOT}/middleware/permissions.js`)(m.stores.permissions),
-        download    = require(`${process.env.ROOT}/fn/utils/download`),
+        download    = require('../functions/download'),
         fs          = require("fs");
     require('./includes.js')(inc, m);
     fs
@@ -11,7 +11,7 @@ module.exports = (app, m) => {
         return (file.indexOf(".") !== 0) && (file !== "index.js");
     })
     .forEach(function(file) {
-        if (file === 'includes.js') {
+        if (file === 'includes.js' || file === 'functions') {
 
         } else require(`./${file}`)(app, allowed, inc, permissions, m);
     });

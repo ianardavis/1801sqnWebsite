@@ -1,9 +1,9 @@
 module.exports = (app, allowed, inc, permissions, m) => {
     let loancard = {}, issues = {},
-        addYears       = require(`${process.env.ROOT}/fn/utils/add_years`),
-        promiseResults = require(`${process.env.ROOT}/fn/utils/promise_results`);
-        require(`${process.env.ROOT}/fn/stores/loancard`)(m, loancard);
-        require(`${process.env.ROOT}/fn/stores/issues`)  (m, issues);
+        addYears       = require(`../functions/add_years`),
+        promiseResults = require(`../functions/promise_results`);
+        require(`./functions/loancard`)(m, loancard);
+        require(`./functions/issues`)  (m, issues);
     app.get('/stores/issues',                 permissions, allowed('access_issues'),                                (req, res) => res.render('stores/issues/index'));
     app.get('/stores/issues/:id',             permissions, allowed('access_issues',                 {allow: true}), (req, res) => {
         m.stores.issues.findOne({
@@ -54,8 +54,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(issue => {
-            if (issue) res.send({result: true, issue: issue})
-            else       res.send({result: false, message: 'Issue not found'});
+            if (issue) res.send({success: true, issue: issue})
+            else       res.send({success: false, message: 'Issue not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -68,7 +68,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.issue_lines()
             ]
         })
-        .then(issues => res.send({result: true, issues: issues}))
+        .then(issues => res.send({success: true, issues: issues}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_lines',        permissions, allowed('access_issue_lines', {send: true}),             (req, res) => {
@@ -81,7 +81,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.issues()
             ]
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_line',         permissions, allowed('access_issue_lines', {send: true}),             (req, res) => {
@@ -95,8 +95,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(line => {
-            if (line) res.send({result: true,  issue_line: line})
-            else      res.send({result: false, message: 'Line not found'});
+            if (line) res.send({success: true,  issue_line: line})
+            else      res.send({success: false, message: 'Line not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -118,7 +118,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             };
         };
         m.stores.issue_lines.findAll({include: include})
-        .then(issue_lines => res.send({result: true, issue_lines: issue_lines}))
+        .then(issue_lines => res.send({success: true, issue_lines: issue_lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_line_returns', permissions, allowed('access_issue_lines', {send: true}),             (req, res) => {
@@ -131,7 +131,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.users()
             ]
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/issue_line_actions', permissions, allowed('access_issue_lines', {send: true}),             (req, res) => {
@@ -142,7 +142,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.users()
             ]
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.put('/stores/issues/:id',             permissions, allowed('issue_edit',         {send: true}),             (req, res) => {
@@ -158,7 +158,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         req.body.issue,
                         {where: {issue_id: issue.issue_id}}
                     )
-                    .then(result => res.send({result: true, message: 'Issue updated'}))
+                    .then(result => res.send({success: true, message: 'Issue updated'}))
                     .catch(err => res.error.send(err, res));
                 } else res.error.send('An issue must have at least 1 line to be completed', res);
             })
@@ -177,7 +177,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(result => {
             let message = 'Issue raised: ';
             if (!result.created) message = 'There is already an issue open for this user: ';
-            res.send({result: true, message: message + result.issue.issue_id})
+            res.send({success: true, message: message + result.issue.issue_id})
         })
         .catch(err => res.error.send(err, res));
     });
@@ -185,7 +185,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         req.body.line.user_id  = req.user.user_id;
         req.body.line.issue_id = req.params.id;
         issues.createLine({line: req.body.line})
-        .then(line_id => res.send({result: true, message: `Line added: ${line_id}`}))
+        .then(line_id => res.send({success: true, message: `Line added: ${line_id}`}))
         .catch(err => res.error.send(err, res))
     });
     app.post('/stores/issue_line_returns',    permissions, allowed('return_line_add',    {send: true}),             (req, res) => {
@@ -198,7 +198,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         };
         Promise.allSettled(actions)
         .then(results => {
-            if (promiseResults(results)) res.send({result: true, message: 'Lines returned'})
+            if (promiseResults(results)) res.send({success: true, message: 'Lines returned'})
             else res.error.send('Some lines failed', res);
         })
         .catch(err => res.error.send(err, res));
@@ -216,7 +216,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     m.stores.issue_lines.destroy({where: {issue_id: req.params.id}})
                     .then(result => {
                         issue.destroy()
-                        .then(result => res.send({result: true, message: 'Issue deleted'}))
+                        .then(result => res.send({success: true, message: 'Issue deleted'}))
                         .catch(err => res.error.send(err, res));
                     })
                     .catch(err => res.error.send(err, res));
@@ -231,7 +231,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             if (line.return_line_id) res.error.send('Returned issue lines can not be deleted')
             else {
                 line.destroy()
-                .then(result => res.send({result: true, message: 'Line deleted'}))
+                .then(result => res.send({success: true, message: 'Line deleted'}))
                 .catch(err => res.error.send(err, res));
             };
         })

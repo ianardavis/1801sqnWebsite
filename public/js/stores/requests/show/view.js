@@ -1,4 +1,4 @@
-function getRequest() {
+function showRequest() {
     let statuses = {'0': 'Cancelled', '1': 'Draft', '2': 'Open', '3': 'Closed'};
     get(
         function (request, options) {
@@ -20,4 +20,4 @@ function getRequest() {
         }
     );
 };
-document.querySelector('#reload').addEventListener('click', getRequest);
+document.querySelector('#reload').addEventListener('click', showRequest);

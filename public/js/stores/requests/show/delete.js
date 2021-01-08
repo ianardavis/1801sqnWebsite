@@ -5,8 +5,8 @@ window.addEventListener( "load", function () {
         `/stores/requests/${path[3]}`,
         {
             onComplete: [
-                getRequest,
-                getLines
+                showRequest,
+                showLines
             ]
         }
     );

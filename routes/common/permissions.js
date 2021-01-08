@@ -262,7 +262,7 @@ module.exports = (app, allowed, permissions, m, db) => {
             where: req.query,
             attributes: ['permission_id', '_permission', 'createdAt']
         })
-        .then(permissions => res.send({result: true, permissions: {permissions: permissions, tree: permission_tree[db]}}))
+        .then(permissions => res.send({success: true, permissions: {permissions: permissions, tree: permission_tree[db]}}))
         .catch(err => res.error.send(err, res));
     });
     app.put(`/${db}/permissions/:id`,    permissions, allowed('permission_edit',    {send: true}), (req, res) => {
@@ -271,9 +271,9 @@ module.exports = (app, allowed, permissions, m, db) => {
             attributes: ['user_id']
         })
         .then(user => {
-            if      (!user)                             res.send({result: false, message: 'User not found'})
-            else if (user.user_id === req.user.user_id) res.send({result: false, message: 'You can not edit your own permissions'})
-            else if (user.user_id === 1)                res.send({result: false, message: 'You can not edit the admin user permissions'})
+            if      (!user)                             res.send({success: false, message: 'User not found'})
+            else if (user.user_id === req.user.user_id) res.send({success: false, message: 'You can not edit your own permissions'})
+            else if (user.user_id === 1)                res.send({success: false, message: 'You can not edit the admin user permissions'})
             else {
                 return m[db].permissions.findAll({
                     where: {user_id: user.user_id},
@@ -299,7 +299,7 @@ module.exports = (app, allowed, permissions, m, db) => {
                         );
                     });
                     return Promise.allSettled(actions)
-                    .then(results => res.send({result: true, message: 'Permissions edited'}))
+                    .then(results => res.send({success: true, message: 'Permissions edited'}))
                     .catch(err => res.error.send(err, res));
                 })
                 .catch(err => res.error.send(err, res));

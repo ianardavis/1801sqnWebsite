@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, permissions, m) => {
     let receipts = {};
-    require(`${process.env.ROOT}/fn/stores/receipts`)(m, receipts);
+    require(`./functions/receipts`)(m, receipts);
 
     app.get('/stores/receipts',             permissions, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/index'));
     app.get('/stores/receipts/:id',         permissions, allowed('access_receipts'),                    (req, res) => res.render('stores/receipts/show'));
@@ -14,7 +14,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.users()
             ]
         })
-        .then(receipts => res.send({result: true, receipts: receipts}))
+        .then(receipts => res.send({success: true, receipts: receipts}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/receipt',          permissions, allowed('access_receipts',      {send: true}), (req, res) => {
@@ -26,8 +26,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(receipt => {
-            if (receipt) res.send({result: true,  receipt: receipt})
-            else         res.send({result: false, message: 'Receipt not found'});
+            if (receipt) res.send({success: true,  receipt: receipt})
+            else         res.send({success: false, message: 'Receipt not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -43,7 +43,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.stock({as: 'stock'})
             ]
         })
-        .then(lines => res.send({result: true, lines: lines}))
+        .then(lines => res.send({success: true, lines: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/receipt_line',     permissions, allowed('access_receipt_lines', {send: true}), (req, res) => {
@@ -59,8 +59,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(receipt_line => {
-            if (receipt_line) res.send({result: true,  receipt_line: receipt_line})
-            else              res.send({result: false, message: 'Line not found'});
+            if (receipt_line) res.send({success: true,  receipt_line: receipt_line})
+            else              res.send({success: false, message: 'Line not found'});
         })
         .catch(err => res.error.send(err, res));
     });
@@ -74,7 +74,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             .then(result => {
                 let message = 'Receipt raised: ';
                 if (!result.created) message = 'There is already an receipt open for this user: ';
-                res.send({result: true, message: message + receipt_id})
+                res.send({success: true, message: message + receipt_id})
             })
             .catch(err => res.error.send(err, res));
         else res.error.send('No supplier specified', res);
@@ -94,19 +94,19 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(result => {
             if (result.success === true) {
                 if (result.results.filter(e => e.success === false).length === 0) {
-                    res.send({result: true, message: 'Receipt line added'});
+                    res.send({success: true, message: 'Receipt line added'});
                 } else {
-                    res.send({result: true, message: 'Some lines have failed'});
+                    res.send({success: true, message: 'Some lines have failed'});
                 };
             } else {
-                res.send({result: false, message: result.message});
+                res.send({success: false, message: result.message});
             };
         })
         .catch(err => res.error.send(err, res));
     });
 
     app.put('/stores/receipts',             permissions, allowed('receipt_edit',         {send: true}), (req, res) => {
-        res.send({result: true, message: ''})
+        res.send({success: true, message: ''})
     });
 
     app.delete('/stores/receipts/:id',      permissions, allowed('receipt_delete',       {send: true}), (req, res) => {
@@ -116,7 +116,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .then(receipt => {
             if (receipt._status !== 1) {
-                res.send({result: false, message: 'Only draft receipts can be cancelled'});
+                res.send({success: false, message: 'Only draft receipts can be cancelled'});
             } else {
                 return m.stores.receipt_lines.findAll({
                     where: {
@@ -157,7 +157,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                     )
                     return Promise.allSettled(actions)
                     .then(receipt_result => {
-                        res.send({result: true, message: 'Receipt cancelled'});
+                        res.send({success: true, message: 'Receipt cancelled'});
                     })
                     .catch(err => res.send.error(err, res));
                 })
@@ -186,7 +186,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             _action: 'Cancelled',
                             user_id: req.user.user_id
                         })
-                        .then(note => res.send({result: true, message: 'Line cancelled'}))
+                        .then(note => res.send({success: true, message: 'Line cancelled'}))
                         .catch(err => res.error.send(err, res));
                     } else {
                         res.error.send('Unable to cancel line', res);
