@@ -443,16 +443,16 @@ module.exports = (app, al, inc, pm, m) => {
                                                         user_id: user_id
                                                     })
                                                 );
-                                            } else resolve({result: false, message: 'Order qty is greater than demand qty'});
+                                            } else resolve({success: false, message: 'Order qty is greater than demand qty'});
                                             if (demand_actions.length > 0) {
                                                 Promise.allSettled(demand_actions)
                                                 .then(results => {
-                                                    if (promiseResults(results)) resolve({result: true, message: 'Demand line cancelled'})
-                                                    else resolve({result: false, message: 'Some demand actions failed'})
+                                                    if (promiseResults(results)) resolve({success: true, message: 'Demand line cancelled'})
+                                                    else resolve({success: false, message: 'Some demand actions failed'})
                                                 })
                                                 .catch(err => reject(err));
-                                            } else resolve({result: false, message: 'No demand action'});
-                                        } else resolve({result: false, message: 'Only pending lines can be cancelled'})
+                                            } else resolve({success: false, message: 'No demand action'});
+                                        } else resolve({success: false, message: 'Only pending lines can be cancelled'})
                                     })
                                     .catch(err => reject(err));
                                 })
@@ -469,8 +469,8 @@ module.exports = (app, al, inc, pm, m) => {
             };
             Promise.allSettled(actions)
             .then(results => {
-                if (promiseResults(results)) resolve({result: true, message: 'Line cancelled'})
-                else resolve({result: false, message: 'Some actions failed cancelling line'});
+                if (promiseResults(results)) resolve({success: true, message: 'Line cancelled'})
+                else resolve({success: false, message: 'Some actions failed cancelling line'});
             })
             .catch(err => reject(err));
         });

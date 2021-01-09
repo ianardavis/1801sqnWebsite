@@ -3,7 +3,7 @@ let promiseResults     = require(`../../functions/promise_results`),
 module.exports = function (m, returns) {
     returns.create = function (options = {}) {
         return new Promise((resolve, reject) => {
-            if (Number(options.return.from) === Number(options.return.user_id)) resolve({result: true, message: 'You cannot return items issued to yourself'})
+            if (Number(options.return.from) === Number(options.return.user_id)) resolve({success: true, message: 'You cannot return items issued to yourself'})
             else {
                 m.stores.returns.findOrCreate({
                     where: {
@@ -12,7 +12,7 @@ module.exports = function (m, returns) {
                     },
                     defaults: {user_id: options.return.user_id}
                 })
-                .then(_return => resolve({result: true, return_id: _return[0].return_id, created: _return[1]}))
+                .then(_return => resolve({success: true, return_id: _return[0].return_id, created: _return[1]}))
                 .catch(err => reject(err));
             };
         });
@@ -21,8 +21,8 @@ module.exports = function (m, returns) {
         return new Promise((resolve, reject) => {
             m.stores.returns.findOne({where: {return_id: options.line.return_id}})
             .then(_return => {
-                if      (!_return)          resolve({result: false, message: 'Return not found'})
-                else if (_return._complete) resolve({result: false, message: 'Lines can not be added to completed returns'})
+                if      (!_return)          resolve({success: false, message: 'Return not found'})
+                else if (_return._complete) resolve({success: false, message: 'Lines can not be added to completed returns'})
                 else {
                     m.stores.return_lines.create(options.line)
                     .then(return_line => {
@@ -33,8 +33,8 @@ module.exports = function (m, returns) {
                         };
                         Promise.allSettled(actions)
                         .then(result => {
-                            if (promiseResults(result)) resolve({result: true, line_id: return_line.line_id})
-                            else resolve({result: false, message: 'Some actions failed'});
+                            if (promiseResults(result)) resolve({success: true, line_id: return_line.line_id})
+                            else resolve({success: false, message: 'Some actions failed'});
                         })
                         .catch(err => reject(err));
                     })

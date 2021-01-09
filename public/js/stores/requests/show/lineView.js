@@ -1,5 +1,6 @@
 let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3':'Approved', '4':'Declined'},
     lines_loaded = false;
+// let line_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Issued', '4': 'Returned'};
 function showLines(table) {
     lines_loaded = false;
     let sel_status = document.querySelector('#sel_status') || {value: ''};

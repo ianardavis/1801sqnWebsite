@@ -14,14 +14,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_date_due': {
-      type: DataTypes.DATE,
+    'size_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_filename': {
-      type: DataTypes.STRING(255),
-      allowNull: true,
+    '_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     '_status': {

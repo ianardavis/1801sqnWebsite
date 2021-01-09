@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('stock', {
+  return sequelize.define('embodiments', {
     'embodiment_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -36,7 +36,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'stock',
+    tableName: 'embodiments',
     schema: 'stores'
   });
 };

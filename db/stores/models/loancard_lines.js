@@ -1,27 +1,48 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('issue_line_actions', {
-    'action_id': {
+  return sequelize.define('loancard_lines', {
+    'line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       comment: "null",
       autoIncrement: true
     },
-    'issue_line_id': {
+    'loancard_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_action': {
-      type: DataTypes.STRING(255),
+    '_line': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'action_line_id': {
+    'size_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
+    'serial_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
+      comment: "null"
+    },
+    'nsn_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    '_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
+    '_status': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      defaultValue: '1',
       comment: "null"
     },
     'user_id': {
@@ -40,7 +61,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'issue_line_actions',
+    tableName: 'loancard_lines',
     schema: 'stores'
   });
 };

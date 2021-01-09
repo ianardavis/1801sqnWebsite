@@ -1,33 +1,42 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('request_lines', {
-    'line_id': {
+  return sequelize.define('order_actions', {
+    'action_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       comment: "null",
       autoIncrement: true
     },
-    'request_id': {
+    'order_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    'size_id': {
-      type: DataTypes.INTEGER(11),
+    '_action': {
+      type: DataTypes.STRING(255),
       allowNull: false,
       comment: "null"
     },
-    '_qty': {
+    'stock_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
-    '_status': {
+    'nsn_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
-      defaultValue: '1',
+      allowNull: true,
+      comment: "null"
+    },
+    'serial_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'demand_line_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
       comment: "null"
     },
     'user_id': {
@@ -46,7 +55,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'request_lines',
+    tableName: 'order_actions',
     schema: 'stores'
   });
 };

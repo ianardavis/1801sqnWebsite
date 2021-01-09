@@ -1,27 +1,17 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('order_line_actions', {
-    'action_id': {
+  return sequelize.define('loancards', {
+    'loancard_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       comment: "null",
       autoIncrement: true
     },
-    'order_line_id': {
+    'user_id_loancard': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      comment: "null"
-    },
-    '_action': {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      comment: "null"
-    },
-    'action_line_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
       comment: "null"
     },
     'user_id': {
@@ -29,18 +19,34 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'createdAt': {
+    '_date_due': {
       type: DataTypes.DATE,
       allowNull: false,
+      comment: "null"
+    },
+    '_filename': {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      comment: "null"
+    },
+    '_status': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      defaultValue: '1',
       comment: "null"
     },
     'updatedAt': {
       type: DataTypes.DATE,
       allowNull: false,
       comment: "null"
+    },
+    'createdAt': {
+      type: DataTypes.DATE,
+      allowNull: false,
+      comment: "null"
     }
   }, {
-    tableName: 'order_line_actions',
+    tableName: 'loancards',
     schema: 'stores'
   });
 };

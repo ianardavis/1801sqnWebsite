@@ -9,10 +9,14 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'user_id_order': {
+    'size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: '-1',
+      comment: "null"
+    },
+    '_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     '_status': {
