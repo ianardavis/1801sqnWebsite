@@ -1,5 +1,5 @@
 module.exports = function (m, loancard) {
-    loancard.create = function (options = {}) {
+    loancard.createPDF = function (options = {}) {
         return new Promise((resolve, reject) => {
             m.stores.issues.findOne({
                 where: {issue_id: options.issue_id},
@@ -146,5 +146,91 @@ module.exports = function (m, loancard) {
             })
             .catch(err => reject(err));
         })
-    }
+    };
+    loancard.create = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            return m.stores.loancards.findOrCreate({
+                where: {
+                    user_id_loancard: options.user_id_issue,
+                    _status: 1
+                },
+                defaults: {
+                    user_id: options.user_id,
+                    _date_due: options._date_due || Date.now()
+                }
+            })
+            .then(([loancard, created]) => {
+                if (created) resolve({success: true, message: 'Loancard created', loancard_id: loancard.loancard_id})
+                else         resolve({success: true, message: 'Loancard exists',  loancard_id: loancard.loancard_id})
+            })
+            .catch(err => reject(err));
+        });
+    };
+    loancard.createLine = function(line = {}) {
+        return new Promise((resolve, reject) => {
+            return m.stores.loancards.findOne({
+                where: {loancard_id: line.loancard_id},
+                attributes: ['loancard_id', '_status']
+            })
+            .then(loancard => {
+                if (!loancard) resolve({success: false, message: 'Loancard not found'})
+                else {
+                    return m.stores.sizes.findOne({
+                        where:      {size_id: line.size_id},
+                        attributes: ['size_id', '_serials', '_nsns'],
+                        include: [
+                            inc.nsns(   {where: {nsn_id:    line.nsn_id,    attributes: ['nsn_id']}}),
+                            inc.serials({where: {serial_id: line.serial_id, attributes: ['serial_id']}})
+                        ]
+                    })
+                    .then(size => {
+                        if      (!size)                            resolve({success: false, message: 'Size not found'})
+                        else if (size._nsns    && !line.nsn_id)    resolve({success: false, message: 'NSN not specified'})
+                        else if (size._nsns    && !size.nsn)       resolve({success: false, message: 'NSN not found'})
+                        else if (size._serials && !line.serial_id) resolve({success: false, message: 'Serial # not specified'})
+                        else if (size._serials && !size.serial)    resolve({success: false, message: 'Serial # not found'})
+                        else {
+                            if (line.serial_id) {
+                                return m.stores.loancard_lines.create({
+                                    loancard_id: loancard.loancard_id,
+                                    serial_id:   size.serial.serial_id,
+                                    size_id:     size.size_id,
+                                    nsn_id:      size.nsn.nsn_id || null,
+                                    _qty:        line._qty   || 1,
+                                    _status:     1,
+                                    user_id:     line.user_id
+                                })
+                                .then(loancard_line => resolve({success: true, message: 'Line added to loancard', line_id: loancard_line.line_id}))
+                                .catch(err =>          reject(err));
+                            } else {
+                                return m.stores.loancard_lines.findOrCreate({
+                                    where: {
+                                        loancard_id: loancard.loancard_id,
+                                        _status:     1,
+                                        size_id:     size.size_id,
+                                        nsn_id:      size.nsn.nsn_id
+                                    },
+                                    defaults: {
+                                        _qty:    line._qty,
+                                        user_id: line.user_id
+                                    }
+                                })
+                                .then(([loancard_line, created]) => {
+                                    if (created) resolve({success: true, message: 'Line added to loancard', line_id: loancard_line.line_id})
+                                    else {
+                                        return loancard_line.increment('_qty', {by: line._qty})
+                                        .then(result => resolve({success: true, message: 'Line added to existing loancard line', line_id: loancard_line.line_id}))
+                                        .catch(err => reject(err));
+                                    };
+                                })
+                                .catch(err => reject(err));
+                            };
+                        };
+                    })
+                    .catch(err => reject(err))
+                };
+            })
+            .catch(err => reject(err));
+        })
+    };
 };

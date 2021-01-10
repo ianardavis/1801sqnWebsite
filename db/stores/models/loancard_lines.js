@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     '_line': {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'size_id': {

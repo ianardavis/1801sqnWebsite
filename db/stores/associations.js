@@ -20,10 +20,11 @@ module.exports = function (m) {
     m.groups.hasMany(               m.types,               {foreignKey: 'group_id',    targetKey: 'group_id'});
     
     m.issue_actions.belongsTo(      m.issues,              {foreignKey: 'issue_id',  targetKey: 'issue_id'});
-    m.issue_actions.hasOne(         m.stocks,              {foreignKey: 'stock_id',  sourceKey: 'stock_id',  constraints: false});
-    m.issue_actions.hasOne(         m.nsns,                {foreignKey: 'nsn_id',    sourceKey: 'nsn_id',    constraints: false});
-    m.issue_actions.hasOne(         m.serials,             {foreignKey: 'serial_id', sourceKey: 'serial_id', constraints: false});
-    m.issue_actions.hasOne(         m.orders,              {foreignKey: 'order_id',  sourceKey: 'order_id',  constraints: false});
+    m.issue_actions.hasOne(         m.stocks,              {foreignKey: 'stock_id',  sourceKey: 'stock_id',         constraints: false});
+    m.issue_actions.hasOne(         m.nsns,                {foreignKey: 'nsn_id',    sourceKey: 'nsn_id',           constraints: false});
+    m.issue_actions.hasOne(         m.serials,             {foreignKey: 'serial_id', sourceKey: 'serial_id',        constraints: false});
+    m.issue_actions.hasOne(         m.orders,              {foreignKey: 'order_id',  sourceKey: 'order_id',         constraints: false});
+    m.issue_actions.hasOne(         m.loancard_lines,      {foreignKey: 'line_id',   sourceKey: 'loancard_line_id', constraints: false});
 
     m.issues.hasOne(                m.sizes,               {foreignKey: 'size_id',       sourceKey: 'size_id', constraints: false});
     m.issues.hasMany(               m.issue_actions,       {foreignKey: 'issue_line_id', targetKey: 'line_id', as: 'actions'});
