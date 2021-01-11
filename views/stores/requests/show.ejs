@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores',		  	 text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores/requests', text: 'Requests'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/issues', text: 'Issues'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/navbar/close`) %>
@@ -13,18 +13,18 @@
             <div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${partials}/notes/menu_add`) %>
 				<%- include(`${partials}/menu/action`) %>
-				<%- include(`${partials}/menu/complete`, {			   permission: 'request_edit'}) %>
-				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'request_line_add'}) %>
-				<%- include(`${partials}/menu/delete`, {			   permission: 'request_edit'}) %>
+				<%- include(`${partials}/menu/complete`, {			   permission: 'issue_edit'}) %>
+				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'issue_line_add'}) %>
+				<%- include(`${partials}/menu/delete`, {			   permission: 'issue_edit'}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'request'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'request_lines', count_id: 'line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'issue_lines', count_id: 'line'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 		count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'user_request', title: 'For', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_issue', title: 'For', link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'user', 		   title: 'By',  link: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'createdAt',	   title: 'Date'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'updatedAt',	   title: 'Last Updated'}) %>
@@ -32,15 +32,15 @@
 		</div>
         <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
 			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}]}) %>
-			<% if (permissions.request_line_edit) { %><form id='form_action'><% } %>
+			<% if (permissions.issue_line_edit) { %><form id='form_action'><% } %>
 			<%- include(`${partials}/tables/lines`) %>
-			<% if (permissions.request_line_edit) { %></form><% } %>
+			<% if (permissions.issue_line_edit) { %></form><% } %>
 		</div>
         <%- include(`${partials}/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
-		<%- include(`${partials}/stores/sizes/select`,  {permission: 'request_line_add', 	 table: 'Request'}) %>
-		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_request_lines', table: 'Request'}) %>
+		<%- include(`${partials}/stores/sizes/select`,  {permission: 'issue_line_add', 	 table: 'Issue'}) %>
+		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_issue_lines', table: 'Issue'}) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -50,27 +50,27 @@
 <script src='/js/data/addFormListener.js'></script>
 <script>showTab('<%= tab %>');</script>
 
-<script src="/js/stores/requests/show/view.js"></script>
-<script async>showRequest()</script>
-<% if (permissions.request_edit) { %>
-	<script src="/js/stores/requests/show/edit.js"></script>
+<script src="/js/stores/issues/show/view.js"></script>
+<script async>showIssue()</script>
+<% if (permissions.issue_edit) { %>
+	<script src="/js/stores/issues/show/edit.js"></script>
 	<script async>setButtons()</script>
 <% } %>
-<% if (permissions.request_delete) { %><script src="/js/stores/requests/show/delete.js"></script><% } %>
-<% if (permissions.access_request_lines) { %>
-    <% if (permissions.access_notes) { %><script src="/js/stores/requests/show/notesView.js"></script><% } %>
-	<script src="/js/stores/requests/show/lineView.js"></script>
+<% if (permissions.issue_delete) { %><script src="/js/stores/issues/show/delete.js"></script><% } %>
+<% if (permissions.access_issue_lines) { %>
+    <% if (permissions.access_notes) { %><script src="/js/stores/issues/show/notesView.js"></script><% } %>
+	<script src="/js/stores/issues/show/lineView.js"></script>
 	<script async>showLines()</script>
-	<% if (permissions.request_line_add) { %><script src="/js/stores/sizes/select.js"></script><% } %>
-	<% if (permissions.request_line_edit) { %>
+	<% if (permissions.issue_line_add) { %><script src="/js/stores/sizes/select.js"></script><% } %>
+	<% if (permissions.issue_line_edit) { %>
 		<script src="/js/stores/nsns/list.js"></script>
 		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/stock/list.js"></script>
-		<script src="/js/stores/requests/show/lineEdit.js"></script>
+		<script src="/js/stores/issues/show/lineEdit.js"></script>
 		<script src="/js/stores/utils/loadActions.js"></script>
 		<script async>loadActions()</script>
 		<script async>setLineButtons()</script>
 	<% } %>
-	<% if (permissions.request_line_delete) { %><script src="/js/stores/requests/show/lineDelete.js"></script><% } %>
+	<% if (permissions.issue_line_delete) { %><script src="/js/stores/issues/show/lineDelete.js"></script><% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

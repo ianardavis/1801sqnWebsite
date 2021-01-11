@@ -5,7 +5,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         counter        = require('../functions/counter'),
         download       = require('../functions/download'),
         timestamp      = require('../functions/timestamps');
-    require('./functions/receipts')(m, receipts),
+    // require('./functions/receipts')(m, receipts),
     require('./functions/demands') (m, demands),
     app.get('/stores/demands',                 loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/index'));
     app.get('/stores/demands/:id',             loggedIn, allowed('access_demands'),                    (req, res) => res.render('stores/demands/show'));

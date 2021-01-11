@@ -6,10 +6,17 @@ module.exports = (app, allowed, permissions, m, db) => {
                     {_permission: 'issue_add'},
                     {_permission: 'issue_edit'},
                     {_permission: 'issue_delete'},
-                    {_permission: 'access_issue_lines', children: [
-                        {_permission: 'issue_line_add'},
-                        {_permission: 'issue_line_edit'},
-                        {_permission: 'issue_line_delete'}
+                    {_permission: 'issue_approve'},
+                    {_permission: 'issue_return'},
+                    {_permission: 'access_loancards', children: [
+                        {_permission: 'loancard_add'},
+                        {_permission: 'loancard_edit'},
+                        {_permission: 'loancard_delete'},
+                        {_permission: 'access_loancard_lines', children: [
+                            {_permission: 'loancard_line_add'},
+                            {_permission: 'loancard_line_edit'},
+                            {_permission: 'loancard_line_delete'}
+                        ]}
                     ]}
                 ]},
                 {_permission: 'access_items',     children: [
@@ -101,30 +108,10 @@ module.exports = (app, allowed, permissions, m, db) => {
                     {_permission: 'order_add'},
                     {_permission: 'order_edit'},
                     {_permission: 'order_delete'},
-                    {_permission: 'access_order_lines', children: [
-                        {_permission: 'order_line_add'},
-                        {_permission: 'order_line_edit'},
-                        {_permission: 'order_line_delete'},
-                        {_permission: 'access_order_actions', children: [
-                            {_permission: 'order_line_action_add'},
-                            {_permission: 'order_line_action_edit'},
-                            {_permission: 'order_line_action_delete'}
-                        ]}
-                    ]}
-                ]},
-                {_permission: 'access_requests',  children: [
-                    {_permission: 'request_add'},
-                    {_permission: 'request_edit'},
-                    {_permission: 'request_delete'},
-                    {_permission: 'access_request_lines', children: [
-                        {_permission: 'request_line_add'},
-                        {_permission: 'request_line_edit'},
-                        {_permission: 'request_line_delete'},
-                        {_permission: 'access_request_line_actions', children: [
-                            {_permission: 'request_line_action_add'},
-                            {_permission: 'request_line_action_edit'},
-                            {_permission: 'request_line_action_delete'}
-                        ]}
+                    {_permission: 'access_order_actions', children: [
+                        {_permission: 'order_action_add'},
+                        {_permission: 'order_action_edit'},
+                        {_permission: 'order_action_delete'}
                     ]}
                 ]},
                 {_permission: 'access_settings',  children: [
@@ -156,16 +143,6 @@ module.exports = (app, allowed, permissions, m, db) => {
                             {_permission: 'demand_line_delete'}
                         ]}
                     ]},
-                    {_permission: 'access_receipts',  children: [
-                        {_permission: 'receipt_add'},
-                        {_permission: 'receipt_edit'},
-                        {_permission: 'receipt_delete'},
-                        {_permission: 'access_receipt_lines', children: [
-                            {_permission: 'receipt_line_add'},
-                            {_permission: 'receipt_line_edit'},
-                            {_permission: 'receipt_line_delete'}
-                        ]}
-                    ]}
                 ]},
                 {_permission: 'access_users',     children: [
                     {_permission: 'access_permissions', children: [

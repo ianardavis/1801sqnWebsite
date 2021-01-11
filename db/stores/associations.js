@@ -26,8 +26,9 @@ module.exports = function (m) {
     m.issue_actions.hasOne(         m.orders,              {foreignKey: 'order_id',  sourceKey: 'order_id',         constraints: false});
     m.issue_actions.hasOne(         m.loancard_lines,      {foreignKey: 'line_id',   sourceKey: 'loancard_line_id', constraints: false});
 
-    m.issues.hasOne(                m.sizes,               {foreignKey: 'size_id',       sourceKey: 'size_id', constraints: false});
-    m.issues.hasMany(               m.issue_actions,       {foreignKey: 'issue_line_id', targetKey: 'line_id', as: 'actions'});
+    m.issues.hasOne(                m.sizes,               {foreignKey: 'size_id',       sourceKey: 'size_id',   constraints: false});
+    m.issues.hasOne(                m.loancard_lines,      {foreignKey: 'issue_id',      foreignKey: 'issue_id', constraints: false});
+    m.issues.hasMany(               m.issue_actions,       {foreignKey: 'issue_line_id', targetKey: 'line_id',   as: 'actions'});
 
     m.items.hasOne (                m.genders,             {foreignKey: 'gender_id',   sourceKey: 'gender_id',   constraints: false});
     m.items.hasOne (                m.categories,          {foreignKey: 'category_id', sourceKey: 'category_id', constraints: false});
@@ -40,6 +41,7 @@ module.exports = function (m) {
     m.loancard_lines.hasOne(        m.serials,             {foreignKey: 'serial_id',   sourceKey: 'serial_id', constraints: false});
     m.loancard_lines.hasOne(        m.nsns,                {foreignKey: 'nsn_id',      sourceKey: 'nsn_id',    constraints: false});
     m.loancard_lines.belongsTo(     m.loancards,           {foreignKey: 'loancard_id', targetKey: 'loancard_id'});
+    m.loancard_lines.belongsTo(     m.issues,              {foreignKey: 'issue_id',    targetKey: 'issue_id'});
 
     m.locations.hasMany(            m.stocks,              {foreignKey: 'location_id', targetKey: 'location_id'});
     m.locations.hasMany(            m.serials,             {foreignKey: 'location_id', targetKey: 'location_id'});
