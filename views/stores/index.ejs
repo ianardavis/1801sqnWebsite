@@ -44,6 +44,7 @@
 		<script async>getCount('demands',  ['_status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
 	<% } %>
 	<% if (permissions.access_issues) { %>
-		<script async>getCount('issues',   ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
+		<script async>getCount('issues',   ['_status=1'], {text: 'Requested', colour: 'danger',  float: 'left'})</script>
+		<script async>getCount('issues',   ['_status=2'], {text: 'Approved',  colour: 'warning', float: 'right'})</script>
 	<% } %>
 	<%- include(`${partials}/foot/elements/htmlClose`) %>

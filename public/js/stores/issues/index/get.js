@@ -26,6 +26,8 @@ function getIssues(status) {
                     add_cell(row, {append: new Link({href: `/stores/issues/${issue.issue_id}`, small: true}).e});
                 });
             };
+            if (status === '1' && typeof getRequestedActions === 'function') getRequestedActions()
+            if (status === '2' && typeof getApprovedActions  === 'function') getApprovedActions()
         },
         {
             table: 'issues',

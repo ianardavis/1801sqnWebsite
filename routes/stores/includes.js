@@ -381,7 +381,7 @@ module.exports = (inc, m) => {
     inc.ranks = (options = {}) => {
         return {
             model:      m.users.ranks,
-            attributes: options.attributes || ['rank_id', '_rank'],
+            attributes: options.attributes || ['_rank'],
             as:         options.as         || 'rank',
             include:    options.include    || [],
             required:   options.required   || false,

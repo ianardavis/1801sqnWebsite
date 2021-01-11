@@ -27,7 +27,7 @@
 		<%- include(`${partials}/tables/issue_tab_body`, {status: '5'}) %>
 	</div>
 	<div id="div_modals">
-		<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">
 			<div class="modal-dialog">
 			  <div class="modal-content">
 				<div class="modal-header">
@@ -62,8 +62,9 @@
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/data/send.js'></script>
 <script src='/js/data/addFormListener.js'></script>
-<script src='/js/stores/issues/index/getIssues.js'></script>
-<script src='/js/stores/issues/index/createIssue.js'></script>
+<script src='/js/stores/issues/index/get.js'></script>
+<script src='/js/stores/issues/index/create.js'></script>
+<% if (permissions.issue_approve) { %><script src='/js/stores/issues/index/requested.js'></script><% } %>
 <script src='/js/tabs.js'></script>
 <script>showTab('status_1');</script>
 <script async>getIssues('0')</script>

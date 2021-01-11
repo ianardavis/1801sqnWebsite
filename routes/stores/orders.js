@@ -37,8 +37,7 @@ module.exports = (app, al, inc, pm, m) => {
             where:   req.query,
             include: [
                 inc.users({as: 'user_order'}),
-                inc.users({as: 'user'}),
-                inc.order_lines()
+                inc.users({as: 'user'})
             ]
         })
         .then(orders => res.send({success: true, orders: orders}))
@@ -49,8 +48,7 @@ module.exports = (app, al, inc, pm, m) => {
             where:   req.query,
             include: [
                 inc.users({as: 'user_order'}),
-                inc.users({as: 'user'}),
-                inc.order_lines()
+                inc.users({as: 'user'})
             ]
         })
         .then(order => res.send({success: true, order: order}))
@@ -100,7 +98,6 @@ module.exports = (app, al, inc, pm, m) => {
         m.stores.order_line_actions.findAll({
             where:   req.query,
             include: [
-                inc.order_lines({as: 'order_line'}),
                 inc.users()
             ]
         })
@@ -200,7 +197,6 @@ module.exports = (app, al, inc, pm, m) => {
     app.put('/stores/orders/:id',             pm, al('order_edit',         {send: true}),              (req, res) => {
         m.stores.orders.findOne({
             where: {order_id: req.params.id},
-            include: [inc.order_lines({where: {_status: 1}, attributes: ['line_id']})],
             attributes: ['order_id', 'user_id_order', '_status']
         })
         .then(order => {

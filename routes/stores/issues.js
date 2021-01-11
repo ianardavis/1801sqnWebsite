@@ -85,9 +85,19 @@ module.exports = (app, al, inc, pm, m) => {
         };
     });
     
-    app.put('/stores/issues/:id',        pm, al('issue_edit',    {allow: true, send: true}), (req, res) => {
-        console.log(req.body);
-        res.send({success: true, message: 'tada'});
+    app.put('/stores/issues',            pm, al('issue_edit',    {allow: true, send: true}), (req, res) => {
+        let actions = [];
+        req.body.lines.filter(e => e._status === '0').forEach(line => actions.push(decline_line(line, req.user.user_id)));
+        req.body.lines.filter(e => e._status === '2').forEach(line => actions.push(approve_line(line, req.user.user_id)));
+        req.body.lines.filter(e => e._status === '3').forEach(line => actions.push(order_line(  line, req.user.user_id)));
+        req.body.lines.filter(e => e._status === '4').forEach(line => actions.push(issue_line(  line, req.user.user_id)));
+        req.body.lines.filter(e => e._status === '5').forEach(line => actions.push(return_line( line, req.user.user_id)));
+        Promise.allSettled(actions)
+        .then(results => {
+            console.log(results);
+            res.send({success: true, message: 'tada'});
+        })
+        .catch(err => res.send({success: false, message: 'Some lines failed'}));
     });
     
     app.delete('/stores/issues/:id',     pm, al('issue_delete',  {allow: true, send: true}), (req, res) => {
@@ -194,6 +204,42 @@ module.exports = (app, al, inc, pm, m) => {
                     })
                     .catch(err => reject(err));
                 };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function decline_line(line, user_id) {
+        return new Promise((resolve, reject) => {
+            return allowed(user_id, 'issue_approve')
+            .then(result => {
+                return m.stores.issues.findOne({
+                    where:      {issue_id: line.issue_id},
+                    attributes: ['issue_id', '_status']
+                })
+                .then(issue => {
+                    if      (!issue)              resolve({success: false, message: 'Issue not found'})
+                    else if (issue._status !== 1) resolve({success: false, message: 'This issue is not pending approval'})
+                    else {
+                        return issue.update({_status: 0})
+                        .then(result => {
+                            if (!result) resolve({success: false, message: 'Issue not updated'})
+                            else {
+                                return m.stores.issue_actions.create({
+                                    issue_id: issue.issue_id,
+                                    _action: 'Declined',
+                                    user_id: user_id
+                                })
+                                .then(action => resolve({success: true, message: 'Line declined'}))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve({success: true, message: `Line declined. Error creating action: ${err.message}`});
+                                });
+                            };
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

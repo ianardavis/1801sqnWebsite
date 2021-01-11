@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'request_line_id': {
+    'issue_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
