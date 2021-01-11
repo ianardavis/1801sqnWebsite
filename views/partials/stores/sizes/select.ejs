@@ -12,7 +12,6 @@
                         <%- include(`${partials}/inputs/select`,     {title: 'Item',         id: 'sel_items',    size: '10', spinner: true, spinner_id: 'items'}) %>
                     </div>
                     <form id="form_line">
-                        <input type="hidden" id='<%= table.toLowerCase() %>_id' name='line[<%= table.toLowerCase() %>_id]'>
                         <div id="div_sizes" class='hidden'>
                             <%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size',     autocomplete: 'off'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Size',         id: 'sel_sizes',    name: 'line[size_id]', required: true, size: '10', spinner: true, spinner_id: 'sizes'}) %>

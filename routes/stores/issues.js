@@ -26,6 +26,7 @@ module.exports = (app, al, inc, pm, m) => {
         m.stores.issues.findAll({
             where: req.query,
             include: [
+                inc.sizes(),
                 inc.users({as: 'user_issue'}),
                 inc.users({as: 'user'})
             ]
@@ -33,7 +34,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(issues => res.send({success: true, result: issues}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/issues',        pm, al('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/stores/get/issue',         pm, al('access_issues', {allow: true, send: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_issue = req.user.user_id;
         m.stores.issues.findOne({
             where: req.query,
@@ -62,23 +63,26 @@ module.exports = (app, al, inc, pm, m) => {
     });
 
     app.post('/stores/issues',           pm, al('issue_add',     {allow: true, send: true}), (req, res) => {
-        let _status = 1;
-        if (req.allowed) _status = 2;
-        create_line(
-            {
-                ...req.body.line,
-                ...{
-                    _status: _status,
-                    user_id: req.user.user_id
-                }
-            },
-            req.user.user_id
-        )
-        .then(result => res.send(result))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: 'Error creating line'});
-        });
+        if (Number(req.body.line.user_id_issue) === 1) res.send({success: false, message: 'Issues can not be made to this user'})
+        else {
+            let _status = 1;
+            if (req.allowed) _status = 2
+            create_line(
+                {
+                    ...req.body.line,
+                    ...{
+                        _status: _status,
+                        user_id: req.user.user_id
+                    }
+                },
+                req.user.user_id
+            )
+            .then(result => res.send(result))
+            .catch(err => {
+                console.log(err);
+                res.send({success: false, message: 'Error creating line'});
+            });
+        };
     });
     
     app.put('/stores/issues/:id',        pm, al('issue_edit',    {allow: true, send: true}), (req, res) => {
@@ -138,6 +142,7 @@ module.exports = (app, al, inc, pm, m) => {
         });
     }
     function create_line(line, user_id) {
+        console.log(line);
         return new Promise((resolve, reject) => {
             return m.users.users.findOne(
                 {where: {user_id: line.user_id_issue}},
@@ -162,7 +167,7 @@ module.exports = (app, al, inc, pm, m) => {
                                 },
                                 defaults: {
                                     user_id: user_id,
-                                    _qty:    line.line._qty
+                                    _qty:    line._qty
                                 }
                             })
                             .then(([issue, created]) => {

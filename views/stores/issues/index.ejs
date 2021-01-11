@@ -1,0 +1,75 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/issue', text: 'Issue'}) %>
+<li class="nav-item">
+	<a class="nav-link" data-toggle="modal" data-target="#mdl_issue_add">
+		<i class="fas fa-plus"></i>
+	</a>
+</li>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'issue'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<div class="container">
+	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <%- include(`${partials}/tab_head`, {id: 'status_0', count_id: 'status_0', spinner: 'status_0', title: 'Cancelled'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'status_1', count_id: 'status_1', spinner: 'status_1', title: 'Requested'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'status_2', count_id: 'status_2', spinner: 'status_2', title: 'Approved'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'status_3', count_id: 'status_3', spinner: 'status_3', title: 'Ordered'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'status_4', count_id: 'status_4', spinner: 'status_4', title: 'Issued'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'status_5', count_id: 'status_5', spinner: 'status_5', title: 'Returned'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+		<%- include(`${partials}/tables/issue_tab_body`, {status: '0'}) %>
+		<%- include(`${partials}/tables/issue_tab_body`, {status: '1'}) %>
+		<%- include(`${partials}/tables/issue_tab_body`, {status: '2'}) %>
+		<%- include(`${partials}/tables/issue_tab_body`, {status: '3'}) %>
+		<%- include(`${partials}/tables/issue_tab_body`, {status: '4'}) %>
+		<%- include(`${partials}/tables/issue_tab_body`, {status: '5'}) %>
+	</div>
+	<div id="div_modals">
+		<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <h5 class="modal-title">Add Issue</h5>
+				  <a class='btn btn-primary float-right' id="reload_add"><i class='fas fa-redo'></i></a>
+				</div>
+				<div class="modal-body">
+					<form id='form_line'>
+						<%- include(`${partials}/inputs/select`, 	 {title: 'User',     	 id: 'sel_users', name: 'line[user_id_issue]', spinner: true, spinner_id: 'users', required: true}) %>
+						<div id="div_items"   class='hidden'>
+							<%- include(`${partials}/inputs/text`,   {title: 'Search Items', id: 'inp_item',  autocomplete: 'off'}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items', size: '10', spinner: true, spinner_id: 'items'}) %>
+						</div>
+						<div id="div_sizes"   class='hidden'>
+							<%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size',  autocomplete: 'off'}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Size',         id: 'sel_sizes', name: 'line[size_id]', required: true, size: '10', spinner: true, spinner_id: 'sizes'}) %>
+						</div>
+						<div id="div_details" class='hidden'>
+							<%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: '_qty',	  name: 'line[_qty]',    required: true, value: '1', min: '1'}) %>
+							<button class="btn btn-success w-100">Add</button>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				</div>
+			  </div>
+			</div>
+		  </div>
+	</div>
+</div>
+<%- include(`${partials}/foot/app`) %>
+<script src='/js/data/send.js'></script>
+<script src='/js/data/addFormListener.js'></script>
+<script src='/js/stores/issues/index/getIssues.js'></script>
+<script src='/js/stores/issues/index/createIssue.js'></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('status_1');</script>
+<script async>getIssues('0')</script>
+<script async>getIssues('1')</script>
+<script async>getIssues('2')</script>
+<script async>getIssues('3')</script>
+<script async>getIssues('4')</script>
+<script async>getIssues('5')</script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

@@ -1,0 +1,14 @@
+<div class="tab-pane fade" id="status_<%= status %>" role="tabpanel" aria-labelledby="status_<%= status %>-tab">
+    <table class="table table-sm table-hover w-100">
+        <thead class="thead-dark">
+            <th class="w-15" onclick="sortTable(0, 'tbl_issues_<%= status %>')">Date</th>
+            <th class="w-20" onclick="sortTable(1, 'tbl_issues_<%= status %>')">For</th>
+            <th class="w-20" onclick="sortTable(2, 'tbl_issues_<%= status %>')">Item</th>
+            <th class="w-20" onclick="sortTable(3, 'tbl_issues_<%= status %>')">Size</th>
+            <th class="w-10" onclick="sortTable(3, 'tbl_issues_<%= status %>')">Quantity</th>
+            <th class="w-15" >Action</th>
+            <th><i class='fas fa-search'></i></th>
+        </thead>
+        <tbody id="tbl_issues_<%= status %>"></tbody>
+    </table>
+</div>
