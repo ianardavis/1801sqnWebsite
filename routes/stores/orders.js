@@ -5,7 +5,7 @@ module.exports = (app, al, inc, pm, m) => {
     require(`./functions/orders`)  (m, orders);
     require(`./functions/demands`) (m, demands);
     // require(`./functions/receipts`)(m, receipts);
-    require(`./functions/issues`)  (m, issues);
+    // require(`./functions/issues`)  (m, issues);
     app.get('/stores/orders',                 pm, al('access_orders'),                                 (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
     app.get('/stores/orders/:id',             pm, al('access_orders'),                                 (req, res) => {
         m.stores.orders.findOne({
