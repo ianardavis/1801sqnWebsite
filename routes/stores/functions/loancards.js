@@ -1,5 +1,5 @@
-module.exports = function (m, loancard) {
-    loancard.createPDF = function (options = {}) {
+module.exports = function (m, inc, loancard) {
+    loancard.createPDF  = function (options = {}) {
         return new Promise((resolve, reject) => {
             m.stores.issues.findOne({
                 where: {issue_id: options.issue_id},
@@ -147,12 +147,12 @@ module.exports = function (m, loancard) {
             .catch(err => reject(err));
         })
     };
-    loancard.create = function (options = {}) {
+    loancard.create     = function (options = {}) {
         return new Promise((resolve, reject) => {
             return m.stores.loancards.findOrCreate({
                 where: {
-                    user_id_loancard: options.user_id_issue,
-                    _status: 1
+                    user_id_loancard: options.user_id_loancard,
+                    _status:          1
                 },
                 defaults: {
                     user_id: options.user_id,
@@ -179,24 +179,26 @@ module.exports = function (m, loancard) {
                         where:      {size_id: line.size_id},
                         attributes: ['size_id', '_serials', '_nsns'],
                         include: [
-                            inc.nsns(   {where: {nsn_id:    line.nsn_id,    attributes: ['nsn_id']}}),
-                            inc.serials({where: {serial_id: line.serial_id, attributes: ['serial_id']}})
+                            inc.nsns(   {where: {nsn_id:    line.nsn_id    || null}, attributes: ['nsn_id']}),
+                            inc.serials({where: {serial_id: line.serial_id || null}, attributes: ['serial_id']})
                         ]
                     })
                     .then(size => {
-                        if      (!size)                            resolve({success: false, message: 'Size not found'})
-                        else if (size._nsns    && !line.nsn_id)    resolve({success: false, message: 'NSN not specified'})
-                        else if (size._nsns    && !size.nsn)       resolve({success: false, message: 'NSN not found'})
-                        else if (size._serials && !line.serial_id) resolve({success: false, message: 'Serial # not specified'})
-                        else if (size._serials && !size.serial)    resolve({success: false, message: 'Serial # not found'})
+                        if      (!size)                             resolve({success: false, message: 'Size not found'})
+                        else if (size._nsns    && !line.nsn_id)     resolve({success: false, message: 'NSN not specified'})
+                        else if (size._nsns    && !size.nsns[0])    resolve({success: false, message: 'NSN not found'})
+                        else if (size._serials && !line.serial_id)  resolve({success: false, message: 'Serial # not specified'})
+                        else if (size._serials && !size.serials[0]) resolve({success: false, message: 'Serial # not found'})
                         else {
                             if (line.serial_id) {
+                                console.log(line);
                                 return m.stores.loancard_lines.create({
                                     loancard_id: loancard.loancard_id,
-                                    serial_id:   size.serial.serial_id,
+                                    issue_id:    line.issue_id,
+                                    serial_id:   size.serials[0].serial_id,
                                     size_id:     size.size_id,
-                                    nsn_id:      size.nsn.nsn_id || null,
-                                    _qty:        line._qty   || 1,
+                                    nsn_id:      size.nsns[0].nsn_id || null,
+                                    _qty:        line._qty       || 1,
                                     _status:     1,
                                     user_id:     line.user_id
                                 })
@@ -208,11 +210,12 @@ module.exports = function (m, loancard) {
                                         loancard_id: loancard.loancard_id,
                                         _status:     1,
                                         size_id:     size.size_id,
-                                        nsn_id:      size.nsn.nsn_id
+                                        nsn_id:      size.nsns[0].nsn_id
                                     },
                                     defaults: {
-                                        _qty:    line._qty,
-                                        user_id: line.user_id
+                                        _qty:     line._qty,
+                                        user_id:  line.user_id,
+                                        issue_id: line.issue_id
                                     }
                                 })
                                 .then(([loancard_line, created]) => {

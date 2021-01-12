@@ -240,17 +240,19 @@ module.exports = (inc, m) => {
         };
     };
     inc.nsns = (options = {}) => {
-        return template({
-            table:      m.stores.nsns,
-            attributes: options.attributes,
-            include:    [
-                inc.nsn_groups(),
-                inc.nsn_classifications(),
-                inc.nsn_countries()
-            ],
-            required:   options.required || false,
-            where:      options.where    || null
-        });
+        let include = [
+            inc.nsn_groups(),
+            inc.nsn_classifications(),
+            inc.nsn_countries()
+        ]
+        return {
+            model:      m.stores.nsns,
+            attributes: options.attributes || null,
+            include:    include,
+            as:         options.as         || 'nsns',
+            where:      options.where      || null,
+            required:   options.required   || false
+        };
     };
     inc.order_actions = (options = {}) => {
         let include = [];
@@ -260,7 +262,7 @@ module.exports = (inc, m) => {
             include.push(inc.users());
         };
         return {
-            model:      m.stores.order_line_actions,
+            model:      m.stores.order_actions,
             attributes: options.attributes || null,
             include:    include,
             as:         options.as         || 'actions',

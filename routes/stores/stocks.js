@@ -1,6 +1,6 @@
 module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/get/stocks',   permissions, allowed('access_stock', {send: true}), (req, res) => {
-        m.stores.stock.findAll({
+        m.stores.stocks.findAll({
             where:   req.query,
             include: [inc.locations({as: 'location'})],
         })

@@ -62,9 +62,26 @@
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/data/send.js'></script>
 <script src='/js/data/addFormListener.js'></script>
+<script src='/js/stores/issues/index/formListener.js'></script>
 <script src='/js/stores/issues/index/get.js'></script>
 <script src='/js/stores/issues/index/create.js'></script>
-<% if (permissions.issue_approve) { %><script src='/js/stores/issues/index/requested.js'></script><% } %>
+<% if (permissions.issue_approve || permissions.issue_return) { %>
+	<script src='/js/stores/issues/index/listStocks.js'></script>
+<% } %>
+<% if (permissions.order_add) { %>
+	<script src='/js/stores/issues/index/order.js'></script>
+	<script>loadOrderActions()</script>
+<% } %>
+<% if (permissions.issue_approve) { %>
+	<script src='/js/stores/issues/index/approve.js'></script>
+<% } %>
+<% if (permissions.loancard_line_add) { %>
+	<script src='/js/stores/issues/index/issue.js'></script>
+	<script>loadIssueActions()</script>
+<% } %>
+<% if (permissions.issue_return) { %>
+	<script src='/js/stores/issues/index/return.js'></script>
+<% } %>
 <script src='/js/tabs.js'></script>
 <script>showTab('status_1');</script>
 <script async>getIssues('0')</script>

@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     '_filename': {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     '_status': {

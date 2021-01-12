@@ -87,7 +87,8 @@ function List_Item(options = {}) {
 };
 function Div(options = {}) {
     this.e = document.createElement('div');
-    if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
+    if (options.classes)    options.classes.forEach(c => this.e.classList.add(c));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Form(options = {}) {
     this.e = document.createElement('form');

@@ -1,5 +1,6 @@
-let issue_statuses = {"0": "Cancelled", "1": "Requested", "2": "Approved", "3": "Ordered", "4": "Issued", "5": "Returned"}
+var lines_loaded = {'0': false, '1': false, '2': false, '3': false, '4': false, '5': false};
 function getIssues(status) {
+    lines_loaded[status] = false;
     get(
         function (issues, options) {
             set_count({id: `status_${status}`, count: issues.length || 0});
@@ -16,18 +17,37 @@ function getIssues(status) {
                     add_cell(row, {text: issue.size.item._description});
                     add_cell(row, {text: issue.size._size});
                     add_cell(row, {text: issue._qty});
-                    add_cell(row, {
-                        classes: [`actions-${status}`],
-                        data: {
-                            field: 'issue_id',
-                            value: issue.issue_id
-                        }
-                    });
+                    if (status !== '0' && status !== '5') {
+                        let div = new Div().e
+                        div.appendChild(new Select({
+                            small: true,
+                            options: [new Option({text: '... Select', selected: true}).e],
+                            attributes: [
+                                {field: 'name', value: `lines[${issue.issue_id}][_status]`},
+                                {field: 'id'  , value: `sel_action_${issue.issue_id}`}
+                            ]
+                        }).e);
+                        div.appendChild(new Hidden({
+                            attributes: [
+                                {field: 'name',  value: `lines[${issue.issue_id}][issue_id]`},
+                                {field: 'value', value: issue.issue_id}
+                            ]
+                        }).e)
+                        add_cell(row, {
+                            append: div,
+                            classes: [`actions-${status}`],
+                            data: {
+                                field: 'issue_id',
+                                value: issue.issue_id
+                            }
+                        });
+                    };
                     add_cell(row, {append: new Link({href: `/stores/issues/${issue.issue_id}`, small: true}).e});
                 });
             };
-            if (status === '1' && typeof getRequestedActions === 'function') getRequestedActions()
-            if (status === '2' && typeof getApprovedActions  === 'function') getApprovedActions()
+            lines_loaded[status] = true;
+            if (status === '1' && typeof getRequestedActions === 'function') getRequestedActions();
+            if (status === '4' && typeof getReturnAction     === 'function') getReturnAction();
         },
         {
             table: 'issues',

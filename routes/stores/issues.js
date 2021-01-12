@@ -1,7 +1,7 @@
 const op = require('sequelize').Op;
 module.exports = (app, al, inc, pm, m) => {
     let loancards = {};
-    require('./functions/loancards')(m, loancards);
+    require('./functions/loancards')(m, inc, loancards);
     app.get('/stores/issues',            pm, al('access_issues', {allow: true}),             (req, res) => res.render('stores/issues/index'));
     app.get('/stores/issues/:id',        pm, al('access_issues', {allow: true}),             (req, res) => {
         m.stores.issues.findOne({
@@ -39,6 +39,7 @@ module.exports = (app, al, inc, pm, m) => {
         m.stores.issues.findOne({
             where: req.query,
             include: [
+                inc.sizes(),
                 inc.users({as: 'user_issue'}),
                 inc.users({as: 'user'})
             ]
@@ -95,7 +96,13 @@ module.exports = (app, al, inc, pm, m) => {
         Promise.allSettled(actions)
         .then(results => {
             console.log(results);
-            res.send({success: true, message: 'tada'});
+            if (
+                results.filter(e => e.status === 'rejected')  .length > 0 ||
+                results.filter(e => e.value.success === false).length > 0
+            ) {
+                console.log(results);
+                res.send({success: true, message: 'Some lines failed'});
+            } else res.send({success: true, message: 'Lines actioned'});
         })
         .catch(err => res.send({success: false, message: 'Some lines failed'}));
     });
@@ -286,7 +293,7 @@ module.exports = (app, al, inc, pm, m) => {
             .then(result => {
                 return m.stores.issues.findOne({
                     where:      {issue_id: line.issue_id},
-                    attributes: ['issue_id', 'size_id', '_qty', '_status'],
+                    attributes: ['issue_id', 'user_id_issue', 'size_id', '_qty', '_status'],
                     include:    [inc.sizes({attributes: ['size_id', '_orderable']})]
                 })
                 .then(issue => {
@@ -296,8 +303,9 @@ module.exports = (app, al, inc, pm, m) => {
                     else {
                         return m.stores.orders.findOrCreate({
                             where: {
-                                size_id: issue.size_id,
-                                _status: 1
+                                user_id_order: issue.user_id_issue,
+                                size_id:       issue.size_id,
+                                _status:       1
                             },
                             defaults: {
                                 user_id: user_id,
@@ -394,21 +402,21 @@ module.exports = (app, al, inc, pm, m) => {
             .then(result => {
                 return m.stores.issues.findOne({
                     where:      {issue_id: line.issue_id},
-                    attributes: ['issue_id', '_status'],
+                    attributes: ['issue_id', 'size_id', 'user_id_issue', '_status'],
                     include:    [
                         inc.sizes({
                             attributes: ['size_id', '_issueable', '_nsns', '_serials'],
                             include:    [
                                 inc.serials({
-                                    where:      {serial_id: line.serial_id},
+                                    where:      {serial_id: line.serial_id || ''},
                                     attributes: ['serial_id', 'issue_id']
                                 }),
                                 inc.stocks({
-                                    where:      {stock_id: line.stock_id},
+                                    where:      {stock_id: line.stock_id || ''},
                                     attributes: ['stock_id']
                                 }),
                                 inc.nsns({
-                                    where:      {nsn_id: line.nsn_id},
+                                    where:      {nsn_id: line.nsn_id || ''},
                                     attributes: ['nsn_id']
                                 })
                             ]
@@ -416,50 +424,50 @@ module.exports = (app, al, inc, pm, m) => {
                     ]
                 })
                 .then(issue => {
-                    console.log(issue);
-                    console.log(issue.serials);
-                    console.log(issue.stocks);
-                    console.log(issue.nsns);
-                    if      (issue._status !== 2  && issue._status !== 3)    resolve({success: false, message: 'Only approved or ordered lines can be issued'})
-                    else if (!issue.size)                                    resolve({success: false, message: 'Size not found'})
-                    else if (!issue.size._issueable)                         resolve({success: false, message: 'This size is not issueable'})
-                    else if (issue.size._nsns     && !line.nsn_id)           resolve({success: false, message: 'No NSN specified'})
-                    else if (issue.size._nsns     && !issue.size.nsns[0])    resolve({success: false, message: 'NSN not found'})
-                    else if (issue.size._serials  && !line.serial_id)        resolve({success: false, message: 'No serial # specified'})
-                    else if (issue.size._serials  && !issue.size.serials[0]) resolve({success: false, message: 'Serial not found'})
-                    else if (issue.size.serials[0].issue_id)                 resolve({success: false, message: 'Serial # is already issued'})
-                    else if (!issue.size._serials && !line.stock_id)         resolve({success: false, message: 'No stock location specified'})
-                    else if (!issue.size._serials && !issue.size.stocks[0])  resolve({success: false, message: 'Stock location not found'})
+                    if      (issue._status !== 2  && issue._status !== 3)            resolve({success: false, message: 'Only approved or ordered lines can be issued'})
+                    else if (!issue.size)                                            resolve({success: false, message: 'Size not found'})
+                    else if (!issue.size._issueable)                                 resolve({success: false, message: 'This size is not issueable'})
+                    else if (issue.size._nsns     && !line.nsn_id)                   resolve({success: false, message: 'No NSN specified'})
+                    else if (issue.size._nsns     && !issue.size.nsns[0])            resolve({success: false, message: 'NSN not found'})
+                    else if (issue.size._serials  && !line.serial_id)                resolve({success: false, message: 'No serial # specified'})
+                    else if (issue.size._serials  && !issue.size.serials[0])         resolve({success: false, message: 'Serial not found'})
+                    else if (issue.size._serials  && issue.size.serials[0].issue_id) resolve({success: false, message: 'Serial # is already issued'})
+                    else if (!issue.size._serials && !line.stock_id)                 resolve({success: false, message: 'No stock location specified'})
+                    else if (!issue.size._serials && !issue.size.stocks[0])          resolve({success: false, message: 'Stock location not found'})
                     else {
                         loancards.create({
                             user_id_loancard: issue.user_id_issue,
                             user_id:          user_id
                         })
                         .then(loancard => {
-                            loancards.createLine({
+                            let loancard_details = {
                                 loancard_id: loancard.loancard_id,
                                 issue_id:    issue.issue_id,
                                 size_id:     issue.size_id,
-                                serial_id:   issue.size.serials[0].serial_id || null,
-                                nsn_id:      issue.size.nsns[0].nsn_id       || null,
-                                _qty:        line._qty                       || 1,
+                                _qty:        line._qty || 1,
                                 user_id:     user_id
-                            })
+                            };
+                            if (issue.size.serials[0]) loancard_details.serial_id = issue.size.serials[0].serial_id;
+                            if (issue.size.nsns[0])    loancard_details.nsn_id    = issue.size.nsns[0].nsn_id;
+                            loancards.createLine(loancard_details)
                             .then(loancard_line => {
-                                m.stores.issue_actions.create({
-                                    issue_id:         issue.issue_id,
-                                    _action:          'Added to loancard',
-                                    serial_id:        issue.size.serials[0].serial_id || null,
-                                    stock_id:         issue.size.stocks[0].stock_id   || null,
-                                    nsn_id:           issue.size.nsns[0].nsn_id       || null,
-                                    loancard_line_id: loancard_line.line_id,
-                                    user_id:          user_id
-                                })
-                                .then(action => resolve({success: true, message: 'Line added to loancard'}))
-                                .catch(err =>   {
-                                    console.log(err);
-                                    resolve({success: true, message: `Line added to loancard. Error creating issue action: ${err.message}`});
-                                });
+                                if (loancard_line.success) {
+                                    let actions = [],
+                                        action_details = {
+                                            issue_id:         issue.issue_id,
+                                            _action:          'Added to loancard',
+                                            loancard_line_id: loancard_line.line_id,
+                                            user_id:          user_id
+                                        };
+                                    if (issue.size.serials[0]) action_details.serial_id = issue.size.serials[0].serial_id;
+                                    if (issue.size.nsns[0])    action_details.nsn_id    = issue.size.nsns[0].nsn_id;
+                                    if (issue.size.stocks[0])  action_details.stock_id  = issue.size.stocks[0].stock_id;
+                                    actions.push(issue.update({_status: 4}));
+                                    actions.push(m.stores.issue_actions.create(action_details));
+                                    return Promise.all(actions)
+                                    .then(result => resolve({success: true, message: 'Line added to loancard'}))
+                                    .catch(err => {});
+                                } else resolve(loancard_line);
                             })
                             .catch(err => reject(err));
                         })
