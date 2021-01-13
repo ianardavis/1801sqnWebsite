@@ -12,14 +12,11 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${partials}/notes/menu_add`) %>
-				<%- include(`${partials}/menu/action`) %>
-				<%- include(`${partials}/menu/complete`, {			   permission: 'issue_edit'}) %>
-				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'issue_line_add'}) %>
-				<%- include(`${partials}/menu/delete`, {			   permission: 'issue_edit'}) %>
+				<%- include(`${partials}/menu/delete`, {  permission: 'issue_edit'}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'issue_lines', count_id: 'line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'issue_actions', count_id: 'action'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 		count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -30,47 +27,34 @@
 			<%- include(`${partials}/inputs/display`, {id: 'updatedAt',	   title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: '_status',  	   title: 'Status'}) %>
 		</div>
-        <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}]}) %>
-			<% if (permissions.issue_line_edit) { %><form id='form_action'><% } %>
-			<%- include(`${partials}/tables/lines`) %>
-			<% if (permissions.issue_line_edit) { %></form><% } %>
+        <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+			<table class="table table-sm table-hover mx-auto w-100">
+				<thead id='table_header_lines' class="thead-dark">
+					<th class='w-50' onclick="sortTable(0, 'tbl_actions')">Date</th>
+					<th class='w-50' onclick="sortTable(1, 'tbl_actions')">Action</th>
+					<th><i class='fas fa-search'></i></th>
+				</thead>
+				<tbody id="tbl_actions"></tbody>
+			</table>
 		</div>
         <%- include(`${partials}/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
-		<%- include(`${partials}/stores/sizes/select`,  {permission: 'issue_line_add', 	 table: 'Issue'}) %>
-		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_issue_lines', table: 'Issue'}) %>
+		<%- include(`${partials}/stores/mdl_action_view`, {permission: 'access_issues', table: 'Issue'}) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/tabs.js'></script>
-<script src='/js/stores/sizes/select.js'></script>
 <script src="/js/search/select.js"></script>
 <script src='/js/data/addFormListener.js'></script>
 <script>showTab('<%= tab %>');</script>
 
 <script src="/js/stores/issues/show/view.js"></script>
 <script async>showIssue()</script>
+<script async>showActions()</script>
 <% if (permissions.issue_edit) { %>
 	<script src="/js/stores/issues/show/edit.js"></script>
 	<script async>setButtons()</script>
 <% } %>
 <% if (permissions.issue_delete) { %><script src="/js/stores/issues/show/delete.js"></script><% } %>
-<% if (permissions.access_issue_lines) { %>
-    <% if (permissions.access_notes) { %><script src="/js/stores/issues/show/notesView.js"></script><% } %>
-	<script src="/js/stores/issues/show/lineView.js"></script>
-	<script async>showLines()</script>
-	<% if (permissions.issue_line_add) { %><script src="/js/stores/sizes/select.js"></script><% } %>
-	<% if (permissions.issue_line_edit) { %>
-		<script src="/js/stores/nsns/list.js"></script>
-		<script src="/js/stores/serials/list.js"></script>
-		<script src="/js/stores/stock/list.js"></script>
-		<script src="/js/stores/issues/show/lineEdit.js"></script>
-		<script src="/js/stores/utils/loadActions.js"></script>
-		<script async>loadActions()</script>
-		<script async>setLineButtons()</script>
-	<% } %>
-	<% if (permissions.issue_line_delete) { %><script src="/js/stores/issues/show/lineDelete.js"></script><% } %>
-<% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

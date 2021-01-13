@@ -4,9 +4,6 @@ function get(onComplete, options) {
     XHR.addEventListener("load", function (event) {
         try {
             let response = JSON.parse(event.target.responseText);
-            // console.log(event.target.responseText);
-            // console.log(response);
-            // console.log(options);
             if (response.success === true) {
                 onComplete(response.result || response[options.table] || response.lines, options);
             } else {

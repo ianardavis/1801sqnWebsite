@@ -172,8 +172,7 @@ module.exports = (inc, m) => {
     inc.loancard_lines = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
-        else {
-        };
+        else include.push(inc.loancards())
         return {
             model:    m.stores.loancard_lines,
             attributes: options.attributes || null,
@@ -289,6 +288,7 @@ module.exports = (inc, m) => {
     inc.serials = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
+        else include.push(inc.locations({as: 'location'}));
         return {
             model:    m.stores.serials,
             attributes: options.attributes || null,

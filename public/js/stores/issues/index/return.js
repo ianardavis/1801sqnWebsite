@@ -17,7 +17,6 @@ function getReturnAction() {
                                         ]
                                     }).e);
                                 return_div.appendChild(new Input({attributes: [
-                                    {field: 'id',          value: `sel_stock_${issue.issue_id}`},
                                     {field: 'name',        value: `lines[${issue.issue_id}][_location]`},
                                     {field: 'placeholder', value: 'Enter location'}
                                 ]}).e);

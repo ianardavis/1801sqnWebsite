@@ -6,20 +6,31 @@ module.exports = (app, al, inc, pm, m) => {
     app.get('/stores/issues/:id',        pm, al('access_issues', {allow: true}),             (req, res) => {
         m.stores.issues.findOne({
             where: {issue_id: req.params.id},
-            attributes: ['user_id_issue']
+            attributes: ['issue_id', 'user_id_issue']
         })
         .then(issue => {
-            if      (!issue)                                                   res.error.redirect(new Error('Issue not found'),   req, res)
-            else if (!req.allowed && issue.user_id_issue !== req.user.user_id) res.error.redirect(new Error('Permission denied'), req, res)
-            else                                                               res.render('stores/issues/show');
+            if      (!issue) res.redirect('/stores/issues')
+            else if (
+                !req.allowed &&
+                req.user.user_id !== issue.user_id_issue
+                )            res.redirect('/stores/issues')
+            else             res.render('stores/issues/show');
         })
-        .catch(err => res.error.redirect(err, req, res));
+        .catch(err => {
+            console.log(err);
+            res.redirect('/stores/issues');
+        })
+        res.render('stores/issues/show');
     });
     
-    app.get('/stores/count/issues',      pm, al('access_issues',              {send: true}), (req, res) => {
+    app.get('/stores/count/issues',      pm, al('access_issues', {allow: true, send: true}), (req, res) => {
+        if (!allowed) req.query.user_id_issue = req.user.user_id;
         m.stores.issues.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: 'Error counting lines'})
+        });
     });
     app.get('/stores/get/issues',        pm, al('access_issues', {allow: true, send: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_issue = req.user.user_id;
@@ -32,10 +43,12 @@ module.exports = (app, al, inc, pm, m) => {
             ]
         })
         .then(issues => res.send({success: true, result: issues}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: 'Error getting lines'});
+        });
     });
     app.get('/stores/get/issue',         pm, al('access_issues', {allow: true, send: true}), (req, res) => {
-        if (!req.allowed) req.query.user_id_issue = req.user.user_id;
         m.stores.issues.findOne({
             where: req.query,
             include: [
@@ -52,14 +65,43 @@ module.exports = (app, al, inc, pm, m) => {
             )           res.send({success: false, message: 'Permission denied'})
             else        res.send({success: true,  result: issue});
         })
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: 'Error getting line'});
+        });
+    });
+    app.get('/stores/get/issue_actions', pm, al('access_issues', {allow: true, send: true}), (req, res) => {
+        m.stores.issues.findOne({
+            where: req.query,
+            include: [inc.issue_actions({include: [inc.users()]})],
+            attributes: ['issue_id', 'user_id_issue']
+        })
+        .then(issue => {
+            if (!issue) res.send({success: false, message: 'Issue not found'})
+            else if (
+                !req.allowed &&
+                issue.user_id_issue !== req.user.user_id
+            )           res.send({success: false, message: 'Permission denied'})
+            else        res.send({success: true, result: issue.actions});
+        })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/issue_actions', pm, al('access_issues',              {send: true}), (req, res) => {
-        m.stores.issue_line_actions.findAll({
-            where:   req.query,
-            include: [inc.users()]
+    app.get('/stores/get/issue_action',  pm, al('access_issues', {allow: true, send: true}), (req, res) => {
+        m.stores.issue_actions.findOne({
+            where: req.query,
+            include: [
+                inc.stocks(        {as: 'stock'}),
+                inc.nsns(          {as: 'nsn'}),
+                inc.serials(       {as: 'serial'}),
+                inc.orders(        {as: 'order'}),
+                inc.loancard_lines({as: 'loancard_line'}),
+                inc.users()
+            ]
         })
-        .then(actions => res.send({success: true, result: actions}))
+        .then(action => {
+            if (!action) res.send({success: false, message: 'Action not found'})
+            else         res.send({success: true,  result: action});
+        })
         .catch(err => res.error.send(err, res));
     });
 
@@ -95,7 +137,6 @@ module.exports = (app, al, inc, pm, m) => {
         req.body.lines.filter(e => e._status === '5').forEach(line => actions.push(return_line( line, req.user.user_id)));
         Promise.allSettled(actions)
         .then(results => {
-            console.log(results);
             if (
                 results.filter(e => e.status === 'rejected')  .length > 0 ||
                 results.filter(e => e.value.success === false).length > 0
@@ -113,9 +154,9 @@ module.exports = (app, al, inc, pm, m) => {
             attributes: ['issue_id', '_status', 'user_id_issue']
         })
         .then(issue => {
-            if      (!issue)                                                   res.send({success: false, message: 'Issue not found'})
-            else if (!req.allowed && issue.user_id_issue !== req.user.user_id) res.send({success: false, message: 'Permission denied'})
-            else if (issue._status !== 1 && issue._status !== 2)               res.send({success: false, message: 'Only requested and approved lines can be cancelled'})
+            if      (!issue)                                                            res.send({success: false, message: 'Issue not found'})
+            else if (!req.allowed && issue.user_id_issue !== req.user.user_id)          res.send({success: false, message: 'Permission denied'})
+            else if (issue._status !== 1 && issue._status !== 2 && issue._status !== 3) res.send({success: false, message: 'Only requested, approved and ordered lines can be cancelled'})
             else {
                 return issue.update({_status: 0})
                 .then(result => {
@@ -129,17 +170,20 @@ module.exports = (app, al, inc, pm, m) => {
                         .then(action => res.send({success: true, message: 'Issue cancelled'}))
                         .catch(err => {
                             console.log(err);
-                            res.send({success: true, message: `Line cancelled. Error creating action: ${err.message}`});
+                            res.send({success: true, message: 'Line cancelled. Error creating action'});
                         });
                     };
                 })
                 .catch(err => {
                     console.log(err);
-                    res.send({success: false, message: `Error updating line: ${err.message}`});
+                    res.send({success: false, message: 'Error updating line'});
                 });
             };
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: 'Error getting line'})
+        });
     });
 
     function allowed(user_id, _permission) {
@@ -157,7 +201,7 @@ module.exports = (app, al, inc, pm, m) => {
             })
             .catch(err => reject(err));
         });
-    }
+    };
     function create_line(line, user_id) {
         console.log(line);
         return new Promise((resolve, reject) => {

@@ -10,6 +10,7 @@
 <%- include(`${partials}/spinner`, {id: 'issue'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <div class="container">
+	<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_filter_users', spinner: true, spinner_id: 'filter_users'}) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'status_0', count_id: 'status_0', spinner: 'status_0', title: 'Cancelled'}) %>
         <%- include(`${partials}/tab_head`, {id: 'status_1', count_id: 'status_1', spinner: 'status_1', title: 'Requested'}) %>
@@ -84,10 +85,6 @@
 <% } %>
 <script src='/js/tabs.js'></script>
 <script>showTab('status_1');</script>
-<script async>getIssues('0')</script>
-<script async>getIssues('1')</script>
-<script async>getIssues('2')</script>
-<script async>getIssues('3')</script>
-<script async>getIssues('4')</script>
-<script async>getIssues('5')</script>
+<script async>getUsersFilter()</script>
+<script>loadGetIssues()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

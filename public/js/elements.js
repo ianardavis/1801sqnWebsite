@@ -62,6 +62,31 @@ function remove_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);
     if (element && options.attribute) element.removeAttribute(options.attribute);
 };
+function add_class(options) {
+    let e = document.querySelector(`#${options.id}`);
+    if (e && options.class) e.classList.add(options.class);
+};
+function remove_class(options) {
+    let e = document.querySelector(`#${options.id}`);
+    if (e && options.class) e.classList.remove(options.class);
+};
+function print_user (user) {
+    if (user) return `${user.rank._rank } ${user.full_name}`
+    else return '';
+};
+function print_date (date, time = false) {
+    if (date) {
+        let str = new Date(date).toDateString();
+        if (time) str += ` ${new Date(date).toLocaleTimeString()}`;
+        return str
+    } else return '';
+};
+function print_nsn (nsn) {
+    if (nsn && nsn.group && nsn.classification && nsn.country) {
+        return `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`
+    } else return '';
+};
+
 function List_Item(options = {}) {
     this.e = document.createElement('li');
     this.e.classList.add('list-group-item', 'text-left', 'p-4');
@@ -211,7 +236,8 @@ function Option (options = {}) {
             pre_text = '***'
         } else if (options.default === true) _text = ' (default)';
     };
-    if (options.value) this.e.setAttribute('value', options.value);
+    if (options.value) this.e.setAttribute('value', options.value)
+    else               this.e.setAttribute('value', '');
     this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
 };
 function Card (options = {}) {
@@ -430,20 +456,4 @@ function Tab_Pane (options = {}) {
     this.e.setAttribute('id', options.id.body);
     this.e.setAttribute('role', 'tabpanel');
     this.e.setAttribute('aria-labelledby', options.id.tab);
-};
-function print_user (user) {
-    if (user) return `${user.rank._rank } ${user.full_name}`
-    else return '';
-};
-function print_date (date, time = false) {
-    if (date) {
-        let str = new Date(date).toDateString();
-        if (time) str += ` ${new Date(date).toLocaleTimeString()}`;
-        return str
-    } else return '';
-};
-function print_nsn (nsn) {
-    if (nsn && nsn.group && nsn.classification && nsn.country) {
-        return `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`
-    } else return '';
 };

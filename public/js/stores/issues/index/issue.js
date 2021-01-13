@@ -57,7 +57,6 @@ function listNSNs(issue_id, size) {
             let sel_nsn = document.querySelector(`#sel_nsn_${issue_id}`);
             if (sel_nsn) {
                 sel_nsn.innerHTML = '';
-                console.log(size.nsn_id)
                 nsns.forEach(nsn => {
                     sel_nsn.appendChild(new Option({
                         text: print_nsn(nsn),
