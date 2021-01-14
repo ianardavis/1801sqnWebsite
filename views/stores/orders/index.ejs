@@ -2,62 +2,81 @@
 <%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
 <% if (permissions.order_add) { %>
-	<%- include(`${partials}/breadcrumb`, {href: '/stores/orders/new?user=-1', html: '<i class="fas fa-plus"></i>'}) %>
+	<li class="nav-item">
+		<a class="nav-link" data-toggle="modal" data-target="#mdl_order_add">
+			<i class="fas fa-plus"></i>
+		</a>
+	</li>
 <% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'orders'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<% if (permissions.demand_line_add) { %>
-		<form class='mb-1' id='form_demand'>
-			<div class="input-group">
-				<div class="input-group-prepend w-30">
-					<button class="btn btn-success text-left w-100 confirm">
-						<%- include(`${partials}/spinner`, {id: 'suppliers', float_left: true, small: true}) %>
-						Demand Orders for
-					</button>
+	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <%- include(`${partials}/tab_head`, {id: 'status_0', count_id: 'status_0', spinner: 'status_0', title: 'Cancelled'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'status_1', count_id: 'status_1', spinner: 'status_1', title: 'Placed'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'status_2', count_id: 'status_2', spinner: 'status_2', title: 'Demanded'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'status_3', count_id: 'status_3', spinner: 'status_3', title: 'Received'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+		<%- include(`${partials}/tables/order_tab_body`, {status: '0'}) %>
+		<%- include(`${partials}/tables/order_tab_body`, {status: '1'}) %>
+		<%- include(`${partials}/tables/order_tab_body`, {status: '2'}) %>
+		<%- include(`${partials}/tables/order_tab_body`, {status: '3'}) %>
+	</div>
+	<div id="div_modals">
+		<% if (permissions.order_add) { %>
+			<div class="modal fade" id="mdl_order_add" tabindex="-1" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Add Order</h5>
+							<a class='btn btn-primary float-right' id="reload_add"><i class='fas fa-redo'></i></a>
+						</div>
+						<div class="modal-body">
+							<form id='form_line'>
+								<div id="div_items">
+									<%- include(`${partials}/inputs/text`,   {title: 'Search Items', id: 'inp_item',  autocomplete: 'off'}) %>
+									<%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items', size: '10', spinner: true, spinner_id: 'items'}) %>
+								</div>
+								<div id="div_sizes"   class='hidden'>
+									<%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size',  autocomplete: 'off'}) %>
+									<%- include(`${partials}/inputs/select`, {title: 'Size',         id: 'sel_sizes', name: 'line[size_id]', required: true, size: '10', spinner: true, spinner_id: 'sizes'}) %>
+								</div>
+								<div id="div_details" class='hidden'>
+									<%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: '_qty',	  name: 'line[_qty]',    required: true, value: '1', min: '1'}) %>
+									<button class="btn btn-success w-100">Add</button>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+						</div>
+					</div>
 				</div>
-				<select class="custom-select" id='sel_suppliers' name='supplier_id'></select>
-				<div class="input-group-append">
-					<a class='btn btn-primary' id='reload_suppliers'>
-						<i class="fas fa-redo"></i>
-					</a>
-				</div>
-			</div>	
-		</form>
-	<% } %>
-	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
-	<table class='table table-sm table-hover'>
-		<thead class='thead-dark'>
-			<th class='w-40' onclick='sortTable(0, "tbl_orders")'>Ordered For</th>
-			<th class='w-40' onclick='sortTable(1, "tbl_orders")'>Order Date</th>
-			<th class='w-10' onclick='sortTable(2, "tbl_orders")'>Lines</th>
-			<th class='w-10' onclick='sortTable(3, "tbl_orders")'>Status</th>
-			<th><i class='fas fa-search'></i></th>
-		</thead>
-		<tbody id='tbl_orders'></tbody>
-	</table>
+			</div>
+		<% } %>
+	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/spinner.js'></script>
-<script src='/js/get.js'></script>
 <script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/send.js'></script>
-<script src='/js/stores/orders/index/orders.js'></script>
-<script async>getOrders()</script>
-<% if (permissions.demand_line_add) { %>
-	<script src='/js/stores/suppliers/list.js'></script>
-	<script async>getSuppliers()</script>
-	<script>
-		window.addEventListener( "load", function () {
-			addFormListener(
-				'form_demand',
-				'PUT',
-				'/stores/orders/addtodemand',
-				{onComplete: getOrders}
-			);
-		});
-	</script>
+<script src='/js/stores/orders/index/formListener.js'></script>
+<script src='/js/search/select.js'></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('status_1');</script>
+<script src='/js/stores/orders/index/get.js'></script>
+<script async>loadAll();</script>
+<% if (permissions.order_add) { %>
+	<script src='/js/stores/orders/index/create.js'></script>
+<% } %>
+<% if (permissions.order_demand) { %>
+	<script src='/js/stores/orders/index/demand.js'></script>
+	<script>loadDemandActions()</script>
+<% } %>
+<% if (permissions.order_receive) { %>
+	<script src='/js/stores/orders/index/receipt.js'></script>
+	<script>loadReceiptActions()</script>
 <% } %>
 <% if (download) { %>
 	<script>download_file('<%= download %>');</script>

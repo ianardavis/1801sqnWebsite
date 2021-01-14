@@ -273,7 +273,6 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            include.push(inc.users({as: 'user_order'}));
             include.push(inc.users({as: 'user'}));
         };
         return {

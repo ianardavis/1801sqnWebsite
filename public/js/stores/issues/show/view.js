@@ -61,7 +61,9 @@ function showActions() {
 };
 function resetActionView() {
     set_innerText({id: 'action_action',       text: ''});
+    set_innerText({id: 'action_date',         text: ''});
     set_innerText({id: 'action_user',         text: ''});
+    set_innerText({id: 'action_id',           text: ''});
     remove_attribute({id: 'action_user_link', attribute: 'href'});
     ['location', 'serial', 'order', 'loancard', 'nsn'].forEach(e => {
         set_innerText(   {id: `action_${e}`,      text: ''});
@@ -73,7 +75,9 @@ $('#mdl_action_view').on('show.bs.modal', function (event) {
     resetActionView();
     get(
         function (action, options) {
+            set_innerText({id: 'action_id',        text: action.action_id});
             set_innerText({id: 'action_action',    text: action._action});
+            set_innerText({id: 'action_date',      text: print_date(action.createdAt, true)});
             set_innerText({id: 'action_user',      text: print_user(action.user)});
             set_attribute({id: 'action_user_link', attribute: 'href', value: `/stores/users/${action.user_id}`});
             if (action.stock) {
@@ -81,8 +85,8 @@ $('#mdl_action_view').on('show.bs.modal', function (event) {
                 set_attribute({id: 'action_location_link', attribute: 'href', value: `/stores/stocks/${action.stock_id}`});
                 remove_class( {id: 'inp_location',         class: 'hidden'});
             } else if (action.serial) {
-                set_innerText({id: 'action_location',      text: action.serial.location._location});
-                set_attribute({id: 'action_location_link', attribute: 'href', value: `/stores/serials/${action.serial_id}`});
+                set_innerText({id: 'action_location',      text: action.location._location});
+                set_attribute({id: 'action_location_link', attribute: 'href', value: `/stores/locations/${action.location_id}`});
                 remove_class( {id: 'inp_location',         class: 'hidden'});
                 set_innerText({id: 'action_serial',        text: action.serial._serial});
                 set_attribute({id: 'action_serial_link',   attribute: 'href', value: `/stores/serials/${action.serial_id}`});

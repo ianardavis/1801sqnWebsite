@@ -41,8 +41,6 @@ function getIssueActions() {
                         });
                     };
                 };
-                row.removeAttribute('class');
-                row.removeAttribute('data-issue_id')
             },
             {
                 table: 'issue',
@@ -79,10 +77,14 @@ function listSerials(issue_id, size) {
             if (sel_serial) {
                 sel_serial.innerHTML = '';
                 serials.forEach(serial => {
-                    sel_serial.appendChild(new Option({
-                        text: serial._serial,
-                        value: serial.serial_id
-                    }).e)
+                    if (serial.location) {
+                        sel_serial.appendChild(
+                            new Option({
+                                text: `${serial._serial} | Location: ${serial.location._location}`,
+                                value: serial.serial_id
+                            }).e
+                        );
+                    };
                 });
             };
         },

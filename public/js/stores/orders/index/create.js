@@ -1,6 +1,5 @@
-function reset_issue_add() {
+function reset_order_add() {
     let div_sizes   = document.querySelector('#div_sizes'),
-        div_items   = document.querySelector('#div_items'),
         div_details = document.querySelector('#div_details'),
         sel_items   = document.querySelector('#sel_items'),
         sel_sizes   = document.querySelector('#sel_sizes'),
@@ -8,7 +7,6 @@ function reset_issue_add() {
         inp_size    = document.querySelector('#inp_size');
     div_details.classList.add('hidden');
     div_sizes.classList.add('hidden');
-    div_items.classList.add('hidden');
     sel_items.setAttribute('size', 10);
     sel_items.value = '';
     sel_items.innerHTML = '';
@@ -17,37 +15,8 @@ function reset_issue_add() {
     sel_sizes.innerHTML = '';
     inp_item.value = '';
     inp_size.value = '';
-    getUsers();
+    getItems();
 };
-function getUsers () {
-    get(
-        function (users, options) {
-            let sel_users = document.querySelector('#sel_users');
-            if (sel_users) {
-                sel_users.innerHTML = '';
-                sel_users.appendChild(new Option({text: 'Select...', selected: true}).e);
-                users.forEach(user => {
-                    sel_users.appendChild(new Option({
-                        value: user.user_id,
-                        text: print_user(user)
-                    }).e)
-                });
-            };
-        },
-        {
-            table: 'users',
-            query: []
-        }
-    );
-};
-function show_items(select) {
-    if (select.target.value === 'Select...') reset_issue_add()
-    else {
-        let div_items = document.querySelector('#div_items');
-        div_items.classList.remove('hidden');
-        getItems();
-    }
-}
 function getItems() {
     get(
         function (items, options) {
@@ -92,43 +61,39 @@ function getSizes(event) {
         },
         {
             table: 'sizes',
-            query: [`item_id=${event.target.value}`, '_issueable=1']
+            query: [`item_id=${event.target.value}`, '_orderable=1']
         }
     );
 };
 function show_details() {
-    let sel_sizes = document.querySelector('#sel_sizes'),
-        div_details  = document.querySelector('#div_details');
+    let sel_sizes   = document.querySelector('#sel_sizes'),
+        div_details = document.querySelector('#div_details');
     if (sel_sizes) {
         if (div_details) div_details.classList.remove('hidden');
-        if (sel_sizes) sel_sizes.removeAttribute('size');
+        if (sel_sizes)   sel_sizes.removeAttribute('size');
     } else console.log('sel_sizes not found');
 };
 window.addEventListener('load', function () {
-    $('#mdl_issue_add').on('show.bs.modal', getUsers);
-    $('#mdl_issue_add').on('show.bs.modal', reset_issue_add);
+    $('#mdl_order_add').on('show.bs.modal', reset_order_add);
     addFormListener(
         'form_line',
         'POST',
-        `/stores/issues`,
+        `/stores/orders`,
         {
             onComplete: [
                 function () {
-                    getIssues('0')
-                    getIssues('1')
-                    getIssues('2')
-                    getIssues('3')
-                    getIssues('4')
-                    getIssues('5')
+                    getOrders('0')
+                    getOrders('1')
+                    getOrders('2')
+                    getOrders('3')
                 },
-                reset_issue_add
+                reset_order_add
             ]
         }
     );
-    document.querySelector('#reload_add').addEventListener('click', reset_issue_add);
+    document.querySelector('#reload_add').addEventListener('click', reset_order_add);
     document.querySelector('#inp_item')  .addEventListener('keyup', function () {searchSelect('inp_item',"sel_items")});
     document.querySelector('#inp_size')  .addEventListener('keyup', function () {searchSelect('inp_size',"sel_sizes")});
     document.querySelector('#sel_items') .addEventListener('change', getSizes);
     document.querySelector('#sel_sizes') .addEventListener('change', show_details);
-    document.querySelector('#sel_users') .addEventListener('change', show_items);
 });

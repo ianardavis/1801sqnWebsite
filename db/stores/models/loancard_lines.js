@@ -14,11 +14,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'issue_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     '_line': {
       type: DataTypes.INTEGER(11),
       allowNull: true,

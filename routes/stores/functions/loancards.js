@@ -16,25 +16,25 @@ module.exports = function (m, inc, loancard) {
             .then(issue => {
                 if (issue) {
                     try {
-                        let path = process.env.ROOT + '/public/res/',
+                        let path = `${process.env.ROOT}/public`,
                             docMetadata = {},
-                            file = 'loancards/Issue ' + issue.issue_id + ' - ' + issue._to._name + '.pdf',
-                            writeStream = fs.createWriteStream(path + file);
-                        docMetadata.Title = 'Loan Card - Issue: ' + issue.issue_id;
-                        docMetadata.Author = issue._by.rank._rank + ' ' + issue._by._name + ', ' + issue._by._ini;
+                            file = `loancards/Issue${issue.issue_id} - ${issue._to._name}.pdf`,
+                            writeStream = fs.createWriteStream(`${path}/res/${file}`);
+                        docMetadata.Title = `Loan Card - Issue: ${issue.issue_id}`;
+                        docMetadata.Author = `${issue._by.rank._rank} ${issue._by.full_name}`;
                         docMetadata.autoFirstPage = false;
                         docMetadata.bufferPages = true;
                         const doc = new pd(docMetadata);
                         doc.pipe(writeStream);
-                        doc.font(process.env.ROOT + '/public/lib/fonts/myriad-pro/d (1).woff');
+                        doc.font(`${path}/lib/fonts/myriad-pro/d (1).woff`);
                         let pageMetaData = {};
                         pageMetaData.size    = 'A4';
                         pageMetaData.margins = 28;
                         doc.addPage(pageMetaData); 
                         try {
                             doc
-                            .image(process.env.ROOT + '/public/img/rafac_logo.png', 28, 48, {fit: [112, 168]})
-                            .image(process.env.ROOT + '/public/img/sqnCrest.png', 470.25, 48, {height: 100})
+                            .image(`${path}/img/rafac_logo.png`, 28, 48, {fit: [112, 168]})
+                            .image(`${path}/img/sqnCrest.png`, 470.25, 48, {height: 100})
                             .fontSize(30)
                             .text('1801 SQUADRON ATC', 154.12, 48, {align: 'justify'})
                             .text('STORES LOAN CARD', 163.89, 98, {align: 'justify'})
@@ -69,8 +69,8 @@ module.exports = function (m, inc, loancard) {
                                         doc.addPage(pageMetaData);
                                         try {
                                             doc
-                                            .image(process.env.ROOT + '/public/img/rafac_logo.png', 28, 48, {fit: [112, 168]})
-                                            .image(process.env.ROOT + '/public/img/sqnCrest.png', 470.25, 48, {height: 100})
+                                            .image(`${path}/img/rafac_logo.png`, 28, 48, {fit: [112, 168]})
+                                            .image(`${path}/img/sqnCrest.png`, 470.25, 48, {height: 100})
                                             .fontSize(30)
                                             .text('1801 SQUADRON ATC', 154.12, 48, {align: 'justify'})
                                             .text('STORES LOAN CARD', 163.89, 98, {align: 'justify'})
@@ -101,7 +101,7 @@ module.exports = function (m, inc, loancard) {
                                     y += 15;
                                     doc.moveTo(28, y).lineTo(567.28, y).stroke();
                                 });
-                                let close_text = 'END OF ISSUE, ' + issue.lines.length + ' LINES ISSUED';
+                                let close_text = `END OF ISSUE, ${issue.lines.length} LINES ISSUED'`;
                                 doc
                                 .text(close_text, 297.64 - (doc.widthOfString(close_text) / 2), y)
                                 .moveTo(116.81, 220).lineTo(116.81, y).stroke()
@@ -124,9 +124,9 @@ module.exports = function (m, inc, loancard) {
                             doc.switchToPage(i);
                             doc
                             .text(`Page ${i + 1} of ${range.count}`, 28, 803.89)
-                            .text('Issue ID: ' + issue.issue_id, (567.28 - doc.widthOfString('Issue ID: ' + issue.issue_id)), 803.89)
+                            .text(`Issue ID: ${issue.issue_id}`, (567.28 - doc.widthOfString(`Issue ID: ${issue.issue_id}`)), 803.89)
                             .text(`Page ${i + 1} of ${range.count}`, 28, 28)
-                            .text('Issue ID: ' + issue.issue_id, (567.28 - doc.widthOfString('Issue ID: ' + issue.issue_id)), 28);
+                            .text(`Issue ID: ${issue.issue_id}`, (567.28 - doc.widthOfString(`Issue ID: ${issue.issue_id}`)), 28);
                         }
                         addPageNumbers(doc, issue.issue_id);
                         doc.end();
@@ -173,33 +173,30 @@ module.exports = function (m, inc, loancard) {
                 attributes: ['loancard_id', '_status']
             })
             .then(loancard => {
-                if (!loancard) resolve({success: false, message: 'Loancard not found'})
+                if (!loancard) reject(new Error('Loancard not found'))
                 else {
+                    let include = [];
+                    if (line.nsn_id)    include.push(inc.nsns(   {where: {nsn_id:    line.nsn_id},    attributes: ['nsn_id']}));
+                    if (line.serial_id) include.push(inc.serials({where: {serial_id: line.serial_id}, attributes: ['serial_id']}))
                     return m.stores.sizes.findOne({
                         where:      {size_id: line.size_id},
                         attributes: ['size_id', '_serials', '_nsns'],
-                        include: [
-                            inc.nsns(   {where: {nsn_id:    line.nsn_id    || null}, attributes: ['nsn_id']}),
-                            inc.serials({where: {serial_id: line.serial_id || null}, attributes: ['serial_id']})
-                        ]
+                        include: include
                     })
                     .then(size => {
-                        if      (!size)                             resolve({success: false, message: 'Size not found'})
-                        else if (size._nsns    && !line.nsn_id)     resolve({success: false, message: 'NSN not specified'})
-                        else if (size._nsns    && !size.nsns[0])    resolve({success: false, message: 'NSN not found'})
-                        else if (size._serials && !line.serial_id)  resolve({success: false, message: 'Serial # not specified'})
-                        else if (size._serials && !size.serials[0]) resolve({success: false, message: 'Serial # not found'})
+                        if      (!size)                             reject(new Error('Size not found'))
+                        else if (size._nsns    && !line.nsn_id)     reject(new Error('NSN not specified'))
+                        else if (size._nsns    && !size.nsns[0])    reject(new Error('NSN not found'))
+                        else if (size._serials && !line.serial_id)  reject(new Error('Serial # not specified'))
+                        else if (size._serials && !size.serials[0]) reject(new Error('Serial # not found'))
                         else {
-                            if (line.serial_id) {
-                                console.log(line);
+                            if (size._serials) {
                                 return m.stores.loancard_lines.create({
                                     loancard_id: loancard.loancard_id,
-                                    issue_id:    line.issue_id,
                                     serial_id:   size.serials[0].serial_id,
                                     size_id:     size.size_id,
                                     nsn_id:      size.nsns[0].nsn_id || null,
-                                    _qty:        line._qty       || 1,
-                                    _status:     1,
+                                    _qty:        1,
                                     user_id:     line.user_id
                                 })
                                 .then(loancard_line => resolve({success: true, message: 'Line added to loancard', line_id: loancard_line.line_id}))
@@ -213,9 +210,8 @@ module.exports = function (m, inc, loancard) {
                                         nsn_id:      size.nsns[0].nsn_id
                                     },
                                     defaults: {
-                                        _qty:     line._qty,
-                                        user_id:  line.user_id,
-                                        issue_id: line.issue_id
+                                        _qty:    line._qty,
+                                        user_id: line.user_id,
                                     }
                                 })
                                 .then(([loancard_line, created]) => {

@@ -3,11 +3,12 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><%= table %> Line <span id="line_id_view"></span></h5>
+                    <h5 class="modal-title">Action <span id="action_id"></span></h5>
                     <span id="span_view_buttons" class="float-right"></span>
                 </div>
                 <div class="modal-body">
                     <%- include(`${partials}/inputs/display`, {title: 'Action',   id: 'action_action'}) %>
+                    <%- include(`${partials}/inputs/display`, {title: 'Date',     id: 'action_date'}) %>
                     <%- include(`${partials}/inputs/display`, {title: 'User',     id: 'action_user',     link: true}) %>
                     <%- include(`${partials}/inputs/display`, {title: 'Location', id: 'action_location', link: true, inp_id: 'inp_location', inp_classes: ['hidden']}) %>
                     <%- include(`${partials}/inputs/display`, {title: 'Serial #', id: 'action_serial',   link: true, inp_id: 'inp_serial',   inp_classes: ['hidden']}) %>

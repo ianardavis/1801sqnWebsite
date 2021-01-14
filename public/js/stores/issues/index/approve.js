@@ -8,9 +8,7 @@ function getRequestedActions() {
                         select.appendChild(new Option({text: 'Approve', value: '2'}).e);
                         select.appendChild(new Option({text: 'Decline', value: '0'}).e);
                     };
-                }
-                row.removeAttribute('class');
-                row.removeAttribute('data-issue_id')
+                };
             },
             {
                 table: 'issue',

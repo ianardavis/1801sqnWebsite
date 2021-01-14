@@ -1,75 +1,81 @@
 module.exports = function (m, orders) {
-    orders.create = function (ordered_for, user_id) {
+    orders.create = function (line, user_id, source = {}) {
         return new Promise((resolve, reject) => {
-            return m.users.users.findOne({
-                where: {user_id: ordered_for},
-                attributes: ['user_id', 'status_id']
+            return m.stores.sizes.findOne({
+                where: {size_id: line.size_id},
+                attributes: ['size_id', '_orderable']
             })
-            .then(user => {
-                if      (!user)                                        resolve({success: false, message: 'User not found'});
-                else if (user.status_id !== 1 && user_status_id !== 2) resolve({success: false, message: 'Orders can only be made for current cadets or staff'});
+            .then(size => {
+                if      (!size)            reject(new Error('Size not found'))
+                else if (!size._orderable) reject(new Error('This size can not ordered'))
                 else {
                     return m.stores.orders.findOrCreate({
                         where: {
-                            ordered_for: user.user_id,
+                            size_id: size.size_id,
                             _status: 1
                         },
-                        defaults: {user_id: user_id}
+                        defaults: {
+                            user_id: user_id,
+                            _qty:    line._qty
+                        }
                     })
                     .then(([order, created]) => {
-                        if (created) resolve({success: true, message: 'Order created',        order_id: order.order_id, created: created})
-                        else         resolve({success: true, message: 'Order already exists', order_id: order.order_id, created: created});
-                    })
-                    .catch(err => reject(err));
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
-    orders.createLine = function (options = {}) {
-        return new Promise((resolve, reject) => {
-            return m.stores.sizes.findOne({
-                where: {size_id: options.size_id},
-                attributes: ['_orderable', 'size_id']
-            })
-            .then(size => {
-                if      (!size)            resolve({success: false, message: 'Size not found'})
-                else if (!size._orderable) resolve({success: false, message: 'This size can not be ordered'})
-                else {
-                    return m.stores.orders.findOne({
-                        where: {order_id: options.order_id},
-                        attributes: ['order_id', '_status']
-                    })
-                    .then(order => {
-                        if      (!order)              resolve({success: false, message: 'Order not found'})
-                        else if (order._status !== 1) resolve({success: false, message: 'Lines can only be added to draft orders'});
-                        else {
-                            return m.stores.order_lines.findOrCreate({
-                                where: {
+                        let action = {
+                            order_id: order.order_id,
+                            user_id:  user_id
+                        };
+                        if (source.table) action[source.table.column] = source.table.id;
+                        if (created) {
+                            if (source.note) {
+                                action._action = `Created${source.note || ''}`;
+                                return m.stores.order_actions.create(action)
+                                .then(action => {
+                                    resolve({
+                                        success:  true,
+                                        message:  'Order created',
+                                        order_id: order.order_id,
+                                        created:  false
+                                    });
+                                })
+                                .catch(err => {
+                                    console.log(error);
+                                    resolve({
+                                        success:  true,
+                                        message:  `Order created, error creating action: ${error.message}`,
+                                        order_id: order.order_id,
+                                        created:  false
+                                    });
+                                });
+                            } else {
+                                resolve({
+                                    success:  true,
+                                    message:  'Issue created',
                                     order_id: order.order_id,
-                                    size_id:  size.size_id,
-                                    _status:  1
-                                },
-                                defaults: {
-                                    _qty:    options._qty,
-                                    user_id: options.user_id
-                                }
-                            })
-                            .then(([line, created]) => {
-                                if (created) resolve({success: true, message: 'Line created', line_id: line.line_id, created: created});
-                                else {
-                                    return line.increment('_qty', {by: options._qty})
-                                    .then(result => {
-                                        return m.stores.order_line_actions.create({
-                                            order_line_id: line.line_id,
-                                            _action:       `Incremented by ${options._qty}${options.note || ''}`,
-                                            user_id:       options.user_id,
-                                        })
-                                        .then(note => resolve({success: true, message: 'Line incremented',                   line_id: line.line_id, created: created}))
-                                        .catch(err => resolve({success: true, message: 'Line incremented. Note not created', line_id: line.line_id, created: created, details: err}));
-                                    })
-                                    .catch(err => reject(err));
-                                };
+                                    created:  true
+                                });
+                            };
+                        } else {
+                            return order.increment('_qty', {by: line._qty})
+                            .then(result => {
+                                action._action = `Incremented by ${line._qty}${source.note || ''}`;
+                                return m.stores.order_actions.create(action)
+                                .then(action => {
+                                    resolve({
+                                        success:  true,
+                                        message:  'Existing order incremented',
+                                        order_id: order.order_id,
+                                        created:  false
+                                    });
+                                })
+                                .catch(err => {
+                                    console.log(error);
+                                    resolve({
+                                        success:  true,
+                                        message:  `Existing order incremented, error creating action: ${error.message}`,
+                                        order_id: order.order_id,
+                                        created:  false
+                                    });
+                                });
                             })
                             .catch(err => reject(err));
                         };

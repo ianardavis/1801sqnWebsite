@@ -20,7 +20,7 @@ function getIssues(status) {
                         add_cell(row, {text: issue.size.item._description});
                         add_cell(row, {text: issue.size._size});
                         add_cell(row, {text: issue._qty});
-                        if (status !== '0' && status !== '5') {
+                        if (['1', '2', '3'].includes(status)) {
                             let div = new Div().e
                             div.appendChild(new Select({
                                 small: true,
@@ -50,7 +50,6 @@ function getIssues(status) {
                 };
                 lines_loaded[status] = true;
                 if (status === '1' && typeof getRequestedActions === 'function') getRequestedActions();
-                if (status === '4' && typeof getReturnAction     === 'function') getReturnAction();
             },
             {
                 table: 'issues',

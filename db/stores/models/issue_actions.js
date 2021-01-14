@@ -24,12 +24,17 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    'nsn_id': {
+    'serial_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
     },
-    'serial_id': {
+    'location_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
+    'nsn_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"

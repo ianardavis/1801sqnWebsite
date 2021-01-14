@@ -9,11 +9,6 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    'user_id_order': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      comment: "null"
-    },
     'size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,

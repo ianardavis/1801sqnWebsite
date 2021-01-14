@@ -2,160 +2,57 @@ const op = require('sequelize').Op;
 module.exports = (app, al, inc, pm, m) => {
     let orders = {}, demands = {}, receipts = {}, issues = {},
         promiseResults = require(`../functions/promise_results`);
-    require(`./functions/orders`)  (m, orders);
-    require(`./functions/demands`) (m, demands);
+    require(`./functions/orders`) (m, orders);
+    require(`./functions/demands`)(m, demands);
     // require(`./functions/receipts`)(m, receipts);
-    // require(`./functions/issues`)  (m, issues);
-    app.get('/stores/orders',                 pm, al('access_orders'),                                 (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
-    app.get('/stores/orders/:id',             pm, al('access_orders'),                                 (req, res) => {
-        m.stores.orders.findOne({
-            where: {order_id: req.params.id},
-            include: [inc.users({as: 'user_order', attributes: ['user_id']})],
-            attributes: ['user_id_order']
-        })
-        .then(order => {
-            if      (!order)                                                 res.error.redirect(new Error('Order not found'), req, res)
-            else if (!req.allowed && order.user_id_order !== req.user.user_id) res.error.redirect(new Error('Permission Denied'), req, res)
-            else res.render('stores/orders/show');
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
-    app.get('/stores/order_lines/:id',        pm, al('access_orders',                   {allow: true}),(req, res) => {
-        m.stores.order_lines.findOne({
-            where: {line_id: req.params.id},
-            attributes: ['order_id']
-        })
-        .then(line => {
-            if (!line) res.error.redirect(new Error('Order line not found'), req, res)
-            else       res.redirect('/stores/orders/' + line.order_id)
-        })
-        .catch(err => res.error.redirect(err, req, res));
-    });
+    app.get('/stores/orders',             pm, al('access_orders'),                    (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
+    app.get('/stores/orders/:id',         pm, al('access_orders'),                    (req, res) => res.render('stores/orders/show'));
     
-    app.get('/stores/get/orders',             pm, al('access_orders',      {send: true}),              (req, res) => {
+    app.get('/stores/get/orders',         pm, al('access_orders',      {send: true}), (req, res) => {
         m.stores.orders.findAll({
             where:   req.query,
             include: [
-                inc.users({as: 'user_order'}),
-                inc.users({as: 'user'})
+                inc.sizes(),
+                inc.users()
             ]
         })
-        .then(orders => res.send({success: true, orders: orders}))
+        .then(orders => res.send({success: true, result: orders}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order',              pm, al('access_orders',      {send: true}),              (req, res) => {
+    app.get('/stores/get/order',          pm, al('access_orders',      {send: true}), (req, res) => {
         m.stores.orders.findOne({
             where:   req.query,
             include: [
-                inc.users({as: 'user_order'}),
-                inc.users({as: 'user'})
-            ]
-        })
-        .then(order => res.send({success: true, order: order}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/order_lines',        pm, al('access_order_lines', {send: true}),              (req, res) => {
-        m.stores.order_lines.findAll({
-            where:   req.query,
-            include: [
                 inc.sizes(),
-                inc.orders(),
-                inc.order_line_actions(),
                 inc.users()
             ]
         })
-        .then(lines => res.send({success: true, lines: lines}))
+        .then(order => res.send({success: true, result: order}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order_line',         pm, al('access_order_lines', {send: true}),              (req, res) => {
-        m.stores.order_lines.findOne({
+    app.get('/stores/get/order_actions',  pm, al('access_order_lines', {send: true}), (req, res) => {
+        m.stores.order_actions.findAll({
             where:   req.query,
             include: [
-                inc.sizes(),
-                inc.orders(),
-                inc.order_line_actions(),
+                inc.stocks(),
+                inc.nsns(),
+                inc.serials(),
+                inc.demand_lines(),
+                inc.issue(),
                 inc.users()
             ]
         })
-        .then(order_line => res.send({success: true, order_line: order_line}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/order_lines/:id',    pm, al('access_order_lines', {send: true}),              (req, res) => {
-        m.stores.order_lines.findAll({
-            where: req.query,
-            include: [
-                inc.sizes(),
-                inc.orders({
-                    where: {user_id_order: req.params.id},
-                    required: true
-                })
-            ]
-        })
-        .then(lines => res.send({success: true, order_lines: lines}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/order_line_actions', pm, al('access_order_lines', {send: true}),              (req, res) => {
-        m.stores.order_line_actions.findAll({
-            where:   req.query,
-            include: [
-                inc.users()
-            ]
-        })
-        .then(order_line_actions => res.send({success: true, order_line_actions: order_line_actions}))
+        .then(order_line_actions => res.send({success: true, result: order_line_actions}))
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/orders',                pm, al('order_add',          {send: true}),              (req, res) => {
-        orders.create(
-            req.body.user_id_order,
-            req.user.user_id
-        )
-        .then(result => {
-            let message = '';
-            if (result.order.created) {
-                res.send({
-                    result: true,
-                    message: `Order raised: ${result.order_id}`
-                });
-            } else {
-                res.send({
-                    result: true,
-                    message: `Draft order already exists for this user: ${result.order_id}`
-                });
-        };
-        })
-        .catch(err => res.error.send(err, res));
-    });
-    app.post('/stores/order_lines',           pm, al('order_line_add',     {send: true}),              (req, res) => {
-        if (req.body.line.order_id) {
-            orders.createLine({
-                order_id: req.body.line.order_id,
-                size_id:  req.body.line.size_id,
-                _qty:     req.body.line._qty,
-                user_id:  req.user.user_id
-            })
-            .then(result => res.send({success: true, message: `Item added: ${result.line.line_id}`}))
-            .catch(err => res.error.send(err, res));
-        } else if (req.body.user_id_order) {
-            m.stores.orders.findOrCreate({
-                where:    {user_id_order: req.body.user_id_order},
-                defaults: {user_id:     req.user.user_id}
-            })
-            .then(([order, created]) => {
-                return orders.createLine({
-                    order_id: order.order_id,
-                    size_id:  req.body.line.size_id,
-                    _qty:     req.body.line._qty,
-                    user_id:  req.user.user_id
-                })
-                .then(result => res.send({success: true, message: `Item added: ${result.line.line_id}`}))
-                .catch(err => res.error.send(err, res));
-            })
-            .catch(err => res.error.send(err, res))
-        } else res.send({success: false, message: 'No order ID or user ID specified'});
+    app.post('/stores/orders',            pm, al('order_add',          {send: true}), (req, res) => {
+        orders.create(req.body.line, req.user.user_id)
+        .then(result => res.send(result))
+        .catch(err => res.send({success: false, message: err.message}));
     });
 
-    app.put('/stores/orders/addtodemand',     pm, al('demand_line_add',    {send: true}),              (req, res) => {
+    app.put('/stores/orders/addtodemand', pm, al('demand_line_add',    {send: true}), (req, res) => {
         m.stores.order_lines.findAll({
             where: {
                 _status:        'Open',
@@ -194,10 +91,10 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/orders/:id',             pm, al('order_edit',         {send: true}),              (req, res) => {
+    app.put('/stores/orders/:id',         pm, al('order_edit',         {send: true}), (req, res) => {
         m.stores.orders.findOne({
             where: {order_id: req.params.id},
-            attributes: ['order_id', 'user_id_order', '_status']
+            attributes: ['order_id', '_status']
         })
         .then(order => {
             if      (!order)                                   res.send({success: false, message: 'Order not found'});
@@ -231,166 +128,23 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/order_lines/:id',        pm, al('order_edit',         {send: true}),              (req, res) => {
-        return m.stores.orders.findOne({
-            where: {order_id: req.params.id},
-            attributes: ['order_id', '_status', 'user_id_order']
-        })
-        .then(order => {
-            let actions = [], _demands = [], _receipts = [], _issues = [];
-            for (let [lineID, line] of Object.entries(req.body.actions)) {
-                line.line_id = Number(String(lineID).replace('line_id', ''));
-                if      (line._status === '3') _demands.push(line);
-                else if (line._status === '4') _receipts.push(line);
-                else if (line._status === '5')   { // if issued
-                    line.offset = _issues.length;
-                    _issues.push(line)
-                } else if (line._status === '6' || line._status === '0')   { // if complete
-                    actions.push(
-                        m.stores.order_lines.update(
-                            {_status: line._status},
-                            {where: {line_id: line.line_id}}
-                        )
-                    );
-                    let note = '';
-                    if      (line._status === 0) note = 'Cancelled'
-                    else if (line._status === 6) note = 'Closed'
-                    actions.push(
-                        m.stores.order_line_actions.create({
-                            order_line_id: line.line_id,
-                            _action:   note,
-                            user_id: req.user.user_id
-                        })
-                    );
-                };
-            };
-            if (_demands.length > 0) {
-                _demands.forEach(line => {
-                    actions.push(
-                        demand_order_line(line.line_id, req.user.user_id)
-                    );
-                });
-            };
-            if (_receipts.length > 0) {
-                _receipts.forEach(line => {
-                    actions.push(
-                        receive_order_line(line, req.user.user_id)
-                    );
-                });
-            };
-            if (_issues.length > 0) {
-                actions.push(
-                    issues.create({
-                        user_id_issue: order.user_id_order,
-                        user_id:   req.user.user_id
-                    })
-                    .then(issue_result => {
-                        if (issue_result.success) {
-                            return m.stores.issue_lines.count({
-                                where: {issue_id: issue_result.issue.issue_id}
-                            })
-                            .then(line_count => {
-                                _issues.forEach(line => {
-                                    actions.push(
-                                        issue_order_line(
-                                            {
-                                                issue_id: issue_result.issue.issue_id,
-                                                count: line_count
-                                            },
-                                            line,
-                                            req.user.user_id
-                                        )
-                                    );
-                                });
-                            })
-                            .catch(err => {
-                                console.log(err);
-                            });
-                        } else {
-                            console.log(issue_result);
-                        };
-                    })
-                    .catch(err => console.log(err))
-                );
-            };
-            return Promise.allSettled(actions)
-            .then(results => {
-                return m.stores.order_lines.findAll({
-                    where: {
-                        _status: 2,
-                        order_id: order.order_id
-                    }
-                })
-                .then(order_lines => {
-                    if (order_lines && order_lines.length > 0) {
-                        if (promiseResults(results)) res.send({success: true, message: 'Lines actioned'})
-                        else res.error.send('Some lines failed', res);
-                    } else {
-                        actions = [];
-                        actions.push(order.update({_status: 3})
-                        );
-                        actions.push(
-                            m.stores.notes.create({
-                                _table: 'orders',
-                                _note:   'Closed',
-                                _id:     order.order_id,
-                                user_id: req.user.user_id,
-                                system:  1
-                            })
-                        );
-                        return Promise.allSettled(actions)
-                        .then(results2 => {
-                            if (promiseResults(results)) res.send({success: true, message: 'Lines actioned, order closed'})
-                            else res.error.send('Some lines failed', res);
-                        })
-                        .catch(err => res.error.send(err, res));
-                    };
-                })
-                .catch(err => res.error.send(err, res));
-            })
-            .catch(err => res.error.send(err, res));
-        })
-        .catch(err => res.error.send(err, res));
-    });
     
-    app.delete('/stores/orders/:id',          pm, al('order_delete',       {send: true}),              (req, res) => {
+    app.delete('/stores/orders/:id',      pm, al('order_delete',       {send: true}), (req, res) => {
         m.stores.orders.findOne({
-            where: {order_id: req.params.id},
-            include: [inc.order_lines({actions: true, attributes: ['line_id', '_status', '_qty']})],
+            where:      {order_id: req.params.id},
             attributes: ['order_id', '_status']
         })
         .then(order => {
-            if (!order) {
-                res.error.send('Order not found', res);
-            } else if (order._status === 3) {
-                res.error.send('Closed orders can not be cancelled', res);
-            } else {
-                let actions = [];
-                order.lines.forEach(line => {
-                    actions.push(cancel_order_line(line, req.user.user_id))
-                });
-                actions.push(
-                    order.update({_status: 0})
-                );
-                Promise.allSettled(actions)
+            if      (!order)              res.send({success: false, message: 'Order not found'});
+            else if (order._status !== 1) res.send({success: false, message: 'Only Placed orders can be cancelled'});
+            else {
+                order.update({_status: 0})
                 .then(results => {
-                    
+                    if (!result) res.send({success: false, message: 'Order not cancelled'})
+                    else         res.send({success: true,  message: 'Order cancelled'});
                 })
                 .catch(err => res.error.send(err, res));
             };
-        })
-        .catch(err => res.error.send(err, res));
-    });
-    app.delete('/stores/order_lines/:id',     pm, al('order_line_delete',  {send: true}),              (req, res) => { //
-        m.stores.order_lines.findOne({
-            where: {line_id: req.params.id},
-            attributes: ['line_id', '_status', '_qty'],
-            include: [inc.order_line_actions()]
-        })
-        .then(line => {
-            cancel_order_line(line, req.user.user_id)
-            .then(result => res.send(result))
-            .catch(err => res.error.send(err, res));
         })
         .catch(err => res.error.send(err, res));
     });
