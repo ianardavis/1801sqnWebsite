@@ -49,51 +49,6 @@ function getIssueActions() {
         );
     });
 };
-function listNSNs(issue_id, size) {
-    get(
-        function (nsns, options) {
-            let sel_nsn = document.querySelector(`#sel_nsn_${issue_id}`);
-            if (sel_nsn) {
-                sel_nsn.innerHTML = '';
-                nsns.forEach(nsn => {
-                    sel_nsn.appendChild(new Option({
-                        text: print_nsn(nsn),
-                        value: nsn.nsn_id,
-                        selected: (nsn.nsn_id === size.nsn_id)
-                    }).e)
-                });
-            };
-        },
-        {
-            table: 'nsns',
-            query: [`size_id=${size.size_id}`]
-        }
-    )
-};
-function listSerials(issue_id, size) {
-    get(
-        function (serials, options) {
-            let sel_serial = document.querySelector(`#sel_serial_${issue_id}`);
-            if (sel_serial) {
-                sel_serial.innerHTML = '';
-                serials.forEach(serial => {
-                    if (serial.location) {
-                        sel_serial.appendChild(
-                            new Option({
-                                text: `${serial._serial} | Location: ${serial.location._location}`,
-                                value: serial.serial_id
-                            }).e
-                        );
-                    };
-                });
-            };
-        },
-        {
-            table: 'serials',
-            query: [`size_id=${size.size_id}`]
-        }
-    )
-};
 function loadIssueActions() {
     let actions_interval = window.setInterval(
         function () {

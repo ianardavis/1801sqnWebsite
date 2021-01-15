@@ -13,10 +13,10 @@ function getCounts() {
             hide_spinner('suppliers');
         });
         XHR.addEventListener("error", function () {
-            alert(`Something went wrong getting ${options.table}`)
-            hide_spinner(options.spinner || options.table);
+            alert(`Something went wrong getting suppliers`)
+            hide_spinner('suppliers');
         });
-        XHR.open(options.method || 'GET', `/stores/count/sizes?supplier_id=${supplier_id}`);
+        XHR.open('GET', `/stores/count/sizes?supplier_id=${supplier_id}`);
         XHR.send();
     });
 };

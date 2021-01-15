@@ -1,4 +1,4 @@
 <div class="dropdown-divider"></div>
 <% if (permissions[permission]) { %><form id='form_delete'><% } %>
-    <button id='btn_delete' class="dropdown-item confirm" disabled>Cancel</button>
+    <button id='btn_delete' class="dropdown-item confirm" disabled><%= locals.text || 'Cancel' %></button>
 <% if (permissions[permission]) { %></form><% } %>

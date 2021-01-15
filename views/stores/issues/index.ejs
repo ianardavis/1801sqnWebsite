@@ -67,9 +67,6 @@
 <script src='/js/stores/issues/index/get.js'></script>
 <script src='/js/stores/issues/index/create.js'></script>
 <script src='/js/search/select.js'></script>
-<% if (permissions.issue_approve || permissions.issue_return) { %>
-	<script src='/js/stores/issues/index/listStocks.js'></script>
-<% } %>
 <% if (permissions.order_add) { %>
 	<script src='/js/stores/issues/index/order.js'></script>
 	<script>loadOrderActions()</script>
@@ -78,6 +75,9 @@
 	<script src='/js/stores/issues/index/approve.js'></script>
 <% } %>
 <% if (permissions.loancard_line_add) { %>
+	<script src='/js/stores/utils/list/nsns.js'></script>
+	<script src='/js/stores/utils/list/serials.js'></script>
+	<script src='/js/stores/utils/list/stocks.js'></script>
 	<script src='/js/stores/issues/index/issue.js'></script>
 	<script>loadIssueActions()</script>
 <% } %>

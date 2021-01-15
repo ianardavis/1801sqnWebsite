@@ -1,25 +1,62 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores', 			 text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', 		  text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores/suppliers', text: 'Suppliers'}) %>
 <% if (permissions.supplier_add) { %>
-	<%- include(`${partials}/breadcrumb`, {href: 'javascript:add("suppliers")', text: '<i class="fas fa-plus"></i>'}) %>
+	<li class="nav-item">
+		<a class='nav-link' data-toggle="modal" data-target="#mdl_supplier_add"><i class="fas fa-plus"></i></a>
+	</li>
 <% } %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class="container">
 	<input class='form-control mt-1' type='text' id='supplierSearch' onkeyup='searchCards(this)' placeholder='Search by name...'>
-	<%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
-	<div class='menu row' id="suppliers">
+	<div class='menu row' id="suppliers"></div>
+	<div id="div_modals">
+		<% if (permissions.supplier_add) { %>
+			<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<form class="modal-content" id='form_supplier_add'>
+						<div class="modal-header">
+							<h5 class="modal-title">Add Supplier</h5>
+						</div>
+						<div class="modal-body">
+							<%- include(`${partials}/inputs/text`,          {title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20,  placeholder: 'Required', required: true}) %>
+							<%- include(`${partials}/inputs/text`,          {title: 'Address',       name: 'supplier[_address1]',  maxLength: 45,  placeholder: 'Required', required: true}) %>
+							<%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
+							<%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
+							<%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
+							<%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
+							<%- include(`${partials}/inputs/text`,          {title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
+							<%- include(`${partials}/inputs/text`,          {title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
+							<%- include(`${partials}/spinner`,              {id: 'accounts'}) %>
+							<%- include(`${partials}/inputs/select`,        {id: 'sel_accounts',     title: 'Account/Inventory',   name: 'supplier[account_id]', append: {a: {type: 'success', href: 'javascript:add("accounts")', text: '<i class="fas fa-plus"></i>'}}}) %>
+							<%- include(`${partials}/inputs/select_yes_no`, {title: 'RAF Stores?',   name: 'supplier[_stores]',    selected: 0}) %>
+							</div>
+						<div class="modal-footer">
+							<input type="submit" class="btn btn-success w-100 confirm" value='Save Item'>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		<% } %>
 	</div>
-	</section>
+</section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/add.js'></script>
-<script src='/js/spinner.js'></script>
+<script src='/js/data/addFormListener.js'></script>
 <script src='/js/data/send.js'></script>
-<script src='/js/get.js'></script>
-<script src='/js/get/settings.js'></script>
 <script src='/js/search/cards.js'></script>
-<script src='/js/stores/suppliers/index/asCards.js'></script>
-<script src='/js/stores/suppliers/index/getCounts.js'></script>
-<script src='/js/stores/suppliers/index/setDefault.js'></script>
-<script async>get(asCards, {table: 'suppliers', query: []})</script>
+<script src='/js/stores/suppliers/index/getSuppliers.js'></script>
+<% if (permissions.access_sizes) { %>
+	<script src='/js/stores/suppliers/index/getCounts.js'></script>
+<% } %>
+<% if (permissions.access_settings) { %>
+	<script src='/js/stores/suppliers/index/getDefault.js'></script>
+<% } %>
+<% if (permissions.supplier_add) { %>
+	<script src='/js/stores/utils/list/accounts.js'></script>
+	<script src='/js/stores/suppliers/index/add.js'></script>
+<% } %>
+<script async>getSuppliers()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

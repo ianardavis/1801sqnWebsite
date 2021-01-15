@@ -2,13 +2,13 @@ window.addEventListener('load', function () {
     addFormListener(
         'lines_1',
         'PUT',
-        '/stores/issues',
+        '/stores/orders',
         {
             onComplete: function () {
-                getIssues('0');
-                getIssues('1');
-                getIssues('2');
-                getIssues('3');
+                getOrders('0');
+                getOrders('1');
+                getOrders('2');
+                getOrders('3');
             }
         }
     );

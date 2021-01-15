@@ -1,21 +1,23 @@
+let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function getIssues() {
     get(
-        function (lines, options) {
+        function (issues, options) {
             let table_body = document.querySelector('#tbl_issues');
-            set_count({id: 'issue', count: lines.length})
+            set_count({id: 'issue', count: issues.length})
             if (table_body) {
                 table_body.innerHTML = '';
-                lines.forEach(line => {
+                issues.forEach(issue => {
                     try {
                         let row = table_body.insertRow(-1);
                         add_cell(row, {
-                            sort: print_date(line.issue.createdAt),
-                            text: new Date(line.issue.createdAt).toDateString()
+                            sort: new Date(issue.createdAt).getTime(),
+                            text: print_date(issue.createdAt)
                         });
-                        add_cell(row, {text: print_user(line.issue.user_issue)});
-                        add_cell(row, {text: line._qty});
+                        add_cell(row, {text: print_user(issue.user_issue)});
+                        add_cell(row, {text: issue._qty});
+                        add_cell(row, {text: issue_statuses[issue._status]});
                         add_cell(row, {append: new Link({
-                            href: `/stores/issues/${line.issue_id}`,
+                            href: `/stores/issues/${issue.issue_id}`,
                             small: true
                         }).e});
                     } catch (error) {
@@ -25,7 +27,7 @@ function getIssues() {
             };
         },
         {
-            table: 'issue_lines',
+            table: 'issues',
             query: [`size_id=${path[3]}`]
         }
     );

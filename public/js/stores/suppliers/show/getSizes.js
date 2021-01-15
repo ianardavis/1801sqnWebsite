@@ -7,6 +7,7 @@ function getSizes() {
                 table_body.innerHTML = '';
                 sizes.forEach(size => {
                     let row = table_body.insertRow(-1);
+                    add_cell(row, {text: size.item._description, ellipsis: true})
                     add_cell(row, {text: size._size});
                     add_cell(row, {append: new Link({
                         href: `/stores/sizes/${size.size_id}`,
@@ -17,7 +18,7 @@ function getSizes() {
         },
         {
             table: 'sizes',
-            query: [`item_id=${path[3]}`]
+            query: [`supplier_id=${path[3]}`]
         }
     );
 };

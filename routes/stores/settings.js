@@ -35,24 +35,30 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(settings => res.send({success: true, settings: settings}))
         .catch(err => res.error.send(err, res));
     });
+    app.get('/stores/get/setting',             permissions, allowed('access_settings', {send: true}), (req, res) => {
+        m.stores.settings.findOne({
+            where:      req.query,
+            attributes: ['_value']
+        })
+        .then(setting => {
+            if (!setting) res.send({success: false, message: 'Setting not found'})
+            else          res.send({success: true,  result: setting})})
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: `Error getting setting: ${err.message}`});
+        });
+    });
 
     app.put('/stores/settings',                permissions, allowed('setting_edit',    {send: true}), (req, res) => {
-        console.log(req.body);
-        console.log(req.query);
-        if (!req.query) res.send({success: false, message: 'No query specified'})
-        else {
-            m.stores.settings.update(
-                req.body.setting,
-                {where: req.query}
-            )
-            .then(result => {
-                let message = '';
-                if (result) message = 'Setting updated'
-                else message = 'Setting not updated';
-                res.send({success: true, message: message})
-            })
-            .catch(err => res.error.redirect(err, req, res));
-        };
+        m.stores.settings.update(
+            {_value: req.body.setting._value},
+            {where: {_name: req.body.setting._name}}
+        )
+        .then(result => {
+            if (!result) res.send({success: true, message: 'Setting not updated'})
+            else         res.send({success: true, message: 'Setting updated'});
+        })
+        .catch(err => res.error.redirect(err, req, res));
     });
     
     app.get('/stores/get/options/:table',      permissions, allowed('access_options',  {send: true}), (req, res) => {

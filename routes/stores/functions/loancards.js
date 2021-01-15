@@ -159,10 +159,7 @@ module.exports = function (m, inc, loancard) {
                     _date_due: options._date_due || Date.now()
                 }
             })
-            .then(([loancard, created]) => {
-                if (created) resolve({success: true, message: 'Loancard created', loancard_id: loancard.loancard_id})
-                else         resolve({success: true, message: 'Loancard exists',  loancard_id: loancard.loancard_id})
-            })
+            .then(([loancard, created]) => resolve({success: true, loancard_id: loancard.loancard_id, created: created}))
             .catch(err => reject(err));
         });
     };

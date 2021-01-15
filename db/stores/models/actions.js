@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('issue_actions', {
+  return sequelize.define('actions', {
     'action_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -11,7 +11,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     'issue_id': {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
+      comment: "null"
+    },
+    'order_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
       comment: "null"
     },
     '_action': {
@@ -39,12 +44,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    'order_id': {
+    'loancard_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
     },
-    'loancard_line_id': {
+    'demand_line_id': {
       type: DataTypes.INTEGER(11),
       allowNull: true,
       comment: "null"
@@ -65,7 +70,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'issue_actions',
+    tableName: 'actions',
     schema: 'stores'
   });
 };

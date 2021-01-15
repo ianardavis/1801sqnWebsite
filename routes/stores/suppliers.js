@@ -2,7 +2,6 @@ const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
     let nullify = require(`../functions/nullify`);
     app.get('/stores/suppliers',          permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/index'));
-    app.get('/stores/suppliers/new',      permissions, allowed('supplier_add'),                   (req, res) => res.render('stores/suppliers/new'));
     app.get('/stores/suppliers/:id',      permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/show'));
     app.get('/stores/suppliers/:id/edit', permissions, allowed('supplier_edit'),                  (req, res) => res.render('stores/suppliers/edit'));
 
@@ -11,7 +10,17 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:      req.query,
             include:    [inc.accounts(), inc.files()]
         })
-        .then(suppliers => res.send({success: true, suppliers: suppliers}))
+        .then(suppliers => res.send({success: true, result: suppliers}))
+        .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/supplier',       permissions, allowed('access_suppliers', {send: true}), (req, res) => {
+        m.stores.suppliers.findOne({
+            where:      req.query,
+            include:    [inc.accounts(), inc.files()]
+        })
+        .then(supplier => {
+            if (!supplier) res.send({success: false, message: 'Supplier not found'})
+            else           res.send({success: true,  result: supplier})})
         .catch(err => res.error.send(err, res));
     });
 

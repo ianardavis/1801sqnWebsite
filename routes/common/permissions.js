@@ -2,6 +2,7 @@ module.exports = (app, allowed, permissions, m, db) => {
     let permission_tree = {
         stores: [
             {_permission: 'access_stores', children: [
+                {_permission: 'access_actions',   children: []},
                 {_permission: 'access_issues',    children: [
                     {_permission: 'issue_add'},
                     {_permission: 'issue_edit'},
@@ -107,12 +108,7 @@ module.exports = (app, allowed, permissions, m, db) => {
                 {_permission: 'access_orders',    children: [
                     {_permission: 'order_add'},
                     {_permission: 'order_edit'},
-                    {_permission: 'order_delete'},
-                    {_permission: 'access_order_actions', children: [
-                        {_permission: 'order_action_add'},
-                        {_permission: 'order_action_edit'},
-                        {_permission: 'order_action_delete'}
-                    ]}
+                    {_permission: 'order_delete'}
                 ]},
                 {_permission: 'access_settings',  children: [
                     {_permission: 'setting_add'},

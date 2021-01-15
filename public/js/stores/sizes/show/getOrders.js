@@ -1,18 +1,22 @@
+let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Received'};
 function getOrders() {
     get(
-        function (lines, options) {
+        function (orders, options) {
             let table_body  = document.querySelector('#tbl_orders');
-            set_count({id: 'order', count: lines.length});
+            set_count({id: 'order', count: orders.length});
             if (table_body) {
                 table_body.innerHTML = '';
-                lines.forEach(line => {
+                orders.forEach(order => {
                     try {
                         let row = table_body.insertRow(-1);
-                        if (Number(line.order.user_id_order) === -1) add_cell(row, {text: 'Backing Stock'})
-                        else add_cell(row, {text: print_user(line.order.user_id_order)});
-                        add_cell(row, {text: line._qty});
+                        add_cell(row, {
+                            sort: new Date(order.createdAt).getTime(),
+                            text: print_date(order.createdAt)
+                        });
+                        add_cell(row, {text: order._qty});
+                        add_cell(row, {text: order_statuses[order._status]});
                         add_cell(row, {append: new Link({
-                            href: `/stores/orders/${line.order_id}`,
+                            href: `/stores/orders/${order.order_id}`,
                             small: true
                         }).e});
                     } catch (error) {
@@ -22,7 +26,7 @@ function getOrders() {
             };
         },
         {
-            table: 'order_lines',
+            table: 'orders',
             query: [`size_id=${path[3]}`]
         }
     );

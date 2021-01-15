@@ -6,19 +6,16 @@ module.exports = function (m, demands) {
                 attributes: ['supplier_id']
             })
             .then(supplier => {
-                if (!supplier) resolve({success: false, message: 'Supplier not found'})
+                if (!supplier) reject(new Error('Supplier not found'))
                 else {
                     return m.stores.demands.findOrCreate({
                         where: {
                             supplier_id: supplier.supplier_id,
-                            _status: 1
+                            _status:     1
                         },
                         defaults: {user_id: options.user_id}
                     })
-                    .then(([demand, created]) => {
-                        if (created) resolve({success: true, message: 'Demand created',        demand: {demand_id: demand.demand_id, created: created}})
-                        else         resolve({success: true, message: 'Demand already exists', demand: {demand_id: demand.demand_id, created: created}});
-                    })
+                    .then(([demand, created]) => resolve({success: true, demand_id: demand.demand_id, created: created}))
                     .catch(err => reject(err));
                 };
             })
@@ -32,18 +29,18 @@ module.exports = function (m, demands) {
                 attributes: ['size_id', 'supplier_id', '_demand_page', '_demand_cell']
             })
             .then(size => {
-                if      (!size)                                          resolve({success: false, message: 'Size not found'})
-                else if (!size._demand_page || size._demand_page === '') resolve({success: false, message: 'No demand page for this size'})
-                else if (!size._demand_cell || size._demand_cell === '') resolve({success: false, message: 'No demand cell for this size'})
+                if      (!size)                                          reject(new Error('Size not found'))
+                else if (!size._demand_page || size._demand_page === '') reject(new Error('No demand page for this size'))
+                else if (!size._demand_cell || size._demand_cell === '') reject(new Error('No demand cell for this size'))
                 else {
                     return m.stores.demands.findOne({
                         where: {demand_id: options.demand_id},
                         attributes: ['demand_id', 'supplier_id', '_status']
                     })
                     .then(demand => {
-                        if      (!demand)                                 resolve({success: false, message: 'Demand not found'})
-                        else if (demand._status !== 1)                    resolve({success: false, message: 'Lines can only be added to draft demands'})
-                        else if (size.supplier_id !== demand.supplier_id) resolve({success: false, message: 'Size is not from this supplier'})
+                        if      (!demand)                                 reject(new Error('Demand not found'))
+                        else if (demand._status !== 1)                    reject(new Error('Lines can only be added to draft demands'))
+                        else if (size.supplier_id !== demand.supplier_id) reject(new Error('Size is not from this supplier'))
                         else {
                             return m.stores.demand_lines.findOrCreate({
                                 where: {
@@ -56,7 +53,7 @@ module.exports = function (m, demands) {
                                 }
                             })
                             .then(([line, created]) => {
-                                if (created) resolve({success: true, message: 'Demand line created', line: {line_id: line.line_id, created: created}})
+                                if (created) resolve({success: true, line_id: line.line_id, created: created})
                                 else {
                                     return line.increment('_qty', {by: options._qty})
                                     .then(result => {
@@ -67,7 +64,7 @@ module.exports = function (m, demands) {
                                             user_id: options.user_id,
                                             _system: 1
                                         })
-                                        .then(note => resolve({success: true, message: 'Demand line created', line: {line_id: line.line_id, created: created}}))
+                                        .then(note => resolve({success: true, line_id: line.line_id, created: created}))
                                         .catch(err => reject(err));
                                     })
                                     .catch(err => reject(err));

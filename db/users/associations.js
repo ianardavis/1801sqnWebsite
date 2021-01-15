@@ -11,10 +11,9 @@ module.exports = function (m) {
     m.stores.accounts.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
     m.stores.issues.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_issue', constraints: false, as: 'user_issue'});
     m.stores.issues.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false, as: 'user'});
-    m.stores.issue_actions.hasOne( m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
     m.stores.notes.hasOne(         m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
     m.stores.orders.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.order_actions.hasOne( m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
+    m.stores.actions.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
     m.stores.demands.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
     m.stores.demand_lines.hasOne(  m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
     m.stores.loancards.hasOne(     m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});

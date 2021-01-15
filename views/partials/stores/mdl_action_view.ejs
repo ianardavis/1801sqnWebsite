@@ -14,7 +14,9 @@
                     <%- include(`${partials}/inputs/display`, {title: 'Serial #', id: 'action_serial',   link: true, inp_id: 'inp_serial',   inp_classes: ['hidden']}) %>
                     <%- include(`${partials}/inputs/display`, {title: 'NSN',      id: 'action_nsn',      link: true, inp_id: 'inp_nsn',      inp_classes: ['hidden']}) %>
                     <%- include(`${partials}/inputs/display`, {title: 'Order',    id: 'action_order',    link: true, inp_id: 'inp_order',    inp_classes: ['hidden']}) %>
+                    <%- include(`${partials}/inputs/display`, {title: 'Issue',    id: 'action_issue',    link: true, inp_id: 'inp_issue',    inp_classes: ['hidden']}) %>
                     <%- include(`${partials}/inputs/display`, {title: 'Loancard', id: 'action_loancard', link: true, inp_id: 'inp_loancard', inp_classes: ['hidden']}) %>
+                    <%- include(`${partials}/inputs/display`, {title: 'Demand',   id: 'action_demand',   link: true, inp_id: 'inp_demand',   inp_classes: ['hidden']}) %>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -22,4 +24,6 @@
             </div>
         </div>
     </div>
+    <script src="/js/stores/utils/actions.js"></script>
+    <script async>showActions()</script>
 <% } %>

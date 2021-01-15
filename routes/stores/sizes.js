@@ -4,6 +4,11 @@ module.exports = (app, allowed, inc, permissions, m) => {
         nullify = require(`../functions/nullify`);
     app.get('/stores/sizes/:id',    permissions, allowed('access_sizes'),               (req, res) => res.render('stores/sizes/show'));
 
+    app.get('/stores/count/sizes',  permissions, allowed('access_sizes', {send: true}), (req, res) => {
+        m.stores.sizes.count({where: req.query})
+        .then(count => res.send({success: true, count: count}))
+        .catch(err => res.error.send(err, res));
+    });
     app.get('/stores/get/sizes',    permissions, allowed('access_sizes', {send: true}), (req, res) => {
         m.stores.sizes.findAll({
             where: req.query,

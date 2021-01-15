@@ -12,37 +12,23 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.size_edit) { %>
-                    <button class='dropdown-item'                  data-toggle='modal' data-target='#mdl_size_edit'>Edit</button>
-                <% } %>
+                <%- include(`${partials}/menu/modal_btn`, {modal: 'size_edit',  permission: 'size_edit',  text: 'Edit'}) %>
                 <div class="dropdown-divider"></div>
                 <%- include(`${partials}/notes/menu_add`) %>
-                <% if (permissions.nsn_add) { %> 
-                    <button class='dropdown-item'                  data-toggle="modal" data-target="#mdl_nsn_add"   >Add NSN</button> 
-                <% } %>
-                <% if (permissions.serial_add) { %> 
-                    <button class='dropdown-item _serials_element' data-toggle="modal" data-target="#mdl_serial_add">Add Serial #</button> 
-                <% } %>
-                <% if (permissions.stock_add) { %>
-                    <button class='dropdown-item _stock_element'   data-toggle="modal" data-target="#mdl_stock_add" >Add Stock Location</button>
-                <% } %>
-                <% if (permissions.order_add) { %>
-                    <button class='dropdown-item'                  data-toggle="modal" data-target="#mdl_order_add" >Order</button>
-                <% } %>
-                <% if (permissions.size_delete) { %>
-                    <%- include(`${partials}/menu/delete`, {redirect: '/stores/items'}) %>
-                <% } %>
+                <%- include(`${partials}/menu/modal_btn`, {modal: 'nsn_add',    permission: 'nsn_add',    text: 'Add NSN'}) %>
+                <%- include(`${partials}/menu/modal_btn`, {modal: 'serial_add', permission: 'serial_add', text: 'Add Serial #'}) %>
+                <%- include(`${partials}/menu/modal_btn`, {modal: 'stock_add',  permission: 'stock_add',  text: 'Add Stock Location'}) %>
+                <%- include(`${partials}/menu/modal_btn`, {modal: 'order_add',  permission: 'order_add',  text: 'Add Order'}) %>
+                <%- include(`${partials}/menu/delete`, {permission: 'size_delete', text: 'Delete'}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',  spinner: 'size'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'nsns',     title: 'NSNs',     spinner: 'nsns',          count_id: 'nsn',     permission: 'access_nsns',          _class: '_nsns_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'serials',  title: 'Serials',  spinner: 'serials',       count_id: 'serial',  permission: 'access_serials',       _class: '_serials_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'stock',    title: 'Stock',    spinner: 'stock',         count_id: 'stock',   permission: 'access_stock',         _class: '_stock_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'requests', title: 'Requests', spinner: 'request_lines', count_id: 'request', permission: 'access_request_lines', _class: '_issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'orders',   title: 'Orders',   spinner: 'order_lines',   count_id: 'order',   permission: 'access_order_lines',   _class: '_orderable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts', title: 'Receipts', spinner: 'receipt_lines', count_id: 'receipt', permission: 'access_receipt_lines', _class: '_orderable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',   title: 'Issues',   spinner: 'issue_lines',   count_id: 'issue',   permission: 'access_issue_lines',   _class: '_issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    spinner: 'notes',         count_id: 'note',    permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'nsns',    title: 'NSNs',    spinner: 'nsns',    count_id: 'nsn',    permission: 'access_nsns',    _class: '_nsns_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'serials', title: 'Serials', spinner: 'serials', count_id: 'serial', permission: 'access_serials', _class: '_serials_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'stock',   title: 'Stock',   spinner: 'stock',   count_id: 'stock',  permission: 'access_stock',   _class: '_stock_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders',  spinner: 'orders',  count_id: 'order',  permission: 'access_orders',  _class: '_orderable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',  title: 'Issues',  spinner: 'issues',  count_id: 'issue',  permission: 'access_issues',  _class: '_issueable_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes',   count_id: 'note',   permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -71,7 +57,7 @@
             <div id="serials"  role="tabpanel" aria-labelledby="serials-tab"  class="tab-pane fade serial_element">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-50' onclick='sortTable(0, "tbl_serials")' >Serial #</th>
+                        <th class='w-50' onclick='sortTable(0, "tbl_serials")'>Serial #</th>
                         <th class='w-50' onclick='sortTable(1, "tbl_serials")'>Location</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
@@ -91,50 +77,27 @@
                 </table>
             </div>
         <% } %>
-        <% if (permissions.access_request_lines) { %>
-            <div id="requests" role="tabpanel" aria-labelledby="requests-tab" class="tab-pane fade">
-                <table class='table table-sm table-hover'>
-                    <thead class='thead-dark'>
-                        <th class='w-80' onclick='sortTable(0, "tbl_requests")'>For</th>
-                        <th class='w-20' onclick='sortTable(1, "tbl_requests")'>Qty</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id='tbl_requests'></tbody>
-                </table>
-            </div>
-        <% } %>
-        <% if (permissions.access_order_lines) { %>
+        <% if (permissions.access_orders) { %>
             <div id="orders"   role="tabpanel" aria-labelledby="orders-tab"   class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-80' onclick='sortTable(0, "tbl_orders")'>For</th>
-                        <th class='w-20' onclick='sortTable(1, "tbl_orders")'>Qty</th>
+                        <th class='w-50' onclick='sortTable(0, "tbl_orders")'>Date</th>
+                        <th class='w-10' onclick='sortTable(1, "tbl_orders")'>Qty</th>
+                        <th class='w-40' onclick='sortTable(2, "tbl_orders")'>Status</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_orders'></tbody>
                 </table>
             </div>
         <% } %>
-        <% if (permissions.access_receipt_lines) { %>
-            <div id="receipts" role="tabpanel" aria-labelledby="receipts-tab" class="tab-pane fade">
-                <table class='table table-sm table-hover'>
-                    <thead class='thead-dark'>
-                        <th class='w-80' onclick='sortTable(0, "tbl_receipts")'>Date</th>
-                        <th class='w-20' onclick='sortTable(1, "tbl_receipts")'>Location</th>
-                        <th class='w-20' onclick='sortTable(2, "tbl_receipts")'>Qty</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id='tbl_receipts'></tbody>
-                </table>
-            </div>
-        <% } %>
-        <% if (permissions.access_issue_lines) { %>
+        <% if (permissions.access_issues) { %>
             <div id="issues"   role="tabpanel" aria-labelledby="issues-tab"   class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-20' onclick='sortTable(0, "tbl_issues")'>Date</th>
-                        <th class='w-60' onclick='sortTable(1, "tbl_issues")'>To</th>
-                        <th class='w-20' onclick='sortTable(2, "tbl_issues")'>Qty</th>
+                        <th class='w-40' onclick='sortTable(1, "tbl_issues")'>To</th>
+                        <th class='w-10' onclick='sortTable(2, "tbl_issues")'>Qty</th>
+                        <th class='w-30' onclick='sortTable(2, "tbl_orders")'>Status</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_issues'></tbody>
@@ -173,7 +136,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.order_line_add) { %>
+        <% if (permissions.order_add) { %>
             <div     id='mdl_order_add'   class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <form class="modal-content" id='form_order_add'>
@@ -342,8 +305,7 @@
                                 <%- include(`${partials}/tab_head`, {id: 'stock-view',     title: 'Stock',       spinner: 'stock_view',     active: true}) %>
                                 <%- include(`${partials}/tab_head`, {id: 'stock-adjusts',  title: 'Adjustments', spinner: 'stock_adjusts',  count_id: 'stock_adjusts',  permission: 'access_adjusts'}) %>
                                 <%- include(`${partials}/tab_head`, {id: 'stock-receipts', title: 'Receipts',    spinner: 'stock_receipts', count_id: 'stock_receipts', permission: 'access_receipt_lines'}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'stock-issues',   title: 'Issues',      spinner: 'stock_issues',   count_id: 'stock_issues',   permission: 'access_issue_lines'}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'stock-returns',  title: 'Returns',     spinner: 'stock_returns',  count_id: 'stock_returns',  permission: 'access_issue_line_returns'}) %>
+                                <%- include(`${partials}/tab_head`, {id: 'stock-issues',   title: 'Issues',      spinner: 'stock_issues',   count_id: 'stock_issues',   permission: 'access_issues'}) %>
                                 <%- include(`${partials}/tab_head`, {id: 'stock-notes',    title: 'Notes',       spinner: 'stock_notes',    count_id: 'stock_note',     permission: 'access_notes'}) %>
                             </ul>
                             <div class="tab-content pt-3" id="stockContent">
@@ -386,20 +348,7 @@
                                         </table>
                                     </div>
                                 <% } %>
-                                <% if (permissions.access_receipt_lines) { %>
-                                    <div class="tab-pane fade" id="stock-receipts" role="tabpanel" aria-labelledby="stock-receipts-tab">
-                                        <table class="table table-sm table-hover">
-                                            <thead class="thead-dark">
-                                                <th class="w-45" onclick="sortTable(0, 'tbl_stock_receipts')">Date</th>
-                                                <th class="w-10" onclick="sortTable(1, 'tbl_stock_receipts')">Qty</th>
-                                                <th class="w-45" onclick="sortTable(2, 'tbl_stock_receipts')">User</th>
-                                                <th><i class="fas fa-search"></i></th>
-                                            </thead>
-                                            <tbody id="tbl_stock_receipts"></tbody>
-                                        </table>
-                                    </div>
-                                <% } %>
-                                <% if (permissions.access_issue_lines) { %>
+                                <% if (permissions.access_issues) { %>
                                     <div class="tab-pane fade" id="stock-issues" role="tabpanel" aria-labelledby="stock-issues-tab">
                                         <table class="table table-sm table-hover">
                                             <thead class="thead-dark">
@@ -410,19 +359,6 @@
                                                 <th><i class="fas fa-search"></i></th>
                                             </thead>
                                             <tbody id="tbl_stock_issues"></tbody>
-                                        </table>
-                                    </div>
-                                <% } %>
-                                <% if (permissions.access_issue_line_returns) { %>
-                                    <div class="tab-pane fade" id="stock-returns" role="tabpanel" aria-labelledby="stock-returns-tab">
-                                        <table class="table table-sm table-hover">
-                                            <thead class="thead-dark">
-                                                <th class="w-45" onclick="sortTable(0, 'tbl_stock_returns')">Date</th>
-                                                <th class="w-45" onclick="sortTable(1, 'tbl_stock_returns')">From</th>
-                                                <th class="w-10" onclick="sortTable(2, 'tbl_stock_returns')">Qty</th>
-                                                <th><i class="fas fa-search"></i></th>
-                                            </thead>
-                                            <tbody id="tbl_stock_returns"></tbody>
                                         </table>
                                     </div>
                                 <% } %>
@@ -486,7 +422,7 @@
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
-<script src='/js/utils/getLineNotes.js'></script>
+<!-- <script src='/js/utils/getLineNotes.js'></script> -->
 <script src="/js/stores/sizes/show/getSize.js"></script>
 <script async>getSize()</script>
 <% if (permissions.nsn_add || permissions.nsn_edit || permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
@@ -669,14 +605,8 @@
             <script src="/js/stores/sizes/show/stock/addAdjust.js"></script>
         <% } %>
     <% } %>
-    <% if (permissions.access_receipt_lines) { %>
-        <script src="/js/stores/sizes/show/stock/getReceipts.js"></script>
-    <% } %>
-    <% if (permissions.access_issue_lines) { %>
+    <% if (permissions.access_issues) { %>
         <script src="/js/stores/sizes/show/stock/getIssues.js"></script>
-    <% } %>
-    <% if (permissions.access_issue_line_returns) { %>
-        <script src="/js/stores/sizes/show/stock/getReturns.js"></script>
     <% } %>
     <% if (permissions.stock_add) { %>
         <script src="/js/stores/sizes/show/stock/add.js"></script>
@@ -688,20 +618,12 @@
         <script src="/js/stores/sizes/show/serials/add.js"></script>
     <% } %>
 <% } %>
-<% if (permissions.access_requests) { %>
-    <script src="/js/stores/sizes/show/getRequests.js"></script>
-    <script async>getRequests()</script>
-<% } %>
 <% if (permissions.access_orders) { %>
     <script src="/js/stores/sizes/show/getOrders.js"></script>
     <script async>getOrders()</script>
-    <% if (permissions.order_line_add) { %>
+    <% if (permissions.order_add) { %>
         <script src="/js/stores/sizes/show/orders/add.js"></script>
     <% } %>
-<% } %>
-<% if (permissions.access_receipts) { %>
-    <script src="/js/stores/sizes/show/getReceipts.js"></script>
-    <script async>getReceipts()</script>
 <% } %>
 <% if (permissions.access_issues) { %>
     <script src="/js/stores/sizes/show/getIssues.js"></script>

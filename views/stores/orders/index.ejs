@@ -75,6 +75,8 @@
 	<script>loadDemandActions()</script>
 <% } %>
 <% if (permissions.order_receive) { %>
+	<script src='/js/stores/utils/list/stocks.js'></script>
+	<script src='/js/stores/utils/list/locations.js'></script>
 	<script src='/js/stores/orders/index/receipt.js'></script>
 	<script>loadReceiptActions()</script>
 <% } %>

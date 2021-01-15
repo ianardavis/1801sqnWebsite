@@ -1,14 +1,23 @@
 const op = require('sequelize').Op;
 module.exports = (app, al, inc, pm, m) => {
-    let orders = {}, demands = {}, receipts = {}, issues = {},
+    let orders = {}, demands = {}, receipts = {}, issues = {}, allowed = require(`../functions/allowed`),
         promiseResults = require(`../functions/promise_results`);
     require(`./functions/orders`) (m, orders);
     require(`./functions/demands`)(m, demands);
     // require(`./functions/receipts`)(m, receipts);
-    app.get('/stores/orders',             pm, al('access_orders'),                    (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
-    app.get('/stores/orders/:id',         pm, al('access_orders'),                    (req, res) => res.render('stores/orders/show'));
+    app.get('/stores/orders',        pm, al('access_orders'),               (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
+    app.get('/stores/orders/:id',    pm, al('access_orders'),               (req, res) => res.render('stores/orders/show'));
     
-    app.get('/stores/get/orders',         pm, al('access_orders',      {send: true}), (req, res) => {
+    app.get('/stores/count/orders',  pm, al('access_orders', {send: true}), (req, res) => {
+        m.stores.orders.count({where: req.query})
+        .then(count => res.send({success: true, result: count}))
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: 'Error counting lines'})
+        });
+    });
+
+    app.get('/stores/get/orders',    pm, al('access_orders', {send: true}), (req, res) => {
         m.stores.orders.findAll({
             where:   req.query,
             include: [
@@ -19,7 +28,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(orders => res.send({success: true, result: orders}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order',          pm, al('access_orders',      {send: true}), (req, res) => {
+    app.get('/stores/get/order',     pm, al('access_orders', {send: true}), (req, res) => {
         m.stores.orders.findOne({
             where:   req.query,
             include: [
@@ -30,118 +39,68 @@ module.exports = (app, al, inc, pm, m) => {
         .then(order => res.send({success: true, result: order}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/order_actions',  pm, al('access_order_lines', {send: true}), (req, res) => {
-        m.stores.order_actions.findAll({
-            where:   req.query,
-            include: [
-                inc.stocks(),
-                inc.nsns(),
-                inc.serials(),
-                inc.demand_lines(),
-                inc.issue(),
-                inc.users()
-            ]
-        })
-        .then(order_line_actions => res.send({success: true, result: order_line_actions}))
-        .catch(err => res.error.send(err, res));
-    });
 
-    app.post('/stores/orders',            pm, al('order_add',          {send: true}), (req, res) => {
+    app.post('/stores/orders',       pm, al('order_add',     {send: true}), (req, res) => {
         orders.create(req.body.line, req.user.user_id)
         .then(result => res.send(result))
         .catch(err => res.send({success: false, message: err.message}));
     });
-
-    app.put('/stores/orders/addtodemand', pm, al('demand_line_add',    {send: true}), (req, res) => {
-        m.stores.order_lines.findAll({
-            where: {
-                _status:        'Open',
-                demand_line_id: null
-            },
-            attributes: ['line_id'],
-            include: [
-                inc.sizes({
-                    where: {
-                        supplier_id: req.body.supplier_id,
-                        _orderable: 1
-                    },
-                    required: true
-        })]})
-        .then(order_lines => {
-            if (order_lines && order_lines.length > 0) {
-                let actions = [];
-                order_lines.forEach(line => {
-                    actions.push(
-                        demand_order_line(
-                            line.line_id,
-                            req.user.user_id
-                        )
-                    );
-                });
-                Promise.allSettled(actions)
-                .then(results => {
-                    if (promiseResults(results)) {
-                        res.send({success: true, message: order_lines.length + ' lines added to demand'});
-                    } else res.error.send(new Error('Some lines failed', res));
-                })
-                .catch(err => res.error.send(err, res));
-            } else {
-                res.send({success: true, message: 'No order lines to demand'})
-            };
+    
+    app.put('/stores/orders',        pm, al('order_edit',    {send: true}), (req, res) => {
+        let actions = [];
+        req.body.lines.filter(e => e._status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
+        req.body.lines.filter(e => e._status === '2').forEach(line => actions.push(demand_line( line, req.user.user_id)));
+        req.body.lines.filter(e => e._status === '3').forEach(line => actions.push(receive_line(line, req.user.user_id)));
+        Promise.allSettled(actions)
+        .then(results => {
+            if (results.filter(e => e.status === 'rejected').length > 0) {
+                console.log(results);
+                res.send({success: true, message: 'Some lines failed'});
+            } else res.send({success: true, message: 'Lines actioned'});
         })
-        .catch(err => res.error.send(err, res));
-    });
-    app.put('/stores/orders/:id',         pm, al('order_edit',         {send: true}), (req, res) => {
-        m.stores.orders.findOne({
-            where: {order_id: req.params.id},
-            attributes: ['order_id', '_status']
-        })
-        .then(order => {
-            if      (!order)                                   res.send({success: false, message: 'Order not found'});
-            else if (order._status !== 1)                      res.send({success: false, message: `Order must be in draft to be completed`});
-            else if (!order.lines || order.lines.length === 0) res.send({success: false, message: 'A order must have at least one open line before you can complete it'});
-            else {
-                let actions = [];
-                actions.push(order.update({_status: 2}));
-                actions.push(
-                    m.stores.order_lines.update(
-                        {_status: 2},
-                        {where:{
-                            order_id: order.order_id,
-                            _status: 1
-                        }}
-                    )
-                );
-                actions.push(
-                    m.stores.notes.create({
-                        _id:     req.params.id,
-                        _table:  'orders',
-                        _note:   'Completed',
-                        _system: 1,
-                        user_id: req.user.user_id
-                    })
-                );
-                return Promise.all(actions)
-                .then(result => res.send({success: true, message: `Order completed`}))
-                .catch(err => res.error.send(err, res));
-            };
-        })
-        .catch(err => res.error.send(err, res));
+        .catch(err => res.send({success: false, message: 'Some lines failed'}));
     });
     
-    app.delete('/stores/orders/:id',      pm, al('order_delete',       {send: true}), (req, res) => {
+    app.delete('/stores/orders/:id', pm, al('order_delete',  {send: true}), (req, res) => {
         m.stores.orders.findOne({
             where:      {order_id: req.params.id},
             attributes: ['order_id', '_status']
         })
         .then(order => {
             if      (!order)              res.send({success: false, message: 'Order not found'});
-            else if (order._status !== 1) res.send({success: false, message: 'Only Placed orders can be cancelled'});
+            else if (order._status !== 1) res.send({success: false, message: 'Only placed orders can be cancelled'});
             else {
-                order.update({_status: 0})
+                return order.update({_status: 0})
                 .then(results => {
                     if (!result) res.send({success: false, message: 'Order not cancelled'})
-                    else         res.send({success: true,  message: 'Order cancelled'});
+                    else {
+                        return m.stores.actions.findAll({
+                            where:      {order_id: order_id},
+                            attributes: ['action_id'],
+                            include: [inc.issues({attributes: ['issue_id', '_status']})]
+                        })
+                        .then(issues => {
+                            let issue_actions = [];
+                            issues.forEach(issue => {
+                                if (issue.issue._status === 3) {
+                                    issue_actions.push(issue.issue.update({_status: 2}));
+                                    issue_actions.push(m.stores.actions.create({
+                                        issue_id: issue.issue_id,
+                                        _action:  'Order cancelled',
+                                        order_id: order.order_id,
+                                        user_id:  req.user.user_id
+                                    }));
+                                };
+                            });
+                            return Promise.allSettled(issue_actions)
+                            .then(results => {
+                                if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true,  message: 'Order cancelled, some issue actions have failed'})
+                                else                                                         res.send({success: true,  message: 'Order cancelled'});
+                            })
+                            .catch(err => res.error.send(err, res));
+                        })
+                        .catch(err => res.error.send(err, res));
+                    };
                 })
                 .catch(err => res.error.send(err, res));
             };
@@ -149,6 +108,207 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
     
+    function demand_line(line, user_id) {
+        return new Promise((resolve, reject) => {
+            return allowed(m.stores.permissions, user_id, 'demand_line_add')
+            .then(result => {
+                m.stores.orders.findOne({
+                    where:  {order_id: line.order_id},
+                    attributes: ['order_id', 'size_id', '_status', '_qty'],
+                    include: [inc.sizes({attributes: ['size_id', 'supplier_id']})]
+                })
+                .then(order => {
+                    if      (!order)              reject(new Error('Order not found'));
+                    else if (order._status !== 1) reject(new Error('Only placed orders can be demanded'))
+                    else {
+                        return demands.create({
+                            supplier_id: order.size.supplier_id,
+                            user_id:     user_id
+                        })
+                        .then(demand => {
+                            return demands.createLine({
+                                demand_id: demand.demand_id,
+                                size_id:   order.size_id,
+                                _qty:      order._qty,
+                                user_id:   user_id,
+                                note:      ' from order'
+                            })
+                            .then(line => {
+                                return order.update({_status: 2})
+                                .then(result => {
+                                    if (!result) resolve({success: true, message: 'Order added to demand, order not updated'})
+                                    else {
+                                        m.stores.actions.create({
+                                            order_id:       order.order_id,
+                                            _action:        'Order added to demand',
+                                            demand_line_id: line.line_id,
+                                            user_id:        user_id
+                                        })
+                                        .then(action => resolve({success: true, message: 'Order added to demand'}))
+                                        .catch(err => {
+                                            console.log(err);
+                                            resolve({success: true, message: `Order added to demand, error creating action: ${err.message}`});
+                                        })
+                                    };
+                                })
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function receive_line(line, user_id) {
+        return new Promise((resolve, reject) => {
+            return allowed(m.stores.permissions, user_id, 'demand_line_add')
+            .then(result => {
+                return m.stores.orders.findOne({
+                    where:      {order_id: line.order_id},
+                    attributes: ['order_id', 'size_id', '_status', '_qty'],
+                    include:    [inc.sizes({attributes: ['size_id', '_serials', 'supplier_id']})]
+                })
+                .then(order => {
+                    if      (!order)              reject(new Error('Order not found'));
+                    else if (order._status !== 1) reject(new Error('Only placed orders can be received'))
+                    else {
+                        let receive_action = null
+                        if (order.size._serials) receive_action = receive_line_serial({...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}})
+                        else                     receive_action = receive_line_stock( {...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}});
+                        receive_action
+                        .then(result => {
+                            order.update({_status: 3})
+                            .then(update_result => {
+                                if (!result) resolve({success: true, message: 'Order received, line not updated'})
+                                else {
+                                    m.stores.actions.create({
+                                        ...result,
+                                        ...{
+                                            order_id: order.order_id,
+                                            _action:  'Order received',
+                                            user_id:  user_id
+                                        }
+                                    })
+                                    .then(action => resolve({success: true, message: 'Order received'}))
+                                    .catch(err => {
+                                        console.log(err);
+                                        resolve({success: true, message: `Order received, error creating action: ${err.message}`});
+                                    });
+                                };
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function location_check(location) {
+        return new Promise((resolve, reject) => {
+            if (location.location_id && location.location_id !== '') {
+                return m.stores.locations.findOne({
+                    where: {location_id: location.location_id}
+                })
+                .then(location => {
+                    if (!location) reject(new Error(`Location not found for serial: ${serial._serial}`))
+                    else           resolve(location.location_id);
+                })
+                .catch(err => reject(err));
+            } else if (location._location && location._location !== '') {
+                return m.stores.locations.findOrCreate({
+                    where: {_location: location._location}
+                })
+                .then(([location, created]) => resolve(location.location_id))
+                .catch(err => reject(err));
+            } else reject(new Error('No location specified'));
+        });
+    };
+    function stock_check(options) {
+        return new Promise((resolve, reject) => {
+            if (options.stock_id) {
+                return m.stores.stocks.findOne({
+                    where:      {stock_id: options.stock_id},
+                    attributes: ['stock_id', 'location_id', '_qty'],
+                    include:    [inc.locations({as: 'location'})]
+                })
+                .then(stock => {
+                    if (!stock) reject(new Error('Stock record not found'))
+                    else resolve(stock);
+                })
+                .catch(err => reject(err));
+            } else {
+                location_check(options.location)
+                .then(location_id => {
+                    return m.stores.stocks.findOrCreate({
+                        where:    {location_id: location_id},
+                        defaults: {size_id:     options.size_id}
+                    })
+                    .then(([stock, created]) => {
+                        if (!stock) reject(new Error('Stock record not found'))
+                        else resolve(stock)
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
+    function receive_line_serial (options) {
+        return new Promise((resolve, reject) => {
+            if (!options._serial) reject(new Error('No serial specified'))
+            else {
+                location_check(options.location)
+                .then(location_id => {  
+                    m.stores.serials.findOrCreate({
+                        where: {
+                            _serial: options._serial,
+                            size_id: options.size_id
+                        },
+                        defaults: {
+                            location_id: location_id
+                        }
+                    })
+                    .then(([serial,created]) => {
+                        if      (created)            resolve({serial_id: serial.serial_id, location_id: location_id})
+                        else if (serial.issue_id)    reject(new Error('This serial # is already issued'))
+                        else if (serial.location_id) reject(new Error('This serial # is already in stock'))
+                        else {
+                            serial.update({location_id: location_id})
+                            .then(result => {
+                                if (!result) reject(new Error('Serial not received'))
+                                else         resolve({serial_id: serial.serial_id, location_id: location_id})
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
+    function receive_line_stock (options) {
+        return new Promise((resolve, reject) => {
+            stock_check(options)
+            .then(stock => {
+                stock.increment('_qty', {by: options._qty})
+                .then(result => {
+                    if (!result) reject(new Error('Stock not received'))
+                    else         resolve({stock_id: stock.stock_id, location_id: stock.location_id})
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+
     function cancel_order_line(line, user_id) {
         return new Promise((resolve, reject) => {
             let actions = [];

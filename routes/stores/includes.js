@@ -122,15 +122,12 @@ module.exports = (inc, m) => {
             where:      options.where      || null
         };
     };
-    inc.issue_actions = (options = {}) => {
+    inc.actions = (options = {}) => {
         let include = [];
-        if (options.include) include = options.include
-        else {
-            if (options.order) include.push(inc.issues());
-            include.push(inc.users());
-        };
+        if (options.include) include = options.include;
+        include.push(inc.users());
         return {
-            model:      m.stores.issue_actions,
+            model:      m.stores.actions,
             attributes: options.attributes || null,
             include:    include,
             as:         options.as         || 'actions',
@@ -249,22 +246,6 @@ module.exports = (inc, m) => {
             attributes: options.attributes || null,
             include:    include,
             as:         options.as         || 'nsns',
-            where:      options.where      || null,
-            required:   options.required   || false
-        };
-    };
-    inc.order_actions = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
-        else {
-            if (options.order) include.push(inc.orders());
-            include.push(inc.users());
-        };
-        return {
-            model:      m.stores.order_actions,
-            attributes: options.attributes || null,
-            include:    include,
-            as:         options.as         || 'actions',
             where:      options.where      || null,
             required:   options.required   || false
         };

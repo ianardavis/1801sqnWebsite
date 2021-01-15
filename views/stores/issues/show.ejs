@@ -12,35 +12,29 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${partials}/notes/menu_add`) %>
-				<%- include(`${partials}/menu/delete`, {  permission: 'issue_edit'}) %>
+				<%- include(`${partials}/menu/delete`, {permission: 'issue_edit'}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'issue'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'issue_actions', count_id: 'action'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 		count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'actions', count_id: 'action', permission: 'access_actions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes',   count_id: 'note',   permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'user_issue', title: 'For', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user', 		   title: 'By',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'createdAt',	   title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'updatedAt',	   title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_status',  	   title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_issue', title: 'For',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'item_name',	 title: 'Item', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'size_desc',	 title: 'Size', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_qty',	 	 title: 'Quantity'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'createdAt',	 title: 'Date Raised'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'updatedAt',	 title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_status',  	 title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user', 		 title: 'By',  link: true}) %>
 		</div>
-        <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
-			<table class="table table-sm table-hover mx-auto w-100">
-				<thead id='table_header_lines' class="thead-dark">
-					<th class='w-50' onclick="sortTable(0, 'tbl_actions')">Date</th>
-					<th class='w-50' onclick="sortTable(1, 'tbl_actions')">Action</th>
-					<th><i class='fas fa-search'></i></th>
-				</thead>
-				<tbody id="tbl_actions"></tbody>
-			</table>
-		</div>
+        <%- include(`${partials}/actions/tab_body`) %>
         <%- include(`${partials}/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
-		<%- include(`${partials}/stores/mdl_action_view`, {permission: 'access_issues'}) %>
+		<%- include(`${partials}/stores/mdl_action_view`, {permission: 'access_actions'}) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -51,10 +45,8 @@
 
 <script src="/js/stores/issues/show/view.js"></script>
 <script async>showIssue()</script>
-<script async>showActions()</script>
-<% if (permissions.issue_edit) { %>
-	<script src="/js/stores/issues/show/edit.js"></script>
-	<script async>setButtons()</script>
+<% if (permissions.issue_delete) { %>
+	<script src="/js/stores/issues/show/delete.js"></script>
+	<script async>setDeleteButton()</script>
 <% } %>
-<% if (permissions.issue_delete) { %><script src="/js/stores/issues/show/delete.js"></script><% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>
