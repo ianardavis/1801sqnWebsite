@@ -10,7 +10,7 @@ function getSupplier() {
             set_innerText({id: '_telephone', text: supplier._telephone});
             set_innerText({id: '_email',     text: supplier._email});
             if (supplier.account) {
-                set_innerText({id: '_account',     text: supplier.account._name});
+                set_innerText({id: '_account',     text: print_account(supplier.account)});
                 set_attribute({id: 'account_link', attribute: 'href', value: `javascript:show("accounts",${supplier.account_id})`})
             };
             set_innerText({id: '_stores',    text: yesno(supplier._stores)});

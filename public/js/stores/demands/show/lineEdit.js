@@ -1,6 +1,5 @@
 function getLineActions() {
-    let actions = document.querySelectorAll('.actions');
-    actions.forEach(e => {
+    document.querySelectorAll('.actions').forEach(e => {
         get(
             function (line, options) {
                 if ([1, 2].includes(line._status)) {
@@ -10,16 +9,16 @@ function getLineActions() {
                         div_details = document.createElement('div');
                     opts.push({text: line_statuses[line._status], selected: true});
                     opts.push({text: 'Cancel', value: '0'});
-                    if (line._status === 2) opts.push({value: '3', text: 'Receive'});
+                    if (line._status === 2) opts.push({text: 'Receive', value: '3'});
                     let _status = new Select({
                         attributes: [{field: 'id', value: `sel_${line.line_id}`}],
-                        small:   true,
-                        options: opts
+                        small:      true,
+                        options:    opts
                     }).e;
                     _status.addEventListener("change", function () {
                         clearElement(`action_${line.line_id}`);
                         clearElement(`details_${line.line_id}`);
-                        if (this.value !== 'Open') {
+                        if (this.value === '0' || this.value === '3') {
                             div_action.appendChild(
                                 new Hidden({
                                     attributes: [
@@ -37,21 +36,22 @@ function getLineActions() {
                                 }).e
                             );
                         };
-                        let _cell = document.querySelector(`#details_${line.line_id}`);
-                        if (_cell) {
-                            _cell.innerHTML = '';
-                            add_spinner(_cell, {id: line.line_id});
-                            get(
-                                function (size, options) {
-                                    if (options.action === '3') showReceiptActions(size, line.line_id, line._qty);
-                                    remove_spinner(line.line_id);
-                                },
-                                {
-                                    table: 'size',
-                                    query: [`size_id=${line.size_id}`],
-                                    action: this.value
-                                }
-                            );
+                        if (this.value === '3') {
+                            let _cell = document.querySelector(`#details_${line.line_id}`);
+                            if (_cell) {
+                                _cell.innerHTML = '';
+                                add_spinner(_cell, {id: line.line_id});
+                                get(
+                                    function (size, options) {
+                                        showReceiptActions(size, line.line_id, line._qty);
+                                        remove_spinner(line.line_id);
+                                    },
+                                    {
+                                        table: 'size',
+                                        query: [`size_id=${line.size_id}`]
+                                    }
+                                );
+                            };
                         };
                     });
                     div_action.setAttribute( 'id', `action_${line.line_id}`);
@@ -173,3 +173,29 @@ function getStock(size_id, line_id, cell, entry = false) {
         }
     );
 };
+function setActions() {
+    let actions_interval = window.setInterval(
+        function () {
+            if (lines_loaded === true) {
+                getLineActions();
+                clearInterval(actions_interval);
+            }
+        },
+        500
+    );
+};
+window.addEventListener( "load", function () {
+    document.querySelector('#reload').addEventListener('click', setActions);
+    addFormListener(
+        'form_action',
+        'PUT',
+        `/stores/demand_lines/${path[3]}`,
+        {
+            onComplete: [
+                getLines,
+                setActions,
+                function () {setLineButtons('demand')}
+            ]
+        }
+    );
+});

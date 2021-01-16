@@ -12,13 +12,6 @@ function yesno(boolean) {
     if (boolean === 1 || boolean === true) return 'Yes'
     else return 'No'
 };
-function set_breadcrumb(options = {}) {
-    let breadcrumb = document.querySelector('#breadcrumb');
-    if (breadcrumb) {
-        breadcrumb.innerText = options.text || '';
-        breadcrumb.setAttribute('href', options.href || '');
-    };
-};
 function enable_button(id) {
     let button = document.querySelector(`#btn_${id}`);
     if (button) button.removeAttribute('disabled');
@@ -58,6 +51,17 @@ function set_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);
     if (element) element.setAttribute(options.attribute || '', options.value || '');
 };
+function set_breadcrumb(options = {}) {
+    let breadcrumb = document.querySelector('#breadcrumb');
+    if (breadcrumb) {
+        breadcrumb.innerText = options.text || '';
+        breadcrumb.setAttribute('href', options.href || '');
+    };
+};
+function set_value(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element && options.value) element.value = options.value;
+};
 function remove_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);
     if (element && options.attribute) element.removeAttribute(options.attribute);
@@ -84,6 +88,11 @@ function print_date (date, time = false) {
 function print_nsn (nsn) {
     if (nsn && nsn.group && nsn.classification && nsn.country) {
         return `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`
+    } else return '';
+};
+function print_account (account) {
+    if (account) {
+        return `${account._name} | ${account._number}`
     } else return '';
 };
 

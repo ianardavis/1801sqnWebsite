@@ -13,8 +13,15 @@
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${partials}/notes/menu_add`) %>
 				<%- include(`${partials}/menu/action`) %>
-				<%- include(`${partials}/menu/complete`, {permission: 'demand_edit'}) %>
-				<%- include(`${partials}/stores/sizes/select_button`, {permission: 'demand_line_add'}) %>
+				<form id='form_raise'>
+					<button id='btn_raise' class='dropdown-item'>Raise</button>
+				</form>
+				<% if (permissions.demand_edit) { %>
+					<form id='form_complete'>
+					<input type="hidden" name='_status' value='2'>
+				<% } %>
+					<button id='btn_complete' class='dropdown-item' disabled>Complete</button>
+				<% if (permissions.demand_edit) { %></form><% } %>
 				<form id="form_download">
 					<button id='btn_download' class='dropdown-item' disabled>Download</button>
 				</form>
@@ -47,7 +54,6 @@
 						<th><i class='fas fa-search'></i></th>
 					</thead>
 					<tbody id='tbl_lines'></tbody>
-					<div id="div_line_modals"></div>
 				</table>
 				<% if (permissions.demand_line_edit) { %></form><% } %>
 			</div>
@@ -55,18 +61,45 @@
         <%- include(`${partials}/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
-		<%- include(`${partials}/stores/sizes/select`,  {permission: 'demand_line_add', 	table: 'Demand'}) %>
-		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_demand_lines', table: 'Demand'}) %>
+		<% if (permissions.access_demand_lines) { %>
+			<div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Demand Line <span id="line_id_view"></span></h5>
+							<span id="span_view_buttons" class="float-right"></span>
+						</div>
+						<div class="modal-body">
+							<ul class="nav nav-tabs" role="tablist">
+								<%- include(`${partials}/tab_head`, {id: 'demand_line', 	   title: 'Details', spinner: 'demand_line_view',  active: true}) %>
+								<%- include(`${partials}/tab_head`, {id: 'demand_lines-notes', title: 'Notes',   spinner: 'demand_line_notes', count_id: 'demand_lines_note', permission: 'access_notes'}) %>
+							</ul>
+							<div class="tab-content pt-3" id="myTabContent">
+								<div class="tab-pane fade active show" id="demand_line" role="tabpanel" aria-labelledby="demand_line-tab">
+									<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item_view', link: true}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size_view', link: true}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Quantity', 	  id: 'line_qty_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user_view', link: true}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Raised',	  	  id: 'line_createdAt_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt_view'}) %>
+								</div>
+								<%- include(`${partials}/notes/line_note_table`, {line: `demand_lines`}) %>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/tabs.js'></script>
 <script src="/js/search/select.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script>
-	let statuses = {"0": "Cancelled", "1": "Draft", "2": "Open", "3": "Closed"};
-	showTab('<%= tab %>');
-</script>
+<script>showTab('<%= tab %>')</script>
 
 <script src="/js/stores/demands/show/getDemand.js"></script>
 <script async>getDemand()</script>
@@ -82,8 +115,19 @@
 				`/stores/demands/${path[3]}`,
 				{
 					onComplete: [
-						function () {getDemand}<% if (permissions.access_demand_lines) { %>,
-						function () {getLines('demand')}<% } %>
+						getDemand,
+						function () {if (typeof getLines === 'function') getLines('demand')}
+					]
+				}
+			);
+			addFormListener(
+				'form_raise',
+				'PUT',
+				`/stores/demands/raise/${path[3]}`,
+				{
+					onComplete: [
+						getDemand,
+						function () {if (typeof getLines === 'function') getLines('demand')}
 					]
 				}
 			);
@@ -91,20 +135,8 @@
 	</script>
 <% } %>
 <% if (permissions.access_demand_lines) { %>
-	<script src="/js/stores/utils/showLine.js"></script>
-	<script src="/js/stores/utils/showLineActions.js"></script>
-	<script src="/js/stores/utils/getLines.js"></script>
-	<script src="/js/stores/sizes/select.js"></script>
-	<script>
-		let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
-		window.addEventListener('load', function () {
-			document.querySelector('#reload')    .addEventListener('click',  function () {getLines('demand')});
-			document.querySelector('#sel_status').addEventListener('change', function () {getLines('demand')});
-			$('#mdl_line_view').on('show.bs.modal', function (event) {showLine(       'demand', event.relatedTarget.dataset[`demand_line_id`])});
-			$('#mdl_line_view').on('show.bs.modal', function (event) {showLineActions('demand', event.relatedTarget.dataset[`demand_line_id`])});
-		});
-	</script>
-	<script async>getLines('demand')</script>
+	<script src="/js/stores/demands/show/getLines.js"></script>
+	<script async>getLines()</script>
 	<% if (permissions.access_notes) { %>
 		<script>
             set_attribute({id: 'btn_demand_lines_note_add', attribute: 'data-source', value: 'line_view'});
@@ -124,55 +156,11 @@
 		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/demands/show/lineEdit.js"></script>
 		<script src="/js/stores/utils/setLineButtons.js"></script>
-		<script>
-			function setActions() {
-				let actions_interval = window.setInterval(
-					function () {
-						if (lines_loaded === true) {
-							getLineActions();
-							clearInterval(actions_interval);
-						}
-					},
-					500
-				);
-			};
-			document.querySelector('#reload').addEventListener('click', setActions);
-		</script>
 		<script async>setActions()</script>
 		<script async>setLineButtons('demand');</script>
-		<script>
-			window.addEventListener( "load", function () {
-				addFormListener(
-					'form_action',
-					'PUT',
-					`/stores/demand_lines/${path[3]}`,
-					{
-						onComplete: [
-							function () {getLines('demand')},
-							setActions,
-							function () {setLineButtons('demand')}
-						]
-					}
-				);
-			});
-		</script>
 	<% } %>
 <% } %>
 <% if (permissions.demand_delete) { %>
-	<script>
-		window.addEventListener( "load", function () {
-			addFormListener(
-				'form_delete',
-				'DELETE',
-				`/stores/demands/${path[3]}`,
-				{
-					onComplete: [
-						getDemand<% if (permissions.access_demand_lines) { %>,
-						function () {getLines('demand')}<% } %>
-					]
-				}
-			);
-		});
-	</script>
+	<script src="/js/stores/demands/show/delete.js"></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

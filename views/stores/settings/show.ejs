@@ -57,7 +57,7 @@
                                 <div class="mb-2">
                                     <form action='/stores/settings/ranks' method='POST'>
                                         <input class='form-control' type='text' name='ranks[_rank]' maxlength='10' placeholder='Rank' required>
-                                        <button class="btn btn-sm btn-success w-100 confirm">Add Rank</button>
+                                        <button class="btn btn-sm btn-success w-100">Add Rank</button>
                                     </form>
                                 </div>
                                 <table class="table table-sm table-hover">
@@ -75,7 +75,7 @@
                                                             <input class='form-control' type='text' name='ranks[_rank]' maxlength='10' value='<%= rank._rank %>' required>
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
                                                         </td>
                                                     </form>
                                                 <% } else { %>
@@ -84,7 +84,7 @@
                                                 <% if (permissions.rank_delete) { %>
                                                     <td>
                                                         <form action="/stores/settings/ranks/<%= rank.rank_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
                                                     </td>
                                                 <% } %>
@@ -103,7 +103,7 @@
                                 <div class="mb-2">
                                     <form action='/stores/settings/statuses' method='POST'>
                                         <input class='form-control' type='text' name='statuses[_status]' maxlength='10' placeholder='Status' required>
-                                        <button class="btn btn-sm btn-success w-100 confirm">Add Status</button>
+                                        <button class="btn btn-sm btn-success w-100">Add Status</button>
                                     </form>
                                 </div>
                                 <table class="table table-sm table-hover">
@@ -121,7 +121,7 @@
                                                             <input class='form-control' type='text' name='statuses[_status]' maxlength='10' value='<%= status._status %>' required>
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
                                                         </td>
                                                     </form>
                                                 <% } else { %>
@@ -131,7 +131,7 @@
                                                 <td>
                                                     <% if (permissions.status_delete && status.status_id > 5) { %>
                                                         <form action="/stores/settings/statuses/<%= status.status_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
                                                     <% } %>
                                                 </td>
@@ -150,7 +150,7 @@
                                 <div class="mb-2">
                                     <form action='/stores/settings/genders' method='POST'>
                                         <input class='form-control' type='text' name='genders[_gender]' maxlength='10' placeholder='Status' required>
-                                        <button class="btn btn-sm btn-success w-100 confirm">Add Status</button>
+                                        <button class="btn btn-sm btn-success w-100">Add Status</button>
                                     </form>
                                 </div>
                                 <table class="table table-sm table-hover">
@@ -168,7 +168,7 @@
                                                             <input class='form-control' type='text' name='genders[_gender]' maxlength='10' value='<%= gender._gender %>' required>
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
                                                         </td>
                                                     </form>
                                                 <% } else { %>
@@ -177,7 +177,7 @@
                                                 <% if (permissions.gender_delete) { %>
                                                     <td>
                                                         <form action="/stores/settings/genders/<%= gender.gender_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
                                                     </td>
                                                 <% } %>
@@ -200,7 +200,7 @@
                                                 <input class='form-control' type='text' name='categories[_category]' maxlength='20' placeholder='Category' required>
                                             </div>
                                             <div class="col-2">
-                                                <button class="float-right btn btn-success confirm"><i class='fas fa-plus'></i></button>
+                                                <button class="float-right btn btn-success"><i class='fas fa-plus'></i></button>
                                             </div>
                                         </div>
                                     </form>
@@ -224,7 +224,7 @@
                                                             <input class='form-control' type='text' name='categories[_category]' maxlength='10' value='<%= category._category %>' required>
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
                                                         </td>
                                                     </form>
                                                 <% } else { %>
@@ -233,7 +233,7 @@
                                                 <% if (permissions.category_delete) { %>
                                                     <td>
                                                         <form action="/stores/settings/categories/<%= category.category_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
                                                     </td>
                                                 <% } %>
@@ -251,7 +251,7 @@
                                                 <input class='form-control' type='text' name='groups[_group]' maxlength='20' placeholder='Group' required>
                                             </div>
                                             <div class="col-2">
-                                                <button class="float-right btn btn-success confirm"><i class='fas fa-plus'></i></button>
+                                                <button class="float-right btn btn-success"><i class='fas fa-plus'></i></button>
                                             </div>
                                         </div>
                                     </form>
@@ -275,7 +275,7 @@
                                                             <input class='form-control' type='text' name='groups[_group]' maxlength='10' value='<%= group._group %>' required>
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
                                                         </td>
                                                     </form>
                                                 <% } else { %>
@@ -284,7 +284,7 @@
                                                 <% if (permissions.group_delete) { %>
                                                     <td>
                                                         <form action="/stores/settings/groups/<%= group.group_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
                                                     </td>
                                                 <% } %>
@@ -302,7 +302,7 @@
                                                 <input class='form-control' type='text' name='types[_type]' maxlength='20' placeholder='Type' required>
                                             </div>
                                             <div class="col-2">
-                                                <button class="float-right btn btn-success confirm"><i class='fas fa-plus'></i></button>
+                                                <button class="float-right btn btn-success"><i class='fas fa-plus'></i></button>
                                             </div>
                                         </div>
                                     </form>
@@ -326,7 +326,7 @@
                                                             <input class='form-control' type='text' name='types[_type]' maxlength='10' value='<%= type._type %>' required>
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
                                                         </td>
                                                     </form>
                                                 <% } else { %>
@@ -335,7 +335,7 @@
                                                 <% if (permissions.type_delete) { %>
                                                     <td>
                                                         <form action="/stores/settings/types/<%= type.type_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
                                                     </td>
                                                 <% } %>
@@ -353,7 +353,7 @@
                                                 <input class='form-control' type='text' name='subtypes[_subtype]' maxlength='20' placeholder='Subtype' required>
                                             </div>
                                             <div class="col-2">
-                                                <button class="float-right btn btn-success confirm"><i class='fas fa-plus'></i></button>
+                                                <button class="float-right btn btn-success"><i class='fas fa-plus'></i></button>
                                             </div>
                                         </div>
                                     </form>
@@ -373,7 +373,7 @@
                                                             <input class='form-control' type='text' name='subtypes[_subtype]' maxlength='10' value='<%= subtype._subtype %>' required>
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-primary confirm"><i class="fas fa-save"></i></button>
+                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
                                                         </td>
                                                     </form>
                                                 <% } else { %>
@@ -382,7 +382,7 @@
                                                 <% if (permissions.subtype_delete) { %>
                                                     <td>
                                                         <form action="/stores/settings/subtypes/<%= subtype.subtype_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger confirm"><i class="fas fa-trash-alt"></i></button>
+                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
                                                     </td>
                                                 <% } %>

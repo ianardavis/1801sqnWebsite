@@ -1,3 +1,4 @@
+let statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
 function getDemand() {
     get(
         function (demand, options) {
@@ -8,7 +9,7 @@ function getDemand() {
             set_innerText({id: 'createdAt',     text: print_date(demand.createdAt, true)});
             set_innerText({id: 'updatedAt',     text: print_date(demand.updatedAt, true)});
             set_innerText({id: '_status',       text: statuses[demand._status]});
-            set_innerText({id: 'file',          text: String(demand._filename)});
+            if (demand._filename) set_innerText({id: 'file', text: String(demand._filename)});
             set_breadcrumb({
                 text: demand[`demand_id`],
                 href: `/stores/demands/${demand[`demand_id`]}`

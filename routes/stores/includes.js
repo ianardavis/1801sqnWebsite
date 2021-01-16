@@ -10,6 +10,18 @@ module.exports = (inc, m) => {
         };
     };
     
+    inc.actions = (options = {}) => {
+        let include = [];
+        include.push(inc.users());
+        return {
+            model:      m.stores.actions,
+            attributes: options.attributes || null,
+            include:    include,
+            as:         options.as         || 'actions',
+            where:      options.where      || null,
+            required:   options.required   || false
+        };
+    };
     inc.accounts = (options = {}) => {
         let include = [];
         include.push(inc.users())
@@ -47,11 +59,9 @@ module.exports = (inc, m) => {
     };
     inc.demand_lines = (options = {}) => {
         let include = [];
-        if (options.include) include = options.include
-        else {
-            if (options.demands) include.push(inc.demands());
-            if (options.sizes) include.push(inc.sizes());
-        };
+        if (options.include) include = options.include;
+        if (options.demands) include.push(inc.demands());
+        if (options.sizes)   include.push(inc.sizes());
         return {
             model:    m.stores.demand_lines,
             attributes: options.attributes || null,
@@ -122,26 +132,11 @@ module.exports = (inc, m) => {
             where:      options.where      || null
         };
     };
-    inc.actions = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include;
-        include.push(inc.users());
-        return {
-            model:      m.stores.actions,
-            attributes: options.attributes || null,
-            include:    include,
-            as:         options.as         || 'actions',
-            where:      options.where      || null,
-            required:   options.required   || false
-        };
-    };
     inc.issues = (options = {}) => {
         let include = [];
-        if (options.include) include = options.include
-        else {
-            include.push(inc.users({as: 'user_issue'}));
-            include.push(inc.users({as: 'user'}));
-        };
+        if (options.include) include = options.include;
+        include.push(inc.users({as: 'user_issue'}));
+        include.push(inc.users({as: 'user'}));
         return {
             model:    m.stores.issues,
             attributes: options.attributes || null,

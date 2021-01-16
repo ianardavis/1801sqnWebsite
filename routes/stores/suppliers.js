@@ -3,7 +3,6 @@ module.exports = (app, allowed, inc, permissions, m) => {
     let nullify = require(`../functions/nullify`);
     app.get('/stores/suppliers',          permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/index'));
     app.get('/stores/suppliers/:id',      permissions, allowed('access_suppliers'),               (req, res) => res.render('stores/suppliers/show'));
-    app.get('/stores/suppliers/:id/edit', permissions, allowed('supplier_edit'),                  (req, res) => res.render('stores/suppliers/edit'));
 
     app.get('/stores/get/suppliers',      permissions, allowed('access_suppliers', {send: true}), (req, res) => {
         m.stores.suppliers.findAll({

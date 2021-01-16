@@ -17,7 +17,7 @@
                 <% if (permissions.order_add) { %>
                     <form id="form_order_add">
                         <input type="hidden" class='user_id' name='user_id_order'>
-                        <button class='dropdown-item confirm'>
+                        <button class='dropdown-item'>
                             New Order
                         </button>
                     </form>
@@ -30,7 +30,7 @@
                 <% if (permissions.issue_add) { %>
                     <form id="form_issue_add">
                         <input type="hidden" class='user_id' name='user_id_issue'>
-                        <button class='dropdown-item confirm'>
+                        <button class='dropdown-item'>
                             New Issue
                         </button>
                     </form>
@@ -43,7 +43,7 @@
                 <% if (permissions.request_add) { %>
                     <form id="form_request_add">
                         <input type="hidden" class='user_id' name='user_id_request'>
-                        <button class='dropdown-item confirm'>
+                        <button class='dropdown-item'>
                             New Request
                         </button>
                     </form>
@@ -119,7 +119,7 @@
             <%- include(`${partials}/inputs/select`, {title: 'Returned Lines', id: 'returned_lines', options: [{value: '', text: 'Include'}, {value: 'returned=0', text: 'Exclude', selected: true}, {value: 'returned=1', text: 'Only'}], spinner: true}) %>
             <% if (permissions.return_add) { %>
                 <form id='form_issue_return'>
-                    <input class="btn btn-sm btn-primary confirm mb-1" type="submit" value="Return Selected Lines">
+                    <input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines">
             <% } %>
             <table class='table table-sm table-hover'>
                 <thead class="thead-dark">

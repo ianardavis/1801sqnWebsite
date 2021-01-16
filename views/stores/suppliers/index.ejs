@@ -34,12 +34,14 @@
 							<%- include(`${partials}/inputs/select_yes_no`, {title: 'RAF Stores?',   name: 'supplier[_stores]',    selected: 0}) %>
 							</div>
 						<div class="modal-footer">
-							<input type="submit" class="btn btn-success w-100 confirm" value='Save Item'>
+							<input type="submit" class="btn btn-success w-100" value='Save Item'>
 							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
 						</div>
 					</form>
 				</div>
 			</div>
+			<script src='/js/stores/utils/list/accounts.js'></script>
+			<script src='/js/stores/suppliers/index/add.js'></script>
 		<% } %>
 	</div>
 </section>
@@ -53,10 +55,6 @@
 <% } %>
 <% if (permissions.access_settings) { %>
 	<script src='/js/stores/suppliers/index/getDefault.js'></script>
-<% } %>
-<% if (permissions.supplier_add) { %>
-	<script src='/js/stores/utils/list/accounts.js'></script>
-	<script src='/js/stores/suppliers/index/add.js'></script>
 <% } %>
 <script async>getSuppliers()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

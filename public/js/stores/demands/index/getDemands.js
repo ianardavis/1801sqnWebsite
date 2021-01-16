@@ -1,7 +1,7 @@
 function getDemands() {
     let sel_status    = document.querySelector('#sel_status')    || {value: ''},
         sel_suppliers = document.querySelector('#sel_suppliers') || {value: ''},
-        statuses      = {"0": "Cancelled", "1": "Draft", "2": "Open", "3":"Complete"},
+        statuses      = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"},
         table_body    = document.querySelector('#tbl_demands');
     if (table_body) {
         table_body.innerHTML = '';
@@ -26,6 +26,17 @@ function getDemands() {
         );
     };
 };
-document.querySelector('#reload')       .addEventListener('click',  getDemands);
-document.querySelector('#sel_status')   .addEventListener('change', getDemands);
-document.querySelector('#sel_suppliers').addEventListener('change', getDemands);
+function loadGetDemands() {
+    let get_interval = window.setInterval(
+        function () {
+            if (suppliers_loaded === true) {
+                getDemands();
+                clearInterval(get_interval);
+            }
+        },
+        200
+    );
+};
+document.querySelector('#reload')       .addEventListener('click',  loadGetDemands);
+document.querySelector('#sel_status')   .addEventListener('change', loadGetDemands);
+document.querySelector('#sel_suppliers').addEventListener('change', loadGetDemands);

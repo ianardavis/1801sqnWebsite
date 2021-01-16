@@ -129,7 +129,7 @@
                             <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size_edit',              maxlength: 15,   placeholder: 'Required', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                            <input type="submit" class="btn btn-success w-100" value='Save Size'>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </form>
@@ -149,7 +149,7 @@
                             <%- include(`${partials}/inputs/number`, {name: 'line[_qty]', title: 'Quantity', value: '1', maxlength: 8, placeholder: 'Required', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100 confirm" value='Save Order'>
+                            <input type="submit" class="btn btn-success w-100" value='Save Order'>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </form>
@@ -181,7 +181,7 @@
                                                 <%- include(`${partials}/inputs/select`, {id: 'nsn_classification_id_edit', title: 'Classification', name: 'nsn[nsn_classification_id]'}) %>
                                                 <%- include(`${partials}/inputs/select`, {id: 'nsn_country_id_edit',        title: 'Country',        name: 'nsn[nsn_country_id]'}) %>
                                                 <%- include(`${partials}/inputs/text`,   {id: '_item_number_edit',          title: 'Item Number',    name: 'nsn[_item_number]'}) %>
-                                                <input class="btn btn-success w-100 confirm" type="submit" value="Save">
+                                                <input class="btn btn-success w-100" type="submit" value="Save">
                                                 <a class='float-left' href='javascript:edit_nsn_reset()'>Cancel</a>
                                             </form>
                                         </div>
@@ -219,7 +219,7 @@
                                 <%- include(`${partials}/inputs/select`, {title: 'Default?',                                        name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
                             </div>
                             <div class="modal-footer">
-                                <input type="submit" class="btn btn-success w-100 confirm" value='Save NSN'>
+                                <input type="submit" class="btn btn-success w-100" value='Save NSN'>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </form>
@@ -250,7 +250,7 @@
                                             <form id='form_serial_edit'>
                                                 <%- include(`${partials}/inputs/text`, {id: '_serial_edit',          title: 'Serial #', name: 'serial[_serial]', maxlength: 45, required: true}) %>
                                                 <%- include(`${partials}/inputs/text`, {id: 'serial_edit_locations', title: 'Location', name: '_location',       maxlength: 20, required: true, list_id: 'locations_list'}) %>
-                                                <input class="btn btn-success w-100 confirm" type="submit" value="Save">
+                                                <input class="btn btn-success w-100" type="submit" value="Save">
                                                 <a class='float-left' href='javascript:edit_serial_reset()'>Cancel</a>
                                             </form>
                                         </div>
@@ -281,7 +281,7 @@
                                 <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_locations', name: '_location',       maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
                             </div>
                             <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100 confirm" value='Save Size'>
+                                <input  type="submit" class="btn btn-success w-100" value='Save Size'>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </form>
@@ -314,7 +314,7 @@
                                         <div id="div_stock_edit" class='hidden'>
                                             <form id='form_stock_edit'>
                                                 <%- include(`${partials}/inputs/text`, {id: 'stock_edit_location', title: 'Location', name: '_location', maxlength: 20, required: true, list_id: 'locations_list'}) %>
-                                                <input class="btn btn-success w-100 confirm" type="submit" value="Save">
+                                                <input class="btn btn-success w-100" type="submit" value="Save">
                                                 <a class='float-left' href='javascript:edit_stock_reset()'>Cancel</a>
                                             </form>
                                         </div>
@@ -388,7 +388,7 @@
                                 <%- include(`${partials}/inputs/select`,  {id: 'adjust_type',     title: 'Type',     name: 'adjust[_type]', required: true, options: [{text: 'Select Adjustment Type...', selected: true},{text: 'Count', value: 'Count'},{text: 'Scrap', value: 'Scrap'}]}) %>
                             </div>
                             <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100 confirm" value='Save Adjustment'>
+                                <input  type="submit" class="btn btn-success w-100" value='Save Adjustment'>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </form>
@@ -407,7 +407,7 @@
                                 <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: '_location', maxlength: 20, required: true, list_id: 'locations_list', spinner: true, spinner_id: 'locations'}) %>
                             </div>
                             <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100 confirm" value='Save Location'>
+                                <input  type="submit" class="btn btn-success w-100" value='Save Location'>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </form>

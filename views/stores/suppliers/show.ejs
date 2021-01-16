@@ -12,13 +12,11 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.supplier_edit) { %>
-                    <%- include(`${partials}/menu/edit`) %>
+                    <%- include(`${partials}/menu/modal_btn`, {modal: 'supplier_edit', permission: 'supplier_edit', text: 'Edit'}) %>
                     <form id='form_set_default'>
                         <input class='supplier_id' type="hidden" name='setting[_name]' value='default_supplier'>
                         <input class='supplier_id' type="hidden" name='setting[_value]'>
-                        <button id='default_button' class="dropdown-item confirm">
-                            Make Default
-                        </button>
+                        <button id='default_button' class="dropdown-item">Make Default</button>
                     </form>
                 <% } %>
                 <%- include(`${partials}/notes/menu_add`) %>
@@ -54,7 +52,7 @@
                             <input type="file" class="custom-file-input" name="demandfile" id="file_upload">
                         </div>
                         <div class="input-group-append">
-                            <button class="btn btn-success confirm">
+                            <button class="btn btn-success">
                                 <i class='fas fa-file-upload'></i>
                             </button>
                         </div>
@@ -64,7 +62,6 @@
         </div>
         <% if (permissions.access_sizes) { %>
             <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-                <%- include(`${partials}/spinner`, {id: 'sizes'}) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-50" onclick="sortTable(0, 'tbl_sizes')">Item</th>
@@ -77,7 +74,6 @@
         <% } %>
         <% if (permissions.access_demands) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
-                <%- include(`${partials}/spinner`, {id: 'demands'}) %>
                 <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_demand_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Complete'}, {value: '_status=3', text: 'Closed'}]}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
@@ -92,12 +88,43 @@
         <% } %>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
+    <div id="div_modals">
+        <% if (permissions.supplier_edit) { %>
+            <div id='mdl_supplier_edit' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_supplier_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Supplier</h5>
+                            <%- include(`${partials}/spinner`, {id: 'supplier_edit'}) %>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`,   {id: '_name_edit',      title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20, required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: '_address1_edit',  title: 'Address',       name: 'supplier[_address1]',  maxLength: 45}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: '_address2_edit',  title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: '_address3_edit',  title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: '_address4_edit',  title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: '_address5_edit',  title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: '_telephone_edit', title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: '_email_edit',     title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
+                            <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',    title: 'Account',       name: 'supplier[account_id]', spinner: true, spinner_id: 'accounts_edit'}) %>
+                            <%- include(`${partials}/inputs/select`, {id: '_stores_edit',    title: 'RAF Stores?',   name: 'supplier[_stores]',    options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
+                            </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Save Supplier'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script src="/js/stores/utils/list/accounts.js"></script>
+            <script src="/js/stores/suppliers/show/edit.js"></script>
+        <% } %>
+    </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <!-- Get/spinner/send from notes include -->
 <script src='/js/add.js'></script>
 <script src='/js/show.js'></script>
-<script src='/js/edit.js'></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/data/addFormListener.js'></script>

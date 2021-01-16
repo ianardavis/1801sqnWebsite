@@ -6,7 +6,7 @@
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<%- include(`${partials}/inputs/select`, {title: 'Supplier', id: 'sel_suppliers', spinner: true, spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
-	<%- include(`${partials}/inputs/select`, {title: 'Status', 	 id: 'sel_status', 	  options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Complete'}]}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Status', 	 id: 'sel_status', 	  options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Complete'}, {value: '_status=3', text: 'Closed'}]}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-30" onclick="sortTable(0, 'tbl_demands')">Date</th>
@@ -20,12 +20,10 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/demands/index/getDemands.js'></script>
-<script src='/js/stores/suppliers/list.js'></script>
-<script async>getSuppliers()</script>
-<script async>getDemands()</script>
+<script src='/js/stores/utils/list/suppliers.js'></script>
+<script async>listSuppliers({blank: true, blank_opt: {text: 'All'}})</script>
+<script async>loadGetDemands()</script>
 <script>
-	window.addEventListener('load', function () {
-		document.querySelector('#sel_suppliers').addEventListener('change', getDemands);
-	})
+	document.querySelector('#reload_suppliers').addEventListener('click', function () {listSuppliers({blank: true, blank_opt: {text: 'All'}})})
 </script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>
