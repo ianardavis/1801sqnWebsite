@@ -405,7 +405,6 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                                         .then(file => {
                                             write_cover_sheet(template, account, file, users)
                                             .then(result => {
-                                                console.log(sizes);
                                                 write_items(file, sizes)
                                                 .then(fails => {
                                                     if (fails && fails.length > 0) resolve({success: true, message: 'Demand raised, some items failed', file: file})

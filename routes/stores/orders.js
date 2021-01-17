@@ -49,7 +49,7 @@ module.exports = (app, al, inc, pm, m) => {
     app.put('/stores/orders',        pm, al('order_edit',    {send: true}), (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e._status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
-        req.body.lines.filter(e => e._status === '2').forEach(line => actions.push(demand_line( line, req.user.user_id)));
+        actions.push(demand_orders(req.body.lines.filter(e => e._status === '2'), req.user.user_id));
         req.body.lines.filter(e => e._status === '3').forEach(line => actions.push(receive_line(line, req.user.user_id)));
         Promise.allSettled(actions)
         .then(results => {
@@ -108,54 +108,140 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    function demand_line(line, user_id) {
+    function demand_orders(lines, user_id) {
         return new Promise((resolve, reject) => {
             return allowed(m.stores.permissions, user_id, 'demand_line_add')
             .then(result => {
-                m.stores.orders.findOne({
-                    where:  {order_id: line.order_id},
-                    attributes: ['order_id', 'size_id', '_status', '_qty'],
-                    include: [inc.sizes({attributes: ['size_id', 'supplier_id']})]
-                })
-                .then(order => {
-                    if      (!order)              reject(new Error('Order not found'));
-                    else if (order._status !== 1) reject(new Error('Only placed orders can be demanded'))
-                    else {
-                        return demands.create({
-                            supplier_id: order.size.supplier_id,
-                            user_id:     user_id
-                        })
-                        .then(demand => {
-                            return demands.createLine({
-                                demand_id: demand.demand_id,
-                                size_id:   order.size_id,
-                                _qty:      order._qty,
-                                user_id:   user_id,
-                                note:      ' from order'
-                            })
-                            .then(line => {
-                                return order.update({_status: 2})
-                                .then(result => {
-                                    if (!result) resolve({success: true, message: 'Order added to demand, order not updated'})
-                                    else {
-                                        m.stores.actions.create({
-                                            order_id:       order.order_id,
-                                            _action:        'Order added to demand',
-                                            demand_line_id: line.line_id,
-                                            user_id:        user_id
-                                        })
-                                        .then(action => resolve({success: true, message: 'Order added to demand'}))
-                                        .catch(err => {
-                                            console.log(err);
-                                            resolve({success: true, message: `Order added to demand, error creating action: ${err.message}`});
-                                        })
-                                    };
+                return get_orders(lines)
+                .then(orders => {
+                    return sort_suppliers(orders)
+                    .then(suppliers => {
+                        return create_demands(suppliers, user_id)
+                        .then(suppliers => {
+                            let demand_actions = []
+                            suppliers.forEach(supplier => {
+                                supplier.orders.forEach(order => {
+                                    demand_actions.push(demand_line(order, supplier.demand_id, user_id));
                                 })
-                                .catch(err => reject(err));
-                            })
+                            });
+                            Promise.all(demand_actions)
+                            .then(results => resolve(true))
                             .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function get_orders(lines) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
+            lines.forEach(line => {
+                actions.push(
+                    new Promise((resolve, reject) => {
+                        return m.stores.orders.findOne({
+                            where:      {order_id: line.order_id},
+                            include:    [inc.sizes({attributes: ['size_id', 'supplier_id']})],
+                            attributes: ['order_id', 'size_id', '_status', '_qty']
+                        })
+                        .then(order => {
+                            if      (!order)                  reject(new Error('Order not found'))
+                            else if (order._status !== 1)     reject(new Error('Only placed orders can be demanded'))
+                            else if (!order.size)             reject(new Error('Size not found'))
+                            else if (!order.size.supplier_id) reject(new Error('Supplier not found'))
+                            else                              resolve(order);
+                        })
+                        .catch(err => reject(err));
+                    })
+                );
+            });
+            Promise.allSettled(actions)
+            .then(results => {
+                let orders = [];
+
+                results
+                .filter( e => e.status === 'fulfilled')
+                .forEach(e => orders.push(e.value));
+
+                resolve(orders);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function sort_suppliers(orders) {
+        return new Promise((resolve, reject) => {
+            let suppliers = [];
+            orders.forEach(order => {
+                let index = suppliers.findIndex(e => e.supplier_id === order.size.supplier__id)
+                if (index === -1) {
+                    suppliers.push({
+                        supplier_id: order.size.supplier_id,
+                        orders:      [order]
+                    })
+                } else suppliers[index].orders.push(order);
+            });
+            if (suppliers && suppliers.length === 0) reject(new Error('No suppliers'))
+            else                                     resolve(suppliers);
+        });
+    };
+    function create_demands(suppliers, user_id) {
+        return new Promise((resolve, reject) => {
+            let demand_actions = [];
+            suppliers.forEach(supplier => {
+                demand_actions.push(
+                    new Promise((resolve, reject) => {
+                        return demands.create({
+                            supplier_id: supplier.supplier_id,
+                            user_Id:     user_id
+                        })
+                        .then(demand => {
+                            supplier.demand_id = demand.demand_id;
+                            resolve({supplier_id: supplier.supplier_id, demand_id: demand.demand_id});
+                        })
+                        .catch(err => reject(err));
+                    })
+                );
+            });
+            Promise.all(demand_actions)
+            .then(results => {
+                console.log(results);
+                results.forEach(result => {
+                    suppliers[suppliers.findIndex(e => e.supplier_id === result.supplier__id)].demand_id = result.demand_id;
+                });
+                resolve(suppliers)
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function demand_line(order, demand_id, user_id) {
+        return new Promise((resolve, reject) => {
+            return demands.createLine({
+                demand_id: demand_id,
+                size_id:   order.size_id,
+                _qty:      order._qty,
+                user_id:   user_id,
+                note:      ' from order'
+            })
+            .then(line => {
+                return order.update({_status: 2})
+                .then(result => {
+                    if (!result) resolve({success: true, message: 'Order added to demand, order not updated'})
+                    else {
+                        m.stores.actions.create({
+                            order_id:       order.order_id,
+                            _action:        'Order added to demand',
+                            demand_line_id: line.line_id,
+                            user_id:        user_id
+                        })
+                        .then(action => resolve({success: true, message: 'Order added to demand'}))
+                        .catch(err => {
+                            console.log(err);
+                            resolve({success: true, message: `Order added to demand, error creating action: ${err.message}`});
+                        })
                     };
                 })
                 .catch(err => reject(err));
@@ -163,6 +249,7 @@ module.exports = (app, al, inc, pm, m) => {
             .catch(err => reject(err));
         });
     };
+
     function receive_line(line, user_id) {
         return new Promise((resolve, reject) => {
             return allowed(m.stores.permissions, user_id, 'demand_line_add')
