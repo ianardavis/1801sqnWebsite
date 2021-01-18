@@ -6,15 +6,9 @@ function getSessions() {
                 current_sessions = [];
             sessions.forEach(session => {
                 let row = table_body.insertRow(-1);
-                add_cell(row, {
-                    text: print_date(session.createdAt, true),
-                    sort: new Date(session.createdAt).getTime()
-                });
+                add_cell(row, table_date(session.createdAt, true));
                 if (session._end) {
-                    add_cell(row, {
-                        text: print_date(session._end, true),
-                        sort: new Date(session._end).getTime()
-                    });
+                    add_cell(row, table_date(session._end, true));
                 } else add_cell(row);
                 if (session._status === 0) {
                     add_cell(row, {text: 'Cancelled'});

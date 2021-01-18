@@ -13,9 +13,7 @@ function getItem() {
                     };
                 } catch (error) {console.log(error)};
             };
-            let breadcrumb = document.querySelector('#breadcrumb');
-            breadcrumb.innerText = item._name;
-            breadcrumb.href = `/canteen/items/${item.item_id}`;
+            set_breadcrumb({text: item._name, href: `/canteen/items/${item.item_id}`});
         },
         {
             db: 'canteen',

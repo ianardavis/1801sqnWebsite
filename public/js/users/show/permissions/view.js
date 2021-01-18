@@ -7,10 +7,7 @@ function getPermissions () {
                 tbl_permissions.innerHTML = '';
                 permissions.permissions.forEach(e => {
                     let row = tbl_permissions.insertRow(-1);
-                    add_cell(row, {
-                        text: print_date(e.createdAt),
-                        sort: new Date(e.createdAt).getTime()
-                    });
+                    add_cell(row, table_date(e.createdAt));
                     add_cell(row, {text: e._permission.replaceAll('_', ' ')});
                 });
             };

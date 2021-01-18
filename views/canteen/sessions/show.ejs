@@ -43,8 +43,7 @@
                     <th class="w-10" onclick="sortTable(3, 'tbl_sales')">Status</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
-                <tbody id="tbl_sales">
-                </tbody>
+                <tbody id="tbl_sales"></tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
@@ -55,8 +54,7 @@
                     <th class="w-20" onclick="sortTable(2, 'tbl_items')">Qty</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
-                <tbody id="tbl_items">
-                </tbody>
+                <tbody id="tbl_items"></tbody>
             </table>
         </div>
         <%- include(`${partials}/notes/tab_body`) %>
@@ -133,7 +131,6 @@
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/tabs.js'></script>
 <script src='/js/data/addFormListener.js'></script>
-<script src='/js/data/send.js'></script>
 <script src="/js/canteen/sessions/show/session.js"></script>
 <script>showTab('<%= tab %>');</script>
 <script async>getSession()</script>

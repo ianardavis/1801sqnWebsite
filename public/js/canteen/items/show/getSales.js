@@ -8,10 +8,7 @@ function getSales() {
                     sale_count.innerText = lines.length || '0';
                 lines.forEach(line => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        sort: new Date(line.createdAt).getTime(),
-                        text: print_date(line.createdAt)
-                    });
+                    add_cell(row, table_date(line.createdAt));
                     add_cell(row, {text: line._qty});
                     add_cell(row, {append: new Link({
                         href: `/canteen/sales/${line.sale_id}`,

@@ -15,8 +15,7 @@
             <th class="w-20" onclick="sortTable(2, 'tbl_sessions')">Status</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
-        <tbody id="tbl_sessions">
-        </tbody>
+        <tbody id="tbl_sessions"></tbody>
     </table>
     <% if (permissions.session_add) { %>
         <div id='mdl_add_session' class="modal" tabindex="-1" role="dialog">
@@ -88,7 +87,6 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/data/addFormListener.js'></script>
-<script src='/js/data/send.js'></script>
 <script src='/js/canteen/sessions/index/getSessions.js'></script>
 <script async>getSessions()</script>
 <% if (permissions.session_add) { %>

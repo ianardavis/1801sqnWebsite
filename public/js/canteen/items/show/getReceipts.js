@@ -2,22 +2,20 @@ function getReceipts() {
     get(
         function (lines, options) {
             try {
-                clearElement('tbl_receipts');
-                let tbl_receipts  = document.querySelector('#tbl_receipts'),
-                    receipt_count = document.querySelector('#receipt_count');
-                receipt_count.innerText = lines.length || '0';
-                lines.forEach(line => {
-                    let row = tbl_receipts.insertRow(-1);
-                    add_cell(row, {
-                        sort: new Date(line.createdAt).getTime(),
-                        text: print_date(line.createdAt)
+                let tbl_receipts = document.querySelector('#tbl_receipts');
+                    set_count({id: 'receipt', count: lines.length || '0'})
+                if (tbl_receipts) {
+                    tbl_receipts.innerHTML = '';
+                    lines.forEach(line => {
+                        let row = tbl_receipts.insertRow(-1);
+                        add_cell(row, table_date(line.createdAt));
+                        add_cell(row, {text: line._qty});
+                        add_cell(row, {append: new Link({
+                            href: `/canteen/receipts/${line.receipt_id}`,
+                            small: true
+                        }).e});
                     });
-                    add_cell(row, {text: line._qty});
-                    add_cell(row, {append: new Link({
-                        href: `/canteen/receipts/${line.receipt_id}`,
-                        small: true
-                    }).e});
-                });
+                };
             } catch (error) {
                 console.log(error);
             };

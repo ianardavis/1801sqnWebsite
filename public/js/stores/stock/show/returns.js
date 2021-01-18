@@ -6,10 +6,7 @@ showReturns = (lines, options) => {
         return_count.innerText = lines.length || '0';
         lines.forEach(line => {
             let row = table_body.insertRow(-1);
-            add_cell(row, {
-                sort: new Date(line.return._date).getTime(),
-                text: new Date(line.return._date).toDateString()
-            });
+            add_cell(row, table_date(line.return.createdAt));
             add_cell(row, {text: line.return._from.rank._rank + ' ' + line.return._from.full_name});
             add_cell(row, {text: line._qty});
             add_cell(row, {append: new Link({

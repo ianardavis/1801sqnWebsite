@@ -3,7 +3,7 @@ function listSuppliers(options = {}) {
     suppliers_loaded = false;
     get(
         function (suppliers, options) {
-            let sel_suppliers = document.querySelector('#sel_suppliers');
+            let sel_suppliers = document.querySelector(`#${options.select || 'sel_suppliers'}`);
             if (sel_suppliers) {
                 sel_suppliers.innerHTML = '';
                 if (options.blank === true) sel_suppliers.appendChild(new Option(options.blank_opt || {}).e);

@@ -14,19 +14,6 @@
                 <%- include(`${partials}/users/show/menu_buttons`) %>
                 <%- include(`${partials}/notes/menu_add`) %>
                 <div class="dropdown-divider"></div>
-                <% if (permissions.order_add) { %>
-                    <form id="form_order_add">
-                        <input type="hidden" class='user_id' name='user_id_order'>
-                        <button class='dropdown-item'>
-                            New Order
-                        </button>
-                    </form>
-                    <script>
-                        window.addEventListener( "load", function () {
-                            addFormListener('form_order_add', 'POST', '/stores/orders', {onComplete: getOrders});
-                        });
-                    </script>
-                <% } %>
                 <% if (permissions.issue_add) { %>
                     <form id="form_issue_add">
                         <input type="hidden" class='user_id' name='user_id_issue'>
@@ -40,99 +27,32 @@
                         });
                     </script>
                 <% } %>
-                <% if (permissions.request_add) { %>
-                    <form id="form_request_add">
-                        <input type="hidden" class='user_id' name='user_id_request'>
-                        <button class='dropdown-item'>
-                            New Request
-                        </button>
-                    </form>
-                    <script>
-                        window.addEventListener( "load", function () {
-                            addFormListener('form_request_add', 'POST', '/stores/requests', {onComplete: getRequests});
-                        });
-                    </script>
-                <% } %>
             </div>
         </li>
         <%- include(`${partials}/users/show/tab_heads`) %>
-        <%- include(`${partials}/tab_head`, {id: 'requests', spinner: 'request_lines', title: 'Requests', count_id: 'request'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'orders',   spinner: 'order_lines',   title: 'Orders',   count_id: 'order'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',   spinner: 'issue_lines',   title: 'Issues',   count_id: 'issue'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',    spinner: 'notes',         title: 'Notes',    count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues', spinner: 'issues', title: 'Issues', count_id: 'issue'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',  spinner: 'notes',  title: 'Notes',  count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <%- include(`${partials}/users/show/tab_bodies`) %>
-        <div class="tab-pane fade" id="requests" role="tabpanel" aria-labelledby="requests-tab">
-            <div class="card text-white bg-primary my-1 hidden" id='crd_draft_request'>
-                <div class="card-body">
-                    <h5 class="card-title">Draft Request</h5>
-                    <p class="card-text f-10">This user has <span id="draft_request_count"></span> request(s) in draft. Follow the links below to go to these requests.</p>
-                    <div id="draft_requests"></div>
-                </div>
-            </div>
-            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'request_status', options: [{value: '', text: 'All'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open', selected: true}, {value: '_status=3', text: 'Approved'}, {value: '_status=4', text: 'Declined'}], spinner: true}) %>
-            <table class='table table-sm table-hover'>
-                <thead class="thead-dark">
-                    <th class="w-20" onclick="sortTable(0, 'tbl_requests')">Date</th>
-                    <th class="w-30" onclick="sortTable(1, 'tbl_requests')">Item</th>
-                    <th class="w-20" onclick="sortTable(2, 'tbl_requests')">Size</th>
-                    <th class="w-10" onclick="sortTable(3, 'tbl_requests')">Qty</th>
-                    <th class="w-20" onclick="sortTable(4, 'tbl_requests')">Status</th>
-                    <th><i class="fas fa-search"></i></th>
-                </thead>
-                <tbody id="tbl_requests"></tbody>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-            <div class="card text-white bg-primary my-1 hidden" id='crd_draft_order'>
-                <div class="card-body">
-                    <h5 class="card-title">Draft Order</h5>
-                    <p class="card-text f-10">This user has <span id="draft_order_count"></span> order(s) in draft. Follow the links below to go to these orders.</p>
-                    <div id="draft_orders"></div>
-                </div>
-            </div>
-            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'order_status', options: [{value: '', text: 'All'}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Demanded'}, {value: '_status=4', text: 'Received'}, {value: '_status=5', text: 'Issued'}, {value: '_status=6', text: 'Complete'}], spinner: true}) %>
-            <table class='table table-sm table-hover'>
-                <thead class="thead-dark">
-                    <th class="w-25" onclick="sortTable(0, 'tbl_orders')">Date</th>
-                    <th class="w-25" onclick="sortTable(1, 'tbl_orders')">Item</th>
-                    <th class="w-20" onclick="sortTable(2, 'tbl_orders')">Size</th>
-                    <th class="w-10" onclick="sortTable(3, 'tbl_orders')">Qty</th>
-                    <th class="w-10" onclick="sortTable(4, 'tbl_orders')">Status</th>
-                    <th class="w-5"  onclick="sortTable(5, 'tbl_orders')" data-toggle="tooltip" data-placement="bottom" title="Demanded">D</th>
-                    <th class="w-5"  onclick="sortTable(6, 'tbl_orders')" data-toggle="tooltip" data-placement="bottom" title="Received">R</th>
-                    <th class="w-5"  onclick="sortTable(7, 'tbl_orders')" data-toggle="tooltip" data-placement="bottom" title="Issued">I</th>
-                    <th><i class="fas fa-search"></i></th>
-                </thead>
-                <tbody id="tbl_orders"></tbody>
-            </table>
-        </div>
         <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-            <div class="card text-white bg-primary my-1 hidden" id='crd_draft_issue'>
-                <div class="card-body">
-                    <h5 class="card-title">Draft Issue</h5>
-                    <p class="card-text f-10">This user has <span id="draft_issue_count"></span> issue(s) in draft. Follow the links below to go to these issues.</p>
-                    <div id="draft_issues"></div>
-                </div>
-            </div>
-            <%- include(`${partials}/inputs/select`, {title: 'Returned Lines', id: 'returned_lines', options: [{value: '', text: 'Include'}, {value: 'returned=0', text: 'Exclude', selected: true}, {value: 'returned=1', text: 'Only'}], spinner: true}) %>
-            <% if (permissions.return_add) { %>
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{text: 'All'}, {value: '_status=0', text: 'Cancelled/Declined'}, {value: '_status=1', text: 'Requested'}, {value: '_status=2', text: 'Approved'}, {value: '_status=3', text: 'Ordered', {value: '_status=4', text: 'Issued', selected: true, , {value: '_status=5', text: 'Returned'}}}], spinner: true}) %>
+            <% if (permissions.issue_return) { %>
                 <form id='form_issue_return'>
                     <input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines">
             <% } %>
             <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
-                    <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Date Due</th>
+                    <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Date</th>
                     <th class="w-30" onclick="sortTable(1, 'tbl_issues')">Item</th>
                     <th class="w-20" onclick="sortTable(2, 'tbl_issues')">Size</th>
                     <th class="w-10" onclick="sortTable(3, 'tbl_issues')">Qty</th>
-                    <th class="w-20" onclick="sortTable(4, 'tbl_issues')">Return Location</th>
+                    <th class="w-20" onclick="sortTable(4, 'tbl_issues')">Status</th>
                     <th><i class="fas fa-search"></i></th>
                 </thead>
                 <tbody id="tbl_issues"></tbody>
             </table>
-            <% if (permissions.return_add) { %>
+            <% if (permissions.issue_return) { %>
                 </form>
                 <script>
                     window.addEventListener( "load", function () {
@@ -148,23 +68,13 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/getByUser.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 
 <%- include(`${partials}/users/show/scripts`) %>
 
-<script src='/js/stores/users/requests.js'></script>
-<script async>getRequests()</script>
-<script async>getDraftRequests()</script>
-
-<script src='/js/stores/users/orders.js'></script>
-<script async>getOrders()</script>
-<script async>getDraftOrders()</script>
-
 <script src='/js/stores/users/issues.js'></script>
 <script async>getIssues()</script>
-<script async>getDraftIssues()</script>
 
 <%- include(`${partials}/foot/elements/htmlClose`) %>

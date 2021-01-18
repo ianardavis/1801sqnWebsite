@@ -20,9 +20,7 @@ function getReceipt() {
                     } else if (id === 'createdAt') element.innerText = print_date(value);
                 } catch (error) {console.log(error)};
             };
-            let breadcrumb = document.querySelector('#breadcrumb');
-            breadcrumb.innerText = receipt.receipt_id;
-            breadcrumb.href = `/canteen/receipts/${receipt.receipt_id}`;
+            set_breadcrumb({text: receipt.receipt_id, href: `/canteen/receipts/${receipt.receipt_id}`});
         },
         {
             db: 'canteen',

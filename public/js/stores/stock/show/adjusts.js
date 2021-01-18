@@ -6,10 +6,7 @@ showAdjusts = (lines, options) => {
         adjust_count.innerText = lines.length || '0';
         lines.forEach(adjust => {
             let row = table_body.insertRow(-1);
-            add_cell(row, {
-                sort: new Date(adjust._date).getTime(),
-                text: new Date(adjust._date).toDateString()
-            });
+            add_cell(row, table_date(adjust.createdAt));
             add_cell(row, {text: adjust._type});
             add_cell(row, {text: adjust._qty});
             add_cell(row, {text: adjust._variance});

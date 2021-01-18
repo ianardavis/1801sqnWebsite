@@ -9,10 +9,7 @@ function getDemands() {
             function (demands, options) {
                 demands.forEach(demand => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        sort: new Date(demand.createdAt).getTime(),
-                        text: print_date(demand.createdAt)
-                    });
+                    add_cell(row, table_date(demand.createdAt));
                     add_cell(row, {text: demand.supplier._name});
                     add_cell(row, {text: demand.lines.length});
                     add_cell(row, {text: statuses[demand._status]});

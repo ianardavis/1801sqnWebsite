@@ -15,9 +15,7 @@ function getSale() {
                     };
                 } catch (error) {console.log(error)};
             };
-            let breadcrumb = document.querySelector('#breadcrumb');
-            breadcrumb.innerText = sale.sale_id;
-            breadcrumb.href = `/canteen/sales/${sale.sale_id}`;
+            set_breadcrumb({text: sale.sale_id, href: `/canteen/sales/${sale.sale_id}`});
         },
         {
             db: 'canteen',

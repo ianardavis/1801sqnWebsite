@@ -10,10 +10,7 @@ function getDemands() {
                 table_body.innerHTML = '';
                 demands.forEach(demand => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        text: print_date(demand.createdAt),
-                        sort: new Date(demand._date).getTime()
-                    });
+                    add_cell(row, table_date(demand.createdAt));
                     add_cell(row, {text: demand.lines.length});
                     add_cell(row, {text: demand_statuses[demand._status]});
                     add_cell(row, {append: new Link({

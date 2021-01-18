@@ -9,10 +9,7 @@ function getStockAdjusts(stock_id) {
                 adjusts.forEach(adjust => {
                     try {
                         let row = tbl_stock_adjusts.insertRow(-1);
-                        add_cell(row, {
-                            text: print_date(adjust.createdAt, true),
-                            sort: new Date (adjust.createdAt).getTime()
-                        });
+                        add_cell(row, table_date(adjust.createdAt, true));
                         add_cell(row, {text: adjust._type});
                         add_cell(row, {text: adjust._qty});
                         add_cell(row, {text: adjust._variance});

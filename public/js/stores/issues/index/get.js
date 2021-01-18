@@ -12,10 +12,7 @@ function getIssues(status) {
                     tbl.innerHTML = '';
                     issues.forEach(issue => {
                         let row = tbl.insertRow(-1);
-                        add_cell(row, {
-                            sort: print_date(issue.createdAt),
-                            text: new Date(issue.createdAt).toDateString()
-                        });
+                        add_cell(row, table_date(issue.createdAt));
                         add_cell(row, {text: print_user(issue.user_issue)});
                         add_cell(row, {text: issue.size.item._description});
                         add_cell(row, {text: issue.size._size});

@@ -1,0 +1,166 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		    text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/loancards', text: 'Loancards'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Menu
+			</a>
+			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
+				<%- include(`${partials}/notes/menu_add`) %>
+				<%- include(`${partials}/menu/action`) %>
+				<form id='form_raise'>
+					<button id='btn_raise' class='dropdown-item'>Raise</button>
+				</form>
+				<% if (permissions.loancard_edit) { %>
+					<form id='form_complete'>
+					<input type="hidden" name='_status' value='2'>
+				<% } %>
+					<button id='btn_complete' class='dropdown-item' disabled>Complete</button>
+				<% if (permissions.loancard_edit) { %></form><% } %>
+				<form id="form_download">
+					<button id='btn_download' class='dropdown-item' disabled>Download</button>
+				</form>
+				<%- include(`${partials}/menu/delete`, {permission: 'loancard_delete'}) %>
+			</div>
+		</li>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line', permission: 'access_loancard_lines'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 	   count_id: 'note', permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+			<%- include(`${partials}/inputs/display`, {id: 'supplier',  title: 'Supplier',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user',		title: 'Raised By', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_status',   title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'file',   	title: 'Filename'}) %>
+		</div>
+		<% if (permissions.access_loancard_lines) { %>
+			<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
+				<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Received'}]}) %>
+				<% if (permissions.loancard_line_edit) { %><form id='form_action'><% } %>
+				<table class='table table-sm table-hover'>
+					<thead class='thead-dark'>
+						<th class='w-30' onclick="sortTable(1,'tbl_lines')">Item</th>
+						<th class='w-40' onclick="sortTable(2,'tbl_lines')">Size</th>
+						<th class='w-10' onclick="sortTable(3,'tbl_lines')">Qty</th>
+						<th class='w-20' onclick="sortTable(4,'tbl_lines')">Status</th>
+						<th><i class='fas fa-search'></i></th>
+					</thead>
+					<tbody id='tbl_lines'></tbody>
+				</table>
+				<% if (permissions.loancard_line_edit) { %></form><% } %>
+			</div>
+		<% } %>
+        <%- include(`${partials}/notes/tab_body`) %>
+	</div>
+	<div id="div_modals">
+		<% if (permissions.access_loancard_lines) { %>
+			<div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Loancard Line <span id="line_id_view"></span></h5>
+							<span id="span_view_buttons" class="float-right"></span>
+						</div>
+						<div class="modal-body">
+							<ul class="nav nav-tabs" role="tablist">
+								<%- include(`${partials}/tab_head`, {id: 'loancard_line', 	   	 title: 'Details', spinner: 'loancard_line_view',  active: true}) %>
+								<%- include(`${partials}/tab_head`, {id: 'loancard_lines-notes', title: 'Notes',   spinner: 'loancard_line_notes', count_id: 'loancard_lines_note', permission: 'access_notes'}) %>
+							</ul>
+							<div class="tab-content pt-3" id="myTabContent">
+								<div class="tab-pane fade active show" id="loancard_line" role="tabpanel" aria-labelledby="loancard_line-tab">
+									<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item_view', link: true}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size_view', link: true}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Quantity', 	  id: 'line_qty_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user_view', link: true}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Raised',	  	  id: 'line_createdAt_view'}) %>
+									<%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt_view'}) %>
+								</div>
+								<%- include(`${partials}/notes/line_note_table`, {line: `loancard_lines`}) %>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% } %>
+	</div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src='/js/tabs.js'></script>
+<script src="/js/search/select.js"></script>
+<script src="/js/data/addFormListener.js"></script>
+<script>showTab('<%= tab %>')</script>
+
+<script src="/js/stores/loancards/show/getLoancard.js"></script>
+<script async>getLoancard()</script>
+
+<% if (permissions.loancard_edit) { %>
+	<script src="/js/stores/utils/setButtons.js"></script>
+	<script async>setButtons('loancard')</script>
+	<script>
+		window.addEventListener( "load", function () {
+			addFormListener(
+				'form_complete',
+				'PUT',
+				`/stores/loancards/${path[3]}`,
+				{
+					onComplete: [
+						getLoancard,
+						function () {if (typeof getLines === 'function') getLines('loancard')}
+					]
+				}
+			);
+			addFormListener(
+				'form_raise',
+				'PUT',
+				`/stores/loancards/raise/${path[3]}`,
+				{
+					onComplete: [
+						getLoancard,
+						function () {if (typeof getLines === 'function') getLines('loancard')}
+					]
+				}
+			);
+		});
+	</script>
+<% } %>
+<% if (permissions.access_loancard_lines) { %>
+	<script src="/js/stores/loancards/show/getLines.js"></script>
+	<script async>getLines()</script>
+	<% if (permissions.access_notes) { %>
+		<script>
+            set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-source', value: 'line_view'});
+			$('#mdl_line_view').on('show.bs.modal', function (event) {
+				set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-_table', value: 'loancard_lines'});
+				set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-_id',    value: event.relatedTarget.dataset.loancard_line_id});
+				getLineNotes({
+					line_id: 'loancard_lines',
+					table: 	 'loancard_lines',
+					id:		 event.relatedTarget.dataset.loancard_line_id
+				})
+			});
+		</script>
+	<% } %>
+	<% if (permissions.loancard_line_edit) { %>
+		<script src="/js/stores/stock/list.js"></script>
+		<script src="/js/stores/serials/list.js"></script>
+		<script src="/js/stores/loancards/show/lineEdit.js"></script>
+		<script src="/js/stores/utils/setLineButtons.js"></script>
+		<script async>setActions()</script>
+		<script async>setLineButtons('loancard');</script>
+	<% } %>
+<% } %>
+<% if (permissions.loancard_delete) { %>
+	<script src="/js/stores/loancards/show/delete.js"></script>
+<% } %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

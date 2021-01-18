@@ -31,7 +31,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             ]
         })
         .then(demand => {
-            if (demand) res.send({success: true, demand: demand})
+            if (demand) res.send({success: true, result: demand})
             else        res.send({success: false, message: 'Demand not found'});
         })
         .catch(err => res.error.send(err, res));
@@ -45,7 +45,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.suppliers({as: 'supplier'})
             ]
         })
-        .then(demands => res.send({success: true, demands: demands}))
+        .then(demands => res.send({success: true, result: demands}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/demand_lines',    loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
@@ -57,7 +57,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.demands()
             ]
         })
-        .then(lines => res.send({success: true, lines: lines}))
+        .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/demand_line',     loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
@@ -70,7 +70,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.actions({include: [inc.orders()]})
             ]
         })
-        .then(demand_line => res.send({success: true, demand_line: demand_line}))
+        .then(demand_line => res.send({success: true, result: demand_line}))
         .catch(err => res.error.send(err, res));
     });
 
@@ -380,6 +380,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             .catch(err => reject(err));
         });
     };
+
     function raise_demand(demand_id, user_id) {
         return new Promise((resolve, reject) => {
             return m.stores.demands.findOne({
@@ -401,11 +402,11 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                                 .then(sizes => {
                                     return get_users(orders)
                                     .then(users => {
-                                        create_file(template, demand.demand_id)
+                                        return create_file(template, demand.demand_id)
                                         .then(file => {
-                                            write_cover_sheet(template, account, file, users)
+                                            return write_cover_sheet(template, account, file, users)
                                             .then(result => {
-                                                write_items(file, sizes)
+                                                return write_items(file, sizes)
                                                 .then(fails => {
                                                     if (fails && fails.length > 0) resolve({success: true, message: 'Demand raised, some items failed', file: file})
                                                     else                           resolve({success: true, message: 'Demand raised', file: file})

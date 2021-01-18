@@ -7,10 +7,7 @@ function showLineActions(table, id) {
                 table_body.innerHTML = '';
                 actions.forEach(e => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        text: print_date(e.createdAt, true),
-                        sort: new Date(e.createdAt).getTime()
-                    });
+                    add_cell(row, table_date(e.createdAt, true));
                     add_cell(row, {text: e._action});
                     add_cell(row, {
                         text: print_user(e.user),

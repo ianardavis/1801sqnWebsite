@@ -85,6 +85,13 @@ function print_date (date, time = false) {
         return str
     } else return '';
 };
+function table_date (date, time = false) {
+    let _date = {
+        sort: new Date(date).getTime(),
+        text: print_date(date, time)
+    };
+    return _date;
+}
 function print_nsn (nsn) {
     if (nsn && nsn.group && nsn.classification && nsn.country) {
         return `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`

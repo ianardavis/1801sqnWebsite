@@ -7,10 +7,7 @@ function getNotes() {
                 table_body.innerHTML = '';
                 notes.forEach(note => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        sort: new Date(note.createdAt).getTime(),
-                        text: new Date(note.createdAt).toDateString()
-                    });
+                    add_cell(row, table_date(note.createdAt));
                     add_cell(row, {text: note._note, ellipsis: true});
                     add_cell(row, {append: new Link({
                         modal: 'note_view',

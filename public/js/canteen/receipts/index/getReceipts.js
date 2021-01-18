@@ -7,10 +7,7 @@ function getReceipts() {
             let table_body = document.querySelector('#tbl_receipts');
             receipts.forEach(receipt => {
                 let row = table_body.insertRow(-1);
-                add_cell(row, {
-                    text: print_date(receipt.createdAt),
-                    sort: new Date(receipt.createdAt).getTime()
-                });
+                add_cell(row, table_date(receipt.createdAt));
                 add_cell(row, {text: print_user(receipt.user)});
                 add_cell(row, {text: statuses[receipt._status]});
                 add_cell(row, {append: new Link({

@@ -8,10 +8,7 @@ function getSaleLines() {
                 line_count.innerText = lines.length || '0';
                 lines.forEach(line => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        sort: new Date(line.createdAt).getTime(),
-                        text: print_date(line.createdAt)
-                    });
+                    add_cell(row, table_date(line.createdAt));
                     add_cell(row, {text: line.item._name});
                     add_cell(row, {text: line._qty});
                     add_cell(row, {text: `£${Number(line.item._price).toFixed(2)}`});

@@ -8,10 +8,7 @@ function getPayments() {
                 payment_count.innerText = payments.length || '0';
                 payments.forEach(payment => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        sort: new Date(payment.createdAt).getTime(),
-                        text: print_date(payment.createdAt, true)
-                    });
+                    add_cell(row, table_date(payment.createdAt));
                     add_cell(row, {text: `£${Number(payment._amount).toFixed(2)}`});
                     add_cell(row, {text: payment._type});
                     add_cell(row, {text: print_user(payment.user)});

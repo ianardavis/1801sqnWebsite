@@ -13,10 +13,7 @@ function getSerialNotes(serial_id, permissions) {
                 set_count({id: 'serial_note', count: notes.length});
                 notes.forEach(note => {
                     let row = tbl_serial_notes.insertRow(-1);
-                    add_cell(row, {
-                        text: print_date(note.createdAt, true),
-                        sort: new Date (note.createdAt).getTime()
-                    });
+                    add_cell(row, table_date(note.createdAt, true));
                     if (note._system === 1) add_cell(row, {html: '<i class="fas fa-check"></i>'})
                     else                    add_cell(row);
                     add_cell(row, {text: note._note});

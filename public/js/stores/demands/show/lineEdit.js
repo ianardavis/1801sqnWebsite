@@ -64,7 +64,7 @@ function getLineActions() {
                 };
             },
             {
-                table: 'demand_line',
+                table: 'loancard_line',
                 query: [`line_id=${e.dataset.line_id}`]
             }
         );
@@ -189,12 +189,12 @@ window.addEventListener( "load", function () {
     addFormListener(
         'form_action',
         'PUT',
-        `/stores/demand_lines/${path[3]}`,
+        `/stores/loancard_lines/${path[3]}`,
         {
             onComplete: [
                 getLines,
                 setActions,
-                function () {setLineButtons('demand')}
+                function () {setLineButtons('loancard')}
             ]
         }
     );

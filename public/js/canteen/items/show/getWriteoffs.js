@@ -8,10 +8,7 @@ function getWriteoffs() {
                 writeoff_count.innerText = lines.length || '0';
                 lines.forEach(line => {
                     let row = tbl_writeoffs.insertRow(-1);
-                    add_cell(row, {
-                        sort: new Date(line.createdAt).getTime(),
-                        text: print_date(line.createdAt)
-                    });
+                    add_cell(row, table_date(line.createdAt));
                     add_cell(row, {text: line._qty});
                     add_cell(row, {append: new Link({
                         href: `/canteen/writeoffs/${line.writeoff_id}`,

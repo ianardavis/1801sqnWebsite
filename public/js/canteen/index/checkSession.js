@@ -1,14 +1,12 @@
 function checkSession() {
     get(
         function (sessions, options) {
-            let card = document.querySelector('#card_pos'),
-                a    = document.querySelector('#card_pos_a');
             if (sessions.length !== 1) {
-                card.classList.add('hidden');
-                a.removeAttribute('href');
+                add_class({id: 'card_pos', class: 'hidden'});
+                remove_attribute({id: 'card_pos_a', attribute: 'href'});
             } else {
-                card.classList.remove('hidden');
-                a.setAttribute('href', '/canteen/pos');
+                remove_class({id: 'card_pos', class: 'hidden'});
+                set_attribute({id: 'card_pos_a', attribute: 'href', value: '/canteen/pos'});
             };
         },
         {

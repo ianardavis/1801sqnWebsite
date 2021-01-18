@@ -9,10 +9,7 @@ function getIssues() {
                 issues.forEach(issue => {
                     try {
                         let row = table_body.insertRow(-1);
-                        add_cell(row, {
-                            sort: new Date(issue.createdAt).getTime(),
-                            text: print_date(issue.createdAt)
-                        });
+                        add_cell(row, table_date(issue.createdAt));
                         add_cell(row, {text: print_user(issue.user_issue)});
                         add_cell(row, {text: issue._qty});
                         add_cell(row, {text: issue_statuses[issue._status]});

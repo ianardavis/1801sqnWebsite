@@ -11,10 +11,7 @@ function getMovements (query_column) {
             if (tbl_movements) {
                 movements.forEach(e => {
                     let row = tbl_movements.insertRow(-1);
-                    add_cell(row, {
-                        text: print_date(e.createdAt),
-                        sort: new Date(e.createdAt).getTime()
-                    });
+                    add_cell(row, table_date(e.createdAt));
                     add_cell(row, {text: `£${Number(e._amount).toFixed(2)}`});
                     add_cell(row, {text: e._type});
                     add_cell(row, {append: new Link({

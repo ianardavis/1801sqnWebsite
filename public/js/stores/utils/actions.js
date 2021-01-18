@@ -11,10 +11,7 @@ function showActions() {
                 actions.forEach(action => {
                     try {
                         let row = table_body.insertRow(-1);
-                        add_cell(row, {
-                            sort: print_date(action.createdAt),
-                            text: new Date(action.createdAt).toDateString()
-                        });
+                        add_cell(row, table_date(action.createdAt));
                         add_cell(row, {text: action._action});
                         add_cell(row, {append: 
                             new Link({

@@ -81,7 +81,6 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/receipts/show/getReceipt.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src="/js/data/send.js"></script>
 <script src="/js/tabs.js"></script>
 <script>showTab('<%= tab %>')</script>
 <script async>getReceipt()</script>
@@ -135,7 +134,10 @@
                 'DELETE',
                 `/canteen/receipts/${path[3]}`,
                 {
-                    onComplete: [getReceipt<% if (permissions.access_receipt_lines) { %>, getLines<% } %>]
+                    onComplete: [
+                        getReceipt, 
+                        function () {if (typeof getLines === 'function') getLines}
+                    ]
                 }
             );
             addFormListener(
@@ -143,7 +145,10 @@
                 'PUT',
                 `/canteen/receipts/${path[3]}`,
                 {
-                    onComplete: [getReceipt<% if (permissions.access_receipt_lines) { %>, getLines<% } %>]
+                    onComplete: [
+                        getReceipt, 
+                        function () {if (typeof getLines === 'function') getLines}
+                    ]
                 }
             );
         });

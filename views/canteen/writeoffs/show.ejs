@@ -76,7 +76,6 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/writeoffs/show/getWriteoff.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src="/js/data/send.js"></script>
 <script src="/js/tabs.js"></script>
 <script>showTab('<%= tab %>')</script>
 <script async>getWriteoff()</script>
@@ -118,7 +117,10 @@
                 'DELETE',
                 `/canteen/writeoffs/${path[3]}`,
                 {
-                    onComplete: [getWriteoff<% if (permissions.access_writeoff_lines) { %>, getLines<% } %>]
+                    onComplete: [
+                        getWriteoff,
+                        function () {if (typeof getLines === 'function') getLines}
+                    ]
                 }
             );
             addFormListener(
@@ -126,7 +128,10 @@
                 'PUT',
                 `/canteen/writeoffs/${path[3]}`,
                 {
-                    onComplete: [getWriteoff<% if (permissions.access_writeoff_lines) { %>, getLines<% } %>]
+                    onComplete: [
+                        getWriteoff,
+                        function () {if (typeof getLines === 'function') getLines}
+                    ]
                 }
             );
         });

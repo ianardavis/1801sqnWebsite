@@ -8,10 +8,7 @@ function getStockIssues(stock_id) {
                 lines.forEach(line => {
                     try {
                         let row = tbl_stock_issues.insertRow(-1);
-                        add_cell(row, {
-                            text: print_date(line.createdAt, true),
-                            sort: new Date (line.createdAt).getTime()
-                        });
+                        add_cell(row, table_date(line.createdAt, true));
                         add_cell(row, {text: print_user(line.issue.user_issue)});
                         add_cell(row, {text: line._qty});
                         if (line.return) add_cell(row, {html: '<i class="fas fa-check"></i>'})

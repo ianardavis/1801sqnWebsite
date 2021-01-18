@@ -10,10 +10,7 @@ function getLineNotes(options = {}) {
                 table_body.innerHTML = '';
                 notes.forEach(note => {
                     let row = table_body.insertRow(-1);
-                    add_cell(row, {
-                        sort: new Date(note.createdAt).getTime(),
-                        text: print_date(note.createdAt, true)
-                    });
+                    add_cell(row, table_date(note.createdAt, true));
                     add_cell(row, {text: yesno(note._system)})
                     add_cell(row, {text: note._note});
                     add_cell(row, {text: print_user(note.user)});

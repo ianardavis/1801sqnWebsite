@@ -9,10 +9,7 @@ function getOrders(status) {
                 tbl.innerHTML = '';
                 orders.forEach(order => {
                     let row = tbl.insertRow(-1);
-                    add_cell(row, {
-                        sort: print_date(order.createdAt),
-                        text: new Date(order.createdAt).toDateString()
-                    });
+                    add_cell(row, table_date(order.createdAt));
                     add_cell(row, {text: order.size.item._description});
                     add_cell(row, {text: order.size._size});
                     add_cell(row, {text: order._qty});

@@ -6,7 +6,7 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getDemand,
-                function () {if (typeof getLines === 'function') getLines('demand')}
+                function () {if (typeof getLines === 'function') getLines()}
             ]
         }
     );

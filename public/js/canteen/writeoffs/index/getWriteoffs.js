@@ -7,10 +7,7 @@ function getWriteoffs() {
             let table_body = document.querySelector('#tbl_writeoffs');
             writeoffs.forEach(writeoff => {
                 let row = table_body.insertRow(-1);
-                add_cell(row, {
-                    text: print_date(writeoff.createdAt),
-                    sort: new Date(writeoff.createdAt).getTime()
-                });
+                add_cell(row, table_date(writeoff.createdAt));
                 add_cell(row, {text: print_user(writeoff.user)});
                 add_cell(row, {text: writeoff._reason});
                 add_cell(row, {text: statuses[writeoff._status]});

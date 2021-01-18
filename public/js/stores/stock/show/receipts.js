@@ -6,10 +6,7 @@ showReceipts = (lines, options) => {
         receipt_count.innerText = lines.length || '0';
         lines.forEach(line => {
             let row = table_body.insertRow(-1);
-            add_cell(row, {
-                sort: new Date(line.receipt._date).getTime(),
-                text: new Date(line.receipt._date).toDateString()
-            });
+            add_cell(row, table_date(line.receipt.createdAt));
             add_cell(row, {text: line.stock.location._location});
             add_cell(row, {text: line._qty});
             add_cell(row, {append: new Link({

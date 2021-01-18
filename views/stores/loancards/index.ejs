@@ -1,0 +1,31 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Loancards'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'loancards'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+	<%- include(`${partials}/inputs/select`, {title: 'User',   id: 'sel_users',	 spinner: true, spinner_id: 'users', reload_id: 'reload_userss'}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Complete'}, {value: '_status=3', text: 'Closed'}]}) %>
+	<table class="table table-sm table-hover">
+		<thead class="thead-dark">
+			<th class="w-30" onclick="sortTable(0, 'tbl_loancards')">Date</th>
+			<th class="w-30" onclick="sortTable(1, 'tbl_loancards')">User</th>
+			<th class="w-15" onclick="sortTable(2, 'tbl_loancards')">Lines</th>
+			<th class="w-25" onclick="sortTable(3, 'tbl_loancards')">Status</th>
+			<th><i class="fas fa-search"></i></th>
+		</thead>
+		<tbody id="tbl_loancards"></tbody>
+	</table>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src='/js/stores/loancards/index/getLoancards.js'></script>
+<script src='/js/stores/utils/list/users.js'></script>
+<script async>listUsers({blank: true, blank_opt: {text: 'All'}})</script>
+<script async>loadGetLoancards()</script>
+<script>
+	window.addEventListener('load', function () {
+		document.querySelector('#reload_users').addEventListener('click', function () {listUsers({blank: true, blank_opt: {text: 'All'}})});
+	});
+</script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

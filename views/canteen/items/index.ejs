@@ -47,7 +47,6 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/items/index/getItems.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src="/js/data/send.js"></script>
 <script async>getItems()</script>
 <% if (permissions.item_add) { %>
     <script>
@@ -58,7 +57,7 @@
                 '/canteen/items',
                 {
                     onComplete: [
-                        window.getItems,
+                        getItems,
                         function () {$('#mdl_add_item').modal('hide')}
                     ]
                 }

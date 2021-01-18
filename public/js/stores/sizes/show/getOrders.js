@@ -9,10 +9,7 @@ function getOrders() {
                 orders.forEach(order => {
                     try {
                         let row = table_body.insertRow(-1);
-                        add_cell(row, {
-                            sort: new Date(order.createdAt).getTime(),
-                            text: print_date(order.createdAt)
-                        });
+                        add_cell(row, table_date(order.createdAt));
                         add_cell(row, {text: order._qty});
                         add_cell(row, {text: order_statuses[order._status]});
                         add_cell(row, {append: new Link({

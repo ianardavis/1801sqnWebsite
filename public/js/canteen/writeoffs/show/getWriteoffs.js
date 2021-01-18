@@ -20,9 +20,7 @@ function getWriteoff() {
                     } else if (id === 'createdAt') element.innerText = print_date(value);
                 } catch (error) {console.log(error)};
             };
-            let breadcrumb = document.querySelector('#breadcrumb');
-            breadcrumb.innerText = writeoff.writeoff_id;
-            breadcrumb.href = `/canteen/writeoffs/${writeoff.writeoff_id}`;
+            set_breadcrumb({text: writeoff.writeoff_id, href: `/canteen/writeoffs/${writeoff.writeoff_id}`});
         },
         {
             db: 'canteen',

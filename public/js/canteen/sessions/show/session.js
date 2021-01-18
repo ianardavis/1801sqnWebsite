@@ -24,9 +24,7 @@ function getSession() {
                     } else if (element) element.innerText = value;
                 } catch (error) {console.log(error)};
             };
-            let breadcrumb = document.querySelector('#breadcrumb');
-            breadcrumb.innerText = session.session_id;
-            breadcrumb.href = `/canteen/sessions/${session.session_id}`;
+            set_breadcrumb({text: session.session_id, href: `/canteen/sessions/${session.session_id}`});
         },
         {
             db:    'canteen',

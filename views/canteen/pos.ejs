@@ -89,7 +89,6 @@
 <script src="/js/canteen/pos/getPages.js"></script>
 <script src="/js/get.js"></script>
 <script src="/js/spinner.js"></script>
-<script src="/js/data/send.js"></script>
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>
@@ -130,17 +129,15 @@
             {
                 noConfirm: true,
                 onComplete: [
-                    window.getSale,
+                    // window.getSale,
+                    getSale,
+                    getUsers,
                     function (response) {
-                        let change   = document.querySelector('#change'),
-                            close    = document.querySelector('#btn_close_complete_sale'),
-                            complete = document.querySelector('#btn_complete_sale');
-                        change.innerText = `£${Number(response.change).toFixed(2)}`;
-                        close.classList.remove('hidden');
-                        complete.classList.add('hidden');
-                    },
-                    getUsers<% if (permissions.access_credits) { %>,
-                    getCredits<% } %>
+                        if (typeof getCredits === 'function') getCredits;
+                        set_innerText({id: 'change',                  text: `£${Number(response.change).toFixed(2)}`})
+                        remove_class( {id: 'btn_close_complete_sale', class: 'hidden'});
+                        add_class(    {id: 'btn_complete_sale',       class: 'hidden'});
+                    }
                 ]
             }
         );
