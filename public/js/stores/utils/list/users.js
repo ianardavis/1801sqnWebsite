@@ -10,11 +10,11 @@ function listUsers(options = {}) {
                 users.forEach(user => {
                     let value = '';
                     if (options.id_only) value = user.user_id
-                    else                 value = `user_id=${user.user_id}`
+                    else                 value = `user_id${options.append || ''}=${user.user_id}`
                     sel_users.appendChild(
                         new Option({
                             value:    value,
-                            text:     print|_user(user),
+                            text:     print_user(user),
                             selected: (options.selected === user.user_id)
                         }).e
                     )

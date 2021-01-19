@@ -7,17 +7,18 @@ module.exports = function (m) {
     m.users.users.hasMany(m.stores.issues,       {foreignKey: 'user_id_issue',    targetKey: 'user_id'});
     m.users.users.hasMany(m.stores.loancards,    {foreignKey: 'user_id_loancard', targetKey: 'user_id'});
     
-    m.stores.adjusts.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.accounts.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.issues.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_issue', constraints: false, as: 'user_issue'});
-    m.stores.issues.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false, as: 'user'});
-    m.stores.notes.hasOne(         m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.orders.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.actions.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.demands.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.demand_lines.hasOne(  m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.loancards.hasOne(     m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
-    m.stores.loancard_lines.hasOne(m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',       constraints: false});
+    m.stores.adjusts.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.accounts.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.issues.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_issue',    constraints: false, as: 'user_issue'});
+    m.stores.issues.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false, as: 'user'});
+    m.stores.notes.hasOne(         m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.orders.hasOne(        m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.actions.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.demands.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.demand_lines.hasOne(  m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.loancards.hasOne(     m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_loancard', constraints: false, as: 'user_loancard'});
+    m.stores.loancards.hasOne(     m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false, as: 'user'});
+    m.stores.loancard_lines.hasOne(m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     
     m.canteen.sessions.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_open',    constraints: false, as: 'user_open'});
     m.canteen.sessions.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_close',   constraints: false, as: 'user_close'});

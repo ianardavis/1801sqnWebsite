@@ -19,7 +19,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .then(sizes => {
             sizes.forEach(size => size.dataValues.locationStock = summer(size.stocks));
-            res.send({success: true, sizes: sizes})
+            res.send({success: true, result: sizes})
         })
         .catch(err => res.error.send(err, res));
     });
@@ -32,7 +32,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(size => {
-            if (size) res.send({success: true, size: size})
+            if (size) res.send({success: true, result: size})
             else      res.send({success: false, message: 'Size not found'});
         })
         .catch(err => res.error.send(err, res));

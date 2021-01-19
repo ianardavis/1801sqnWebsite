@@ -4,7 +4,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:   req.query,
             include: [inc.locations({as: 'location'})]
         })
-        .then(serials => res.send({success: true, serials: serials}))
+        .then(serials => res.send({success: true, result: serials}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/serial',     permissions, allowed('access_serials', {send: true}), (req, res) => {
@@ -12,7 +12,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:   req.query,
             include: [inc.locations({as: 'location'})]
         })
-        .then(serial => res.send({success: true, serial: serial}))
+        .then(serial => res.send({success: true, result: serial}))
         .catch(err => res.error.send(err, res));
     });
 

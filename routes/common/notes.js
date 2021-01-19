@@ -4,7 +4,7 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
             where:   req.query,
             include: [inc.users()]
         })
-        .then(notes => res.send({success: true, notes: notes}))
+        .then(notes => res.send({success: true, result: notes}))
         .catch(err => res.error.send(err, res));
     });
     app.get(`/${db}/get/note`,     permissions, allowed('access_notes', {send: true}), (req, res) => {
@@ -12,7 +12,7 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
             where:   req.query,
             include: [inc.users()]
         })
-        .then(note => res.send({success: true, note: note}))
+        .then(note => res.send({success: true, result: note}))
         .catch(err => res.error.send(err, res));
     });
 

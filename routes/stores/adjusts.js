@@ -7,7 +7,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
                 inc.stock({as: 'stock'})
             ]
         })
-        .then(adjusts => res.send({success: true, adjusts: adjusts}))
+        .then(adjusts => res.send({success: true, result: adjusts}))
         .catch(err => res.error.send(err, res));
     });
 

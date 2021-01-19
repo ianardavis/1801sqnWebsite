@@ -10,11 +10,12 @@
 		<% } else { %>
 			<% cards.push({href: `stores/users/${user.user_id}`, title: 'Your Account', image: 'user'}) %>
 		<% } %>
-		<% if (permissions.access_issues)   cards.push({href: '/stores/issues',   title: 'Issues',   image: 'address-card'}) %>
-		<% if (permissions.access_orders)   cards.push({href: '/stores/orders',	  title: 'Orders',   image: 'list'}) %>
-		<% if (permissions.access_demands)  cards.push({href: '/stores/demands',  title: 'Demands',  image: 'stream'}) %>
-		<% if (permissions.access_reports) 	cards.push({href: '/stores/reports',  title: 'Reports',  image: 'chart-pie'}) %>
-		<% if (permissions.access_settings) cards.push({href: '/stores/settings', title: 'Settings', image: 'cog'}) %>
+		<% if (permissions.access_issues)   cards.push({href: '/stores/issues',    title: 'Issues',    image: 'address-card'}) %>
+		<% if (permissions.access_issues)   cards.push({href: '/stores/loancards', title: 'Loancards', image: 'address-card'}) %>
+		<% if (permissions.access_orders)   cards.push({href: '/stores/orders',	   title: 'Orders',    image: 'list'}) %>
+		<% if (permissions.access_demands)  cards.push({href: '/stores/demands',   title: 'Demands',   image: 'stream'}) %>
+		<% if (permissions.access_reports) 	cards.push({href: '/stores/reports',   title: 'Reports',   image: 'chart-pie'}) %>
+		<% if (permissions.access_settings) cards.push({href: '/stores/settings',  title: 'Settings',  image: 'cog'}) %>
 		<div class="row container m-auto p-0 menu">
 			<% cards.forEach(card => { %>
 				<div class="col-md-6 col-lg-4 col-xl-3">
@@ -46,5 +47,9 @@
 	<% if (permissions.access_issues) { %>
 		<script async>getCount('issues',  ['_status=1'], {text: 'Requested', colour: 'danger',  float: 'left'})</script>
 		<script async>getCount('issues',  ['_status=2'], {text: 'Approved',  colour: 'warning', float: 'right'})</script>
+	<% } %>
+	<% if (permissions.access_loancards) { %>
+		<script async>getCount('loancards', ['_status=1'], {text: 'Draft', colour: 'danger',  float: 'left'})</script>
+		<script async>getCount('loancards', ['_status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
 	<% } %>
 	<%- include(`${partials}/foot/elements/htmlClose`) %>

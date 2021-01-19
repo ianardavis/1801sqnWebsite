@@ -6,7 +6,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         download       = require('../functions/download'),
         timestamp      = require('../functions/timestamps');
     // require('./functions/receipts')(m, receipts),
-    require('./functions/loancards') (m, loancards),
+    require('./functions/loancards') (m, inc, loancards),
     app.get('/stores/loancards',              loggedIn, allowed('access_loancards'),                    (req, res) => res.render('stores/loancards/index'));
     app.get('/stores/loancards/:id',          loggedIn, allowed('access_loancards'),                    (req, res) => res.render('stores/loancards/show'));
     app.get('/stores/loancards/:id/download', loggedIn, allowed('access_loancards'),                    (req, res) => {
@@ -21,6 +21,14 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
+    app.get('/stores/count/loancards',        loggedIn, allowed('access_loancards',      {send: true}), (req, res) => {
+        m.stores.loancards.count({where: req.query})
+        .then(count => res.send({success: true, result: count}))
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: 'Error counting loancards'})
+        });
+    });
     app.get('/stores/get/loancard',           loggedIn, allowed('access_loancards',      {send: true}), (req, res) => {
         m.stores.loancards.findOne({
             where: req.query,

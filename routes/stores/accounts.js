@@ -9,7 +9,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             where:   req.query,
             include: [inc.users()]
         })
-        .then(accounts => res.send({success: true, accounts: accounts}))
+        .then(accounts => res.send({success: true, result: accounts}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/account',       loggedIn, allowed('access_accounts', {send: true}), (req, res) => {
@@ -18,7 +18,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             include: [inc.users()]
         })
         .then(account => {
-            if (account) res.send({success: true,  account: account})
+            if (account) res.send({success: true,  result: account})
             else         res.send({success: false, message: 'Account not found'});
         })
         .catch(err => res.error.send(err, res));

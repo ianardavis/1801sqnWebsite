@@ -32,6 +32,7 @@ module.exports = function (m) {
     m.loancard_lines.hasOne(        m.nsns,                {foreignKey: 'nsn_id',                sourceKey: 'nsn_id',                constraints: false});
     m.loancard_lines.belongsTo(     m.loancards,           {foreignKey: 'loancard_id',           targetKey: 'loancard_id'});
     m.loancard_lines.hasMany(       m.actions,             {foreignKey: 'loancard_line_id',      sourceKey: 'line_id'});
+    m.loancards.hasMany(            m.loancard_lines,      {foreignKey: 'loancard_id',           sourceKey: 'loancard_id', as: 'lines'});
     m.locations.hasMany(            m.stocks,              {foreignKey: 'location_id',           targetKey: 'location_id'});
     m.locations.hasMany(            m.serials,             {foreignKey: 'location_id',           targetKey: 'location_id'});
     m.nsns.belongsTo(               m.sizes,               {foreignKey: 'size_id',               targetKey: 'size_id'});

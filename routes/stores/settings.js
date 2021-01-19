@@ -32,7 +32,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:      req.query,
             attributes: ['_name', '_value']
         })
-        .then(settings => res.send({success: true, settings: settings}))
+        .then(settings => res.send({success: true, result: settings}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/setting',             permissions, allowed('access_settings', {send: true}), (req, res) => {

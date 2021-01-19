@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores',		    text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		      text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores/loancards', text: 'Loancards'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
@@ -30,16 +30,16 @@
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line', permission: 'access_loancard_lines'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 	   count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 	   	 count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'supplier',  title: 'Supplier',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user',		title: 'Raised By', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_status',   title: 'Status'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'file',   	title: 'Filename'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user_loancard', title: 'User',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'createdAt', 	title: 'Date'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', 	title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: '_status',   	title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'file',   		title: 'Filename'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'user',			title: 'Raised By', link: true}) %>
 		</div>
 		<% if (permissions.access_loancard_lines) { %>
 			<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">

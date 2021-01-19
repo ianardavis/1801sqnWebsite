@@ -235,7 +235,7 @@ module.exports = (app, allowed, permissions, m, db) => {
             where: req.query,
             attributes: ['permission_id', '_permission', 'createdAt']
         })
-        .then(permissions => res.send({success: true, permissions: {permissions: permissions, tree: permission_tree[db]}}))
+        .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree[db]}}))
         .catch(err => res.error.send(err, res));
     });
     app.put(`/${db}/permissions/:id`,    permissions, allowed('permission_edit',    {send: true}), (req, res) => {

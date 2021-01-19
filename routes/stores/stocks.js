@@ -4,7 +4,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:   req.query,
             include: [inc.locations({as: 'location'})],
         })
-        .then(stocks => res.send({success: true, stocks: stocks}))
+        .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/stock',    permissions, allowed('access_stock', {send: true}), (req, res) => {
@@ -15,7 +15,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.locations({as: 'location'})
             ],
         })
-        .then(stock => res.send({success: true, stock: stock}))
+        .then(stock => res.send({success: true, result: stock}))
         .catch(err => res.error.send(err, res));
     });
 

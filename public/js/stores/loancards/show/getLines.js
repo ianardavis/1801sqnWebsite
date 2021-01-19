@@ -16,8 +16,8 @@ function getLines() {
                         add_cell(row, {text: line.size._size});
                         add_cell(row, {text: line._qty});
                         if (
-                            (line._status === 1 && line.demand._status === 1) ||
-                            (line._status === 2 && line.demand._status === 2)
+                            (line._status === 1 && line.loancard._status === 1) ||
+                            (line._status === 2 && line.loancard._status === 2)
                         ) {
                             add_cell(row, {
                                 text: line_statuses[line._status],
@@ -33,7 +33,7 @@ function getLines() {
                                 small: true,
                                 modal: 'line_view',
                                 data: {
-                                    field: `demand_line_id`,
+                                    field: `loancard_line_id`,
                                     value: line.line_id
                                 }
                             }).e
@@ -47,15 +47,14 @@ function getLines() {
             lines_loaded = true;
         },
         {
-            table: 'demand_lines',
-            query: [`demand_id=${path[3]}`, sel_status.value]
+            table: 'loancard_lines',
+            query: [`loancard_id=${path[3]}`, sel_status.value]
         }
     );
 };
 function showLine(event) {
     get(
         function (line, options) {
-            console.log(line);
             set_innerText({id: 'line_id_view',        text: line.line_id});
             set_innerText({id: 'line_item_view',      text: line.size.item._description});
             set_attribute({id: 'line_item_view_link', attribute: 'href', value: `/stores/items/${line.size.item_id}`});
@@ -68,8 +67,8 @@ function showLine(event) {
             set_innerText({id: 'line_updatedAt_view', text: print_date(line.updatedAt, true)});
         },
         {
-            table: 'demand_line',
-            query: [`line_id=${event.relatedTarget.dataset.demand_line_id}`]
+            table: 'loancard_line',
+            query: [`line_id=${event.relatedTarget.dataset.loancard_line_id}`]
         }
     );
 };

@@ -5,7 +5,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
     
     app.get('/stores/get/files',      loggedIn, allowed('access_files', {send: true}), (req, res) => {
         m.stores.files.findAll({where: req.query})
-        .then(files => res.send({success: true, files: files}))
+        .then(files => res.send({success: true, result: files}))
         .catch(err => res.error.send(err, res));
     });
 

@@ -10,7 +10,7 @@ function getLoancards() {
                 loancards.forEach(loancard => {
                     let row = table_body.insertRow(-1);
                     add_cell(row, table_date(loancard.createdAt));
-                    add_cell(row, {text: print_user(user)});
+                    add_cell(row, {text: print_user(loancard.user_loancard)});
                     add_cell(row, {text: loancard.lines.length});
                     add_cell(row, {text: statuses[loancard._status]});
                     add_cell(row, {append: new Link({href: `/stores/loancards/${loancard.loancard_id}`, small: true}).e});

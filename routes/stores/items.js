@@ -14,7 +14,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.genders()
             ]
         })
-        .then(items => res.send({success: true, items: items}))
+        .then(items => res.send({success: true, result: items}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/item',       permissions, allowed('access_items',      {send: true}), (req, res) => {
@@ -29,34 +29,34 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(item => {
-            if (item) res.send({success: true,  item: item})
+            if (item) res.send({success: true,  result: item})
             else      res.send({success: false, message: 'Item not found'});
         })
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/genders',    permissions, allowed('access_genders',    {send: true}), (req, res) => {
         m.stores.genders.findAll({where: req.query})
-        .then(genders => res.send({success: true, genders: genders}))
+        .then(genders => res.send({success: true, result: genders}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/categories', permissions, allowed('access_categories', {send: true}), (req, res) => {
         m.stores.categories.findAll({where: req.query})
-        .then(categories => res.send({success: true, categories: categories}))
+        .then(categories => res.send({success: true, result: categories}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/groups',     permissions, allowed('access_groups',     {send: true}), (req, res) => {
         m.stores.groups.findAll({where: req.query})
-        .then(groups => res.send({success: true, groups: groups}))
+        .then(groups => res.send({success: true, result: groups}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/types',      permissions, allowed('access_types',      {send: true}), (req, res) => {
         m.stores.types.findAll({where: req.query})
-        .then(types => res.send({success: true, types: types}))
+        .then(types => res.send({success: true, result: types}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/subtypes',   permissions, allowed('access_subtypes',   {send: true}), (req, res) => {
         m.stores.subtypes.findAll({where: req.query})
-        .then(subtypes => res.send({success: true, subtypes: subtypes}))
+        .then(subtypes => res.send({success: true, result: subtypes}))
         .catch(err => res.error.send(err, res));
     });
 

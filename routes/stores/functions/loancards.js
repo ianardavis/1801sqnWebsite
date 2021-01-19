@@ -155,7 +155,7 @@ module.exports = function (m, inc, loancard) {
                     _status:          1
                 },
                 defaults: {
-                    user_id: options.user_id,
+                    user_id:   options.user_id,
                     _date_due: options._date_due || Date.now()
                 }
             })

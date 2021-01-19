@@ -21,7 +21,16 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.get('/stores/get/demand',          loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
+    app.get('/stores/count/demands',        loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
+        m.stores.demands.count({where: req.query})
+        .then(count => res.send({success: true, result: count}))
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: 'Error counting demands'})
+        });
+    });
+    
+    app.get('/stores/get/demand',           loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
         m.stores.demands.findOne({
             where: req.query,
             include: [
@@ -36,7 +45,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/demands',         loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
+    app.get('/stores/get/demands',          loggedIn, allowed('access_demands',      {send: true}), (req, res) => {
         m.stores.demands.findAll({
             where:   req.query,
             include: [
@@ -48,7 +57,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(demands => res.send({success: true, result: demands}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/demand_lines',    loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
+    app.get('/stores/get/demand_lines',     loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
         m.stores.demand_lines.findAll({
             where:   req.query,
             include: [
@@ -60,7 +69,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/demand_line',     loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
+    app.get('/stores/get/demand_line',      loggedIn, allowed('access_demand_lines', {send: true}), (req, res) => {
         m.stores.demand_lines.findOne({
             where:   req.query,
             include: [
@@ -74,7 +83,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/demands',            loggedIn, allowed('demand_add',          {send: true}), (req, res) => {
+    app.post('/stores/demands',             loggedIn, allowed('demand_add',          {send: true}), (req, res) => {
         demands.create({
             demand: {
                 supplier_id: req.body.supplier_id,
@@ -88,7 +97,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/stores/demands/raise/:id',   loggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
+    app.put('/stores/demands/raise/:id',    loggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
         raise_demand(req.params.id, req.user.user_id)
         .then(result => res.send(result))
         .catch(err => {
@@ -96,7 +105,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             res.send({success: false, message: `Error raising demand: ${err.message}`})
         });
     });
-    app.put('/stores/demands/:id',         loggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
+    app.put('/stores/demands/:id',          loggedIn, allowed('demand_edit',         {send: true}), (req, res) => {
         if (Number(req.body._status) === 2) {
             complete_demand(req.params.id, req.user.user_id)
             .then(filename => res.send({success: true,  message: `Demand completed. Filename: ${filename}`}))
@@ -113,7 +122,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             });
         } else                res.send({success: false, message: 'Invalid request'});
     });
-    app.put('/stores/demand_lines/:id',    loggedIn, allowed('receipt_add',         {send: true}), (req, res) => {
+    app.put('/stores/demand_lines/:id',     loggedIn, allowed('receipt_add',         {send: true}), (req, res) => {
         m.stores.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['demand_id', 'supplier_id']
@@ -215,7 +224,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/demands/:id',      loggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
+    app.delete('/stores/demands/:id',       loggedIn, allowed('demand_delete',       {send: true}), (req, res) => {
         m.stores.demands.findOne({
             where:      {demand_id: req.params.id},
             include:    [inc.demand_lines({where: {_status: {[op.not]: 0}}})],
@@ -255,7 +264,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             res.send({success: false, message: `Error getting demand: ${err.message}`});
         });
     });
-    app.delete('/stores/demand_lines/:id', loggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => {
+    app.delete('/stores/demand_lines/:id',  loggedIn, allowed('demand_line_delete',  {send: true}), (req, res) => {
         m.stores.demand_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status']

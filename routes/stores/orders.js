@@ -13,7 +13,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(count => res.send({success: true, result: count}))
         .catch(err => {
             console.log(err);
-            res.send({success: false, message: 'Error counting lines'})
+            res.send({success: false, message: 'Error counting orders'})
         });
     });
 
@@ -107,7 +107,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    
+
     function demand_orders(lines, user_id) {
         return new Promise((resolve, reject) => {
             return allowed(m.stores.permissions, user_id, 'demand_line_add')
@@ -176,7 +176,7 @@ module.exports = (app, al, inc, pm, m) => {
         return new Promise((resolve, reject) => {
             let suppliers = [];
             orders.forEach(order => {
-                let index = suppliers.findIndex(e => e.supplier_id === order.size.supplier__id)
+                let index = suppliers.findIndex(e => e.supplier_id === order.size.supplier_id)
                 if (index === -1) {
                     suppliers.push({
                         supplier_id: order.size.supplier_id,

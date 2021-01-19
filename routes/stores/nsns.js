@@ -9,7 +9,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.sizes({attributes: ['nsn_id']})
             ]
         })
-        .then(nsns => res.send({success: true, nsns: nsns}))
+        .then(nsns => res.send({success: true, result: nsns}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/nsn',                 permissions, allowed('access_nsns', {send: true}), (req, res) => {
@@ -23,7 +23,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ]
         })
         .then(nsn => {
-            if (nsn) res.send({success: true, nsn: nsn})
+            if (nsn) res.send({success: true, result: nsn})
             else     res.send({success: false, message: 'NSN not found'});
         })
         .catch(err => res.error.send(err, res));
@@ -32,21 +32,21 @@ module.exports = (app, allowed, inc, permissions, m) => {
         m.stores.nsn_groups.findAll({
             where: req.query
         })
-        .then(nsn_groups => res.send({success: true, nsn_groups: nsn_groups}))
+        .then(nsn_groups => res.send({success: true, result: nsn_groups}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/nsn_classifications', permissions, allowed('access_nsns', {send: true}), (req, res) => {
         m.stores.nsn_classifications.findAll({
             where: req.query
         })
-        .then(nsn_classifications => res.send({success: true, nsn_classifications: nsn_classifications}))
+        .then(nsn_classifications => res.send({success: true, result: nsn_classifications}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/nsn_countries',       permissions, allowed('access_nsns', {send: true}), (req, res) => {
         m.stores.nsn_countries.findAll({
             where: req.query
         })
-        .then(nsn_countries => res.send({success: true, nsn_countries: nsn_countries}))
+        .then(nsn_countries => res.send({success: true, result: nsn_countries}))
         .catch(err => res.error.send(err, res));
     });
 
