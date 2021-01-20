@@ -21,6 +21,15 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
+    app.get('/stores/loancards/:id/raise',    loggedIn, allowed('access_loancards'),                    (req, res) => {
+        loancards.createPDF(req.params.id)
+        .then(loancard => res.send({success: true, message: 'Loancard raised'}))
+        .catch(err => {
+            console.log(err);
+            res.send({success: false, message: `Error raising loancard: ${err.message}`});
+        });
+    });
+
     app.get('/stores/count/loancards',        loggedIn, allowed('access_loancards',      {send: true}), (req, res) => {
         m.stores.loancards.count({where: req.query})
         .then(count => res.send({success: true, result: count}))

@@ -22,7 +22,7 @@ module.exports = (app, al, inc, pm, m) => {
             res.redirect('/stores/issues');
         })
     });
-    
+
     app.get('/stores/count/issues',  pm, al('access_issues', {allow: true, send: true}), (req, res) => {
         if (!allowed) req.query.user_id_issue = req.user.user_id;
         m.stores.issues.count({where: req.query})
@@ -93,13 +93,12 @@ module.exports = (app, al, inc, pm, m) => {
             });
         };
     });
-    
+
     app.put('/stores/issues',        pm, al('issue_edit',    {allow: true, send: true}), (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e._status === '0').forEach(line => actions.push(decline_line(line, req.user.user_id)));
         req.body.lines.filter(e => e._status === '2').forEach(line => actions.push(approve_line(line, req.user.user_id)));
         req.body.lines.filter(e => e._status === '3').forEach(line => actions.push(order_line(  line, req.user.user_id)));
-        // req.body.lines.filter(e => e._status === '4').forEach(line => actions.push(issue_line(  line, req.user.user_id)));
         actions.push(issue_lines(req.body.lines.filter(e => e._status === '4'), req.user.user_id));
         Promise.allSettled(actions)
         .then(results => {
@@ -110,7 +109,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.send({success: false, message: 'Some lines failed'}));
     });
-    
+
     app.delete('/stores/issues/:id', pm, al('issue_delete',  {allow: true, send: true}), (req, res) => {
         m.stores.issues.findOne({
             where:      {issue_id: req.params.id},
@@ -163,12 +162,12 @@ module.exports = (app, al, inc, pm, m) => {
             .catch(err => reject(err));
         });
     };
-    function get_issue(issue_id) {
+    function get_issue(issue_id, include = []) {
         return new Promise((resolve, reject) => {
             return m.stores.issues.findOne({
                 where:      {issue_id: issue_id},
                 attributes: ['issue_id', 'user_id_issue', 'size_id', '_qty', '_status'],
-                include:    [inc.sizes({attributes: ['size_id', '_orderable', '_issueable', '_nsns', '_serials']})]
+                include:    include
             })
             .then(issue => {
                 if (!issue) reject(new Error('Issue not found'))
@@ -310,52 +309,48 @@ module.exports = (app, al, inc, pm, m) => {
         return new Promise((resolve, reject) => {
             return allowed(m.stores.permissions, user_id, 'order_add')
             .then(result => {
-                return get_issue(line.issue_id)
+                let include = [inc.sizes({attributes: ['size_id', '_orderable', '_issueable', '_nsns', '_serials']})];
+                return get_issue(line.issue_id, include)
                 .then(issue => {
                     if      (issue._status !== 2)    reject(new Error('Only approved orders can be ordered'))
+                    else if (!issue.size)            reject(new Error('Size not found'))
+                    else if (!issue.size._orderable) reject(new Error('This size can not be ordered'))
                     else {
-                        return get_size(issue.size_id)
-                        .then(size => {
-                            if (!size._orderable) reject(new Error('This size can not be ordered'))
-                            else {
-                                return orders.create(
-                                    {
-                                        size_id: size.size_id,
-                                        _qty: issue._qty
-                                    },
-                                    user_id,
-                                    {
-                                        note: ' from issue',
-                                        table: {
-                                            column: 'issue_id',
-                                            id:     issue.issue_id
+                        return orders.create(
+                            {
+                                size_id: issue.size_id,
+                                _qty:    issue._qty
+                            },
+                            user_id,
+                            {
+                                note: ' from issue',
+                                table: {
+                                    column: 'issue_id',
+                                    id:     issue.issue_id
+                                }
+                            }
+                        )
+                        .then(order => {
+                            return issue.update({_status: 3})
+                            .then(result => {
+                                if (!result) reject(new Error('Issue not updated'))
+                                else {
+                                    return create_action(
+                                        'Issue ordered',
+                                        user_id,
+                                        {
+                                            issue_id: issue.issue_id,
+                                            order_id: order.order_id,
                                         }
-                                    }
-                                )
-                                .then(order => {
-                                    return issue.update({_status: 3})
-                                    .then(result => {
-                                        if (!result) reject(new Error('Issue not updated'))
-                                        else {
-                                            return create_action(
-                                                'Issue ordered',
-                                                user_id,
-                                                {
-                                                    issue_id: issue.issue_id,
-                                                    order_id: order.order_id,
-                                                }
-                                            )
-                                            .then(action => resolve({success: true, message: 'Order incremented'}))
-                                            .catch(err =>   resolve({success: true, message: `Order incremented. Error creating issue action: ${err.message}`}));
-                                        };
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                        resolve({success: true, message: `Order incremented. Error updating issue: ${err.message}`});
-                                    });
-                                })
-                                .catch(err => reject(err));
-                            };
+                                    )
+                                    .then(action => resolve({success: true, message: 'Order incremented'}))
+                                    .catch(err =>   resolve({success: true, message: `Order incremented. Error creating issue action: ${err.message}`}));
+                                };
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                resolve({success: true, message: `Order incremented. Error updating issue: ${err.message}`});
+                            });
                         })
                         .catch(err => reject(err));
                     };
@@ -366,46 +361,74 @@ module.exports = (app, al, inc, pm, m) => {
         });
     };
 
+    function get_issues(lines) {
+        return new Promise((resolve, reject) => {
+            let actions = [];
+            lines.forEach(line => {
+                let include = [];
+                if (line.serial_id) include.push(inc.serials({where: {serial_id: line.serial_id}, attributes: ['serial_id']}));
+                if (line.stock_id)  include.push(inc.stocks( {where: {stock_id:  line.stock_id},  attributes: ['stock_id']}));
+                if (line.nsn_id)    include.push(inc.nsns(   {where: {nsn_id:    line.nsn_id},    attributes: ['nsn_id']}));
+                actions.push(
+                    new Promise((resolve, reject) => {
+                        get_issue(
+                            line.issue_id,
+                            [
+                                inc.sizes({
+                                    attributes: ['size_id', '_serials', '_nsns', '_issueable', '_orderable'],
+                                    include:    include
+                                })
+                            ]
+                        )
+                        .then(issue => {
+                            if      (!issue.size)                                      reject(new Error('Size not found'))
+                            else if (issue.size._nsns && !line.nsn_id)                 reject(new Error('No NSN specified'))
+                            else if (issue.size._nsns && size.nsns.length === 0)       reject(new Error('NSN not found'))
+                            else if (issue.size._serials && !line.serial_id)           reject(new Error('No Serial # specified'))
+                            else if (issue.size._serials && size.serials.length === 0) reject(new Error('Serial # not found'))
+                            else                                                       resolve(issue);
+                        })
+                        .catch(err => reject(err));
+                    })
+                );
+            });
+            Promise.allSettled(actions)
+            .then(results => {
+                let issues = [];
+                results.filter(e => e.status === 'fulfilled').forEach(issue => issues.push(issue.value));
+                if (issues.length === 0) {
+                    console.log(results);
+                    reject(new Error('No valid issues'))
+                } else resolve(issues);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function sort_issues(issues) {
+        return new Promise((resolve, reject) => {
+            let users = [];
+            issues.forEach(issue => {
+                let index = users.findIndex(e => e.user_id_issue === issue.user_id_issue)
+                if (index === -1) {
+                    users.push({
+                        user_id_issue: issue.user_id_issue,
+                        issues:        [issue]
+                    })
+                } else users[index].issues.push(issue);
+            });
+            resolve(users);
+        });
+    };
     function issue_lines(lines, user_id) {
         return new Promise((resolve, reject) => {
             return allowed(m.stores.permissions, user_id, 'loancard_line_add')
             .then(result => {
-                if (!lines || lines.length === 0) reject(new Error('No lines'))
+                if (!lines || lines.length === 0) reject(new Error('No lines to issue'))
                 else {
-                    let get_issues = [], users = [];
-                    lines.forEach(line => get_issues.push(
-                        new Promise((resolve, reject) => {
-                            return get_issue(line.issue_id)
-                            .then(issue => {
-                                if (issue._status !== 2 && issue._status !== 3) reject(new Error('Only approved or ordered lines can be issued'))
-                                else {
-                                    let include = [];
-                                    if (line.nsn_id) include.push(inc.nsns({where: {nsn_id: line.nsn_id}, attributes: ['nsn_id']}));
-                                    return get_size(issue.size_id, include)
-                                    .then(size => {
-                                        if      (size._nsns && !line.nsn_id)           reject(new Error('No NSN specified'))
-                                        else if (size._nsns && size.nsns.length === 0) reject(new Error('NSN not found'))
-                                        else {
-                                            let index = users.findIndex(e => e.user_id_issue === issue.user_id_issue)
-                                            if (index === -1) {
-                                                users.push({
-                                                    user_id_issue: issue.user_id_issue,
-                                                    issues:        [{issue: issue, size: size, line: line}]
-                                                })
-                                            } else users[index].issues.push({issue: issue, size: size, line: line});
-                                            resolve(true);
-                                        };
-                                    })
-                                    .catch(err => reject(err));
-                                };
-                            })
-                            .catch(err => reject(err));
-                        })
-                    ))
-                    return Promise.allSettled(get_issues)
+                    return get_issues(lines)
                     .then(issues => {
-                        if (users.length === 0) reject(new Error('No valid issues'))
-                        else {
+                        return sort_issues(issues)
+                        .then(users => {
                             let actions = [];
                             users.forEach(user => {
                                 actions.push(
@@ -416,7 +439,7 @@ module.exports = (app, al, inc, pm, m) => {
                                         })
                                         .then(loancard => {
                                             user.issues.forEach(issue => {
-                                                issue_line(issue.issue, issue.size, issue.line, user_id, loancard.loancard_id)
+                                                issue_line(issue, user_id, loancard.loancard_id)
                                             });
                                         })
                                         .catch(err => reject(err));
@@ -426,7 +449,8 @@ module.exports = (app, al, inc, pm, m) => {
                             Promise.all(actions)
                             .then(results => resolve(true))
                             .catche(err => reject(err));
-                        };
+                        })
+                        .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
                 };
@@ -434,28 +458,28 @@ module.exports = (app, al, inc, pm, m) => {
             .catch(err => reject(err));
         });
     };
-    function issue_line(issue, size, line, user_id, loancard_id) {
+    function issue_line(issue, user_id, loancard_id) {
         return new Promise((resolve, reject) => {
             let details = {
                     issue_id:    issue.issue_id,
-                    size_id:     size.size_id,
+                    size_id:     issue.size.size_id,
                     user_id:     user_id,
                     loancard_id: loancard_id
                 },
                 issue_action = null;
-            if (size.nsns.length === 1) details.nsn_id = size.nsns[0].nsn_id;
-            if (size._serials) {
-                details.serial_id = line.serial_id;
+            if (issue.size.nsns.length === 1) details.nsn_id = issue.size.nsns[0].nsn_id;
+            if (issue.size._serials) {
+                details.serial_id = issue.size.serials[0].serial_id;
                 issue_action = issue_line_serial(details);
             } else {
-                details.stock_id = line.stock_id;
+                details.stock_id = issue.size.stocks[0].stock_id;
                 issue_action = issue_line_stock(details);
             };
             return issue_action
             .then(action => {
                 return issue.update({_status: 4})
                 .then(result => {
-                    return create_action(action._action, user_id, action.action)
+                    return create_action('Issue added to loancard', user_id, action)
                     .then(action => resolve({success: true, message: 'Line added to loancard'}))
                     .catch(err =>   resolve({success: true, message: `Line added to loancard. Error creating action: ${err.message}`}));
                 })
@@ -481,10 +505,10 @@ module.exports = (app, al, inc, pm, m) => {
                     else if (serial.issue_id) reject(new Error('Serial # is currently issued'))
                     else {
                         let loancard_details = {
-                            size_id:   options.size_id,
-                            serial_id: serial.serial_id,
-                            _qty:      1,
-                            user_id:   options.user_id,
+                            size_id:     options.size_id,
+                            serial_id:   serial.serial_id,
+                            _qty:        1,
+                            user_id:     options.user_id,
                             loancard_id: options.loancard_id
                         };
                         if (options.nsn_id) loancard_details.nsn_id = options.nsn_id;
@@ -501,10 +525,7 @@ module.exports = (app, al, inc, pm, m) => {
                                 if (!result) reject(new Error('Serial # not updated'))
                                 else {
                                     if (options.nsn_id) action.nsn_id = options.nsn_id;
-                                    resolve({
-                                        _action: 'Issue added to loancard',
-                                        action:  action
-                                    })
+                                    resolve(action);
                                 };
                             })
                             .catch(err => reject(err));
@@ -552,10 +573,7 @@ module.exports = (app, al, inc, pm, m) => {
                                             stock_id:         stock.stock_id
                                         };
                                     if (options.nsn_id) action.nsn_id = options.nsn_id;
-                                    resolve({
-                                        _action: 'Issue added to loancard',
-                                        action:  action
-                                    })
+                                    resolve(action);
                                 };
                             })
                             .catch(err => reject(err));

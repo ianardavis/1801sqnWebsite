@@ -21,4 +21,12 @@ function getLoancard() {
         }
     );
 };
+window.addEventListener('load', function () {
+    addFormListener(
+        'form_raise',
+        'GET',
+        `/stores/loancards/${path[3]}/raise`,
+        {onComplete: getLoancard}
+    );
+});
 document.querySelector('#reload').addEventListener('click', getLoancard);
