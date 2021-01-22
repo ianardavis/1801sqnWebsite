@@ -64,7 +64,7 @@ function getLineActions() {
                 };
             },
             {
-                table: 'demand_line',
+                table: 'loancard_line',
                 query: [`line_id=${e.dataset.line_id}`]
             }
         );
@@ -184,18 +184,15 @@ function setActions() {
         500
     );
 };
-window.addEventListener( "load", function () {
-    document.querySelector('#reload').addEventListener('click', setActions);
-    addFormListener(
-        'form_action',
-        'PUT',
-        `/stores/demand_lines/${path[3]}`,
+function setLineButtons() {
+    get(
+        function(loancard, options) {
+            set_attribute({id: `btn_action`, attribute: 'disabled', value: true});
+            if (loancard._status === 2) remove_attribute({id: 'btn_action', attribute: 'disabled'});
+        },
         {
-            onComplete: [
-                getLines,
-                setActions,
-                function () {setLineButtons('demand')}
-            ]
+            table: 'loancard',
+            query: [`loancard_id=${path[3]}`]
         }
     );
-});
+};

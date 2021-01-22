@@ -5,7 +5,6 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         counter        = require('../functions/counter'),
         download       = require('../functions/download'),
         timestamp      = require('../functions/timestamps');
-    // require('./functions/receipts')(m, receipts),
     require('./functions/loancards') (m, inc, loancards),
     app.get('/stores/loancards',              loggedIn, allowed('access_loancards'),                    (req, res) => res.render('stores/loancards/index'));
     app.get('/stores/loancards/:id',          loggedIn, allowed('access_loancards'),                    (req, res) => res.render('stores/loancards/show'));
@@ -19,15 +18,6 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             else res.error.redirect(new Error('No file found'), req, res);
         })
         .catch(err => res.error.redirect(err, req, res));
-    });
-
-    app.get('/stores/loancards/:id/raise',    loggedIn, allowed('access_loancards'),                    (req, res) => {
-        loancards.createPDF(req.params.id)
-        .then(loancard => res.send({success: true, message: 'Loancard raised'}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error raising loancard: ${err.message}`});
-        });
     });
 
     app.get('/stores/count/loancards',        loggedIn, allowed('access_loancards',      {send: true}), (req, res) => {
@@ -105,30 +95,34 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/stores/loancards/raise/:id',    loggedIn, allowed('loancard_edit',         {send: true}), (req, res) => {
-        raise_loancard(req.params.id, req.user.user_id)
-        .then(result => res.send(result))
+    app.put('/stores/loancards/raise/:id',    loggedIn, allowed('access_loancards'),                    (req, res) => {
+        loancards.createPDF(req.params.id)
+        .then(loancard => res.send({success: true, message: 'Loancard raised'}))
         .catch(err => {
             console.log(err);
-            res.send({success: false, message: `Error raising loancard: ${err.message}`})
+            res.send({success: false, message: `Error raising loancard: ${err.message}`});
         });
     });
     app.put('/stores/loancards/:id',          loggedIn, allowed('loancard_edit',         {send: true}), (req, res) => {
         if (Number(req.body._status) === 2) {
             complete_loancard(req.params.id, req.user.user_id)
-            .then(filename => res.send({success: true,  message: `Loancard completed. Filename: ${filename}`}))
+            .then(result => {
+                return loancards.createPDF(req.params.id)
+                .then(filename => res.send({success: true, message: `Loancard completed. Filename: ${filename}`}))
+                .catch(err =>     res.send({success: true, message: `Loancard completed. Error creating PDF: ${err.message}`}))
+            })
             .catch(err => {
                 console.log(err);
                 res.send({success: false, message: `Error completing loancard: ${err.message}`});
             });
         } else if (Number(req.body._status) === 3) {
             close_loancard(req.params.id, req.user.user_id)
-            .then(result =>   res.send({success: true,  message: 'Loancard closed.'}))
+            .then(result => res.send({success: true, message: 'Loancard closed.'}))
             .catch(err => {
                 console.log(err);
                 res.send({success: false, message: `Error closing loancard: ${err.message}`});
             });
-        } else                res.send({success: false, message: 'Invalid request'});
+        } else res.send({success: false, message: 'Invalid request'});
     });
     app.put('/stores/loancard_lines/:id',     loggedIn, allowed('receipt_add',           {send: true}), (req, res) => {
         m.stores.loancards.findOne({
@@ -310,4 +304,136 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             res.send({success: false, message: `Error getting line: ${err.message}`});
         });
     });
+
+    function get_loancard(loancard_id) {
+        return new Promise((resolve, reject) => {
+            return m.stores.loancards.findOne({
+                where: {loancard_id: loancard_id},
+                includes: [
+                    // inc.users({as: 'user'}),
+                    // inc.users({as: 'user_loancard'})
+                ]
+            })
+            .then(loancard => {
+                if (!loancard) reject(new Error('Loancard not found'))
+                else resolve(loancard);
+            })
+            .catch(err => reject(err));
+        })
+    };
+    function get_loancard_lines(loancard_id, _status) {
+        return new Promise((resolve, reject) => {
+            return m.stores.loancard_lines.findAll({
+                where: {
+                    loancard_id: loancard_id,
+                    _status:     _status
+                },
+                include: [
+                    // inc.users(),
+                    // inc.sizes()
+                ]
+            })
+            .then(lines => {
+                if (!lines || lines.length === 0) reject(new Error('No lines'))
+                else resolve(lines);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function complete_loancard(loancard_id, user_id) {
+        return new Promise((resolve, reject) => {
+            return get_loancard(loancard_id)
+            .then(loancard => {
+                if (loancard._status !== 1) reject(new Error('Loancard is not in draft'))
+                else {
+                    return get_loancard_lines(loancard_id, 1)
+                    .then(lines => {
+                        if (!lines || lines.length === 0) reject(new Error('No lines'))
+                        else {
+                            return loancard.update({_status: 2})
+                            .then(result => {
+                                if (!result) reject(new Error('Loancard not updated'))
+                                else {
+                                    return m.stores.loancard_lines.update(
+                                        {_status: 2},
+                                        {where: {
+                                            loancard_id: loancard_id,
+                                            _status: 1
+                                        }}
+                                    )
+                                    .then(result => {
+                                        if (!result) reject(new Error('Lines not updated'))
+                                        else {
+                                            let create_notes = [];
+                                            create_notes.push(
+                                                m.stores.notes.create({
+                                                    _note:   'Loancard completed',
+                                                    _table:  'loancards',
+                                                    _id:     loancard.loancard_id,
+                                                    _system: 1,
+                                                    user_id: user_id
+                                                })
+                                            );
+                                            lines.forEach(line => {
+                                                create_notes.push(
+                                                    m.stores.notes.create({
+                                                        _note:   'Loancard completed',
+                                                        _table:  'loancard_lines',
+                                                        _id:     line.line_id,
+                                                        _system: 1,
+                                                        user_id: user_id
+                                                    })
+                                                );
+                                            });
+                                            return Promise.all(create_notes)
+                                            .then(results => resolve(true))
+                                            .catch(err =>    resolve(false));
+                                        };
+                                    })
+                                    .catch(err => reject(err));
+                                };
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                }; 
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function close_loancard(loancard_id, user_id) {
+        return new Promise((resolve, reject) => {
+            return get_loancard(loancard_id)
+            .then(loancard => {
+                if (loancard._status !== 2) reject(new Error('Loancard is not complete'))
+                else {
+                    return get_loancard_lines(loancard_id, 2)
+                    .then(lines => {
+                        if (lines && lines.length > 0) reject(new Error('Can not close a loancard with open lines'))
+                        else {
+                            return loancard.update({_status: 2})
+                            .then(result => {
+                                if (!result) reject(new Error('Loancard not updated'))
+                                else {
+                                    return m.stores.notes.create({
+                                        _note:   'Loancard closed',
+                                        _id:     loancard.loancard_id,
+                                        _table:  'loancards',
+                                        _system: 1,
+                                        user_id: user_id
+                                    })
+                                    .then(results => resolve({success: true, message: 'Loancard created'}))
+                                    .catch(err =>    resolve({success: true, message: `Loancard created. Error creating notes: ${err.message}`}));
+                                };
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                }; 
+            })
+            .catch(err => reject(err));
+        });
+    };
 };

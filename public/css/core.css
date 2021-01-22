@@ -80,6 +80,9 @@ select {
 button.dropdown-item {
 	font-size: 25px;
 }
+input.dropdown-item {
+	font-size: 25px;
+}
 .fb {
 	height: 30px;
 }

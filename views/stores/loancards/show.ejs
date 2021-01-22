@@ -11,21 +11,36 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/notes/menu_add`) %>
-				<%- include(`${partials}/menu/action`) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
+				
+				<% if (permissions.loancard_line_edit) { %>
+					<%- include(`${partials}/menu/button`, {id: 'action', text: 'Action Lines', form: 'action'}) %>
+					<script src="/js/stores/loancards/show/listeners/action.js"></script>
+				<% } %>
+
 				<form id='form_raise'>
-					<button id='btn_raise' class='dropdown-item'>Raise</button>
+					<%- include(`${partials}/menu/button`, {id: 'raise', text: 'Raise'}) %>
+					<script src="/js/stores/loancards/show/listeners/raise.js"></script>
 				</form>
+
 				<% if (permissions.loancard_edit) { %>
 					<form id='form_complete'>
-					<input type="hidden" name='_status' value='2'>
+						<input type="hidden" name='_status' value='2'>
+						<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete'}) %>
+					</form>
+					<script src="/js/stores/loancards/show/listeners/complete.js"></script>
 				<% } %>
-					<button id='btn_complete' class='dropdown-item' disabled>Complete</button>
-				<% if (permissions.loancard_edit) { %></form><% } %>
+
 				<form id="form_download">
-					<button id='btn_download' class='dropdown-item' disabled>Download</button>
+					<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download'}) %>
 				</form>
-				<%- include(`${partials}/menu/delete`, {permission: 'loancard_delete'}) %>
+
+				<% if (permissions.loancard_delete) { %>
+					<form id='form_delete'>
+						<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Cancel'}) %>
+					</form>
+					<script src="/js/stores/loancards/show/listeners/delete.js"></script>
+				<% } %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
@@ -101,41 +116,15 @@
 <script src="/js/data/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
 
-<script src="/js/stores/loancards/show/getLoancard.js"></script>
+<script src="/js/stores/loancards/show/get.js"></script>
 <script async>getLoancard()</script>
 
 <% if (permissions.loancard_edit) { %>
-	<script src="/js/stores/utils/setButtons.js"></script>
+	<script src="/js/stores/loancards/show/edit.js"></script>
 	<script async>setButtons('loancard')</script>
-	<script>
-		window.addEventListener( "load", function () {
-			addFormListener(
-				'form_complete',
-				'PUT',
-				`/stores/loancards/${path[3]}`,
-				{
-					onComplete: [
-						getLoancard,
-						function () {if (typeof getLines === 'function') getLines('loancard')}
-					]
-				}
-			);
-			addFormListener(
-				'form_raise',
-				'PUT',
-				`/stores/loancards/raise/${path[3]}`,
-				{
-					onComplete: [
-						getLoancard,
-						function () {if (typeof getLines === 'function') getLines('loancard')}
-					]
-				}
-			);
-		});
-	</script>
 <% } %>
 <% if (permissions.access_loancard_lines) { %>
-	<script src="/js/stores/loancards/show/getLines.js"></script>
+	<script src="/js/stores/loancards/show/lines/get.js"></script>
 	<script async>getLines()</script>
 	<% if (permissions.access_notes) { %>
 		<script>
@@ -154,13 +143,9 @@
 	<% if (permissions.loancard_line_edit) { %>
 		<script src="/js/stores/stock/list.js"></script>
 		<script src="/js/stores/serials/list.js"></script>
-		<script src="/js/stores/loancards/show/lineEdit.js"></script>
-		<script src="/js/stores/utils/setLineButtons.js"></script>
+		<script src="/js/stores/loancards/show/lines/edit.js"></script>
 		<script async>setActions()</script>
 		<script async>setLineButtons('loancard');</script>
 	<% } %>
-<% } %>
-<% if (permissions.loancard_delete) { %>
-	<script src="/js/stores/loancards/show/delete.js"></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

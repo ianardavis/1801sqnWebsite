@@ -9,11 +9,13 @@ function getLoancard() {
             set_innerText({id: 'createdAt',          text: print_date(loancard.createdAt, true)});
             set_innerText({id: 'updatedAt',          text: print_date(loancard.updatedAt, true)});
             set_innerText({id: '_status',            text: statuses[loancard._status]});
-            if (loancard._filename) set_innerText({id: 'file', text: String(loancard._filename)});
+            set_innerText({id: 'file',               text: String(loancard._filename || '') })
             set_breadcrumb({
                 text: loancard.loancard_id,
                 href: `/stores/loancards/${loancard.loancard_id}`
             });
+            if (!loancard._filename) remove_attribute({id: 'btn_raise', attribute: 'disabled'})
+            else                     set_attribute(   {id: 'btn_raise', attribute: 'disabled', value: true})
         },
         {
             table: 'loancard',
@@ -21,12 +23,4 @@ function getLoancard() {
         }
     );
 };
-window.addEventListener('load', function () {
-    addFormListener(
-        'form_raise',
-        'GET',
-        `/stores/loancards/${path[3]}/raise`,
-        {onComplete: getLoancard}
-    );
-});
 document.querySelector('#reload').addEventListener('click', getLoancard);
