@@ -1,5 +1,5 @@
 let lines_loaded = false,
-    line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
+    line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Returned'};
 function getLines() {
     lines_loaded = false;
     let sel_status = document.querySelector('#sel_status') || {value: ''};

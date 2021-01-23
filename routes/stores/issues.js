@@ -107,7 +107,10 @@ module.exports = (app, al, inc, pm, m) => {
                 res.send({success: true, message: 'Some lines failed'});
             } else res.send({success: true, message: 'Lines actioned'});
         })
-        .catch(err => res.send({success: false, message: 'Some lines failed'}));
+        .catch(err => {
+            console.log(results);
+            res.send({success: false, message: 'Some lines failed'});
+        });
     });
 
     app.delete('/stores/issues/:id', pm, al('issue_delete',  {allow: true, send: true}), (req, res) => {
@@ -381,18 +384,18 @@ module.exports = (app, al, inc, pm, m) => {
                             ]
                         )
                         .then(issue => {
-                            if      (!issue.size)                                      reject(new Error('Size not found'))
-                            else if (issue.size._nsns && !line.nsn_id)                 reject(new Error('No NSN specified'))
-                            else if (issue.size._nsns && size.nsns.length === 0)       reject(new Error('NSN not found'))
-                            else if (issue.size._serials && !line.serial_id)           reject(new Error('No Serial # specified'))
-                            else if (issue.size._serials && size.serials.length === 0) reject(new Error('Serial # not found'))
-                            else                                                       resolve(issue);
+                            if      (!issue.size)                                            reject(new Error('Size not found'))
+                            else if (issue.size._nsns && !line.nsn_id)                       reject(new Error('No NSN specified'))
+                            else if (issue.size._nsns && issue.size.nsns.length === 0)       reject(new Error('NSN not found'))
+                            else if (issue.size._serials && !line.serial_id)                 reject(new Error('No Serial # specified'))
+                            else if (issue.size._serials && issue.size.serials.length === 0) reject(new Error('Serial # not found'))
+                            else                                                             resolve(issue);
                         })
                         .catch(err => reject(err));
                     })
                 );
             });
-            Promise.allSettled(actions)
+            return Promise.allSettled(actions)
             .then(results => {
                 let issues = [];
                 results.filter(e => e.status === 'fulfilled').forEach(issue => issues.push(issue.value));
@@ -433,22 +436,26 @@ module.exports = (app, al, inc, pm, m) => {
                             users.forEach(user => {
                                 actions.push(
                                     new Promise((resolve, reject) => {
-                                        loancards.create({
+                                        return loancards.create({
                                             user_id_loancard: user.user_id_issue,
                                             user_id: user_id
                                         })
                                         .then(loancard => {
+                                            let issue_actions = [];
                                             user.issues.forEach(issue => {
-                                                issue_line(issue, user_id, loancard.loancard_id)
+                                                issue_actions.push(issue_line(issue, user_id, loancard.loancard_id));
                                             });
+                                            return Promise.all(issue_actions)
+                                            .then(results => resolve(true))
+                                            .catch(err => reject(err));
                                         })
                                         .catch(err => reject(err));
                                     })
                                 );
                             });
-                            Promise.all(actions)
+                            return Promise.all(actions)
                             .then(results => resolve(true))
-                            .catche(err => reject(err));
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     })
@@ -479,7 +486,7 @@ module.exports = (app, al, inc, pm, m) => {
             .then(action => {
                 return issue.update({_status: 4})
                 .then(result => {
-                    return create_action('Issue added to loancard', user_id, action)
+                    return create_action('Added to loancard', user_id, action)
                     .then(action => resolve({success: true, message: 'Line added to loancard'}))
                     .catch(err =>   resolve({success: true, message: `Line added to loancard. Error creating action: ${err.message}`}));
                 })
@@ -489,9 +496,9 @@ module.exports = (app, al, inc, pm, m) => {
         });
     };
     function issue_line_serial (options) {
-        // options:
-        // requires: serial_id, user_id, issue_id, user_id_issue, size_id, 
-        // optional: nsn_id
+        //options:
+        //  requires: serial_id, user_id, issue_id, user_id_issue, size_id, 
+        //  optional: nsn_id
         return new Promise((resolve, reject) => {
             if (!options.serial_id) reject(new Error('No serial # specified'))
             else {
@@ -520,15 +527,8 @@ module.exports = (app, al, inc, pm, m) => {
                                     location_id:      serial.location_id,
                                     serial_id:        serial.serial_id
                                 };
-                            return serial.update({issue_id: options.issue_id, location_id: null})
-                            .then(result => {
-                                if (!result) reject(new Error('Serial # not updated'))
-                                else {
-                                    if (options.nsn_id) action.nsn_id = options.nsn_id;
-                                    resolve(action);
-                                };
-                            })
-                            .catch(err => reject(err));
+                            if (options.nsn_id) action.nsn_id = options.nsn_id;
+                            resolve(action);
                         })
                         .catch(err => reject(err));
                     };
@@ -538,9 +538,9 @@ module.exports = (app, al, inc, pm, m) => {
         });
     };
     function issue_line_stock (options) {
-        // options:
-        // requires: stock_id, user_id, issue_id, user_id_issue, size_id, 
-        // optional: nsn_id
+        //options:
+        //  requires: stock_id, user_id, issue_id, user_id_issue, size_id, 
+        //  optional: nsn_id
         return new Promise((resolve, reject) => {
             if (!options.stock_id) reject(new Error('No stock record specified'))
             else {
@@ -562,21 +562,14 @@ module.exports = (app, al, inc, pm, m) => {
                         if (options.nsn_id) loancard_details.nsn_id = options.nsn_id;
                         return issue_line_loancard(loancard_details)
                         .then(loancard_line_id => {
-                            return stock.decrement('_qty', {by: options._qty || 1})
-                            .then(result => {
-                                if (!result) reject(new Error('Stock not decremented'))
-                                else {
-                                    let action = {
-                                            issue_id:         options.issue_id,
-                                            loancard_line_id: loancard_line_id,
-                                            location_id:      stock.location_id,
-                                            stock_id:         stock.stock_id
-                                        };
-                                    if (options.nsn_id) action.nsn_id = options.nsn_id;
-                                    resolve(action);
+                            let action = {
+                                    issue_id:         options.issue_id,
+                                    loancard_line_id: loancard_line_id,
+                                    location_id:      stock.location_id,
+                                    stock_id:         stock.stock_id
                                 };
-                            })
-                            .catch(err => reject(err));
+                            if (options.nsn_id) action.nsn_id = options.nsn_id;
+                            resolve(action);
                         })
                         .catch(err => reject(err));
                     };

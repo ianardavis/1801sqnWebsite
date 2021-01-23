@@ -6,7 +6,10 @@ window.addEventListener("load", function () {
         {
             onComplete: [
                 getLoancard,
-                function () {if (typeof getLines === 'function') getLines('loancard')}
+                function () {
+                    if (typeof getLines === 'function') getLines('loancard');
+                    download('loancards', path[3]);
+                }
             ]
         }
     );

@@ -3,12 +3,12 @@ window.addEventListener( "load", function () {
     addFormListener(
         'form_action',
         'PUT',
-        `/stores/demand_lines/${path[3]}`,
+        '/stores/loancard_lines',
         {
             onComplete: [
                 getLines,
                 setActions,
-                function () {setLineButtons('demand')}
+                setLineButtons
             ]
         }
     );

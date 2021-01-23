@@ -22,6 +22,7 @@
 					<%- include(`${partials}/menu/button`, {id: 'raise', text: 'Raise'}) %>
 					<script src="/js/stores/loancards/show/listeners/raise.js"></script>
 				</form>
+				<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download'}) %>
 
 				<% if (permissions.loancard_edit) { %>
 					<form id='form_complete'>
@@ -30,10 +31,6 @@
 					</form>
 					<script src="/js/stores/loancards/show/listeners/complete.js"></script>
 				<% } %>
-
-				<form id="form_download">
-					<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download'}) %>
-				</form>
 
 				<% if (permissions.loancard_delete) { %>
 					<form id='form_delete'>
@@ -117,11 +114,12 @@
 <script>showTab('<%= tab %>')</script>
 
 <script src="/js/stores/loancards/show/get.js"></script>
+<script src="/js/download.js"></script>
 <script async>getLoancard()</script>
 
 <% if (permissions.loancard_edit) { %>
 	<script src="/js/stores/loancards/show/edit.js"></script>
-	<script async>setButtons('loancard')</script>
+	<script async>setButtons()</script>
 <% } %>
 <% if (permissions.access_loancard_lines) { %>
 	<script src="/js/stores/loancards/show/lines/get.js"></script>
@@ -145,7 +143,7 @@
 		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/loancards/show/lines/edit.js"></script>
 		<script async>setActions()</script>
-		<script async>setLineButtons('loancard');</script>
+		<script async>setLineButtons();</script>
 	<% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

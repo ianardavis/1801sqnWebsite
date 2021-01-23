@@ -14,8 +14,17 @@ function getLoancard() {
                 text: loancard.loancard_id,
                 href: `/stores/loancards/${loancard.loancard_id}`
             });
-            if (!loancard._filename) remove_attribute({id: 'btn_raise', attribute: 'disabled'})
-            else                     set_attribute(   {id: 'btn_raise', attribute: 'disabled', value: true})
+            set_attribute({id: 'btn_download', attribute: 'disabled', value: true});
+            set_attribute({id: 'btn_raise',    attribute: 'disabled', value: true});
+            if (loancard._status === 2) {
+                if (!loancard._filename && loancard._filename !== '') {
+                    remove_attribute({id: 'btn_raise',    attribute: 'disabled'});
+                } else {
+                    remove_attribute({id: 'btn_download', attribute: 'disabled'});
+                };
+            } else if (loancard._status === 3 && loancard._filename && loancard._filename !== '') {
+                remove_attribute({id: 'btn_download', attribute: 'disabled'});
+            };
         },
         {
             table: 'loancard',
@@ -24,3 +33,7 @@ function getLoancard() {
     );
 };
 document.querySelector('#reload').addEventListener('click', getLoancard);
+window.addEventListener('load', function () {
+    let btn_download = document.querySelector('#btn_download')
+    if (btn_download) btn_download.addEventListener('click', function () {download('loancards', path[3])})
+});
