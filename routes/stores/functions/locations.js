@@ -22,4 +22,23 @@ module.exports = function (m, location) {
             };
         });
     };
+    location.check = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            if (options.location_id) {
+                m.stores.locations.findOne({
+                    where: {location_id: options.location_id},
+                    attributes: ['location_id']
+                })
+                .then(location => {
+                    if (!location) reject(new Error('Location not found'))
+                    else           resolve(location.location_id)
+                })
+                .catch(err => reject(err));
+            } else if (options._location) {
+                m.stores.locations.findOrCreate({where: {_location: options._location}})
+                .then(([location, created]) => resolve(location.location_id))
+                .catch(err => reject(err));
+            } else reject(new Error('No location specified'))
+        });
+    };
 };

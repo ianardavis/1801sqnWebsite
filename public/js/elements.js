@@ -196,8 +196,9 @@ function Input (options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'text');
     this.e.classList.add('form-control');
-    if (options.small) this.e.classList.add('form-control-sm');
-    if (options.attributes)  options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.classes)    options.classes.forEach(e => this.e.classList.add(e))
+    if (options.small)      this.e.classList.add('form-control-sm');
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Tab_Header (options = {}) { 
     this.e = document.createElement('li');

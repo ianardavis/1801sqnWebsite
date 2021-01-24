@@ -1,7 +1,8 @@
 const op = require('sequelize').Op;
 module.exports = (app, al, inc, pm, m) => {
-    let loancards = {}, allowed = require('../functions/allowed');
+    let loancards = {}, locations = {}, allowed = require('../functions/allowed');
     require('./functions/loancards') (m, inc, loancards);
+    require('./functions/locations') (m, locations);
     app.get('/stores/loancards',              pm, al('access_loancards'),                    (req, res) => res.render('stores/loancards/index'));
     app.get('/stores/loancards/:id',          pm, al('access_loancards'),                    (req, res) => res.render('stores/loancards/show'));
     app.get('/stores/loancards/:id/download', pm, al('access_loancards'),                    (req, res) => {
@@ -129,8 +130,6 @@ module.exports = (app, al, inc, pm, m) => {
         let actions = [],
             cancels = req.body.actions.filter(e => e._status === '0'),
             returns = req.body.actions.filter(e => e._status === '3');
-        console.log('cancels', cancels);
-        console.log('returns', returns);
         if (cancels.length > 0) actions.push(cancel_lines(cancels, req.user.user_id));
         if (returns.length > 0) actions.push(return_lines(returns, req.user.user_id));
         Promise.all(actions)
@@ -298,22 +297,167 @@ module.exports = (app, al, inc, pm, m) => {
         });
     };
     function return_lines(lines, user_id) {
+        console.log(lines);
         return new Promise((resolve, reject) => {
             let actions = [];
             lines.forEach(line => {
                 actions.push(
                     new Promise((resolve, reject) => {
-                        
-                        return m.stores.loancard_lines.findOne({
-                            where: {line_id: line.line_id}
-                        })
-                        .then(loancard_line => {
-                            
+                        return locations.check(line.location)
+                        .then(location_id => {
+                            return m.stores.loancard_lines.findOne({
+                                where:      {line_id: line.line_id},
+                                include:    [inc.sizes({attributes: ['_serial']})],
+                                attributes: ['line_id', '_status', 'size_id', 'serial_id', '_qty']
+                            })
+                            .then(line => {
+                                if      (!line)              reject(new Error('Loancard line not found'))
+                                else if (!line.size)         reject(new Error('Size not found'))
+                                else if (line._status !== 2) reject(new Error('This line is not issued'))
+                                else {
+                                    if (line.serial_id) {
+                                        return m.stores.serials.findOne({
+                                            where:      {serial_id: line.serial_id},
+                                            attributes: ['serial_id', 'location_id', 'issue_id']
+                                        })
+                                        .then(serial => {
+                                            if (!serial) reject(new Error('Serial not found'))
+                                            else {
+                                                let update_actions = [];
+                                                update_actions.push(serial.update({issue_id: null, location_id: location_id}));
+                                                update_actions.push(line.update({_status: 3}));
+                                                update_actions.push(
+                                                    new Promise((resolve, reject) => {
+                                                        return m.stores.actions.findOne({
+                                                            where: {
+                                                                loancard_line_id: line.line_id,
+                                                                issue_id:         {[op.not]: null},
+                                                                _action:          'Added to loancard'
+                                                            },
+                                                            attribute: ['action_id', 'issue_id']
+                                                        })
+                                                        .then(action => {
+                                                            return m.stores.issues.findOne({
+                                                                where:      {issue_id: action.issue_id},
+                                                                attributes: ['issue_id', '_status']
+                                                            })
+                                                            .then(issue => {
+                                                                if (!issue) reject(new Error('Issue not found'))
+                                                                else {
+                                                                    issue.update({_status: 5})
+                                                                    .then(result => {
+                                                                        if (!result) reject(new Error('Issue not updated'))
+                                                                        else         resolve({issue_id: issue.issue_id});
+                                                                    })
+                                                                };
+                                                            })
+                                                            .catch(err => reject(err));
+                                                        })
+                                                        .catch(err => reject(err));
+                                                    })
+                                                );
+                                                return Promise.all(update_actions)
+                                                .then(results => {
+                                                    let issue = results.filter(e => e.issue_id)[0];
+                                                    if (!issue) reject(new Error('Issue ID not found'))
+                                                    else {
+                                                        return m.stores.actions.create({
+                                                            issue_id:         issue.issue_id,
+                                                            loancard_line_id: line.line_id,
+                                                            serial_id:        serial.serial_id,
+                                                            _action:          'Line returned',
+                                                            user_id:          user_id
+                                                        })
+                                                        .then(action => resolve(true))
+                                                        .catch(err => reject(err));
+                                                    };
+                                                })
+                                                .catch(err => reject(err));
+                                            };
+                                        })
+                                        .catch(err => reject(err));
+                                    } else {
+                                        return m.stores.stocks.findOne({
+                                            where: {
+                                                location_id: location_id,
+                                                size_id:     line.size_id
+                                            },
+                                            attributes: ['stock_id', 'location_id']
+                                        })
+                                        .then(stock => {
+                                            if (!stock) reject(new Error('Stock record not found'))
+                                            else {
+                                                let update_actions = [];
+                                                update_actions.push(stock.increment('_qty', {by: line._qty}));
+                                                update_actions.push(line.update({_status: 3}));
+                                                update_actions.push(
+                                                    new Promise((resolve, reject) => {
+                                                        return m.stores.actions.findAll({
+                                                            where: {
+                                                                loancard_line_id: line.line_id,
+                                                                issue_id:         {[op.not]: null},
+                                                                _action:          'Added to loancard'
+                                                            },
+                                                            attribute: ['action_id', 'issue_id']
+                                                        })
+                                                        .then(_actions => {
+                                                            let return_actions = [];
+                                                            _actions.forEach(action => {
+                                                                return_actions.push(
+                                                                    new Promise((resolve, reject) => {
+                                                                        return m.stores.issues.findOne({
+                                                                            where:      {issue_id: action.issue_id},
+                                                                            attributes: ['issue_id', '_status']
+                                                                        })
+                                                                        .then(issue => {
+                                                                            if (!issue) reject(new Error('Issue not found'))
+                                                                            else {
+                                                                                return issue.update({_status: 5})
+                                                                                .then(result => {
+                                                                                    if (!result) reject(new Error('Issue not updated'))
+                                                                                    else {
+                                                                                        return m.stores.actions.create({
+                                                                                            issue_id:         issue.issue_id,
+                                                                                            loancard_line_id: line.line_id,
+                                                                                            stock_id:         stock.stock_id,
+                                                                                            _action:          'Line returned',
+                                                                                            user_id:          user_id
+                                                                                        })
+                                                                                        .then(action => resolve(true))
+                                                                                        .catch(err => reject(err));
+                                                                                    };
+                                                                                })
+                                                                            };
+                                                                        })
+                                                                        .catch(err => reject(err));
+                                                                    })
+                                                                );
+                                                            });
+                                                            return Promise.all(return_actions)
+                                                            .then(results => resolve(true))
+                                                            .catch(err => reject(err));
+                                                        })
+                                                        .catch(err => reject(err));
+                                                    })
+                                                );
+                                                return Promise.all(update_actions)
+                                                .then(results => resolve(true))
+                                                .catch(err => reject(err));
+                                            };
+                                        })
+                                        .catch(err => reject(err));
+                                    };
+                                };
+                            })
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     })
                 );
             });
+            Promise.all(actions)
+            .then(results => resolve(true))
+            .catch(err => reject(err));
         });
     };
 

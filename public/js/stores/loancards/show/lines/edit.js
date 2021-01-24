@@ -81,23 +81,49 @@ function showReturnActions(size, line_id, qty = 1) {
     get(
         function (stocks, options) {
             let locations = [{value: '', text: '... Select Location'}];
-            stocks.forEach(e => locations.push({value: e.stock_id, text: `${e.location._location}, Qty: ${e._qty}`}));
+            stocks.forEach(e => locations.push({value: e.location_id, text: `${e.location._location}, Qty: ${e._qty}`}));
+            locations.push({value: 'enter', text: 'Manual Entry'});
             _cell.appendChild(
                 new Select({
                     attributes: [
-                        {field: 'name', value: `actions[${line_id}][stock_id]`}
+                        {field: 'id',       value: `sel_location_${line_id}`},
+                        {field: 'name',     value: `actions[${line_id}][location][location_id]`},
+                        {field: 'required', value: true}
                     ],
                     small: true,
-                    options: locations
+                    options: locations,
+                    listener: {
+                        event: 'change',
+                        func: function () {
+                            let inp_location = document.querySelector(`#inp_location_${line_id}`),
+                                sel_location = document.querySelector(`#sel_location_${line_id}`);
+                            if (inp_location) {
+                                if (this.value === 'enter') {
+                                    inp_location.classList.remove('hidden');
+                                    inp_location.setAttribute('name', `actions[${line_id}][location][_location]`);
+                                    inp_location.setAttribute('required', true);
+                                    sel_location.removeAttribute('name');
+                                    sel_location.removeAttribute('required');
+                                } else {
+                                    inp_location.classList.add('hidden');
+                                    inp_location.removeAttribute('name');
+                                    inp_location.removeAttribute('required');
+                                    sel_location.setAttribute('name', `actions[${line_id}][location][location_id]`);
+                                    sel_location.setAttribute('required', true);
+                                };
+                            };
+                        }
+                    }
                 }).e
             );
             _cell.appendChild(
                 new Input({
                     attributes: [
-                        {field: 'name',        value: `actions[${line_id}][location]`},
+                        {field: 'id',          value: `inp_location_${line_id}`},
                         {field: 'placeholder', value: 'Enter Location'}
                     ],
-                    small: true
+                    small:   true,
+                    classes: ['hidden']
                 }).e
             );
             remove_spinner(`stocks_${line_id}`);
