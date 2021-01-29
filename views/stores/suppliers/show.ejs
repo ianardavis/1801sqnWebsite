@@ -12,15 +12,20 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if (permissions.supplier_edit) { %>
-                    <%- include(`${partials}/menu/modal_btn`, {modal: 'supplier_edit', permission: 'supplier_edit', text: 'Edit'}) %>
+                    <%- include(`${partials}/menu/button`, {id: 'supplier_edit', text: 'Edit', modal: 'supplier_edit'}) %>
                     <form id='form_set_default'>
                         <input class='supplier_id' type="hidden" name='setting[_name]' value='default_supplier'>
                         <input class='supplier_id' type="hidden" name='setting[_value]'>
                         <button id='default_button' class="dropdown-item">Make Default</button>
                     </form>
                 <% } %>
-                <%- include(`${partials}/notes/menu_add`) %>
-                <%- include(`${partials}/menu/delete`, {permission: 'supplier_delete', text: 'Delete'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
+				<% if (permissions.loancard_delete) { %>
+					<form id='form_delete'>
+						<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete'}) %>
+					</form>
+					<!-- <script src="/js/stores/loancards/show/listeners/delete.js"></script> -->
+				<% } %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details', spinner: 'supplier'}) %>
@@ -116,7 +121,7 @@
                     </form>
                 </div>
             </div>
-            <script src="/js/stores/utils/list/accounts.js"></script>
+            <script src="/js/utils/list/accounts.js"></script>
             <script src="/js/stores/suppliers/show/edit.js"></script>
         <% } %>
     </div>

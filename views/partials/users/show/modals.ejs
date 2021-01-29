@@ -6,12 +6,12 @@
                     <h5 class="modal-title">Edit User: <span id="full_name_edit"></span></h5>
                 </div>
                 <div class="modal-body">
-                    <%- include(`${partials}/inputs/text`,   {title: 'Bader #',  name: 'user[_bader]', 	  required: true, id: 'inp_bader',     placeholder: 'Required', maxLength: 20}) %>
-                    <%- include(`${partials}/inputs/select`, {title: 'Rank',     name: 'user[rank_id]',   required: true, id: 'inp_rank_id',   spinner: true, spinner_id: 'ranks', classes: ['ranks']}) %>
-                    <%- include(`${partials}/inputs/text`,   {title: 'Surname',  name: 'user[_name]', 	  required: true, id: 'inp_name',      placeholder: 'Required', maxLength: 50}) %>
-                    <%- include(`${partials}/inputs/text`,   {title: 'Initials', name: 'user[_ini]',  	  required: true, id: 'inp_ini',       placeholder: 'Required', maxLength: 5}) %>
-                    <%- include(`${partials}/inputs/select`, {title: 'Status',   name: 'user[status_id]', required: true, id: 'inp_status_id', spinner: true, spinner_id: 'statuses', classes: ['statuses']}) %>
-                    <%- include(`${partials}/inputs/text`,   {title: 'Login ID', name: 'user[_login_id]', required: true, id: 'inp_login_id',  placeholder: 'Required', maxLength: 30}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Bader #',  name: 'user[_bader]', 	  required: true, id: 'inp_bader',      placeholder: 'Required', maxLength: 20}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Rank',     name: 'user[rank_id]',   required: true, id: 'rank_id_edit',   spinner: true, spinner_id: 'ranks', classes: ['ranks']}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Surname',  name: 'user[_name]', 	  required: true, id: 'inp_name',       placeholder: 'Required', maxLength: 50}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Initials', name: 'user[_ini]',  	  required: true, id: 'inp_ini',        placeholder: 'Required', maxLength: 5}) %>
+                    <%- include(`${partials}/inputs/select`, {title: 'Status',   name: 'user[status_id]', required: true, id: 'status_id_edit', spinner: true, spinner_id: 'statuses', classes: ['statuses']}) %>
+                    <%- include(`${partials}/inputs/text`,   {title: 'Login ID', name: 'user[_login_id]', required: true, id: 'inp_login_id',   placeholder: 'Required', maxLength: 30}) %>
                 </div>
                 <div class="modal-footer">
                     <input type="submit" id='save_user' class="btn btn-success w-100 confirm" value='Save User'>
@@ -20,8 +20,8 @@
             </form>
         </div>
     </div>
-    <script src="/js/users/statuses/listStatuses.js"></script>
-    <script src="/js/users/ranks/listRanks.js"></script>
+    <script src="/js/utils/list/statuses.js"></script>
+    <script src="/js/utils/list/ranks.js"></script>
 <% } %>
 <div id='mdl_user_password' class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

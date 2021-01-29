@@ -23,7 +23,7 @@ module.exports = (app, m) => {
 
     app.get('/canteen/get/settings',      permissions, allowed('access_canteen'), (req, res) => {
         m.canteen.settings.findOne({where: req.query})
-        .then(settings => res.send({success: true, settings: settings}))
+        .then(settings => res.send({success: true, result: settings}))
         .catch(err => res.error.send(err, res));
     });
 };

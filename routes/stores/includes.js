@@ -122,16 +122,6 @@ module.exports = (inc, m) => {
             where:      options.where      || null
         };
     };
-    inc.groups = (options = {}) => {
-        return {
-            model:      m.stores.groups,
-            attributes: options.attributes || ['group_id', '_group'],
-            as:         options.as         || 'group',
-            include:    options.include    || [],
-            required:   options.required   || false,
-            where:      options.where      || null
-        };
-    };
     inc.issues = (options = {}) => {
         let include = [];
         if (options.include) include = options.include;
@@ -307,16 +297,6 @@ module.exports = (inc, m) => {
             required:   options.required   || false
         };
     };
-    inc.subtypes = (options = {}) => {
-        return {
-            model:      m.stores.subtypes,
-            attributes: options.attributes || ['subtype_id', '_subtype'],
-            as:         options.as         || 'subtype',
-            include:    options.include    || [],
-            required:   options.required   || false,
-            where:      options.where      || null
-        };
-    };
     inc.suppliers = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
@@ -329,16 +309,6 @@ module.exports = (inc, m) => {
             include:  include,
             required: options.required || false,
             where:    options.where    || null
-        };
-    };
-    inc.types = (options = {}) => {
-        return {
-            model:      m.stores.types,
-            attributes: options.attributes || ['type_id', '_type'],
-            as:         options.as         || 'type',
-            include:    options.include    || [],
-            required:   options.required   || false,
-            where:      options.where      || null
         };
     };
 

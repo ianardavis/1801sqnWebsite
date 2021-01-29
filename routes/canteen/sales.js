@@ -10,7 +10,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.users()
             ]
         })
-        .then(sales => res.send({success: true, sales: sales}))
+        .then(sales => res.send({success: true, result: sales}))
         .catch(err => res.error.send(err, res))
     });
     app.get('/canteen/get/sale',       permissions, allowed('access_sales', {send: true}), (req, res) => {
@@ -19,7 +19,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()]
         })
         .then(sale => {
-            if (sale) res.send({success: true,  sale: sale})
+            if (sale) res.send({success: true,  result: sale})
             else      res.send({success: false, message: 'Sale not found'})
         })
         .catch(err => res.error.send(err, res))
@@ -39,7 +39,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         _status:    1
                     }
                 })
-                .then(([sale, created]) => res.send({success: true, user_sale: sale.sale_id}))
+                .then(([sale, created]) => res.send({success: true, result: sale.sale_id}))
                 .catch(err => res.error.send(err, res));
             };
         })
@@ -50,7 +50,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             where:   req.query,
             include: [inc.items()]
         })
-        .then(lines => res.send({success: true, lines: lines}))
+        .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res))
     });
 

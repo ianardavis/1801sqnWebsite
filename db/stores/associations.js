@@ -8,7 +8,10 @@ module.exports = function (m) {
     m.actions.hasOne(               m.nsns,                {foreignKey: 'nsn_id',                sourceKey: 'nsn_id',                constraints: false});
     m.actions.belongsTo(            m.loancard_lines,      {foreignKey: 'loancard_line_id',      targetKey: 'line_id',               constraints: false});
     m.actions.hasOne(               m.demand_lines,        {foreignKey: 'line_id',               sourceKey: 'demand_line_id',        constraints: false});
-    m.categories.hasMany(           m.groups,              {foreignKey: 'category_id',           targetKey: 'category_id'});
+    m.categories.hasMany(           m.categories,          {foreignKey: 'category_id',           targetKey: 'parent_category_id'}); ///////////Unknown if this works?!
+    m.categories.belongsTo(         m.categories,          {foreignKey: 'parent_category_id',    targetKey: 'category_id'});        ///////////Unknown if this works?!
+    m.categories.belongsToMany(     m.items,               {foreignKey: 'category_id',           otherKey:  'item_id',               through: m.item_categories})
+    m.item_categories.hasOne(       m.categories,          {foreignKey: 'category_id',           sourceKey: 'category_id',           constraints: false})
     m.demand_lines.hasOne(          m.sizes,               {foreignKey: 'size_id',               sourceKey: 'size_id',               constraints: false});
     m.demand_lines.belongsTo(       m.demands,             {foreignKey: 'demand_id',             targetKey: 'demand_id'});
     m.demand_lines.hasMany(         m.actions,             {foreignKey: 'demand_line_id',        sourceKey: 'line_id'});
@@ -17,15 +20,11 @@ module.exports = function (m) {
     m.embodiments.hasOne(           m.sizes,               {foreignKey: 'size_id',               sourceKey: 'size_id_parent',        constraints: false, as: 'parent'});
     m.embodiments.hasOne(           m.sizes,               {foreignKey: 'size_id',               sourceKey: 'size_id_child',         constraints: false, as: 'child'});
     m.files.belongsTo(              m.suppliers,           {foreignKey: 'file_id',               targetKey: 'file_id'});
-    m.groups.belongsTo(             m.categories,          {foreignKey: 'category_id',           targetKey: 'category_id'});
-    m.groups.hasMany(               m.types,               {foreignKey: 'group_id',              targetKey: 'group_id'});
     m.issues.hasOne(                m.sizes,               {foreignKey: 'size_id',               sourceKey:  'size_id',              constraints: false});
     m.issues.hasMany(               m.actions,             {foreignKey: 'issue_id',              targetKey:  'issue_id',                                 as: 'actions'});
     m.items.hasOne (                m.genders,             {foreignKey: 'gender_id',             sourceKey: 'gender_id',             constraints: false});
-    m.items.hasOne (                m.categories,          {foreignKey: 'category_id',           sourceKey: 'category_id',           constraints: false});
-    m.items.hasOne (                m.groups,              {foreignKey: 'group_id',              sourceKey: 'group_id',              constraints: false});
-    m.items.hasOne (                m.types,               {foreignKey: 'type_id',               sourceKey: 'type_id',               constraints: false});
-    m.items.hasOne (                m.subtypes,            {foreignKey: 'subtype_id',            sourceKey: 'subtype_id',            constraints: false});
+    m.sizes.hasMany(                m.details,             {foreignKey: 'size_id',               sourceKey: 'size_id'});
+    // m.items.hasMany (               m.categories,          {foreignKey: 'item_id',               sourceKey: 'item_id',               constraints: false});
     m.items.hasMany(                m.sizes,               {foreignKey: 'item_id',               targetKey: 'item_id'});
     m.loancard_lines.hasOne(        m.sizes,               {foreignKey: 'size_id',               sourceKey: 'size_id',               constraints: false});
     m.loancard_lines.hasOne(        m.serials,             {foreignKey: 'serial_id',             sourceKey: 'serial_id',             constraints: false});
@@ -57,8 +56,6 @@ module.exports = function (m) {
     m.sizes.hasMany(                m.demand_lines,        {foreignKey: 'size_id',               targetKey: 'size_id',                                   as: 'demands'});
     m.sizes.hasMany(                m.stocks,              {foreignKey: 'size_id',               targetKey: 'size_id'});
     m.sizes.hasMany(                m.serials,             {foreignKey: 'size_id',               targetKey: 'size_id'});
-    m.types.belongsTo(              m.groups,              {foreignKey: 'group_id',              targetKey: 'group_id'});
-    m.subtypes.belongsTo(           m.types,               {foreignKey: 'type_id',               targetKey: 'type_id'});
     m.stocks.belongsTo(             m.sizes,               {foreignKey: 'size_id',               targetKey: 'size_id'});
     m.stocks.hasOne(                m.locations,           {foreignKey: 'location_id',           sourceKey: 'location_id',           constraints: false});
     m.stocks.hasMany(               m.adjusts,             {foreignKey: 'stock_id',              targetKey: 'stock_id'});

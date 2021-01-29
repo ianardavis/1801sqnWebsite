@@ -12,14 +12,19 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/modal_btn`, {modal: 'size_edit',  permission: 'size_edit',  text: 'Edit'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'size_edit',  text: 'Edit',                modal: 'size_edit'}) %>
                 <div class="dropdown-divider"></div>
-                <%- include(`${partials}/notes/menu_add`) %>
-                <%- include(`${partials}/menu/modal_btn`, {modal: 'nsn_add',    permission: 'nsn_add',    text: 'Add NSN'}) %>
-                <%- include(`${partials}/menu/modal_btn`, {modal: 'serial_add', permission: 'serial_add', text: 'Add Serial #'}) %>
-                <%- include(`${partials}/menu/modal_btn`, {modal: 'stock_add',  permission: 'stock_add',  text: 'Add Stock Location'}) %>
-                <%- include(`${partials}/menu/modal_btn`, {modal: 'order_add',  permission: 'order_add',  text: 'Add Order'}) %>
-                <%- include(`${partials}/menu/delete`, {permission: 'size_delete', text: 'Delete'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add',   text: 'Add Note',            modal: 'note_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'nsn_add',    text: 'Add NSN',             modal: 'nsn_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'serial_add', text: 'Add Serial #',        modal: 'serial_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'stock_add',  text: 'Add Stock Location',  modal: 'stock_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'order_add',  text: 'Add Order',           modal: 'order_add'}) %>
+				<% if (permissions.item_delete) { %>
+					<form id='form_delete'>
+						<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete'}) %>
+					</form>
+					<!-- <script src="/js/stores/sizes/show/listeners/delete.js"></script> -->
+				<% } %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>
@@ -32,14 +37,21 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`,  {id: '_issueable',        title: 'Issueable'}) %>
-            <%- include(`${partials}/inputs/display`,  {id: '_orderable',        title: 'Orderable'}) %>
-            <%- include(`${partials}/inputs/display`,  {id: '_serials',          title: 'Has Serials'}) %>
-            <%- include(`${partials}/inputs/display`,  {id: '_nsns',             title: 'Has NSNs'}) %>
-            <%- include(`${partials}/inputs/display`,  {id: 'supplier',          title: 'Supplier', link: true}) %>
-            <%- include(`${partials}/inputs/display`,  {id: '_demand_page',      title: 'Demand Page'}) %>
-            <%- include(`${partials}/inputs/display`,  {id: '_demand_cell',      title: 'Demand Cell'}) %>
-            <%- include(`${partials}/inputs/textarea`, {id: '_ordering_details', title: 'Ordering Details', rows: 5, readonly: true}) %>
+            <%- include(`${partials}/inputs/display`,  {id: '_issueable', title: 'Issueable'}) %>
+            <%- include(`${partials}/inputs/display`,  {id: '_orderable', title: 'Orderable'}) %>
+            <%- include(`${partials}/inputs/display`,  {id: '_serials',   title: 'Has Serials'}) %>
+            <%- include(`${partials}/inputs/display`,  {id: '_nsns',      title: 'Has NSNs'}) %>
+            <%- include(`${partials}/inputs/display`,  {id: 'supplier',   title: 'Supplier', link: true}) %>
+            <div id="div_details">
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-20' onclick='sortTable(0, "tbl_details")'>Name</th>
+                        <th class='w-80' onclick='sortTable(1, "tbl_details")'>Value</th>
+                        <!-- <th><i class='fas fa-search'></i></th> -->
+                    </thead>
+                    <tbody id='tbl_details'></tbody>
+                </table>
+            </div>
         </div>
         <% if (permissions.access_nsns) { %>
             <div id="nsns"     role="tabpanel" aria-labelledby="nsns-tab"     class="tab-pane fade">
@@ -425,6 +437,7 @@
 <!-- <script src='/js/utils/getLineNotes.js'></script> -->
 <script src="/js/stores/sizes/show/getSize.js"></script>
 <script async>getSize()</script>
+<script async>getDetails()</script>
 <% if (permissions.nsn_add || permissions.nsn_edit || permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
     <script src="/js/stores/locations/getLocations.js"></script>
     <script async>getLocations()</script>

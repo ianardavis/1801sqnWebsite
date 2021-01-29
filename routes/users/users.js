@@ -7,7 +7,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include:    [inc.ranks(), inc.statuses()],
             attributes: ['user_id', 'full_name', '_bader', '_name', '_ini', 'status_id', 'rank_id', '_login_id', '_reset', '_last_login']
         })
-        .then(users => res.send({success: true, users: users}))
+        .then(users => res.send({success: true, result: users}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/users/get/user',     permissions, allowed('access_users',  {send: true}),              (req, res) => {
@@ -17,7 +17,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             attributes: ['user_id', 'full_name', '_bader', '_name', '_ini', 'status_id', 'rank_id', '_login_id', '_reset', '_last_login']
         })
         .then(user => {
-            if (user) res.send({success: true,  user: user})
+            if (user) res.send({success: true,  result: user})
             else      res.send({success: false, message: 'User not found'});
         })
         .catch(err => res.error.send(err, res));

@@ -9,6 +9,11 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
+    'parent_category_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      comment: "null"
+    },
     '_category': {
       type: DataTypes.STRING(20),
       allowNull: false,

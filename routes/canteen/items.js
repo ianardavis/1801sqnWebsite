@@ -5,13 +5,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
     
     app.get('/canteen/get/items',    permissions, allowed('access_items'),              (req, res) => {
         m.items.findAll({where: req.query})
-        .then(items => res.send({success: true, items: items}))
+        .then(items => res.send({success: true, result: items}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/canteen/get/item',     permissions, allowed('access_items'),              (req, res) => {
         m.items.findOne({where: req.query})
         .then(item => {
-            if (item) res.send({success: true,  item: item})
+            if (item) res.send({success: true,  result: item})
             else      res.send({success: false, message: 'Item not found'})
         })
         .catch(err => res.error.send(err, res));

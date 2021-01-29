@@ -10,11 +10,7 @@
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_categories', title: 'Category'}) %>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_groups', 	title: 'Groups'}) %>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_types', 		title: 'Types'}) %>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_subtypes', 	title: 'Subtypes'}) %>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', 	title: 'Genders'}) %>
+	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders'}) %>
 	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
@@ -32,13 +28,9 @@
 							<h5 class="modal-title">Add Item</h5>
 						</div>
 						<div class="modal-body">
-							<%- include(`${partials}/inputs/text`, {name: 'item[_description]', title: 'Description', placeholder: 'Required', maxLength: 45, required: true}) %>
-							<%- include(`${partials}/inputs/select`, {id: 'sel_categories_add', title: 'Category'}) %>
-							<%- include(`${partials}/inputs/select`, {id: 'sel_groups_add', 	title: 'Groups'}) %>
-							<%- include(`${partials}/inputs/select`, {id: 'sel_types_add', 		title: 'Types'}) %>
-							<%- include(`${partials}/inputs/select`, {id: 'sel_subtypes_add', 	title: 'Subtypes'}) %>
-							<%- include(`${partials}/inputs/select`, {id: 'sel_genders_add', 	title: 'Genders'}) %>
-							<%- include(`${partials}/inputs/text`, {name: 'item[_size_text]',	title: 'Size Text',	  placeholder: 'Required', maxLength: 45, required: true}) %>
+							<%- include(`${partials}/inputs/text`,	 {title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
+							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text',	name: 'item[_size_text]',	placeholder: 'Required', maxLength: 45, required: true}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Gender',		id: 'sel_genders_add'}) %>
 						</div>
 						<div class="modal-footer">
 							<input type="submit" class="btn btn-success w-100" value='Save Item'>
@@ -47,6 +39,7 @@
 					</form>
 				</div>
 			</div>
+			<script src="/js/stores/items/index/itemAdd.js"></script>
 		<% } %>
 	</div>
 </section>
@@ -55,60 +48,5 @@
 <script src="/js/search/table.js"></script>
 <script src="/js/stores/items/index/items.js"></script>
 <script src="/js/data/addFormListener.js"></script>
-<script src="/js/spinner.js"></script>
-<script src="/js/get.js"></script>
-<% [{table: 'categories', singular: 'category'}, {table: 'genders', singular: 'gender'}].forEach(e => { %>
-	<script async>
-		let sel_<%= e.table %> = document.querySelector(`#sel_<%= e.table %>`);
-		if (sel_<%= e.table %>) {
-			get(
-				function (results, options) {
-					sel_<%= e.table %>.innerHTML= '';
-					sel_<%= e.table %>.appendChild(new Option({text: '', value: '', selected: true}).e);
-					results.forEach(r => {
-						sel_<%= e.table %>.appendChild(
-							new Option({
-								text: r['_<%= e.singular %>'],
-								value: r['<%= e.singular %>_id']
-							}).e
-						)
-					});
-				},
-				{
-					table: '<%= e.table %>',
-					query: []
-				}
-			);
-		};
-		getItems();
-	</script>
-	<% if (permissions.item_add) { %>
-		<script async>
-			let sel_<%= e.table %>_add = document.querySelector(`#sel_<%= e.table %>_add`);
-			if (sel_<%= e.table %>_add) {
-				get(
-					function (results, options) {
-						sel_<%= e.table %>_add.innerHTML= '';
-						sel_<%= e.table %>_add.appendChild(new Option({text: '', value: '', selected: true}).e);
-						results.forEach(r => {
-							sel_<%= e.table %>_add.appendChild(
-								new Option({
-									text: r['_<%= e.singular %>'],
-									value: r['<%= e.singular %>_id']
-								}).e
-							)
-						});
-					},
-					{
-						table: '<%= e.table %>',
-						query: []
-					}
-				);
-			};
-		</script>
-	<% } %>
-<% }) %>
-<% if (permissions.item_add) { %>
-	<script src="/js/stores/items/index/itemAdd.js"></script>
-<% } %>
+<script async>getGenders()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

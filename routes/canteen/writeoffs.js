@@ -8,7 +8,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()],
             where: req.query
         })
-        .then(writeoffs => res.send({success: true, writeoffs: writeoffs}))
+        .then(writeoffs => res.send({success: true, result: writeoffs}))
         .catch(err => res.error.send(err, res))
     });
     app.get('/canteen/get/writeoff',          permissions, allowed('access_writeoffs',      {send: true}), (req, res) => {
@@ -17,7 +17,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()]
         })
         .then(writeoff => {
-            if (writeoff) res.send({success: true,  writeoff: writeoff})
+            if (writeoff) res.send({success: true, result: writeoff})
             else         res.send({success: false, message: 'Writeoff not found'});
         })
         .catch(err => res.error.send(err, res))
@@ -30,7 +30,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ],
             where: req.query
         })
-        .then(lines => res.send({success: true, lines: lines}))
+        .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res))
     });
 

@@ -12,7 +12,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/users/show/menu_buttons`) %>
-                <%- include(`${partials}/notes/menu_add`) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
                 <div class="dropdown-divider"></div>
                 <% if (permissions.issue_add) { %>
                     <form id="form_issue_add">
@@ -30,17 +30,14 @@
             </div>
         </li>
         <%- include(`${partials}/users/show/tab_heads`) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues', spinner: 'issues', title: 'Issues', count_id: 'issue'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',  spinner: 'notes',  title: 'Notes',  count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',    spinner: 'issues',    title: 'Issues',    count_id: 'issue'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'loancards', spinner: 'loancards', title: 'Loancards', count_id: 'loancards'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',     spinner: 'notes',     title: 'Notes',     count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <%- include(`${partials}/users/show/tab_bodies`) %>
         <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{text: 'All'}, {value: '_status=0', text: 'Cancelled/Declined'}, {value: '_status=1', text: 'Requested'}, {value: '_status=2', text: 'Approved'}, {value: '_status=3', text: 'Ordered', {value: '_status=4', text: 'Issued', selected: true, , {value: '_status=5', text: 'Returned'}}}], spinner: true}) %>
-            <% if (permissions.issue_return) { %>
-                <form id='form_issue_return'>
-                    <input class="btn btn-sm btn-primary mb-1" type="submit" value="Return Selected Lines">
-            <% } %>
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_issues', options: [{text: 'All'}, {value: '_status=0', text: 'Cancelled/Declined'}, {value: '_status=1', text: 'Requested'}, {value: '_status=2', text: 'Approved'}, {value: '_status=3', text: 'Ordered'}, {value: '_status=4', text: 'Issued', selected: true}, {value: '_status=5', text: 'Returned'}]}) %>
             <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Date</th>
@@ -52,14 +49,18 @@
                 </thead>
                 <tbody id="tbl_issues"></tbody>
             </table>
-            <% if (permissions.issue_return) { %>
-                </form>
-                <script>
-                    window.addEventListener( "load", function () {
-                        addFormListener('form_issue_return', 'POST', '/stores/returns', {onComplete: getIssues});
-                    });
-                </script>
-            <% } %>
+        </div>
+        <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open', selected: true}, {value: '_status=3', text: 'Closed'}]}) %>
+            <table class='table table-sm table-hover'>
+                <thead class="thead-dark">
+                    <th class="w-40" onclick="sortTable(0, 'tbl_loancards')">Date</th>
+                    <th class="w-20" onclick="sortTable(1, 'tbl_loancards')">Lines</th>
+                    <th class="w-40" onclick="sortTable(2, 'tbl_loancards')">Status</th>
+                    <th><i class="fas fa-search"></i></th>
+                </thead>
+                <tbody id="tbl_loancards"></tbody>
+            </table>
         </div>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
@@ -76,5 +77,7 @@
 
 <script src='/js/stores/users/issues.js'></script>
 <script async>getIssues()</script>
+<script src='/js/stores/users/loancards.js'></script>
+<script async>getLoancards()</script>
 
 <%- include(`${partials}/foot/elements/htmlClose`) %>

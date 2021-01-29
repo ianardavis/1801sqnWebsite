@@ -1,6 +1,6 @@
 let issue_statuses = {'0': 'Cancelled', '1':'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function getIssues () {
-    let sel_status = document.querySelector('#sel_status') || {value: ''};
+    let sel_status = document.querySelector('#sel_status_issues') || {value: ''};
     get(
         function (lines, options) {
             set_count({id: 'issue', count: lines.length || '0'})
@@ -28,9 +28,9 @@ function getIssues () {
         },
         {
             table: 'issues',
-            query: [sel_status.value]
+            query: [`user_id_issue=${path[3]}`, sel_status.value]
         }
     );
 };
-document.querySelector('#reload')    .addEventListener('click',  getIssues);
-document.querySelector('#sel_status').addEventListener('change', getIssues);
+document.querySelector('#reload')           .addEventListener('click',  getIssues);
+document.querySelector('#sel_status_issues').addEventListener('change', getIssues);

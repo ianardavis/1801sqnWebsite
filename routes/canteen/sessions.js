@@ -12,7 +12,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.users({as: 'user_close'}),
             ]
         })
-        .then(sessions => res.send({success: true, sessions: sessions}))
+        .then(sessions => res.send({success: true, result: sessions}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/canteen/get/session',  permissions, allowed('access_sessions', {send: true}), (req, res) => {
@@ -25,7 +25,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .then(session => {
             return getSessionSales(session.session_id)
-            .then(sales => res.send({success: true, session: {...session.dataValues, ...sales}}))
+            .then(sales => res.send({success: true, result: {...session.dataValues, ...sales}}))
             .catch(err => res.error.send(err, res))
         })
         .catch(err => res.error.send(err, res));

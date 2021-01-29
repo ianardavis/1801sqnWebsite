@@ -35,4 +35,24 @@ function getSize() {
         }
     );
 };
+function getDetails() {
+    get(
+        function (details, options) {
+            let tbl_details = document.querySelector('#tbl_details');
+            if (tbl_details) {
+                tbl_details.innerHTML = '';
+                details.forEach(detail => {
+                    let row = tbl_details.insertRow(-1);
+                    add_cell(row, {text: detail._name});
+                    add_cell(row, {text: detail._value});
+                });
+            };
+        },
+        {
+            table: 'details',
+            query: [`size_id=${path[3]}`]
+        }
+    );
+};
+document.querySelector('#reload').addEventListener('click', getDetails);
 document.querySelector('#reload').addEventListener('click', getSize);

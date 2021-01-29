@@ -1,21 +1,21 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('subtypes', {
-    'subtype_id': {
+  return sequelize.define('item_categories', {
+    'item_category_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       comment: "null",
       autoIncrement: true
     },
-    'type_id': {
+    'item_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_subtype': {
-      type: DataTypes.STRING(20),
+    'category_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
@@ -30,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'subtypes',
+    tableName: 'item_categories',
     schema: 'stores'
   });
 };

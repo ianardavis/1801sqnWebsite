@@ -1,7 +1,6 @@
 const op = require('sequelize').Op;
 module.exports = (app, allowed, inc, permissions, m) => {
-    let summer  = require(`../functions/summer`),
-        nullify = require(`../functions/nullify`);
+    let nullify = require(`../functions/nullify`);
     app.get('/stores/sizes/:id',    permissions, allowed('access_sizes'),               (req, res) => res.render('stores/sizes/show'));
 
     app.get('/stores/count/sizes',  permissions, allowed('access_sizes', {send: true}), (req, res) => {
@@ -17,10 +16,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 inc.suppliers({as: 'supplier'})
             ]
         })
-        .then(sizes => {
-            sizes.forEach(size => size.dataValues.locationStock = summer(size.stocks));
-            res.send({success: true, result: sizes})
-        })
+        .then(sizes => res.send({success: true, result: sizes}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/size',     permissions, allowed('access_sizes', {send: true}), (req, res) => {
@@ -36,6 +32,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
             else      res.send({success: false, message: 'Size not found'});
         })
         .catch(err => res.error.send(err, res));
+    });
+    app.get('/stores/get/details',  permissions, allowed('access_sizes', {send: true}), (req, res) => {
+        m.stores.details.findAll({
+            where: req.query,
+            attributes: ['_name', '_value']
+        })
+        .then(details => res.send({success: true,  result: details}))
+        .catch(err =>    res.send({success: false, message: `Error getting details: ${err.message}`}));
     });
 
     app.post('/stores/sizes',       permissions, allowed('size_add',     {send: true}), (req, res) => {

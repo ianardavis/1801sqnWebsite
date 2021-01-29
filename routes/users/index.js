@@ -8,12 +8,12 @@ module.exports = (app, m) => {
     app.get('/users',              permissions, allowed('access_users',    {send: true}), (req, res) => res.render('users/index'));
     app.get('/users/get/statuses', permissions,                                           (req, res) => {
         m.users.statuses.findAll({where: req.query})
-        .then(statuses => res.send({success: true, statuses: statuses}))
+        .then(statuses => res.send({success: true, result: statuses}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/users/get/ranks',    permissions,                                           (req, res) => {
         m.users.ranks.findAll({where: req.query})
-        .then(ranks => res.send({success: true, ranks: ranks}))
+        .then(ranks => res.send({success: true, result: ranks}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/users/get/current',  permissions, allowed('access_users',    {send: true}), (req, res) => {
@@ -24,8 +24,8 @@ module.exports = (app, m) => {
         })
         .then(users => {
             res.send({
-                result: true,
-                current: users
+                success: true,
+                result: users
             });
         })
         .catch(err => res.error.send(err, res));

@@ -8,7 +8,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()],
             where: req.query
         })
-        .then(receipts => res.send({success: true, receipts: receipts}))
+        .then(receipts => res.send({success: true, result: receipts}))
         .catch(err => res.error.send(err, res))
     });
     app.get('/canteen/get/receipt',          permissions, allowed('access_receipts',      {send: true}), (req, res) => {
@@ -17,7 +17,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             include: [inc.users()]
         })
         .then(receipt => {
-            if (receipt) res.send({success: true,  receipt: receipt})
+            if (receipt) res.send({success: true,  result: receipt})
             else         res.send({success: false, message: 'Receipt not found'});
         })
         .catch(err => res.error.send(err, res))
@@ -30,7 +30,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             ],
             where: req.query
         })
-        .then(lines => res.send({success: true, lines: lines}))
+        .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res))
     });
 

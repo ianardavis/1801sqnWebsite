@@ -15,7 +15,7 @@
 <script src='/js/stores/accounts/edit/account.js'></script>
 <script src='/js/stores/accounts/showUsers.js'></script>
 <script async>get(showAccount, {table: 'accounts', query:[`account_id=${path[3]}`]})</script>
-<script async>get(showUsers, {table: 'users', query:['status_id=2']})</script>
+<script async>get(showUsers,   {table: 'users',    query:['status_id=2']})</script>
 <script>
     window.addEventListener( "load", function () {
         addFormListener(

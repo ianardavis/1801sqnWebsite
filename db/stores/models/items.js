@@ -19,27 +19,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    'category_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
-      defaultValue: '4',
-      comment: "null"
-    },
-    'group_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'type_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
-    'subtype_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
     '_size_text': {
       type: DataTypes.STRING(45),
       allowNull: false,

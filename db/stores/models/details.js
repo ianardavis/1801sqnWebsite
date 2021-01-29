@@ -1,21 +1,26 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('types', {
-    'type_id': {
+  return sequelize.define('details', {
+    'detail_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       comment: "null",
       autoIncrement: true
     },
-    'group_id': {
+    'size_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },
-    '_type': {
-      type: DataTypes.STRING(20),
+    '_name': {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+      comment: "null"
+    },
+    '_value': {
+      type: DataTypes.STRING(1000),
       allowNull: false,
       comment: "null"
     },
@@ -30,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'types',
+    tableName: 'details',
     schema: 'stores'
   });
 };

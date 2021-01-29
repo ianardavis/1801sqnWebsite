@@ -1,0 +1,30 @@
+let statuses_loaded = false;
+function listStatuses(options = {}) {
+    statuses_loaded = false;
+    get(
+        function (statuses, options) {
+            let select = document.querySelector(`#${options.id || 'status_id'}`);
+            if (select) {
+                select.innerHTML = '';
+                if (options.blank === true) select.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
+                statuses.forEach(status => {
+                    let value = null;
+                    if (options.id_only) value = status.status_id
+                    else                 value = `status_id=${status.status_id}`;
+                    select.appendChild(new Option({
+                        value:    value,
+                        text:     status._status,
+                        selected: (options.selected === status.status_id)
+                    }).e);
+                });
+                statuses_loaded = true;
+            };
+        },
+        {
+            db:    'users',
+            table: 'statuses',
+            query: [],
+            ...options
+        }
+    );
+};

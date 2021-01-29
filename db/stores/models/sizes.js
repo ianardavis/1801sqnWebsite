@@ -31,21 +31,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '1',
       comment: "null"
     },
-    '_demand_page': {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-      comment: "null"
-    },
-    '_demand_cell': {
-      type: DataTypes.STRING(3),
-      allowNull: true,
-      comment: "null"
-    },
-    '_ordering_details': {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-      comment: "null"
-    },
     '_serials': {
       type: DataTypes.INTEGER(4),
       allowNull: false,

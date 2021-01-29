@@ -1,4 +1,6 @@
 function getUsers() {
+    let status = document.querySelector('#status_id') || {value: ''},
+        rank   = document.querySelector('#rank_id')   || {value: ''};
     get(
         function (users, options) {
             let table_body = document.querySelector('#tbl_users');
@@ -20,11 +22,10 @@ function getUsers() {
         {
             db: 'users',
             table: 'users',
-            query: user_query()
+            query: [status.value, rank.value]
         }
     );
 };
-var statuses_loaded = false, ranks_loaded = false;
 let int_load_users = window.setInterval(
     function () {
         if (statuses_loaded === true && ranks_loaded === true) {
@@ -34,16 +35,8 @@ let int_load_users = window.setInterval(
     },
     100
 );
-function user_query() {
-    let status = document.querySelector('#status_id') || {value: ''},
-        rank   = document.querySelector('#rank_id')   || {value: ''},
-        query        = [];
-    if (status.value !== '') query.push(`status_id=${status.value}`);
-    if (rank.value !== '')   query.push(`rank_id=${rank.value}`);
-    return query;
-};
-window.addEventListener( "load", function () {
-    document.querySelector('#reload').addEventListener('click', getUsers);
-    document.querySelector(`#status_id`).addEventListener("change", getUsers);
-    document.querySelector(`#rank_id`).addEventListener("change", getUsers);
+window.addEventListener("load", function () {
+    document.querySelector('#reload')   .addEventListener('click', getUsers);
+    document.querySelector('#status_id').addEventListener("change", getUsers);
+    document.querySelector('#rank_id')  .addEventListener("change", getUsers);
 });
