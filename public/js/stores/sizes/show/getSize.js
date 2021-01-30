@@ -45,6 +45,7 @@ function getDetails() {
                     let row = tbl_details.insertRow(-1);
                     add_cell(row, {text: detail._name});
                     add_cell(row, {text: detail._value});
+                    add_cell(row, {classes: ['details'], data: {field: 'id', value: detail.detail_id}});
                 });
             };
         },

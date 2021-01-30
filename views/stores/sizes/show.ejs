@@ -19,11 +19,11 @@
 				<%- include(`${partials}/menu/button`, {id: 'serial_add', text: 'Add Serial #',        modal: 'serial_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'stock_add',  text: 'Add Stock Location',  modal: 'stock_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'order_add',  text: 'Add Order',           modal: 'order_add'}) %>
-				<% if (permissions.item_delete) { %>
-					<form id='form_delete'>
-						<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete'}) %>
+				<% if (permissions.item_delete) { %><form id='form_delete'><% } %>
+                <%- include(`${partials}/menu/button`, {id: 'delete',     text: 'Delete'}) %>
+                <% if (permissions.item_delete) { %>
 					</form>
-					<!-- <script src="/js/stores/sizes/show/listeners/delete.js"></script> -->
+					<script src="/js/stores/sizes/show/listeners/delete.js"></script>
 				<% } %>
             </div>
         </li>
@@ -36,7 +36,7 @@
         <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes',   count_id: 'note',   permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <div     id="details" role="tabpanel" aria-labelledby="details-tab" class="tab-pane fade">
             <%- include(`${partials}/inputs/display`,  {id: '_issueable', title: 'Issueable'}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_orderable', title: 'Orderable'}) %>
             <%- include(`${partials}/inputs/display`,  {id: '_serials',   title: 'Has Serials'}) %>
@@ -47,14 +47,14 @@
                     <thead class='thead-dark'>
                         <th class='w-20' onclick='sortTable(0, "tbl_details")'>Name</th>
                         <th class='w-80' onclick='sortTable(1, "tbl_details")'>Value</th>
-                        <!-- <th><i class='fas fa-search'></i></th> -->
+                        <th><i class='fas fa-trash-alt'></i></th>
                     </thead>
                     <tbody id='tbl_details'></tbody>
                 </table>
             </div>
         </div>
         <% if (permissions.access_nsns) { %>
-            <div id="nsns"     role="tabpanel" aria-labelledby="nsns-tab"     class="tab-pane fade">
+            <div id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_nsns")'>NSN</th>
@@ -66,7 +66,7 @@
             </div>
         <% } %>
         <% if (permissions.access_serials) { %>
-            <div id="serials"  role="tabpanel" aria-labelledby="serials-tab"  class="tab-pane fade serial_element">
+            <div id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade _serials_element">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-50' onclick='sortTable(0, "tbl_serials")'>Serial #</th>
@@ -78,7 +78,7 @@
             </div>
         <% } %>
         <% if (permissions.access_stock) { %>
-            <div id="stock"    role="tabpanel" aria-labelledby="stock-tab"    class="tab-pane fade">
+            <div id="stock"   role="tabpanel" aria-labelledby="stock-tab"   class="tab-pane fade _stock_element">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_stock")'>Location</th>
@@ -90,7 +90,7 @@
             </div>
         <% } %>
         <% if (permissions.access_orders) { %>
-            <div id="orders"   role="tabpanel" aria-labelledby="orders-tab"   class="tab-pane fade">
+            <div id="orders"  role="tabpanel" aria-labelledby="orders-tab"  class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-50' onclick='sortTable(0, "tbl_orders")'>Date</th>
@@ -103,7 +103,7 @@
             </div>
         <% } %>
         <% if (permissions.access_issues) { %>
-            <div id="issues"   role="tabpanel" aria-labelledby="issues-tab"   class="tab-pane fade">
+            <div id="issues"  role="tabpanel" aria-labelledby="issues-tab"  class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-20' onclick='sortTable(0, "tbl_issues")'>Date</th>
@@ -121,6 +121,7 @@
     <div id="div_modals">
         <% if (permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
             <datalist id="locations_list"></datalist>
+            <script src="/js/stores/locations/getLocations.js"></script>
         <% } %>
         <% if (permissions.size_edit) { %>
             <div     id='mdl_size_edit'   class="modal fade" tabindex="-1" role="dialog">
@@ -176,37 +177,34 @@
                             <h5   class="modal-title">NSN ID: <span id="nsn_id"></span> | <span id="_nsn_view"></span></h5>
                             <span class='float-right'>
                                 <a class="btn btn-primary mr-1" id="nsn_reload"><i class="fas fa-redo"></i></a>
-                                <span id='nsn_buttons'></span>
+                                <span id='nsn_buttons'>
+                                    <a id='btn_nsn_link' class='btn btn-success'><i class="fas fa-search"></i></a>
+                                    <span id="span_nsn_edit"   class='ml-1'></span>
+                                    <span id="span_nsn_delete" class='ml-1'></span>
+                                </span>
                             </span>
                         </div>
                         <div class="modal-body">
-                            <ul class="nav nav-tabs" id="nsnTab" role="tablist">
-                                <%- include(`${partials}/tab_head`, {id: 'nsn-view',  title: 'NSN',   spinner: 'nsn_view',  active: true}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'nsn-notes', title: 'Notes', spinner: 'nsn_notes', count_id: 'nsn_note'}) %>
-                            </ul>
-                            <div class="tab-content pt-3" id="nsnContent">
-                                <div class="tab-pane fade show active" id="nsn-view" role="tabpanel" aria-labelledby="nsn-view-tab">
-                                    <% if (permissions.nsn_edit) { %>
-                                        <div id="div_nsn_edit" class='hidden'>
-                                            <form id='form_nsn_edit'>
-                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_group_id_edit',          title: 'Group',          name: 'nsn[nsn_group_id]'}) %>
-                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_classification_id_edit', title: 'Classification', name: 'nsn[nsn_classification_id]'}) %>
-                                                <%- include(`${partials}/inputs/select`, {id: 'nsn_country_id_edit',        title: 'Country',        name: 'nsn[nsn_country_id]'}) %>
-                                                <%- include(`${partials}/inputs/text`,   {id: '_item_number_edit',          title: 'Item Number',    name: 'nsn[_item_number]'}) %>
-                                                <input class="btn btn-success w-100" type="submit" value="Save">
-                                                <a class='float-left' href='javascript:edit_nsn_reset()'>Cancel</a>
-                                            </form>
-                                        </div>
-                                    <% } %>
-                                    <div id="div_nsn_view">
-                                        <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',          classes: ['text-left'], title: 'Group'}) %>
-                                        <%- include(`${partials}/inputs/display`, {id: 'nsn_classification_id', classes: ['text-left'], title: 'Classification'}) %>
-                                        <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id',        classes: ['text-left'], title: 'Country'}) %>
-                                        <%- include(`${partials}/inputs/display`, {id: '_item_number',          classes: ['text-left'], title: 'Item Number'}) %>
-                                        <%- include(`${partials}/inputs/display`, {id: '_default',              classes: ['text-left'], title: 'Is Default?'}) %>
-                                    </div>
+                            <% if (permissions.nsn_edit) { %>
+                                <div id="div_nsn_edit" class='hidden'>
+                                    <form id='form_nsn_edit'>
+                                        <input type="hidden" id='nsn_id_edit' name='nsn_id'>
+                                        <%- include(`${partials}/inputs/select`, {id: 'nsn_group_id_edit',          title: 'Group',          name: 'nsn[nsn_group_id]'}) %>
+                                        <%- include(`${partials}/inputs/select`, {id: 'nsn_classification_id_edit', title: 'Classification', name: 'nsn[nsn_classification_id]'}) %>
+                                        <%- include(`${partials}/inputs/select`, {id: 'nsn_country_id_edit',        title: 'Country',        name: 'nsn[nsn_country_id]'}) %>
+                                        <%- include(`${partials}/inputs/text`,   {id: '_item_number_edit',          title: 'Item Number',    name: 'nsn[_item_number]'}) %>
+                                        <input class="btn btn-success w-100" type="submit" value="Save">
+                                        <a class='float-left' href='javascript:reset_nsn()'>Cancel</a>
+                                    </form>
                                 </div>
-                                <%- include(`${partials}/notes/line_note_table`, {line: 'nsn'}) %>
+                                <script src="/js/stores/sizes/show/nsns/edit.js"></script>
+                            <% } %>
+                            <div id="div_nsn_view">
+                                <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',          classes: ['text-left'], title: 'Group'}) %>
+                                <%- include(`${partials}/inputs/display`, {id: 'nsn_classification_id', classes: ['text-left'], title: 'Classification'}) %>
+                                <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id',        classes: ['text-left'], title: 'Country'}) %>
+                                <%- include(`${partials}/inputs/display`, {id: '_item_number',          classes: ['text-left'], title: 'Item Number'}) %>
+                                <%- include(`${partials}/inputs/display`, {id: '_default',              classes: ['text-left'], title: 'Is Default?'}) %>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -237,6 +235,7 @@
                         </form>
                     </div>
                 </div>
+                <script src="/js/stores/sizes/show/nsns/add.js"></script>
             <% } %>
         <% } %>
         <% if (permissions.access_serials) { %>
@@ -438,69 +437,14 @@
 <script src="/js/stores/sizes/show/getSize.js"></script>
 <script async>getSize()</script>
 <script async>getDetails()</script>
-<% if (permissions.nsn_add || permissions.nsn_edit || permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
-    <script src="/js/stores/locations/getLocations.js"></script>
-    <script async>getLocations()</script>
-<% } %>
 <% if (permissions.access_nsns) { %>
     <script src="/js/stores/sizes/show/nsns/view.js"></script>
     <script async>getNSNs()</script>
-    <script>
-        let nsn_id     = document.querySelector('#nsn_id'),
-            nsn_reload = document.querySelector('#nsn_reload'),
-            get_NSN    = function (nsn_id) {
-                getNSNView(
-                    nsn_id,
-                    {
-                        edit:   <%= permissions.nsn_edit   || false %>,
-                        delete: <%= permissions.nsn_delete || false %>
-                    }
-                );
-            };
-        $('#mdl_nsn_view').on('show.bs.modal', function(event) {
-            get_NSN(event.relatedTarget.dataset.nsn_id);
-        });
-        window.addEventListener('load', function () {
-            nsn_reload.addEventListener('click', function () {
-                get_NSN(nsn_id.innerText);
-            });
-        });
-    </script>
-    <% if (permissions.access_notes) { %>
-        <script src="/js/stores/sizes/show/nsns/getNotes.js"></script>
-        <script>
-            let get_NSN_notes = function (nsn_id) {
-                getNSNNotes(
-                    nsn_id,
-                    {
-                        add:    <%= permissions.note_add    || false %>,
-                        edit:   <%= permissions.note_edit   || false %>,
-                        delete: <%= permissions.note_delete || false %>
-                    }
-                );
-            };
-            $('#mdl_nsn_view').on('show.bs.modal', function(event) {
-                get_NSN_notes(event.relatedTarget.dataset.nsn_id);
-            });
-            window.addEventListener('load', function () {
-                let nsn_sel_system = document.querySelector('#nsn_sel_system');
-                nsn_reload.addEventListener('click', function () {
-                    get_NSN_notes(nsn_id.innerText);
-                });
-                if (nsn_sel_system && nsn_id) nsn_sel_system.addEventListener('change', function () {
-                    get_NSN_notes(nsn_id.innerText);
-                });
-            });
-        </script>
-    <% } %>
     <% if (permissions.nsn_add || permissions.nsn_edit) { %>
         <script src="/js/stores/sizes/show/nsns/categories.js"></script>
     <% } %>
-    <% if (permissions.nsn_edit) { %>
-        <script src="/js/stores/sizes/show/nsns/edit.js"></script>
-    <% } %>
-    <% if (permissions.nsn_add) { %>
-        <script src="/js/stores/sizes/show/nsns/add.js"></script>
+    <% if (permissions.nsn_delete) { %>
+        <script src="/js/stores/sizes/show/nsns/delete.js"></script>
     <% } %>
 <% } %>
 <% if (permissions.access_serials) { %>

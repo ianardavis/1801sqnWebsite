@@ -5,7 +5,7 @@
             <% if (locals.id) { %>for="<%= id %>"<% } %>
         >
             <%= title %>
-            <% if (locals.spinner_id === true) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id, small: true}) %><% } %>
+            <% if (locals.spinner_id) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id, small: true}) %><% } %>
         </label>
     </div>
     <select

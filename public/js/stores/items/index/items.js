@@ -2,19 +2,20 @@ function getItems() {
     let sel_genders = document.querySelector('#sel_genders') || {value: ''};
     get(
         function (items, options) {
-            clearElement('tbl_items');
-            let table_body = document.querySelector('#tbl_items');
-            items.forEach(item => {
-                let row = table_body.insertRow(-1);
-                add_cell(row, {
-                    text: item._description,
-                    classes: ['search']
+            let tbl_items = document.querySelector('#tbl_items');
+            if (tbl_items) {
+                items.forEach(item => {
+                    let row = tbl_items.insertRow(-1);
+                    add_cell(row, {
+                        text: item._description,
+                        classes: ['search']
+                    });
+                    add_cell(row, {append: new Link({
+                        href: `/stores/items/${item.item_id}`,
+                        small: true
+                    }).e});
                 });
-                add_cell(row, {append: new Link({
-                    href: `/stores/items/${item.item_id}`,
-                    small: true
-                }).e});
-            });
+            };
         },
         {
             table: 'items',
@@ -32,7 +33,7 @@ function getGenders() {
 				genders.forEach(gender => {
 					sel_genders.appendChild(
 						new Option({
-							text: gender._gender,
+							text:  gender._gender,
 							value: `gender_id=${gender.gender_id}`
 						}).e
 					)
@@ -46,5 +47,6 @@ function getGenders() {
 		);
 	} else getItems();
 };
-document.querySelector('#reload')     .addEventListener('click',  getItems);
-document.querySelector('#sel_genders').addEventListener('change', getItems);
+document.querySelector('#reload')        .addEventListener('click',  getItems);
+document.querySelector('#reload_genders').addEventListener('click',  getGenders);
+document.querySelector('#sel_genders')   .addEventListener('change', getItems);

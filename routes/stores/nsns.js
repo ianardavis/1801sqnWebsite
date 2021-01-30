@@ -1,5 +1,5 @@
-module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/stores/get/nsns',                permissions, allowed('access_nsns', {send: true}), (req, res) => {
+module.exports = (app, al, inc, pm, m) => {
+    app.get('/stores/get/nsns',                pm, al('access_nsns', {send: true}), (req, res) => {
         m.stores.nsns.findAll({
             where: req.query,
             include: [
@@ -12,7 +12,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(nsns => res.send({success: true, result: nsns}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn',                 permissions, allowed('access_nsns', {send: true}), (req, res) => {
+    app.get('/stores/get/nsn',                 pm, al('access_nsns', {send: true}), (req, res) => {
         m.stores.nsns.findOne({
             where: req.query,
             include: [
@@ -28,21 +28,21 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn_groups',          permissions, allowed('access_nsns', {send: true}), (req, res) => {
+    app.get('/stores/get/nsn_groups',          pm, al('access_nsns', {send: true}), (req, res) => {
         m.stores.nsn_groups.findAll({
             where: req.query
         })
         .then(nsn_groups => res.send({success: true, result: nsn_groups}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn_classifications', permissions, allowed('access_nsns', {send: true}), (req, res) => {
+    app.get('/stores/get/nsn_classifications', pm, al('access_nsns', {send: true}), (req, res) => {
         m.stores.nsn_classifications.findAll({
             where: req.query
         })
         .then(nsn_classifications => res.send({success: true, result: nsn_classifications}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn_countries',       permissions, allowed('access_nsns', {send: true}), (req, res) => {
+    app.get('/stores/get/nsn_countries',       pm, al('access_nsns', {send: true}), (req, res) => {
         m.stores.nsn_countries.findAll({
             where: req.query
         })
@@ -50,7 +50,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/nsns',                   permissions, allowed('nsn_add',     {send: true}), (req, res) => {
+    app.post('/stores/nsns',                   pm, al('nsn_add',     {send: true}), (req, res) => {
         m.stores.nsns.findOrCreate({
             where: {
                 nsn_group_id: req.body.nsn.nsn_group_id,
@@ -67,20 +67,23 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.put('/stores/nsns/:id',                permissions, allowed('nsn_edit',    {send: true}), (req, res) => {
-        m.stores.nsns.findOne({where: {nsn_id: req.params.id}})
-        .then(nsn => {
-            if (!nsn) res.send({success: false, message: 'NSN not found'})
-            else {
-                return nsn.update(req.body.nsn)
-                .then(result => res.send({success: true, message: 'NSN saved'}))
-                .catch(err => res.error.send(err, res));
-            };
-        })
-        .catch(err => res.error.send(err, res));
+    app.put('/stores/nsns',                    pm, al('nsn_edit',    {send: true}), (req, res) => {
+        if (!req.body.nsn_id) res.send({success: false, message: 'No NSN ID provided'})
+        else {
+            m.stores.nsns.findOne({where: {nsn_id: req.body.nsn_id}})
+            .then(nsn => {
+                if (!nsn) res.send({success: false, message: 'NSN not found'})
+                else {
+                    return nsn.update(req.body.nsn)
+                    .then(result => res.send({success: true, message: 'NSN saved'}))
+                    .catch(err => res.error.send(err, res));
+                };
+            })
+            .catch(err => res.error.send(err, res));
+        };
     });
     
-    app.delete('/stores/nsns/:id',             permissions, allowed('nsn_delete',  {send: true}), (req, res) => {
+    app.delete('/stores/nsns/:id',             pm, al('nsn_delete',  {send: true}), (req, res) => {
         m.stores.nsns.findOne({
             where: {nsn_id: req.params.id},
             attributes: ['nsn_id']

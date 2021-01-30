@@ -10,7 +10,7 @@
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders'}) %>
+	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', reload_id: 'reload_genders'}) %>
 	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
@@ -30,7 +30,7 @@
 						<div class="modal-body">
 							<%- include(`${partials}/inputs/text`,	 {title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
 							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text',	name: 'item[_size_text]',	placeholder: 'Required', maxLength: 45, required: true}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Gender',		id: 'sel_genders_add'}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Gender',		name: 'item[gender_id]', 	id:   'sel_genders_add', spinner_id: 'genders_add', reload_id: 'reload_genders_add'}) %>
 						</div>
 						<div class="modal-footer">
 							<input type="submit" class="btn btn-success w-100" value='Save Item'>
@@ -39,12 +39,11 @@
 					</form>
 				</div>
 			</div>
-			<script src="/js/stores/items/index/itemAdd.js"></script>
+			<script src="/js/stores/items/index/add.js"></script>
 		<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<!-- get and spinner from item options -->
 <script src="/js/search/table.js"></script>
 <script src="/js/stores/items/index/items.js"></script>
 <script src="/js/data/addFormListener.js"></script>

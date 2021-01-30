@@ -1,6 +1,7 @@
 window.addEventListener('load', function() {
-    set_attribute({id: 'btn_note_add', attribute: 'data-_table', value: path[2]});
-    set_attribute({id: 'btn_note_add', attribute: 'data-_id',    value: path[3]});
+    set_attribute(   {id: 'btn_note_add', attribute: 'data-_table', value: path[2]});
+    set_attribute(   {id: 'btn_note_add', attribute: 'data-_id',    value: path[3]});
+    remove_attribute({id: 'btn_note_add', attribute: 'disabled'});
     let onComplete = []; 
     addFormListener(
         'form_note_add',

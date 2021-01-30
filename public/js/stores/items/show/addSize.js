@@ -21,18 +21,16 @@ function resetAddSize() {
         let select = document.querySelector(`#${e}`);
         if (select) select.value = '0';
     });
-    ['_demand_page', '_demand_cell', '_size'].forEach(e => {
-        let select = document.querySelector(`#${e}`);
-        if (select) select.value = '';
-    });
-    let select1 = document.querySelector('#_ordering_details');
-    if (select1) select1.innerText = '';
-    let select2 = document.querySelector('#supplier_id');
-    if (select2) select2.value = '';
+    let _size       = document.querySelector('#_size');
+        supplier_id = document.querySelector('#supplier_id');
+    if (_size)       _size.value = '';
 };
-document.querySelector('#reset_size_add').addEventListener('click', getSuppliers);
-document.querySelector('#reset_size_add').addEventListener('click', resetAddSize);
+document.querySelector('#reload_size_add').addEventListener('click', getSuppliers);
+document.querySelector('#reload_size_add').addEventListener('click', resetAddSize);
 window.addEventListener('load', function () {
+    $('#mdl_size_add').on('show.bs.modal', getSuppliers);
+    $('#mdl_size_add').on('show.bs.modal', resetAddSize);
+    remove_attribute({id: 'btn_size_add', attribute: 'disabled'});
     addFormListener(
         'form_size_add',
         'POST',
