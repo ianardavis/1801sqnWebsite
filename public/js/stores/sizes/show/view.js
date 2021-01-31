@@ -10,14 +10,15 @@ function getSize() {
             set_innerText({id: '_demand_page',      text: size._demand_page});
             set_innerText({id: '_demand_cell',      text: size._demand_cell});
             set_innerText({id: '_ordering_details', text: size._ordering_details});
-            let stock_elements  = document.querySelectorAll('._stock_element'),
-                serial_elements = document.querySelectorAll('._serials_element');
+            set_attribute({id: 'size_id_detail',    attribute: 'value', value: size.size_id});
+            let stock_tab  = document.querySelector('._stock_element'),
+                serial_tab = document.querySelector('._serials_element');
             if (size._serials) {
-                stock_elements.forEach(e => e.classList.add('hidden'));
-                serial_elements.forEach(e => e.classList.remove('hidden'));
+                stock_tab.classList.add('hidden');
+                serial_tab.classList.remove('hidden');
             } else {
-                stock_elements.forEach(e => e.classList.remove('hidden'));
-                serial_elements.forEach(e => e.classList.add('hidden'));
+                stock_tab.classList.remove('hidden');
+                serial_tab.classList.add('hidden');
             };
             ['_issueable', '_orderable', '_nsns'].forEach(e => {
                 if (size[e]) document.querySelectorAll(`.${e}_element`).forEach(e => e.classList.remove('hidden'))
@@ -26,7 +27,7 @@ function getSize() {
             let _item = document.querySelector('#_item');
             _item.innerText = size.item._description;
             _item.href      = `/stores/items/${size.item_id}`;
-            set_breadcrumb({text: `Size: ${size._size}`, href: `/stores/sizes/${size.size_id}`});
+            set_breadcrumb({text: `${size.item._size_text || 'Size'}: ${size._size}`, href: `/stores/sizes/${size.size_id}`});
             document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
         },
         {
@@ -35,7 +36,9 @@ function getSize() {
         }
     );
 };
+let details_loaded = false;
 function getDetails() {
+    details_loaded = false;
     get(
         function (details, options) {
             let tbl_details = document.querySelector('#tbl_details');
@@ -47,6 +50,7 @@ function getDetails() {
                     add_cell(row, {text: detail._value});
                     add_cell(row, {classes: ['details'], data: {field: 'id', value: detail.detail_id}});
                 });
+                details_loaded = true;
             };
         },
         {

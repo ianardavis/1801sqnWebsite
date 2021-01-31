@@ -165,6 +165,7 @@ function Delete_Button (options = {}) {
     btn.innerHTML = _delete();
     if (options.small)  btn.classList.add('btn-sm');
     if (options.float)  this.e.classList.add('float-right');
+    if (options.inline) this.e.classList.add('inline-form');
     this.e.appendChild(btn);
     this.e.addEventListener("submit", function (event) {
         event.preventDefault();

@@ -12,7 +12,9 @@ module.exports = function (m, orders) {
                     let create_action = null;
                     if (size._serials) create_action = create_serials(line, user_id, source)
                     else               create_action = create_stock(  line, user_id, source);
-                    create_action.then(result => resolve(result));
+                    create_action
+                    .then(result => resolve(result))
+                    .catch(err => reject(err));
                 };
             })
             .catch(err => reject(err));

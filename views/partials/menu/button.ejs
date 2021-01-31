@@ -1,6 +1,6 @@
 <% if (!locals.permission || permissions[permission]) { %> 
     <button
-        class='dropdown-item'
+        class='dropdown-item<% if (locals.classes) classes.forEach(e => { %> <%= e %><% }) %>'
         <% if (locals.id) { %>
             id='btn_<%= id %>'
         <% } %>

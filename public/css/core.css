@@ -92,7 +92,10 @@ input.dropdown-item {
 	margin-bottom: 5px;
 }
 .hidden {
-	display: none
+	display: none;
+}
+.inline-form {
+	display: inline;
 }
 .nested {
 	display: none;

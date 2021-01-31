@@ -19,7 +19,7 @@ function addFormListener(form_id, method, location, options = {reload: false, _c
 };
 function sendData(form, method, _location, options = {reload: false, _close: true}) {
     const XHR = new XMLHttpRequest(),
-          FD = new FormData(form);
+          FD  = new FormData(form);
     XHR.addEventListener("load", event => {
         try {
             let response = JSON.parse(event.target.responseText);

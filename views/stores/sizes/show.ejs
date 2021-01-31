@@ -16,8 +16,8 @@
                 <div class="dropdown-divider"></div>
 				<%- include(`${partials}/menu/button`, {id: 'note_add',   text: 'Add Note',            modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'nsn_add',    text: 'Add NSN',             modal: 'nsn_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'serial_add', text: 'Add Serial #',        modal: 'serial_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'stock_add',  text: 'Add Stock Location',  modal: 'stock_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'serial_add', text: 'Add Serial #',        modal: 'serial_add', classes: ['_serials_element']}) %>
+				<%- include(`${partials}/menu/button`, {id: 'stock_add',  text: 'Add Stock Location',  modal: 'stock_add',  classes: ['_stock_element']}) %>
 				<%- include(`${partials}/menu/button`, {id: 'order_add',  text: 'Add Order',           modal: 'order_add'}) %>
 				<% if (permissions.item_delete) { %><form id='form_delete'><% } %>
                 <%- include(`${partials}/menu/button`, {id: 'delete',     text: 'Delete'}) %>
@@ -30,7 +30,7 @@
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>
         <%- include(`${partials}/tab_head`, {id: 'nsns',    title: 'NSNs',    spinner: 'nsns',    count_id: 'nsn',    permission: 'access_nsns',    _class: '_nsns_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'serials', title: 'Serials', spinner: 'serials', count_id: 'serial', permission: 'access_serials', _class: '_serials_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'stock',   title: 'Stock',   spinner: 'stock',   count_id: 'stock',  permission: 'access_stock',   _class: '_stock_element'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stocks',  spinner: 'stocks',  count_id: 'stock',  permission: 'access_stocks',  _class: '_stock_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders',  spinner: 'orders',  count_id: 'order',  permission: 'access_orders',  _class: '_orderable_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'issues',  title: 'Issues',  spinner: 'issues',  count_id: 'issue',  permission: 'access_issues',  _class: '_issueable_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes',   count_id: 'note',   permission: 'access_notes'}) %>
@@ -43,6 +43,22 @@
             <%- include(`${partials}/inputs/display`,  {id: '_nsns',      title: 'Has NSNs'}) %>
             <%- include(`${partials}/inputs/display`,  {id: 'supplier',   title: 'Supplier', link: true}) %>
             <div id="div_details">
+                <hr>
+                <% if (permissions.size_edit) { %>
+                    <form id='form_detail_add' class="row">
+                        <input type="hidden" id='size_id_detail' name='detail[size_id]'>
+                        <div class="col-4">
+                            <datalist id="list_detail_options"></datalist>
+                            <input id='inp_detail_name'  class='form-control' type="text" name='detail[_name]'  placeholder='Name'  maxlength="45"   autocomplete="off" required list='list_detail_options'>
+                        </div>
+                        <div class="col-4">
+                            <input id='inp_detail_value' class='form-control' type="text" name='detail[_value]' placeholder='Value' maxlength="1000" autocomplete="off" required>
+                        </div>
+                        <div class="col-4">
+                            <button class='btn btn-success w-100'>Save</button>
+                        </div>
+                    </form>
+                <% } %>
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
                         <th class='w-20' onclick='sortTable(0, "tbl_details")'>Name</th>
@@ -66,7 +82,7 @@
             </div>
         <% } %>
         <% if (permissions.access_serials) { %>
-            <div id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade _serials_element">
+            <div id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-50' onclick='sortTable(0, "tbl_serials")'>Serial #</th>
@@ -77,8 +93,8 @@
                 </table>
             </div>
         <% } %>
-        <% if (permissions.access_stock) { %>
-            <div id="stock"   role="tabpanel" aria-labelledby="stock-tab"   class="tab-pane fade _stock_element">
+        <% if (permissions.access_stocks) { %>
+            <div id="stocks"  role="tabpanel" aria-labelledby="stocks-tab"  class="tab-pane fade">
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_stock")'>Location</th>
@@ -119,7 +135,7 @@
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
     <div id="div_modals">
-        <% if (permissions.serial_add || permissions.serial_edit || permissions.stock_add || permissions.stock_edit) { %>
+        <% if (permissions.serial_add || permissions.stock_add) { %>
             <datalist id="locations_list"></datalist>
             <script src="/js/stores/locations/getLocations.js"></script>
         <% } %>
@@ -135,11 +151,8 @@
                             <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',        title: 'Orderable',        id: '_orderable_edit'}) %>
                             <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',          title: 'Has Serial #',     id: '_serials_edit'}) %>
                             <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_nsns]',             title: 'Has NSNs',         id: '_nsns_edit'}) %>
-                            <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]',       title: 'Supplier',         id: 'supplier_id_edit',       spinner: true, spinner_id: 'suppliers'}) %>
-                            <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_page]',      title: 'Demand Page',      id: '_demand_page_edit',      maxlength: 20}) %>
-                            <%- include(`${partials}/inputs/text`,          {name: 'size[_demand_cell]',      title: 'Cell',             id: '_demand_cell_edit',      maxlength: 3}) %>
-                            <%- include(`${partials}/inputs/textarea`,      {name: 'size[_ordering_details]', title: 'Ordering Details', id: '_ordering_details_edit', maxlength: 1000, rows: 5}) %>
-                            <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size_edit',              maxlength: 15,   placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]',       title: 'Supplier',         id: 'supplier_id_edit', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
+                            <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',             title: 'Size',             id:'_size_edit',        maxlength: 15, placeholder: 'Required', required: true}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save Size'>
@@ -158,7 +171,6 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name='line[size_id]' class='size_id'>
-                            <input type="hidden" name='user_id_order'   value='-1'>
                             <%- include(`${partials}/inputs/number`, {name: 'line[_qty]', title: 'Quantity', value: '1', maxlength: 8, placeholder: 'Required', required: true}) %>
                         </div>
                         <div class="modal-footer">
@@ -168,6 +180,7 @@
                     </form>
                 </div>
             </div>
+            <script src="/js/stores/sizes/show/orders/add.js"></script>
         <% } %>
         <% if (permissions.access_nsns) { %>
             <div     id='mdl_nsn_view'    class="modal fade" tabindex="-1" role="dialog">
@@ -175,37 +188,16 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5   class="modal-title">NSN ID: <span id="nsn_id"></span> | <span id="_nsn_view"></span></h5>
-                            <span class='float-right'>
-                                <a class="btn btn-primary mr-1" id="nsn_reload"><i class="fas fa-redo"></i></a>
-                                <span id='nsn_buttons'>
-                                    <a id='btn_nsn_link' class='btn btn-success'><i class="fas fa-search"></i></a>
-                                    <span id="span_nsn_edit"   class='ml-1'></span>
-                                    <span id="span_nsn_delete" class='ml-1'></span>
-                                </span>
+                            <span class='float-right' id='nsn_buttons'>
+                                <a class='btn btn-primary' id='btn_nsn_link'><i class="fas fa-search"></i></a>
                             </span>
                         </div>
                         <div class="modal-body">
-                            <% if (permissions.nsn_edit) { %>
-                                <div id="div_nsn_edit" class='hidden'>
-                                    <form id='form_nsn_edit'>
-                                        <input type="hidden" id='nsn_id_edit' name='nsn_id'>
-                                        <%- include(`${partials}/inputs/select`, {id: 'nsn_group_id_edit',          title: 'Group',          name: 'nsn[nsn_group_id]'}) %>
-                                        <%- include(`${partials}/inputs/select`, {id: 'nsn_classification_id_edit', title: 'Classification', name: 'nsn[nsn_classification_id]'}) %>
-                                        <%- include(`${partials}/inputs/select`, {id: 'nsn_country_id_edit',        title: 'Country',        name: 'nsn[nsn_country_id]'}) %>
-                                        <%- include(`${partials}/inputs/text`,   {id: '_item_number_edit',          title: 'Item Number',    name: 'nsn[_item_number]'}) %>
-                                        <input class="btn btn-success w-100" type="submit" value="Save">
-                                        <a class='float-left' href='javascript:reset_nsn()'>Cancel</a>
-                                    </form>
-                                </div>
-                                <script src="/js/stores/sizes/show/nsns/edit.js"></script>
-                            <% } %>
-                            <div id="div_nsn_view">
-                                <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',          classes: ['text-left'], title: 'Group'}) %>
-                                <%- include(`${partials}/inputs/display`, {id: 'nsn_classification_id', classes: ['text-left'], title: 'Classification'}) %>
-                                <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id',        classes: ['text-left'], title: 'Country'}) %>
-                                <%- include(`${partials}/inputs/display`, {id: '_item_number',          classes: ['text-left'], title: 'Item Number'}) %>
-                                <%- include(`${partials}/inputs/display`, {id: '_default',              classes: ['text-left'], title: 'Is Default?'}) %>
-                            </div>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',          classes: ['text-left'], title: 'Group'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_classification_id', classes: ['text-left'], title: 'Classification'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id',        classes: ['text-left'], title: 'Country'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: '_item_number',          classes: ['text-left'], title: 'Item Number'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: '_default',              classes: ['text-left'], title: 'Is Default?'}) %>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -222,11 +214,11 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" class='size_id' name='nsn[size_id]'>
-                                <%- include(`${partials}/inputs/select`, {title: 'Group',          id: 'nsn_group_id_add',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true}) %>
-                                <%- include(`${partials}/inputs/select`, {title: 'Classification', id: 'nsn_classification_id_add', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true}) %>
-                                <%- include(`${partials}/inputs/select`, {title: 'Country',        id: 'nsn_country_id_add',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true}) %>
-                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',                                     name: 'nsn[_item_number]',          placeholder: 'Required', required: true, inputmode: 'numeric', maxLength: '8'}) %>
-                                <%- include(`${partials}/inputs/select`, {title: 'Default?',                                        name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true, id: 'nsn_group_id_add'}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_classification_id]', placeholder: 'Required', required: true, id: 'nsn_classification_id_add'}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true, id: 'nsn_country_id_add'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[_item_number]',          placeholder: 'Required', required: true, inputmode: 'numeric', maxLength: '8'}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Default?',       name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
                             </div>
                             <div class="modal-footer">
                                 <input type="submit" class="btn btn-success w-100" value='Save NSN'>
@@ -244,34 +236,12 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5   class="modal-title">Serial ID: <span id="serial_id"></span> | <span id="_serial_view"></span></h5>
-                            <span class='float-right'>
-                                <a class="btn btn-primary mr-1" id="serial_reload"><i class="fas fa-redo"></i></a>
-                                <span id='serial_buttons'></span>
+                            <span class='float-right' id='serial_buttons'>
+                                <a class='btn btn-primary' id='btn_serial_link'><i class="fas fa-search"></i></a>
                             </span>
                         </div>
                         <div class="modal-body">
-                            <ul class="nav nav-tabs" id="serialTab" role="tablist">
-                                <%- include(`${partials}/tab_head`, {id: 'serial-view',  title: 'Serial', spinner: 'serial_view', active: true}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'serial-notes', title: 'Notes',  count_id: 'serial_note'}) %>
-                            </ul>
-                            <div class="tab-content pt-3" id="serialContent">
-                                <div class="tab-pane fade show active" id="serial-view" role="tabpanel" aria-labelledby="serial-view-tab">
-                                    <% if (permissions.serial_edit) { %>
-                                        <div id="div_serial_edit" class='hidden'>
-                                            <form id='form_serial_edit'>
-                                                <%- include(`${partials}/inputs/text`, {id: '_serial_edit',          title: 'Serial #', name: 'serial[_serial]', maxlength: 45, required: true}) %>
-                                                <%- include(`${partials}/inputs/text`, {id: 'serial_edit_locations', title: 'Location', name: '_location',       maxlength: 20, required: true, list_id: 'locations_list'}) %>
-                                                <input class="btn btn-success w-100" type="submit" value="Save">
-                                                <a class='float-left' href='javascript:edit_serial_reset()'>Cancel</a>
-                                            </form>
-                                        </div>
-                                    <% } %>
-                                    <div id="div_serial_view">
-                                        <%- include(`${partials}/inputs/display`, {id: 'serial_location', classes: ['text-left'], title: 'Location'}) %>
-                                   </div>
-                                </div>
-                                <%- include(`${partials}/notes/line_note_table`, {line: 'serial'}) %>
-                            </div>
+                            <%- include(`${partials}/inputs/display`, {id: 'serial_location', classes: ['text-left'], title: 'Location'}) %>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -298,82 +268,60 @@
                         </form>
                     </div>
                 </div>
+                <script src="/js/stores/sizes/show/serials/add.js"></script>
             <% } %>
         <% } %>
-        <% if (permissions.access_stock) { %>
+        <% if (permissions.access_stocks) { %>
             <div     id='mdl_stock_view'  class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5   class="modal-title" id="_stock_view">Stock ID: <span id="stock_id"></span></h5>
-                            <span class='float-right'>
-                                <a class="btn btn-primary mr-1" id="stock_reload"><i class="fas fa-redo"></i></a>
-                                <span id='stock_buttons'></span>
+                            <h5 class="modal-title" id="_stock_view">Stock ID: <span id="stock_id"></span></h5>
+                            <span class='float-right' id='stock_buttons'>
+                                <a class='btn btn-primary' id='btn_stock_link'><i class="fas fa-search"></i></a>
                             </span>
                         </div>
                         <div class="modal-body">
                             <ul class="nav nav-tabs" id="stockTab" role="tablist">
-                                <%- include(`${partials}/tab_head`, {id: 'stock-view',     title: 'Stock',       spinner: 'stock_view',     active: true}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'stock-adjusts',  title: 'Adjustments', spinner: 'stock_adjusts',  count_id: 'stock_adjusts',  permission: 'access_adjusts'}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'stock-receipts', title: 'Receipts',    spinner: 'stock_receipts', count_id: 'stock_receipts', permission: 'access_receipt_lines'}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'stock-issues',   title: 'Issues',      spinner: 'stock_issues',   count_id: 'stock_issues',   permission: 'access_issues'}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'stock-notes',    title: 'Notes',       spinner: 'stock_notes',    count_id: 'stock_note',     permission: 'access_notes'}) %>
+                                <%- include(`${partials}/tab_head`, {id: 'stock-view',    title: 'Stock',       spinner: 'stock_view',    active: true}) %>
+                                <%- include(`${partials}/tab_head`, {id: 'stock-adjusts', title: 'Adjustments', spinner: 'stock_adjusts', count_id: 'stock_adjusts', permission: 'access_adjusts'}) %>
                             </ul>
                             <div class="tab-content pt-3" id="stockContent">
                                 <div class="tab-pane fade show active" id="stock-view" role="tabpanel" aria-labelledby="stock-view-tab">
-                                    <% if (permissions.stock_edit) { %>
-                                        <div id="div_stock_edit" class='hidden'>
-                                            <form id='form_stock_edit'>
-                                                <%- include(`${partials}/inputs/text`, {id: 'stock_edit_location', title: 'Location', name: '_location', maxlength: 20, required: true, list_id: 'locations_list'}) %>
-                                                <input class="btn btn-success w-100" type="submit" value="Save">
-                                                <a class='float-left' href='javascript:edit_stock_reset()'>Cancel</a>
-                                            </form>
-                                        </div>
-                                    <% } %>
-                                    <div id="div_stock_view">
-                                        <%- include(`${partials}/inputs/display`, {id: 'stock_location', classes: ['text-left'], title: 'Location'}) %>
-                                        <%- include(`${partials}/inputs/display`, {id: '_qty',           classes: ['text-left'], title: 'Quantity'}) %>
-                                    </div>
+                                    <%- include(`${partials}/inputs/display`, {id: 'stock_location', classes: ['text-left'], title: 'Location'}) %>
+                                    <%- include(`${partials}/inputs/display`, {id: '_qty',           classes: ['text-left'], title: 'Quantity'}) %>
                                 </div>
                                 <% if (permissions.access_adjusts) { %>
                                     <div class="tab-pane fade" id="stock-adjusts" role="tabpanel" aria-labelledby="stock-adjusts-tab">
-                                        <div class="row">
-                                            <% if (permissions.adjust_add) { %><div class="col-2">
-                                                <button id='btn_stock_adjust_add' class='btn btn-success w-100' data-toggle='modal' data-target='#mdl_adjust_add'>
-                                                    <i class="fas fa-plus"></i>
-                                                </button>
-                                            </div>
-                                            <div class="col-10"><% } %>
-                                                <%- include(`${partials}/inputs/select`, {id: `sel_stock_adjust_type`, title: 'Adjustment Types', options: [{text: 'All', value: '', selected: true}, {text: 'Count', value: '_type=Count'}, {text: 'Scrap', value: '_type=Scrap'}]}) %>
-                                            <% if (permissions.adjust_add) { %></div><% } %>
-                                        </div>
-                                        <table class="table table-sm table-hover">
-                                            <thead class="thead-dark">
-                                                <th class="w-25" onclick="sortTable(0, 'tbl_stock_adjusts')">Date</th>
-                                                <th class="w-10" onclick="sortTable(1, 'tbl_stock_adjusts')">Type</th>
-                                                <th class="w-10" onclick="sortTable(2, 'tbl_stock_adjusts')">Qty</th>
-                                                <th class="w-10" onclick="sortTable(3, 'tbl_stock_adjusts')">Variance</th>
-                                                <th class="w-45" onclick="sortTable(4, 'tbl_stock_adjusts')">User</th>
+                                        <% if (permissions.adjust_add) { %>
+                                            <form class='row' id='form_adjust_add'>
+                                                <input type="hidden" name='adjust[stock_id]' id='stock_id_adjust'>
+                                                <div class="col-4">
+                                                    <select class='form-control' name='adjust[_type]' required>
+                                                        <option value="Count">Count</option>
+                                                        <option value="Scrap">Scrap</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-4">
+                                                    <input id='stock_id_qty' class='form-control' type="number" inputmode="numeric" min='0' maxlength="11" name='adjust[_qty]' required>
+                                                </div>
+                                                <div class="col-4">
+                                                    <button class='btn btn-success w-100'>Save</button>
+                                                </div>
+                                            </form>
+                                            <script src="/js/stores/sizes/show/stock/adjusts/add.js"></script>
+                                        <% } %>
+                                        <table class='table table-sm table-hover'>
+                                            <thead class='thead-dark'>
+                                                <th class='w-30' onclick='sortTable(0, "tbl_adjusts")'>Date</th>
+                                                <th class='w-30' onclick='sortTable(1, "tbl_adjusts")'>Type</th>
+                                                <th class='w-20' onclick='sortTable(2, "tbl_adjusts")'>Qty</th>
+                                                <th class='w-20' onclick='sortTable(3, "tbl_adjusts")'>Variance</th>
                                             </thead>
-                                            <tbody id="tbl_stock_adjusts"></tbody>
+                                            <tbody id='tbl_adjusts'></tbody>
                                         </table>
                                     </div>
                                 <% } %>
-                                <% if (permissions.access_issues) { %>
-                                    <div class="tab-pane fade" id="stock-issues" role="tabpanel" aria-labelledby="stock-issues-tab">
-                                        <table class="table table-sm table-hover">
-                                            <thead class="thead-dark">
-                                                <th class="w-40" onclick="sortTable(0, 'tbl_stock_issues')">Date</th>
-                                                <th class="w-40" onclick="sortTable(1, 'tbl_stock_issues')">To</th>
-                                                <th class="w-10" onclick="sortTable(2, 'tbl_stock_issues')">Qty</th>
-                                                <th class="w-10" onclick="sortTable(3, 'tbl_stock_issues')">Returned?</th>
-                                                <th><i class="fas fa-search"></i></th>
-                                            </thead>
-                                            <tbody id="tbl_stock_issues"></tbody>
-                                        </table>
-                                    </div>
-                                <% } %>
-                                <%- include(`${partials}/notes/line_note_table`, {line: 'stock'}) %>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -382,30 +330,6 @@
                     </div>
                 </div>
             </div>
-            <% if (permissions.adjust_add) { %>
-                <div id='mdl_adjust_add'  class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <form class="modal-content" id='form_adjust_add'>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add Adjustment</h5>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" class='stock_id' name='adjust[stock_id]'>
-                                <%- include(`${partials}/inputs/display`, {id: 'adjust_item',     title: 'Item'}) %>
-                                <%- include(`${partials}/inputs/display`, {id: 'adjust_size',     title: 'Size'}) %>
-                                <%- include(`${partials}/inputs/display`, {id: 'adjust_location', title: 'Location'}) %>
-                                <%- include(`${partials}/inputs/display`, {id: 'adjust_qty',      title: 'Current Quantity'}) %>
-                                <%- include(`${partials}/inputs/number`,  {id: 'adjust_new_qty',  title: 'Quantity', name: 'adjust[_qty]',  required: true}) %>
-                                <%- include(`${partials}/inputs/select`,  {id: 'adjust_type',     title: 'Type',     name: 'adjust[_type]', required: true, options: [{text: 'Select Adjustment Type...', selected: true},{text: 'Count', value: 'Count'},{text: 'Scrap', value: 'Scrap'}]}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save Adjustment'>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <% } %>
             <% if (permissions.stock_add) { %>
                 <div id='mdl_stock_add'   class="modal fade" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-lg" role="document">
@@ -424,170 +348,45 @@
                         </form>
                     </div>
                 </div>
+                <script src="/js/stores/sizes/show/stock/add.js"></script>
             <% } %>
         <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<!-- get/spinner/send from notes include -->
 <script src="/js/data/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
-<!-- <script src='/js/utils/getLineNotes.js'></script> -->
-<script src="/js/stores/sizes/show/getSize.js"></script>
+<script src="/js/stores/sizes/show/view.js"></script>
 <script async>getSize()</script>
 <script async>getDetails()</script>
 <% if (permissions.access_nsns) { %>
     <script src="/js/stores/sizes/show/nsns/view.js"></script>
     <script async>getNSNs()</script>
-    <% if (permissions.nsn_add || permissions.nsn_edit) { %>
-        <script src="/js/stores/sizes/show/nsns/categories.js"></script>
-    <% } %>
-    <% if (permissions.nsn_delete) { %>
-        <script src="/js/stores/sizes/show/nsns/delete.js"></script>
-    <% } %>
 <% } %>
 <% if (permissions.access_serials) { %>
     <script src="/js/stores/sizes/show/serials/view.js"></script>
     <script async>getSerials()</script>
-    <script>
-        let serial_id     = document.querySelector('#serial_id'),
-            serial_reload = document.querySelector('#serial_reload'),
-            get_serial    = function (serial_id) {
-                getSerialView(
-                    serial_id,
-                    {
-                        edit:   <%= permissions.serial_edit   || false %>,
-                        delete: <%= permissions.serial_delete || false %>
-                    }
-                );
-            };
-        $('#mdl_serial_view').on('show.bs.modal', function(event) {
-            get_serial(event.relatedTarget.dataset.serial_id);
-        });
-        window.addEventListener('load', function () {
-            serial_reload.addEventListener('click', function () {
-                get_serial(serial_id.innerText);
-            });
-        });
-    </script>
-    <% if (permissions.access_notes) { %>
-        <script src="/js/stores/sizes/show/serials/getNotes.js"></script>
-        <script>
-            let get_serial_notes = function (serial_id) {
-                getSerialNotes(
-                    serial_id,
-                    {
-                        add:    <%= permissions.note_add    || false %>,
-                        edit:   <%= permissions.note_edit   || false %>,
-                        delete: <%= permissions.note_delete || false %>
-                    }
-                );
-            };
-            $('#mdl_serial_view').on('show.bs.modal', function(event) {
-                get_serial_notes(event.relatedTarget.dataset.serial_id);
-            });
-            window.addEventListener('load', function () {
-                let serial_sel_system = document.querySelector('#serial_sel_system');
-                serial_reload.addEventListener('click', function () {
-                    get_serial_notes(serial_id.innerText);
-                });
-                if (serial_sel_system) serial_sel_system.addEventListener('change', function () {
-                    get_serial_notes(serial_id.innerText);
-                });
-            });
-        </script>
-    <% } %>
-    <% if (permissions.serial_edit) { %>
-        <script src="/js/stores/sizes/show/serials/edit.js"></script>
-    <% } %>
-    <% if (permissions.serial_add) { %>
-        <script src="/js/stores/sizes/show/serials/add.js"></script>
-    <% } %>
 <% } %>
-<% if (permissions.access_stock) { %>
+<% if (permissions.access_stocks) { %>
     <script src="/js/stores/sizes/show/stock/view.js"></script>
     <script async>getStocks()</script>
-    <script>
-        let stock_id     = document.querySelector('#stock_id'),
-            stock_reload = document.querySelector('#stock_reload'),
-            get_stock    = function (stock_id) {
-                getStockView(
-                    stock_id,
-                    {
-                        edit:   <%= permissions.stock_edit   || false %>,
-                        delete: <%= permissions.stock_delete || false %>
-                    }
-                );
-            };
-        $('#mdl_stock_view').on('show.bs.modal', function(event) {
-            get_stock(event.relatedTarget.dataset.stock_id);
-        });
-        window.addEventListener('load', function () {
-            stock_reload.addEventListener('click', function () {
-                get_stock(stock_id.innerText);
-            });
-        });
-    </script>
-    <% if (permissions.access_notes) { %>
-        <script src="/js/stores/sizes/show/stock/getNotes.js"></script>
-        <script>
-            let get_stock_notes = function (stock_id) {
-                getStockNotes(
-                    stock_id,
-                    {
-                        add:    <%= permissions.note_add    || false %>,
-                        edit:   <%= permissions.note_edit   || false %>,
-                        delete: <%= permissions.note_delete || false %>
-                    }
-                );
-            };
-            $('#mdl_stock_view').on('show.bs.modal', function(event) {
-                get_stock_notes(event.relatedTarget.dataset.stock_id);
-            });
-            window.addEventListener('load', function () {
-                let stock_sel_system = document.querySelector('#stock_sel_system');
-                stock_reload.addEventListener('click', function () {
-                    get_stock_notes(stock_id.innerText);
-                });
-                if (stock_sel_system) stock_sel_system.addEventListener('change', function () {
-                    get_stock_notes(stock_id.innerText);
-                });
-            });
-        </script>
-    <% } %>
     <% if (permissions.access_adjusts) { %>
-        <script src="/js/stores/sizes/show/stock/getAdjusts.js"></script>
-        <% if (permissions.adjust_add) { %>
-            <script src="/js/stores/sizes/show/stock/addAdjust.js"></script>
-        <% } %>
-    <% } %>
-    <% if (permissions.access_issues) { %>
-        <script src="/js/stores/sizes/show/stock/getIssues.js"></script>
-    <% } %>
-    <% if (permissions.stock_add) { %>
-        <script src="/js/stores/sizes/show/stock/add.js"></script>
-    <% } %>
-    <% if (permissions.stock_edit) { %>
-        <script src="/js/stores/sizes/show/stock/edit.js"></script>
-    <% } %>
-    <% if (permissions.serial_add) { %>
-        <script src="/js/stores/sizes/show/serials/add.js"></script>
+        <script src="/js/stores/sizes/show/stock/adjusts/view.js"></script>
     <% } %>
 <% } %>
 <% if (permissions.access_orders) { %>
-    <script src="/js/stores/sizes/show/getOrders.js"></script>
+    <script src="/js/stores/sizes/show/orders/view.js"></script>
     <script async>getOrders()</script>
-    <% if (permissions.order_add) { %>
-        <script src="/js/stores/sizes/show/orders/add.js"></script>
-    <% } %>
 <% } %>
 <% if (permissions.access_issues) { %>
-    <script src="/js/stores/sizes/show/getIssues.js"></script>
+    <script src="/js/stores/sizes/show/issues/view.js"></script>
     <script async>getIssues()</script>
 <% } %>
 <% if (permissions.size_edit) { %>
-    <script src="/js/stores/sizes/show/getSizeEdit.js"></script>
+    <script src="/js/utils/list/suppliers.js"></script>
+    <script src="/js/stores/sizes/show/edit.js"></script>
     <script async>getSizeEdit()</script>
+    <script>loadDetailDelete()</script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

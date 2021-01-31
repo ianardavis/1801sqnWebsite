@@ -29,8 +29,8 @@ function getCategories() {
                     add_cell(row, {text: category.category._category});
                     add_cell(row, {classes: ['categories'], data: {field: 'id', value: category.item_category_id}});
                 });
+                categories_loaded = true;
             };
-            categories_loaded = true;
         },
         {
             table: 'item_categories',

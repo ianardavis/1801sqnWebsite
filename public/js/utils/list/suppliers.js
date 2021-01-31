@@ -9,8 +9,8 @@ function listSuppliers(options = {}) {
                 if (options.blank === true) sel_suppliers.appendChild(new Option(options.blank_opt || {}).e);
                 suppliers.forEach(supplier => {
                     let value = '';
-                    if (options.id_only) value = supplier.supplier_id
-                    else                 value = `supplier_id=${supplier.supplier_id}`
+                    if (options.id_only === true) value = supplier.supplier_id
+                    else                          value = `supplier_id=${supplier.supplier_id}`
                     sel_suppliers.appendChild(
                         new Option({
                             value: value,

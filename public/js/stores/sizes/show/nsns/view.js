@@ -28,7 +28,7 @@ function getNSNs() {
         }
     );
 };
-$('#mdl_nsn_view').on('show.bs.modal', function(event) {
+function viewNSN(event) {
     get(
         function(nsn, options) {
             set_innerText({id: 'nsn_group_id',          text: `${String(nsn.group._code).padStart(2, '0')} | ${nsn.group._group}`});
@@ -46,5 +46,8 @@ $('#mdl_nsn_view').on('show.bs.modal', function(event) {
             spinner: 'nsn_view'
         }
     );
+};
+window.addEventListener('load', function() {
+    $('#mdl_nsn_view').on('show.bs.modal', viewNSN);
+    document.querySelector('#reload').addEventListener('click', getNSNs);
 });
-document.querySelector('#reload').addEventListener('click', getNSNs);

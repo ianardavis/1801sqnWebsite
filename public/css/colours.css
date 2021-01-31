@@ -16,7 +16,9 @@ body {
 	background-color: var(--main-bg-color);
 	color: var(--main-color);
 }
-
+hr {
+	color: var(--main-color);
+}
 .bg-red {
 	background-color: #ffb7b7;
 	color: var(--main-bg-color);

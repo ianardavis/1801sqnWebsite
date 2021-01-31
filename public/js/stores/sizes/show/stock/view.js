@@ -1,12 +1,12 @@
 function getStocks() {
     get(
         function (stocks, options) {
-            try {
-                let tbl_stock = document.querySelector('#tbl_stock');
-                set_count({id: 'stock', count: stocks.length});
-                if (tbl_stock) {
-                    tbl_stock.innerHTML = '';
-                    stocks.forEach(stock => {
+            set_count({id: 'stock', count: stocks.length || '0'});
+            let tbl_stock = document.querySelector('#tbl_stock');
+            if (tbl_stock) {
+                tbl_stock.innerHTML = '';
+                stocks.forEach(stock => {
+                    try {
                         let row = tbl_stock.insertRow(-1);
                         add_cell(row, {text: stock.location._location});
                         add_cell(row, {text: stock._qty || '0'});
@@ -16,9 +16,9 @@ function getStocks() {
                             small: true
                         }).e}
                         );
-                    });
-                };
-            } catch (error) {console.log(error)};
+                    } catch (error) {console.log(error)};
+                });
+            };
         },
         {
             table: 'stocks',
@@ -26,56 +26,25 @@ function getStocks() {
         }
     );
 };
-function getStockView(stock_id, permissions) {
-    let stock_ids = document.querySelectorAll('.stock_id');
-    if (stock_ids) stock_ids.forEach(e => e.setAttribute('value', stock_id));
+function viewStock(event) {
     get(
         function(stock, options) {
+            let stock_ids = document.querySelectorAll('.stock_id');
+            if (stock_ids) stock_ids.forEach(e => e.setAttribute('value', stock.stock_id));
             set_innerText({id: 'stock_location',       text: stock.location._location});
             set_innerText({id: '_qty',                 text: stock._qty});
             set_innerText({id: 'stock_id',             text: stock.stock_id});
-            set_attribute({id: 'btn_stock_adjust_add', attribute: 'data-stock_id', value: stock_id});
-            if (permissions.edit === true || permissions.delete === true) {
-                let stock_buttons = document.querySelector('#stock_buttons');
-                if (stock_buttons) {
-                    stock_buttons.innerHTML = '';
-                    if (permissions.delete) {
-                        stock_buttons.appendChild(
-                            new Delete_Button({
-                                path:       `/stores/stocks/${stock.stock_id}`,
-                                descriptor: 'Stock',
-                                float:      true,
-                                options: {
-                                    onComplete: [
-                                        getStocks,
-                                        function () {$('mdl_stock_view').modal('hide')}
-                                    ]
-                                }
-                            }).e
-                        );
-                    };
-                    if (permissions.edit) {
-                        stock_buttons.appendChild(
-                            new Button({
-                                attributes: [
-                                    {field: 'id', value: 'btn_stock_edit'}
-                                ],
-                                type: 'success',
-                                html: '<i class="fas fa-pencil-alt"></i>',
-                                click: edit_stock,
-                                float:      true,
-                                classes: ['mr-1']
-                            }).e
-                        );
-                    };
-                };
-            };
+            set_attribute({id: 'btn_stock_adjust_add', attribute: 'data-stock_id', value: stock.stock_id});
+            set_attribute({id: 'btn_stock_link',       attribute: 'href', value: `/stores/stocks/${stock.stock_id}`});
         },
         {
             table: 'stock',
-            query: [`stock_id=${stock_id}`],
+            query: [`stock_id=${event.relatedTarget.dataset.stock_id}`],
             spinner: 'stock_view'
         }
     );
 };
-document.querySelector('#reload').addEventListener('click', getStocks);
+window.addEventListener('load', function () {
+    $('#mdl_stock_view').on('show.bs.modal', viewStock);
+    document.querySelector('#reload').addEventListener('click', getStocks);
+});

@@ -8,6 +8,8 @@ module.exports = function (m) {
     m.actions.hasOne(               m.nsns,                {foreignKey: 'nsn_id',                sourceKey: 'nsn_id',                constraints: false});
     m.actions.belongsTo(            m.loancard_lines,      {foreignKey: 'loancard_line_id',      targetKey: 'line_id',               constraints: false});
     m.actions.hasOne(               m.demand_lines,        {foreignKey: 'line_id',               sourceKey: 'demand_line_id',        constraints: false});
+    m.adjusts.hasOne(               m.stocks,              {foreignKey: 'stock_id',              sourceKey: 'stock_id',              constraints: false});
+    m.adjusts.hasOne(               m.sizes,               {foreignKey: 'size_id',               sourceKey: 'size_id',              constraints: false});
     m.categories.hasMany(           m.categories,          {foreignKey: 'category_id',           targetKey: 'parent_category_id'}); ///////////Unknown if this works?!
     m.categories.belongsTo(         m.categories,          {foreignKey: 'parent_category_id',    targetKey: 'category_id'});        ///////////Unknown if this works?!
     m.categories.belongsToMany(     m.items,               {foreignKey: 'category_id',           otherKey:  'item_id',               through: m.item_categories})
@@ -47,6 +49,7 @@ module.exports = function (m) {
     m.orders.hasMany(               m.actions,             {foreignKey: 'order_id',              targetKey: 'order_id',                                  as: 'actions'});
     m.serials.belongsTo(            m.sizes,               {foreignKey: 'size_id',               targetKey: 'size_id'});
     m.serials.hasOne(               m.locations,           {foreignKey: 'location_id',           sourceKey: 'location_id',           constraints: false});
+    m.serials.hasOne(               m.issues,              {foreignKey: 'issue_id',              sourceKey: 'issue_id',              constraints: false});
     m.sizes.hasOne (                m.suppliers,           {foreignKey: 'supplier_id',           sourceKey: 'supplier_id',           constraints: false});
     m.sizes.hasMany(                m.nsns,                {foreignKey: 'size_id',               targetKey: 'size_id'});
     m.sizes.hasOne(                 m.nsns,                {foreignKey: 'nsn_id',                targetKey: 'nsn_id'});

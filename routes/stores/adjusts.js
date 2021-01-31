@@ -4,7 +4,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
             where:   req.query,
             include: [
                 inc.users(), 
-                inc.stock({as: 'stock'})
+                inc.stocks({as: 'stock'})
             ]
         })
         .then(adjusts => res.send({success: true, result: adjusts}))
@@ -13,7 +13,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
 
     app.post('/stores/adjusts',    loggedIn, allowed('adjust_add',     {send: true}), (req, res) => {
         if (req.body.adjust.stock_id && req.body.adjust._qty && req.body.adjust._type) {
-            m.stores.stock.findOne({
+            m.stores.stocks.findOne({
                 where: {stock_id: req.body.adjust.stock_id},
                 attributes: ['stock_id', 'size_id', '_qty']
             })
