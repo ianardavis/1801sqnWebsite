@@ -75,7 +75,7 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/writeoffs/show/getWriteoff.js"></script>
-<script src="/js/data/addFormListener.js"></script>
+<script src="/js/addFormListener.js"></script>
 <script src="/js/tabs.js"></script>
 <script>showTab('<%= tab %>')</script>
 <script async>getWriteoff()</script>
@@ -99,7 +99,7 @@
                 if (input) input.addEventListener('input', calculate_cost);
             })
             addFormListener(
-                'form_add_item',
+                'add_item',
                 'POST',
                 `/canteen/writeoff_lines/${path[3]}`,
                 {onComplete: [getLines, reset_add_item]}
@@ -113,7 +113,7 @@
     <script>
         window.addEventListener('load', function () {
             addFormListener(
-                'form_cancel',
+                'cancel',
                 'DELETE',
                 `/canteen/writeoffs/${path[3]}`,
                 {
@@ -124,7 +124,7 @@
                 }
             );
             addFormListener(
-                'form_complete',
+                'complete',
                 'PUT',
                 `/canteen/writeoffs/${path[3]}`,
                 {

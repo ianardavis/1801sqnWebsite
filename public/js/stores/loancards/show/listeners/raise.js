@@ -1,6 +1,6 @@
 window.addEventListener("load", function () {
     addFormListener(
-        'form_raise',
+        'raise',
         'PUT',
         `/stores/loancards/raise/${path[3]}`,
         {

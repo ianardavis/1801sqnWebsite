@@ -3,105 +3,10 @@ function _search() {return '<i class="fas fa-search"></i>'}
 function _globe()  {return '<i class="fas fa-globe-europe"></i>'}
 function _edit()   {return '<i class="fas fa-pencil-alt"></i>'}//
 function _save()   {return '<i class="fas fa-save"></i>'}
+function _move(attribute = '')   {return `<i class="fas fa-align-justify"${attribute}></i>`}
 function _copy()   {return '<i class="fas fa-clipboard"></i>'}
 function _delete() {return '<i class="fas fa-trash-alt"></i>'}
-function random_id() {
-    return Math.floor(Math.random()*10000)
-};
-function yesno(boolean) {
-    if (boolean === 1 || boolean === true) return 'Yes'
-    else return 'No'
-};
-function enable_button(id) {
-    let button = document.querySelector(`#btn_${id}`);
-    if (button) button.removeAttribute('disabled');
-};
-function disable_button(id) {
-    let button = document.querySelector(`#btn_${id}`);
-    if (button) button.setAttribute('disabled', true);
-};
-function set_count(options = {}) {
-    let _count = document.querySelector(`#${options.id}_count`);
-    if (_count) _count.innerText = options.count || '0';
-};
-function add_cell(row, options = {}) {
-    let cell = row.insertCell();
-    if (options.sort)      cell.setAttribute('data-sort', options.sort);
-    if (options.text)      cell.innerText = options.text || '';
-    else if (options.html) cell.innerHTML = options.html || '';
-    if (options.classes)   options.classes.forEach(e => cell.classList.add(e));
-    if (options.append)    cell.appendChild(options.append);
-    if (options.id)        cell.setAttribute('id', options.id);
-    if (options.data)      cell.setAttribute(`data-${options.data.field}`, options.data.value)
-    if (options.ellipsis)  cell.classList.add('ellipsis1');
-};
-function show(id) {
-    let element = document.querySelector(`#${id}`);
-    if (element) element.classList.remove('hidden');
-};
-function hide(id) {
-    let element = document.querySelector(`#${id}`);
-    if (element) element.classList.add('hidden');
-};
-function set_innerText(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) element.innerText = options.text || '';
-};
-function set_attribute(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) element.setAttribute(options.attribute || '', options.value || '');
-};
-function set_breadcrumb(options = {}) {
-    let breadcrumb = document.querySelector('#breadcrumb');
-    if (breadcrumb) {
-        breadcrumb.innerText = options.text || '';
-        breadcrumb.setAttribute('href', options.href || '');
-    };
-};
-function set_value(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element && options.value) element.value = options.value;
-};
-function remove_attribute(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element && options.attribute) element.removeAttribute(options.attribute);
-};
-function add_class(options) {
-    let e = document.querySelector(`#${options.id}`);
-    if (e && options.class) e.classList.add(options.class);
-};
-function remove_class(options) {
-    let e = document.querySelector(`#${options.id}`);
-    if (e && options.class) e.classList.remove(options.class);
-};
-function print_user (user) {
-    if (user) return `${user.rank._rank } ${user.full_name}`
-    else return '';
-};
-function print_date (date, time = false) {
-    if (date) {
-        let str = new Date(date).toDateString();
-        if (time) str += ` ${new Date(date).toLocaleTimeString()}`;
-        return str
-    } else return '';
-};
-function table_date (date, time = false) {
-    let _date = {
-        sort: new Date(date).getTime(),
-        text: print_date(date, time)
-    };
-    return _date;
-}
-function print_nsn (nsn) {
-    if (nsn && nsn.group && nsn.classification && nsn.country) {
-        return `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`
-    } else return '';
-};
-function print_account (account) {
-    if (account) {
-        return `${account._name} | ${account._number}`
-    } else return '';
-};
+function random_id() {return Math.floor(Math.random()*10000)};
 
 function List_Item(options = {}) {
     this.e = document.createElement('li');
@@ -123,8 +28,40 @@ function List_Item(options = {}) {
     span.classList.add('caret');
     this.e.appendChild(span);
     ul.classList.add('nested', 'list-group');
-    ul.setAttribute('id', `ul_${options.text}`)
+    ul.setAttribute('id', `ul_${options.text}`);
     this.e.appendChild(ul);
+};
+function Category_LI(options = {}) {
+    this.e = document.createElement('li');
+    this.e.setAttribute('data-id', options.li_id || random_id);
+    this.e.classList.add('list-group-item', 'text-left', 'category_li', 'my-1');
+    let span = document.createElement('span'),
+        ul   = document.createElement('ul');
+    span.innerText = options.text || '';
+    span.classList.add('caret'); ///////////////////////////// 
+    span.classList.add('ml-3');
+    span.setAttribute('id', `caret_${options.li_id}`)
+    this.e.appendChild(new Link({
+        type: 'move',
+        type_attribute: `data-id="${options.li_id || ''}"`,
+        data: {field: 'id', value: options.li_id || ''},
+        small: true,
+        classes: ['mr-1']
+    }).e);
+    if (options.append) this.e.appendChild(options.append);
+    ul.classList.add('nested', 'list-group', 'ml-4', 'category_ul'); ////////////////////
+    ul.setAttribute('id', `ul_${options.ul_id || random_id()}`);
+    this.e.appendChild(span);
+    this.e.appendChild(ul);
+    this.e.addEventListener('mouseover', function () {
+        if (dragging) this.classList.add('red');
+    });
+    this.e.addEventListener('mouseenter', function () {
+        if (dragging) this.classList.add('red');
+    });
+    this.e.addEventListener('mouseleave', function () {
+        if (dragging) this.classList.remove('red');
+    });
 };
 function Div(options = {}) {
     this.e = document.createElement('div');
@@ -141,9 +78,12 @@ function Link(options = {}) {
     this.e = document.createElement('a');
     this.e.classList.add('btn');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
-    if (options.type === 'edit') {
+    if        (options.type === 'edit') {
         this.e.classList.add('btn-success');
         this.e.innerHTML = _edit();
+    } else if (options.type === 'move') {
+        this.e.classList.add('btn-success');
+        this.e.innerHTML = _move(options.type_attribute || '');
     } else {
         this.e.classList.add('btn-primary');
         this.e.innerHTML = _search();
@@ -153,8 +93,8 @@ function Link(options = {}) {
         this.e.setAttribute('data-toggle', 'modal');
         this.e.setAttribute('data-target', `#mdl_${options.modal}`);
         if (options.source) this.e.setAttribute(`data-source`, options.source);
-        if (options.data)   this.e.setAttribute(`data-${options.data.field}`, options.data.value);
     };
+    if (options.data)  this.e.setAttribute(`data-${options.data.field}`, options.data.value);
     if (options.small) this.e.classList.add('btn-sm');
     if (options.float) this.e.classList.add('float-right');
 };

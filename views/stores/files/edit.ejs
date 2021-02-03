@@ -25,13 +25,13 @@
         <%- include(`${partials}/save_cancel`) %>
     </form>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/data/addFormListener.js"></script>
+<script src="/js/addFormListener.js"></script>
 <script src="/js/stores/files/edit/file.js"></script>
 <script async>get(showFile, {table: 'files', query:[`file_id=${path[3]}`]})</script>
 <script>
     window.addEventListener( "load", function () {
         addFormListener(
-            'fileForm',
+            'file',
             'PUT',
             `/stores/files/${path[3]}`,
             {

@@ -17,7 +17,7 @@ function getNoteEdit(note_id) {
 };
 window.addEventListener('load', function() {
     addFormListener(
-        'form_note_edit',
+        'note_edit',
         'PUT',
         `/${path[1]}/notes`,
         {

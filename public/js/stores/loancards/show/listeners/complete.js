@@ -1,6 +1,6 @@
 window.addEventListener( "load", function () {
     addFormListener(
-        'form_complete',
+        'complete',
         'PUT',
         `/stores/loancards/${path[3]}`,
         {

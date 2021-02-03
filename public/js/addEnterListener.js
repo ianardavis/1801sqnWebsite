@@ -1,4 +1,4 @@
-addEnterListener = (control, action, args = null) => {
+function addEnterListener(control, action, args = null) {
     var input = document.querySelector('#' + control);
         input.addEventListener("keyup", event => {
         if (event.keyCode === 13) {

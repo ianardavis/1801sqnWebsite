@@ -27,13 +27,13 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/receipts/index/getReceipts.js"></script>
-<script src="/js/data/addFormListener.js"></script>
+<script src="/js/addFormListener.js"></script>
 <script async>getReceipts()</script>
 <% if (permissions.receipt_add) { %>
     <script>
         window.addEventListener('load', function () {
             addFormListener(
-                'form_add_receipt',
+                'add_receipt',
                 'POST',
                 '/canteen/receipts',
                 {onComplete: getReceipts}

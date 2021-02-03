@@ -21,7 +21,7 @@ function getDefault() {
 };
 window.addEventListener("load", function () {
     addFormListener(
-        'form_set_default',
+        'set_default',
         'PUT',
         '/stores/settings',
         {onComplete: getDefault}

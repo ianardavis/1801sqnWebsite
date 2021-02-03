@@ -19,7 +19,7 @@
 				<%- include(`${partials}/menu/button`, {id: 'delete',    text: 'Delete'}) %>
                 <% if (permissions.item_delete) { %>
 					</form>
-					<script src="/js/stores/items/show/listeners/delete.js"></script>
+					<script src="/js/stores/items/show/delete.js"></script>
 				<% } %>
                 <%- include(`${partials}/menu/button`, {id: 'size_add', text: 'Add Size', modal: 'size_add'}) %>
             </div>
@@ -34,6 +34,15 @@
             <%- include(`${partials}/inputs/display`, {id: '_gender',      title: 'Gender'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_size_text',   title: 'Size Text'}) %>
             <div id="div_categories">
+                <hr>
+                <% if (permissions.item_edit) { %>
+                    <form id='form_category_add'>
+                        <input type="hidden" id='item_id_category' name='category[item_id]'>
+                        <select name="category[category_id][]" id="sel_category_1" class='form-control sel_category' required></select>
+                        <div id="sub_categories"></div>
+                        <button class='btn btn-success w-100 mb-1'>Save</button>
+                    </form>
+                <% } %>
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
                         <th class='w-100' onclick='sortTable(0, "tbl_categories")'>Categories</th>
@@ -115,7 +124,7 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/data/addFormListener.js"></script>
+<script src="/js/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script src='/js/stores/items/show/view.js'></script>
 <script>showTab('<%= tab %>')</script>

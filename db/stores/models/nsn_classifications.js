@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('nsn_classifications', {
-    'nsn_classification_id': {
+  return sequelize.define('nsn_classes', {
+    'nsn_class_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
@@ -35,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'nsn_classifications',
+    tableName: 'nsn_classes',
     schema: 'stores'
   });
 };

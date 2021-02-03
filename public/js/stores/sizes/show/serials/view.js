@@ -35,41 +35,6 @@ function viewSerial(event) {
             set_innerText({id: '_serial_view',    text: serial._serial});
             set_innerText({id: 'serial_id',       text: serial.serial_id});
             set_attribute({id: 'btn_serial_link', attribute: 'href', value: `/stores/serials/${serial.serial_id}`});
-            // if (permissions.edit === true || permissions.delete === true) {
-            //     let serial_buttons = document.querySelector('#serial_buttons');
-            //     if (serial_buttons) {
-            //         serial_buttons.innerHTML = '';
-            //         if (permissions.delete) {
-            //             serial_buttons.appendChild(
-            //                 new Delete_Button({
-            //                     path:       `/stores/serials/${serial.serial_id}`,
-            //                     descriptor: 'Serial',
-            //                     float:      true,
-            //                     options: {
-            //                         onComplete: [
-            //                             getSerials,
-            //                             function () {$('mdl_serial_view').modal('hide')}
-            //                         ]
-            //                     }
-            //                 }).e
-            //             );
-            //         };
-            //         if (permissions.edit) {
-            //             serial_buttons.appendChild(
-            //                 new Button({
-            //                     attributes: [
-            //                         {field: 'id', value: 'btn_serial_edit'}
-            //                     ],
-            //                     type: 'success',
-            //                     html: '<i class="fas fa-pencil-alt"></i>',
-            //                     click: edit_serial,
-            //                     float:      true,
-            //                     classes: ['mr-1']
-            //                 }).e
-            //             );
-            //         };
-            //     };
-            // };
         },
         {
             table: 'serial',

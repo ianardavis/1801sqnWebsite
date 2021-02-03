@@ -25,7 +25,7 @@ function getGenders_add () {
 window.addEventListener( "load", function () {
     $('#mdl_item_add').on('show.bs.modal', getGenders_add);
     addFormListener(
-        'form_item_add',
+        'item_add',
         'POST',
         '/stores/items',
         {onComplete: getItems}

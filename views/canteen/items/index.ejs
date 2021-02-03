@@ -46,13 +46,13 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/items/index/getItems.js"></script>
-<script src="/js/data/addFormListener.js"></script>
+<script src="/js/addFormListener.js"></script>
 <script async>getItems()</script>
 <% if (permissions.item_add) { %>
     <script>
         window.addEventListener('load', function () {
             addFormListener(
-                'form_add_item',
+                'add_item',
                 'POST',
                 '/canteen/items',
                 {

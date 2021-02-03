@@ -47,7 +47,7 @@ module.exports = (app, allowed, permissions, m, db) => {
                             {_permission: 'nsn_add'},
                             {_permission: 'nsn_edit'},
                             {_permission: 'nsn_delete'},
-                            {_permission: 'access_nsn_classifications', children: [
+                            {_permission: 'access_nsn_classes', children: [
                                 {_permission: 'nsn_classification_add'},
                                 {_permission: 'nsn_classification_edit'},
                                 {_permission: 'nsn_classification_delete'}

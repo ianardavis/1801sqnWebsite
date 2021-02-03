@@ -4,7 +4,7 @@ window.addEventListener( "load", function () {
         set_value(    {id: 'stock_id_qty', value: '0'});
     });
     addFormListener(
-        'form_adjust_add',
+        'adjust_add',
         'POST',
         '/stores/adjusts',
         {onComplete: [

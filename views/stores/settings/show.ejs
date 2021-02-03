@@ -1,406 +1,267 @@
 <%- include(`${partials}/head/app`) %>
-<li class="nav-item">
-    <a class="nav-link" href="/stores">Stores</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/stores/settings">Settings</a>
-</li>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		     text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores/settings', text: 'Settings'}) %>
+<%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/navbar/close`) %>
-<section>
+<section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="settings" aria-selected="true">Settings</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" id="options-tab" data-toggle="tab" href="#options" role="tab" aria-controls="options" aria-selected="true">Options</a>
-        </li>
+        <%- include(`${partials}/tab_head`, {id: 'settings',   title: 'Settings',   spinner: 'settings'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'genders',    title: 'Genders',    spinner: 'genders'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-            <div class="container">
+            <% if (permissions.setting_add) { %>
+                <button class='btn btn-success w-100 mb-1' data-toggle="modal" data-target="#mdl_setting_add">Add Setting</button>
+            <% } %>
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-50" onclick="sortTable(0, 'tbl_settings')">Setting</th>
+                    <th class="w-50" onclick="sortTable(1, 'tbl_settings')">Value</th>
+                    <th><i class='fas fa-pencil-alt'></i></th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id='tbl_settings'></tbody>
+            </table>
+            <script src="/js/stores/settings/settings/view.js"></script>
+            <script async>getSettings()</script>
+        </div>
+        <% if (permissions.access_genders) { %>
+            <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
+                <% if (permissions.gender_add) { %>
+                    <button class='btn btn-success w-100 mb-1' data-toggle="modal" data-target="#mdl_gender_add">Add Gender</button>
+                <% } %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-50">Setting</th>
-                        <th class="w-50">Value</th>
+                        <th class="w-100" onclick="sortTable(0, 'tbl_statuses')">Gender</th>
+                        <th><i class='fas fa-pencil-alt'></i></th>
+                        <th><i class='fas fa-search'></i></th>
                     </thead>
-                    <tbody>
-                        <% settings.forEach(setting => { %>
-                            <tr>
-                                <td><%= setting._name %></td>
-                                <td><%= setting._value %></td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
+                    <tbody id='tbl_genders'></tbody>
                 </table>
+                <script src="/js/stores/settings/genders/view.js"></script>
+                <script async>getGenders()</script>
             </div>
-        </div>
-        <div class="tab-pane fade active show" id="options" role="tabpanel" aria-labelledby="options-tab">
-            <ul class="nav nav-tabs" id="optionsTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link" id="ranks-tab" data-toggle="tab" href="#ranks" role="tab" aria-controls="ranks" aria-selected="true">Ranks</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="statuses-tab" data-toggle="tab" href="#statuses" role="tab" aria-controls="statuses" aria-selected="true">Statuses</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="genders-tab" data-toggle="tab" href="#genders" role="tab" aria-controls="genders" aria-selected="true">Genders</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="item-classes-tab" data-toggle="tab" href="#item-classes" role="tab" aria-controls="item-classes" aria-selected="true">Item Classes</a>
-                </li>
-            </ul>
-            <div class="tab-content pt-3" id="myTabContent">
-                <div class="tab-pane fade" id="ranks" role="tabpanel" aria-labelledby="rank-tab">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12 col-sm-6 mx-auto">
-                                <div class="mb-2">
-                                    <form action='/stores/settings/ranks' method='POST'>
-                                        <input class='form-control' type='text' name='ranks[_rank]' maxlength='10' placeholder='Rank' required>
-                                        <button class="btn btn-sm btn-success w-100">Add Rank</button>
-                                    </form>
-                                </div>
-                                <table class="table table-sm table-hover">
-                                    <thead class="thead-dark">
-                                        <th class="w-100">Rank</th>
-                                        <% if (permissions.rank_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.rank_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-                                    </thead>
-                                    <tbody>
-                                        <% classes.ranks.forEach(rank => { %>
-                                            <tr>
-                                                <% if (permissions.rank_edit) { %>
-                                                    <form action='/stores/settings/ranks/<%= rank.rank_id %>?_method=PUT' method='POST'>
-                                                        <td>
-                                                            <input class='form-control' type='text' name='ranks[_rank]' maxlength='10' value='<%= rank._rank %>' required>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
-                                                        </td>
-                                                    </form>
-                                                <% } else { %>
-                                                    <td><%= rank._rank %></td>
-                                                <% } %>
-                                                <% if (permissions.rank_delete) { %>
-                                                    <td>
-                                                        <form action="/stores/settings/ranks/<%= rank.rank_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                        </form>
-                                                    </td>
-                                                <% } %>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+        <% } %>
+        <% if (permissions.access_categories) { %>
+            <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+                <% if (permissions.category_add) { %>
+                    <button class='btn btn-success w-100 mb-1' data-toggle="modal" data-target="#mdl_category_add">Add Category</button>
+                <% } %>
+                <% if (permissions.category_edit) { %>
+                    <script>var dragging = false</script>
+                    <form id='form_category_move'>
+                        <input type="hidden" name='category_id' id='category_id_move'>
+                        <input type="hidden" name='category[parent_category_id]' id='parent_category_id_move'>
+                <% } %>
+                    <ul class="list-group category_ul" id='ul_category_'></ul>
+                <% if (permissions.category_edit) { %></form><% } %>
+                <script src="/js/stores/settings/categories/view.js"></script>
+                <script src="/js/tree.js"></script>
+                <script async>getCategories()</script>
+            </div>
+        <% } %>
+    </div>
+    <div id="div_modals">
+        <div class="modal fade" id="mdl_setting_view" tabindex="-1" aria-labelledby="ttl_mdl_setting_view" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ttl_mdl_setting_view">Setting</h5>
+                        <span id="setting_delete" class='float-right'></span>
                     </div>
-                </div>
-                <div class="tab-pane fade" id="statuses" role="tabpanel" aria-labelledby="statuses-tab">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12 col-sm-6 mx-auto">
-                                <div class="mb-2">
-                                    <form action='/stores/settings/statuses' method='POST'>
-                                        <input class='form-control' type='text' name='statuses[_status]' maxlength='10' placeholder='Status' required>
-                                        <button class="btn btn-sm btn-success w-100">Add Status</button>
-                                    </form>
-                                </div>
-                                <table class="table table-sm table-hover">
-                                    <thead class="thead-dark">
-                                        <th class="w-100">Rank</th>
-                                        <% if (permissions.status_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.status_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-                                    </thead>
-                                    <tbody>
-                                        <% classes.statuses.forEach(status => { %>
-                                            <tr>
-                                                <% if (permissions.status_edit && status.status_id > 5) { %>
-                                                    <form action='/stores/settings/statuses/<%= status.status_id %>?_method=PUT' method='POST'>
-                                                        <td>
-                                                            <input class='form-control' type='text' name='statuses[_status]' maxlength='10' value='<%= status._status %>' required>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
-                                                        </td>
-                                                    </form>
-                                                <% } else { %>
-                                                    <td><%= status._status %></td>
-                                                    <td></td>
-                                                <% } %>
-                                                <td>
-                                                    <% if (permissions.status_delete && status.status_id > 5) { %>
-                                                        <form action="/stores/settings/statuses/<%= status.status_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                        </form>
-                                                    <% } %>
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {title: 'Name',       id: '_name'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Value',      id: '_value'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'user_setting'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'createdAt_setting'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'updatedAt_setting'}) %>
                     </div>
-                </div>
-                <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12 col-sm-6 mx-auto">
-                                <div class="mb-2">
-                                    <form action='/stores/settings/genders' method='POST'>
-                                        <input class='form-control' type='text' name='genders[_gender]' maxlength='10' placeholder='Status' required>
-                                        <button class="btn btn-sm btn-success w-100">Add Status</button>
-                                    </form>
-                                </div>
-                                <table class="table table-sm table-hover">
-                                    <thead class="thead-dark">
-                                        <th class="w-100">Rank</th>
-                                        <% if (permissions.gender_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.gender_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-                                    </thead>
-                                    <tbody>
-                                        <% classes.genders.forEach(gender => { %>
-                                            <tr>
-                                                <% if (permissions.gender_edit) { %>
-                                                    <form action='/stores/settings/genders/<%= gender.gender_id %>?_method=PUT' method='POST'>
-                                                        <td>
-                                                            <input class='form-control' type='text' name='genders[_gender]' maxlength='10' value='<%= gender._gender %>' required>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
-                                                        </td>
-                                                    </form>
-                                                <% } else { %>
-                                                    <td><%= gender._gender %></td>
-                                                <% } %>
-                                                <% if (permissions.gender_delete) { %>
-                                                    <td>
-                                                        <form action="/stores/settings/genders/<%= gender.gender_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                        </form>
-                                                    </td>
-                                                <% } %>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="item-classes" role="tabpanel" aria-labelledby="item-classes-tab">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12 col-md-3">
-                                <div class="mb-2">
-                                    <form action='/stores/settings/categories' method='POST'>
-                                        <div class="row">
-                                            <div class="col-10">
-                                                <input class='form-control' type='text' name='categories[_category]' maxlength='20' placeholder='Category' required>
-                                            </div>
-                                            <div class="col-2">
-                                                <button class="float-right btn btn-success"><i class='fas fa-plus'></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <table class="table table-sm table-hover">
-                                    <thead class="thead-dark">
-                                        <th class='w-20'></th>
-                                        <th class="w-80">Rank</th>
-                                        <% if (permissions.category_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.category_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-                                    </thead>
-                                    <tbody>
-                                        <% classes.categories.forEach(category => { %>
-                                            <tr>
-                                                <td>
-                                                    <input class='form-control' type="radio" id='<%= category.category_id %>' name='category' value='<%= category.category_id %>' onchange='radio({"table":"group","id":"<%= category.category_id %>"})'>
-                                                </td>
-                                                <% if (permissions.category_edit) { %>
-                                                    <form action='/stores/settings/categories/<%= category.category_id %>?_method=PUT' method='POST'>
-                                                        <td>
-                                                            <input class='form-control' type='text' name='categories[_category]' maxlength='10' value='<%= category._category %>' required>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
-                                                        </td>
-                                                    </form>
-                                                <% } else { %>
-                                                    <td><%= category._category %></td>
-                                                <% } %>
-                                                <% if (permissions.category_delete) { %>
-                                                    <td>
-                                                        <form action="/stores/settings/categories/<%= category.category_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                        </form>
-                                                    </td>
-                                                <% } %>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <div class="mb-2">
-                                    <form action='/stores/settings/groups' method='POST'>
-                                        <input type="hidden" id='group_parent' name='groups[category_id]' value='-1'>
-                                        <div class="row">
-                                            <div class="col-10">
-                                                <input class='form-control' type='text' name='groups[_group]' maxlength='20' placeholder='Group' required>
-                                            </div>
-                                            <div class="col-2">
-                                                <button class="float-right btn btn-success"><i class='fas fa-plus'></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <table class="table table-sm table-hover">
-                                    <thead class="thead-dark">
-                                        <th class='w-20'></th>
-                                        <th class="w-80">Rank</th>
-                                        <% if (permissions.group_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.group_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-                                    </thead>
-                                    <tbody id="group">
-                                        <% classes.groups.forEach(group => { %>
-                                            <tr data-parent='<%= group.category_id %>' style='display: none;'>
-                                                <td>
-                                                    <input class='form-control' type="radio" id='<%= group.group_id %>' name='group' value='<%= group.group_id %>' onchange='radio({"table":"type","id":"<%= group.group_id %>"})'>
-                                                </td>
-                                                <% if (permissions.group_edit) { %>
-                                                    <form action='/stores/settings/groups/<%= group.group_id %>?_method=PUT' method='POST'>
-                                                        <td>
-                                                            <input class='form-control' type='text' name='groups[_group]' maxlength='10' value='<%= group._group %>' required>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
-                                                        </td>
-                                                    </form>
-                                                <% } else { %>
-                                                    <td><%= group._group %></td>
-                                                <% } %>
-                                                <% if (permissions.group_delete) { %>
-                                                    <td>
-                                                        <form action="/stores/settings/groups/<%= group.group_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                        </form>
-                                                    </td>
-                                                <% } %>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <div class="mb-2">
-                                    <form action='/stores/settings/types' method='POST'>
-                                        <input type="hidden" id='type_parent' name='types[group_id]' value='-1'>
-                                        <div class="row">
-                                            <div class="col-10">
-                                                <input class='form-control' type='text' name='types[_type]' maxlength='20' placeholder='Type' required>
-                                            </div>
-                                            <div class="col-2">
-                                                <button class="float-right btn btn-success"><i class='fas fa-plus'></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <table class="table table-sm table-hover">
-                                    <thead class="thead-dark">
-                                        <th class='w-20'></th>
-                                        <th class="w-80">Rank</th>
-                                        <% if (permissions.type_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.type_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-                                    </thead>
-                                    <tbody id="type">
-                                        <% classes.types.forEach(type => { %>
-                                            <tr data-parent='<%= type.group_id %>' style='display: none;'>
-                                                <td>
-                                                    <input class='form-control' type="radio" id='<%= type.type_id %>' name='type' value='<%= type.type_id %>' onchange='radio({"table":"subtype","id":"<%= type.type_id %>"})'>
-                                                </td>
-                                                <% if (permissions.type_edit) { %>
-                                                    <form action='/stores/settings/types/<%= type.type_id %>?_method=PUT' method='POST'>
-                                                        <td>
-                                                            <input class='form-control' type='text' name='types[_type]' maxlength='10' value='<%= type._type %>' required>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
-                                                        </td>
-                                                    </form>
-                                                <% } else { %>
-                                                    <td><%= type._type %></td>
-                                                <% } %>
-                                                <% if (permissions.type_delete) { %>
-                                                    <td>
-                                                        <form action="/stores/settings/types/<%= type.type_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                        </form>
-                                                    </td>
-                                                <% } %>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <div class="mb-2">
-                                    <form action='/stores/settings/subtypes' method='POST'>
-                                        <input type="hidden" id='subtype_parent' name='subtypes[type_id]' value='-1'>
-                                        <div class="row">
-                                            <div class="col-10">
-                                                <input class='form-control' type='text' name='subtypes[_subtype]' maxlength='20' placeholder='Subtype' required>
-                                            </div>
-                                            <div class="col-2">
-                                                <button class="float-right btn btn-success"><i class='fas fa-plus'></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <table class="table table-sm table-hover">
-                                    <thead class="thead-dark">
-                                        <th class="w-100">Rank</th>
-                                        <% if (permissions.subtype_edit) { %><th><i class='fas fa-save'></i></th><% } %>
-                                        <% if (permissions.subtype_delete) { %><th><i class='fas fa-trash-alt'></i></th><% } %>
-                                    </thead>
-                                    <tbody id="subtype">
-                                        <% classes.subtypes.forEach(subtype => { %>
-                                            <tr data-parent='<%= subtype.type_id %>' style='display: none;'>
-                                                <% if (permissions.subtype_edit) { %>
-                                                    <form action='/stores/settings/subtypes/<%= subtype.subtype_id %>?_method=PUT' method='POST'>
-                                                        <td>
-                                                            <input class='form-control' type='text' name='subtypes[_subtype]' maxlength='10' value='<%= subtype._subtype %>' required>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
-                                                        </td>
-                                                    </form>
-                                                <% } else { %>
-                                                    <td><%= subtype._subtype %></td>
-                                                <% } %>
-                                                <% if (permissions.subtype_delete) { %>
-                                                    <td>
-                                                        <form action="/stores/settings/subtypes/<%= subtype.subtype_id %>?_method=DELETE" method="POST">
-                                                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>
-                                                        </form>
-                                                    </td>
-                                                <% } %>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div>
+        <% if (permissions.setting_edit) { %>
+            <div class="modal fade" id="mdl_setting_edit" tabindex="-1" aria-labelledby="ttl_mdl_setting_edit" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form class="modal-content" id='form_setting_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ttl_mdl_setting_edit">Setting</h5>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name='setting[setting_id]' id='setting_id_edit'>
+                            <%- include(`${partials}/inputs/text`, {title: 'Name',  id: '_name_edit',  name: 'setting[_name]'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Value', id: '_value_edit', name: 'setting[_value]'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <button class='btn btn-success w-100'>Save</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script src="/js/stores/settings/settings/edit.js"></script>
+            <script async>loadSettingsEdit()</script>
+        <% } %>
+        <% if (permissions.setting_add) { %>
+            <div class="modal fade" id="mdl_setting_add" tabindex="-1" aria-labelledby="ttl_mdl_setting_add" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form class="modal-content" id='form_setting_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ttl_mdl_setting_add">Setting</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`, {title: 'Name',  name: 'setting[_name]'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Value', name: 'setting[_value]'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <button class='btn btn-success w-100'>Save</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script src="/js/stores/settings/settings/add.js"></script>
+        <% } %>
+        <% if (permissions.access_genders) { %>
+            <div class="modal fade" id="mdl_gender_view" tabindex="-1" aria-labelledby="ttl_mdl_gender_view" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ttl_mdl_gender_view">Gender</h5>
+                            <span id="gender_delete" class='float-right'></span>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`, {title: 'Gender',     id: '_gender'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'user_gender'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'createdAt_gender'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'updatedAt_gender'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% if (permissions.gender_edit) { %>
+                <div class="modal fade" id="mdl_gender_edit" tabindex="-1" aria-labelledby="ttl_mdl_gender_edit" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="modal-content" id='form_gender_edit'>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ttl_mdl_gender_edit">Gender</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name='gender[gender_id]' id='gender_id_edit'>
+                                <%- include(`${partials}/inputs/text`, {title: 'Gender', id: '_gender_edit', name: 'gender[_gender]'}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <button class='btn btn-success w-100'>Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script src="/js/stores/settings/genders/edit.js"></script>
+                <script async>loadGendersEdit()</script>
+            <% } %>
+            <% if (permissions.gender_add) { %>
+                <div class="modal fade" id="mdl_gender_add" tabindex="-1" aria-labelledby="ttl_mdl_gender_add" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="modal-content" id='form_gender_add'>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ttl_mdl_gender_add">Gender</h5>
+                            </div>
+                            <div class="modal-body">
+                                <%- include(`${partials}/inputs/text`, {title: 'Name', name: 'gender[_gender]'}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <button class='btn btn-success w-100'>Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script src="/js/stores/settings/genders/add.js"></script>
+            <% } %>
+        <% } %>
+        <% if (permissions.access_categories) { %>
+            <div class="modal fade" id="mdl_category_view" tabindex="-1" aria-labelledby="ttl_mdl_category_view" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ttl_mdl_category_view">Category</h5>
+                            <span id="category_delete" class='float-right'></span>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`, {title: 'Parent',     id: '_parent'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Category',   id: '_category'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'user_category'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'createdAt_category'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'updatedAt_category'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% if (permissions.category_edit) { %>
+                <div class="modal fade" id="mdl_category_edit" tabindex="-1" aria-labelledby="ttl_mdl_category_edit" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="modal-content" id='form_category_edit'>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ttl_mdl_category_edit">Category</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name='category_id' id='category_id_edit'>
+                                <%- include(`${partials}/inputs/text`, {title: 'Category', id: '_category_edit', name: 'category[_category]'}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <button class='btn btn-success w-100'>Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script src="/js/stores/settings/categories/edit.js"></script>
+                <script async>loadCategoriesEdit()</script>
+            <% } %>
+            <% if (permissions.category_add) { %>
+                <div class="modal fade" id="mdl_category_add" tabindex="-1" aria-labelledby="ttl_mdl_category_add" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="modal-content" id='form_category_add'>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ttl_mdl_category_add">Category</h5>
+                            </div>
+                            <div class="modal-body">
+                                <%- include(`${partials}/inputs/select`, {title: 'Parent',   name: 'category[parent_category_id]', id: 'sel_category_add'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[_category]'}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <button class='btn btn-success w-100'>Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script src="/js/stores/settings/categories/add.js"></script>
+            <% } %>
+        <% } %>
     </div>
 </section>
-<% include ../../partials/foot/app %>
-<script src="/js/settings.js"></script>
-<script>
-    showTab('<%= showtab %>');
-</script>
-<% include ../../partials/foot/elements/htmlClose %>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/tabs.js"></script>
+<script src="/js/addFormListener.js"></script>
+<script>showTab('settings')</script>
+<% if (permissions.category_delete) { %>
+    <script src="/js/stores/settings/categories/delete.js"></script>
+<% } %>
+<% if (permissions.gender_delete) { %>
+    <script src="/js/stores/settings/genders/delete.js"></script>
+<% } %>
+<% if (permissions.setting_delete) { %>
+    <script src="/js/stores/settings/settings/delete.js"></script>
+<% } %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

@@ -32,7 +32,7 @@ window.addEventListener('load', function () {
     $('#mdl_size_add').on('show.bs.modal', resetAddSize);
     remove_attribute({id: 'btn_size_add', attribute: 'disabled'});
     addFormListener(
-        'form_size_add',
+        'size_add',
         'POST',
         '/stores/sizes',
         {onComplete: [

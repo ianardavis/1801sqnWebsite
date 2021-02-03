@@ -19,6 +19,12 @@ body {
 hr {
 	color: var(--main-color);
 }
+.green {
+	background-color: #bdffa3;
+}
+.red {
+	background-color: #ffb7b7;
+}
 .bg-red {
 	background-color: #ffb7b7;
 	color: var(--main-bg-color);

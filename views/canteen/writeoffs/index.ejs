@@ -46,7 +46,7 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/writeoffs/index/getWriteoffs.js"></script>
-<script src="/js/data/addFormListener.js"></script>
+<script src="/js/addFormListener.js"></script>
 <script async>getWriteoffs()</script>
 <% if (permissions.writeoff_add) { %>
 <script>
@@ -54,7 +54,7 @@
         let btn_add_writeoff = document.querySelector('#btn_add_writeoff');
         if (btn_add_writeoff) btn_add_writeoff.addEventListener('click', function () {$("#mdl_add_writeoff").modal("show")});
         addFormListener(
-            'form_add_writeoff',
+            'add_writeoff',
             'POST',
             '/canteen/writeoffs',
             {onComplete: getWriteoffs}

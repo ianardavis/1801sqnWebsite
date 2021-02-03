@@ -1,7 +1,7 @@
 window.addEventListener( "load", function () {
     $('#mdl_supplier_add').on('show.bs.modal', listAccounts)
     addFormListener(
-        'form_supplier_add',
+        'supplier_add',
         'POST',
         '/stores/suppliers',
         {onComplete: getSuppliers}

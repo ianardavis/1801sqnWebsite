@@ -98,7 +98,7 @@
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/tabs.js'></script>
 <script src="/js/search/select.js"></script>
-<script src="/js/data/addFormListener.js"></script>
+<script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
 
 <script src="/js/stores/demands/show/getDemand.js"></script>
@@ -110,7 +110,7 @@
 	<script>
 		window.addEventListener( "load", function () {
 			addFormListener(
-				'form_complete',
+				'complete',
 				'PUT',
 				`/stores/demands/${path[3]}`,
 				{
@@ -121,7 +121,7 @@
 				}
 			);
 			addFormListener(
-				'form_raise',
+				'raise',
 				'PUT',
 				`/stores/demands/raise/${path[3]}`,
 				{

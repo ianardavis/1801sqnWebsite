@@ -76,7 +76,7 @@ function show_details() {
 window.addEventListener('load', function () {
     $('#mdl_order_add').on('show.bs.modal', reset_order_add);
     addFormListener(
-        'form_line',
+        'line',
         'POST',
         `/stores/orders`,
         {

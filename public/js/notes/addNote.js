@@ -4,7 +4,7 @@ window.addEventListener('load', function() {
     remove_attribute({id: 'btn_note_add', attribute: 'disabled'});
     let onComplete = []; 
     addFormListener(
-        'form_note_add',
+        'note_add',
         'POST',
         `/${path[1]}/notes`,
         {

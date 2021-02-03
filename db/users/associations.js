@@ -19,6 +19,9 @@ module.exports = function (m) {
     m.stores.loancards.hasOne(     m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_loancard', constraints: false, as: 'user_loancard'});
     m.stores.loancards.hasOne(     m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false, as: 'user'});
     m.stores.loancard_lines.hasOne(m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.genders.hasOne(       m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.categories.hasOne(    m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
+    m.stores.settings.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     
     m.canteen.sessions.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_open',    constraints: false, as: 'user_open'});
     m.canteen.sessions.hasOne(      m.users.users, {foreignKey: 'user_id', sourceKey: 'user_id_close',   constraints: false, as: 'user_close'});

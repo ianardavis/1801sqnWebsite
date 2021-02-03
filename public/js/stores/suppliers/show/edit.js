@@ -27,7 +27,7 @@ window.addEventListener("load", function () {
         .catch(err => console.log(err));
     });
     addFormListener(
-        'form_supplier_edit',
+        'supplier_edit',
         'PUT',
         `/stores/suppliers/${path[3]}`,
         {onComplete: [

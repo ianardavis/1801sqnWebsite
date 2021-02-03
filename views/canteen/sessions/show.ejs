@@ -130,7 +130,7 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/tabs.js'></script>
-<script src='/js/data/addFormListener.js'></script>
+<script src='/js/addFormListener.js'></script>
 <script src="/js/canteen/sessions/show/session.js"></script>
 <script>showTab('<%= tab %>');</script>
 <script async>getSession()</script>
@@ -142,7 +142,7 @@
     <script>
         window.addEventListener('load', function () {
             addFormListener(
-                'form_close',
+                'close',
                 'PUT',
                 `/canteen/sessions/${path[3]}`,
                 {

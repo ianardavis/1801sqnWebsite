@@ -1,6 +1,6 @@
 window.addEventListener( "load", function () {
     addFormListener(
-        'form_delete',
+        'delete',
         'DELETE',
         `/stores/demands/${path[3]}`,
         {

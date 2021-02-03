@@ -187,7 +187,7 @@ function setActions() {
 window.addEventListener( "load", function () {
     document.querySelector('#reload').addEventListener('click', setActions);
     addFormListener(
-        'form_action',
+        'action',
         'PUT',
         `/stores/loancard_lines/${path[3]}`,
         {

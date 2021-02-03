@@ -7,8 +7,8 @@ function getItem() {
             if (item.gender) set_innerText({id: '_gender', text: item.gender._gender});
             else             set_innerText({id: '_gender', text: ''});
             set_breadcrumb({text: item._description, href: `/stores/items/${item.item_id}`});
-            let item_id_add_size = document.querySelector('#item_id_add_size');
-            if (item_id_add_size) item_id_add_size.setAttribute('value', item.item_id);
+            set_attribute({id: 'item_id_add_size', attribute: 'value', value: item.item_id});
+            set_attribute({id: 'item_id_category', attribute: 'value', value: item.item_id});
         },
         {
             table: 'item',

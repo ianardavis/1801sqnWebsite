@@ -11,14 +11,14 @@ function getSize() {
             set_innerText({id: '_demand_cell',      text: size._demand_cell});
             set_innerText({id: '_ordering_details', text: size._ordering_details});
             set_attribute({id: 'size_id_detail',    attribute: 'value', value: size.size_id});
-            let stock_tab  = document.querySelector('._stock_element'),
-                serial_tab = document.querySelector('._serials_element');
+            let stock_elements  = document.querySelectorAll('._stock_element'),
+                serial_elements = document.querySelectorAll('._serials_element');
             if (size._serials) {
-                stock_tab.classList.add('hidden');
-                serial_tab.classList.remove('hidden');
+                stock_elements.forEach(e => e.classList.add('hidden'));
+                serial_elements.forEach(e => e.classList.remove('hidden'));
             } else {
-                stock_tab.classList.remove('hidden');
-                serial_tab.classList.add('hidden');
+                stock_elements.forEach(e => e.classList.remove('hidden'));
+                serial_elements.forEach(e => e.classList.add('hidden'));
             };
             ['_issueable', '_orderable', '_nsns'].forEach(e => {
                 if (size[e]) document.querySelectorAll(`.${e}_element`).forEach(e => e.classList.remove('hidden'))

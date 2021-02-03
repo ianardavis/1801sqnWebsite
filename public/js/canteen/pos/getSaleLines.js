@@ -37,10 +37,10 @@ function getSaleLines() {
                     form.appendChild(new Button({html: '<i class="fas fa-minus"></i>', small: true}).e);
                     add_cell(row, {append: form});
                     addFormListener(
-                        `form_${line.line_id}_minus`,
+                        `${line.line_id}_minus`,
                         'PUT',
                         `/canteen/sale_lines`,
-                        {noConfirm: true, onComplete: [getSaleLines]}
+                        {noConfirm: true, onComplete: getSaleLines}
                     );
                 });
             };

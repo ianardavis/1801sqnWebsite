@@ -12,11 +12,15 @@ module.exports = function(sequelize, DataTypes) {
     '_name': {
       type: DataTypes.STRING(45),
       allowNull: false,
-      comment: "null",
-      unique: true
+      comment: "null"
     },
     '_value': {
       type: DataTypes.STRING(255),
+      allowNull: false,
+      comment: "null"
+    },
+    'user_id': {
+      type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"
     },

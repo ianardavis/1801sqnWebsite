@@ -1,7 +1,7 @@
 window.addEventListener( "load", function () {
     remove_attribute({id: 'btn_delete', attribute: 'disabled'});
     addFormListener(
-        'form_delete',
+        'delete',
         'DELETE',
         `/stores/loancards/${path[3]}`,
         {

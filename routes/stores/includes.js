@@ -87,6 +87,18 @@ module.exports = (inc, m) => {
             required: options.required     || false
         };
     };
+    inc.details = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        return {
+            model:      m.stores.details,
+            attributes: options.attributes || null,
+            include:    include,
+            as:         options.as         || 'details',
+            where:      options.where      || null,
+            required:   options.required   || false
+        };
+    };
     inc.embodiments = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
@@ -107,7 +119,7 @@ module.exports = (inc, m) => {
         return {
             model:      m.stores.files,
             attributes: options.attributes || null,
-            as:         options.as         || 'file',
+            as:         options.as         || 'files',
             required:   options.required   || false,
             where:      options.where      || null
         };
@@ -190,11 +202,11 @@ module.exports = (inc, m) => {
             required: options.required     || false
         };
     };
-    inc.nsn_classifications = (options = {}) => {
+    inc.nsn_classes = (options = {}) => {
         return {
-            model:      m.stores.nsn_classifications,
+            model:      m.stores.nsn_classes,
             attributes: options.attributes || {exclude: ['createdAt', 'updatedAt']},
-            as:         options.as         || 'classification',
+            as:         options.as         || 'class',
             include:    options.include    || [],
             required:   options.required   || false,
             where:      options.where      || null
@@ -223,7 +235,7 @@ module.exports = (inc, m) => {
     inc.nsns = (options = {}) => {
         let include = [
             inc.nsn_groups(),
-            inc.nsn_classifications(),
+            inc.nsn_classes(),
             inc.nsn_countries()
         ]
         return {
@@ -319,7 +331,7 @@ module.exports = (inc, m) => {
         return {
             model:      m.users.users,
             include:    include,
-            attributes: options.attributes || {exclude: ['_password', '_salt']},
+            attributes: options.attributes || ['full_name'],
             as:         options.as         || 'user',
             where:      options.where      || null,
             required:   options.required   || false

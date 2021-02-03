@@ -78,7 +78,7 @@ window.addEventListener('load', function () {
     getDetailOptions();
     remove_attribute({id: 'btn_size_edit', attribute: 'disabled'});
     addFormListener(
-        'form_detail_add',
+        'detail_add',
         'POST',
         '/stores/details',
         {
@@ -93,7 +93,7 @@ window.addEventListener('load', function () {
         }
     );
     addFormListener(
-        'form_size_edit',
+        'size_edit',
         'PUT',
         `/stores/sizes/${path[3]}`,
         {
@@ -111,4 +111,5 @@ window.addEventListener('load', function () {
             select:  'supplier_id_edit'
         });
     });
+    document.querySelector('#reload').addEventListener('click', loadDetailDelete);
 });

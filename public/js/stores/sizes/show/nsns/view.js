@@ -32,7 +32,7 @@ function viewNSN(event) {
     get(
         function(nsn, options) {
             set_innerText({id: 'nsn_group_id',          text: `${String(nsn.group._code).padStart(2, '0')} | ${nsn.group._group}`});
-            set_innerText({id: 'nsn_classification_id', text: `${String(nsn.classification._code).padStart(2, '0')} | ${nsn.classification._classification}`});
+            set_innerText({id: 'nsn_class_id', text: `${String(nsn.classification._code).padStart(2, '0')} | ${nsn.classification._classification}`});
             set_innerText({id: 'nsn_country_id',        text: `${String(nsn.country._code).padStart(2, '0')} | ${nsn.country._country}`});
             set_innerText({id: '_item_number',          text: nsn._item_number});
             set_innerText({id: 'nsn_id',                text: nsn.nsn_id});

@@ -59,7 +59,7 @@ function configure_tree () {
 window.addEventListener('load', function () {
     document.querySelector('#reload_permission_edit').addEventListener('click', getPermissionsEdit);
     addFormListener(
-        'form_permissions_edit',
+        'permissions_edit',
         'PUT',
         `/${path[1]}/permissions/${path[3]}`,
         {

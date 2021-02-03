@@ -4,7 +4,7 @@ module.exports = (app, al, inc, pm, m) => {
             where: req.query,
             include: [
                 inc.nsn_groups(),
-                inc.nsn_classifications(),
+                inc.nsn_classes(),
                 inc.nsn_countries(),
                 inc.sizes({attributes: ['nsn_id']})
             ]
@@ -17,7 +17,7 @@ module.exports = (app, al, inc, pm, m) => {
             where: req.query,
             include: [
                 inc.nsn_groups(),
-                inc.nsn_classifications(),
+                inc.nsn_classes(),
                 inc.nsn_countries(),
                 inc.sizes({attributes: ['nsn_id']})
             ]
@@ -35,11 +35,11 @@ module.exports = (app, al, inc, pm, m) => {
         .then(nsn_groups => res.send({success: true, result: nsn_groups}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn_classifications', pm, al('access_nsns', {send: true}), (req, res) => {
-        m.stores.nsn_classifications.findAll({
+    app.get('/stores/get/nsn_classes', pm, al('access_nsns', {send: true}), (req, res) => {
+        m.stores.nsn_classes.findAll({
             where: req.query
         })
-        .then(nsn_classifications => res.send({success: true, result: nsn_classifications}))
+        .then(nsn_classes => res.send({success: true, result: nsn_classes}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/nsn_countries',       pm, al('access_nsns', {send: true}), (req, res) => {
@@ -54,7 +54,7 @@ module.exports = (app, al, inc, pm, m) => {
         m.stores.nsns.findOrCreate({
             where: {
                 nsn_group_id: req.body.nsn.nsn_group_id,
-                nsn_classification_id: req.body.nsn.nsn_classification_id,
+                nsn_class_id: req.body.nsn.nsn_class_id,
                 nsn_country_id: req.body.nsn.nsn_country_id,
                 _item_number: req.body.nsn._item_number
             },

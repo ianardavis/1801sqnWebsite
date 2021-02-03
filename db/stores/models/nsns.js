@@ -19,7 +19,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'nsn_classification_id': {
+    'nsn_class_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       comment: "null"

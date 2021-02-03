@@ -108,7 +108,7 @@ window.addEventListener('load', function () {
     $('#mdl_issue_add').on('show.bs.modal', getUsers);
     $('#mdl_issue_add').on('show.bs.modal', reset_issue_add);
     addFormListener(
-        'form_line',
+        'line',
         'POST',
         `/stores/issues`,
         {

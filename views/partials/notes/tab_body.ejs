@@ -1,7 +1,7 @@
 <% if (permissions.access_notes) { %>
     <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
         <%- include(`${partials}/notes/note_table`) %>
-        <script src="/js/data/addFormListener.js"></script>
+        <script src="/js/addFormListener.js"></script>
         <script src="/js/notes/showNotes.js"></script>
         <script async>getNotes()</script>
     </div>

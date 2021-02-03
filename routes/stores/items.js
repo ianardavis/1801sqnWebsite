@@ -1,9 +1,9 @@
-module.exports = (app, allowed, inc, permissions, m) => {
+module.exports = (app, al, inc, pm, m) => {
     let nullify = require(`../functions/nullify`);
-    app.get('/stores/items',                  permissions, allowed('access_items'),                    (req, res) => res.render('stores/items/index'));
-    app.get('/stores/items/:id',              permissions, allowed('access_items'),                    (req, res) => res.render('stores/items/show'));
+    app.get('/stores/items',                  pm, al('access_items'),               (req, res) => res.render('stores/items/index'));
+    app.get('/stores/items/:id',              pm, al('access_items'),               (req, res) => res.render('stores/items/show'));
     
-    app.get('/stores/get/items',              permissions, allowed('access_items',      {send: true}), (req, res) => {
+    app.get('/stores/get/items',              pm, al('access_items', {send: true}), (req, res) => {
         m.stores.items.findAll({
             where:   req.query,
             include: [
@@ -14,7 +14,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(items => res.send({success: true, result: items}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/item',               permissions, allowed('access_items',      {send: true}), (req, res) => {
+    app.get('/stores/get/item',               pm, al('access_items', {send: true}), (req, res) => {
         m.stores.items.findOne({
             where:   req.query,
             include: [
@@ -28,20 +28,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/genders',            permissions, allowed('access_genders',    {send: true}), (req, res) => {
-        m.stores.genders.findAll({where: req.query})
-        .then(genders => res.send({success: true, result: genders}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/categories',         permissions, allowed('access_categories', {send: true}), (req, res) => {
-        for (let [key, value] of Object.entries(req.query)) {
-            if (value === '') req.query[key] = null;
-        };
-        m.stores.categories.findAll({where: req.query})
-        .then(categories => res.send({success: true, result: categories}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/stores/get/item_categories',    permissions, allowed('access_items',      {send: true}), (req, res) => {
+    app.get('/stores/get/item_categories',    pm, al('access_items', {send: true}), (req, res) => {
         m.stores.item_categories.findAll({
             where: req.query,
             include: [inc.categories()]
@@ -49,7 +36,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/item_category',      permissions, allowed('access_items',      {send: true}), (req, res) => {
+    app.get('/stores/get/item_category',      pm, al('access_items', {send: true}), (req, res) => {
         m.stores.item_categories.findOne({
             where: req.query,
             include: [inc.categories()]
@@ -58,13 +45,31 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/items',                 permissions, allowed('item_add',          {send: true}), (req, res) => {
+    app.post('/stores/items',                 pm, al('item_add',     {send: true}), (req, res) => {
         req.body.item = nullify(req.body.item);
         m.stores.items.create(req.body.item)
         .then(item => res.send({success: true, message: 'Item added'}))
         .catch(err => res.error.send(err, res));
     });
-    app.put('/stores/items/:id',              permissions, allowed('item_edit',         {send: true}), (req, res) => {
+    app.post('/stores/item_categories',       pm, al('item_edit',    {send: true}), (req, res) => {
+        let actions = [];
+        req.body.category.category_id.filter(e => e !== '').forEach(category_id => {
+            actions.push(new Promise((resolve, reject) => {
+                return m.stores.item_categories.findOrCreate({
+                    where: {
+                        item_id:     req.body.category.item_id,
+                        category_id: category_id
+                    }
+                })
+                .then(([category, created]) => resolve(true))
+                .catch(err => reject(err));
+            }));
+        });
+        Promise.allSettled(actions)
+        .then(results => res.send({success: true, message: 'Categories added'}))
+        .catch(err => res.send({success: false, message: `Error adding categories: ${err.message}`}));
+    });
+    app.put('/stores/items/:id',              pm, al('item_edit',    {send: true}), (req, res) => {
         req.body.item = nullify(req.body.item);
         m.stores.items.update(
             req.body.item,
@@ -73,7 +78,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(result => res.send({success: true, message: 'Item saved'}))
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/items/:id',           permissions, allowed('item_delete',       {send: true}), (req, res) => {
+    app.delete('/stores/items/:id',           pm, al('item_delete',  {send: true}), (req, res) => {
         m.stores.sizes.findOne({where: {item_id: req.params.id}})
         .then(sizes => {
             if (!sizes) {
@@ -87,7 +92,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.send({success: false, message: `Error deleting item: ${err.message}`}));
     });
-    app.delete('/stores/item_categories/:id', permissions, allowed('item_edit',         {send: true}), (req, res) => {
+    app.delete('/stores/item_categories/:id', pm, al('item_edit',    {send: true}), (req, res) => {
         m.stores.item_categories.destroy({where: {item_category_id: req.params.id}})
         .then(result => {
             if (!result) res.send({success: false, message: 'Category not deleted'})

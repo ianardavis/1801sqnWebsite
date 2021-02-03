@@ -28,30 +28,30 @@ function getNSNGroups(options = {}) {
 };
 function getNSNClassifications(options = {}) {
     let group           = document.querySelector('#nsn_group_id_add'),
-        classifications = document.querySelector('#nsn_classification_id_add');
+        classifications = document.querySelector('#nsn_class_id_add');
     if (group && classifications) {
         classifications.innerHTML = '';
         if (group.value !== '') {
             get(
-                function (nsn_classifications, options) {
+                function (nsn_classes, options) {
                     classifications.appendChild(
                         new Option({
                             text: 'Select Classification Code',
                             selected: (options.selected === null)
                         }).e
                     );
-                    nsn_classifications.forEach(e => {
+                    nsn_classes.forEach(e => {
                         classifications.appendChild(
                             new Option({
                                 text:     `${String(e._code).padStart(2, '0')} | ${e._classification}`,
-                                value:     e.nsn_classification_id,
-                                selected: (e.nsn_classification_id === options.selected)
+                                value:     e.nsn_class_id,
+                                selected: (e.nsn_class_id === options.selected)
                             }).e
                         );
                     });
                 },
                 {
-                    table:    'nsn_classifications',
+                    table:    'nsn_classes',
                     query:    [`nsn_group_id=${group.value}`],
                     selected: options.selected || null
                 }
@@ -89,7 +89,7 @@ function getNSNCountries(options = {}) {
 window.addEventListener( "load", function () {
     remove_attribute({id: 'btn_nsn_add', attribute: 'disabled'});
     addFormListener(
-        'form_nsn_add',
+        'nsn_add',
         'POST',
         '/stores/nsns',
         {onComplete: getNSNs}

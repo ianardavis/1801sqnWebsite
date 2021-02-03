@@ -23,7 +23,7 @@
                     </form>
                     <script>
                         window.addEventListener( "load", function () {
-                            addFormListener('form_issue_add', 'POST', '/stores/issues', {onComplete: getIssues});
+                            addFormListener('issue_add', 'POST', '/stores/issues', {onComplete: getIssues});
                         });
                     </script>
                 <% } %>
@@ -69,7 +69,7 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/data/addFormListener.js"></script>
+<script src="/js/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 

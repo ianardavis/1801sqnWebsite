@@ -23,7 +23,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 },
                 include: [
                         inc.issue_lines(),
-                        inc.users({as: '_to'})
+                        inc.users({as: 'user_to'})
                     ]
             })
             .then(issues => res.render('stores/reports/show/2', {issues: issues}))

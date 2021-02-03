@@ -86,7 +86,7 @@
     <% } %>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/data/addFormListener.js'></script>
+<script src='/js/addFormListener.js'></script>
 <script src='/js/canteen/sessions/index/getSessions.js'></script>
 <script async>getSessions()</script>
 <% if (permissions.session_add) { %>
@@ -94,7 +94,7 @@
         let btn_add_session = document.querySelector('#btn_add_session');
         if (btn_add_session) btn_add_session.addEventListener('click', function (){$('#mdl_add_session').modal('show')});
         addFormListener(
-            'form_add_session',
+            'add_session',
             'POST',
             `/canteen/sessions`,
             {onComplete: [getSessions, function () {$('#mdl_add_session').modal('hide')}]}

@@ -1,6 +1,6 @@
 function addFormListener(form_id, method, location, options = {reload: false, _close: true}, log = false) {
     try {
-        let form = document.querySelector(`#${form_id}`);
+        let form = document.querySelector(`#form_${form_id}`);
         if (form) {
             let submit_func = function (event) {
                 event.preventDefault();
@@ -25,18 +25,22 @@ function sendData(form, method, _location, options = {reload: false, _close: tru
             let response = JSON.parse(event.target.responseText);
             if (response.success === true) {
                 alert(response.message);
-                if (!options.args) options.args = [];
-
                 if (options.onComplete) {
                     if (Array.isArray(options.onComplete)) {
-                        options.onComplete.forEach(function (func) {
+                        options.onComplete.forEach(func => {
                             try {
                                 func(response)
                             } catch (error) {
                                 console.log(error);
                             };
                         })
-                    } else options.onComplete(...options.args);
+                    } else {
+                        try {
+                            options.onComplete();
+                        } catch (error) {
+                            console.log(error);
+                        };
+                    };
                 };
 
                 if      (options.reload)   window.location.reload();

@@ -12,7 +12,7 @@ function setDeleteButton() {
 };
 window.addEventListener( "load", function () {
     addFormListener(
-        'form_delete',
+        'delete',
         'DELETE',
         `/stores/orders/${path[3]}`,
         {

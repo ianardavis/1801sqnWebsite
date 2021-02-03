@@ -21,7 +21,7 @@ function getUserEdit(user_id) {
 set_attribute({id: 'btn_user_edit', attribute: 'data-user_id', value: path[3]});
 window.addEventListener('load', function () {
     addFormListener(
-        'form_user_edit',
+        'user_edit',
         'PUT',
         `/users/users/${path[3]}`,
         {

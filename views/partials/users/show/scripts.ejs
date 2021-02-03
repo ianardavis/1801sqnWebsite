@@ -3,7 +3,7 @@
 <script>
     window.addEventListener('load', function () {
         addFormListener(
-            'form_user_password',
+            'user_password',
             'PUT',
             `/users/password/${path[3]}`,
             {
@@ -20,7 +20,7 @@
     <script>
         window.addEventListener('load', function () {
             addFormListener(
-                'form_password_reset',
+                'password_reset',
                 'PUT',
                 `/users/users/${path[3]}`,
                 {onComplete: getUser}
