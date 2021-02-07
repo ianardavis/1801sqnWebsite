@@ -1,5 +1,9 @@
 function listNSNs(line_id, size) {
     get(
+        {
+            table: 'nsns',
+            query: [`size_id=${size.size_id}`]
+        },
         function (nsns, options) {
             let sel_nsn = document.querySelector(`#sel_nsn_${line_id}`);
             if (sel_nsn) {
@@ -12,10 +16,6 @@ function listNSNs(line_id, size) {
                     }).e)
                 });
             };
-        },
-        {
-            table: 'nsns',
-            query: [`size_id=${size.size_id}`]
         }
-    )
+    );
 };

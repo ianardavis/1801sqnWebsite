@@ -2,6 +2,11 @@ let statuses = {"0": "Cancelled", "1": "Open", "2": "Complete"};
 function getWriteoffs() {
     let sel_status = document.querySelector('#sel_status');
     get(
+        {
+            db: 'canteen',
+            table: 'writeoffs',
+            query: [sel_status.value]
+        },
         function (writeoffs, options) {
             clearElement('tbl_writeoffs');
             let table_body = document.querySelector('#tbl_writeoffs');
@@ -16,11 +21,6 @@ function getWriteoffs() {
                     small: true
                 }).e});
             });
-        },
-        {
-            db: 'canteen',
-            table: 'writeoffs',
-            query: [sel_status.value]
         }
     );
 };

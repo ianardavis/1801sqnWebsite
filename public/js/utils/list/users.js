@@ -2,6 +2,11 @@ let users_loaded = false;
 function listUsers(options = {}) {
     users_loaded = false;
     get(
+        {
+            table: 'users',
+            query: [],
+            ...options
+        },
         function (users, options) {
             let sel_users = document.querySelector(`#${options.select || 'sel_users'}`);
             if (sel_users) {
@@ -9,8 +14,9 @@ function listUsers(options = {}) {
                 if (options.blank === true) sel_users.appendChild(new Option(options.blank_opt || {}).e);
                 users.forEach(user => {
                     let value = '';
-                    if (options.id_only) value = user.user_id
-                    else                 value = `user_id${options.append || ''}=${user.user_id}`
+                    if (options.id_only === true) value = user.user_id
+                    else                          value = `user_id${options.append || ''}=${user.user_id}`
+                    console.log(options.selected);
                     sel_users.appendChild(
                         new Option({
                             value:    value,
@@ -21,11 +27,6 @@ function listUsers(options = {}) {
                 });
             };
             users_loaded = true;
-        },
-        {
-            table: 'users',
-            query: [],
-            ...options
         }
     );
 };

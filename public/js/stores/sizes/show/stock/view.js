@@ -1,5 +1,9 @@
 function getStocks() {
     get(
+        {
+            table: 'stocks',
+            query: [`size_id=${path[3]}`]
+        },
         function (stocks, options) {
             set_count({id: 'stock', count: stocks.length || '0'});
             let tbl_stock = document.querySelector('#tbl_stock');
@@ -19,15 +23,16 @@ function getStocks() {
                     } catch (error) {console.log(error)};
                 });
             };
-        },
-        {
-            table: 'stocks',
-            query: [`size_id=${path[3]}`]
         }
     );
 };
 function viewStock(event) {
     get(
+        {
+            table: 'stock',
+            query: [`stock_id=${event.relatedTarget.dataset.stock_id}`],
+            spinner: 'stock_view'
+        },
         function(stock, options) {
             let stock_ids = document.querySelectorAll('.stock_id');
             if (stock_ids) stock_ids.forEach(e => e.setAttribute('value', stock.stock_id));
@@ -36,11 +41,6 @@ function viewStock(event) {
             set_innerText({id: 'stock_id',             text: stock.stock_id});
             set_attribute({id: 'btn_stock_adjust_add', attribute: 'data-stock_id', value: stock.stock_id});
             set_attribute({id: 'btn_stock_link',       attribute: 'href', value: `/stores/stocks/${stock.stock_id}`});
-        },
-        {
-            table: 'stock',
-            query: [`stock_id=${event.relatedTarget.dataset.stock_id}`],
-            spinner: 'stock_view'
         }
     );
 };

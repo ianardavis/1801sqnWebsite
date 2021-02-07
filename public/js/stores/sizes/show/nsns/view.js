@@ -1,5 +1,9 @@
 function getNSNs() {
     get(
+        {
+            table: 'nsns',
+            query: [`size_id=${path[3]}`]
+        },
         function (nsns, options) {
             set_count({id: 'nsn', count: nsns.length || '0'});
             let tbl_nsns = document.querySelector('#tbl_nsns');
@@ -21,15 +25,16 @@ function getNSNs() {
                     } catch (error) {console.log(error)};
                 });
             };
-        },
-        {
-            table: 'nsns',
-            query: [`size_id=${path[3]}`]
         }
     );
 };
 function viewNSN(event) {
     get(
+        {
+            table: 'nsn',
+            query: [`nsn_id=${event.relatedTarget.dataset.nsn_id}`],
+            spinner: 'nsn_view'
+        },
         function(nsn, options) {
             set_innerText({id: 'nsn_group_id',          text: `${String(nsn.group._code).padStart(2, '0')} | ${nsn.group._group}`});
             set_innerText({id: 'nsn_class_id', text: `${String(nsn.classification._code).padStart(2, '0')} | ${nsn.classification._classification}`});
@@ -39,11 +44,6 @@ function viewNSN(event) {
             set_innerText({id: '_nsn_view',             text: print_nsn(nsn)});
             set_innerText({id: '_default',              text: yesno((nsn.nsn_id === nsn.size.nsn_id))});
             set_attribute({id: 'btn_nsn_link',          attribute: 'href', value: `/stores/nsns/${nsn.nsn_id}`});
-        },
-        {
-            table: 'nsn',
-            query: [`nsn_id=${event.relatedTarget.dataset.nsn_id}`],
-            spinner: 'nsn_view'
         }
     );
 };

@@ -1,5 +1,10 @@
 function getSale() {
     get(
+        {
+            db: 'canteen',
+            table: 'sale',
+            query: [`sale_id=${path[3]}`]
+        },
         function (sale, options) {
             for (let [id, value] of Object.entries(sale)) {
                 try {
@@ -16,12 +21,7 @@ function getSale() {
                 } catch (error) {console.log(error)};
             };
             set_breadcrumb({text: sale.sale_id, href: `/canteen/sales/${sale.sale_id}`});
-        },
-        {
-            db: 'canteen',
-            table: 'sale',
-            query: [`sale_id=${path[3]}`]
         }
-    )
+    );
 };
 document.querySelector('#reload').addEventListener('click', getSale);

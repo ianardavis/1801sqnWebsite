@@ -2,6 +2,10 @@ function getNSNs(size_id, line_id, cell, nsn_id = null) {
     let _cell = document.querySelector(`#${cell}_${line_id}`);
     add_spinner(_cell, {id: `nsns_${line_id}`});
     get(
+        {
+            table: 'nsns',
+            query: [`size_id=${size_id}`]
+        },
         function (nsns, options) {
             let opts = [{value: '', text: '... Select NSN'}];
             nsns.forEach(e => opts.push({
@@ -21,10 +25,6 @@ function getNSNs(size_id, line_id, cell, nsn_id = null) {
                 }).e
             );
             remove_spinner(`nsns_${line_id}`);
-        },
-        {
-            table: 'nsns',
-            query: [`size_id=${size_id}`]
         }
     );
 };

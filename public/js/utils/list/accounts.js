@@ -1,6 +1,11 @@
 function listAccounts() {
     return new Promise((resolve, reject) => {
         get(
+            {
+                table: 'accounts',
+                query: [],
+                onFail: [function(){reject(new Error('Error getting accounts'))}]
+            },
             function (accounts, options) {
                 let sel_accounts  = document.querySelector('#sel_accounts');
                 if (sel_accounts) {
@@ -17,11 +22,6 @@ function listAccounts() {
                     });
                 };
                 resolve(true)
-            },
-            {
-                table: 'accounts',
-                query: [],
-                onFail: [function(){reject(new Error('Error getting accounts'))}]
             }
         );
     });

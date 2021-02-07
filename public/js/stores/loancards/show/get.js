@@ -1,6 +1,10 @@
 let statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
 function getLoancard() {
     get(
+        {
+            table: 'loancard',
+            query: [`loancard_id=${path[3]}`]
+        },
         function (loancard, options) {
             set_innerText({id: 'user_loancard',      text: print_user(loancard.user_loancard)});
             set_innerText({id: 'user',               text: print_user(loancard.user)});
@@ -25,10 +29,6 @@ function getLoancard() {
             } else if (loancard._status === 3 && loancard._filename && loancard._filename !== '') {
                 remove_attribute({id: 'btn_download', attribute: 'disabled'});
             };
-        },
-        {
-            table: 'loancard',
-            query: [`loancard_id=${path[3]}`]
         }
     );
 };

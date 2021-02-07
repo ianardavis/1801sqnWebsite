@@ -1,5 +1,10 @@
 function getLines() {
     get(
+        {
+            db: 'canteen',
+            table: 'writeoff_lines',
+            query: [`writeoff_id=${path[3]}`]
+        },
         function (lines, options) {
             try {
                 clearElement('tbl_writeoff_lines');
@@ -40,12 +45,7 @@ function getLines() {
             } catch (error) {
                 console.log(error);
             };
-        },
-        {
-            db: 'canteen',
-            table: 'writeoff_lines',
-            query: [`writeoff_id=${path[3]}`]
         }
-    )
+    );
 };
 document.querySelector('#reload').addEventListener('click', getLines);

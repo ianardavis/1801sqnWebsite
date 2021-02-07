@@ -1,5 +1,10 @@
 function getUser() {
     get(
+        {
+            db: 'users',
+            table: 'user',
+            query: [`user_id=${path[3]}`]
+        },
         function (user, options) {
             set_innerText({id: '_bader',      text: user._bader});
             set_innerText({id: 'rank',        text: user.rank._rank});
@@ -12,11 +17,6 @@ function getUser() {
             let user_ids  = document.querySelectorAll('.user_id');
             user_ids.forEach(e => e.value = user.user_id);
             set_breadcrumb({text: print_user(user), href: `/${path[1]}/users/${user.user_id}`});
-        },
-        {
-            db: 'users',
-            table: 'user',
-            query: [`user_id=${path[3]}`]
         }
     );
 };

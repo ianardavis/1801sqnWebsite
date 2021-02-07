@@ -60,11 +60,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "null"
     },
-    'file_id': {
-      type: DataTypes.INTEGER(11),
-      allowNull: true,
-      comment: "null"
-    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: false,

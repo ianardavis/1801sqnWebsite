@@ -1,4 +1,5 @@
 window.addEventListener('load', function () {
+    remove_attribute({id: 'btn_category_add', attribute: 'disabled'});
     addFormListener(
         'category_add',
         'POST',
@@ -11,27 +12,5 @@ window.addEventListener('load', function () {
             ]
         }
     );
-    $('#mdl_category_add').on('show.bs.modal', function () {
-        get(
-            function (categories, options) {
-                let select = document.querySelector('#sel_category_add');
-                if (select) {
-                    select.innerHTML = '';
-                    select.appendChild(new Option({text: ''}).e);
-                    categories.forEach(category => {
-                        select.appendChild(
-                            new Option({
-                                text: category._category,
-                                value: category.category_id
-                            }).e
-                        );
-                    });
-                };
-            },
-            {
-                table: 'categories',
-                query: []
-            }
-        );
-    });
+    $('#mdl_category_add').on('show.bs.modal', function (){listCategories({select: 'sel_category_add'})});
 });

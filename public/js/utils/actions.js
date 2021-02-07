@@ -3,6 +3,10 @@ if      (path[2] === 'orders') table = 'order'
 else if (path[2] === 'issues') table = 'issue';
 function showActions() {
     get(
+        {
+            table: 'actions',
+            query: [`${table}_id=${path[3]}`]
+        },
         function (actions, options) {
             set_count({id: 'action', count: actions.length || '0'});
             let table_body = document.querySelector('#tbl_actions');
@@ -29,10 +33,6 @@ function showActions() {
                     };
                 });
             };
-        },
-        {
-            table: 'actions',
-            query: [`${table}_id=${path[3]}`]
         }
     );
 };
@@ -52,6 +52,10 @@ window.addEventListener('load', function () {
     $('#mdl_action_view').on('show.bs.modal', function (event) {
         resetActionView();
         get(
+            {
+                table: 'action',
+                query: [`action_id=${event.relatedTarget.dataset.action_id}`]
+            },
             function (action, options) {
                 set_innerText({id: 'action_id',        text: action.action_id});
                 set_innerText({id: 'action_action',    text: action._action});
@@ -95,10 +99,6 @@ window.addEventListener('load', function () {
                     set_attribute({id: 'action_demand_link', attribute: 'href', value: `/stores/demands/${action.demand_line.demand_id}`});
                     remove_class( {id: 'inp_demand',         class: 'hidden'});
                 };
-            },
-            {
-                table: 'action',
-                query: [`action_id=${event.relatedTarget.dataset.action_id}`]
             }
         )
     });

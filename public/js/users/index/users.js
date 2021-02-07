@@ -2,6 +2,11 @@ function getUsers() {
     let status = document.querySelector('#status_id') || {value: ''},
         rank   = document.querySelector('#rank_id')   || {value: ''};
     get(
+        {
+            db: 'users',
+            table: 'users',
+            query: [status.value, rank.value]
+        },
         function (users, options) {
             let table_body = document.querySelector('#tbl_users');
             if (table_body) {
@@ -18,11 +23,6 @@ function getUsers() {
                     }).e});
                 });
             };
-        },
-        {
-            db: 'users',
-            table: 'users',
-            query: [status.value, rank.value]
         }
     );
 };

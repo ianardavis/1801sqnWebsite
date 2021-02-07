@@ -1,5 +1,10 @@
 function getSaleLines() {
     get(
+        {
+            db: 'canteen',
+            table: 'sale_lines',
+            query: [`sale_id=${sale_id}`]
+        },
         function (lines, options) {
             clearElement('tbl_sale_lines');
             let btn_complete_sale = document.querySelector('#btn_complete_sale'),
@@ -47,11 +52,6 @@ function getSaleLines() {
             totals.forEach(e => {
                 e.innerText = total.toFixed(2) || '0.00'
             });
-        },
-        {
-            db: 'canteen',
-            table: 'sale_lines',
-            query: [`sale_id=${sale_id}`]
         }
     );
 };

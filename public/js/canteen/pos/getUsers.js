@@ -1,5 +1,10 @@
 function getUsers() {
     get(
+        {
+            db:    'users',
+            table: 'current',
+            query: []
+        },
         function (users, options) {
             clearElement('current');
             let _users = document.querySelector('#current');
@@ -7,11 +12,6 @@ function getUsers() {
             users.forEach(user => {
                 _users.appendChild(new Option({value: user.user_id, text: `${user.rank._rank} ${user.full_name}`}).e)
             });
-        },
-        {
-            db:    'users',
-            table: 'current',
-            query: []
         }
     )
 };

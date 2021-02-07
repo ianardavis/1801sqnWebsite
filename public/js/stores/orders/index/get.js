@@ -2,6 +2,11 @@ var lines_loaded = {'0': false, '1': false, '2': false, '3': false};
 function getOrders(status) {
     lines_loaded[status] = false;
     get(
+        {
+            table: 'orders',
+            query: [`_status=${status}`],
+            spinner: `status_${status}`
+        },
         function (orders, options) {
             set_count({id: `status_${status}`, count: orders.length || 0});
             let tbl = document.querySelector(`#tbl_orders_${status}`);
@@ -43,11 +48,6 @@ function getOrders(status) {
             };
             lines_loaded[status] = true;
             if (status === '1' && typeof getPlacedActions === 'function') getPlacedActions();
-        },
-        {
-            table: 'orders',
-            query: [`_status=${status}`],
-            spinner: `status_${status}`
         }
     );
 };

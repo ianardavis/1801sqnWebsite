@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_path': {
+    '_filename': {
       type: DataTypes.STRING(255),
       allowNull: false,
       comment: "null",
@@ -25,59 +25,9 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_code': {
-      type: DataTypes.STRING(4),
-      allowNull: true,
-      comment: "null"
-    },
-    '_rank': {
-      type: DataTypes.STRING(4),
-      allowNull: true,
-      comment: "null"
-    },
-    '_name': {
-      type: DataTypes.STRING(4),
-      allowNull: true,
-      comment: "null"
-    },
-    '_sqn': {
-      type: DataTypes.STRING(4),
-      allowNull: true,
-      comment: "null"
-    },
-    '_rank_column': {
-      type: DataTypes.STRING(2),
-      allowNull: true,
-      comment: "null"
-    },
-    '_name_column': {
-      type: DataTypes.STRING(2),
-      allowNull: true,
-      comment: "null"
-    },
-    '_request_start': {
-      type: DataTypes.STRING(2),
-      allowNull: true,
-      comment: "null"
-    },
-    '_request_end': {
-      type: DataTypes.STRING(2),
-      allowNull: true,
-      comment: "null"
-    },
-    '_date': {
-      type: DataTypes.STRING(4),
-      allowNull: true,
-      comment: "null"
-    },
-    '_cover_sheet': {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-      comment: "null"
-    },
-    '_items_sheet': {
-      type: DataTypes.STRING(20),
-      allowNull: true,
+    'user_id': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
       comment: "null"
     },
     'createdAt': {

@@ -2,6 +2,12 @@ let statuses_loaded = false;
 function listStatuses(options = {}) {
     statuses_loaded = false;
     get(
+        {
+            db:    'users',
+            table: 'statuses',
+            query: [],
+            ...options
+        },
         function (statuses, options) {
             let select = document.querySelector(`#${options.id || 'status_id'}`);
             if (select) {
@@ -19,12 +25,6 @@ function listStatuses(options = {}) {
                 });
                 statuses_loaded = true;
             };
-        },
-        {
-            db:    'users',
-            table: 'statuses',
-            query: [],
-            ...options
         }
     );
 };

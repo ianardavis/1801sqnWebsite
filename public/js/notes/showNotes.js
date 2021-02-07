@@ -1,5 +1,10 @@
 function getNotes() {
     get(
+        {
+            db:    path[1],
+            table: 'notes',
+            query: note_query()
+        },
         function (notes, options) {
             set_count({id: 'note', count: notes.length || 0})
             let table_body = document.querySelector('#tbl_notes');
@@ -16,16 +21,17 @@ function getNotes() {
                     }).e});
                 });
             };
-        },
-        {
-            db:    path[1],
-            table: 'notes',
-            query: note_query()
         }
     );
 };
 function getNote(note_id, permissions) {
     get(
+        {
+            db:      path[1],
+            table:   'note',
+            query:   [`note_id=${note_id}`],
+            spinner: 'note_view'
+        },
         function (note, options) {
             set_innerText({id: 'note_id_view',   text: note.note_id});
             set_innerText({id: 'note_createdAt', text: print_date(note.createdAt)});
@@ -61,14 +67,8 @@ function getNote(note_id, permissions) {
                     }).e);
                 };
             };
-        },
-        {
-            db:      path[1],
-            table:   'note',
-            query:   [`note_id=${note_id}`],
-            spinner: 'note_view'
         }
-    )
+    );
 };
 function note_query() {
     let sel_system = document.querySelector('#sel_system'), query = [];

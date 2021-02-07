@@ -2,6 +2,11 @@ function getGenders_add () {
 	let sel_genders = document.querySelector('#sel_genders_add');
 	if (sel_genders) {
 		get(
+			{
+				table:   'genders',
+                query:   [],
+                spinner: 'genders_add'
+			},
 			function (genders, options) {
 				sel_genders.innerHTML= '';
 				sel_genders.appendChild(new Option({text: '', value: '', selected: true}).e);
@@ -13,11 +18,6 @@ function getGenders_add () {
 						}).e
 					)
 				});
-			},
-			{
-				table:   'genders',
-                query:   [],
-                spinner: 'genders_add'
 			}
 		);
 	};

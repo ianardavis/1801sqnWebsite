@@ -6,6 +6,10 @@ function getLoancards() {
     if (table_body) {
         table_body.innerHTML = '';
         get(
+            {
+                table: 'loancards',
+                query: [sel_status.value, sel_users.value]
+            },
             function (loancards, options) {
                 loancards.forEach(loancard => {
                     let row = table_body.insertRow(-1);
@@ -15,10 +19,6 @@ function getLoancards() {
                     add_cell(row, {text: statuses[loancard._status]});
                     add_cell(row, {append: new Link({href: `/stores/loancards/${loancard.loancard_id}`, small: true}).e});
                 });
-            },
-            {
-                table: 'loancards',
-                query: [sel_status.value, sel_users.value]
             }
         );
     };

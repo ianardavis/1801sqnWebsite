@@ -1,5 +1,10 @@
 function getAdjusts(event) {
     get(
+        {
+            table: 'adjusts',
+            query: [`stock_id=${event.relatedTarget.dataset.stock_id}`],
+            spinner: 'stock_adjusts'
+        },
         function(adjusts, options) {
             let tbl_adjusts = document.querySelector('#tbl_adjusts');
             if (tbl_adjusts) {
@@ -17,11 +22,6 @@ function getAdjusts(event) {
                     };
                 });
             }
-        },
-        {
-            table: 'adjusts',
-            query: [`stock_id=${event.relatedTarget.dataset.stock_id}`],
-            spinner: 'stock_adjusts'
         }
     );
 };

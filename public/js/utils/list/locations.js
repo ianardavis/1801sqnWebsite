@@ -1,5 +1,9 @@
 function listLocations(line_id, blankselect = false) {
     get(
+        {
+            table: 'locations',
+            query: []
+        },
         function (locations, options) {
             let sel_location = document.querySelector(`#sel_location_${line_id}`);
             if (sel_location) {
@@ -19,10 +23,6 @@ function listLocations(line_id, blankselect = false) {
                     );
                 });
             };
-        },
-        {
-            table: 'locations',
-            query: []
         }
-    )
+    );
 };

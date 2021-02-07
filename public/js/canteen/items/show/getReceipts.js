@@ -1,5 +1,10 @@
 function getReceipts() {
     get(
+        {
+            db: 'canteen',
+            table: 'receipt_lines',
+            query: [`item_id=${path[3]}`]
+        },
         function (lines, options) {
             try {
                 let tbl_receipts = document.querySelector('#tbl_receipts');
@@ -19,11 +24,6 @@ function getReceipts() {
             } catch (error) {
                 console.log(error);
             };
-        },
-        {
-            db: 'canteen',
-            table: 'receipt_lines',
-            query: [`item_id=${path[3]}`]
         }
     )
 };

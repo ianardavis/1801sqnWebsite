@@ -1,5 +1,10 @@
 function getPermissions () {
     get(
+        {
+            db: path[1],
+            table: 'permissions',
+            query: [`user_id=${path[3]}`]
+        },
         function (permissions, options) {
             set_count({id: 'permission', count: permissions.permissions.length || '0'})
             let tbl_permissions  = document.querySelector('#tbl_permissions');
@@ -11,12 +16,7 @@ function getPermissions () {
                     add_cell(row, {text: e._permission.replaceAll('_', ' ')});
                 });
             };
-        },
-        {
-            db: path[1],
-            table: 'permissions',
-            query: [`user_id=${path[3]}`]
         }
-    )
+    );
 };
 document.querySelector('#reload').addEventListener('click', getPermissions);

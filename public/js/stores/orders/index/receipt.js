@@ -1,6 +1,10 @@
 function getReceiptActions() {
     document.querySelectorAll('.actions-1').forEach(row => {
         get(
+            {
+                table: 'order',
+                query: [`order_id=${row.dataset.order_id}`]
+            },
             function (order, options) {
                 if (order._status === 1) {
                     let select = document.querySelector(`#sel_action_${order.order_id}`);
@@ -39,10 +43,6 @@ function getReceiptActions() {
                     };
                     
                 };
-            },
-            {
-                table: 'order',
-                query: [`order_id=${row.dataset.order_id}`]
             }
         );
     });

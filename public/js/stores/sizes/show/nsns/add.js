@@ -1,5 +1,11 @@
 function getNSNGroups(options = {}) {
     get(
+        {
+            table:                   'nsn_groups',
+            query:                   [],
+            selected:                options.selected || 79,
+            selected_classification: options.selected_classification || null
+        },
         function (nsn_groups, options) {
             let nsn_group_id = document.querySelector('#nsn_group_id_add');
             console.log(nsn_group_id);
@@ -17,12 +23,6 @@ function getNSNGroups(options = {}) {
                 });
             };
             getNSNClassifications({select: options.select, selected: options.selected_classification});
-        },
-        {
-            table:                   'nsn_groups',
-            query:                   [],
-            selected:                options.selected || 79,
-            selected_classification: options.selected_classification || null
         }
     )
 };
@@ -33,6 +33,11 @@ function getNSNClassifications(options = {}) {
         classifications.innerHTML = '';
         if (group.value !== '') {
             get(
+                {
+                    table:    'nsn_classes',
+                    query:    [`nsn_group_id=${group.value}`],
+                    selected: options.selected || null
+                },
                 function (nsn_classes, options) {
                     classifications.appendChild(
                         new Option({
@@ -49,11 +54,6 @@ function getNSNClassifications(options = {}) {
                             }).e
                         );
                     });
-                },
-                {
-                    table:    'nsn_classes',
-                    query:    [`nsn_group_id=${group.value}`],
-                    selected: options.selected || null
                 }
             )
         };
@@ -64,6 +64,11 @@ function getNSNCountries(options = {}) {
     if (nsn_country_id) {
         nsn_country_id.innerHTML = '';
         get(
+            {
+                table:    'nsn_countries',
+                query:    [],
+                selected: options.selected || 82
+            },
             function (nsn_countries, options) {
                 nsn_country_id.appendChild(
                     new Option({text: 'Select Country Code'}).e
@@ -77,11 +82,6 @@ function getNSNCountries(options = {}) {
                         }).e
                     );
                 });
-            },
-            {
-                table:    'nsn_countries',
-                query:    [],
-                selected: options.selected || 82
             }
         );
     };

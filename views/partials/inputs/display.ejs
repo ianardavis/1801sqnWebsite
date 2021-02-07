@@ -19,6 +19,22 @@
             </a>
         </div>
     <% } %>
+    <% if (locals.button) { %>
+        <div class="input-group-append">
+            <button
+                class='btn btn-primary'
+                <% if (locals.id) { %>
+                    id='<%= id %>_link'
+                <% } %>
+                <% if (locals.modal) { %>
+                    data-toggle="modal"
+                    data-target="#mdl_<%= modal %>"
+                <% } %>
+            >
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    <% } %>
     <% if (locals.append) { %>
         <%- include('append', {append: locals.append}) %>
     <% } %>

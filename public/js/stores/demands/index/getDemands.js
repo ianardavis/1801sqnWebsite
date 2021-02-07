@@ -6,6 +6,10 @@ function getDemands() {
     if (table_body) {
         table_body.innerHTML = '';
         get(
+            {
+                table: 'demands',
+                query: [sel_status.value, sel_suppliers.value]
+            },
             function (demands, options) {
                 demands.forEach(demand => {
                     let row = table_body.insertRow(-1);
@@ -15,10 +19,6 @@ function getDemands() {
                     add_cell(row, {text: statuses[demand._status]});
                     add_cell(row, {append: new Link({href: `/stores/demands/${demand.demand_id}`, small: true}).e});
                 });
-            },
-            {
-                table: 'demands',
-                query: [sel_status.value, sel_suppliers.value]
             }
         );
     };

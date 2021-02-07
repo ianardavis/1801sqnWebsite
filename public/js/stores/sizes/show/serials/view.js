@@ -1,5 +1,9 @@
 function getSerials() {
     get(
+        {
+            table: 'serials',
+            query: [`size_id=${path[3]}`]
+        },
         function (serials, options) {
                 set_count({id: 'serial', count: serials.length});
                 let tbl_serials = document.querySelector('#tbl_serials');
@@ -21,25 +25,21 @@ function getSerials() {
                     } catch (error) {console.log(error)};
                 });
             };
-        },
-        {
-            table: 'serials',
-            query: [`size_id=${path[3]}`]
         }
     );
 };
 function viewSerial(event) {
     get(
+        {
+            table: 'serial',
+            query: [`serial_id=${event.relatedTarget.dataset.serial_id}`],
+            spinner: 'serial_view'
+        },
         function(serial, options) {
             set_innerText({id: 'serial_location', text: serial.location._location});
             set_innerText({id: '_serial_view',    text: serial._serial});
             set_innerText({id: 'serial_id',       text: serial.serial_id});
             set_attribute({id: 'btn_serial_link', attribute: 'href', value: `/stores/serials/${serial.serial_id}`});
-        },
-        {
-            table: 'serial',
-            query: [`serial_id=${event.relatedTarget.dataset.serial_id}`],
-            spinner: 'serial_view'
         }
     );
 };

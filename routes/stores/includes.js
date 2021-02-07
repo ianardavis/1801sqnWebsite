@@ -124,6 +124,18 @@ module.exports = (inc, m) => {
             where:      options.where      || null
         };
     };
+    inc.file_details = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        return {
+            model:      m.stores.file_details,
+            attributes: options.attributes || null,
+            include:    include,
+            as:         options.as         || 'details',
+            where:      options.where      || null,
+            required:   options.required   || false
+        };
+    };
     inc.genders = (options = {}) => {
         return {
             model:      m.stores.genders,

@@ -1,5 +1,9 @@
 function showLine(table, id) {
     get(
+        {
+            table: `${table}_line`,
+            query: [`line_id=${id}`]
+        },
         function (line, options) {
             set_innerText({id: 'line_id_view',        text: line.line_id});
             set_innerText({id: 'line_item_view',      text: line.size.item._description});
@@ -11,10 +15,6 @@ function showLine(table, id) {
             set_attribute({id: 'line_user_view_link', attribute: 'href', value: `/stores/users/${line.user_id}`});
             set_innerText({id: 'line_createdAt_view', text: print_date(line.createdAt, true)});
             set_innerText({id: 'line_updatedAt_view', text: print_date(line.updatedAt, true)});
-        },
-        {
-            table: `${table}_line`,
-            query: [`line_id=${id}`]
         }
     );
 };

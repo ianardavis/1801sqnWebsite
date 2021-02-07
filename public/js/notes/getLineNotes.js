@@ -3,6 +3,11 @@ function getLineNotes(options = {}) {
         query  = [`_table=${options.table}`, `_id=${options.id}`];
     if (select && select.value) query.push(select.value);
     get(
+        {
+            table: 'notes',
+            query: query,
+            line_id: options.line_id
+        },
         function (notes, _options) {
             let table_body = document.querySelector(`#tbl_${_options.line_id}_notes`);
             set_count({id: `${_options.line_id}_note`, count: notes.length || '0'});
@@ -37,11 +42,6 @@ function getLineNotes(options = {}) {
                     };
                 });
             };
-        },
-        {
-            table: 'notes',
-            query: query,
-            line_id: options.line_id
         }
     );
 };

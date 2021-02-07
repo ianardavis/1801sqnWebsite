@@ -94,7 +94,7 @@ function set_breadcrumb(options = {}) {
 };
 function set_value(options = {}) {
     let element = document.querySelector(`#${options.id}`);
-    if (element && options.value) element.value = options.value;
+    if (element) element.value = options.value || '';
 };
 function remove_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);

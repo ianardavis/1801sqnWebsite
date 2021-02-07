@@ -1,6 +1,11 @@
 var statuses = {"0": "Cancelled", "1": "Open", "2": "Complete"};
 function getWriteoff() {
     get(
+        {
+            db: 'canteen',
+            table: 'writeoff',
+            query: [`writeoff_id=${path[3]}`]
+        },
         function (writeoff, options) {
             for (let [id, value] of Object.entries(writeoff)) {
                 try {
@@ -21,12 +26,7 @@ function getWriteoff() {
                 } catch (error) {console.log(error)};
             };
             set_breadcrumb({text: writeoff.writeoff_id, href: `/canteen/writeoffs/${writeoff.writeoff_id}`});
-        },
-        {
-            db: 'canteen',
-            table: 'writeoff',
-            query: [`writeoff_id=${path[3]}`]
         }
-    )
+    );
 };
 document.querySelector('#reload').addEventListener('click', getWriteoff);

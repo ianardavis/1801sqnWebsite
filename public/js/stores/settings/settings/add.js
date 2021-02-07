@@ -1,4 +1,5 @@
 window.addEventListener('load', function () {
+    remove_attribute({id: 'btn_setting_add', attribute: 'disabled'});
     addFormListener(
         'setting_add',
         'POST',
@@ -6,7 +7,6 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getSettings,
-                loadSettingsEdit,
                 function () {$('#mdl_setting_add').modal('hide')}
             ]
         }

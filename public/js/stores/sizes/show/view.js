@@ -1,5 +1,9 @@
 function getSize() {
     get(
+        {
+            table: 'size',
+            query: [`size_id=${path[3]}`]
+        },
         function (size, options) {
             set_innerText({id: '_issueable',        text: yesno(size._issueable)});
             set_innerText({id: '_orderable',        text: yesno(size._orderable)});
@@ -29,10 +33,6 @@ function getSize() {
             _item.href      = `/stores/items/${size.item_id}`;
             set_breadcrumb({text: `${size.item._size_text || 'Size'}: ${size._size}`, href: `/stores/sizes/${size.size_id}`});
             document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
-        },
-        {
-            table: 'size',
-            query: [`size_id=${path[3]}`]
         }
     );
 };
@@ -40,6 +40,10 @@ let details_loaded = false;
 function getDetails() {
     details_loaded = false;
     get(
+        {
+            table: 'details',
+            query: [`size_id=${path[3]}`]
+        },
         function (details, options) {
             let tbl_details = document.querySelector('#tbl_details');
             if (tbl_details) {
@@ -52,10 +56,6 @@ function getDetails() {
                 });
                 details_loaded = true;
             };
-        },
-        {
-            table: 'details',
-            query: [`size_id=${path[3]}`]
         }
     );
 };

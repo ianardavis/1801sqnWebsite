@@ -1,5 +1,9 @@
 function getSuppliers() {
     get(
+        {
+            table: 'suppliers',
+            query: []
+        },
         function (suppliers, options) {
             clearElement('suppliers');
             let _suppliers = document.querySelector('#suppliers');
@@ -14,10 +18,6 @@ function getSuppliers() {
             });
             if (typeof getCounts  === 'function') getCounts();
             if (typeof getDefault === 'function') getDefault();
-        },
-        {
-            table: 'suppliers',
-            query: []
         }
     );
 };

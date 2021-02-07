@@ -1,5 +1,10 @@
 function getSessions() {
     get(
+        {
+            db: 'canteen',
+            table: 'sessions',
+            query: []
+        },
         function (sessions, options) {
             clearElement('tbl_sessions');
             let table_body = document.querySelector('#tbl_sessions'),
@@ -24,11 +29,6 @@ function getSessions() {
                 }).e});
             });
             hide_spinner('sessions');
-        },
-        {
-            db: 'canteen',
-            table: 'sessions',
-            query: []
         }
     );
 };

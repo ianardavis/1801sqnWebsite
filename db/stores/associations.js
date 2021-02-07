@@ -20,7 +20,9 @@ module.exports = function (m) {
     m.demands.hasMany(         m.demand_lines,   {foreignKey: 'demand_id',          targetKey: 'demand_id',                          as: 'lines'});
     m.embodiments.hasOne(      m.sizes,          {foreignKey: 'size_id',            sourceKey: 'size_id_parent', constraints: false, as: 'parent'});
     m.embodiments.hasOne(      m.sizes,          {foreignKey: 'size_id',            sourceKey: 'size_id_child',  constraints: false, as: 'child'});
-    m.files.belongsTo(         m.suppliers,      {foreignKey: 'file_id',            targetKey: 'file_id'});
+    m.files.belongsTo(         m.suppliers,      {foreignKey: 'supplier_id',        targetKey: 'supplier_id'});
+    m.files.hasMany(           m.file_details,   {foreignKey: 'file_id',            targetKey: 'file_id',                            as: 'details'})
+    m.file_details.belongsTo(  m.files,          {foreignKey: 'file_id',            targetKey: 'file_id'});
     m.issues.hasOne(           m.sizes,          {foreignKey: 'size_id',            sourceKey:  'size_id',       constraints: false});
     m.issues.hasMany(          m.actions,        {foreignKey: 'issue_id',           targetKey:  'issue_id',                          as: 'actions'});
     m.items.hasOne (           m.genders,        {foreignKey: 'gender_id',          sourceKey: 'gender_id',      constraints: false});

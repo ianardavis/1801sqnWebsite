@@ -4,6 +4,10 @@ function getLines() {
     lines_loaded = false;
     let sel_status = document.querySelector('#sel_status') || {value: ''};
     get(
+        {
+            table: 'loancard_lines',
+            query: [`loancard_id=${path[3]}`, sel_status.value]
+        },
         function (lines, options) {
             set_count({id: 'line', count: lines.length || '0'});
             let table_body = document.querySelector('#tbl_lines');
@@ -45,15 +49,15 @@ function getLines() {
                 });
             };
             lines_loaded = true;
-        },
-        {
-            table: 'loancard_lines',
-            query: [`loancard_id=${path[3]}`, sel_status.value]
         }
     );
 };
 function showLine(event) {
     get(
+        {
+            table: 'loancard_line',
+            query: [`line_id=${event.relatedTarget.dataset.loancard_line_id}`]
+        },
         function (line, options) {
             console.log(line);
             set_innerText({id: 'line_id_view',        text: line.line_id});
@@ -66,10 +70,6 @@ function showLine(event) {
             set_attribute({id: 'line_user_view_link', attribute: 'href', value: `/stores/users/${line.user_id}`});
             set_innerText({id: 'line_createdAt_view', text: print_date(line.createdAt, true)});
             set_innerText({id: 'line_updatedAt_view', text: print_date(line.updatedAt, true)});
-        },
-        {
-            table: 'loancard_line',
-            query: [`line_id=${event.relatedTarget.dataset.loancard_line_id}`]
         }
     );
 };

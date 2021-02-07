@@ -1,6 +1,10 @@
 let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Received'};
 function getOrders() {
     get(
+        {
+            table: 'orders',
+            query: [`size_id=${path[3]}`]
+        },
         function (orders, options) {
             let table_body  = document.querySelector('#tbl_orders');
             set_count({id: 'order', count: orders.length});
@@ -21,10 +25,6 @@ function getOrders() {
                     };
                 });
             };
-        },
-        {
-            table: 'orders',
-            query: [`size_id=${path[3]}`]
         }
     );
 };

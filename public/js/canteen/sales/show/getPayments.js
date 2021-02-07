@@ -1,5 +1,10 @@
 function getPayments() {
     get(
+        {
+            db: 'canteen',
+            table: 'payments',
+            query: [`sale_id=${path[3]}`]
+        },
         function (payments, options) {
             try {
                 clearElement('tbl_payments');
@@ -16,12 +21,7 @@ function getPayments() {
             } catch (error) {
                 console.log(error);
             };
-        },
-        {
-            db: 'canteen',
-            table: 'payments',
-            query: [`sale_id=${path[3]}`]
         }
-    )
+    );
 };
 document.querySelector('#reload').addEventListener('click', getPayments);

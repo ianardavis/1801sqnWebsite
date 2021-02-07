@@ -1,6 +1,11 @@
 function getUsers () {
     let sel_status = document.querySelector('#sel_status');
     get(
+        {
+            db: 'users',
+            table: 'users',
+            query: [sel_status.value || null]
+        },
         function (users, options) {
             clearElement('tbl_users');
             let tbl_users = document.querySelector('#tbl_users');
@@ -13,11 +18,6 @@ function getUsers () {
                     small: true
                 }).e})
             })
-        },
-        {
-            db: 'users',
-            table: 'users',
-            query: [sel_status.value || null]
         }
     );
     document.querySelector('#reload').addEventListener('click', getUsers);

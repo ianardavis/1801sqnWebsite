@@ -1,5 +1,10 @@
 function getStatuses () {
     get(
+        {
+            db: 'users',
+            table: 'statuses',
+            query: []
+        },
         function (statuses, options) {
             clearElement('sel_status')
             let sel_status = document.querySelector('#sel_status');
@@ -21,11 +26,6 @@ function getStatuses () {
                 });
             };
             getUsers();
-        },
-        {
-            db: 'users',
-            table: 'statuses',
-            query: []
         }
-    )
+    );
 };

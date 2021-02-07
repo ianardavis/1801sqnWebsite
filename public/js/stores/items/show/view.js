@@ -1,5 +1,9 @@
 function getItem() {
     get(
+        {
+            table: 'item',
+            query: [`item_id=${path[3]}`]
+        },
         function (item, options) {
             set_innerText({id: '_description', text: item._description});
             set_innerText({id: '_size_text',   text: item._size_text});
@@ -9,10 +13,6 @@ function getItem() {
             set_breadcrumb({text: item._description, href: `/stores/items/${item.item_id}`});
             set_attribute({id: 'item_id_add_size', attribute: 'value', value: item.item_id});
             set_attribute({id: 'item_id_category', attribute: 'value', value: item.item_id});
-        },
-        {
-            table: 'item',
-            query: [`item_id=${path[3]}`]
         }
     );
 };
@@ -20,6 +20,10 @@ let categories_loaded = false;
 function getCategories() {
     categories_loaded = false;
     get(
+        {
+            table: 'item_categories',
+            query: [`item_id=${path[3]}`]
+        },
         function (categories, options) {
             let tbl_categories = document.querySelector('#tbl_categories');
             if (tbl_categories) {
@@ -31,10 +35,6 @@ function getCategories() {
                 });
                 categories_loaded = true;
             };
-        },
-        {
-            table: 'item_categories',
-            query: [`item_id=${path[3]}`]
         }
     );
 };

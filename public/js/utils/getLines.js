@@ -3,6 +3,10 @@ function getLines(table) {
     lines_loaded = false;
     let sel_status = document.querySelector('#sel_status') || {value: ''};
     get(
+        {
+            table: `${table}_lines`,
+            query: [`${table}_id=${path[3]}`, sel_status.value]
+        },
         function (lines, options) {
             set_count({id: 'line', count: lines.length || '0'});
             let table_body = document.querySelector('#tbl_lines');
@@ -44,10 +48,6 @@ function getLines(table) {
                 });
             };
             lines_loaded = true;
-        },
-        {
-            table: `${table}_lines`,
-            query: [`${table}_id=${path[3]}`, sel_status.value]
         }
     );
 };

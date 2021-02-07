@@ -1,6 +1,10 @@
 let statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
 function getDemand() {
     get(
+        {
+            table: 'demand',
+            query: [`demand_id=${path[3]}`]
+        },
         function (demand, options) {
             set_innerText({id: 'supplier',      text: demand.supplier._name});
             set_innerText({id: 'user',          text: print_user(demand.user)});
@@ -14,10 +18,6 @@ function getDemand() {
                 text: demand.demnd_id,
                 href: `/stores/demands/${demand.demand_id}`
             });
-        },
-        {
-            table: 'demand',
-            query: [`demand_id=${path[3]}`]
         }
     );
 };

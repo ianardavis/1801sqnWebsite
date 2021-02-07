@@ -1,5 +1,9 @@
 function getResult(table) {
     get(
+        {
+            table: table,
+            query: [`${table}_id=${path[3]}`]
+        },
         function (result, options) {
             set_innerText({id: `user_${table}`,      text: print_user(result[`user_${table}`])});
             set_innerText({id: 'user',               text: print_user(result.user)});
@@ -12,10 +16,6 @@ function getResult(table) {
                 text: result[`${table}_id`],
                 href: `/stores/${table}s/${result[`${table}_id`]}`
             });
-        },
-        {
-            table: table,
-            query: [`${table}_id=${path[3]}`]
         }
     );
 };

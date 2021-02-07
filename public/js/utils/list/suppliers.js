@@ -2,6 +2,11 @@ let suppliers_loaded = false;
 function listSuppliers(options = {}) {
     suppliers_loaded = false;
     get(
+        {
+            table: 'suppliers',
+            query: [],
+            ...options
+        },
         function (suppliers, options) {
             let sel_suppliers = document.querySelector(`#${options.select || 'sel_suppliers'}`);
             if (sel_suppliers) {
@@ -21,11 +26,6 @@ function listSuppliers(options = {}) {
                 });
             };
             suppliers_loaded = true;
-        },
-        {
-            table: 'suppliers',
-            query: [],
-            ...options
         }
     );
 };

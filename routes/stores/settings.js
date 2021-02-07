@@ -70,7 +70,6 @@ module.exports = (app, al, inc, pm, m) => {
             where: req.query,
             include: [
                 inc.categories({as: 'parent'}),
-                // inc.categories({as: 'children'}),
                 inc.users()
             ]
         })
@@ -113,6 +112,7 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
     app.put('/stores/categories',        pm, al('category_edit',     {send: true}), (req, res) => {
+        if (req.body.category.parent_category_id === '') req.body.category.parent_category_id = null;
         m.stores.categories.update(
             req.body.category,
             {where: {category_id: req.body.category_id}}

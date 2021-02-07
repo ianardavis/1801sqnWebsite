@@ -2,6 +2,10 @@ let issue_statuses = {'0': 'Cancelled', '1':'Requested', '2': 'Approved', '3': '
 function getIssues () {
     let sel_status = document.querySelector('#sel_status_issues') || {value: ''};
     get(
+        {
+            table: 'issues',
+            query: [`user_id_issue=${path[3]}`, sel_status.value]
+        },
         function (lines, options) {
             set_count({id: 'issue', count: lines.length || '0'})
             let table_body = document.querySelector('#tbl_issues');
@@ -25,10 +29,6 @@ function getIssues () {
                     });
                 });
             };
-        },
-        {
-            table: 'issues',
-            query: [`user_id_issue=${path[3]}`, sel_status.value]
         }
     );
 };

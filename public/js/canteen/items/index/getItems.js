@@ -1,5 +1,10 @@
 function getItems() {
     get(
+        {
+            db:    'canteen',
+            table: 'items',
+            query: [document.querySelector('#_current').value || '']
+        },
         function (items, options) {
             let tbl_items = document.querySelector('#tbl_items');
             if (tbl_items) {
@@ -18,11 +23,6 @@ function getItems() {
                     };
                 });
             };
-        },
-        {
-            db:    'canteen',
-            table: 'items',
-            query: [document.querySelector('#_current').value || '']
         }
     );
 };

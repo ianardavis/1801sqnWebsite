@@ -1,6 +1,10 @@
 function getItems() {
     let sel_genders = document.querySelector('#sel_genders') || {value: ''};
     get(
+        {
+            table: 'items',
+            query: [sel_genders.value]
+        },
         function (items, options) {
             let tbl_items = document.querySelector('#tbl_items');
             if (tbl_items) {
@@ -16,17 +20,17 @@ function getItems() {
                     }).e});
                 });
             };
-        },
-        {
-            table: 'items',
-            query: [sel_genders.value]
         }
-    )
+    );
 };
 function getGenders() {
 	let sel_genders = document.querySelector('#sel_genders');
 	if (sel_genders) {
 		get(
+			{
+				table: 'genders',
+				query: []
+			},
 			function (genders, options) {
 				sel_genders.innerHTML= '';
 				sel_genders.appendChild(new Option({text: 'All', selected: true}).e);
@@ -39,10 +43,6 @@ function getGenders() {
 					)
 				});
 				getItems();
-			},
-			{
-				table: 'genders',
-				query: []
 			}
 		);
 	} else getItems();

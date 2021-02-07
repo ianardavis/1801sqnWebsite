@@ -1,5 +1,10 @@
 function getItemEdit() {
     get(
+        {
+            table:   'item',
+            query:   [`item_id=${path[3]}`],
+            spinner: 'item_edit'
+        },
         function (item, options) {
             let _description_edit = document.querySelector('#_description_edit'),
                 _size_text_edit   = document.querySelector('#_size_text_edit'),
@@ -9,6 +14,10 @@ function getItemEdit() {
             if (sel_genders) {
                 sel_genders.innerHTML= '';
                 get(
+                    {
+                        table: 'genders',
+                        query: []
+                    },
                     function (genders, options) {
                         sel_genders.appendChild(new Option({text: '', value: '', selected: (!item.gender_id)}).e);
                         genders.forEach(gender => {
@@ -20,24 +29,19 @@ function getItemEdit() {
                                 }).e
                             )
                         });
-                    },
-                    {
-                        table: 'genders',
-                        query: []
                     }
                 );
             };
-        },
-        {
-            table:   'item',
-            query:   [`item_id=${path[3]}`],
-            spinner: 'item_edit'
         }
     );
 };
 function categoryDelete() {
     document.querySelectorAll('.categories').forEach(e => {
         get(
+            {
+                table: 'item_category',
+                query: [`item_category_id=${e.dataset.id}`]
+            },
             function(item_category, options) {
                 e.appendChild(
                     new Delete_Button({
@@ -52,10 +56,6 @@ function categoryDelete() {
                 );
                 e.removeAttribute('data-id');
                 e.removeAttribute('class');
-            },
-            {
-                table: 'item_category',
-                query: [`item_category_id=${e.dataset.id}`]
             }
         );
     });
@@ -76,6 +76,10 @@ function listCategories(select, parent_id = '') {
     if (sel_category) {
         sel_category.innerHTML = '';
         get(
+            {
+                table: 'categories',
+                query: [`parent_category_id=${parent_id}`]
+            },
             function (categories, options) {
                 if (categories.length === 0) {
                     sel_category.remove();
@@ -90,10 +94,6 @@ function listCategories(select, parent_id = '') {
                         )
                     });
                 };
-            },
-            {
-                table: 'categories',
-                query: [`parent_category_id=${parent_id}`]
             }
         );
     };

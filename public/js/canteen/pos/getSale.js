@@ -1,5 +1,10 @@
 function getSale() {
     get(
+        {
+            db: 'canteen',
+            table: 'user_sale',
+            query: []
+        },
         function (_sale_id, options) {
             if (_sale_id) {
                 let breadcrumb = document.querySelector('#breadcrumb');
@@ -8,11 +13,6 @@ function getSale() {
                 sale_loaded = true;
                 load_check();
             } else alert('Sale not found');
-        },
-        {
-            db: 'canteen',
-            table: 'user_sale',
-            query: []
         }
     );
 };

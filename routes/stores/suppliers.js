@@ -7,7 +7,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/get/suppliers',      permissions, allowed('access_suppliers', {send: true}), (req, res) => {
         m.stores.suppliers.findAll({
             where:      req.query,
-            include:    [inc.accounts(), inc.files()]
+            include:    [inc.accounts()]
         })
         .then(suppliers => res.send({success: true, result: suppliers}))
         .catch(err => res.error.send(err, res));
@@ -15,7 +15,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     app.get('/stores/get/supplier',       permissions, allowed('access_suppliers', {send: true}), (req, res) => {
         m.stores.suppliers.findOne({
             where:      req.query,
-            include:    [inc.accounts(), inc.files()]
+            include:    [inc.accounts()]
         })
         .then(supplier => {
             if (!supplier) res.send({success: false, message: 'Supplier not found'})

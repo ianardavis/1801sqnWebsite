@@ -20,16 +20,17 @@ function addFormListener(form_id, method, location, options = {reload: false, _c
 function sendData(form, method, _location, options = {reload: false, _close: true}) {
     const XHR = new XMLHttpRequest(),
           FD  = new FormData(form);
-    XHR.addEventListener("load", event => {
+    XHR.addEventListener("load", function (event) {
         try {
             let response = JSON.parse(event.target.responseText);
             if (response.success === true) {
-                alert(response.message);
+                if (!options.noConfirmAlert) alert(response.message);
                 if (options.onComplete) {
                     if (Array.isArray(options.onComplete)) {
                         options.onComplete.forEach(func => {
                             try {
-                                func(response)
+                                // func(response)
+                                func()
                             } catch (error) {
                                 console.log(error);
                             };
@@ -48,13 +49,16 @@ function sendData(form, method, _location, options = {reload: false, _close: tru
                 else if (options.redirect) window.location.replace(options.redirect);
             } else {
                 console.log(response);
-                alert(`Error: ${response.message || response.error || 'unknown'}`);
+                alert(response.message || response.error || 'Unknown error');
             };
         } catch (error) {
             console.log(error)
         };
     });
-    XHR.addEventListener("error", function () {alert('Something went wrong.')});
+    XHR.addEventListener("error", function (event) {
+        console.log(event);
+        alert('Something went wrong.');
+    });
     XHR.open(method, _location);
     XHR.send(FD);
 };

@@ -1,6 +1,10 @@
 function getRequestedActions() {
     document.querySelectorAll('.actions-1').forEach(row => {
         get(
+            {
+                table: 'issue',
+                query: [`issue_id=${row.dataset.issue_id}`]
+            },
             function (issue, options) {
                 if (issue._status === 1) {
                     let select = document.querySelector(`#sel_action_${issue.issue_id}`);
@@ -9,10 +13,6 @@ function getRequestedActions() {
                         select.appendChild(new Option({text: 'Decline', value: '0'}).e);
                     };
                 };
-            },
-            {
-                table: 'issue',
-                query: [`issue_id=${row.dataset.issue_id}`]
             }
         );
     });

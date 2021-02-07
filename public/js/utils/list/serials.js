@@ -1,5 +1,9 @@
 function listSerials(line_id, size) {
     get(
+        {
+            table: 'serials',
+            query: [`size_id=${size.size_id}`]
+        },
         function (serials, options) {
             let sel_serial = document.querySelector(`#sel_serial_${line_id}`);
             if (sel_serial) {
@@ -15,10 +19,6 @@ function listSerials(line_id, size) {
                     };
                 });
             };
-        },
-        {
-            table: 'serials',
-            query: [`size_id=${size.size_id}`]
         }
-    )
+    );
 };

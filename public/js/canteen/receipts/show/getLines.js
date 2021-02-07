@@ -1,5 +1,10 @@
 function getLines() {
     get(
+        {
+            db: 'canteen',
+            table: 'receipt_lines',
+            query: [`receipt_id=${path[3]}`]
+        },
         function (lines, options) {
             try {
                 clearElement('tbl_receipt_lines');
@@ -40,12 +45,7 @@ function getLines() {
             } catch (error) {
                 console.log(error);
             };
-        },
-        {
-            db: 'canteen',
-            table: 'receipt_lines',
-            query: [`receipt_id=${path[3]}`]
         }
-    )
+    );
 };
 document.querySelector('#reload').addEventListener('click', getLines);

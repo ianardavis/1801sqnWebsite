@@ -1,6 +1,11 @@
 var statuses = {'0': 'Cancelled', '1': 'Open', '2': 'Closed'};
 function getSession() {
     get(
+        {
+            db:    'canteen',
+            table: 'session',
+            query: [`session_id=${path[3]}`]
+        },
         function (session, options) {
             for (let [id, value] of Object.entries(session)) {
                 try {
@@ -25,11 +30,6 @@ function getSession() {
                 } catch (error) {console.log(error)};
             };
             set_breadcrumb({text: session.session_id, href: `/canteen/sessions/${session.session_id}`});
-        },
-        {
-            db:    'canteen',
-            table: 'session',
-            query: [`session_id=${path[3]}`]
         }
     );
 };

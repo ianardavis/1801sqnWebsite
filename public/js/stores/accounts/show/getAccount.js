@@ -1,5 +1,9 @@
 function getAccount() {
     get(
+        {
+            table: 'account',
+            query:[`account_id=${path[3]}`]
+        },
         function (account, options) {
             for (let [id, value] of Object.entries(account)) {
                 try {
@@ -14,11 +18,7 @@ function getAccount() {
             };
             let edit_link = document.querySelector('#edit_link');
             if (edit_link) edit_link.href = `javascript:edit("accounts",${account.account_id})`;
-        },
-        {
-            table: 'account',
-            query:[`account_id=${path[3]}`]
         }
-    )
+    );
 };
 document.querySelector('#reload').addEventListener('click', () => getAccount);

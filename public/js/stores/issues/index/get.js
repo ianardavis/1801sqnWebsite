@@ -5,6 +5,11 @@ function getIssues(status) {
         lines_loaded[status] = false;
         let sel_filter_users = document.querySelector('#sel_filter_users') || {value: ''};
         get(
+            {
+                table: 'issues',
+                query: [`_status=${status}`, sel_filter_users.value],
+                spinner: `status_${status}`
+            },
             function (issues, options) {
                 set_count({id: `status_${status}`, count: issues.length || 0});
                 let tbl = document.querySelector(`#tbl_issues_${status}`);
@@ -47,11 +52,6 @@ function getIssues(status) {
                 };
                 lines_loaded[status] = true;
                 if (status === '1' && typeof getRequestedActions === 'function') getRequestedActions();
-            },
-            {
-                table: 'issues',
-                query: [`_status=${status}`, sel_filter_users.value],
-                spinner: `status_${status}`
             }
         );
     };
@@ -59,6 +59,10 @@ function getIssues(status) {
 function getUsersFilter () {
     users_loaded = false;
     get(
+        {
+            table: 'users',
+            query: []
+        },
         function (users, options) {
             let sel_filter_users = document.querySelector('#sel_filter_users');
             if (sel_filter_users) {
@@ -72,10 +76,6 @@ function getUsersFilter () {
                 });
             };
             users_loaded = true;
-        },
-        {
-            table: 'users',
-            query: []
         }
     );
 };

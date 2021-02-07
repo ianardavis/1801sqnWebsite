@@ -3,6 +3,6 @@ window.addEventListener("load", function () {
         'file_add',
         'POST',
         '/stores/files',
-        {onComplete: getSupplier}
+        {onComplete: getFiles}
     );
 });

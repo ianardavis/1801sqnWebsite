@@ -1,4 +1,4 @@
-function get(onComplete, options) {
+function get(options, onComplete) {
     show_spinner(options.spinner || options.table || '');
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", function (event) {
@@ -6,7 +6,7 @@ function get(onComplete, options) {
             let response = JSON.parse(event.target.responseText);
             if (response.success === true) onComplete(response.result, options);
             else {
-                alert(`Error: ${response.message || response.error || 'unknown'}`);
+                alert(response.message || response.error || 'Unknown error');
                 if (options.onFail) options.onFail();
             };
             hide_spinner(options.spinner || options.table || '');

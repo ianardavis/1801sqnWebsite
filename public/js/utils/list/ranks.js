@@ -2,6 +2,12 @@ let ranks_loaded = false;
 function listRanks(options = {}) {
     ranks_loaded = false;
     get(
+        {
+            db:    'users',
+            table: 'ranks',
+            query: [],
+            ...options
+        },
         function (ranks, options) {
             let select = document.querySelector(`#${options.id || 'rank_id'}`);
             if (select) {
@@ -19,12 +25,6 @@ function listRanks(options = {}) {
                 });
                 ranks_loaded = true;
             };
-        },
-        {
-            db:    'users',
-            table: 'ranks',
-            query: [],
-            ...options
         }
     );
 };

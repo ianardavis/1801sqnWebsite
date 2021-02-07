@@ -1,6 +1,11 @@
 var statuses = {"0": "Cancelled", "1": "Open", "2": "Complete"};
 function getReceipt() {
     get(
+        {
+            db: 'canteen',
+            table: 'receipt',
+            query: [`receipt_id=${path[3]}`]
+        },
         function (receipt, options) {
             for (let [id, value] of Object.entries(receipt)) {
                 try {
@@ -21,11 +26,6 @@ function getReceipt() {
                 } catch (error) {console.log(error)};
             };
             set_breadcrumb({text: receipt.receipt_id, href: `/canteen/receipts/${receipt.receipt_id}`});
-        },
-        {
-            db: 'canteen',
-            table: 'receipt',
-            query: [`receipt_id=${path[3]}`]
         }
     )
 };

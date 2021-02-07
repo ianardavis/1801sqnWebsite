@@ -1,4 +1,5 @@
 window.addEventListener('load', function () {
+    remove_attribute({id: 'btn_gender_add', attribute: 'disabled'});
     addFormListener(
         'gender_add',
         'POST',
@@ -6,7 +7,6 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getGenders,
-                loadGendersEdit,
                 function () {$('#mdl_gender_add').modal('hide')}
             ]
         }

@@ -1,6 +1,10 @@
 function getLineActions() {
     document.querySelectorAll('.actions').forEach(e => {
         get(
+            {
+                table: 'loancard_line',
+                query: [`line_id=${e.dataset.line_id}`]
+            },
             function (line, options) {
                 if ([1, 2].includes(line._status)) {
                     let opts = [],
@@ -42,13 +46,13 @@ function getLineActions() {
                                 _cell.innerHTML = '';
                                 add_spinner(_cell, {id: line.line_id});
                                 get(
-                                    function (size, options) {
-                                        showReceiptActions(size, line.line_id, line._qty);
-                                        remove_spinner(line.line_id);
-                                    },
                                     {
                                         table: 'size',
                                         query: [`size_id=${line.size_id}`]
+                                    },
+                                    function (size, options) {
+                                        showReceiptActions(size, line.line_id, line._qty);
+                                        remove_spinner(line.line_id);
                                     }
                                 );
                             };
@@ -63,10 +67,6 @@ function getLineActions() {
                     e.appendChild(div_actions);
                 };
             },
-            {
-                table: 'loancard_line',
-                query: [`line_id=${e.dataset.line_id}`]
-            }
         );
     });
 };
@@ -75,8 +75,16 @@ function showReceiptActions(size, line_id, qty = 1) {
         let _cell = document.querySelector(`#details_${line_id}`);
         add_spinner(_cell, {id: `actions_${line_id}`});
         get(
+            {
+                table: 'stocks',
+                query: [`size_id=${size.size_id}`]
+            },
             function (stocks, options) {
                 get(
+                    {
+                        table: 'serials',
+                        query: [`size_id=${size.size_id}`]
+                    },
                     function (serials, options) {
                         let locations = [{value: '', text: '... Select Location'}],
                             _serials = [{value: '', text:  '... Select Serial #'}];
@@ -123,16 +131,8 @@ function showReceiptActions(size, line_id, qty = 1) {
                             _cell.appendChild(document.createElement('hr'));
                         };
                         remove_spinner(`actions_${line_id}`);
-                    },
-                    {
-                        table: 'serials',
-                        query: [`size_id=${size.size_id}`]
                     }
                 );
-            },
-            {
-                table: 'stocks',
-                query: [`size_id=${size.size_id}`]
             }
         );
     } else getStock(size.size_id, line_id, 'details', true);
@@ -141,6 +141,10 @@ function getStock(size_id, line_id, cell, entry = false) {
     let _cell = document.querySelector(`#${cell}_${line_id}`);
     add_spinner(_cell, {id: `stocks_${line_id}`});
     get(
+        {
+            table: 'stocks',
+            query: [`size_id=${size_id}`]
+        },
         function (stocks, options) {
             let locations = [{value: '', text: '... Select Location'}];
             stocks.forEach(e => locations.push({value: e.stock_id, text: `${e.location._location}, Qty: ${e._qty}`}));
@@ -166,10 +170,6 @@ function getStock(size_id, line_id, cell, entry = false) {
                 );
             };
             remove_spinner(`stocks_${line_id}`);
-        },
-        {
-            table: 'stocks',
-            query: [`size_id=${size_id}`]
         }
     );
 };

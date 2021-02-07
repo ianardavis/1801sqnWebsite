@@ -1,5 +1,10 @@
 function getMovements (query_column) {
     get(
+        {
+            db: 'canteen',
+            table: 'movements',
+            query: [`${query_column}=${path[3]}`]
+        },
         function (movements, options) {
             let table = '';
             if      (query_column === 'user_id_to')   table = 'paid_out'
@@ -20,11 +25,6 @@ function getMovements (query_column) {
                     }).e})
                 });
             };
-        },
-        {
-            db: 'canteen',
-            table: 'movements',
-            query: [`${query_column}=${path[3]}`]
         }
     );
     document.querySelector('#reload').addEventListener('click', getMovements);

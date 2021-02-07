@@ -11,24 +11,28 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.supplier_edit) { %>
-                    <%- include(`${partials}/menu/button`, {id: 'supplier_edit', text: 'Edit', modal: 'supplier_edit'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'supplier_edit', text: 'Edit', modal: 'supplier_edit'}) %>
+                <% if (permissions.setting_edit) { %>
                     <form id='form_set_default'>
-                        <input class='supplier_id' type="hidden" name='setting[_name]' value='default_supplier'>
+                        <input type="hidden" name='setting[_name]' value='default_supplier'>
                         <input class='supplier_id' type="hidden" name='setting[_value]'>
-                        <button id='default_button' class="dropdown-item">Make Default</button>
+                        <%- include(`${partials}/menu/button`, {id: 'default', text: 'Make Default'}) %>
                     </form>
+                    <script src='/js/stores/suppliers/show/default/edit.js'></script>
+                    <script async>setDefaultBtn()</script>
                 <% } %>
+				<%- include(`${partials}/menu/button`, {id: 'file_add', text: 'Add File', modal: 'file_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
-				<% if (permissions.loancard_delete) { %>
-					<form id='form_delete'>
-						<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete'}) %>
-					</form>
-					<!-- <script src="/js/stores/loancards/show/listeners/delete.js"></script> -->
+				<% if (permissions.supplier_delete) { %><form id='form_supplier_delete'><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'supplier_delete', text: 'Delete'}) %>
+				<% if (permissions.supplier_delete) { %>
+                    </form>
+					<script src="/js/stores/suppliers/show/delete.js"></script>
 				<% } %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details', spinner: 'supplier'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'files',    title: 'Files',   spinner: 'files',   count_id: 'file',   permission: 'access_files'}) %>
         <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',   spinner: 'sizes',   count_id: 'size',   permission: 'access_sizes'}) %>
         <%- include(`${partials}/tab_head`, {id: 'demands',  title: 'Demands', spinner: 'demands', count_id: 'demand', permission: 'access_demands'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',   spinner: 'notes',   count_id: 'note',   permission: 'access_notes'}) %>
@@ -44,27 +48,28 @@
             <%- include(`${partials}/inputs/display`, {id: '_address5',  title: ''}) %>
             <%- include(`${partials}/inputs/display`, {id: '_telephone', title: 'Telephone'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_email',     title: 'Email'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_account',   title: 'Account',     append: {a: {id: 'account_link', type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_account',   title: 'Account', button: true, modal: 'account_view'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_stores',    title: 'RAF Stores'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_default',   title: 'Default Supplier'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_file',      title: 'Demand File', append: {a: {id: 'file_link',    type: 'primary', text: '<i class="fas fa-search"></i>'}}}) %>
-            <% if (permissions.file_add) { %>
-                <form id="form_file_add" encType="multipart/form-data">
-                    <input class='supplier_id' type="hidden" name='supplier_id'>
-                    <div class="input-group">
-                        <div class="custom-file">
-                            <label class="custom-file-label" for="file_upload">Choose file</label>
-                            <input type="file" class="custom-file-input" name="demandfile" id="file_upload">
-                        </div>
-                        <div class="input-group-append">
-                            <button class="btn btn-success">
-                                <i class='fas fa-file-upload'></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            <% }; %>
+            <% if (permissions.access_settings) { %>
+                <%- include(`${partials}/inputs/display`, {id: '_default',   title: 'Default Supplier'}) %>
+                <script src='/js/stores/suppliers/show/default/view.js'></script>
+                <script async>getDefault()</script>
+            <% } %>
         </div>
+        <% if (permissions.access_files) { %>
+            <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-50" onclick="sortTable(0, 'tbl_files')">Path</th>
+                        <th class="w-50" onclick="sortTable(1, 'tbl_files')">Description</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id="tbl_files"></tbody>
+                </table>
+            </div>
+            <script src="/js/stores/suppliers/show/files/view.js"></script>
+            <script async>getFiles()</script>
+        <% } %>
         <% if (permissions.access_sizes) { %>
             <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
                 <table class="table table-sm table-hover">
@@ -76,6 +81,8 @@
                     <tbody id="tbl_sizes"></tbody>
                 </table>
             </div>
+            <script src="/js/stores/suppliers/show/sizes/view.js"></script>
+            <script async>getSizes()</script>
         <% } %>
         <% if (permissions.access_demands) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
@@ -90,6 +97,8 @@
                     <tbody id="tbl_demands"></tbody>
                 </table>
             </div>
+            <script src="/js/stores/suppliers/show/demands/view.js"></script>
+            <script async>getDemands()</script>
         <% } %>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
@@ -113,7 +122,7 @@
                             <%- include(`${partials}/inputs/text`,   {id: '_email_edit',     title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
                             <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',    title: 'Account',       name: 'supplier[account_id]', spinner: true, spinner_id: 'accounts_edit'}) %>
                             <%- include(`${partials}/inputs/select`, {id: '_stores_edit',    title: 'RAF Stores?',   name: 'supplier[_stores]',    options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
-                            </div>
+                        </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save Supplier'>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -124,25 +133,162 @@
             <script src="/js/utils/list/accounts.js"></script>
             <script src="/js/stores/suppliers/show/edit.js"></script>
         <% } %>
+        <% if (permissions.access_accounts) { %>
+            <div id='mdl_account_view' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Account: <span id="account_id_view"></span></h5>
+                            <%- include(`${partials}/spinner`, {id: 'account_view'}) %>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`, {id:'_name_account_view',     title: 'Name'}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'_number_account_view',   title: 'Number'}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'user_account_view',      title: 'Owner', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'createdAt_account_view', title: 'Created'}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'updatedAt_account_view', title: 'Updated'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="/js/stores/suppliers/show/accounts/view.js"></script>
+        <% } %>
+        <% if (permissions.access_files) { %>
+            <div id='mdl_file_view' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">File: <span id="file_id_view"></span></h5>
+                            <%- include(`${partials}/spinner`, {id: 'file_view'}) %>
+                            <span class="float-right">
+                                <form id="form_file_download" method='GET' class='float-right ml-1'>
+                                    <button class='btn btn-primary'><i class="fas fa-file-download"></i></button>
+                                </form>
+                                <span id="span_file_edit_btn"   class='float-right ml-1'></span>
+                                <span id="span_file_delete_btn" class='float-right ml-1'></span>
+                            </span>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`, {id: '_filename',    title: 'Filename'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: '_description', title: 'Description'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'user_file',    title: 'Added By'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'createdAt',    title: 'Added'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'updatedAt',    title: 'Updated'}) %>
+                            <% if (permissions.access_file_details) { %>
+                                <h4>Details</h4>
+                                <% if (permissions.file_detail_add) { %>
+                                    <form id="form_file_detail_add">
+                                        <input type="hidden" id='file_id_detail_add' name='detail[file_id]'>
+                                        <%- include(`${partials}/inputs/text`, {id: '_name_file_detail_add',  title: 'Name',  name: 'detail[_name]',  maxLength: 45,  required: true}) %>
+                                        <%- include(`${partials}/inputs/text`, {id: '_value_file_detail_add', title: 'Value', name: 'detail[_value]', maxLength: 255, required: true}) %>
+                                        <button class="btn btn-success w-100 mb-1">Save</button>
+                                    </form>
+                                    <script src="/js/stores/suppliers/show/files/details/add.js"></script>
+                                <% } %>
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-dark">
+                                        <th class="w-50" onclick="sortTable(0, 'tbl_file_details')">Name</th>
+                                        <th class="w-50" onclick="sortTable(1, 'tbl_file_details')">Value</th>
+                                        <th><i class="fas fa-pencil-alt"></i></th>
+                                        <th><i class="fas fa-trash-alt"></i></th>
+                                    </thead>
+                                    <tbody id="tbl_file_details"></tbody>
+                                </table>
+                                <% if (permissions.file_detail_delete) { %>
+                                    <script src="/js/stores/suppliers/show/files/details/delete.js"></script>
+                                <% } %>
+                                <script src="/js/stores/suppliers/show/files/details/view.js"></script>
+                            <% } %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% if (permissions.file_add) { %>
+                <div id='mdl_file_add' class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <form class="modal-content" id="form_file_add" encType="multipart/form-data">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add File</h5>
+                                <%- include(`${partials}/spinner`, {id: 'file_add'}) %>
+                            </div>
+                            <div class="modal-body">
+                                <input class='supplier_id' type="hidden" name='file[supplier_id]'>
+                                <%- include(`${partials}/inputs/text`, {id: '_description_add', title: 'Description', name: 'file[_description]', maxLength: 45, required: true}) %>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <label class="custom-file-label" for="file_upload">Choose file</label>
+                                        <input type="file" class="custom-file-input" name="file" id="file_upload" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input  type="submit" class="btn btn-success w-100" value='Save File'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script src="/js/stores/suppliers/show/files/add.js"></script>
+            <% } %>
+            <% if (permissions.file_edit) { %>
+                <div id='mdl_file_edit' class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <form class="modal-content" id='form_file_edit'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit File</h5>
+                                <%- include(`${partials}/spinner`, {id: 'file_edit'}) %>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" id='file_id_edit' name='file_id'>
+                                <%- include(`${partials}/inputs/text`, {id: '_description_edit', title: 'Description', name: 'file[_description]', maxLength: 45, required: true}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <input  type="submit" class="btn btn-success w-100" value='Save File'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script src="/js/stores/suppliers/show/files/edit.js"></script>
+            <% } %>
+            <% if (permissions.file_detail_edit) { %>
+                <div id='mdl_file_detail_edit' class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <form class="modal-content" id='form_file_detail_edit'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Detail</h5>
+                                <%- include(`${partials}/spinner`, {id: 'file_detail_edit'}) %>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" id='file_detail_id_edit' name='file_detail_id'>
+                                <%- include(`${partials}/inputs/text`, {id: '_name_detail_edit',  title: 'Name',  name: 'detail[_name]',  maxLength: 45,  required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: '_value_detail_edit', title: 'Value', name: 'detail[_value]', maxLength: 255, required: true}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit"  class="btn btn-success w-100" value='Save File'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <script src="/js/stores/suppliers/show/files/details/edit.js"></script>
+            <% } %>
+            <% if (permissions.file_delete) { %>
+                <script src="/js/stores/suppliers/show/files/delete.js"></script>
+            <% } %>
+        <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<!-- Get/spinner/send from notes include -->
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/addFormListener.js'></script>
-<script src='/js/stores/suppliers/show/getSupplier.js'></script>
-<script src='/js/stores/suppliers/show/getDefault.js'></script>
+<script src='/js/stores/suppliers/show/view.js'></script>
 <script async>getSupplier()</script>
-<% if (permissions.access_sizes) { %>
-    <script src="/js/stores/suppliers/show/getSizes.js"></script>
-    <script async>getSizes()</script>
-<% } %>
-<% if (permissions.access_demands) { %>
-    <script src="/js/stores/suppliers/show/getDemands.js"></script>
-    <script async>getDemands()</script>
-<% } %>
-<% if (permissions.file_add) { %>
-    <script src="/js/stores/suppliers/show/fileAdd.js"></script>
-<% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

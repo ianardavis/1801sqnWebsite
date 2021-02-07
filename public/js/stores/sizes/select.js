@@ -19,6 +19,10 @@ function reset_add_size() {
 };
 function getItems() {
     get(
+        {
+            table: 'items',
+            query: []
+        },
         function (items, options) {
             let sel_items = document.querySelector('#sel_items');
             if (sel_items) {
@@ -32,10 +36,6 @@ function getItems() {
                     );
                 });
             } else console.log('sel_items not found');
-        },
-        {
-            table: 'items',
-            query: []
         }
     );
 };
@@ -44,6 +44,10 @@ function getSizes(event) {
     if      (path[2] === 'orders') query.push('_orderable=1')
     else if (path[2] === 'issues' ||path[2] === 'requests') query.push('_issueable=1')
     get(
+        {
+            table: 'sizes',
+            query: query
+        },
         function (sizes, options) {
             let sel_sizes = document.querySelector('#sel_sizes'),
                 div_sizes = document.querySelector('#div_sizes'),
@@ -61,10 +65,6 @@ function getSizes(event) {
                     );
                 });
             } else console.log('sel_sizes note found');
-        },
-        {
-            table: 'sizes',
-            query: query
         }
     );
 };
@@ -75,6 +75,10 @@ function getSize() {
         if (path[2] === 'receipts' || path[2] === 'issues') {
             let sel_sizes = document.querySelector('#sel_sizes') || {value: '-1'};
             get(
+                {
+                    table: 'size',
+                    query: [`size_id=${sel_sizes.value}`]
+                },
                 function (size, options) {
                     let div_serials   = document.querySelector('#div_serials'),
                         div_locations = document.querySelector('#div_locations');
@@ -86,6 +90,10 @@ function getSize() {
                             div_locations.classList.add('hidden');
                             if (path[2] === 'receipts') {
                                 get(
+                                    {
+                                        table: 'locations',
+                                        query: []
+                                    },
                                     function (locations, options) {
                                         let opts = [{text: 'Select location', selected: true}];
                                         locations.forEach(e => {
@@ -128,14 +136,14 @@ function getSize() {
                                             );
                                             div_serials.appendChild(document.createElement('hr'))
                                         };
-                                    },
-                                    {
-                                        table: 'locations',
-                                        query: []
                                     }
                                 );
                             } else if (path[2] === 'issues') {
                                 get(
+                                    {
+                                        table: 'serials',
+                                        query: [`size_id=${sel_sizes.value}`]
+                                    },
                                     function (serials, options) {
                                         let opts = [];
                                         serials.forEach(serial => {
@@ -157,10 +165,6 @@ function getSize() {
                                             );
                                             div_serials.appendChild(document.createElement('hr'))
                                         };
-                                    },
-                                    {
-                                        table: 'serials',
-                                        query: [`size_id=${sel_sizes.value}`]
                                     }
                                 );
                             };
@@ -168,6 +172,10 @@ function getSize() {
                             div_serials.classList.add('hidden');
                             div_locations.classList.remove('hidden');
                             get(
+                                {
+                                    table: 'locations',
+                                    query: []
+                                },
                                 function (locations, options) {
                                     let opts = [{text: 'Select location', selected: true}];
                                     locations.forEach(e => {
@@ -197,18 +205,10 @@ function getSize() {
                                         }).e
                                     );
                                     div_serials.appendChild(document.createElement('hr'));
-                                },
-                                {
-                                    table: 'locations',
-                                    query: []
                                 }
                             );
                         };
                     };
-                },
-                {
-                    table: 'size',
-                    query: [`size_id=${sel_sizes.value}`]
                 }
             );
         };
@@ -224,6 +224,10 @@ function show_details() {
 };
 function getLocations() {
     get(
+        {
+            table: 'stocks',
+            query: [`size_id=${sel_sizes.value}`]
+        },
         function (stocks, options) {
             let sel_locations = document.querySelector('#sel_locations');
             if (sel_locations) {
@@ -236,10 +240,6 @@ function getLocations() {
                     );
                 });
             };
-        },
-        {
-            table: 'stocks',
-            query: [`size_id=${sel_sizes.value}`]
         }
     );
 };

@@ -1,5 +1,9 @@
 function getSizes() {
     get(
+        {
+            table: 'sizes',
+            query: [`item_id=${path[3]}`]
+        },
         function (sizes, options) {
             set_count({id: 'size', count: sizes.length || '0'});
             let table_body = document.querySelector('#tbl_sizes');
@@ -14,10 +18,6 @@ function getSizes() {
                     }).e});
                 });
             };
-        },
-        {
-            table: 'sizes',
-            query: [`item_id=${path[3]}`]
         }
     );
 };

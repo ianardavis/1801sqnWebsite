@@ -1,6 +1,11 @@
 function showOrder() {
     let statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Received'};
     get(
+        {
+            table: 'order',
+            query: [`order_id=${path[3]}`],
+            onFail: function () {window.location.href = '/stores/orders'}
+        },
         function (order, options) {
             set_innerText({id: 'size_desc', text: order.size._size});
             set_attribute({id: 'size_desc_link',  attribute: 'href', value: `/stores/sizes/${order.size_id}`});
@@ -16,11 +21,6 @@ function showOrder() {
                 text: order.order_id,
                 href: `/stores/orders/${order.order_id}`
             });
-        },
-        {
-            table: 'order',
-            query: [`order_id=${path[3]}`],
-            onFail: function () {window.location.href = '/stores/orders'}
         }
     );
 };

@@ -1,5 +1,10 @@
 function getItem() {
     get(
+        {
+            db: 'canteen',
+            table: 'item',
+            query: [`item_id=${path[3]}`]
+        },
         function (item, options) {
             for (let [id, value] of Object.entries(item)) {
                 try {
@@ -14,11 +19,6 @@ function getItem() {
                 } catch (error) {console.log(error)};
             };
             set_breadcrumb({text: item._name, href: `/canteen/items/${item.item_id}`});
-        },
-        {
-            db: 'canteen',
-            table: 'item',
-            query: [`item_id=${path[3]}`]
         }
     )
 };

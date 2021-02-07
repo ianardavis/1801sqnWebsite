@@ -2,6 +2,11 @@ let statuses = {"0": "Cancelled", "1": "Open", "2": "Complete"};
 function getReceipts() {
     let sel_status = document.querySelector('#sel_status');
     get(
+        {
+            db: 'canteen',
+            table: 'receipts',
+            query: [sel_status.value]
+        },
         function (receipts, options) {
             clearElement('tbl_receipts');
             let table_body = document.querySelector('#tbl_receipts');
@@ -15,11 +20,6 @@ function getReceipts() {
                     small: true
                 }).e});
             });
-        },
-        {
-            db: 'canteen',
-            table: 'receipts',
-            query: [sel_status.value]
         }
     );
 };

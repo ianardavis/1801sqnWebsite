@@ -1,5 +1,10 @@
 function getWriteoffs() {
     get(
+        {
+            db: 'canteen',
+            table: 'writeoff_lines',
+            query: [`item_id=${path[3]}`]
+        },
         function (lines, options) {
             try {
                 clearElement('tbl_writeoffs');
@@ -18,11 +23,6 @@ function getWriteoffs() {
             } catch (error) {
                 console.log(error);
             };
-        },
-        {
-            db: 'canteen',
-            table: 'writeoff_lines',
-            query: [`item_id=${path[3]}`]
         }
     )
 };

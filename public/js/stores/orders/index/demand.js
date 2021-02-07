@@ -1,15 +1,15 @@
 function getDemandActions() {
     document.querySelectorAll('.actions-1').forEach(row => {
         get(
+            {
+                table: 'order',
+                query: [`order_id=${row.dataset.order_id}`]
+            },
             function (order, options) {
                 if (order._status === 1 && order.size._demand_page && order.size._demand_cell) {
                     let select = document.querySelector(`#sel_action_${order.order_id}`);
                     if (select) select.appendChild(new Option({text: 'Demand', value: '2'}).e);
                 };
-            },
-            {
-                table: 'order',
-                query: [`order_id=${row.dataset.order_id}`]
             }
         );
     });

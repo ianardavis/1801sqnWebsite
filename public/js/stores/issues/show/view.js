@@ -1,6 +1,11 @@
 function showIssue() {
     let statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
     get(
+        {
+            table: 'issue',
+            query: [`issue_id=${path[3]}`],
+            onFail: function () {window.location.href = '/stores/issues'}
+        },
         function (issue, options) {
             set_innerText({id: `user_issue`,      text: print_user(issue.user_issue)});
             set_attribute({id: `user_issue_link`, attribute: 'href', value: `/stores/users/${issue.user_id_issue}`});
@@ -18,11 +23,6 @@ function showIssue() {
                 text: issue.issue_id,
                 href: `/stores/issues/${issue.issue_id}`
             });
-        },
-        {
-            table: 'issue',
-            query: [`issue_id=${path[3]}`],
-            onFail: function () {window.location.href = '/stores/issues'}
         }
     );
 };

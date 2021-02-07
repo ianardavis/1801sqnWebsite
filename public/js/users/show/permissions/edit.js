@@ -1,5 +1,11 @@
 function getPermissionsEdit () {
     get(
+        {
+            db: path[1],
+            table: 'permissions',
+            query: [`user_id=${path[3]}`],
+            spinner: 'permission_edit'
+        },
         function (permissions, options) {
             let ul_tree = document.querySelector('#ul_tree');
             if (ul_tree) {
@@ -23,12 +29,6 @@ function getPermissionsEdit () {
                 let checkbox = document.querySelector(`#permission_${e._permission}`);
                 if (checkbox) checkbox.setAttribute('checked', true);
             });
-        },
-        {
-            db: path[1],
-            table: 'permissions',
-            query: [`user_id=${path[3]}`],
-            spinner: 'permission_edit'
         }
     );
 };

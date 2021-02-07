@@ -1,5 +1,9 @@
 function getSizeEdit() {
     get(
+        {
+            table: 'size',
+            query: [`size_id=${path[3]}`]
+        },
         function (size, options) {
             listSuppliers({
                 blank:    true,
@@ -12,16 +16,16 @@ function getSizeEdit() {
             set_value({id: '_serials_edit',   value: size._serials});
             set_value({id: '_nsns_edit',      value: size._nsns});
             set_value({id: '_size_edit',      value: size._size});
-        },
-        {
-            table: 'size',
-            query: [`size_id=${path[3]}`]
         }
     );
 };
 function detailDelete() {
     document.querySelectorAll('.details').forEach(e => {
         get(
+            {
+                table: 'detail',
+                query: [`detail_id=${e.dataset.id}`]
+            },
             function(detail, options) {
                 e.appendChild(
                     new Delete_Button({
@@ -36,10 +40,6 @@ function detailDelete() {
                 );
                 e.removeAttribute('data-id');
                 e.removeAttribute('class');
-            },
-            {
-                table: 'detail',
-                query: [`detail_id=${e.dataset.id}`]
             }
         );
     });
@@ -57,6 +57,10 @@ function loadDetailDelete() {
 };
 function getDetailOptions() {
     get(
+        {
+            table: 'settings',
+            query: ['_name=detail_option']
+        },
         function (settings, options) {
             let list = document.querySelector('#list_detail_options');
             if (list) {
@@ -67,10 +71,6 @@ function getDetailOptions() {
                     );
                 });
             };
-        },
-        {
-            table: 'settings',
-            query: ['_name=detail_option']
         }
     );
 };

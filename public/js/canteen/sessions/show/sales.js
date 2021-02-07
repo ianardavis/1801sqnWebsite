@@ -1,5 +1,10 @@
 function getSales() {
     get(
+        {
+            db:    'canteen',
+            table: 'sales',
+            query: [`session_id=${path[3]}`]
+        },
         function (sales, options) {
             clearElement('tbl_items');
             clearElement('tbl_sales');
@@ -52,11 +57,6 @@ function getSales() {
                     }).e
                 });
             });
-        },
-        {
-            db:    'canteen',
-            table: 'sales',
-            query: [`session_id=${path[3]}`]
         }
     );
 };

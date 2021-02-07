@@ -19,6 +19,10 @@ function reset_order_add() {
 };
 function getItems() {
     get(
+        {
+            table: 'items',
+            query: []
+        },
         function (items, options) {
             let sel_items = document.querySelector('#sel_items');
             if (sel_items) {
@@ -32,15 +36,15 @@ function getItems() {
                     );
                 });
             } else console.log('sel_items not found');
-        },
-        {
-            table: 'items',
-            query: []
         }
     );
 };
 function getSizes(event) {
     get(
+        {
+            table: 'sizes',
+            query: [`item_id=${event.target.value}`, '_orderable=1']
+        },
         function (sizes, options) {
             let sel_sizes = document.querySelector('#sel_sizes'),
                 div_sizes = document.querySelector('#div_sizes'),
@@ -58,10 +62,6 @@ function getSizes(event) {
                     );
                 });
             } else console.log('sel_sizes note found');
-        },
-        {
-            table: 'sizes',
-            query: [`item_id=${event.target.value}`, '_orderable=1']
         }
     );
 };

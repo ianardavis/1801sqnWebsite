@@ -1,5 +1,9 @@
 function showLineActions(table, id) {
     get(
+        {
+            table: `${table}_line_actions`,
+            query: [`${table}_line_id=${id}`]
+        },
         function (actions, options) {
             set_count({id: 'line_actions', count: actions.length || '0'});
             let table_body = document.querySelector('#tbl_line_dates');
@@ -28,10 +32,6 @@ function showLineActions(table, id) {
 
                 });
             };
-        },
-        {
-            table: `${table}_line_actions`,
-            query: [`${table}_line_id=${id}`]
         }
     );
 };

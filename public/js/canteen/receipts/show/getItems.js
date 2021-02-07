@@ -1,5 +1,10 @@
 function getItems() {
     get(
+        {
+            db: 'canteen',
+            table: 'items',
+            query: []
+        },
         function (items, options) {
             clearElement('sel_items');
             let sel_items = document.querySelector('#sel_items');
@@ -20,11 +25,6 @@ function getItems() {
                     )
                 });
             }
-        },
-        {
-            db: 'canteen',
-            table: 'items',
-            query: []
         }
     )
 }

@@ -1,6 +1,10 @@
 function getIssueActions() {
     document.querySelectorAll('.actions-2, .actions-3').forEach(row => {
         get(
+            {
+                table: 'issue',
+                query: [`issue_id=${row.dataset.issue_id}`]
+            },
             function (issue, options) {
                 if (issue._status === 2 || issue._status === 3) {
                     let select = document.querySelector(`#sel_action_${issue.issue_id}`);
@@ -41,10 +45,6 @@ function getIssueActions() {
                         });
                     };
                 };
-            },
-            {
-                table: 'issue',
-                query: [`issue_id=${row.dataset.issue_id}`]
             }
         );
     });

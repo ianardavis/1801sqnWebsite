@@ -1,5 +1,9 @@
 function getSuppliers() {
     get(
+        {
+            table: 'suppliers',
+            query: []
+        },
         function (suppliers, options) {
             let sel_suppliers = document.querySelector('#supplier_id');
             if (sel_suppliers) {
@@ -8,11 +12,7 @@ function getSuppliers() {
                 suppliers.forEach(e => {
                     sel_suppliers.appendChild(new Option({value: e.supplier_id, text: e._name}).e);
                 })
-            }
-        },
-        {
-            table: 'suppliers',
-            query: []
+            };
         }
     );
 };

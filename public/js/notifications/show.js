@@ -23,6 +23,11 @@ function Notification (options = {}) {
 };
 function getNotifications() {
     get(
+        {
+            db: path[1],
+            table: 'notifications',
+            query: []
+        },
         function (notifications, options) {
             let ul_notifications = document.querySelector('#ul_notifications');
             if (ul_notifications) {
@@ -38,11 +43,6 @@ function getNotifications() {
                     );
                 });
             };
-        },
-        {
-            db: path[1],
-            table: 'notifications',
-            query: []
         }
     );
 };

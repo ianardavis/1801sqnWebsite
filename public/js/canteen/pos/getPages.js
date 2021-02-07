@@ -1,5 +1,10 @@
 function getPages() {
     get(
+        {
+            db: 'canteen',
+            table: 'pos_pages',
+            query: []
+        },
         function (pages, options) {
             clearElement('tab_headers');
             clearElement('tab_pages');
@@ -36,22 +41,17 @@ function getPages() {
                 tab_pages.appendChild(pane);
             });
             get(
-                function (settings, options) {
-                    showTab(`page_${settings._value}`)
-                },
                 {
                     db: 'canteen',
                     table: 'settings',
                     query: ['_name=default_pos_page']
+                },
+                function (settings, options) {
+                    showTab(`page_${settings._value}`)
                 }
             )
             items_loaded = true;
             load_check();
         },
-        {
-            db: 'canteen',
-            table: 'pos_pages',
-            query: []
-        }
     );
 };

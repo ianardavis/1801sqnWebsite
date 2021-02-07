@@ -1,6 +1,10 @@
 let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function getIssues() {
     get(
+        {
+            table: 'issues',
+            query: [`size_id=${path[3]}`]
+        },
         function (issues, options) {
             let table_body = document.querySelector('#tbl_issues');
             set_count({id: 'issue', count: issues.length})
@@ -22,10 +26,6 @@ function getIssues() {
                     };
                 });
             };
-        },
-        {
-            table: 'issues',
-            query: [`size_id=${path[3]}`]
         }
     );
 };

@@ -2,6 +2,10 @@ let loancard_statuses = {'0': 'Cancelled', '1':'Draft', '2': 'Open', '3': 'Close
 function getLoancards () {
     let sel_status = document.querySelector('#sel_status_loancards') || {value: ''};
     get(
+        {
+            table: 'loancards',
+            query: [`user_id_loancard=${path[3]}`, sel_status.value]
+        },
         function (loancards, options) {
             set_count({id: 'loancards', count: loancards.length || '0'})
             let table_body = document.querySelector('#tbl_loancards');
@@ -20,10 +24,6 @@ function getLoancards () {
                     });
                 });
             };
-        },
-        {
-            table: 'loancards',
-            query: [`user_id_loancard=${path[3]}`, sel_status.value]
         }
     );
 };

@@ -1,34 +1,27 @@
-function GendersEdit() {
-    document.querySelectorAll('.genders').forEach(e => {
-        get(
-            function(gender, options) {
-                e.appendChild(
-                    new Link({
-                        modal: 'gender_edit',
-                        small: true,
-                        type: 'edit',
-                        data:  {field: 'gender_id', value: gender.gender_id}
-                    }).e
-                );
-                e.removeAttribute('data-id');
-                e.removeAttribute('class');
-            },
-            {
-                table: 'gender',
-                query: [`gender_id=${e.dataset.id}`]
-            }
+function gendersEditBtn(gender_id) {
+    let span_edit = document.querySelector('#gender_edit');
+    if (span_edit) {
+        span_edit.innerHTML = '';
+        span_edit.appendChild(
+            new Link({
+                modal: 'gender_edit',
+                type: 'edit',
+                data:  {field: 'id', value: gender_id}
+            }).e
         );
-    });
+    };
 };
-function loadGendersEdit() {
-    let get_interval = window.setInterval(
-        function () {
-            if (genders_loaded === true) {
-                GendersEdit();
-                clearInterval(get_interval);
-            };
+function viewGenderEdit(gender_id) {
+    $('#mdl_gender_view').modal('hide');
+    get(
+        {
+            table: 'gender',
+            query: [`gender_id=${gender_id}`]
         },
-        200
+        function(gender, options) {
+            set_attribute({id: 'gender_id_edit', attribute: 'value', value: gender.gender_id});
+            set_value({id: 'gender_gender_edit', value: gender._gender});
+        }
     );
 };
 window.addEventListener('load', function () {
@@ -39,22 +32,10 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getGenders,
-                loadGendersEdit,
                 function () {$('#mdl_gender_edit').modal('hide')}
             ]
         }
     );
-    $('#mdl_gender_edit').on('show.bs.modal', function (event) {
-        get(
-            function(gender, options) {
-                set_attribute({id: 'gender_id_edit', attribute: 'value', value: gender.gender_id});
-                set_value({id: '_gender_edit', value: gender._gender});
-            },
-            {
-                table: 'gender',
-                query: [`gender_id=${event.relatedTarget.dataset.gender_id}`]
-            }
-        );
-    });
-    document.querySelector('#reload').addEventListener('click', loadGendersEdit);
+    $('#mdl_gender_edit').on('show.bs.modal', function (event) {viewGenderEdit(event.relatedTarget.dataset.id)});
+    $('#mdl_gender_view').on('show.bs.modal', function (event) {gendersEditBtn(event.relatedTarget.dataset.id)});
 });

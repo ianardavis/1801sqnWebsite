@@ -1,5 +1,10 @@
 function getItems() {
     get(
+        {
+            db: 'canteen',
+            table: 'items',
+            query: []
+        },
         function (items, options) {
             clearElement('sel_items');
             let sel_items = document.querySelector('#sel_items');
@@ -17,14 +22,9 @@ function getItems() {
                             value: item.item_id,
                             text: item._name
                         }).e
-                    )
+                    );
                 });
-            }
-        },
-        {
-            db: 'canteen',
-            table: 'items',
-            query: []
+            };
         }
-    )
-}
+    );
+};

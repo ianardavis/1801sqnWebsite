@@ -5,60 +5,82 @@
 <%- include(`${partials}/head/navbar/close`) %>
 <section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%- include(`${partials}/menu/button`, {id: 'setting_add',  text: 'Add Setting',  modal: 'setting_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'gender_add',   text: 'Add Gender',   modal: 'gender_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'account_add',  text: 'Add Account',  modal: 'account_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category', modal: 'category_add'}) %>
+            </div>
+        </li>
         <%- include(`${partials}/tab_head`, {id: 'settings',   title: 'Settings',   spinner: 'settings'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'genders',    title: 'Genders',    spinner: 'genders'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'genders',    title: 'Genders',    spinner: 'genders',    permission: 'access_genders'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'files',      title: 'Files',      spinner: 'files',      permission: 'access_files'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'accounts',   title: 'Accounts',   spinner: 'accounts',   permission: 'access_accounts'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', permission: 'access_categories'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-            <% if (permissions.setting_add) { %>
-                <button class='btn btn-success w-100 mb-1' data-toggle="modal" data-target="#mdl_setting_add">Add Setting</button>
-            <% } %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                     <th class="w-50" onclick="sortTable(0, 'tbl_settings')">Setting</th>
                     <th class="w-50" onclick="sortTable(1, 'tbl_settings')">Value</th>
-                    <th><i class='fas fa-pencil-alt'></i></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_settings'></tbody>
             </table>
-            <script src="/js/stores/settings/settings/view.js"></script>
-            <script async>getSettings()</script>
         </div>
         <% if (permissions.access_genders) { %>
             <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
-                <% if (permissions.gender_add) { %>
-                    <button class='btn btn-success w-100 mb-1' data-toggle="modal" data-target="#mdl_gender_add">Add Gender</button>
-                <% } %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-100" onclick="sortTable(0, 'tbl_statuses')">Gender</th>
-                        <th><i class='fas fa-pencil-alt'></i></th>
+                        <th class="w-100" onclick="sortTable(0, 'tbl_genders')">Gender</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_genders'></tbody>
                 </table>
-                <script src="/js/stores/settings/genders/view.js"></script>
-                <script async>getGenders()</script>
+            </div>
+        <% } %>
+        <% if (permissions.access_files) { %>
+            <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-20" onclick="sortTable(0, 'tbl_files')">File ID</th>
+                        <th class="w-60" onclick="sortTable(1, 'tbl_files')">File Name</th>
+                        <th class="w-20" onclick="sortTable(2, 'tbl_files')">File Exists</th>
+                        <th><i class='fas fa-trash-alt'></i></th>
+                    </thead>
+                    <tbody id='tbl_files'></tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (permissions.access_accounts) { %>
+            <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-10" onclick="sortTable(0, 'tbl_accounts')">Account ID</th>
+                        <th class="w-40" onclick="sortTable(1, 'tbl_accounts')">Name</th>
+                        <th class="w-20" onclick="sortTable(2, 'tbl_accounts')">Number</th>
+                        <th class="w-30" onclick="sortTable(2, 'tbl_accounts')">Owner</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='tbl_accounts'></tbody>
+                </table>
             </div>
         <% } %>
         <% if (permissions.access_categories) { %>
             <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
-                <% if (permissions.category_add) { %>
-                    <button class='btn btn-success w-100 mb-1' data-toggle="modal" data-target="#mdl_category_add">Add Category</button>
-                <% } %>
                 <% if (permissions.category_edit) { %>
-                    <script>var dragging = false</script>
+                    <script>let dragging = false</script>
                     <form id='form_category_move'>
                         <input type="hidden" name='category_id' id='category_id_move'>
                         <input type="hidden" name='category[parent_category_id]' id='parent_category_id_move'>
                 <% } %>
                     <ul class="list-group category_ul" id='ul_category_'></ul>
                 <% if (permissions.category_edit) { %></form><% } %>
-                <script src="/js/stores/settings/categories/view.js"></script>
-                <script src="/js/tree.js"></script>
-                <script async>getCategories()</script>
             </div>
         <% } %>
     </div>
@@ -68,14 +90,17 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="ttl_mdl_setting_view">Setting</h5>
-                        <span id="setting_delete" class='float-right'></span>
+                        <span class="float-right">
+                            <span id="setting_delete" class='float-right ml-1'></span>
+                            <span id="setting_edit"   class='float-right ml-1'></span>
+                        </span>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {title: 'Name',       id: '_name'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Value',      id: '_value'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'user_setting'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'createdAt_setting'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'updatedAt_setting'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Name',       id: 'setting_name'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Value',      id: 'setting_value'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'setting_user'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'setting_createdAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'setting_updatedAt'}) %>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -83,6 +108,25 @@
                 </div>
             </div>
         </div>
+        <% if (permissions.setting_add) { %>
+            <div class="modal fade" id="mdl_setting_add" tabindex="-1" aria-labelledby="ttl_mdl_setting_add" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form class="modal-content" id='form_setting_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ttl_mdl_setting_add">Setting</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`, {title: 'Name',  name: 'setting[_name]',  required: true}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Value', name: 'setting[_value]', required: true}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <button class='btn btn-success w-100'>Save</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
         <% if (permissions.setting_edit) { %>
             <div class="modal fade" id="mdl_setting_edit" tabindex="-1" aria-labelledby="ttl_mdl_setting_edit" aria-hidden="true">
                 <div class="modal-dialog">
@@ -92,8 +136,8 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name='setting[setting_id]' id='setting_id_edit'>
-                            <%- include(`${partials}/inputs/text`, {title: 'Name',  id: '_name_edit',  name: 'setting[_name]'}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Value', id: '_value_edit', name: 'setting[_value]'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Name',  id: 'setting_name_edit',  name: 'setting[_name]',  required: true}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Value', id: 'setting_value_edit', name: 'setting[_value]', required: true}) %>
                         </div>
                         <div class="modal-footer">
                             <button class='btn btn-success w-100'>Save</button>
@@ -102,42 +146,24 @@
                     </form>
                 </div>
             </div>
-            <script src="/js/stores/settings/settings/edit.js"></script>
-            <script async>loadSettingsEdit()</script>
         <% } %>
-        <% if (permissions.setting_add) { %>
-            <div class="modal fade" id="mdl_setting_add" tabindex="-1" aria-labelledby="ttl_mdl_setting_add" aria-hidden="true">
-                <div class="modal-dialog">
-                    <form class="modal-content" id='form_setting_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="ttl_mdl_setting_add">Setting</h5>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`, {title: 'Name',  name: 'setting[_name]'}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Value', name: 'setting[_value]'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <button class='btn btn-success w-100'>Save</button>
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <script src="/js/stores/settings/settings/add.js"></script>
-        <% } %>
+
         <% if (permissions.access_genders) { %>
             <div class="modal fade" id="mdl_gender_view" tabindex="-1" aria-labelledby="ttl_mdl_gender_view" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="ttl_mdl_gender_view">Gender</h5>
-                            <span id="gender_delete" class='float-right'></span>
+                        <span class="float-right">
+                            <span id="gender_delete" class='float-right ml-1'></span>
+                            <span id="gender_edit"   class='float-right ml-1'></span>
+                        </span>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {title: 'Gender',     id: '_gender'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'user_gender'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'createdAt_gender'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'updatedAt_gender'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Gender',     id: 'gender_gender'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'gender_user'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'gender_createdAt'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'gender_updatedAt'}) %>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -145,6 +171,24 @@
                     </div>
                 </div>
             </div>
+            <% if (permissions.gender_add) { %>
+                <div class="modal fade" id="mdl_gender_add" tabindex="-1" aria-labelledby="ttl_mdl_gender_add" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="modal-content" id='form_gender_add'>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ttl_mdl_gender_add">Gender</h5>
+                            </div>
+                            <div class="modal-body">
+                                <%- include(`${partials}/inputs/text`, {title: 'Name', name: 'gender[_gender]', required: true}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <button class='btn btn-success w-100'>Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
             <% if (permissions.gender_edit) { %>
                 <div class="modal fade" id="mdl_gender_edit" tabindex="-1" aria-labelledby="ttl_mdl_gender_edit" aria-hidden="true">
                     <div class="modal-dialog">
@@ -154,7 +198,7 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" name='gender[gender_id]' id='gender_id_edit'>
-                                <%- include(`${partials}/inputs/text`, {title: 'Gender', id: '_gender_edit', name: 'gender[_gender]'}) %>
+                                <%- include(`${partials}/inputs/text`, {title: 'Gender', id: 'gender_gender_edit', name: 'gender[_gender]', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <button class='btn btn-success w-100'>Save</button>
@@ -163,36 +207,86 @@
                         </form>
                     </div>
                 </div>
-                <script src="/js/stores/settings/genders/edit.js"></script>
-                <script async>loadGendersEdit()</script>
-            <% } %>
-            <% if (permissions.gender_add) { %>
-                <div class="modal fade" id="mdl_gender_add" tabindex="-1" aria-labelledby="ttl_mdl_gender_add" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form class="modal-content" id='form_gender_add'>
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="ttl_mdl_gender_add">Gender</h5>
-                            </div>
-                            <div class="modal-body">
-                                <%- include(`${partials}/inputs/text`, {title: 'Name', name: 'gender[_gender]'}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <button class='btn btn-success w-100'>Save</button>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <script src="/js/stores/settings/genders/add.js"></script>
             <% } %>
         <% } %>
+
+        <% if (permissions.access_accounts) { %>
+            <div class="modal fade" id="mdl_account_view" tabindex="-1" aria-labelledby="ttl_mdl_account_view" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ttl_mdl_account_view">Account: <span id="account_id_view"></span></h5>
+                            <span class='float-right'>
+                                <span id="account_delete" class='float-right ml-1'></span>
+                                <span id="account_edit"   class='float-right ml-1'></span>
+                            </span>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`, {title: 'Name',    id: 'account_name'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Number',  id: 'account_number'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Owner',   id: 'account_user', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created', id: 'account_createdAt'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Updated', id: 'account_updatedAt'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% if (permissions.account_add) { %>
+                <div class="modal fade" id="mdl_account_add" tabindex="-1" aria-labelledby="ttl_mdl_account_add" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="modal-content" id='form_account_add'>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ttl_mdl_account_add">Gender</h5>
+                            </div>
+                            <div class="modal-body">
+                                <%- include(`${partials}/inputs/text`,   {title: 'Name',   name: 'account[_name]',           required: true}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Number', name: 'account[_number]',         required: true}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Owner',  name: 'account[user_id_account]', required: true, id: 'sel_account_user_add'}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <button class='btn btn-success w-100'>Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+            <% if (permissions.account_edit) { %>
+                <div class="modal fade" id="mdl_account_edit" tabindex="-1" aria-labelledby="ttl_mdl_account_edit" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="modal-content" id='form_account_edit'>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ttl_mdl_account_edit">Account</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name='account[account_id]' id='account_id_edit'>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Name',   id: 'account_name_edit',     name: 'account[_name]',           required: true}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Number', id: 'account_number_edit',   name: 'account[_number]',         required: true}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Owner',  id: 'sel_account_user_edit', name: 'account[user_id_account]', required: true}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <button class='btn btn-success w-100'>Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+        <% } %>
+
         <% if (permissions.access_categories) { %>
             <div class="modal fade" id="mdl_category_view" tabindex="-1" aria-labelledby="ttl_mdl_category_view" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="ttl_mdl_category_view">Category</h5>
-                            <span id="category_delete" class='float-right'></span>
+                            <span class="float-right">
+                                <span id="category_delete" class='float-right ml-1'></span>
+                                <span id="category_edit"   class='float-right ml-1'></span>
+                            </span>
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/display`, {title: 'Parent',     id: '_parent'}) %>
@@ -207,27 +301,6 @@
                     </div>
                 </div>
             </div>
-            <% if (permissions.category_edit) { %>
-                <div class="modal fade" id="mdl_category_edit" tabindex="-1" aria-labelledby="ttl_mdl_category_edit" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form class="modal-content" id='form_category_edit'>
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="ttl_mdl_category_edit">Category</h5>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name='category_id' id='category_id_edit'>
-                                <%- include(`${partials}/inputs/text`, {title: 'Category', id: '_category_edit', name: 'category[_category]'}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <button class='btn btn-success w-100'>Save</button>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <script src="/js/stores/settings/categories/edit.js"></script>
-                <script async>loadCategoriesEdit()</script>
-            <% } %>
             <% if (permissions.category_add) { %>
                 <div class="modal fade" id="mdl_category_add" tabindex="-1" aria-labelledby="ttl_mdl_category_add" aria-hidden="true">
                     <div class="modal-dialog">
@@ -237,7 +310,7 @@
                             </div>
                             <div class="modal-body">
                                 <%- include(`${partials}/inputs/select`, {title: 'Parent',   name: 'category[parent_category_id]', id: 'sel_category_add'}) %>
-                                <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[_category]'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[_category]', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <button class='btn btn-success w-100'>Save</button>
@@ -246,7 +319,26 @@
                         </form>
                     </div>
                 </div>
-                <script src="/js/stores/settings/categories/add.js"></script>
+            <% } %>
+            <% if (permissions.category_edit) { %>
+                <div class="modal fade" id="mdl_category_edit" tabindex="-1" aria-labelledby="ttl_mdl_category_edit" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="modal-content" id='form_category_edit'>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ttl_mdl_category_edit">Category</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name='category_id' id='category_id_edit'>
+                                <%- include(`${partials}/inputs/select`, {title: 'Parent',   name: 'category[parent_category_id]', id: 'sel_category_edit'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[_category]',          id: '_category_edit', required: true}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <button class='btn btn-success w-100'>Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             <% } %>
         <% } %>
     </div>
@@ -255,13 +347,74 @@
 <script src="/js/tabs.js"></script>
 <script src="/js/addFormListener.js"></script>
 <script>showTab('settings')</script>
-<% if (permissions.category_delete) { %>
-    <script src="/js/stores/settings/categories/delete.js"></script>
+<script src="/js/stores/settings/settings/view.js"></script>
+<% if (permissions.setting_add) { %>
+    <script src="/js/stores/settings/settings/add.js"></script>
 <% } %>
-<% if (permissions.gender_delete) { %>
-    <script src="/js/stores/settings/genders/delete.js"></script>
+<% if (permissions.setting_edit) { %>
+    <script src="/js/stores/settings/settings/edit.js"></script>
 <% } %>
 <% if (permissions.setting_delete) { %>
     <script src="/js/stores/settings/settings/delete.js"></script>
 <% } %>
+<script async>getSettings()</script>
+
+<% if (permissions.access_genders) { %>
+    <script src="/js/stores/settings/genders/view.js"></script>
+    <% if (permissions.gender_add) { %>
+        <script src="/js/stores/settings/genders/add.js"></script>
+    <% } %>
+    <% if (permissions.gender_edit) { %>
+        <script src="/js/stores/settings/genders/edit.js"></script>
+    <% } %>
+    <% if (permissions.gender_delete) { %>
+        <script src="/js/stores/settings/genders/delete.js"></script>
+    <% } %>
+    <script async>getGenders()</script>
+<% } %>
+
+<% if (permissions.access_files) { %>
+    <script src="/js/stores/settings/files/view.js"></script>
+    <% if (permissions.file_delete) { %>
+        <script src="/js/stores/settings/files/delete.js"></script>
+    <% } %>
+    <script async>getFiles()</script>
+<% } %>
+
+<% if (permissions.access_accounts) { %>
+    <script src="/js/stores/settings/accounts/view.js"></script>
+    <% if (permissions.account_add || permissions.account_edit) { %>
+        <script src="/js/utils/list/users.js"></script>
+    <% } %>
+    <% if (permissions.account_add) { %>
+        <script src="/js/stores/settings/accounts/add.js"></script>
+    <% } %>
+    <% if (permissions.account_edit) { %>
+        <script src="/js/stores/settings/accounts/edit.js"></script>
+    <% } %>
+    <% if (permissions.account_delete) { %>
+        <script src="/js/stores/settings/accounts/delete.js"></script>
+    <% } %>
+    <script async>getAccounts()</script>
+<% } %>
+
+<% if (permissions.access_categories) { %>
+    <% if (permissions.category_add || permissions.category_edit) { %>
+        <script src="/js/utils/list/categories.js"></script>
+    <% } %>
+    <script src="/js/stores/settings/categories/view.js"></script>
+    <script src="/js/tree.js"></script>
+    <script async>getCategories('')</script>
+    <% if (permissions.category_add) { %>
+        <script src="/js/stores/settings/categories/add.js"></script>
+    <% } %>
+    <% if (permissions.category_edit) { %>
+        <script src="/js/stores/settings/categories/edit.js"></script>
+        <script async>loadCategoriesEdit()</script>
+    <% } %>
+    <% if (permissions.category_delete) { %>
+        <script src="/js/stores/settings/categories/delete.js"></script>
+    <% } %>
+<% } %>
+
 <%- include(`${partials}/foot/elements/htmlClose`) %>
