@@ -1,4 +1,4 @@
-function gendersEditBtn(gender_id) {
+function genderEditBtn(gender_id) {
     let span_edit = document.querySelector('#gender_edit');
     if (span_edit) {
         span_edit.innerHTML = '';
@@ -37,5 +37,5 @@ window.addEventListener('load', function () {
         }
     );
     $('#mdl_gender_edit').on('show.bs.modal', function (event) {viewGenderEdit(event.relatedTarget.dataset.id)});
-    $('#mdl_gender_view').on('show.bs.modal', function (event) {gendersEditBtn(event.relatedTarget.dataset.id)});
+    $('#mdl_gender_view').on('show.bs.modal', function (event) {genderEditBtn(event.relatedTarget.dataset.id)});
 });

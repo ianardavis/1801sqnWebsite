@@ -1,4 +1,4 @@
-function accountsEditBtns(account_id) {
+function accountEditBtn(account_id) {
     let span_edit = document.querySelector('#account_edit');
     if (span_edit) {
         span_edit.innerHTML = '';
@@ -43,5 +43,5 @@ window.addEventListener('load', function () {
         }
     );
     $('#mdl_account_edit').on('show.bs.modal', function (event) {viewAccountEdit(event.relatedTarget.dataset.id)});
-    $('#mdl_account_view').on('show.bs.modal', function (event) {accountsEditBtns(event.relatedTarget.dataset.id)});
+    $('#mdl_account_view').on('show.bs.modal', function (event) {accountEditBtn(event.relatedTarget.dataset.id)});
 });

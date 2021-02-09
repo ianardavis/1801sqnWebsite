@@ -1,4 +1,4 @@
-function categoriesEditBtns(category_id) {
+function categoryEditBtn(category_id) {
     let span_edit = document.querySelector('#category_edit');
     if (span_edit) {
         span_edit.innerHTML = '';
@@ -37,8 +37,8 @@ function viewCategoryEdit(category_id) {
     );
 };
 window.addEventListener('load', function () {
-    $('#mdl_category_view').on('show.bs.modal', function (event) {categoriesEditBtns(event.relatedTarget.dataset.id)});
-    $('#mdl_category_edit').on('show.bs.modal', function (event) {viewCategoryEdit(  event.relatedTarget.dataset.id)});
+    $('#mdl_category_view').on('show.bs.modal', function (event) {categoryEditBtn(event.relatedTarget.dataset.id)});
+    $('#mdl_category_edit').on('show.bs.modal', function (event) {viewCategoryEdit(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', loadCategoriesEdit);
 
     addFormListener(

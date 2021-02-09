@@ -12,28 +12,31 @@ function viewFileEdit(file_id) {
         }
     );
 };
+function fileEditBtn(file_id) {
+    let span_file_edit_btn = document.querySelector('#span_file_edit_btn');
+    if (span_file_edit_btn) {
+        span_file_edit_btn.innerHTML = '';
+        span_file_edit_btn.appendChild(
+            new Link({
+                modal: 'file_edit',
+                data: {field: 'id', value: file_id},
+                type: 'edit'
+            }).e
+        )
+    };
+};
 window.addEventListener("load", function () {
     $('#mdl_file_edit').on('show.bs.modal', function (event) {viewFileEdit(event.relatedTarget.dataset.id)});
-    $('#mdl_file_view').on('show.bs.modal', function (event) {
-        let span_file_edit_btn = document.querySelector('#span_file_edit_btn');
-        if (span_file_edit_btn) {
-            span_file_edit_btn.innerHTML = '';
-            span_file_edit_btn.appendChild(
-                new Link({
-                    modal: 'file_edit',
-                    data: {field: 'id', value: event.relatedTarget.dataset.id},
-                    type: 'edit'
-                }).e
-            )
-        };
-    });
+    $('#mdl_file_view').on('show.bs.modal', function (event) {fileEditBtn( event.relatedTarget.dataset.id)});
     addFormListener(
         'file_edit',
         'PUT',
         '/stores/files',
-        {onComplete: [
-            getFiles,
-            function () {$('#mdl_file_edit').modal('hide')}
-        ]}
+        {
+            onComplete: [
+                getFiles,
+                function () {$('#mdl_file_edit').modal('hide')}
+            ]
+        }
     );
 });

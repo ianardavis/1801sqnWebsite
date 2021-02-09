@@ -6,4 +6,5 @@ window.addEventListener( "load", function () {
         '/stores/suppliers',
         {onComplete: getSuppliers}
     );
+    document.querySelector('#reload_accounts').addEventListener('click', listAccounts);
 });

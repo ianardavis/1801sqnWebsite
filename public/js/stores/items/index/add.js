@@ -23,12 +23,26 @@ function getGenders_add () {
 	};
 };
 window.addEventListener( "load", function () {
-    $('#mdl_item_add').on('show.bs.modal', getGenders_add);
+    $('#mdl_item_add').on('show.bs.modal', function () {
+		listGenders({
+			select: 'sel_genders_add',
+			blank:  true,
+			spinner: 'genders_add',
+			id_only: true
+		});
+	});
     addFormListener(
         'item_add',
         'POST',
         '/stores/items',
         {onComplete: getItems}
     );
-    document.querySelector('#reload_genders_add').addEventListener('click', getGenders_add);
+    document.querySelector('#reload_genders_add').addEventListener('click', function () {
+		listGenders({
+			select: 'sel_genders_add',
+			blank: 	true,
+			spinner: 'genders_add',
+			id_only: true
+		});
+	});
 });

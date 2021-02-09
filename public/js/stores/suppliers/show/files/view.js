@@ -16,16 +16,16 @@ function viewFile(file_id) {
     );
 };
 function getFiles() {
-    get(
-        {
-            table: 'files',
-            query: [`supplier_id=${path[3]}`]
-        },
-        function (files, options) {
-            set_count({id: 'file', count: files.length || '0'});
-            let table_body = document.querySelector('#tbl_files');
-            if (table_body) {
-                table_body.innerHTML = '';
+    let table_body = document.querySelector('#tbl_files');
+    if (table_body) {
+        table_body.innerHTML = '';
+        get(
+            {
+                table: 'files',
+                query: [`supplier_id=${path[3]}`]
+            },
+            function (files, options) {
+                set_count({id: 'file', count: files.length || '0'});
                 files.forEach(file => {
                     let row = table_body.insertRow(-1);
                     add_cell(row, {text: file._filename})
@@ -38,17 +38,11 @@ function getFiles() {
                         }).e
                     });
                 });
-            };
-        }
-    );
+            }
+        );
+    };
 };
 window.addEventListener('load', function () {
-    // let form_download = document.querySelector('#form_file_download');
-    // if (form_download) {
-        // form_download.addEventListener('submit',   function (event) {console.log(event)});
-        // form_download.addEventListener('reset',    function (event) {console.log(event)});
-        // form_download.addEventListener('formdata', function (event) {console.log(event)});
-    // };
     $('#mdl_file_view').on('show.bs.modal', function (event) {viewFile(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', getFiles);
 });

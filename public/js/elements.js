@@ -198,39 +198,6 @@ function Option (options = {}) {
     else               this.e.setAttribute('value', '');
     this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
 };
-function Card (options = {}) {
-    this.e = document.createElement('div');
-    let _a        = document.createElement('a'),
-        _header   = document.createElement('div'),
-        _title    = document.createElement('h3'),
-        _body     = document.createElement('div'),
-        _body_p   = document.createElement('p');
-    if (options.search) this.e.setAttribute('data-search', options.search);
-    this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3', 'card_div');
-    if (options.id) this.e.setAttribute('id', options.id);
-    _a.setAttribute('href', options.href);
-    _a.classList.add('card', 'm-3', 'text-left');
-    _header.classList.add('card-header');
-    _title.classList.add('card-title');
-    if (options.search_title) _title.classList.add('search');
-    _title.innerText = options.title;
-    _header.appendChild(_title);
-    if (options.subtitle) {
-        let _subtitle = document.createElement('p');
-        _subtitle.innerText = options.subtitle;
-        _subtitle.classList.add('card-subtitle', 'text-muted');
-        _header.appendChild(_subtitle);
-    };
-    _body.classList.add('card-body');
-    _body_p.classList.add('text-left', 'f-10');
-    if (options.search_body) _body_p.classList.add('search');
-    if (options.body_ellipsis) _body_p.classList.add('ellipsis1');
-    _body_p.innerHTML = options.body;
-    _body.appendChild(_body_p);
-    _a.appendChild(_header);
-    _a.appendChild(_body);
-    this.e.appendChild(_a);
-};
 function Spinner (options = {}) {
     this.e = document.createElement('div');
     this.e.setAttribute('id', `spn_${options.id || random_id}`);

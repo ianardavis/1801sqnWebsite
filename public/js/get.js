@@ -21,13 +21,13 @@ function get(options, onComplete) {
     XHR.open(options.method || 'GET', `/${options.db || 'stores'}/get/${options.table}?${options.query.join('&')}`);
     XHR.send();
 };
-function count(onComplete, options) {
+function count(options, onComplete) {
     show_spinner(options.spinner || options.table || '');
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", function (event) {
         try {
             let response = JSON.parse(event.target.responseText);
-            if (response.success === true) onComplete(response.result, options);
+            if (response.success === true) onComplete(response.count, options);
             else {
                 alert(`Error: ${response.message || response.error || 'unknown'}`);
                 if (options.onFail) options.onFail();

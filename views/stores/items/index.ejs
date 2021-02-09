@@ -10,7 +10,9 @@
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', reload_id: 'reload_genders'}) %>
+	<% if (permissions.access_genders) { %>
+		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
+	<% } %>
 	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
@@ -39,13 +41,28 @@
 					</form>
 				</div>
 			</div>
-			<script src="/js/stores/items/index/add.js"></script>
 		<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/search/table.js"></script>
-<script src="/js/stores/items/index/items.js"></script>
 <script src="/js/addFormListener.js"></script>
-<script async>getGenders()</script>
+<% if (permissions.access_genders) { %>
+	<script src="/js/utils/list/genders.js"></script>
+	<script src="/js/stores/items/index/items.js"></script>
+	<script async>
+		listGenders({
+			onComplete: getItems,
+			blank_text: 'All',
+			select: 	'sel_genders',
+			blank: 		true
+		});
+	</script>
+<% } else { %>
+	<script src="/js/stores/items/index/items.js"></script>
+	<script async>getItems()</script>
+<% } %>
+<% if (permissions.item_add) { %>
+	<script src="/js/stores/items/index/add.js"></script>
+<% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

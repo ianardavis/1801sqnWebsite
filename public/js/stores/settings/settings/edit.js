@@ -1,4 +1,4 @@
-function settingsEditBtn(setting_id) {
+function settingEditBtn(setting_id) {
     let span_edit = document.querySelector('#setting_edit');
     if (span_edit) {
         span_edit.innerHTML = '';
@@ -38,5 +38,5 @@ window.addEventListener('load', function () {
         }
     );
     $('#mdl_setting_edit').on('show.bs.modal', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});
-    $('#mdl_setting_view').on('show.bs.modal', function (event) {settingsEditBtn(event.relatedTarget.dataset.id)});
+    $('#mdl_setting_view').on('show.bs.modal', function (event) {settingEditBtn(event.relatedTarget.dataset.id)});
 });

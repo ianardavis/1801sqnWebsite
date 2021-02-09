@@ -1,4 +1,4 @@
-function settingsDeleteBtn(setting_id) {
+function settingDeleteBtn(setting_id) {
     let span_delete = document.querySelector('#setting_delete');
     if (span_delete) {
         span_delete.innerHTML = '';
@@ -17,5 +17,5 @@ function settingsDeleteBtn(setting_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_setting_view').on('show.bs.modal', function (event) {settingsDeleteBtn(event.relatedTarget.dataset.id)});
+    $('#mdl_setting_view').on('show.bs.modal', function (event) {settingDeleteBtn(event.relatedTarget.dataset.id)});
 });

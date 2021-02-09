@@ -1,4 +1,4 @@
-function gendersDeleteBtn(gender_id) {
+function genderDeleteBtn(gender_id) {
     let span_delete = document.querySelector('#gender_delete');
     if (span_delete) {
         span_delete.innerHTML = '';
@@ -17,5 +17,5 @@ function gendersDeleteBtn(gender_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_gender_view').on('show.bs.modal', function (event) {gendersDeleteBtn(event.relatedTarget.dataset.id)});
+    $('#mdl_gender_view').on('show.bs.modal', function (event) {genderDeleteBtn(event.relatedTarget.dataset.id)});
 });

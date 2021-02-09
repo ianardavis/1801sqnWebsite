@@ -23,4 +23,6 @@ function getSupplier() {
         }
     )
 };
-document.querySelector('#reload').addEventListener('click', getSupplier);
+window.addEventListener("load", function () {
+    document.querySelector('#reload').addEventListener('click', getSupplier);
+});

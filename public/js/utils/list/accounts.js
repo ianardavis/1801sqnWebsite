@@ -1,28 +1,25 @@
-function listAccounts() {
-    return new Promise((resolve, reject) => {
-        get(
-            {
-                table: 'accounts',
-                query: [],
-                onFail: [function(){reject(new Error('Error getting accounts'))}]
-            },
-            function (accounts, options) {
-                let sel_accounts  = document.querySelector('#sel_accounts');
-                if (sel_accounts) {
-                    sel_accounts.innerHTML = '';
-                    sel_accounts.appendChild(new Option().e);
-                    accounts.forEach(account => {
-                        sel_accounts.appendChild(
-                            new Option({
-                                value: account.account_id,
-                                text:  print_account(account),
-                                selected: (options.selected === account.account_id)
-                            }).e
-                        )
-                    });
-                };
-                resolve(true)
-            }
-        );
-    });
+function listAccounts(options = {}) {
+    get(
+        {
+            table: 'accounts',
+            query: [],
+            ...options
+        },
+        function (accounts, options) {
+            let sel_accounts  = document.querySelector(`#${options.select ||'sel_accounts'}`);
+            if (sel_accounts) {
+                sel_accounts.innerHTML = '';
+                sel_accounts.appendChild(new Option({text: '---None---', selected: (options.selected === null)}).e);
+                accounts.forEach(account => {
+                    sel_accounts.appendChild(
+                        new Option({
+                            value:    account.account_id,
+                            text:     print_account(account),
+                            selected: (options.selected === account.account_id)
+                        }).e
+                    )
+                });
+            };
+        }
+    );
 };

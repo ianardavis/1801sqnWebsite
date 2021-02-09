@@ -5,13 +5,8 @@ function getDefault() {
             query: ['_name=default_supplier']
         },
         function (setting, options) {
-            let card = document.querySelector(`#supplier_${setting._value} .card-header`);
-            if (card) {
-                let subtitle = document.createElement('p');
-                subtitle.innerText = 'Default';
-                subtitle.classList.add('card-subtitle', 'text-muted', 'f-10');
-                card.appendChild(subtitle);
-            };
+            let subtitle = document.querySelector(`#default_${setting._value}`);
+            if (subtitle) subtitle.innerText = 'Default';
         }
     );
 };

@@ -1,4 +1,5 @@
 function viewDetailEdit(file_detail_id) {
+    $('#mdl_file_view').modal('hide');
     get(
         {
             table:   'file_detail',
@@ -39,8 +40,5 @@ window.addEventListener('load', function () {
         '/stores/file_details',
         {onComplete: function () {$('#mdl_file_detail_edit').modal('hide')}}
     );
-    $('#mdl_file_detail_edit').on('show.bs.modal', function (event) {
-        $('#mdl_file_view').modal('hide');
-        viewDetailEdit(event.relatedTarget.dataset.id);
-    });
+    $('#mdl_file_detail_edit').on('show.bs.modal', function (event) {viewDetailEdit(event.relatedTarget.dataset.id)});
 });

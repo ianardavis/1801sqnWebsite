@@ -18,17 +18,12 @@
                         <input class='supplier_id' type="hidden" name='setting[_value]'>
                         <%- include(`${partials}/menu/button`, {id: 'default', text: 'Make Default'}) %>
                     </form>
-                    <script src='/js/stores/suppliers/show/default/edit.js'></script>
-                    <script async>setDefaultBtn()</script>
                 <% } %>
-				<%- include(`${partials}/menu/button`, {id: 'file_add', text: 'Add File', modal: 'file_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'file_add',        text: 'Add File', modal: 'file_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add',        text: 'Add Note', modal: 'note_add'}) %>
 				<% if (permissions.supplier_delete) { %><form id='form_supplier_delete'><% } %>
 				<%- include(`${partials}/menu/button`, {id: 'supplier_delete', text: 'Delete'}) %>
-				<% if (permissions.supplier_delete) { %>
-                    </form>
-					<script src="/js/stores/suppliers/show/delete.js"></script>
-				<% } %>
+				<% if (permissions.supplier_delete) { %></form><% } %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details', spinner: 'supplier'}) %>
@@ -51,9 +46,7 @@
             <%- include(`${partials}/inputs/display`, {id: '_account',   title: 'Account', button: true, modal: 'account_view'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_stores',    title: 'RAF Stores'}) %>
             <% if (permissions.access_settings) { %>
-                <%- include(`${partials}/inputs/display`, {id: '_default',   title: 'Default Supplier'}) %>
-                <script src='/js/stores/suppliers/show/default/view.js'></script>
-                <script async>getDefault()</script>
+            <%- include(`${partials}/inputs/display`, {id: '_default',   title: 'Default Supplier'}) %>
             <% } %>
         </div>
         <% if (permissions.access_files) { %>
@@ -67,8 +60,6 @@
                     <tbody id="tbl_files"></tbody>
                 </table>
             </div>
-            <script src="/js/stores/suppliers/show/files/view.js"></script>
-            <script async>getFiles()</script>
         <% } %>
         <% if (permissions.access_sizes) { %>
             <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
@@ -81,8 +72,6 @@
                     <tbody id="tbl_sizes"></tbody>
                 </table>
             </div>
-            <script src="/js/stores/suppliers/show/sizes/view.js"></script>
-            <script async>getSizes()</script>
         <% } %>
         <% if (permissions.access_demands) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
@@ -97,8 +86,6 @@
                     <tbody id="tbl_demands"></tbody>
                 </table>
             </div>
-            <script src="/js/stores/suppliers/show/demands/view.js"></script>
-            <script async>getDemands()</script>
         <% } %>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
@@ -120,7 +107,7 @@
                             <%- include(`${partials}/inputs/text`,   {id: '_address5_edit',  title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
                             <%- include(`${partials}/inputs/text`,   {id: '_telephone_edit', title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
                             <%- include(`${partials}/inputs/text`,   {id: '_email_edit',     title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
-                            <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',    title: 'Account',       name: 'supplier[account_id]', spinner: true, spinner_id: 'accounts_edit'}) %>
+                            <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',    title: 'Account',       name: 'supplier[account_id]', spinner: true, spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
                             <%- include(`${partials}/inputs/select`, {id: '_stores_edit',    title: 'RAF Stores?',   name: 'supplier[_stores]',    options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
                         </div>
                         <div class="modal-footer">
@@ -130,8 +117,6 @@
                     </form>
                 </div>
             </div>
-            <script src="/js/utils/list/accounts.js"></script>
-            <script src="/js/stores/suppliers/show/edit.js"></script>
         <% } %>
         <% if (permissions.access_accounts) { %>
             <div id='mdl_account_view' class="modal fade" tabindex="-1" role="dialog">
@@ -154,7 +139,6 @@
                     </div>
                 </div>
             </div>
-            <script src="/js/stores/suppliers/show/accounts/view.js"></script>
         <% } %>
         <% if (permissions.access_files) { %>
             <div id='mdl_file_view' class="modal fade" tabindex="-1" role="dialog">
@@ -186,7 +170,6 @@
                                         <%- include(`${partials}/inputs/text`, {id: '_value_file_detail_add', title: 'Value', name: 'detail[_value]', maxLength: 255, required: true}) %>
                                         <button class="btn btn-success w-100 mb-1">Save</button>
                                     </form>
-                                    <script src="/js/stores/suppliers/show/files/details/add.js"></script>
                                 <% } %>
                                 <table class="table table-sm table-hover">
                                     <thead class="thead-dark">
@@ -197,10 +180,6 @@
                                     </thead>
                                     <tbody id="tbl_file_details"></tbody>
                                 </table>
-                                <% if (permissions.file_detail_delete) { %>
-                                    <script src="/js/stores/suppliers/show/files/details/delete.js"></script>
-                                <% } %>
-                                <script src="/js/stores/suppliers/show/files/details/view.js"></script>
                             <% } %>
                         </div>
                         <div class="modal-footer">
@@ -234,7 +213,6 @@
                         </form>
                     </div>
                 </div>
-                <script src="/js/stores/suppliers/show/files/add.js"></script>
             <% } %>
             <% if (permissions.file_edit) { %>
                 <div id='mdl_file_edit' class="modal fade" tabindex="-1" role="dialog">
@@ -255,7 +233,6 @@
                         </form>
                     </div>
                 </div>
-                <script src="/js/stores/suppliers/show/files/edit.js"></script>
             <% } %>
             <% if (permissions.file_detail_edit) { %>
                 <div id='mdl_file_detail_edit' class="modal fade" tabindex="-1" role="dialog">
@@ -277,10 +254,6 @@
                         </form>
                     </div>
                 </div>
-                <script src="/js/stores/suppliers/show/files/details/edit.js"></script>
-            <% } %>
-            <% if (permissions.file_delete) { %>
-                <script src="/js/stores/suppliers/show/files/delete.js"></script>
             <% } %>
         <% } %>
     </div>
@@ -289,6 +262,63 @@
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/addFormListener.js'></script>
+
 <script src='/js/stores/suppliers/show/view.js'></script>
 <script async>getSupplier()</script>
+<% if (permissions.supplier_edit) { %>
+    <script src="/js/utils/list/accounts.js"></script>
+    <script src="/js/stores/suppliers/show/edit.js"></script>
+<% } %>
+<% if (permissions.supplier_delete) { %>
+    <script src="/js/stores/suppliers/show/delete.js"></script>
+<% } %>
+
+<% if (permissions.access_settings) { %>
+    <script src='/js/stores/suppliers/show/default/view.js'></script>
+    <script async>getDefault()</script>
+    <% if (permissions.setting_edit) { %>
+        <script src='/js/stores/suppliers/show/default/edit.js'></script>
+        <script async>setDefaultBtn()</script>
+    <% } %>
+<% } %>
+
+<% if (permissions.access_files) { %>
+    <script src="/js/stores/suppliers/show/files/view.js"></script>
+    <script async>getFiles()</script>
+    <% if (permissions.file_add) { %>
+        <script src="/js/stores/suppliers/show/files/add.js"></script>
+    <% } %>
+    <% if (permissions.file_edit) { %>
+        <script src="/js/stores/suppliers/show/files/edit.js"></script>
+    <% } %>
+    <% if (permissions.access_file_details) { %>
+        <script src="/js/stores/suppliers/show/files/details/view.js"></script>
+        <% if (permissions.file_detail_delete) { %>
+            <script src="/js/stores/suppliers/show/files/details/delete.js"></script>
+        <% } %>
+        <% if (permissions.file_detail_add) { %>
+            <script src="/js/stores/suppliers/show/files/details/add.js"></script>
+        <% } %>
+        <% if (permissions.file_detail_edit) { %>
+            <script src="/js/stores/suppliers/show/files/details/edit.js"></script>
+        <% } %>
+        <% if (permissions.file_delete) { %>
+            <script src="/js/stores/suppliers/show/files/delete.js"></script>
+        <% } %>
+    <% } %>
+<% } %>
+
+<% if (permissions.access_sizes) { %>
+    <script src="/js/stores/suppliers/show/sizes/view.js"></script>
+    <script async>getSizes()</script>
+<% } %>
+
+<% if (permissions.access_demands) { %>
+    <script src="/js/stores/suppliers/show/demands/view.js"></script>
+    <script async>getDemands()</script>
+<% } %>
+
+<% if (permissions.access_accounts) { %>
+    <script src="/js/stores/suppliers/show/accounts/view.js"></script>
+<% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

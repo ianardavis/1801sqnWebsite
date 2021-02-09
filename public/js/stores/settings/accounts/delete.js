@@ -1,4 +1,4 @@
-function accountsDeleteBtn(account_id) {
+function accountDeleteBtn(account_id) {
     let span_delete = document.querySelector('#account_delete');
     if (span_delete) {
         span_delete.innerHTML = '';
@@ -17,5 +17,5 @@ function accountsDeleteBtn(account_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_account_view').on('show.bs.modal', function (event) {accountsDeleteBtn(event.relatedTarget.dataset.id)});
+    $('#mdl_account_view').on('show.bs.modal', function (event) {accountDeleteBtn(event.relatedTarget.dataset.id)});
 });

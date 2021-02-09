@@ -29,8 +29,7 @@
 							<%- include(`${partials}/inputs/text`,          {title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
 							<%- include(`${partials}/inputs/text`,          {title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
 							<%- include(`${partials}/inputs/text`,          {title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
-							<%- include(`${partials}/spinner`,              {id: 'accounts'}) %>
-							<%- include(`${partials}/inputs/select`,        {id: 'sel_accounts',     title: 'Account/Inventory',   name: 'supplier[account_id]', append: {a: {type: 'success', href: 'javascript:add("accounts")', text: '<i class="fas fa-plus"></i>'}}}) %>
+							<%- include(`${partials}/inputs/select`,        {title: 'Account',   	 name: 'supplier[account_id]', id: 'sel_accounts', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
 							<%- include(`${partials}/inputs/select_yes_no`, {title: 'RAF Stores?',   name: 'supplier[_stores]',    selected: 0}) %>
 							</div>
 						<div class="modal-footer">
@@ -40,8 +39,6 @@
 					</form>
 				</div>
 			</div>
-			<script src='/js/utils/list/accounts.js'></script>
-			<script src='/js/stores/suppliers/index/add.js'></script>
 		<% } %>
 	</div>
 </section>
@@ -54,6 +51,10 @@
 <% } %>
 <% if (permissions.access_settings) { %>
 	<script src='/js/stores/suppliers/index/getDefault.js'></script>
+<% } %>
+<% if (permissions.supplier_add) { %>
+	<script src='/js/utils/list/accounts.js'></script>
+	<script src='/js/stores/suppliers/index/add.js'></script>
 <% } %>
 <script async>getSuppliers()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

@@ -16,27 +16,7 @@ function getItem() {
         }
     );
 };
-let categories_loaded = false;
-function getCategories() {
-    categories_loaded = false;
-    get(
-        {
-            table: 'item_categories',
-            query: [`item_id=${path[3]}`]
-        },
-        function (categories, options) {
-            let tbl_categories = document.querySelector('#tbl_categories');
-            if (tbl_categories) {
-                tbl_categories.innerHTML = '';
-                categories.forEach(category => {
-                    let row = tbl_categories.insertRow(-1);
-                    add_cell(row, {text: category.category._category});
-                    add_cell(row, {classes: ['categories'], data: {field: 'id', value: category.item_category_id}});
-                });
-                categories_loaded = true;
-            };
-        }
-    );
-};
-document.querySelector('#reload').addEventListener('click', getItem);
-document.querySelector('#reload').addEventListener('click', getItem);
+window.addEventListener('load', function () {
+    document.querySelector('#reload').addEventListener('click', getItem);
+    document.querySelector('#reload').addEventListener('click', getItem);
+});

@@ -102,11 +102,10 @@ module.exports = (app, al, inc, pm, m) => {
             .then(supplier => {
                 if (!supplier) res.send({success: false, message: 'Supplier not found'})
                 else {
-                    const { COPYFILE_EXCL } = fs.constants;
                     fs.copyFile(
                         uploaded.file,
                         `${process.env.ROOT}/public/res/files/${uploaded.filename}`,
-                        COPYFILE_EXCL,
+                        fs.constants.COPYFILE_EXCL,
                         function (err) {
                             if (err) {
                                 if (err.code === 'EEXIST') res.send({success: false, message: 'Error copying file: This file already exists'})

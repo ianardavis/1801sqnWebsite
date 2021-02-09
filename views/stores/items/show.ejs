@@ -14,14 +14,13 @@
                 <%- include(`${partials}/menu/button`, {id: 'item_edit', text: 'Edit',     modal: 'item_edit'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'note_add',  text: 'Add Note', modal: 'note_add'}) %>
                 <% if (permissions.item_delete) { %>
-                    <form id='form_delete'>
+                    <form id='form_item_delete'>
                 <% } %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',    text: 'Delete'}) %>
                 <% if (permissions.item_delete) { %>
 					</form>
-					<script src="/js/stores/items/show/delete.js"></script>
 				<% } %>
-                <%- include(`${partials}/menu/button`, {id: 'size_add', text: 'Add Size', modal: 'size_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'size_add',  text: 'Add Size', modal: 'size_add'}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'item'}) %>
@@ -34,9 +33,9 @@
             <%- include(`${partials}/inputs/display`, {id: '_gender',      title: 'Gender'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_size_text',   title: 'Size Text'}) %>
             <div id="div_categories">
-                <hr>
                 <% if (permissions.item_edit) { %>
-                    <form id='form_category_add'>
+                    <form id='form_category_add' class='bordered my-3'>
+                        <h5>Add Category</h5>
                         <input type="hidden" id='item_id_category' name='category[item_id]'>
                         <select name="category[category_id][]" id="sel_category_1" class='form-control sel_category' required></select>
                         <div id="sub_categories"></div>
@@ -82,7 +81,7 @@
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`,   {id: '_description_edit', title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
                             <%- include(`${partials}/inputs/text`,   {id: '_size_text_edit',   title: 'Size Text',   name: 'item[_size_text]',   placeholder: 'Required', maxLength: 45, required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {id: 'sel_genders_edit',  title: 'Gender',      spinner_id: 'genders'}) %>
+                            <%- include(`${partials}/inputs/select`, {id: 'sel_gender_edit',   title: 'Gender',      spinner_id: 'genders'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit"  class="btn btn-success w-100" value='Save Item'>
@@ -91,7 +90,6 @@
                     </form>
                 </div>
             </div>
-            <script src='/js/stores/items/show/edit.js'></script>
         <% } %>
         <% if (permissions.size_add) { %>
             <div id='mdl_size_add' class="modal fade" tabindex="-1" role="dialog">
@@ -99,9 +97,6 @@
                     <form class="modal-content" id='form_size_add'>
                         <div class="modal-header">
                             <h5 class="modal-title">Add Size</h5>
-                            <a class="float-right btn btn-primary" id='reload_size_add'>
-                                <i class='fas fa-redo'></i>
-                            </a>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name='size[item_id]' id='item_id_add_size'>
@@ -110,7 +105,7 @@
                             <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',  title: 'Orderable',    id: '_orderable'}) %>
                             <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',    title: 'Has Serial #', id: '_serials'}) %>
                             <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_nsns]',       title: 'Has NSNs',     id: '_nsns'}) %>
-                            <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]', title: 'Supplier',     id: 'supplier_id', spinner_id: 'suppliers'}) %>
+                            <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]', title: 'Supplier',     id: 'sel_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save Size'>
@@ -119,22 +114,34 @@
                     </form>
                 </div>
             </div>
-            <script src='/js/stores/items/show/addSize.js'></script>
         <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
-<script src='/js/stores/items/show/view.js'></script>
 <script>showTab('<%= tab %>')</script>
+
+<script src='/js/stores/items/show/view.js'></script>
+<script src='/js/stores/items/show/categories/view.js'></script>
+<% if (permissions.item_edit) { %>
+    <script src='/js/utils/list/genders.js'></script>
+    <script src='/js/stores/items/show/categories/add.js'></script>
+    <script src='/js/stores/items/show/categories/delete.js'></script>
+    <script src='/js/stores/items/show/edit.js'></script>
+<% } %>
 <script async>getItem()</script>
 <script async>getCategories()</script>
-<% if (permissions.item_edit) { %>
-    <script>loadCategoryDelete()</script>
+<% if (permissions.item_delete) { %>
+    <script src="/js/stores/items/show/delete.js"></script>
 <% } %>
+
 <% if (permissions.access_sizes) { %>
-    <script src='/js/stores/items/show/getSizes.js'></script>
+    <script src='/js/stores/items/show/sizes/view.js'></script>
     <script async>getSizes()</script>
+    <% if (permissions.size_add) { %>
+        <script src='/js/utils/list/suppliers.js'></script>
+        <script src='/js/stores/items/show/sizes/add.js'></script>
+    <% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>
