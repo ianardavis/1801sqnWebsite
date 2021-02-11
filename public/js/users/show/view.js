@@ -20,4 +20,17 @@ function getUser() {
         }
     );
 };
-document.querySelector('#reload').addEventListener('click', getUser);
+window.addEventListener('load', function () {
+    addFormListener(
+        'user_password',
+        'PUT',
+        `/users/password/${path[3]}`,
+        {
+            onComplete: [
+                getUser,
+                function () {$('#mdl_user_password').modal('hide')}
+            ]
+        }
+    );
+    document.querySelector('#reload').addEventListener('click', getUser);
+});

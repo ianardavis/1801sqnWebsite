@@ -16,10 +16,10 @@ function check_fields() {
     } else _save.disabled = true;
 };
 window.addEventListener('load', function () {
-    _bader.addEventListener('input',     check_fields);
-    _name.addEventListener('input',      check_fields);
-    _ini.addEventListener('input',       check_fields);
+    _bader   .addEventListener('input',  check_fields);
+    _name    .addEventListener('input',  check_fields);
+    _ini     .addEventListener('input',  check_fields);
     _login_id.addEventListener('input',  check_fields);
-    rank_id.addEventListener('change',   check_fields);
+    rank_id  .addEventListener('change', check_fields);
     status_id.addEventListener('change', check_fields);
 });

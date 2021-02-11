@@ -6,8 +6,8 @@
 <%- include(`${partials}/spinner`, {id: 'users'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'rank_id',   spinner_id: 'ranks'}) %>
-	<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'status_id', spinner_id: 'statuses'}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'rank_id',   spinner_id: 'ranks', 	  reload_id: 'reload_ranks'}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'status_id', spinner_id: 'statuses', reload_id: 'reload_statuses'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-40" onclick="sortTable(0, 'tbl_users')">Bader/Service #</th>
@@ -23,16 +23,9 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-
 <script src="/js/utils/list/statuses.js"></script>
 <script src="/js/utils/list/ranks.js"></script>
 <script src="/js/users/index/users.js"></script>
 <script async>listStatuses({blank: true, blank_text: 'All'})</script>
 <script async>listRanks(   {blank: true, blank_text: 'All'})</script>
-<script>
-	window.addEventListener( "load", function () {
-		document.querySelector(`#reload`).addEventListener("click", function () {listStatuses({blank: true, blank_text: 'All'})});
-		document.querySelector(`#reload`).addEventListener("click", function () {listRanks(	  {blank: true, blank_text: 'All'})});
-	});
-</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

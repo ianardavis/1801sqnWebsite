@@ -29,14 +29,16 @@ function getUsers() {
 let int_load_users = window.setInterval(
     function () {
         if (statuses_loaded === true && ranks_loaded === true) {
-            window.clearInterval(int_load_users);
             getUsers();
+            window.clearInterval(int_load_users);
         }
     },
     100
 );
 window.addEventListener("load", function () {
-    document.querySelector('#reload')   .addEventListener('click', getUsers);
+    document.querySelector('#reload')   .addEventListener('click',  getUsers);
     document.querySelector('#status_id').addEventListener("change", getUsers);
     document.querySelector('#rank_id')  .addEventListener("change", getUsers);
+    document.querySelector('#reload_statuses').addEventListener("click", function () {listStatuses({blank: true, blank_text: 'All'})});
+    document.querySelector('#reload_ranks')   .addEventListener("click", function () {listRanks(   {blank: true, blank_text: 'All'})});
 });

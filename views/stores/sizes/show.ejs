@@ -19,12 +19,9 @@
                 <%- include(`${partials}/menu/button`, {id: 'serial_add', text: 'Add Serial #',       modal: 'serial_add', classes: ['_serials_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'stock_add',  text: 'Add Stock Location', modal: 'stock_add',  classes: ['_stock_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'order_add',  text: 'Add Order',          modal: 'order_add',  classes: ['_orderable_element']}) %>
-				<% if (permissions.item_delete) { %><form id='form_delete'><% } %>
+				<% if (permissions.item_delete) { %><form id='form_size_delete'><% } %>
                 <%- include(`${partials}/menu/button`, {id: 'delete',     text: 'Delete'}) %>
-                <% if (permissions.item_delete) { %>
-					</form>
-					<script src="/js/stores/sizes/show/delete.js"></script>
-				<% } %>
+                <% if (permissions.item_delete) { %></form><% } %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>
@@ -137,7 +134,6 @@
     <div id="div_modals">
         <% if (permissions.serial_add || permissions.stock_add) { %>
             <datalist id="locations_list"></datalist>
-            <script src="/js/stores/locations/getLocations.js"></script>
         <% } %>
         <% if (permissions.size_edit) { %>
             <div     id='mdl_size_edit'   class="modal fade" tabindex="-1" role="dialog">
@@ -180,7 +176,6 @@
                     </form>
                 </div>
             </div>
-            <script src="/js/stores/sizes/show/orders/add.js"></script>
         <% } %>
         <% if (permissions.access_nsns) { %>
             <div     id='mdl_nsn_view'    class="modal fade" tabindex="-1" role="dialog">
@@ -227,7 +222,6 @@
                         </form>
                     </div>
                 </div>
-                <script src="/js/stores/sizes/show/nsns/add.js"></script>
             <% } %>
         <% } %>
         <% if (permissions.access_serials) { %>
@@ -268,7 +262,6 @@
                         </form>
                     </div>
                 </div>
-                <script src="/js/stores/sizes/show/serials/add.js"></script>
             <% } %>
         <% } %>
         <% if (permissions.access_stocks) { %>
@@ -309,7 +302,6 @@
                                                     <button class='btn btn-success w-100'>Save</button>
                                                 </div>
                                             </form>
-                                            <script src="/js/stores/sizes/show/stock/adjusts/add.js"></script>
                                         <% } %>
                                         <table class='table table-sm table-hover'>
                                             <thead class='thead-dark'>
@@ -348,7 +340,6 @@
                         </form>
                     </div>
                 </div>
-                <script src="/js/stores/sizes/show/stock/add.js"></script>
             <% } %>
         <% } %>
     </div>
@@ -358,35 +349,63 @@
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
 <script src="/js/stores/sizes/show/view.js"></script>
+<script src="/js/stores/sizes/show/details/view.js"></script>
 <script async>getSize()</script>
 <script async>getDetails()</script>
-<% if (permissions.access_nsns) { %>
-    <script src="/js/stores/sizes/show/nsns/view.js"></script>
-    <script async>getNSNs()</script>
-<% } %>
-<% if (permissions.access_serials) { %>
-    <script src="/js/stores/sizes/show/serials/view.js"></script>
-    <script async>getSerials()</script>
-<% } %>
-<% if (permissions.access_stocks) { %>
-    <script src="/js/stores/sizes/show/stock/view.js"></script>
-    <script async>getStocks()</script>
-    <% if (permissions.access_adjusts) { %>
-        <script src="/js/stores/sizes/show/stock/adjusts/view.js"></script>
-    <% } %>
-<% } %>
-<% if (permissions.access_orders) { %>
-    <script src="/js/stores/sizes/show/orders/view.js"></script>
-    <script async>getOrders()</script>
-<% } %>
-<% if (permissions.access_issues) { %>
-    <script src="/js/stores/sizes/show/issues/view.js"></script>
-    <script async>getIssues()</script>
-<% } %>
 <% if (permissions.size_edit) { %>
     <script src="/js/utils/list/suppliers.js"></script>
     <script src="/js/stores/sizes/show/edit.js"></script>
-    <script async>getSizeEdit()</script>
-    <script>loadDetailDelete()</script>
+    <script src="/js/stores/sizes/show/details/delete.js"></script>
+    <script src="/js/stores/sizes/show/details/add.js"></script>
+<% } %>
+<% if (permissions.size_delete) { %>
+    <script src="/js/stores/sizes/show/delete.js"></script>
+<% } %>
+
+<% if (permissions.serial_add || permissions.stock_add) { %>
+    <script src="/js/stores/locations/getLocations.js"></script>
+<% } %>
+
+<% if (permissions.access_nsns) { %>
+    <script src="/js/stores/sizes/show/nsns/view.js"></script>
+    <script async>getNSNs()</script>
+    <% if (permissions.nsn_add) { %>
+        <script src="/js/stores/sizes/show/nsns/add.js"></script>
+    <% } %>
+<% } %>
+
+<% if (permissions.access_serials) { %>
+    <script src="/js/stores/sizes/show/serials/view.js"></script>
+    <script async>getSerials()</script>
+    <% if (permissions.serial_add) { %>
+        <script src="/js/stores/sizes/show/serials/add.js"></script>
+    <% } %>
+<% } %>
+
+<% if (permissions.access_stocks) { %>
+    <script src="/js/stores/sizes/show/stock/view.js"></script>
+    <script async>getStocks()</script>
+    <% if (permissions.stock_add) { %>
+        <script src="/js/stores/sizes/show/stock/add.js"></script>
+    <% } %>
+    <% if (permissions.access_adjusts) { %>
+        <script src="/js/stores/sizes/show/stock/adjusts/view.js"></script>
+        <% if (permissions.adjust_add) { %>
+            <script src="/js/stores/sizes/show/stock/adjusts/add.js"></script>
+        <% } %>
+    <% } %>
+<% } %>
+
+<% if (permissions.access_orders) { %>
+    <script src="/js/stores/sizes/show/orders/view.js"></script>
+    <script async>getOrders()</script>
+    <% if (permissions.order_add) { %>
+        <script src="/js/stores/sizes/show/orders/add.js"></script>
+    <% } %>
+<% } %>
+
+<% if (permissions.access_issues) { %>
+    <script src="/js/stores/sizes/show/issues/view.js"></script>
+    <script async>getIssues()</script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

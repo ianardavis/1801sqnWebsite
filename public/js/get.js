@@ -27,7 +27,7 @@ function count(options, onComplete) {
     XHR.addEventListener("load", function (event) {
         try {
             let response = JSON.parse(event.target.responseText);
-            if (response.success === true) onComplete(response.count, options);
+            if (response.success === true) onComplete(response.result || 0, options);
             else {
                 alert(`Error: ${response.message || response.error || 'unknown'}`);
                 if (options.onFail) options.onFail();
