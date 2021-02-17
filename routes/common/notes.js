@@ -1,5 +1,5 @@
-module.exports = (app, allowed, inc, permissions, m, db) => {
-    app.get(`/${db}/get/notes`,    permissions, allowed('access_notes', {send: true}), (req, res) => {
+module.exports = (app, al, inc, pm, m, db) => {
+    app.get(`/${db}/get/notes`,    pm, al('access_notes', {send: true}), (req, res) => {
         m.notes.findAll({
             where:   req.query,
             include: [inc.users()]
@@ -7,7 +7,7 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
         .then(notes => res.send({success: true, result: notes}))
         .catch(err => res.error.send(err, res));
     });
-    app.get(`/${db}/get/note`,     permissions, allowed('access_notes', {send: true}), (req, res) => {
+    app.get(`/${db}/get/note`,     pm, al('access_notes', {send: true}), (req, res) => {
         m.notes.findOne({
             where:   req.query,
             include: [inc.users()]
@@ -16,14 +16,14 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post(`/${db}/notes`,       permissions, allowed('note_add',     {send: true}), (req, res) => {
+    app.post(`/${db}/notes`,       pm, al('note_add',     {send: true}), (req, res) => {
         req.body.note.user_id = req.user.user_id;
         m.notes.create(req.body.note)
         .then(note => res.send({success: true, message: 'Note added'}))
         .catch(err => res.error.send(err, res));
     });
     
-    app.put(`/${db}/notes`,        permissions, allowed('note_edit',    {send: true}), (req, res) => {
+    app.put(`/${db}/notes`,        pm, al('note_edit',    {send: true}), (req, res) => {
         m.notes.findOne({
             where: {note_id: req.body.note_id},
             attributes: ['note_id', '_system']
@@ -40,7 +40,7 @@ module.exports = (app, allowed, inc, permissions, m, db) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete(`/${db}/notes/:id`, permissions, allowed('note_delete',  {send: true}), (req, res) => {
+    app.delete(`/${db}/notes/:id`, pm, al('note_delete',  {send: true}), (req, res) => {
         m.notes.findOne({
             where: {note_id: req.params.id},
             attributes: ['note_id', '_system']

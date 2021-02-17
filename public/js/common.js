@@ -89,7 +89,7 @@ function set_breadcrumb(options = {}) {
     let breadcrumb = document.querySelector('#breadcrumb');
     if (breadcrumb) {
         breadcrumb.innerText = options.text || '';
-        breadcrumb.setAttribute('href', options.href || '');
+        if (options.href) breadcrumb.setAttribute('href', options.href);
     };
 };
 function set_value(options = {}) {

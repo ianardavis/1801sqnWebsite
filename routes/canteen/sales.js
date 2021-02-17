@@ -1,8 +1,8 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/canteen/sales/:id',      permissions, allowed('access_sales'),               (req, res) => res.render('canteen/sales/show'));
+module.exports = (app, al, inc, pm, m) => {
+    app.get('/canteen/sales/:id',      pm, al('access_sales'),               (req, res) => res.render('canteen/sales/show'));
 
-    app.get('/canteen/get/sales',      permissions, allowed('access_sales', {send: true}), (req, res) => {
+    app.get('/canteen/get/sales',      pm, al('access_sales', {send: true}), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
@@ -13,7 +13,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(sales => res.send({success: true, result: sales}))
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/sale',       permissions, allowed('access_sales', {send: true}), (req, res) => {
+    app.get('/canteen/get/sale',       pm, al('access_sales', {send: true}), (req, res) => {
         m.sales.findOne({
             where: req.query,
             include: [inc.users()]
@@ -24,7 +24,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/user_sale',  permissions, allowed('access_pos',   {send: true}), (req, res) => {
+    app.get('/canteen/get/user_sale',  pm, al('access_pos',   {send: true}), (req, res) => {
         m.sessions.findAll({
             where: {_status: 1},
             attributes: ['session_id']
@@ -45,7 +45,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/canteen/get/sale_lines', permissions, allowed('access_pos',   {send: true}), (req, res) => {
+    app.get('/canteen/get/sale_lines', pm, al('access_pos',   {send: true}), (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
             include: [inc.items()]
@@ -54,8 +54,9 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.post('/canteen/sale_lines',    permissions, allowed('access_pos',   {send: true}), (req, res) => {
-        if (req.body.line) {
+    app.post('/canteen/sale_lines',    pm, al('access_pos',   {send: true}), (req, res) => {
+        if (!req.body.line) res.send({success: false, message: 'No line specified'})
+        else {
             m.sales.findOne({
                 where: {sale_id: req.body.line.sale_id},
                 include: [inc.sessions({attributes: ['_status']})],
@@ -87,8 +88,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                 else {
                                     return line.increment('_qty', {by: req.body.line._qty})
                                     .then(result => {
-                                        if (result) res.send({success: true, message: 'Line updated'})
-                                        else res.send({success: false, message: 'Line not updated'});
+                                        if (result) res.send({success: true,  message: 'Line updated'})
+                                        else        res.send({success: false, message: 'Line not updated'});
                                     })
                                     .catch(err => res.error.send(err, res));
                                 };
@@ -100,10 +101,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 };
             })
             .catch(err => res.error.send(err, res));
-        } else res.send({success: false, message: 'No line specified'});
+        };
     });
     
-    app.put('/canteen/sale_lines',     permissions, allowed('access_pos',   {send: true}), (req, res) => {
+    app.put('/canteen/sale_lines',     pm, al('access_pos',   {send: true}), (req, res) => {
         if (req.body.line) {
             m.sale_lines.findOne({
                 where: {line_id: req.body.line.line_id},
@@ -144,7 +145,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
             .catch(err => res.error.send(err, res));
         } else res.send({success: false, message: 'No line specified'});
     });
-    app.put('/canteen/sales',          permissions, allowed('access_pos',   {send: true}), (req, res) => {
+    app.put('/canteen/sales',          pm, al('access_pos',   {send: true}), (req, res) => {
         m.sales.findOne({
             where:      {sale_id: req.body.sale_id},
             attributes: ['sale_id', '_status']
@@ -168,8 +169,8 @@ module.exports = (app, allowed, inc, permissions, m) => {
                             total += line._qty * line._price;
                         });
                         if (req.body.sale.tendered < total) {
-                            if (req.body.sale.debit_user_id && String(req.body.sale.debit_user_id) !== '') {
-                                return m.credits.findOne({where: {user_id: req.body.sale.debit_user_id}})
+                            if (req.body.sale.user_id_debit && String(req.body.sale.user_id_debit) !== '') {
+                                return m.credits.findOne({where: {user_id: req.body.sale.user_id_debit}})
                                 .then(account => {
                                     if (account) {
                                         if (account._credit < (total - req.body.sale.tendered)) res.send({success: false, message: 'Not enough on account'})
@@ -186,7 +187,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                                             sale_id: sale.sale_id,
                                                             _amount: debit_amount,
                                                             _type: 'Debit',
-                                                            user_id: req.body.sale.debit_user_id
+                                                            user_id: req.body.sale.user_id_debit
                                                         })
                                                     );
                                                     if (Number(req.body.sale.tendered) > 0) {
@@ -203,9 +204,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                                             {where: {sale_id: sale.sale_id}}
                                                         )
                                                     );
-                                                    actions.push(
-                                                        sale.update({_status: 2})
-                                                    );
+                                                    actions.push(sale.update({_status: 2}));
                                                     lines.forEach(line => {
                                                         actions.push(
                                                             m.items.findOne({
@@ -238,9 +237,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                     {where: {sale_id: sale.sale_id}}
                                 )
                             );
-                            actions.push(
-                                sale.update({_status: 2})
-                            );
+                            actions.push(sale.update({_status: 2}));
                             actions.push(
                                 m.payments.create({
                                     sale_id: sale.sale_id,
@@ -256,10 +253,10 @@ module.exports = (app, allowed, inc, permissions, m) => {
                                     .then(item => {return item.decrement('_qty', {by: line._qty})})
                                 );
                             });
-                            if (req.body.sale.credit_user_id && String(req.body.sale.credit_user_id) !== '' && change > 0) {
+                            if (req.body.sale.user_id_credit && String(req.body.sale.user_id_credit) !== '' && change > 0) {
                                 actions.push(
                                     m.credits.findOrCreate({
-                                        where:    {user_id: req.body.sale.credit_user_id},
+                                        where:    {user_id: req.body.sale.user_id_credit},
                                         defaults: {_credit: change}
                                     })
                                     .then(([credit, created]) => {

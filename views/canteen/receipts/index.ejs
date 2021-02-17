@@ -3,42 +3,56 @@
 <%- include(`${partials}/breadcrumb`, {href: '/canteen/receipts', text: 'Receipts'}) %>
 <% if (permissions.receipt_add) { %>
     <li class="nav-item">
-        <form id='form_add_receipt'>
-            <button class="nav-link confirm">
-                <i class="fas fa-plus"></i>
-            </button>
-        </form>
+        <a class="nav-link" data-toggle="modal" data-target="#mdl_receipt_add">
+            <i class="fas fa-plus"></i>
+        </a>
     </li>
 <% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'receipts'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-    <%- include(`${partials}/inputs/select`, {title: 'Complete Receipts', id: 'sel_status', options: [{value:'', text: 'Include'},{value:'_status=1', text: 'Exclude', selected: true},{value:'_status=2', text: 'Only'}]}) %>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
             <th class="w-40" onclick="sortTable(0, 'tbl_receipts')">Date</th>
-            <th class="w-40" onclick="sortTable(1, 'tbl_receipts')">User</th>
-            <th class="w-20" onclick="sortTable(2, 'tbl_receipts')">Status</th>
+            <th class="w-40" onclick="sortTable(1, 'tbl_receipts')">Item</th>
+            <th class="w-10" onclick="sortTable(1, 'tbl_receipts')">Quantity</th>
+            <th class="w-10" onclick="sortTable(1, 'tbl_receipts')">Cost</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_receipts"></tbody>
     </table>
+    <div id="div_modals">
+        <% if (permissions.receipt_add) { %>
+            <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_receipt_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Receipt</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items',  name: 'receipt[item_id]',                        required: true}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total', placeholder: 'Optional',                                      step: '0.01', min: '0.01'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',  placeholder: 'Required', name: 'receipt[_cost]', required: true, step: '0.01', min: '0.01'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty',        placeholder: 'Required', name: 'receipt[_qty]',  required: true,               min: '1'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Add Item'>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+    </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/canteen/receipts/index/getReceipts.js"></script>
 <script src="/js/addFormListener.js"></script>
+<script src="/js/canteen/receipts/index/getReceipts.js"></script>
 <script async>getReceipts()</script>
 <% if (permissions.receipt_add) { %>
-    <script>
-        window.addEventListener('load', function () {
-            addFormListener(
-                'add_receipt',
-                'POST',
-                '/canteen/receipts',
-                {onComplete: getReceipts}
-            )
-        });
-    </script>
+    <script src="/js/canteen/receipts/index/add.js"></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

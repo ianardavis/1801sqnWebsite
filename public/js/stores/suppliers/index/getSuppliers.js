@@ -3,10 +3,7 @@ function getSuppliers() {
     if (_suppliers) {
         _suppliers.innerHTML = '';
         get(
-            {
-                table: 'suppliers',
-                query: []
-            },
+            {table: 'suppliers'},
             function (suppliers, options) {
                 suppliers.forEach(supplier => {
                     let card       = document.createElement('div'),

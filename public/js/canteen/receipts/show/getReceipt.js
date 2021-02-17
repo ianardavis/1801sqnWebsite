@@ -1,4 +1,3 @@
-var statuses = {"0": "Cancelled", "1": "Open", "2": "Complete"};
 function getReceipt() {
     get(
         {
@@ -7,25 +6,14 @@ function getReceipt() {
             query: [`receipt_id=${path[3]}`]
         },
         function (receipt, options) {
-            for (let [id, value] of Object.entries(receipt)) {
-                try {
-                    let element = document.querySelector(`#${id}`);
-                    if (id === 'user') {
-                        element.innerText = print_user(value);
-                        let receipt_user = document.querySelector('#receipt_user');
-                        if (receipt_user) receipt_user.setAttribute('href', `/canteen/users/${value.user_id}`);
-                    } else if (id === '_status') {
-                        element.innerText = statuses[value];
-                        ['complete', 'cancel', 'add_item'].forEach(e => {
-                            let btn = document.querySelector(`#btn_${e}`);
-                            if (value === 1) {
-                                if (btn) btn.removeAttribute('disabled');
-                            } else if (btn) btn.setAttribute('disabled', true);
-                        });
-                    } else if (id === 'createdAt') element.innerText = print_date(value);
-                } catch (error) {console.log(error)};
-            };
-            set_breadcrumb({text: receipt.receipt_id, href: `/canteen/receipts/${receipt.receipt_id}`});
+            set_innerText({id: 'item',      text: receipt.item._name});
+            set_innerText({id: '_qty',      text: receipt._qty});
+            set_innerText({id: '_cost',     text: `£${receipt._cost}`});
+            set_innerText({id: 'createdAt', text: print_date(receipt.createdAt, true)});
+            set_innerText({id: 'user',      text: print_user(receipt.user)});
+            set_attribute({id: 'item_link', attribute: 'href', value: `/canteen/items/${receipt.item_id}`});
+            set_attribute({id: 'user_link', attribute: 'href', value: `/canteen/users/${receipt.user_id}`});
+            set_breadcrumb({text: receipt.receipt_id});
         }
     )
 };

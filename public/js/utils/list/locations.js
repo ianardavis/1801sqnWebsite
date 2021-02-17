@@ -1,9 +1,6 @@
 function listLocations(line_id, blankselect = false) {
     get(
-        {
-            table: 'locations',
-            query: []
-        },
+        {table: 'locations'},
         function (locations, options) {
             let sel_location = document.querySelector(`#sel_location_${line_id}`);
             if (sel_location) {

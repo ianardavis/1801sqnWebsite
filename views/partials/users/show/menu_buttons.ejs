@@ -1,17 +1,8 @@
-<% if (permissions.user_edit) { %>
-    <button class="dropdown-item" id='btn_user_edit' data-toggle='modal' data-target='#mdl_user_edit'>
-        Edit User
-    </button>
-    <form id='form_password_reset'>
-        <button class='dropdown-item confirm'>
-            Toggle Reset Password
-        </button>
-    </form>
-<% } %>
-<button class="dropdown-item" data-toggle='modal' data-target='#mdl_user_password'>
-    Change Password
-</button>
-<% if (permissions.permission_edit) { %>
-    <button class='dropdown-item' data-toggle='modal' data-target='#mdl_permissions_edit'>Edit Permissions</button>
-<% } %>
+<%- include(`${partials}/menu/button`, {id: 'user_edit',        text: 'Edit User',        modal: 'user_edit'}) %>
+<% if (permissions.user_edit) { %><form id='form_password_reset'><% } %>
+<%- include(`${partials}/menu/button`, {id: 'password_reset',   text: 'Toggle Reset Password'}) %>
+<% if (permissions.user_edit) { %></form><% } %>
+<%- include(`${partials}/menu/button`, {id: 'user_password',    text: 'Change Password',  modal: 'user_password'}) %>
+<%- include(`${partials}/menu/button`, {id: 'permissions_edit', text: 'Edit Permissions', modal: 'permissions_edit'}) %>
+<%- include(`${partials}/menu/button`, {id: 'note_add',         text: 'Add Note',         modal: 'note_add'}) %>
 <div class="dropdown-divider"></div>

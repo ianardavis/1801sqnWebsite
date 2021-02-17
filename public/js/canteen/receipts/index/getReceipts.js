@@ -1,27 +1,32 @@
-let statuses = {"0": "Cancelled", "1": "Open", "2": "Complete"};
 function getReceipts() {
-    let sel_status = document.querySelector('#sel_status');
     get(
         {
-            db: 'canteen',
-            table: 'receipts',
-            query: [sel_status.value]
+            db:    'canteen',
+            table: 'receipts'
         },
         function (receipts, options) {
-            clearElement('tbl_receipts');
-            let table_body = document.querySelector('#tbl_receipts');
-            receipts.forEach(receipt => {
-                let row = table_body.insertRow(-1);
-                add_cell(row, table_date(receipt.createdAt));
-                add_cell(row, {text: print_user(receipt.user)});
-                add_cell(row, {text: statuses[receipt._status]});
-                add_cell(row, {append: new Link({
-                    href: `/canteen/receipts/${receipt.receipt_id}`,
-                    small: true
-                }).e});
-            });
+            let tbl_receipts = document.querySelector('#tbl_receipts');
+            if (tbl_receipts) {
+                tbl_receipts.innerHTML = '';
+                receipts.forEach(receipt => {
+                    try {
+                        let row = tbl_receipts.insertRow(-1);
+                        add_cell(row, table_date(receipt.createdAt));
+                        if (receipt.item) add_cell(row, {text: receipt.item._name})
+                        else              add_cell(row, {text: '***Unknown***'});
+                        add_cell(row, {text: receipt._qty});
+                        add_cell(row, {text: `£${receipt._cost}`});
+                        add_cell(row, {append: new Link({
+                            href: `/canteen/receipts/${receipt.receipt_id}`,
+                            small: true
+                        }).e});
+                    } catch (error) {
+                        console.log(receipt);
+                        console.log(error);
+                    };
+                });
+            };
         }
     );
 };
-document.querySelector('#sel_status').addEventListener('change', getReceipts);
 document.querySelector('#reload').addEventListener('click', getReceipts);

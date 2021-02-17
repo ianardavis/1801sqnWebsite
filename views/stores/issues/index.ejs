@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores/issues', text: 'Issue'}) %>
 <li class="nav-item">
 	<a class="nav-link" data-toggle="modal" data-target="#mdl_issue_add">
@@ -7,10 +7,10 @@
 	</a>
 </li>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/spinner`, {id: 'issue'}) %>
+<%- include(`${partials}/spinner`, {id: 'issues'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class="container">
-	<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_filter_users', spinner: true, spinner_id: 'filter_users'}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
         <%- include(`${partials}/tab_head`, {id: 'status_0', count_id: 'status_0', spinner: 'status_0', title: 'Cancelled'}) %>
         <%- include(`${partials}/tab_head`, {id: 'status_1', count_id: 'status_1', spinner: 'status_1', title: 'Requested'}) %>
@@ -35,23 +35,21 @@
 						<h5 class="modal-title">Add Issue</h5>
 						<a class='btn btn-primary float-right' id="reload_add"><i class='fas fa-redo'></i></a>
 					</div>
-					<div class="modal-body">
-						<form id='form_line'>
-							<%- include(`${partials}/inputs/select`, 	 {title: 'User',     	 id: 'sel_users', name: 'line[user_id_issue]', spinner: true, spinner_id: 'users', required: true}) %>
-							<div id="div_items"   class='hidden'>
-								<%- include(`${partials}/inputs/text`,   {title: 'Search Items', id: 'inp_item',  autocomplete: 'off'}) %>
-								<%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items', size: '10', spinner: true, spinner_id: 'items'}) %>
-							</div>
-							<div id="div_sizes"   class='hidden'>
-								<%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size',  autocomplete: 'off'}) %>
-								<%- include(`${partials}/inputs/select`, {title: 'Size',         id: 'sel_sizes', name: 'line[size_id]', required: true, size: '10', spinner: true, spinner_id: 'sizes'}) %>
-							</div>
-							<div id="div_details" class='hidden'>
-								<%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: '_qty',	  name: 'line[_qty]',    required: true, value: '1', min: '1'}) %>
-								<button class="btn btn-success w-100">Add</button>
-							</div>
-						</form>
-					</div>
+					<form class="modal-body" id='form_line'>
+						<%- include(`${partials}/inputs/select`, 	 {title: 'User',     	 id: 'sel_users_add', name: 'line[user_id_issue]', spinner_id: 'users_add', reload_id: 'reload_users_add', required: true}) %>
+						<div id="div_items"   class='hidden'>
+							<%- include(`${partials}/inputs/text`,   {title: 'Search Items', id: 'inp_item',  autocomplete: 'off'}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items', size: '10', spinner_id: 'items'}) %>
+						</div>
+						<div id="div_sizes"   class='hidden'>
+							<%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size',  autocomplete: 'off'}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Size',         id: 'sel_sizes', name: 'line[size_id]', required: true, size: '10', spinner_id: 'sizes'}) %>
+						</div>
+						<div id="div_details" class='hidden'>
+							<%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: '_qty',	  name: 'line[_qty]',    required: true, value: '1', min: '1'}) %>
+							<button class="btn btn-success w-100">Add</button>
+						</div>
+					</form>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
 					</div>
@@ -62,13 +60,14 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/addFormListener.js'></script>
-<script src='/js/stores/issues/index/formListener.js'></script>
 <script src='/js/stores/issues/index/get.js'></script>
-<script src='/js/stores/issues/index/create.js'></script>
+<script src='/js/utils/list/users.js'></script>
+<script src='/js/stores/issues/index/add.js'></script>
 <script src='/js/search/select.js'></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('status_1');</script>
 <% if (permissions.order_add) { %>
 	<script src='/js/stores/issues/index/order.js'></script>
-	<script>loadOrderActions()</script>
 <% } %>
 <% if (permissions.issue_approve) { %>
 	<script src='/js/stores/issues/index/approve.js'></script>
@@ -78,10 +77,6 @@
 	<script src='/js/utils/list/serials.js'></script>
 	<script src='/js/utils/list/stocks.js'></script>
 	<script src='/js/stores/issues/index/issue.js'></script>
-	<script>loadIssueActions()</script>
 <% } %>
-<script src='/js/tabs.js'></script>
-<script>showTab('status_1');</script>
-<script async>getUsersFilter()</script>
-<script>loadGetIssues()</script>
+<script async>getUsers()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

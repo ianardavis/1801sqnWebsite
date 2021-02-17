@@ -11,20 +11,18 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.item_edit) { %>
-                    <%- include(`${partials}/menu/edit`, {href: 'javascript:$("#mdl_edit_item").modal("show")'}) %>
-                <% } %>
-                <%- include(`${partials}/notes/menu_add`) %>
+                <%- include(`${partials}/menu/button`, {id: 'item_edit', modal: 'item_edit', text: 'Edit'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add',  modal: 'note_add',  text: 'Add Note'}) %>
                 <% if (permissions.item_delete) { %>
-                    <%- include(`${partials}/menu/delete`) %>
+                    <%- include(`${partials}/menu/delete`, {permission: 'item_delete', text: 'Delete'}) %>
                 <% } %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',  spinner: 'item'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipt_lines',  count_id: 'receipt',  permission: 'access_receipts'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoff_lines', count_id: 'writeoff', permission: 'access_writeoffs'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines',     count_id: 'sale',     permission: 'access_sales'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',    spinner: 'notes',          count_id: 'note',     permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipts',   count_id: 'receipt',  permission: 'access_receipts'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoffs',  count_id: 'writeoff', permission: 'access_writeoffs'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines', count_id: 'sale',     permission: 'access_sales'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',    spinner: 'notes',      count_id: 'note',     permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -73,9 +71,9 @@
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
     <% if (permissions.item_add) { %>
-        <div id='mdl_edit_item' class="modal" tabindex="-1" role="dialog">
+        <div id='mdl_item_edit' class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_edit_item'>
+                <form class="modal-content" id='form_item_edit'>
                     <div class="modal-header">
                         <h5 class="modal-title">Edit Item</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -83,13 +81,13 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[_name]',    id: 'edit_name',    required: true, maxLength: '45'}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[_price]',   id: 'edit_price',   required: true, step: '0.01', min: '0'}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[_cost]',    id: 'edit_cost',    required: true, step: '0.01', min: '0'}) %>
-                        <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[_current]', id: 'edit_current', options: [{value: '1', text: 'Yes', selected: true}, {value: '0', text: 'No'}]}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[_name]',    id: '_name_edit',    required: true, maxLength: '45'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[_price]',   id: '_price_edit',   required: true, step: '0.01', min: '0'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[_cost]',    id: '_cost_edit',    required: true, step: '0.01', min: '0'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[_current]', id: '_current_edit', options: [{value: '1', text: 'Yes', selected: true}, {value: '0', text: 'No'}]}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100 confirm" value='Save Item'>
+                        <input type="submit" class="btn btn-success w-100" value='Save Item'>
                     </div>
                 </form>
             </div>
@@ -100,35 +98,24 @@
 <script src='/js/tabs.js'></script>
 <script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>');</script>
-<script src='/js/canteen/items/show/getItem.js'></script>
+<script src='/js/canteen/items/show/view.js'></script>
 <script async>getItem()</script>
 <% if (permissions.access_receipts) { %>
-    <script src='/js/canteen/items/show/getReceipts.js'></script>
+    <script src='/js/canteen/items/show/receipts/view.js'></script>
     <script async>getReceipts()</script>
 <% } %>
 <% if (permissions.access_writeoffs) { %>
-    <script src='/js/canteen/items/show/getWriteoffs.js'></script>
+    <script src='/js/canteen/items/show/writeoffs/view.js'></script>
     <script async>getWriteoffs()</script>
 <% } %>
 <% if (permissions.access_sales) { %>
-    <script src='/js/canteen/items/show/getSales.js'></script>
+    <script src='/js/canteen/items/show/sales/view.js'></script>
     <script async>getSales()</script>
 <% } %>
 <% if (permissions.item_edit) { %>
-<script>
-    window.addEventListener('load', function () {
-        addFormListener(
-            'edit_item',
-            'PUT',
-            '/canteen/items',
-            {
-                onComplete: [
-                    getItem,
-                    function () {$('#mdl_edit_item').modal('hide')}
-                ]
-            }
-        )
-    })
-</script>
+    <script src='/js/canteen/items/show/edit.js'></script>
+<% } %>
+<% if (permissions.item_delete) { %>
+    <script src='/js/canteen/items/show/delete.js'></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

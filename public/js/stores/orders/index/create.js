@@ -19,10 +19,7 @@ function reset_order_add() {
 };
 function getItems() {
     get(
-        {
-            table: 'items',
-            query: []
-        },
+        {table: 'items'},
         function (items, options) {
             let sel_items = document.querySelector('#sel_items');
             if (sel_items) {

@@ -11,7 +11,7 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/notes/menu_add`) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
 				<%- include(`${partials}/menu/action`) %>
 				<form id='form_raise'>
 					<button id='btn_raise' class='dropdown-item'>Raise</button>

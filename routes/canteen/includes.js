@@ -71,26 +71,9 @@ module.exports = (inc, m) => {
         };
     };
     
-    inc.receipt_lines = (options = {}) => {
-        let include = [inc.items()];
-        if (options.include) include = options.include
-        else {
-            if (options.receipt) include.push(inc.receipts({as: 'receipt'}));
-        };
-        return {
-            model:    m.canteen.receipt_lines,
-            include:  include,
-            as:       options.as       || 'lines',
-            where:    options.where    || null,
-            required: options.required || false
-        };
-    };
     inc.receipts = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
-        else {
-            if (options.lines) include.push(inc.receipt_lines());
-        };
         include.push(inc.users());
         return {
             model:    m.canteen.receipts,
@@ -101,26 +84,9 @@ module.exports = (inc, m) => {
         };
     };
     
-    inc.writeoff_lines = (options = {}) => {
-        let include = [inc.items()];
-        if (options.include) include = options.include
-        else {
-            if (options.writeoff) include.push(inc.writeoffs({as: 'writeoff'}));
-        };
-        return {
-            model:    m.canteen.writeoff_lines,
-            include:  include,
-            as:       options.as       || 'lines',
-            where:    options.where    || null,
-            required: options.required || false
-        };
-    };
     inc.writeoffs = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
-        else {
-            if (options.lines) include.push(inc.writeoff_lines());
-        };
         include.push(inc.users());
         return {
             model:    m.canteen.writeoffs,

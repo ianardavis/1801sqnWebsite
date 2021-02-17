@@ -2,7 +2,6 @@ function listAccounts(options = {}) {
     get(
         {
             table: 'accounts',
-            query: [],
             ...options
         },
         function (accounts, options) {

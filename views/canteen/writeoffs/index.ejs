@@ -3,7 +3,7 @@
 <%- include(`${partials}/breadcrumb`, {href: '/canteen/writeoffs', text: 'Writeoffs'}) %>
 <% if (permissions.writeoff_add) { %>
     <li class="nav-item">
-        <a class="nav-link confirm" id='btn_add_writeoff'>
+        <a class="nav-link" id='btn_add_writeoff'>
             <i class="fas fa-plus"></i>
         </a>
     </li>
@@ -12,13 +12,11 @@
 <%- include(`${partials}/spinner`, {id: 'writeoffs'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-    <%- include(`${partials}/inputs/select`, {title: 'Complete Writeoffs', id: 'sel_status', options: [{value:'', text: 'Include'},{value:'_status=1', text: 'Exclude', selected: true},{value:'_status=2', text: 'Only'}]}) %>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-30" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
-            <th class="w-30" onclick="sortTable(1, 'tbl_writeoffs')">User</th>
-            <th class="w-30" onclick="sortTable(2, 'tbl_writeoffs')">Reason</th>
-            <th class="w-10" onclick="sortTable(3, 'tbl_writeoffs')">Status</th>
+            <th class="w-45" onclick="sortTable(0, 'tbl_receipts')">Date</th>
+            <th class="w-45" onclick="sortTable(1, 'tbl_receipts')">Item</th>
+            <th class="w-10" onclick="sortTable(1, 'tbl_receipts')">Quantity</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_writeoffs"></tbody>
@@ -37,7 +35,7 @@
                         <%- include(`${partials}/inputs/text`, {title: 'Reason', name: 'writeoff[_reason]', required: true, maxLength: '45'}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100 confirm" value='Add Writeoff'>
+                        <input type="submit" class="btn btn-success w-100" value='Add Writeoff'>
                     </div>
                 </form>
             </div>

@@ -6,7 +6,6 @@ function getRanks() {
             {
                 db: 'users',
                 table: 'ranks',
-                query: []
             },
             function (ranks, options) {
                 ranks.forEach(rank => {

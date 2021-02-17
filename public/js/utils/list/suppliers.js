@@ -4,7 +4,6 @@ function listSuppliers(options = {}) {
     get(
         {
             table: 'suppliers',
-            query: [],
             ...options
         },
         function (suppliers, options) {

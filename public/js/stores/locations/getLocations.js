@@ -1,9 +1,6 @@
 function getLocations() {
     get(
-        {
-            table: 'locations',
-            query: []
-        },
+        {table: 'locations'},
         function (locations, options) {
             let locations_list = document.querySelector('#locations_list');
             if (locations_list) {

@@ -5,7 +5,7 @@ module.exports = (app, al, inc, pm, m) => {
 
     app.get('/stores/count/sizes',    pm, al('access_sizes', {send: true}), (req, res) => {
         m.stores.sizes.count({where: req.query})
-        .then(count => res.send({success: true, count: count}))
+        .then(count => res.send({success: true, result: count}))
         .catch(err => res.error.send(err, res));
     });
     app.get('/stores/get/sizes',      pm, al('access_sizes', {send: true}), (req, res) => {

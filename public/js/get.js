@@ -1,5 +1,6 @@
 function get(options, onComplete) {
     show_spinner(options.spinner || options.table || '');
+    if (!options.query) options.query = [];
     const XHR = new XMLHttpRequest();
     XHR.addEventListener("load", function (event) {
         try {

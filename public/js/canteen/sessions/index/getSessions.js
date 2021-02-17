@@ -2,8 +2,7 @@ function getSessions() {
     get(
         {
             db: 'canteen',
-            table: 'sessions',
-            query: []
+            table: 'sessions'
         },
         function (sessions, options) {
             clearElement('tbl_sessions');

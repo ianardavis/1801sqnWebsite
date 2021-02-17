@@ -3,10 +3,7 @@ function getSettings() {
     if (tbl_settings) {
         tbl_settings.innerHTML = '';
         get(
-            {
-                table: 'settings',
-                query: []
-            },
+            {table: 'settings'},
             function (settings, options) {
                 settings.forEach(setting => {
                     let row = tbl_settings.insertRow(-1);

@@ -4,7 +4,6 @@ function listGenders(options = {}) {
 		get(
 			{
 				table: 'genders',
-				query: [],
                 spinner: options.spinner || 'genders',
                 ...options
 			},

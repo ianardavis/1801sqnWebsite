@@ -1,7 +1,7 @@
 const inc = {}, op = require('sequelize').Op;
 module.exports = (app, m) => {
-    var permissions = require(`${process.env.ROOT}/middleware/permissions.js`)(m.canteen.permissions),
-        allowed     = require(`${process.env.ROOT}/middleware/allowed.js`),
+    var pm = require(`${process.env.ROOT}/middleware/permissions.js`)(m.canteen.permissions, m.users.permissions),
+        al     = require(`${process.env.ROOT}/middleware/allowed.js`),
         fs          = require("fs");
     require('./includes.js')(inc, m);
     fs
@@ -13,15 +13,15 @@ module.exports = (app, m) => {
         if (file === 'includes.js' || file === 'functions') {
             
         } else if (file === 'permissions.js') {
-            require(`./${file}`)(app, allowed, inc, permissions, {permissions: m.canteen.permissions, users: m.users.users})
+            require(`./${file}`)(app, al, inc, pm, {permissions: m.canteen.permissions, users: m.users.users})
         } else {
-            require(`./${file}`)(app, allowed, inc, permissions, m.canteen)
+            require(`./${file}`)(app, al, inc, pm, m.canteen)
         };
     });
 
-    app.get('/canteen',                   permissions, allowed('access_canteen'), (req, res) => res.render('canteen/index'));
+    app.get('/canteen',                   pm, al('access_canteen'), (req, res) => res.render('canteen/index'));
 
-    app.get('/canteen/get/settings',      permissions, allowed('access_canteen'), (req, res) => {
+    app.get('/canteen/get/settings',      pm, al('access_canteen'), (req, res) => {
         m.canteen.settings.findOne({where: req.query})
         .then(settings => res.send({success: true, result: settings}))
         .catch(err => res.error.send(err, res));

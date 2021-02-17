@@ -4,7 +4,6 @@ function getGenders_add () {
 		get(
 			{
 				table:   'genders',
-                query:   [],
                 spinner: 'genders_add'
 			},
 			function (genders, options) {

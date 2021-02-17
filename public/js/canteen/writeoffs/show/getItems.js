@@ -2,8 +2,7 @@ function getItems() {
     get(
         {
             db: 'canteen',
-            table: 'items',
-            query: []
+            table: 'items'
         },
         function (items, options) {
             clearElement('sel_items');

@@ -3,7 +3,7 @@ function getUsers() {
         rank   = document.querySelector('#rank_id')   || {value: ''};
     get(
         {
-            db: 'users',
+            db:    'users',
             table: 'users',
             query: [status.value, rank.value]
         },

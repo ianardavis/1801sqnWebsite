@@ -1,16 +1,8 @@
 const op = require('sequelize').Op,
       { scryptSync, randomBytes } = require("crypto");
-module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/users/get/users',    permissions, allowed('access_users',  {send: true}),              (req, res) => {
-        m.users.findAll({
-            where:      req.query,
-            include:    [inc.ranks(), inc.statuses()],
-            attributes: ['user_id', 'full_name', '_bader', '_name', '_ini', 'status_id', 'rank_id', '_login_id', '_reset', '_last_login']
-        })
-        .then(users => res.send({success: true, result: users}))
-        .catch(err => res.error.send(err, res));
-    });
-    app.get('/users/get/user',     permissions, allowed('access_users',  {send: true}),              (req, res) => {
+module.exports = (app, al, inc, pm, m) => {
+    app.get('/users',              pm, al('access_users',  {send: true, allow: true}), (req, res) => res.render('users/index'));
+    app.get('/users/get/user',     pm, al('access_users',  {send: true}),              (req, res) => {
         m.users.findOne({
             where:      req.query,
             include:    [inc.ranks(), inc.statuses()],
@@ -20,10 +12,31 @@ module.exports = (app, allowed, inc, permissions, m) => {
             if (user) res.send({success: true,  result: user})
             else      res.send({success: false, message: 'User not found'});
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => res.send({success: false, message: `Error getting user: ${err.message}`}));
+    });
+    app.get('/users/get/current',  pm, al('access_users',  {send: true, allow: true}), (req, res) => {
+        let where = {status_id: {[op.or]: [1, 2]}}
+        if (!req.allowed) where.user_id = req.user.user_id;
+        m.users.findAll({
+            where:      where,
+            include:    [inc.ranks(), inc.statuses()],
+            attributes: ['user_id', 'full_name', '_name', '_ini']
+        })
+        .then(users => res.send({success: true,  result: users}))
+        .catch(err =>  res.send({success: false, message: `Error getting users: ${err.message}`}));
+    });
+    app.get('/users/get/users',    pm, al('access_users',  {send: true, allow: true}), (req, res) => {
+        if (!req.allowed) req.query.user_id = req.user.user_id;
+        m.users.findAll({
+            where:      req.query,
+            include:    [inc.ranks(), inc.statuses()],
+            attributes: ['user_id', 'full_name', '_name', '_ini']
+        })
+        .then(users => res.send({success: true,  result: users}))
+        .catch(err =>  res.send({success: false, message: `Error getting users: ${err.message}`}));
     });
 
-    app.post('/users/users',       permissions, allowed('user_add',      {send: true}),              (req, res) => {
+    app.post('/users/users',       pm, al('user_add',      {send: true}),              (req, res) => {
         let _user = req.body.user;
         if (
             (_user._bader    && _user._bader !== '')    &&
@@ -37,14 +50,14 @@ module.exports = (app, allowed, inc, permissions, m) => {
                 else {
                     let _password = generatePassword();
                     m.users.create({..._user, ...{_reset: 1}, ...encryptPassword(_password.plain)})
-                    .then(user => res.send({success: true, message: `User added. Password: ${_password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
-                    .catch(err => res.error.send(err, res));
+                    .then(user => res.send({success: true,  message: `User added. Password: ${_password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
+                    .catch(err => res.send({success: false, message: `Error creating user: ${err.message}`}));
                 }
             })
-        } else res.error.send(new Error('Not all required information has been submitted'), res)
+        } else res.send({success: false, message: 'Not all required information has been submitted'});
     });
     
-    app.put('/users/password/:id', permissions, allowed('user_password', {send: true, allow: true}), (req, res) => {
+    app.put('/users/password/:id', pm, al('user_password', {send: true, allow: true}), (req, res) => {
         if      (!req.allowed && req.user.user_id !== Number(req.params.id)) res.send({success: false, message: 'Permission denied'})
         else if (!req.body._password)                                        res.send({success: false, message: 'No password submitted'})
         else {
@@ -61,13 +74,13 @@ module.exports = (app, allowed, inc, permissions, m) => {
                         if (result) res.send({success: true,  message: 'Password changed'})
                         else        res.send({success: false, message: 'Password not changed'});
                     })
-                    .catch(err => res.error.send(err, res));
+                    .catch(err =>   res.send({success: false, message: 'Error saving new password'}));
                 };
             })
-            .catch(err => res.error.send(err, res));
+            .catch(err => res.send({success: false, message: `Error getting user: ${err.message}`}));
         };
     });
-    app.put('/users/users/:id',    permissions, allowed('user_edit',     {send: true}),              (req, res) => {
+    app.put('/users/users/:id',    pm, al('user_edit',     {send: true}),              (req, res) => {
         if (req.body.user) {
             if (!req.body.user._reset) req.body.user._reset = 0;
             ['user_id','full_name','_salt','_password','createdAt','updatedAt'].forEach(e => {
@@ -75,23 +88,24 @@ module.exports = (app, allowed, inc, permissions, m) => {
             });
             m.users.findOne({where: {user_id: req.params.id}})
             .then(user => {
-                return user.update(req.body.user).then(user => res.send({success: true, message: 'User saved'}))
-                .catch(err => res.error.send(err, res));
+                return user.update(req.body.user)
+                .then(user => res.send({success: true,  message: 'User saved'}))
+                .catch(err => res.send({success: false, message: `Error updating user: ${err.message}`}));
             })
-            .catch(err => res.error.send(err, res));
-        } else res.error.send(new Error('No details submitted'), res);
+            .catch(err => res.send({success: false, message: `Error getting user: ${err.message}`}));
+        } else res.send({success: false, message: 'No details submitted'});
     });
     
-    app.delete('/users/users/:id', permissions, allowed('user_delete',   {send: true}),              (req, res) => {
+    app.delete('/users/users/:id', pm, al('user_delete',   {send: true}),              (req, res) => {
         if (Number(req.user.user_id) !== Number(req.params.id)) {
             m.users.permissions.destroy({where: {user_id: req.params.id}})
             .then(result => {
                 m.users.destroy({where: {user_id: req.params.id}})
                 .then(result => res.send({success: true, message: 'User/Permissions deleted'}))
-                .catch(err => res.error.send(err, res));
+                .catch(err => res.send({success: false, message: `Error deleting user: ${err.message}`}));
             })
-            .catch(err => res.error.send(err, res));
-        } else res.send_error('You can not delete your own account', res);       
+            .catch(err => res.send({success: false, message: `Error deleting user permissions: ${err.message}`}));
+        } else res.send({success: false, message: 'You can not delete your own account'});       
     });
 
     function generatePassword () {

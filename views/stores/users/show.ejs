@@ -12,8 +12,6 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/users/show/menu_buttons`) %>
-				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
-                <div class="dropdown-divider"></div>
                 <% if (permissions.issue_add) { %>
                     <form id="form_issue_add">
                         <input type="hidden" class='user_id' name='user_id_issue'>

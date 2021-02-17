@@ -3,10 +3,7 @@ function getAccounts() {
     if (tbl_accounts) {
         tbl_accounts.innerHTML = '';
         get(
-            {
-                table: 'accounts',
-                query: []
-            },
+            {table: 'accounts'},
             function (accounts, options) {
                 accounts.forEach(account => {
                     let row = tbl_accounts.insertRow(-1);

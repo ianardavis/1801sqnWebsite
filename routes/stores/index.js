@@ -1,9 +1,9 @@
 const inc = {};
 module.exports = (app, m) => {
-    var allowed     = require(`${process.env.ROOT}/middleware/allowed.js`),
-        permissions = require(`${process.env.ROOT}/middleware/permissions.js`)(m.stores.permissions),
-        download    = require('../functions/download'),
-        fs          = require("fs");
+    var al = require(`${process.env.ROOT}/middleware/allowed.js`),
+        pm = require(`${process.env.ROOT}/middleware/permissions.js`)(m.stores.permissions, m.users.permissions),
+        // download = require('../functions/download'),
+        fs = require("fs");
     require('./includes.js')(inc, m);
     fs
     .readdirSync(__dirname)
@@ -13,12 +13,12 @@ module.exports = (app, m) => {
     .forEach(function(file) {
         if (file === 'includes.js' || file === 'functions') {
 
-        } else require(`./${file}`)(app, allowed, inc, permissions, m);
+        } else require(`./${file}`)(app, al, inc, pm, m);
     });
 
-    app.get('/stores',                   permissions, allowed('access_stores'), (req, res) => res.render('stores/index'));
+    app.get('/stores', pm, al('access_stores'), (req, res) => res.render('stores/index'));
 
-    app.get('/stores/download',          permissions, allowed('file_download'), (req, res) => {
-        if (req.query.file) download(req.query.file, req, res);
-    });
+    // app.get('/stores/download',          pm, al('file_download'), (req, res) => {
+    //     if (req.query.file) download(req.query.file, req, res);
+    // });
 };

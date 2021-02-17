@@ -3,7 +3,7 @@ function getOrderActions() {
         get(
             {
                 table: 'issue',
-                query: [`issue_id=${row.dataset.issue_id}`]
+                query: [`issue_id=${row.dataset.id}`]
             },
             function (issue, options) {
                 if (issue._status === 2 && issue.size._orderable) {
@@ -14,15 +14,3 @@ function getOrderActions() {
         );
     });
 };
-function loadOrderActions() {
-    let actions_interval = window.setInterval(
-        function () {
-            if (lines_loaded['2'] === true) {
-                getOrderActions();
-                clearInterval(actions_interval);
-            }
-        },
-        500
-    );
-};
-document.querySelector('#reload').addEventListener('click', loadOrderActions);

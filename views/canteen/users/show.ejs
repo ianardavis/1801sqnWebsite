@@ -12,7 +12,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/users/show/menu_buttons`) %>
-                <%- include(`${partials}/notes/menu_add`) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
             </div>
         </li>
         <%- include(`${partials}/users/show/tab_heads`) %>

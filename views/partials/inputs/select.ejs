@@ -1,35 +1,37 @@
-<div class="input-group mb-1">
-    <div class="input-group-prepend w-<%= locals.prepend_size || 30 %>">
-        <label
-            class="input-group-text w-100"
-            <% if (locals.id) { %>for="<%= id %>"<% } %>
-        >
-            <%= title %>
-            <% if (locals.spinner_id) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id, small: true}) %><% } %>
-        </label>
-    </div>
-    <select
-        class="custom-select<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
-        <% if (locals.id) { %>id='<%= id %>'<% } %>
-        <% if (locals.name) { %>name=<%= name %><% } %>
-        <% if (locals.required) { %>required<% } %>
-        <% if (locals.disabled) { %>disabled<% } %>
-        <% if (locals.onchange) { %>onchange='<%= onchange %>'<% } %>
-        <% if (locals.size) { %>size='<%= size %>'<% } %>
-    >
-    <% if (locals.options) { %>
-        <% options.forEach(option => { %>
-            <option value="<%= option.value %>"<% if (option.selected === true) { %> selected<% } %>><%= option.text %></option>
-        <% }) %>
-    <% } %>
-    </select>
-    <% if (locals.reload_id) { %>
-        <div class="input-group-append">
-            <a class='btn btn-primary' id='<%= reload_id %>'>
-                <i class="fas fa-redo"></i>
-            </a>
+<% if (!locals.permission || permissions[permission]) { %>
+    <div class="input-group mb-1">
+        <div class="input-group-prepend w-<%= locals.prepend_size || 30 %>">
+            <label
+                class="input-group-text w-100"
+                <% if (locals.id) { %>for="<%= id %>"<% } %>
+            >
+                <%= title %>
+                <% if (locals.spinner_id) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id, small: true}) %><% } %>
+            </label>
         </div>
-    <% } else if (locals.append) { %>
-        <%- include('append', {append: locals.append}) %>
-    <% } %>
-</div>
+        <select
+            class="custom-select<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
+            <% if (locals.id) { %>id='<%= id %>'<% } %>
+            <% if (locals.name) { %>name=<%= name %><% } %>
+            <% if (locals.required) { %>required<% } %>
+            <% if (locals.disabled) { %>disabled<% } %>
+            <% if (locals.onchange) { %>onchange='<%= onchange %>'<% } %>
+            <% if (locals.size) { %>size='<%= size %>'<% } %>
+        >
+        <% if (locals.options) { %>
+            <% options.forEach(option => { %>
+                <option value="<%= option.value %>"<% if (option.selected === true) { %> selected<% } %>><%= option.text %></option>
+            <% }) %>
+        <% } %>
+        </select>
+        <% if (locals.reload_id) { %>
+            <div class="input-group-append">
+                <a class='btn btn-primary' id='<%= reload_id %>'>
+                    <i class="fas fa-redo"></i>
+                </a>
+            </div>
+        <% } else if (locals.append) { %>
+            <%- include('append', {append: locals.append}) %>
+        <% } %>
+    </div>
+<% } %>

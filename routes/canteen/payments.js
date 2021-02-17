@@ -1,6 +1,6 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/canteen/get/payments', permissions, allowed('access_payments', {send: true}), (req, res) => {
+module.exports = (app, al, inc, pm, m) => {
+    app.get('/canteen/get/payments', pm, al('access_payments', {send: true}), (req, res) => {
         m.payments.findAll({
             where: req.query,
             include: [

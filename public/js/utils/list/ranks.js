@@ -5,7 +5,6 @@ function listRanks(options = {}) {
         {
             db:    'users',
             table: 'ranks',
-            query: [],
             ...options
         },
         function (ranks, options) {

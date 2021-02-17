@@ -12,9 +12,10 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <button id='btn_close' class="dropdown-item confirm" disabled>
+                <button id='btn_close' class="dropdown-item" disabled>
                     Close
                 </button>
+                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
@@ -120,7 +121,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100 confirm" value='Close'>
+                        <input type="submit" class="btn btn-success w-100" value='Close'>
                     </div>
                 </form>
             </div>

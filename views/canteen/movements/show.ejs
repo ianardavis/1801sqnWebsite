@@ -7,6 +7,14 @@
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
+            </div>
+        </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note', permission: 'access_notes'}) %>
     </ul>

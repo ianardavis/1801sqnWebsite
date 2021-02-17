@@ -1,9 +1,9 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, permissions, m) => {
-    app.get('/canteen/writeoffs',             permissions, allowed('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/index'));
-    app.get('/canteen/writeoffs/:id',         permissions, allowed('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/show'));
+module.exports = (app, al, inc, pm, m) => {
+    app.get('/canteen/writeoffs',             pm, al('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/index'));
+    app.get('/canteen/writeoffs/:id',         pm, al('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/show'));
     
-    app.get('/canteen/get/writeoffs',         permissions, allowed('access_writeoffs',      {send: true}), (req, res) => {
+    app.get('/canteen/get/writeoffs',         pm, al('access_writeoffs',      {send: true}), (req, res) => {
         m.writeoffs.findAll({
             include: [inc.users()],
             where: req.query
@@ -11,7 +11,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .then(writeoffs => res.send({success: true, result: writeoffs}))
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/writeoff',          permissions, allowed('access_writeoffs',      {send: true}), (req, res) => {
+    app.get('/canteen/get/writeoff',          pm, al('access_writeoffs',      {send: true}), (req, res) => {
         m.writeoffs.findOne({
             where: req.query,
             include: [inc.users()]
@@ -22,7 +22,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/writeoff_lines',    permissions, allowed('access_writeoff_lines', {send: true}), (req, res) => {
+    app.get('/canteen/get/writeoff_lines',    pm, al('access_writeoff_lines', {send: true}), (req, res) => {
         m.writeoff_lines.findAll({
             include: [
                 inc.items(),
@@ -34,7 +34,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.post('/canteen/writeoffs',            permissions, allowed('writeoff_add',          {send: true}), (req, res) => {
+    app.post('/canteen/writeoffs',            pm, al('writeoff_add',          {send: true}), (req, res) => {
         m.writeoffs.findOrCreate({
             where: {
                 _status: 1,
@@ -48,7 +48,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         })
     
     });
-    app.post('/canteen/writeoff_lines/:id',   permissions, allowed('writeoff_line_add',     {send: true}), (req, res) => {
+    app.post('/canteen/writeoff_lines/:id',   pm, al('writeoff_line_add',     {send: true}), (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id']
@@ -89,7 +89,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
     
     });
 
-    app.put('/canteen/writeoffs/:id',         permissions, allowed('writeoff_edit',         {send: true}), (req, res) => {
+    app.put('/canteen/writeoffs/:id',         pm, al('writeoff_edit',         {send: true}), (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status'],
@@ -149,12 +149,12 @@ module.exports = (app, allowed, inc, permissions, m) => {
         .catch(err => res.send(err, res));
     });
     
-    app.delete('/canteen/writeoff_lines/:id', permissions, allowed('writeoff_line_delete',  {send: true}), (req, res) => {
+    app.delete('/canteen/writeoff_lines/:id', pm, al('writeoff_line_delete',  {send: true}), (req, res) => {
         m.writeoff_lines.update({_status: 0}, {where: {line_id: req.params.id}})
         .then(result => res.send({success: true, message: 'Line deleted'}))
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/canteen/writeoffs/:id',      permissions, allowed('writeoff_delete',       {send: true}), (req, res) => {
+    app.delete('/canteen/writeoffs/:id',      pm, al('writeoff_delete',       {send: true}), (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status']

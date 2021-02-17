@@ -1,12 +1,15 @@
-function getIssueActions() {
-    document.querySelectorAll('.actions-2, .actions-3').forEach(row => {
+function getIssueActions(status) {
+    document.querySelectorAll(`.actions-${status}`).forEach(row => {
         get(
             {
                 table: 'issue',
-                query: [`issue_id=${row.dataset.issue_id}`]
+                query: [`issue_id=${row.dataset.id}`]
             },
             function (issue, options) {
-                if (issue._status === 2 || issue._status === 3) {
+                if (
+                    (issue._status === 2 || issue._status === 3) &&
+                    issue._issueable
+                ) {
                     let select = document.querySelector(`#sel_action_${issue.issue_id}`);
                     if (select) {
                         select.appendChild(new Option({text: 'Issue', value: '4'}).e);
@@ -49,15 +52,3 @@ function getIssueActions() {
         );
     });
 };
-function loadIssueActions() {
-    let actions_interval = window.setInterval(
-        function () {
-            if (lines_loaded['2'] === true && lines_loaded['3'] === true) {
-                getIssueActions();
-                clearInterval(actions_interval);
-            }
-        },
-        500
-    );
-};
-document.querySelector('#reload').addEventListener('click', loadIssueActions);

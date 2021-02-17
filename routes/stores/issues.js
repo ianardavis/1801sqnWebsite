@@ -155,12 +155,12 @@ module.exports = (app, al, inc, pm, m) => {
         return new Promise((resolve, reject) => {
             return m.users.users.findOne(
                 {where: {user_id: user_id}},
-                {attributes: ['user_id', '_status']}
+                {attributes: ['user_id', 'status_id']}
             )
             .then(user => {
-                if (!user)                                         reject(new Error('User not found'))
-                else if (user._status !== 1 && user._status !== 2) reject(new Error('Only current users can be issued to'))
-                else                                               resolve(user);
+                if      (!user)                                        reject(new Error('User not found'))
+                else if (user.status_id !== 1 && user.status_id !== 2) reject(new Error('Only current users can be issued to'))
+                else                                                   resolve(user);
             })
             .catch(err => reject(err));
         });

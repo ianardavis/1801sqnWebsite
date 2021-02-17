@@ -5,7 +5,6 @@ function listStatuses(options = {}) {
         {
             db:    'users',
             table: 'statuses',
-            query: [],
             ...options
         },
         function (statuses, options) {

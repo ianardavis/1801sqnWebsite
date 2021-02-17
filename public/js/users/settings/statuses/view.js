@@ -5,8 +5,7 @@ function getStatuses() {
         get(
             {
                 db: 'users',
-                table: 'statuses',
-                query: []
+                table: 'statuses'
             },
             function (statuses, options) {
                 statuses.forEach(status => {

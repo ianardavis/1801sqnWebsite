@@ -116,8 +116,11 @@ module.exports = (inc, m) => {
         };
     };
     inc.files = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
         return {
             model:      m.stores.files,
+            include:    include,
             attributes: options.attributes || null,
             as:         options.as         || 'files',
             required:   options.required   || false,
@@ -129,8 +132,8 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         return {
             model:      m.stores.file_details,
-            attributes: options.attributes || null,
             include:    include,
+            attributes: options.attributes || null,
             as:         options.as         || 'details',
             where:      options.where      || null,
             required:   options.required   || false

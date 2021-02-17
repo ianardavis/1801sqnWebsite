@@ -2,7 +2,6 @@ function getNSNGroups(options = {}) {
     get(
         {
             table:                   'nsn_groups',
-            query:                   [],
             selected:                options.selected || 79,
             selected_classification: options.selected_classification || null
         },
@@ -66,7 +65,6 @@ function getNSNCountries(options = {}) {
         get(
             {
                 table:    'nsn_countries',
-                query:    [],
                 selected: options.selected || 82
             },
             function (nsn_countries, options) {

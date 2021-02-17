@@ -22,7 +22,7 @@
                         <button class="dropdown-item" id='btn_complete' disabled>Complete</button>
                     </form>
                 <% } %>
-                <%- include(`${partials}/notes/menu_add`) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'writeoff'}) %>
@@ -66,7 +66,7 @@
                         <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'qty',        placeholder: 'Required', name: 'line[_qty]',  required: true, min: '1'}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100 confirm" value='Add Item'>
+                        <input type="submit" class="btn btn-success w-100" value='Add Item'>
                     </div>
                 </form>
             </div>

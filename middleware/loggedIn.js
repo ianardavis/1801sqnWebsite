@@ -6,7 +6,7 @@ module.exports = () => {
                 req._parsedUrl.pathname === `/stores/users/${req.user.user_id}/password`
             ) {
                 next();
-                return null;
+                // return null;
             } else {
                 if (req.user._reset) req.flash('info', 'You must change your password before you can continue')
                 res.redirect(`/stores/users/${req.user.user_id}/password`);
@@ -16,7 +16,7 @@ module.exports = () => {
             res.redirect(`/login?redirect=${req._parsedUrl.pathname.split('/')[1]}`);
         } else {
             next();
-            return null;
+            // return null;
         };
     };
 };

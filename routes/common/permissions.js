@@ -1,4 +1,4 @@
-module.exports = (app, allowed, permissions, m, db) => {
+module.exports = (app, al, pm, m, db) => {
     let permission_tree = {
         stores: [
             {_permission: 'access_stores', children: [
@@ -230,7 +230,7 @@ module.exports = (app, allowed, permissions, m, db) => {
             ]}
         ]
     };
-    app.get(`/${db}/get/permissions`,    permissions, allowed('access_permissions', {send: true}), (req, res) => {
+    app.get(`/${db}/get/permissions`, pm, al('access_permissions', {send: true}), (req, res) => {
         m[db].permissions.findAll({
             where: req.query,
             attributes: ['permission_id', '_permission', 'createdAt']
@@ -238,7 +238,7 @@ module.exports = (app, allowed, permissions, m, db) => {
         .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree[db]}}))
         .catch(err => res.error.send(err, res));
     });
-    app.put(`/${db}/permissions/:id`,    permissions, allowed('permission_edit',    {send: true}), (req, res) => {
+    app.put(`/${db}/permissions/:id`, pm, al('permission_edit',    {send: true}), (req, res) => {
         m.users.users.findOne({
             where: {user_id: req.params.id},
             attributes: ['user_id']

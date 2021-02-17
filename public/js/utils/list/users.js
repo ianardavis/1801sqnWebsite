@@ -1,32 +1,30 @@
-let users_loaded = false;
 function listUsers(options = {}) {
-    users_loaded = false;
-    get(
-        {
-            table: 'users',
-            query: [],
-            ...options
-        },
-        function (users, options) {
-            let sel_users = document.querySelector(`#${options.select || 'sel_users'}`);
-            if (sel_users) {
-                sel_users.innerHTML = '';
-                if (options.blank === true) sel_users.appendChild(new Option(options.blank_opt || {}).e);
+    let select = document.querySelector(`#${options.select}`);
+    if (select) {
+        select.innerHTML = '';
+        get(
+            {
+                db:      'users',
+                table:   options.table || 'users',
+                spinner: options.spinner || options.table || 'users',
+                ...options
+            },
+            function (users, options) {
+                if (options.blank === true) select.appendChild(new Option(options.blank_opt || {}).e);
                 users.forEach(user => {
                     let value = '';
                     if (options.id_only === true) value = user.user_id
                     else                          value = `user_id${options.append || ''}=${user.user_id}`
-                    console.log(options.selected);
-                    sel_users.appendChild(
+                    select.appendChild(
                         new Option({
                             value:    value,
                             text:     print_user(user),
                             selected: (options.selected === user.user_id)
                         }).e
-                    )
+                    );
                 });
-            };
-            users_loaded = true;
-        }
-    );
+                if (options.onComplete) options.onComplete();
+            }
+        );
+    } else if (options.onComplete) options.onComplete();
 };

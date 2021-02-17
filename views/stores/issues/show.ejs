@@ -11,7 +11,7 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/notes/menu_add`) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
 				<%- include(`${partials}/menu/delete`, {permission: 'issue_edit'}) %>
             </div>
         </li>
@@ -47,6 +47,5 @@
 <script async>showIssue()</script>
 <% if (permissions.issue_delete) { %>
 	<script src="/js/stores/issues/show/delete.js"></script>
-	<script async>setDeleteButton()</script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

@@ -1,6 +1,8 @@
 <div class="tab-pane fade" id="status_<%= status %>" role="tabpanel" aria-labelledby="status_<%= status %>-tab">
+    <% if (status === '1') { %>
     <form id='form_lines_<%= status %>'>
-        <% if (status === '1') { %><button class='btn btn-success w-100 mb-2'>Action lines</button><% } %>
+        <button class='btn btn-success w-100 mb-2'>Action lines</button>
+    <% } %>
         <table class="table table-sm table-hover w-100">
             <thead class="thead-dark">
                 <th class="w-20" onclick="sortTable(0, 'tbl_orders_<%= status %>')">Date</th>
@@ -12,5 +14,5 @@
             </thead>
             <tbody id="tbl_orders_<%= status %>"></tbody>
         </table>
-    </form>
+        <% if (status === '1') { %></form><% } %>
 </div>

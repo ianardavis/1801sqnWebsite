@@ -444,16 +444,22 @@ module.exports = (app, al, inc, pm, m) => {
             return m.stores.suppliers.findOne({
                 where:      {supplier_id: supplier_id},
                 include:    [
-                    inc.files(),
+                    inc.files({
+                        include:    [inc.file_details()],
+                        attributes: ['file_id', '_filename'],
+                        where:      {_description: 'Demand'}
+                    }),
                     inc.accounts()
                 ],
                 attributes: ['supplier_id']
             })
             .then(supplier => {
-                if      (!supplier)         reject(new Error('Supplier not found'))
-                else if (!supplier.file)    reject(new Error('No template for this supplier'))
-                else if (!supplier.account) reject(new Error('No account for this supplier'))
-                else                        resolve([supplier.file, supplier.account, supplier.supplier_id]);
+                if      (!supplier)                   reject(new Error('Supplier not found'))
+                else if (!supplier.files)             reject(new Error('No template for this supplier'))
+                else if (supplier.files.length === 0) reject(new Error('No demand files for this supplier'))
+                else if (supplier.files.length > 1)   reject(new Error('Multiple demand files for this supplier'))
+                else if (!supplier.account)           reject(new Error('No account for this supplier'))
+                else                                  resolve([supplier.files[0], supplier.account, supplier.supplier_id]);
             })
             .catch(err => reject(err));
         });
@@ -577,8 +583,7 @@ module.exports = (app, al, inc, pm, m) => {
                 let users = [];
                 results.filter(e => e.status === 'fulfilled').forEach(e => {
                     e.value.forEach(user => {
-                        let userIndex = users.findIndex(e => e.user_id === user.user_id)
-                        if (userIndex === -1) {
+                        if (users.findIndex(e => e.user_id === user.user_id) === -1) {
                             users.push({
                                 user_id: user.user_id,
                                 name:    user._name,
@@ -600,7 +605,7 @@ module.exports = (app, al, inc, pm, m) => {
             if (file) {
                 let path     = `${process.env.ROOT}/public/res`,
                     new_file = `demands/demand-${demand_id}.xlsx`;
-                fs.copyFile(`${path}/files/${file._path}`, `${path}/${new_file}`, COPYFILE_EXCL, function (err) {
+                fs.copyFile(`${path}/files/${file._filename}`, `${path}/${new_file}`, COPYFILE_EXCL, function (err) {
                     if (err) {
                         if (err.code === 'EEXIST') reject(new Error('File already exists for this demand'))
                         else                       reject(new Error(err));
@@ -611,52 +616,68 @@ module.exports = (app, al, inc, pm, m) => {
     };
     function write_cover_sheet(template, account, file, users) {
         return new Promise((resolve, reject) => {
-            let ex       = require('exceljs'),
-                workbook = new ex.Workbook(),
-                path     = `${process.env.ROOT}/public/res/`;
-            workbook.xlsx.readFile(`${path}/${file}`)
-            .then(() => {
-                try {
-                    let worksheet = workbook.getWorksheet(template._cover_sheet);
-
-                    let cell_code = worksheet.getCell(template._code);
-                    cell_code.value = account._number;
-
-                    let cell_rank = worksheet.getCell(template._rank);
-                    cell_rank.value = account.user.rank._rank;
-
-                    let cell_name = worksheet.getCell(template._name);
-                    cell_name.value = account.user._name;
-
-                    let cell_sqn = worksheet.getCell(template._sqn);
-                    cell_sqn.value = account._name;
-
-                    let cell_date = worksheet.getCell(template._date),
-                        now       = new Date(),
-                        line      = counter();
-                    cell_date.value = now.toDateString();
-
-                    if (users) {
-                        for (let r = Number(template._request_start); r <= Number(template._request_end); r++) {
-                            let rankCell = worksheet.getCell(template._rank_column + r),
-                                nameCell = worksheet.getCell(template._name_column + r),
-                                currentLine = line() - 1,
-                                sortedKeys = Object.keys(users).sort(),
-                                user = users[sortedKeys[currentLine]];
-                            if (user) {
-                                rankCell.value = user.rank;
-                                nameCell.value = `${user.name}, ${user.ini}`;
-                            } else break;
+            if (template.details.filter(e => e._name === 'Cover sheet').length === 1) {
+                let ex       = require('exceljs'),
+                    workbook = new ex.Workbook(),
+                    path     = `${process.env.ROOT}/public/res/`;
+                workbook.xlsx.readFile(`${path}/${file}`)
+                .then(() => {
+                    try {
+                        let worksheet = workbook.getWorksheet(template._cover_sheet);
+                        if (template.details.filter(e => e._name === 'Code').length === 1) {
+                            let cell_code = worksheet.getCell(template.details.filter(e => e._name === 'Code')[0]._value);
+                            cell_code.value = account._number;
                         };
+
+                        if (template.details.filter(e => e._name === 'Rank').length === 1) {
+                            let cell_rank = worksheet.getCell(template.details.filter(e => e._name === 'Rank')[0]._value);
+                            cell_rank.value = account.user.rank._rank;
+                        };
+
+                        if (template.details.filter(e => e._name === 'Holder').length === 1) {
+                            let cell_name = worksheet.getCell(template.details.filter(e => e._name === 'Holder')[0]._value);
+                            cell_name.value = account.user._name;
+                        };
+
+                        if (template.details.filter(e => e._name === 'Squadron').length === 1) {
+                            let cell_sqn = worksheet.getCell(template.details.filter(e => e._name === 'Squadron')[0]._value);
+                            cell_sqn.value = account._name;
+                        };
+
+                        if (template.details.filter(e => e._name === 'Date').length === 1) {
+                            let cell_date = worksheet.getCell(template.details.filter(e => e._name === 'Date')[0]._value);
+                            cell_date.value = new Date().toDateString();
+                        };
+                        if (
+                            users &&
+                            template.details.filter(e => e._name === 'Rank column').length === 1 &&
+                            template.details.filter(e => e._name === 'Name column').length === 1 &&
+                            template.details.filter(e => e._name === 'User start') .length === 1 &&
+                            template.details.filter(e => e._name === 'User end')   .length === 1
+                        ) {
+                            let line = new counter();
+                            console.log(users);
+                            for (let r = Number(template.details.filter(e => e._name === 'User start')[0]._value); r <= Number(template.details.filter(e => e._name === 'User end')[0]._value); r++) {
+                                let rankCell = worksheet.getCell(template.details.filter(e => e._name === 'Rank column')[0]._value + r),
+                                    nameCell = worksheet.getCell(template.details.filter(e => e._name === 'Name column')[0]._value + r),
+                                    currentLine = line() - 1,
+                                    sortedKeys = Object.keys(users).sort(),
+                                    user = users[sortedKeys[currentLine]];
+                                if (user) {
+                                    rankCell.value = user.rank;
+                                    nameCell.value = `${user.name}, ${user.ini}`;
+                                } else break;
+                            };
+                        };
+                        
+                        workbook.xlsx.writeFile(`${path}/${file}`)
+                        .then(() => resolve(true))
+                        .catch(err => reject(err));
+                    } catch (err) {
+                        reject(err);
                     };
-                    
-                    workbook.xlsx.writeFile(`${path}/${file}`)
-                    .then(() => resolve(true))
-                    .catch(err => reject(err));
-                } catch (err) {
-                    reject(err);
-                };
-            }).catch(err => reject(err));
+                }).catch(err => reject(err));
+            } else reject(new Error('No cover sheet specified'));
         });
     };
     function write_items(file, sizes) {

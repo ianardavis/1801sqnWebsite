@@ -3,16 +3,10 @@ function getFiles() {
     if (tbl_files) {
         tbl_files.innerHTML = '';
         get(
-            {
-                table: 'files',
-                query: []
-            },
+            {table: 'files'},
             function (files, options) {
                 get(
-                    {
-                        table: 'fs_files',
-                        query: []
-                    },
+                    {table: 'fs_files'},
                     function (fs, options) {
                         let table_files = [];
                         files.forEach(file => {

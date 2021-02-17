@@ -9,10 +9,20 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       autoIncrement: true
     },
-    '_status': {
+    'item_id': {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      defaultValue: '1',
+      comment: "null"
+    },
+    '_qty': {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      comment: "null"
+    },
+    '_cost': {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+      defaultValue: '0.00',
       comment: "null"
     },
     'user_id': {

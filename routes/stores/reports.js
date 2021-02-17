@@ -1,11 +1,11 @@
 const op = require('sequelize').Op;
-module.exports = (app, allowed, inc, permissions, m) => {
+module.exports = (app, al, inc, pm, m) => {
     let orders = {}, stock = {};
     require(`./functions/stock`) (m, stock);
     require(`./functions/orders`)(m, orders)
-    app.get('/stores/reports',     permissions, allowed('access_reports'), (req, res) => res.render('stores/reports/index'));
+    app.get('/stores/reports',     pm, al('access_reports'), (req, res) => res.render('stores/reports/index'));
 
-    app.get('/stores/reports/:id', permissions, allowed('access_reports'), (req, res) => {
+    app.get('/stores/reports/:id', pm, al('access_reports'), (req, res) => {
         if (Number(req.params.id) === 1) {
             m.stores.stock.findAll({
                 where: {_qty: {[op.lt]: 0}},
@@ -78,7 +78,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         } else res.error.redirect(new Error('Invalid report'), req, res);
     });
 
-    app.post('/stores/reports/3',  permissions, allowed('access_reports'), (req, res) => {
+    app.post('/stores/reports/3',  pm, al('access_reports'), (req, res) => {
         let selected = []
         for (let [key, line] of Object.entries(req.body.selected)) {
             if (Number(line) > 0) selected.push({size_id: key, _qty: line});
@@ -107,7 +107,7 @@ module.exports = (app, allowed, inc, permissions, m) => {
         };
     });
 
-    app.post('/stores/reports/5',  permissions, allowed('access_reports'), (req, res) => {
+    app.post('/stores/reports/5',  pm, al('access_reports'), (req, res) => {
         let actions = [];
         for (let [key, value] of Object.entries(req.body.corrections)) {
             if (value) {

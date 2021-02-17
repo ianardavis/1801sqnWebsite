@@ -2,7 +2,6 @@ function listCategories(options = {}) {
     get(
         {
             table: 'categories',
-            query: [],
             ...options
         },
         function (categories, options) {

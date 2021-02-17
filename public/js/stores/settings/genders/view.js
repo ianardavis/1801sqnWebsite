@@ -3,10 +3,7 @@ function getGenders() {
     if (tbl_genders) {
         tbl_genders.innerHTML = '';
         get(
-            {
-                table: 'genders',
-                query: []
-            },
+            {table: 'genders'},
             function (genders, options) {
                 genders.forEach(gender => {
                     let row = tbl_genders.insertRow(-1);

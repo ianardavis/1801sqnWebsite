@@ -1,5 +1,5 @@
-module.exports = (app, allowed, inc, loggedIn, m) => {
-    app.get('/stores/get/adjusts', loggedIn, allowed('access_adjusts', {send: true}), (req, res) => {
+module.exports = (app, al, inc, pm, m) => {
+    app.get('/stores/get/adjusts', pm, al('access_adjusts', {send: true}), (req, res) => {
         m.stores.adjusts.findAll({
             where:   req.query,
             include: [
@@ -11,7 +11,7 @@ module.exports = (app, allowed, inc, loggedIn, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/adjusts',    loggedIn, allowed('adjust_add',     {send: true}), (req, res) => {
+    app.post('/stores/adjusts',    pm, al('adjust_add',     {send: true}), (req, res) => {
         if (req.body.adjust.stock_id && req.body.adjust._qty && req.body.adjust._type) {
             m.stores.stocks.findOne({
                 where: {stock_id: req.body.adjust.stock_id},
