@@ -6,9 +6,9 @@ function calculate_cost() {
     };
 };
 function reset_add_item() {
-    set_value({id: 'qty', value: ''});
+    set_value({id: 'qty',        value: ''});
+    set_value({id: 'cost_each',  value: ''});
     set_value({id: 'cost_total', value: ''});
-    set_value({id: 'cost_each', value: ''});
 };
 function getItems() {
     get(

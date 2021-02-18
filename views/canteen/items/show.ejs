@@ -11,8 +11,10 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'item_edit', modal: 'item_edit', text: 'Edit'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'note_add',  modal: 'note_add',  text: 'Add Note'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'item_edit',    modal: 'item_edit',    text: 'Edit'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'writeoff_add', modal: 'writeoff_add', text: 'Writeoff Stock'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'receipt_add',  modal: 'receipt_add',  text: 'Receive Stock'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add',     modal: 'note_add',     text: 'Add Note'}) %>
                 <% if (permissions.item_delete) { %>
                     <%- include(`${partials}/menu/delete`, {permission: 'item_delete', text: 'Delete'}) %>
                 <% } %>
@@ -84,7 +86,52 @@
                         <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[_name]',    id: '_name_edit',    required: true, maxLength: '45'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[_price]',   id: '_price_edit',   required: true, step: '0.01', min: '0'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[_cost]',    id: '_cost_edit',    required: true, step: '0.01', min: '0'}) %>
-                        <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[_current]', id: '_current_edit', options: [{value: '1', text: 'Yes', selected: true}, {value: '0', text: 'No'}]}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[_current]', id: '_current_edit', options: [{value: '1', text: 'Yes'}, {value: '0', text: 'No'}]}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100" value='Save Item'>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+    <% if (permissions.writeoff_add) { %>
+        <div id='mdl_writeoff_add' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_writeoff_add'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Writeoff Stock</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name='writeoff[item_id]' id='item_id_writeoff'>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Reason',   name: 'writeoff[_reason]', required: true, maxLength: '45'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'writeoff[_qty]',    required: true, min: '1'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100" value='Save Item'>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+    <% if (permissions.receipt_add) { %>
+        <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_receipt_add'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Receive Stock</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name='receipt[item_id]' id='item_id_receipt'>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total', placeholder: 'Optional', step: '0.01', min: '0.01'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  name: 'receipt[_cost]',  id: 'cost_each',  placeholder: 'Required', required: true, step: '0.01', min: '0.01'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity',     name: 'receipt[_qty]', id: 'qty_receipt', required: true, min: '1'}) %>
                     </div>
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-success w-100" value='Save Item'>
@@ -103,10 +150,16 @@
 <% if (permissions.access_receipts) { %>
     <script src='/js/canteen/items/show/receipts/view.js'></script>
     <script async>getReceipts()</script>
+    <% if (permissions.receipt_add) { %>
+        <script src='/js/canteen/items/show/receipts/add.js'></script>
+    <% } %>
 <% } %>
 <% if (permissions.access_writeoffs) { %>
     <script src='/js/canteen/items/show/writeoffs/view.js'></script>
     <script async>getWriteoffs()</script>
+    <% if (permissions.writeoff_add) { %>
+        <script src='/js/canteen/items/show/writeoffs/add.js'></script>
+    <% } %>
 <% } %>
 <% if (permissions.access_sales) { %>
     <script src='/js/canteen/items/show/sales/view.js'></script>

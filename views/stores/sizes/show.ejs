@@ -212,7 +212,7 @@
                                 <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true, id: 'nsn_group_id_add'}) %>
                                 <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]', placeholder: 'Required', required: true, id: 'nsn_class_id_add'}) %>
                                 <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true, id: 'nsn_country_id_add'}) %>
-                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[_item_number]',          placeholder: 'Required', required: true, inputmode: 'numeric', maxLength: '8'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[_item_number]',          placeholder: 'Required', required: true, maxLength: '8'}) %>
                                 <%- include(`${partials}/inputs/select`, {title: 'Default?',       name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
                             </div>
                             <div class="modal-footer">

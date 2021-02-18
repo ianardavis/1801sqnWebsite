@@ -43,7 +43,7 @@
             <%- include(`${partials}/inputs/display`, {id: '_address5',  title: ''}) %>
             <%- include(`${partials}/inputs/display`, {id: '_telephone', title: 'Telephone'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_email',     title: 'Email'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_account',   title: 'Account', button: true, modal: 'account_view'}) %>
+            <%- include(`${partials}/inputs/display`, {id: '_account',   title: 'Account', link: true, modal: 'account_view'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_stores',    title: 'RAF Stores'}) %>
             <% if (permissions.access_settings) { %>
             <%- include(`${partials}/inputs/display`, {id: '_default',   title: 'Default Supplier'}) %>

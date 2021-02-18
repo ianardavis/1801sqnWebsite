@@ -1,11 +1,11 @@
 <div class="input-group mb-1">
-    <div class="input-group-prepend w-<%= locals.prepend_size || 30 %>">
+    <div class="input-group-prepend w-30">
         <% if (locals.id) { %>          
             <label class="input-group-text w-100" for='<%= id %>'><%= title %></label>
         <% } else { %>
             <span class="input-group-text w-100"><%= title %></span>
         <% } %>
-        <% if (locals.spinner === true) { %>
+        <% if (locals.spinner_id) { %>
             <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
         <% } %>
     </div>
@@ -16,11 +16,8 @@
         <% if (locals.name) { %>        name='<%= name %>'<% } %>
         <% if (locals.value) { %>       value='<%= value %>'<% } %>
         <% if (locals.required) { %>    required<% } %>
-        <% if (locals.readonly) { %>    readonly<% } %>
-        <% if (locals.disabled) { %>    disabled<% } %>
         <% if (locals.minLength) { %>   minlength='<%= minLength %>'<% } %>
         <% if (locals.maxLength) { %>   maxlength='<%= maxLength %>'<% } %>
-        <% if (locals.inputmode) { %>   inputMode='<%= inputmode %>'<% } %>
         <% if (locals.placeholder) { %> placeholder='<%= placeholder %>'<% } %>
         <% if (locals.autocomplete) { %>autocomplete='<%= autocomplete %>'<% } %>
         <% if (locals.list_id) { %>       

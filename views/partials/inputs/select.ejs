@@ -1,6 +1,6 @@
 <% if (!locals.permission || permissions[permission]) { %>
     <div class="input-group mb-1">
-        <div class="input-group-prepend w-<%= locals.prepend_size || 30 %>">
+        <div class="input-group-prepend w-30">
             <label
                 class="input-group-text w-100"
                 <% if (locals.id) { %>for="<%= id %>"<% } %>
@@ -14,8 +14,6 @@
             <% if (locals.id) { %>id='<%= id %>'<% } %>
             <% if (locals.name) { %>name=<%= name %><% } %>
             <% if (locals.required) { %>required<% } %>
-            <% if (locals.disabled) { %>disabled<% } %>
-            <% if (locals.onchange) { %>onchange='<%= onchange %>'<% } %>
             <% if (locals.size) { %>size='<%= size %>'<% } %>
         >
         <% if (locals.options) { %>
@@ -30,8 +28,6 @@
                     <i class="fas fa-redo"></i>
                 </a>
             </div>
-        <% } else if (locals.append) { %>
-            <%- include('append', {append: locals.append}) %>
         <% } %>
     </div>
 <% } %>

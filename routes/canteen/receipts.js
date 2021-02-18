@@ -47,17 +47,42 @@ module.exports = (app, al, inc, pm, m) => {
                         user_id: req.user.user_id
                     })
                     .then(receipt => {
-                        return  item.increment('_qty', {by: receipt._qty})
+                        let receipt_qty = Number(receipt._qty);
+                        if (item._qty < 0) {
+                            receipt_qty += Math.abs(item._qty);
+                            m.notes.create({
+                                _table:  'items',
+                                _id:     item.item_id,
+                                _note:   `Quantity below 0. Increased by ${Math.abs(item._qty)} on receipt ${receipt.receipt_id}`,
+                                _system: 1,
+                                user_id: req.user.user_id
+                            });
+                        };
+                        return item.increment('_qty', {by: receipt_qty})
                         .then(result => {
                             if (!result) res.send({success: false, message: 'Item quantity not updated'})
                             else {
                                 if (item._cost !== receipt._cost) {
-                                    return item.update({
-                                        _cost: ((item._qty * item._cost) + (receipt._qty * receipt._cost)) / (item._qty + receipt._qty)
-                                    })
+                                    let qty_current   = Math.max(0, Number(item._qty)),
+                                        value_current = qty_current * Number(item._cost),
+                                        value_receipt = Number(receipt._qty) * Number(receipt._cost),
+                                        qty_total     = qty_current + Number(receipt._qty),
+                                        cost_new      = Number((value_current + value_receipt) / qty_total),
+                                        cost_old      = Number(item._cost);
+                                    return item.update({_cost: cost_new})
                                     .then(result => {
                                         if (!result) res.send({success: true, message: 'Item received, cost not updated'});
-                                        else         res.send({success: true, message: 'Item received, cost updated'})
+                                        else {
+                                            m.notes.create({
+                                                _table:  'items', 
+                                                _id:     item.item_id,
+                                                _note:   `Item cost updated from £${cost_old.toFixed(2)} to £${cost_new.toFixed(2)} by receipt ${receipt.receipt_id}`,
+                                                _system: 1,
+                                                user_id: req.user.user_id
+                                            })
+                                            .then(note => res.send({success: true, message: 'Item received, cost updated'}))
+                                            .catch(err => res.send({success: true, message: 'Item received, cost updated'}))
+                                        };
                                     })
                                     .catch(err => res.send({success: true, message: `Error updating item cost: ${err.message}`}))
                                 } else res.send({success: true, message: 'Item received'});

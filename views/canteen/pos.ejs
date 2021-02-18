@@ -64,7 +64,7 @@
                             <input type="hidden" class='sale_id' name='sale_id'>
                             <%- include(`${partials}/inputs/select`,  {title: 'Debit from',    id: 'sel_credits', name: 'sale[user_id_debit]',  spinner_id: 'users_debit',  reload_id: 'reload_debit',  permission: 'access_credits'}) %>
                             <%- include(`${partials}/inputs/select`,  {title: 'Credit change', id: 'sel_users',   name: 'sale[user_id_credit]', spinner_id: 'users_credit', reload_id: 'reload_credit', permission: 'access_users'}) %>
-                            <%- include(`${partials}/inputs/number`,  {title: 'Tendered (£)',  id: '_tendered',   name: 'sale[tendered]', step: '0.01', value: '0.00', readonly: true, required: true}) %>
+                            <%- include(`${partials}/inputs/number`,  {title: 'Tendered (£)',  id: '_tendered',   name: 'sale[tendered]', step: '0.01', value: '0.00', required: true}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Change (£)',    id: 'change'}) %>
                         </form>
                     </div>

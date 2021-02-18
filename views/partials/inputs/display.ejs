@@ -1,5 +1,5 @@
 <div <% if (locals.inp_id) { %>id='<%= inp_id %>' <% } %>class="input-group mb-1<% if (locals.inp_classes) inp_classes.forEach(e => { %> <%= e %><% }) %>">
-    <div class="input-group-prepend w-<%= locals.prepend_size || 30 %>">
+    <div class="input-group-prepend w-30">
         <span class="input-group-text w-100"><%= title %></span>
     </div>
     <% if (locals.html) { %>
@@ -14,28 +14,16 @@
     <% } %>
     <% if (locals.link) { %>
         <div class="input-group-append">
-            <a class='btn btn-primary' id='<%= id %>_link'>
-                <i class="fas fa-search"></i>
-            </a>
-        </div>
-    <% } %>
-    <% if (locals.button) { %>
-        <div class="input-group-append">
-            <button
+            <a
                 class='btn btn-primary'
-                <% if (locals.id) { %>
-                    id='<%= id %>_link'
-                <% } %>
+                id='<%= id %>_link'
                 <% if (locals.modal) { %>
                     data-toggle="modal"
                     data-target="#mdl_<%= modal %>"
                 <% } %>
             >
                 <i class="fas fa-search"></i>
-            </button>
+            </a>
         </div>
-    <% } %>
-    <% if (locals.append) { %>
-        <%- include('append', {append: locals.append}) %>
     <% } %>
 </div>
