@@ -1,8 +1,7 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/canteen/sales/:id',      pm, al('access_sales'),               (req, res) => res.render('canteen/sales/show'));
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/sales/:id', pm.get, pm.check('access_sales'),               (req, res) => res.render('canteen/sales/show'));
 
-    app.get('/canteen/get/sales',      pm, al('access_sales', {send: true}), (req, res) => {
+    app.get('/get/sales',           pm.check('access_sales', {send: true}), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
@@ -13,7 +12,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(sales => res.send({success: true, result: sales}))
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/sale',       pm, al('access_sales', {send: true}), (req, res) => {
+    app.get('/get/sale',            pm.check('access_sales', {send: true}), (req, res) => {
         m.sales.findOne({
             where: req.query,
             include: [inc.users()]
@@ -24,7 +23,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/user_sale',  pm, al('access_pos',   {send: true}), (req, res) => {
+    app.get('/get/user_sale',       pm.check('access_pos',   {send: true}), (req, res) => {
         m.sessions.findAll({
             where: {_status: 1},
             attributes: ['session_id']
@@ -45,7 +44,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/canteen/get/sale_lines', pm, al('access_pos',   {send: true}), (req, res) => {
+    app.get('/get/sale_lines',      pm.check('access_pos',   {send: true}), (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
             include: [inc.items()]
@@ -54,7 +53,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.post('/canteen/sale_lines',    pm, al('access_pos',   {send: true}), (req, res) => {
+    app.post('/sale_lines',         pm.check('access_pos',   {send: true}), (req, res) => {
         if (!req.body.line) res.send({success: false, message: 'No line specified'})
         else {
             m.sales.findOne({
@@ -66,7 +65,7 @@ module.exports = (app, al, inc, pm, m) => {
                 if      (!sale)                      res.send({success: false, message: 'Sale not found'})
                 else if (sale.session._status !== 1) res.send({success: false, message: 'Session for this sale is not open'})
                 else {
-                    return m.items.findOne({
+                    return m.canteen_items.findOne({
                         where: {item_id: req.body.line.item_id},
                         attributes: ['item_id', '_price']
                     })
@@ -104,7 +103,7 @@ module.exports = (app, al, inc, pm, m) => {
         };
     });
     
-    app.put('/canteen/sale_lines',     pm, al('access_pos',   {send: true}), (req, res) => {
+    app.put('/sale_lines',          pm.check('access_pos',   {send: true}), (req, res) => {
         if (req.body.line) {
             m.sale_lines.findOne({
                 where: {line_id: req.body.line.line_id},
@@ -145,7 +144,7 @@ module.exports = (app, al, inc, pm, m) => {
             .catch(err => res.error.send(err, res));
         } else res.send({success: false, message: 'No line specified'});
     });
-    app.put('/canteen/sales',          pm, al('access_pos',   {send: true}), (req, res) => {
+    app.put('/sales',               pm.check('access_pos',   {send: true}), (req, res) => {
         m.sales.findOne({
             where:      {sale_id: req.body.sale_id},
             attributes: ['sale_id', '_status']
@@ -207,7 +206,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                     actions.push(sale.update({_status: 2}));
                                                     lines.forEach(line => {
                                                         actions.push(
-                                                            m.items.findOne({
+                                                            m.canteen_items.findOne({
                                                                 where: {item_id: line.item_id},
                                                                 attributes: ['item_id', '_qty']
                                                             })
@@ -246,7 +245,7 @@ module.exports = (app, al, inc, pm, m) => {
                             );
                             lines.forEach(line => {
                                 actions.push(
-                                    m.items.findOne({
+                                    m.canteen_items.findOne({
                                         where: {item_id: line.item_id},
                                         attributes: ['item_id', '_qty']
                                     })

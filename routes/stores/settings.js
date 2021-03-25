@@ -1,8 +1,8 @@
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/stores/settings',        pm, al('access_settings'),               (req, res) => res.render('stores/settings/show'));
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/settings', pm.get, pm.check('access_settings'),     (req, res) => res.render('stores/settings/show'));
 
-    app.get('/stores/get/settings',    pm, al('access_settings', {send: true}), (req, res) => {
-        m.stores.settings.findAll({
+    app.get('/get/settings',    pm.check('access_settings', {send: true}), (req, res) => {
+        m.settings.findAll({
             where:      req.query,
             attributes: ['setting_id','_name', '_value']
         })
@@ -12,8 +12,8 @@ module.exports = (app, al, inc, pm, m) => {
             res.send({success: false, message: `Error getting settings: ${err.message}`});
         });
     });
-    app.get('/stores/get/setting',     pm, al('access_settings', {send: true}), (req, res) => {
-        m.stores.settings.findOne({
+    app.get('/get/setting',     pm.check('access_settings', {send: true}), (req, res) => {
+        m.settings.findOne({
             where:   req.query,
             include: [inc.users()]
         })
@@ -27,8 +27,8 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
 
-    app.put('/stores/settings',        pm, al('setting_edit',    {send: true}), (req, res) => {
-        m.stores.settings.update(
+    app.put('/settings',        pm.check('setting_edit',    {send: true}), (req, res) => {
+        m.settings.update(
             {_value: req.body.setting._value},
             {where: {_name: req.body.setting._name}}
         )
@@ -42,8 +42,8 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
 
-    app.post('/stores/settings',       pm, al('setting_add',     {send: true}), (req, res) => {
-        m.stores.settings.create({...req.body.setting, ...{user_id: req.user.user_id}})
+    app.post('/settings',       pm.check('setting_add',     {send: true}), (req, res) => {
+        m.settings.create({...req.body.setting, ...{user_id: req.user.user_id}})
         .then(setting => res.send({success: true, message: 'Setting created'}))
         .catch(err => {
             console.log(err);
@@ -51,8 +51,8 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
     
-    app.delete('/stores/settings/:id', pm, al('setting_delete',  {send: true}), (req, res) => {
-        m.stores.settings.findOne({
+    app.delete('/settings/:id', pm.check('setting_delete',  {send: true}), (req, res) => {
+        m.settings.findOne({
             where:      {setting_id: req.params.id},
             attributes: ['setting_id']
         })

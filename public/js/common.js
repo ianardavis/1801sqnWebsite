@@ -104,6 +104,10 @@ function add_class(options) {
     let e = document.querySelector(`#${options.id}`);
     if (e && options.class) e.classList.add(options.class);
 };
+function add_classes(options) {
+    let e = document.querySelector(`#${options.id}`);
+    if (e && options.classes) options.classes.forEach(_class => e.classList.add(options.class));
+};
 function remove_class(options) {
     let e = document.querySelector(`#${options.id}`);
     if (e && options.class) e.classList.remove(options.class);
@@ -135,5 +139,15 @@ function print_account (account) {
     if (account) {
         return `${account._name} | ${account._number}`
     } else return '';
+};
+function clear_table(id) {
+    return new Promise((resolve, reject) => {
+        let table = document.querySelector(`#tbl_${id}`);
+        if (!table) reject(new Error('Table not found'))
+        else {
+            table.innerHTML = '';
+            resolve(table);
+        };
+    })
 };
 let path = window.location.pathname.toString().split('/');

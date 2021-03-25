@@ -23,10 +23,7 @@ function Notification (options = {}) {
 };
 function getNotifications() {
     get(
-        {
-            db: path[1],
-            table: 'notifications'
-        },
+        {table: 'notifications'},
         function (notifications, options) {
             let ul_notifications = document.querySelector('#ul_notifications');
             if (ul_notifications) {

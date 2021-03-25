@@ -2,7 +2,6 @@ function getMovements() {
     let sel_confirmed = document.querySelector('#sel_confirmed');
     get(
         {
-            db: 'canteen',
             table: 'movements',
             query: [sel_confirmed.value]
         },

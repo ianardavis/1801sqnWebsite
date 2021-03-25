@@ -1,7 +1,6 @@
 function checkSession() {
     get(
         {
-            db:    'canteen',
             table: 'sessions',
             query: ['_status=1']
         },

@@ -1,7 +1,7 @@
 module.exports = function (m, orders) {
     orders.create = function (line, user_id, source = {}) {
         return new Promise((resolve, reject) => {
-            return m.stores.sizes.findOne({
+            return m.sizes.findOne({
                 where: {size_id: line.size_id},
                 attributes: ['size_id', '_orderable', '_serials']
             })
@@ -26,7 +26,7 @@ module.exports = function (m, orders) {
             for (let i = 0; i < line._qty; i++) {
                 order_actions.push(
                     new Promise((resolve, reject) => {
-                        return m.stores.orders.create({
+                        return m.orders.create({
                             size_id: line.size_id,
                             user_id: user_id,
                             _qty:    1
@@ -39,7 +39,7 @@ module.exports = function (m, orders) {
                                 };
                                 if (source.table) action[source.table.column] = source.table.id;
                                 action._action = `Order created${source.note || ''}`;
-                                return m.stores.actions.create(action)
+                                return m.actions.create(action)
                                 .then(action => {
                                     resolve({
                                         success:  true,
@@ -82,7 +82,7 @@ module.exports = function (m, orders) {
     };
     function create_stock(line, user_id, source = {}) {
         return new Promise((resolve, reject) => {
-            return m.stores.orders.findOrCreate({
+            return m.orders.findOrCreate({
                 where: {
                     size_id: line.size_id,
                     _status: 1
@@ -101,7 +101,7 @@ module.exports = function (m, orders) {
                 if (created) {
                     if (source.note) {
                         action._action = `Order created${source.note || ''}`;
-                        return m.stores.actions.create(action)
+                        return m.actions.create(action)
                         .then(action => {
                             resolve({
                                 success:  true,
@@ -131,7 +131,7 @@ module.exports = function (m, orders) {
                     return order.increment('_qty', {by: line._qty})
                     .then(result => {
                         action._action = `Order incremented by ${line._qty}${source.note || ''}`;
-                        return m.stores.actions.create(action)
+                        return m.actions.create(action)
                         .then(action => {
                             resolve({
                                 success:  true,

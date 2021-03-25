@@ -3,9 +3,10 @@
 <div class="container row mx-auto">
 	<div class="col-12 col-md-6 bordered mx-auto">
 		<h3>Login:</h3>
-		<form action="/login?redirect=<%= redirect %>" method="POST">
-            <%- include(`${partials}/inputs/text`, {id: 'username', name: '_login_id', title: 'Username', required: true, autocomplete: 'username'}) %>
-			<%- include(`${partials}/inputs/text`, {id: 'password', name: '_password', type: 'password', title: 'Password', required: true, autocomplete: 'current-password'}) %>
+		<form action="/login" method="POST">
+			<input type="hidden" name='redirect' value='<%- redirect %>'>
+            <%- include(`${partials}/inputs/text`, {id: 'username', name: 'login_id', title: 'Username', required: true, autocomplete: 'username'}) %>
+			<%- include(`${partials}/inputs/text`, {id: 'password', name: 'password', type: 'password', title: 'Password', required: true, autocomplete: 'current-password'}) %>
 			<button class="btn btn-success w-100">Log In</button>
 		</form>
 	</div>

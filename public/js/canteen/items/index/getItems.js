@@ -1,7 +1,6 @@
 function getItems() {
     get(
         {
-            db:    'canteen',
             table: 'items',
             query: [document.querySelector('#_current').value || '']
         },

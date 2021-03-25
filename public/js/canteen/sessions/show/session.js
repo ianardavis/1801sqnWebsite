@@ -2,7 +2,6 @@ var statuses = {'0': 'Cancelled', '1': 'Open', '2': 'Closed'};
 function getSession() {
     get(
         {
-            db:    'canteen',
             table: 'session',
             query: [`session_id=${path[3]}`]
         },

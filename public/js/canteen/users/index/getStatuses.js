@@ -1,9 +1,6 @@
 function getStatuses () {
     get(
-        {
-            db: 'users',
-            table: 'statuses'
-        },
+        {table: 'statuses'},
         function (statuses, options) {
             clearElement('sel_status')
             let sel_status = document.querySelector('#sel_status');

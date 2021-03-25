@@ -1,7 +1,6 @@
 function getUser() {
     get(
         {
-            db: 'users',
             table: 'user',
             query: [`user_id=${path[3]}`]
         },

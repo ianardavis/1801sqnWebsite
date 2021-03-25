@@ -1,7 +1,6 @@
 function getSales() {
     get(
         {
-            db:    'canteen',
             table: 'sales',
             query: [`session_id=${path[3]}`]
         },

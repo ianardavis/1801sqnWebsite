@@ -1,9 +1,6 @@
 function getSessions() {
     get(
-        {
-            db: 'canteen',
-            table: 'sessions'
-        },
+        {table: 'sessions'},
         function (sessions, options) {
             clearElement('tbl_sessions');
             let table_body = document.querySelector('#tbl_sessions'),

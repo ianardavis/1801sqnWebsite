@@ -12,10 +12,7 @@ function reset_add_item() {
 };
 function getItems() {
     get(
-        {
-            db: 'canteen',
-            table: 'items'
-        },
+        {table: 'items'},
         function (items, options) {
             let sel_items = document.querySelector('#sel_items');
             if (sel_items) {

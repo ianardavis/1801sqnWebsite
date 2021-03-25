@@ -1,9 +1,6 @@
 function getReceipts() {
     get(
-        {
-            db:    'canteen',
-            table: 'receipts'
-        },
+        {table: 'receipts'},
         function (receipts, options) {
             let tbl_receipts = document.querySelector('#tbl_receipts');
             if (tbl_receipts) {

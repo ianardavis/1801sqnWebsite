@@ -1,6 +1,6 @@
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/stores/get/nsns',                pm, al('access_nsns', {send: true}), (req, res) => {
-        m.stores.nsns.findAll({
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/get/nsns',          pm.check('access_nsns', {send: true}), (req, res) => {
+        m.nsns.findAll({
             where: req.query,
             include: [
                 inc.nsn_groups(),
@@ -12,8 +12,8 @@ module.exports = (app, al, inc, pm, m) => {
         .then(nsns => res.send({success: true, result: nsns}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn',                 pm, al('access_nsns', {send: true}), (req, res) => {
-        m.stores.nsns.findOne({
+    app.get('/get/nsn',           pm.check('access_nsns', {send: true}), (req, res) => {
+        m.nsns.findOne({
             where: req.query,
             include: [
                 inc.nsn_groups(),
@@ -28,30 +28,30 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn_groups',          pm, al('access_nsns', {send: true}), (req, res) => {
-        m.stores.nsn_groups.findAll({
+    app.get('/get/nsn_groups',    pm.check('access_nsns', {send: true}), (req, res) => {
+        m.nsn_groups.findAll({
             where: req.query
         })
         .then(nsn_groups => res.send({success: true, result: nsn_groups}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn_classes', pm, al('access_nsns', {send: true}), (req, res) => {
-        m.stores.nsn_classes.findAll({
+    app.get('/get/nsn_classes',   pm.check('access_nsns', {send: true}), (req, res) => {
+        m.nsn_classes.findAll({
             where: req.query
         })
         .then(nsn_classes => res.send({success: true, result: nsn_classes}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/nsn_countries',       pm, al('access_nsns', {send: true}), (req, res) => {
-        m.stores.nsn_countries.findAll({
+    app.get('/get/nsn_countries', pm.check('access_nsns', {send: true}), (req, res) => {
+        m.nsn_countries.findAll({
             where: req.query
         })
         .then(nsn_countries => res.send({success: true, result: nsn_countries}))
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/nsns',                   pm, al('nsn_add',     {send: true}), (req, res) => {
-        m.stores.nsns.findOrCreate({
+    app.post('/nsns',             pm.check('nsn_add',     {send: true}), (req, res) => {
+        m.nsns.findOrCreate({
             where: {
                 nsn_group_id: req.body.nsn.nsn_group_id,
                 nsn_class_id: req.body.nsn.nsn_class_id,
@@ -67,10 +67,10 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.put('/stores/nsns',                    pm, al('nsn_edit',    {send: true}), (req, res) => {
+    app.put('/nsns',              pm.check('nsn_edit',    {send: true}), (req, res) => {
         if (!req.body.nsn_id) res.send({success: false, message: 'No NSN ID provided'})
         else {
-            m.stores.nsns.findOne({where: {nsn_id: req.body.nsn_id}})
+            m.nsns.findOne({where: {nsn_id: req.body.nsn_id}})
             .then(nsn => {
                 if (!nsn) res.send({success: false, message: 'NSN not found'})
                 else {
@@ -83,8 +83,8 @@ module.exports = (app, al, inc, pm, m) => {
         };
     });
     
-    app.delete('/stores/nsns/:id',             pm, al('nsn_delete',  {send: true}), (req, res) => {
-        m.stores.nsns.findOne({
+    app.delete('/nsns/:id',       pm.check('nsn_delete',  {send: true}), (req, res) => {
+        m.nsns.findOne({
             where: {nsn_id: req.params.id},
             attributes: ['nsn_id']
         })
@@ -93,7 +93,7 @@ module.exports = (app, al, inc, pm, m) => {
             else {
                 return nsn.destroy()
                 .then(result => {
-                    m.stores.sizes.update(
+                    m.sizes.update(
                         {nsn_id: null},
                         {where: {nsn_id: req.params.id}}
                     )

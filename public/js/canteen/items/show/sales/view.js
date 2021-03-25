@@ -1,7 +1,6 @@
 function getSales() {
     get(
         {
-            db: 'canteen',
             table: 'sale_lines',
             query: [`item_id=${path[3]}`]
         },

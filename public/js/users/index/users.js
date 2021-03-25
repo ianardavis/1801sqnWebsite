@@ -1,30 +1,29 @@
 function getUsers() {
-    let status = document.querySelector('#status_id') || {value: ''},
-        rank   = document.querySelector('#rank_id')   || {value: ''};
-    get(
-        {
-            db:    'users',
-            table: 'users',
-            query: [status.value, rank.value]
-        },
-        function (users, options) {
-            let table_body = document.querySelector('#tbl_users');
-            if (table_body) {
-                table_body.innerHTML = '';
+    clear_table('users')
+    .then(tbl => {
+        let status = document.querySelector('#sel_statuses') || {value: ''},
+            rank   = document.querySelector('#sel_ranks')    || {value: ''};
+        get(
+            {
+                table: 'users',
+                query: [status.value, rank.value]
+            },
+            function (users, options) {
                 users.forEach(user => {
-                    let row = table_body.insertRow(-1);
-                    add_cell(row, {text: user._bader});
-                    add_cell(row, {text: user.rank._rank});
-                    add_cell(row, {text: user._name});
-                    add_cell(row, {text: user._ini});
+                    let row = tbl.insertRow(-1);
+                    add_cell(row, {text: user.service_number});
+                    add_cell(row, {text: user.rank.rank});
+                    add_cell(row, {text: user.surname});
+                    add_cell(row, {text: user.first_name});
                     add_cell(row, {append: new Link({
-                        href: `/${path[1]}/users/${user.user_id}`,
+                        href: `/users/${user.user_id}`,
                         small: true
                     }).e});
                 });
-            };
-        }
-    );
+            }
+        );
+    })
+    .catch(err => console.log(err));
 };
 let int_load_users = window.setInterval(
     function () {
@@ -35,10 +34,24 @@ let int_load_users = window.setInterval(
     },
     100
 );
+function getStatuses() {
+    listStatuses({
+        select: 'sel_statuses',
+        blank: true,
+        blank_text: 'All'
+    });
+};
+function getRanks() {
+    listRanks({
+        select: 'sel_ranks',
+        blank: true,
+        blank_text: 'All'
+    });
+};
 window.addEventListener("load", function () {
-    document.querySelector('#reload')   .addEventListener('click',  getUsers);
-    document.querySelector('#status_id').addEventListener("change", getUsers);
-    document.querySelector('#rank_id')  .addEventListener("change", getUsers);
-    document.querySelector('#reload_statuses').addEventListener("click", function () {listStatuses({blank: true, blank_text: 'All'})});
-    document.querySelector('#reload_ranks')   .addEventListener("click", function () {listRanks(   {blank: true, blank_text: 'All'})});
+    document.querySelector('#reload')         .addEventListener('click',  getUsers);
+    document.querySelector('#sel_statuses')   .addEventListener("change", getUsers);
+    document.querySelector('#sel_ranks')      .addEventListener("change", getUsers);
+    document.querySelector('#reload_statuses').addEventListener("click",  getStatuses);
+    document.querySelector('#reload_ranks')   .addEventListener("click",  getRanks);
 });

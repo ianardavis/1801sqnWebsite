@@ -3,10 +3,7 @@ function getRanks() {
     if (tbl_ranks) {
         tbl_ranks.innerHTML = '';
         get(
-            {
-                db: 'users',
-                table: 'ranks',
-            },
+            {table: 'ranks'},
             function (ranks, options) {
                 ranks.forEach(rank => {
                     let row = tbl_ranks.insertRow(-1);

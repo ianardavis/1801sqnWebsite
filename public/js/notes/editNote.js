@@ -1,7 +1,6 @@
 function getNoteEdit(note_id) {
     get(
         {
-            db:      path[1],
             table:   'note',
             query:   [`note_id=${note_id}`],
             spinner: 'note_edit',

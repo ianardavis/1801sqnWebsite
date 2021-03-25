@@ -3,12 +3,13 @@
         class='nav-link<% if (locals.classes) classes.forEach(e => { %> <%= e %><% }) %>'
         <% if (locals.href) { %>
             href='<%= href %>'
-        <% } else { %>
-            id='<%= locals.id || 'breadcrumb' %>'
-        <% }%>
-    ><% if (locals.text) { %>
-            <%= text %>
-        <% } else if (locals.html) { %>
-            <%- html %>
-        <% } %></a>
+        <% } else if (locals.id) { %>
+            id='<%= id || 'breadcrumb' %>'
+        <% } else if (locals.modal) { %>
+            data-toggle="modal"
+            data-target="#mdl_<%= modal %>"
+        <% } %>
+    >
+        <%- locals.text || '' %>
+    </a>
 </li>

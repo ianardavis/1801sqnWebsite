@@ -1,16 +1,16 @@
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/stores/settings',          pm, al('access_settings'),                 (req, res) => res.render('stores/settings/show'));
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/settings', pm.get, pm.check('access_settings'),          (req, res) => res.render('stores/settings/show'));
 
-    app.get('/stores/get/genders',    pm, al('access_genders', {send: true}), (req, res) => {
-        m.stores.genders.findAll({where: req.query})
+    app.get('/get/genders',    pm.check('access_genders', {send: true}), (req, res) => {
+        m.genders.findAll({where: req.query})
         .then(genders => res.send({success: true, result: genders}))
         .catch(err => {
             console.log(err);
             res.send({success: false, message: `Error getting genders: ${err.message}`});
         });
     });
-    app.get('/stores/get/gender',     pm, al('access_genders', {send: true}), (req, res) => {
-        m.stores.genders.findOne({
+    app.get('/get/gender',     pm.check('access_genders', {send: true}), (req, res) => {
+        m.genders.findOne({
             where:   req.query,
             include: [inc.users()]
         })
@@ -24,8 +24,8 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
 
-    app.put('/stores/genders',        pm, al('gender_edit',    {send: true}), (req, res) => {
-        m.stores.genders.update(
+    app.put('/genders',        pm.check('gender_edit',    {send: true}), (req, res) => {
+        m.genders.update(
             {_gender: req.body.gender._gender},
             {where: {gender_id: req.body.gender.gender_id}}
         )
@@ -39,8 +39,8 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
     
-    app.post('/stores/genders',       pm, al('gender_add',     {send: true}), (req, res) => {
-        m.stores.genders.create({...req.body.gender, ...{user_id: req.user.user_id}})
+    app.post('/genders',       pm.check('gender_add',     {send: true}), (req, res) => {
+        m.genders.create({...req.body.gender, ...{user_id: req.user.user_id}})
         .then(gender => res.send({success: true, message: 'Gender created'}))
         .catch(err => {
             console.log(err);
@@ -48,15 +48,15 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
     
-    app.delete('/stores/genders/:id', pm, al('gender_delete',  {send: true}), (req, res) => {
-        m.stores.genders.findOne({
+    app.delete('/genders/:id', pm.check('gender_delete',  {send: true}), (req, res) => {
+        m.genders.findOne({
             where: {gender_id: req.params.id},
             attributes: ['gender_id']
         })
         .then(gender => {
             if (!gender) res.send({success: false, message: 'Gender not found'})
             else {
-                return m.stores.items.update(
+                return m.items.update(
                     {gender_id: null},
                     {where: {gender_id: gender.gender_id}}
                 )

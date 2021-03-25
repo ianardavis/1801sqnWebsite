@@ -2,7 +2,6 @@ function getUsers () {
     let sel_status = document.querySelector('#sel_status');
     get(
         {
-            db: 'users',
             table: 'users',
             query: [sel_status.value || null]
         },

@@ -4,7 +4,6 @@ function listUsers(options = {}) {
         select.innerHTML = '';
         get(
             {
-                db:      'users',
                 table:   options.table || 'users',
                 spinner: options.spinner || options.table || 'users',
                 ...options

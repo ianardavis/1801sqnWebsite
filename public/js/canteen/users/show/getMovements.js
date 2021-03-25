@@ -1,7 +1,6 @@
 function getMovements (query_column) {
     get(
         {
-            db: 'canteen',
             table: 'movements',
             query: [`${query_column}=${path[3]}`]
         },

@@ -1,9 +1,6 @@
 function getItems() {
     get(
-        {
-            db: 'canteen',
-            table: 'items'
-        },
+        {table: 'items'},
         function (items, options) {
             clearElement('sel_items');
             let sel_items = document.querySelector('#sel_items');

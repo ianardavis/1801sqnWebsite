@@ -1,9 +1,9 @@
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/stores/get/categories',    pm, al('access_categories', {send: true}), (req, res) => {
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/get/categories',    pm.check('access_categories', {send: true}), (req, res) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
-        m.stores.categories.findAll({
+        m.categories.findAll({
             where: req.query,
             include: [inc.categories({as: 'parent'})]
         })
@@ -13,11 +13,11 @@ module.exports = (app, al, inc, pm, m) => {
             res.send({success: false, message: `Error getting categories: ${err.message}`});
         });
     });
-    app.get('/stores/get/category',      pm, al('access_categories', {send: true}), (req, res) => {
+    app.get('/get/category',      pm.check('access_categories', {send: true}), (req, res) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
-        m.stores.categories.findOne({
+        m.categories.findOne({
             where: req.query,
             include: [
                 inc.categories({as: 'parent'}),
@@ -34,9 +34,9 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
 
-    app.put('/stores/categories',        pm, al('category_edit',     {send: true}), (req, res) => {
+    app.put('/categories',        pm.check('category_edit',     {send: true}), (req, res) => {
         if (req.body.category.parent_category_id === '') req.body.category.parent_category_id = null;
-        m.stores.categories.update(
+        m.categories.update(
             req.body.category,
             {where: {category_id: req.body.category_id}}
         )
@@ -50,9 +50,9 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
 
-    app.post('/stores/categories',       pm, al('category_add',      {send: true}), (req, res) => {
+    app.post('/categories',       pm.check('category_add',      {send: true}), (req, res) => {
         if (req.body.category.parent_category_id === '') delete req.body.category.parent_category_id;
-        m.stores.categories.create({...req.body.category, ...{user_id: req.user.user_id}})
+        m.categories.create({...req.body.category, ...{user_id: req.user.user_id}})
         .then(category => res.send({success: true, message: 'Category created'}))
         .catch(err => {
             console.log(err);
@@ -60,15 +60,15 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
 
-    app.delete('/stores/categories/:id', pm, al('category_delete',   {send: true}), (req, res) => {
-        m.stores.categories.findOne({
+    app.delete('/categories/:id', pm.check('category_delete',   {send: true}), (req, res) => {
+        m.categories.findOne({
             where:      {category_id: req.params.id},
             attributes: ['category_id']
         })
         .then(category => {
             if (!category) res.send({success: false, message: 'Category not found'})
             else {
-                return m.stores.item_categories.destroy(
+                return m.item_categories.destroy(
                     {where: {category_id: category.category_id}}
                 )
                 .then(result => {

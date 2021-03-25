@@ -3,19 +3,19 @@
 <%- include(`${partials}/head/navbar/close`) %>
 	<section>
 		<% let cards = [] %>
-		<% if (permissions.access_suppliers) cards.push({href: 'stores/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
-		<% if (permissions.access_items)	 cards.push({href: 'stores/items', 	   title: 'Items', 	   image: 'tshirt'}) %>
+		<% if (permissions.access_suppliers) cards.push({href: '/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
+		<% if (permissions.access_items)	 cards.push({href: '/items', 	   title: 'Items', 	   image: 'tshirt'}) %>
 		<% if (permissions.access_users) { %>
-			<% cards.push({href: 'stores/users', title: 'Users', image: 'users'}) %>
+			<% cards.push({href: '/users', title: 'Users', image: 'users'}) %>
 		<% } else { %>
-			<% cards.push({href: `stores/users/${user.user_id}`, title: 'Your Account', image: 'user'}) %>
+			<% cards.push({href: `/users/${user.user_id}`, title: 'Your Account', image: 'user'}) %>
 		<% } %>
-		<% if (permissions.access_issues)   cards.push({href: '/stores/issues',    title: 'Issues',    image: 'address-card'}) %>
-		<% if (permissions.access_issues)   cards.push({href: '/stores/loancards', title: 'Loancards', image: 'address-card'}) %>
-		<% if (permissions.access_orders)   cards.push({href: '/stores/orders',	   title: 'Orders',    image: 'list'}) %>
-		<% if (permissions.access_demands)  cards.push({href: '/stores/demands',   title: 'Demands',   image: 'stream'}) %>
-		<% if (permissions.access_reports) 	cards.push({href: '/stores/reports',   title: 'Reports',   image: 'chart-pie'}) %>
-		<% if (permissions.access_settings) cards.push({href: '/stores/settings',  title: 'Settings',  image: 'cog'}) %>
+		<% if (permissions.access_issues)   cards.push({href: '/issues',    title: 'Issues',    image: 'address-card'}) %>
+		<% if (permissions.access_issues)   cards.push({href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
+		<% if (permissions.access_orders)   cards.push({href: '/orders',	title: 'Orders',    image: 'list'}) %>
+		<% if (permissions.access_demands)  cards.push({href: '/demands',   title: 'Demands',   image: 'stream'}) %>
+		<% if (permissions.access_reports) 	cards.push({href: '/reports',   title: 'Reports',   image: 'chart-pie'}) %>
+		<% if (permissions.access_settings) cards.push({href: '/settings',  title: 'Settings',  image: 'cog'}) %>
 		<div class="row container m-auto p-0 menu">
 			<% cards.forEach(card => { %>
 				<div class="col-md-6 col-lg-4 col-xl-3">
@@ -37,19 +37,19 @@
 	<%- include(`${partials}/foot/app`) %>
 	<script src="/js/stores/index/show.js"></script>
 	<% if (permissions.access_orders) { %>
-		<script async>getCount('orders',  ['_status=1'], {text: 'Placed',   colour: 'danger',  float: 'left'})</script>
-		<script async>getCount('orders',  ['_status=2'], {text: 'Demanded', colour: 'warning', float: 'right'})</script>
+		<script async>getCount('orders',  ['status=1'], {text: 'Placed',   colour: 'danger',  float: 'left'})</script>
+		<script async>getCount('orders',  ['status=2'], {text: 'Demanded', colour: 'warning', float: 'right'})</script>
 	<% } %>
 	<% if (permissions.access_demands) { %>
-		<script async>getCount('demands', ['_status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
-		<script async>getCount('demands', ['_status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
+		<script async>getCount('demands', ['status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
+		<script async>getCount('demands', ['status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
 	<% } %>
 	<% if (permissions.access_issues) { %>
-		<script async>getCount('issues',  ['_status=1'], {text: 'Requested', colour: 'danger',  float: 'left'})</script>
-		<script async>getCount('issues',  ['_status=2'], {text: 'Approved',  colour: 'warning', float: 'right'})</script>
+		<script async>getCount('issues',  ['status=1'], {text: 'Requested', colour: 'danger',  float: 'left'})</script>
+		<script async>getCount('issues',  ['status=2'], {text: 'Approved',  colour: 'warning', float: 'right'})</script>
 	<% } %>
 	<% if (permissions.access_loancards) { %>
-		<script async>getCount('loancards', ['_status=1'], {text: 'Draft', colour: 'danger',  float: 'left'})</script>
-		<script async>getCount('loancards', ['_status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
+		<script async>getCount('loancards', ['status=1'], {text: 'Draft', colour: 'danger',  float: 'left'})</script>
+		<script async>getCount('loancards', ['status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
 	<% } %>
 	<%- include(`${partials}/foot/elements/htmlClose`) %>

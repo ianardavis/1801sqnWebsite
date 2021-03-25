@@ -1,7 +1,7 @@
 <% if (!locals.permission || permissions[locals.permission]) { %>
     <li class="nav-item">
         <a
-    class="nav-link<% if (locals._class) { %> <%= _class %><% } %><% if (locals.active) { %> active<% } %>"
+            class="nav-link<% if (locals._class) { %> <%= _class %><% } %><% if (locals.active) { %> active<% } %>"
             id="<%= id %>-tab"
             data-toggle="tab"
             href="#<%= id %>"

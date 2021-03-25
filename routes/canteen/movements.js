@@ -1,8 +1,7 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/canteen/movements',     pm, al('access_movements'),               (req, res) => res.render('canteen/movements/index'));
-    app.get('/canteen/movements/:id', pm, al('access_movements'),               (req, res) => res.render('canteen/movements/show'));
-    app.get('/canteen/get/movements', pm, al('access_movements', {send: true}), (req, res) => {
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/movements',     pm.get, pm.check('access_movements'), (req, res) => res.render('canteen/movements/index'));
+    app.get('/movements/:id', pm.get, pm.check('access_movements'), (req, res) => res.render('canteen/movements/show'));
+    app.get('/get/movements',         pm.check('access_movements', {send: true}),   (req, res) => {
         m.movements.findAll({
             where: req.query,
             include: [

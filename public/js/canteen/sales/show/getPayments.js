@@ -1,7 +1,6 @@
 function getPayments() {
     get(
         {
-            db: 'canteen',
             table: 'payments',
             query: [`sale_id=${path[3]}`]
         },

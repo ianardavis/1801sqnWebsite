@@ -1,4 +1,4 @@
-searchSelect = (search, select) => {
+function searchSelect(search, select) {
     let filter  = document.querySelector(`#${search}`).value.toLowerCase(),
         options = document.querySelectorAll(`#${select} option`);
     options.forEach(option => {

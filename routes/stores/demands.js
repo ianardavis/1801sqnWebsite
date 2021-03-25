@@ -1,15 +1,14 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
+module.exports = (app, m, pm, op, inc, send_error) => {
     let receipts = {}, demands = {},
         promiseResults = require('../functions/promise_results'),
         counter        = require('../functions/counter'),
         download       = require('../functions/download');
     // require('./functions/receipts')(m, receipts),
     require('./functions/demands') (m, demands),
-    app.get('/stores/demands',              pm, al('access_demands'),                    (req, res) => res.render('stores/demands/index'));
-    app.get('/stores/demands/:id',          pm, al('access_demands'),                    (req, res) => res.render('stores/demands/show'));
-    app.get('/stores/demands/:id/download', pm, al('access_demands'),                    (req, res) => {
-        m.stores.demands.findOne({
+    app.get('/demands',      pm.get, pm.check('access_demands'),                    (req, res) => res.render('stores/demands/index'));
+    app.get('/demands/:id',  pm.get, pm.check('access_demands'),                    (req, res) => res.render('stores/demands/show'));
+    app.get('/demands/:id/download', pm.check('access_demands'),                    (req, res) => {
+        m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['_filename']
         })
@@ -20,8 +19,8 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.get('/stores/count/demands',        pm, al('access_demands',      {send: true}), (req, res) => {
-        m.stores.demands.count({where: req.query})
+    app.get('/count/demands',        pm.check('access_demands',      {send: true}), (req, res) => {
+        m.demands.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => {
             console.log(err);
@@ -29,8 +28,8 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
     
-    app.get('/stores/get/demand',           pm, al('access_demands',      {send: true}), (req, res) => {
-        m.stores.demands.findOne({
+    app.get('/get/demand',           pm.check('access_demands',      {send: true}), (req, res) => {
+        m.demands.findOne({
             where: req.query,
             include: [
                 inc.demand_lines(),
@@ -44,8 +43,8 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/demands',          pm, al('access_demands',      {send: true}), (req, res) => {
-        m.stores.demands.findAll({
+    app.get('/get/demands',          pm.check('access_demands',      {send: true}), (req, res) => {
+        m.demands.findAll({
             where:   req.query,
             include: [
                 inc.demand_lines(),
@@ -56,8 +55,8 @@ module.exports = (app, al, inc, pm, m) => {
         .then(demands => res.send({success: true, result: demands}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/demand_lines',     pm, al('access_demand_lines', {send: true}), (req, res) => {
-        m.stores.demand_lines.findAll({
+    app.get('/get/demand_lines',     pm.check('access_demand_lines', {send: true}), (req, res) => {
+        m.demand_lines.findAll({
             where:   req.query,
             include: [
                 inc.sizes(),
@@ -68,8 +67,8 @@ module.exports = (app, al, inc, pm, m) => {
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/demand_line',      pm, al('access_demand_lines', {send: true}), (req, res) => {
-        m.stores.demand_lines.findOne({
+    app.get('/get/demand_line',      pm.check('access_demand_lines', {send: true}), (req, res) => {
+        m.demand_lines.findOne({
             where:   req.query,
             include: [
                 inc.sizes(),
@@ -82,7 +81,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/demands',             pm, al('demand_add',          {send: true}), (req, res) => {
+    app.post('/demands',             pm.check('demand_add',          {send: true}), (req, res) => {
         demands.create({
             demand: {
                 supplier_id: req.body.supplier_id,
@@ -96,7 +95,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/stores/demands/raise/:id',    pm, al('demand_edit',         {send: true}), (req, res) => {
+    app.put('/demands/raise/:id',    pm.check('demand_edit',         {send: true}), (req, res) => {
         raise_demand(req.params.id, req.user.user_id)
         .then(result => res.send(result))
         .catch(err => {
@@ -104,7 +103,7 @@ module.exports = (app, al, inc, pm, m) => {
             res.send({success: false, message: `Error raising demand: ${err.message}`})
         });
     });
-    app.put('/stores/demands/:id',          pm, al('demand_edit',         {send: true}), (req, res) => {
+    app.put('/demands/:id',          pm.check('demand_edit',         {send: true}), (req, res) => {
         if (Number(req.body._status) === 2) {
             complete_demand(req.params.id, req.user.user_id)
             .then(filename => res.send({success: true,  message: `Demand completed. Filename: ${filename}`}))
@@ -121,8 +120,8 @@ module.exports = (app, al, inc, pm, m) => {
             });
         } else                res.send({success: false, message: 'Invalid request'});
     });
-    app.put('/stores/demand_lines/:id',     pm, al('receipt_add',         {send: true}), (req, res) => {
-        m.stores.demands.findOne({
+    app.put('/demand_lines/:id',     pm.check('receipt_add',         {send: true}), (req, res) => {
+        m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['demand_id', 'supplier_id']
         })
@@ -132,14 +131,14 @@ module.exports = (app, al, inc, pm, m) => {
                 if      (line._status === '3') receives.push(line);
                 else if (line._status === '0') {
                     actions.push(
-                        m.stores.demand_lines.update(
+                        m.demand_lines.update(
                             {_status: 0},
                             {where: {line_id: line.line_id}}
                         )
                     );
                     actions.push(
                         new Promise((resolve, reject) => {
-                            m.stores.order_line_actions.findAll({
+                            m.order_line_actions.findAll({
                                 where: {
                                     _action: 'Demand',
                                     action_line_id: line.line_id
@@ -151,7 +150,7 @@ module.exports = (app, al, inc, pm, m) => {
                                     let order_actions = [];
                                     actions.forEach(e => {
                                         order_actions.push(
-                                            m.stores.order_lines.update(
+                                            m.order_lines.update(
                                                 {_status: 2},
                                                 {where: {
                                                     line_id: e.order_line_id,
@@ -160,7 +159,7 @@ module.exports = (app, al, inc, pm, m) => {
                                             )
                                         );
                                         order_actions.push(
-                                            m.stores.order_line_actions.create({
+                                            m.order_line_actions.create({
                                                 order_line_id:  e.order_line_id,
                                                 action_line_id: line.line_id,
                                                 _action:        'Demand line cancelled',
@@ -177,7 +176,7 @@ module.exports = (app, al, inc, pm, m) => {
                         }),
                     );
                     actions.push(
-                        m.stores.demand_line_actions.create({
+                        m.demand_line_actions.create({
                             demand_line_id: line.line_id,
                             _action:        `Cancelled`,
                             user_id:        req.user.user_id
@@ -223,8 +222,8 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.delete('/stores/demands/:id',       pm, al('demand_delete',       {send: true}), (req, res) => {
-        m.stores.demands.findOne({
+    app.delete('/demands/:id',       pm.check('demand_delete',       {send: true}), (req, res) => {
+        m.demands.findOne({
             where:      {demand_id: req.params.id},
             include:    [inc.demand_lines({where: {_status: {[op.not]: 0}}})],
             attributes: ['demand_id', '_status']
@@ -238,7 +237,7 @@ module.exports = (app, al, inc, pm, m) => {
                 .then(result => {
                     if (!result) res.send({success: false, message: `Error updating demand: ${err.message}`})
                     else {
-                        m.stores.notes.create({
+                        m.notes.create({
                             _id: demand.demand_id,
                             _table: 'demands',
                             _note: 'Cancelled',
@@ -263,8 +262,8 @@ module.exports = (app, al, inc, pm, m) => {
             res.send({success: false, message: `Error getting demand: ${err.message}`});
         });
     });
-    app.delete('/stores/demand_lines/:id',  pm, al('demand_line_delete',  {send: true}), (req, res) => {
-        m.stores.demand_lines.findOne({
+    app.delete('/demand_lines/:id',  pm.check('demand_line_delete',  {send: true}), (req, res) => {
+        m.demand_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status']
         })
@@ -276,7 +275,7 @@ module.exports = (app, al, inc, pm, m) => {
                 .then(result => {
                     if (!result) res.send({success: false, message: 'Line not updated'})
                     else {
-                        m.stores.notes.create({
+                        m.notes.create({
                             _table:  'demand_lines',
                             _note:   `Line ${req.params.id} cancelled`,
                             _id:     line.line_id,
@@ -304,7 +303,7 @@ module.exports = (app, al, inc, pm, m) => {
 
     function complete_demand(demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            m.stores.demands.findOne({
+            m.demands.findOne({
                 where:      {demand_id: demand_id},
                 include:    [inc.demand_lines({where: {_status: 1}})],
                 attributes: ['demand_id', '_status']
@@ -318,7 +317,7 @@ module.exports = (app, al, inc, pm, m) => {
                     .then(result => {
                         if (!result) reject(new Error('demand not updated'))
                         else {
-                            m.stores.demand_lines.update(
+                            m.demand_lines.update(
                                 {_status: 2},
                                 {where: {
                                     demand_id: demand.demand_id,
@@ -328,7 +327,7 @@ module.exports = (app, al, inc, pm, m) => {
                             .then(result => {
                                 if (!result) reject(new Error('Lines not updated'))
                                 else {
-                                    m.stores.notes.create({
+                                    m.notes.create({
                                         _table: 'demands',
                                         _id: demand.demand_id,
                                         _note: 'Completed',
@@ -354,7 +353,7 @@ module.exports = (app, al, inc, pm, m) => {
     };
     function close_demand(demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return m.stores.demands.findOne({
+            return m.demands.findOne({
                 where: {demand_id: demand_id},
                 include: [inc.demand_lines({where: {_status: {[op.or]: [1, 2]}}})],
                 attributes: ['demand_id', '_status']
@@ -368,7 +367,7 @@ module.exports = (app, al, inc, pm, m) => {
                     .then(result => {
                         if (!result) reject(new Error('Demand not updated'))
                         else {
-                            m.stores.notes.create({
+                            m.notes.create({
                                 _table:  'demands',
                                 _id:     demand.demand_id,
                                 _note:   'Closed',
@@ -391,7 +390,7 @@ module.exports = (app, al, inc, pm, m) => {
 
     function raise_demand(demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return m.stores.demands.findOne({
+            return m.demands.findOne({
                 where: {demand_id: demand_id},
                 attributes: ['demand_id', '_status', '_filename', 'supplier_id']
             })
@@ -441,7 +440,7 @@ module.exports = (app, al, inc, pm, m) => {
     };
     function get_template(supplier_id) {
         return new Promise((resolve, reject) => {
-            return m.stores.suppliers.findOne({
+            return m.suppliers.findOne({
                 where:      {supplier_id: supplier_id},
                 include:    [
                     inc.files({
@@ -466,7 +465,7 @@ module.exports = (app, al, inc, pm, m) => {
     };
     function get_lines(demand_id) {
         return new Promise((resolve, reject) => {
-            return m.stores.demand_lines.findAll({
+            return m.demand_lines.findAll({
                 where: {
                     demand_id: demand_id,
                     _status: 2
@@ -490,7 +489,7 @@ module.exports = (app, al, inc, pm, m) => {
             lines.forEach(line => {
                 actions.push(
                     new Promise((resolve, reject) => {
-                        m.stores.actions.findAll({
+                        m.actions.findAll({
                             where:      {
                                 demand_line_id: line.line_id,
                                 order_id:       {[op.not]: null}
@@ -555,7 +554,7 @@ module.exports = (app, al, inc, pm, m) => {
             orders.forEach(order => {
                 actions.push(
                     new Promise((resolve, reject) => {
-                        m.stores.actions.findAll({
+                        m.actions.findAll({
                             where:      {
                                 order_id: order,
                                 issue_id: {[op.not]: null}
@@ -707,7 +706,7 @@ module.exports = (app, al, inc, pm, m) => {
     
     function receive_demand_line (line, receipt_id, user_id) {
         return new Promise((resolve, reject) => {
-            m.stores.demand_lines.findOne({
+            m.demand_lines.findOne({
                 where: {line_id: line.line_id},
                 attributes: ['size_id', '_qty']
             })
@@ -724,7 +723,7 @@ module.exports = (app, al, inc, pm, m) => {
                 .then(receipt_line_id => {
                     let actions = [];
                     actions.push(
-                        m.stores.demand_lines.update(
+                        m.demand_lines.update(
                             {
                                 receipt_line_id: receipt_line_id,
                                 _status:         3
@@ -733,7 +732,7 @@ module.exports = (app, al, inc, pm, m) => {
                         )
                     );
                     actions.push(
-                        m.stores.order_lines.update(
+                        m.order_lines.update(
                             {receipt_line_id: receipt_line_id},
                             {where: {demand_line_id: line.line_id}}
                         )

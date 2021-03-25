@@ -14,7 +14,7 @@ module.exports = (inc, m) => {
         let include = [];
         include.push(inc.users());
         return {
-            model:      m.stores.actions,
+            model:      m.actions,
             attributes: options.attributes || null,
             include:    include,
             as:         options.as         || 'actions',
@@ -26,7 +26,7 @@ module.exports = (inc, m) => {
         let include = [];
         include.push(inc.users())
         return {
-            model:      m.stores.accounts,
+            model:      m.accounts,
             include:    include,
             attributes: options.attributes || null,
             as:         options.as         || 'account',
@@ -39,7 +39,7 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         else include.push(inc.users());
         return {
-            model:    m.stores.adjusts,
+            model:    m.adjusts,
             attributes: options.attributes || null,
             as:       options.as           || 'adjusts',
             include:  include,
@@ -49,7 +49,7 @@ module.exports = (inc, m) => {
     };
     inc.categories = (options = {}) => {
         return {
-            model:      m.stores.categories,
+            model:      m.categories,
             attributes: options.attributes || ['category_id', '_category'],
             as:         options.as         || 'category',
             include:    options.include    || [],
@@ -63,7 +63,7 @@ module.exports = (inc, m) => {
         if (options.demands) include.push(inc.demands());
         if (options.sizes)   include.push(inc.sizes());
         return {
-            model:    m.stores.demand_lines,
+            model:    m.demand_lines,
             attributes: options.attributes || null,
             include:  include,
             as:       options.as           || 'lines',
@@ -79,7 +79,7 @@ module.exports = (inc, m) => {
             if (options.lines) include.push(inc.demand_lines());
         };
         return {
-            model:    m.stores.demands,
+            model:    m.demands,
             attributes: options.attributes || null,
             include:  include,
             as:       options.as           || 'demand',
@@ -91,7 +91,7 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         return {
-            model:      m.stores.details,
+            model:      m.details,
             attributes: options.attributes || null,
             include:    include,
             as:         options.as         || 'details',
@@ -107,7 +107,7 @@ module.exports = (inc, m) => {
             if (options.child)  include.push(inc.sizes({as: 'child'}));
         };
         return {
-            model:      m.stores.embodiments,
+            model:      m.embodiments,
             attributes: options.attributes || null,
             as:         options.as         || 'embodiments',
             include:    include,
@@ -119,7 +119,7 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         return {
-            model:      m.stores.files,
+            model:      m.files,
             include:    include,
             attributes: options.attributes || null,
             as:         options.as         || 'files',
@@ -131,7 +131,7 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         return {
-            model:      m.stores.file_details,
+            model:      m.file_details,
             include:    include,
             attributes: options.attributes || null,
             as:         options.as         || 'details',
@@ -141,7 +141,7 @@ module.exports = (inc, m) => {
     };
     inc.genders = (options = {}) => {
         return {
-            model:      m.stores.genders,
+            model:      m.genders,
             attributes: options.attributes || ['gender_id', '_gender'],
             as:         options.as         || 'gender',
             include:    options.include    || [],
@@ -155,7 +155,7 @@ module.exports = (inc, m) => {
         include.push(inc.users({as: 'user_issue'}));
         include.push(inc.users({as: 'user'}));
         return {
-            model:    m.stores.issues,
+            model:    m.issues,
             attributes: options.attributes || null,
             include:  include,
             as:       options.as           || 'issue',
@@ -170,7 +170,7 @@ module.exports = (inc, m) => {
             if (options.sizes) include.push(inc.sizes());
         };
         return {
-            model:      m.stores.items,
+            model:      m.items,
             attributes: options.attributes || null,
             as:         options.as         || 'item',
             include:    include,
@@ -183,7 +183,7 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         else include.push(inc.loancards())
         return {
-            model:    m.stores.loancard_lines,
+            model:    m.loancard_lines,
             attributes: options.attributes || null,
             include:  include,
             as:       options.as           || 'lines',
@@ -197,7 +197,7 @@ module.exports = (inc, m) => {
         else {
         };
         return {
-            model:    m.stores.loancards,
+            model:    m.loancards,
             attributes: options.attributes || null,
             include:  include,
             as:       options.as           || 'loancard',
@@ -209,7 +209,7 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include;
         return {
-            model:    m.stores.locations,
+            model:    m.locations,
             attributes: options.attributes || null,
             as:       options.as           || 'locations',
             include:  include,
@@ -219,7 +219,7 @@ module.exports = (inc, m) => {
     };
     inc.nsn_classes = (options = {}) => {
         return {
-            model:      m.stores.nsn_classes,
+            model:      m.nsn_classes,
             attributes: options.attributes || {exclude: ['createdAt', 'updatedAt']},
             as:         options.as         || 'class',
             include:    options.include    || [],
@@ -229,7 +229,7 @@ module.exports = (inc, m) => {
     };
     inc.nsn_countries = (options = {}) => {
         return {
-            model:      m.stores.nsn_countries,
+            model:      m.nsn_countries,
             attributes: options.attributes || {exclude: ['createdAt', 'updatedAt']},
             as:         options.as         || 'country',
             include:    options.include    || [],
@@ -239,7 +239,7 @@ module.exports = (inc, m) => {
     };
     inc.nsn_groups = (options = {}) => {
         return {
-            model:      m.stores.nsn_groups,
+            model:      m.nsn_groups,
             attributes: options.attributes || {exclude: ['createdAt', 'updatedAt']},
             as:         options.as         || 'group',
             include:    options.include    || [],
@@ -254,7 +254,7 @@ module.exports = (inc, m) => {
             inc.nsn_countries()
         ]
         return {
-            model:      m.stores.nsns,
+            model:      m.nsns,
             attributes: options.attributes || null,
             include:    include,
             as:         options.as         || 'nsns',
@@ -269,7 +269,7 @@ module.exports = (inc, m) => {
             include.push(inc.users({as: 'user'}));
         };
         return {
-            model:    m.stores.orders,
+            model:    m.orders,
             attributes: options.attributes || null,
             include:  include,
             as:       options.as       || 'order',
@@ -282,7 +282,7 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         else include.push(inc.locations({as: 'location'}));
         return {
-            model:    m.stores.serials,
+            model:    m.serials,
             attributes: options.attributes || null,
             as:       options.as           || 'serials',
             include:  include,
@@ -294,13 +294,13 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            include.push(m.stores.items)
+            include.push(m.items)
             if (options.stock)   include.push(inc.stock());
             if (options.nsns)    include.push(inc.nsns());
             if (options.serials) include.push(inc.serials());
         };
         return {
-            model:      m.stores.sizes,
+            model:      m.sizes,
             include:    include,
             as:         options.as         || 'size',
             where:      options.where      || null,
@@ -316,7 +316,7 @@ module.exports = (inc, m) => {
             if (options.size) include.push(inc.sizes());
         };
         return {
-            model:      m.stores.stocks,
+            model:      m.stocks,
             attributes: options.attributes || null,
             as:         options.as         || 'stocks',
             include:    include,
@@ -330,7 +330,7 @@ module.exports = (inc, m) => {
         if (options.file)    include.push(inc.files())
         if (options.account) include.push(inc.accounts())
         return {
-            model:    m.stores.suppliers,
+            model:    m.suppliers,
             attributes: options.attributes || null,
             as:       options.as       || 'suppliers',
             include:  include,

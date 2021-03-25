@@ -1,7 +1,6 @@
 function getItemEdit() {
     get(
         {
-            db: 'canteen',
             table: 'item',
             query: [`item_id=${path[3]}`]
         },

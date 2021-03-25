@@ -1,7 +1,6 @@
 function getCredits() {
     get(
         {
-            db:    'canteen',
             table: 'credits',
             spinner: 'users_debit'
         },

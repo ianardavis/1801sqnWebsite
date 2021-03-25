@@ -19,7 +19,7 @@ function get(options, onComplete) {
         alert(`Something went wrong getting ${options.table}`);
         hide_spinner(options.spinner || options.table || '');
     });
-    XHR.open(options.method || 'GET', `/${options.db || 'stores'}/get/${options.table}?${options.query.join('&')}`);
+    XHR.open(options.method || 'GET', `/get/${options.table}?${options.query.join('&')}`);
     XHR.send();
 };
 function count(options, onComplete) {
@@ -42,6 +42,6 @@ function count(options, onComplete) {
         alert(`Something went wrong getting ${options.table}`);
         hide_spinner(options.spinner || options.table || '');
     });
-    XHR.open('GET', `/${options.db || 'stores'}/count/${options.table}?${options.query.join('&')}`);
+    XHR.open('GET', `/count/${options.table}?${options.query.join('&')}`);
     XHR.send();
 };

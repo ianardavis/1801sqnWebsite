@@ -1,7 +1,7 @@
 module.exports = function (m, inc, loancard) {
     loancard.createPDF  = function (loancard_id) {
         return new Promise((resolve, reject) => {
-            m.stores.loancards.findOne({
+            m.loancards.findOne({
                 attributes: ['loancard_id', '_status', 'createdAt'],
                 where:      {loancard_id: loancard_id},
                 include: [
@@ -60,7 +60,7 @@ module.exports = function (m, inc, loancard) {
                         doc.end();
                         writeStream.on('error', err => reject(err));
                         writeStream.on('finish', function () {
-                            m.stores.loancards.update(
+                            m.loancards.update(
                                 {_filename: file},
                                 {where: {loancard_id: loancard.loancard_id}}
                             )
@@ -159,7 +159,7 @@ module.exports = function (m, inc, loancard) {
 
     loancard.create     = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return m.stores.loancards.findOrCreate({
+            return m.loancards.findOrCreate({
                 where: {
                     user_id_loancard: options.user_id_loancard,
                     _status:          1
@@ -175,7 +175,7 @@ module.exports = function (m, inc, loancard) {
     };
     loancard.createLine = function(line = {}) {
         return new Promise((resolve, reject) => {
-            return m.stores.loancards.findOne({
+            return m.loancards.findOne({
                 where: {loancard_id: line.loancard_id},
                 attributes: ['loancard_id', '_status']
             })
@@ -185,7 +185,7 @@ module.exports = function (m, inc, loancard) {
                     let include = [];
                     if (line.nsn_id)    include.push(inc.nsns(   {where: {nsn_id:    line.nsn_id},    attributes: ['nsn_id']}));
                     if (line.serial_id) include.push(inc.serials({where: {serial_id: line.serial_id}, attributes: ['serial_id']}))
-                    return m.stores.sizes.findOne({
+                    return m.sizes.findOne({
                         where:      {size_id: line.size_id},
                         attributes: ['size_id', '_serials', '_nsns'],
                         include: include
@@ -198,7 +198,7 @@ module.exports = function (m, inc, loancard) {
                         else if (size._serials && !size.serials[0]) reject(new Error('Serial # not found'))
                         else {
                             if (size._serials) {
-                                return m.stores.loancard_lines.create({
+                                return m.loancard_lines.create({
                                     loancard_id: loancard.loancard_id,
                                     serial_id:   size.serials[0].serial_id,
                                     size_id:     size.size_id,
@@ -209,7 +209,7 @@ module.exports = function (m, inc, loancard) {
                                 .then(loancard_line => resolve({success: true, message: 'Line added to loancard', line_id: loancard_line.line_id}))
                                 .catch(err =>          reject(err));
                             } else {
-                                return m.stores.loancard_lines.findOrCreate({
+                                return m.loancard_lines.findOrCreate({
                                     where: {
                                         loancard_id: loancard.loancard_id,
                                         _status:     1,

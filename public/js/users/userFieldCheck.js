@@ -1,25 +1,27 @@
-var _bader    = document.querySelector("#inp_bader"),
-    _name     = document.querySelector("#inp_name"),
-    _ini      = document.querySelector("#inp_ini"),
-    _login_id = document.querySelector("#inp_login_id"),
-    rank_id   = document.querySelector("#inp_status_id"),
-    status_id = document.querySelector("#inp_rank_id"),
-    _save     = document.querySelector("#save_user");
+let inp_service_number = document.querySelector("#inp_service_number"),
+    inp_surname        = document.querySelector("#inp_surname"),
+    inp_first_name     = document.querySelector("#inp_first_name"),
+    inp_login_id       = document.querySelector("#inp_login_id"),
+    sel_statuses_add   = document.querySelector("#sel_statuses_add"),
+    sel_ranks_add      = document.querySelector("#sel_ranks_add"),
+    save_user          = document.querySelector("#save_user");
 function check_fields() {
-    if (_bader.value    !== '' && 
-        _name.value     !== '' && 
-        _ini.value      !== '' && 
-        _login_id.value !== '' && 
-        rank_id.value   !== '' && 
-        status_id.value !== '') {
-        _save.disabled = false
-    } else _save.disabled = true;
+    if (
+        inp_service_number.value !== '' && 
+        inp_surname.value        !== '' && 
+        inp_first_name.value     !== '' && 
+        inp_login_id.value       !== '' && 
+        sel_ranks_add.value      !== '' && 
+        sel_statuses_add.value   !== ''
+    ) {
+        save_user.disabled = false
+    } else save_user.disabled = true;
 };
 window.addEventListener('load', function () {
-    _bader   .addEventListener('input',  check_fields);
-    _name    .addEventListener('input',  check_fields);
-    _ini     .addEventListener('input',  check_fields);
-    _login_id.addEventListener('input',  check_fields);
-    rank_id  .addEventListener('change', check_fields);
-    status_id.addEventListener('change', check_fields);
+    inp_service_number.addEventListener('input',  check_fields);
+    inp_surname       .addEventListener('input',  check_fields);
+    inp_first_name    .addEventListener('input',  check_fields);
+    inp_login_id      .addEventListener('input',  check_fields);
+    sel_ranks_add     .addEventListener('change', check_fields);
+    sel_statuses_add  .addEventListener('change', check_fields);
 });

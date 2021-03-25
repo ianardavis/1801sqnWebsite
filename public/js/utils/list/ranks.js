@@ -3,12 +3,11 @@ function listRanks(options = {}) {
     ranks_loaded = false;
     get(
         {
-            db:    'users',
             table: 'ranks',
             ...options
         },
         function (ranks, options) {
-            let select = document.querySelector(`#${options.id || 'rank_id'}`);
+            let select = document.querySelector(`#${options.select}`);
             if (select) {
                 select.innerHTML = '';
                 if (options.blank === true) select.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
@@ -18,7 +17,7 @@ function listRanks(options = {}) {
                     else                 value = `rank_id=${rank.rank_id}`;
                     select.appendChild(new Option({
                         value:    value,
-                        text:     rank._rank,
+                        text:     rank.rank,
                         selected: (options.selected === rank.rank_id)
                     }).e);
                 });

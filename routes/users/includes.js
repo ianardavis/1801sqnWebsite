@@ -2,9 +2,9 @@ module.exports = (inc, m) => {
     inc.users = (options = {}) => {
         let include = [];
         if (options.include) options.include;
-        include.push(inc.ranks());
+        include.push(inc.rank());
         return {
-            model:      m.users.users,
+            model:      m.users,
             include:    include,
             attributes: options.attributes || {exclude: ['_password', '_salt']},
             as:         options.as         || 'user',
@@ -12,24 +12,18 @@ module.exports = (inc, m) => {
             required:   options.required   || false
         };
     };
-    inc.ranks = (options = {}) => {
+    inc.rank = () => {
         return {
-            model:      m.users.ranks,
-            attributes: options.attributes || ['_rank'],
-            as:         options.as         || 'rank',
-            include:    options.include    || [],
-            required:   options.required   || false,
-            where:      options.where      || null
+            model:      m.ranks,
+            attributes: ['rank'],
+            as:         'rank'
         };
     };
-    inc.statuses = (options = {}) => {
+    inc.status = () => {
         return {
-            model:      m.users.statuses,
-            attributes: options.attributes || ['_status'],
-            as:         options.as         || 'status',
-            include:    options.include    || [],
-            required:   options.required   || false,
-            where:      options.where      || null
+            model:      m.statuses,
+            attributes: ['status'],
+            as:         'status'
         };
     };
 };

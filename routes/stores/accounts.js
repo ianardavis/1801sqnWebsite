@@ -1,15 +1,14 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/stores/get/accounts',    pm, al('access_accounts', {send: true}), (req, res) => {
-        return m.stores.accounts.findAll({
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/get/accounts',    pm.check('access_accounts', {send: true}), (req, res) => {
+        return m.accounts.findAll({
             where:   req.query,
             include: [inc.users({as: 'user_account'})]
         })
         .then(accounts => res.send({success: true, result: accounts}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/account',     pm, al('access_accounts', {send: true}), (req, res) => {
-        return m.stores.accounts.findOne({
+    app.get('/get/account',     pm.check('access_accounts', {send: true}), (req, res) => {
+        return m.accounts.findOne({
             where:   req.query,
             include: [
                 inc.users({as: 'user'}),
@@ -23,8 +22,8 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/stores/accounts/:id',    pm, al('account_edit',    {send: true}), (req, res) => {
-        m.stores.accounts.update(
+    app.put('/accounts/:id',    pm.check('account_edit',    {send: true}), (req, res) => {
+        m.accounts.update(
             req.body.account,
             {where: {account_id: req.params.id}}
         )
@@ -32,8 +31,8 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.post('/stores/accounts',       pm, al('account_add',     {send: true}), (req, res) => {
-        m.stores.accounts.create({
+    app.post('/accounts',       pm.check('account_add',     {send: true}), (req, res) => {
+        m.accounts.create({
             ...req.body.account,
             ...{user_id: req.user.user_id}
         })
@@ -41,9 +40,9 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.delete('/stores/accounts/:id', pm, al('account_delete',  {send: true}), (req, res) => {
+    app.delete('/accounts/:id', pm.check('account_delete',  {send: true}), (req, res) => {
         console.log(req.params.id)
-        m.stores.accounts.findOne({
+        m.accounts.findOne({
             where: {account_id: req.params.id},
             attributes: ['account_id']
         })
@@ -54,7 +53,7 @@ module.exports = (app, al, inc, pm, m) => {
                 .then(result => {
                     if (!result) res.send({success: false, message: 'Account not deleted'})
                     else {
-                        return m.stores.suppliers.update(
+                        return m.suppliers.update(
                             {account_id: null},
                             {where: {account_id: account.account_id}}
                         )

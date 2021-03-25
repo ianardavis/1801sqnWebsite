@@ -1,7 +1,6 @@
 function getPermissionsEdit () {
     get(
         {
-            db: path[1],
             table: 'permissions',
             query: [`user_id=${path[3]}`],
             spinner: 'permission_edit'

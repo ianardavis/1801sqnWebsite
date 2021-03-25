@@ -1,7 +1,6 @@
 function getReceipts() {
     get(
         {
-            db: 'canteen',
             table: 'receipts',
             query: [`item_id=${path[3]}`]
         },

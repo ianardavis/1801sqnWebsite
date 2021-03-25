@@ -1,7 +1,6 @@
 function getNotes() {
     get(
         {
-            db:    path[1],
             table: 'notes',
             query: note_query()
         },
@@ -27,7 +26,6 @@ function getNotes() {
 function getNote(note_id, permissions) {
     get(
         {
-            db:      path[1],
             table:   'note',
             query:   [`note_id=${note_id}`],
             spinner: 'note_view'

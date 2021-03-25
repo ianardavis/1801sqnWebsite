@@ -1,9 +1,8 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/canteen/writeoffs',             pm, al('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/index'));
-    app.get('/canteen/writeoffs/:id',         pm, al('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/show'));
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/writeoffs',     pm.get, pm.check('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/index'));
+    app.get('/writeoffs/:id', pm.get, pm.check('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/show'));
     
-    app.get('/canteen/get/writeoffs',         pm, al('access_writeoffs',      {send: true}), (req, res) => {
+    app.get('/get/writeoffs',           pm.check('access_writeoffs',      {send: true}), (req, res) => {
         m.writeoffs.findAll({
             include: [inc.users()],
             where: req.query
@@ -11,7 +10,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(writeoffs => res.send({success: true, result: writeoffs}))
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/writeoff',          pm, al('access_writeoffs',      {send: true}), (req, res) => {
+    app.get('/get/writeoff',            pm.check('access_writeoffs',      {send: true}), (req, res) => {
         m.writeoffs.findOne({
             where: req.query,
             include: [inc.users()]
@@ -22,7 +21,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res))
     });
-    app.get('/canteen/get/writeoff_lines',    pm, al('access_writeoff_lines', {send: true}), (req, res) => {
+    app.get('/get/writeoff_lines',      pm.check('access_writeoff_lines', {send: true}), (req, res) => {
         m.writeoff_lines.findAll({
             include: [
                 inc.items(),
@@ -34,7 +33,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.post('/canteen/writeoffs',            pm, al('writeoff_add',          {send: true}), (req, res) => {
+    app.post('/writeoffs',              pm.check('writeoff_add',          {send: true}), (req, res) => {
         m.writeoffs.findOrCreate({
             where: {
                 _status: 1,
@@ -48,7 +47,7 @@ module.exports = (app, al, inc, pm, m) => {
         })
     
     });
-    app.post('/canteen/writeoff_lines/:id',   pm, al('writeoff_line_add',     {send: true}), (req, res) => {
+    app.post('/writeoff_lines/:id',     pm.check('writeoff_line_add',     {send: true}), (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id']
@@ -89,7 +88,7 @@ module.exports = (app, al, inc, pm, m) => {
     
     });
 
-    app.put('/canteen/writeoffs/:id',         pm, al('writeoff_edit',         {send: true}), (req, res) => {
+    app.put('/writeoffs/:id',           pm.check('writeoff_edit',         {send: true}), (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status'],
@@ -106,7 +105,7 @@ module.exports = (app, al, inc, pm, m) => {
                         writeoff.lines.forEach(line => {
                             complete_actions.push(
                                 new Promise((resolve, reject) => {
-                                    m.items.findOne({
+                                    m.canteen_items.findOne({
                                         where: {item_id: line.item_id},
                                         attributes: ['item_id', '_qty', '_cost']
                                     })
@@ -149,12 +148,12 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.send(err, res));
     });
     
-    app.delete('/canteen/writeoff_lines/:id', pm, al('writeoff_line_delete',  {send: true}), (req, res) => {
+    app.delete('/writeoff_lines/:id',   pm.check('writeoff_line_delete',  {send: true}), (req, res) => {
         m.writeoff_lines.update({_status: 0}, {where: {line_id: req.params.id}})
         .then(result => res.send({success: true, message: 'Line deleted'}))
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/canteen/writeoffs/:id',      pm, al('writeoff_delete',       {send: true}), (req, res) => {
+    app.delete('/writeoffs/:id',        pm.check('writeoff_delete',       {send: true}), (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status']

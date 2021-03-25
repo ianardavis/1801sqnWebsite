@@ -3,7 +3,6 @@ function getWriteoffs() {
     let sel_status = document.querySelector('#sel_status');
     get(
         {
-            db: 'canteen',
             table: 'writeoffs',
             query: [sel_status.value]
         },

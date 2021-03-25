@@ -2,7 +2,6 @@ var statuses = {"0": "Cancelled", "1": "Open", "2": "Complete"};
 function getWriteoff() {
     get(
         {
-            db: 'canteen',
             table: 'writeoff',
             query: [`writeoff_id=${path[3]}`]
         },

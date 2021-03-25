@@ -1,10 +1,10 @@
-module.exports = (app, al, inc, pm, m) => {
+module.exports = (app, m, pm, op, inc, send_error) => {
     let nullify = require(`../functions/nullify`);
-    app.get('/stores/items',                  pm, al('access_items'),               (req, res) => res.render('stores/items/index'));
-    app.get('/stores/items/:id',              pm, al('access_items'),               (req, res) => res.render('stores/items/show'));
+    app.get('/items',        pm.get, pm.check('access_items'),               (req, res) => res.render('stores/items/index'));
+    app.get('/items/:id',    pm.get, pm.check('access_items'),               (req, res) => res.render('stores/items/show'));
     
-    app.get('/stores/get/items',              pm, al('access_items', {send: true}), (req, res) => {
-        m.stores.items.findAll({
+    app.get('/get/items',              pm.check('access_items', {send: true}), (req, res) => {
+        m.items.findAll({
             where:   req.query,
             include: [
                 // inc.categories(),
@@ -14,8 +14,8 @@ module.exports = (app, al, inc, pm, m) => {
         .then(items => res.send({success: true, result: items}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/item',               pm, al('access_items', {send: true}), (req, res) => {
-        m.stores.items.findOne({
+    app.get('/get/item',               pm.check('access_items', {send: true}), (req, res) => {
+        m.items.findOne({
             where:   req.query,
             include: [
                 // inc.categories(),
@@ -28,16 +28,16 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/item_categories',    pm, al('access_items', {send: true}), (req, res) => {
-        m.stores.item_categories.findAll({
+    app.get('/get/item_categories',    pm.check('access_items', {send: true}), (req, res) => {
+        m.item_categories.findAll({
             where: req.query,
             include: [inc.categories()]
         })
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/item_category',      pm, al('access_items', {send: true}), (req, res) => {
-        m.stores.item_categories.findOne({
+    app.get('/get/item_category',      pm.check('access_items', {send: true}), (req, res) => {
+        m.item_categories.findOne({
             where: req.query,
             include: [inc.categories()]
         })
@@ -45,17 +45,17 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/items',                 pm, al('item_add',     {send: true}), (req, res) => {
+    app.post('/items',                 pm.check('item_add',     {send: true}), (req, res) => {
         req.body.item = nullify(req.body.item);
-        m.stores.items.create(req.body.item)
+        m.items.create(req.body.item)
         .then(item => res.send({success: true, message: 'Item added'}))
         .catch(err => res.error.send(err, res));
     });
-    app.post('/stores/item_categories',       pm, al('item_edit',    {send: true}), (req, res) => {
+    app.post('/item_categories',       pm.check('item_edit',    {send: true}), (req, res) => {
         let actions = [];
         req.body.category.category_id.filter(e => e !== '').forEach(category_id => {
             actions.push(new Promise((resolve, reject) => {
-                return m.stores.item_categories.findOrCreate({
+                return m.item_categories.findOrCreate({
                     where: {
                         item_id:     req.body.category.item_id,
                         category_id: category_id
@@ -69,20 +69,20 @@ module.exports = (app, al, inc, pm, m) => {
         .then(results => res.send({success: true, message: 'Categories added'}))
         .catch(err => res.send({success: false, message: `Error adding categories: ${err.message}`}));
     });
-    app.put('/stores/items/:id',              pm, al('item_edit',    {send: true}), (req, res) => {
+    app.put('/items/:id',              pm.check('item_edit',    {send: true}), (req, res) => {
         req.body.item = nullify(req.body.item);
-        m.stores.items.update(
+        m.items.update(
             req.body.item,
             {where: {item_id: req.params.id}}
         )
         .then(result => res.send({success: true, message: 'Item saved'}))
         .catch(err => res.error.send(err, res));
     });
-    app.delete('/stores/items/:id',           pm, al('item_delete',  {send: true}), (req, res) => {
-        m.stores.sizes.findOne({where: {item_id: req.params.id}})
+    app.delete('/items/:id',           pm.check('item_delete',  {send: true}), (req, res) => {
+        m.sizes.findOne({where: {item_id: req.params.id}})
         .then(sizes => {
             if (!sizes) {
-                m.stores.items.destroy({where: {item_id: req.params.id}})
+                m.items.destroy({where: {item_id: req.params.id}})
                 .then(result => res.send({success: true, message: 'Item deleted'}))
                 .catch(err => {
                     if (!result) res.send({success: false, message: 'Item not deleted'})
@@ -92,8 +92,8 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.send({success: false, message: `Error deleting item: ${err.message}`}));
     });
-    app.delete('/stores/item_categories/:id', pm, al('item_edit',    {send: true}), (req, res) => {
-        m.stores.item_categories.destroy({where: {item_category_id: req.params.id}})
+    app.delete('/item_categories/:id', pm.check('item_edit',    {send: true}), (req, res) => {
+        m.item_categories.destroy({where: {item_category_id: req.params.id}})
         .then(result => {
             if (!result) res.send({success: false, message: 'Category not deleted'})
             else         res.send({success: true,  message: 'Category deleted'});

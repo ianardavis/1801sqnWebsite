@@ -3,12 +3,11 @@ function listStatuses(options = {}) {
     statuses_loaded = false;
     get(
         {
-            db:    'users',
             table: 'statuses',
             ...options
         },
         function (statuses, options) {
-            let select = document.querySelector(`#${options.id || 'status_id'}`);
+            let select = document.querySelector(`#${options.select}`);
             if (select) {
                 select.innerHTML = '';
                 if (options.blank === true) select.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
@@ -18,7 +17,7 @@ function listStatuses(options = {}) {
                     else                 value = `status_id=${status.status_id}`;
                     select.appendChild(new Option({
                         value:    value,
-                        text:     status._status,
+                        text:     status.status,
                         selected: (options.selected === status.status_id)
                     }).e);
                 });

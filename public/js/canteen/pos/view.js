@@ -41,10 +41,7 @@ function load_check() {
 };
 function getSale() {
     get(
-        {
-            db: 'canteen',
-            table: 'user_sale'
-        },
+        {table: 'user_sale'},
         function (_sale_id, options) {
             if (_sale_id) {
                 set_breadcrumb({text: _sale_id})
@@ -58,7 +55,6 @@ function getSale() {
 function getSaleLines() {
     get(
         {
-            db:    'canteen',
             table: 'sale_lines',
             query: [`sale_id=${sale_id}`]
         },
@@ -112,10 +108,7 @@ function getSaleLines() {
 };
 function getPages() {
     get(
-        {
-            db:    'canteen',
-            table: 'pos_pages'
-        },
+        {table: 'pos_pages'},
         function (pages, options) {
             clearElement('tab_headers');
             clearElement('tab_pages');
@@ -153,7 +146,6 @@ function getPages() {
             });
             get(
                 {
-                    db: 'canteen',
                     table: 'settings',
                     query: ['_name=default_pos_page']
                 },

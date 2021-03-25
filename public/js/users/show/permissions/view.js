@@ -4,7 +4,6 @@ function getPermissions () {
         tbl_permissions.innerHTML = '';
         get(
             {
-                db: path[1],
                 table: 'permissions',
                 query: [`user_id=${path[3]}`]
             },

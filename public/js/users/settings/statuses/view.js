@@ -3,10 +3,7 @@ function getStatuses() {
     if (tbl_statuses) {
         tbl_statuses.innerHTML = '';
         get(
-            {
-                db: 'users',
-                table: 'statuses'
-            },
+            {table: 'statuses'},
             function (statuses, options) {
                 statuses.forEach(status => {
                     let row = tbl_statuses.insertRow(-1);

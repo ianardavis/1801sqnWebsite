@@ -13,7 +13,7 @@ module.exports = () => {
             };
         } else if (['canteen', 'stores', 'users'].includes(req._parsedUrl.pathname.split('/')[1])) {
             req.flash('danger', 'You need to be signed in to do that!');
-            res.redirect(`/login?redirect=${req._parsedUrl.pathname.split('/')[1]}`);
+            res.redirect(`/login?redirect=${req._parsedUrl.pathname}`);
         } else {
             next();
             // return null;

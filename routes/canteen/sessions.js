@@ -1,10 +1,9 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
+module.exports = (app, m, pm, al, op, inc, send_error) => {
     let settings = require(`${process.env.ROOT}/fn/settings`);
-    app.get('/canteen/sessions',     pm, al('access_canteen'),                (req, res) => res.render('canteen/sessions/index'));
-    app.get('/canteen/sessions/:id', pm, al('access_canteen'),                (req, res) => res.render('canteen/sessions/show'));
+    app.get('/sessions',     pm.get, pm.check('access_canteen'),      (req, res) => res.render('canteen/sessions/index'));
+    app.get('/sessions/:id', pm.get, pm.check('access_canteen'),      (req, res) => res.render('canteen/sessions/show'));
 
-    app.get('/canteen/get/sessions', pm, al('access_sessions', {send: true}), (req, res) => {
+    app.get('/get/sessions', pm.check('access_sessions', {send: true}), (req, res) => {
         m.sessions.findAll({
             where: req.query,
             include: [
@@ -15,7 +14,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(sessions => res.send({success: true, result: sessions}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/canteen/get/session',  pm, al('access_sessions', {send: true}), (req, res) => {
+    app.get('/get/session',  pm.check('access_sessions', {send: true}), (req, res) => {
         m.sessions.findOne({
             where: req.query,
             include: [
@@ -31,7 +30,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/canteen/sessions',    pm, al('session_add',     {send: true}), (req, res) => {
+    app.post('/sessions',    pm.check('session_add',     {send: true}), (req, res) => {
         let balance = countCash(req.body.balance);
         m.holdings.findOrCreate({
             where: {_description: 'Canteen'},
@@ -85,7 +84,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
     
-    app.put('/canteen/sessions/:id', pm, al('session_edit',    {send: true}), (req, res) => {
+    app.put('/sessions/:id', pm.check('session_edit',    {send: true}), (req, res) => {
         m.sessions.findOne({
             where: {session_id: req.params.id},
             attributes: ['session_id', '_status']

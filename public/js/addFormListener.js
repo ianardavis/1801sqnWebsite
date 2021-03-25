@@ -48,6 +48,23 @@ function sendData(form, method, _location, options = {reload: false, _close: tru
                 else if (options._close)   close();
                 else if (options.redirect) window.location.replace(options.redirect);
             } else {
+                if (options.onFail) {
+                    if (Array.isArray(options.onFail)) {
+                        options.onFail.forEach(func => {
+                            try {
+                                func()
+                            } catch (error) {
+                                console.log(error);
+                            };
+                        })
+                    } else {
+                        try {
+                            options.onFail();
+                        } catch (error) {
+                            console.log(error);
+                        };
+                    };
+                };
                 console.log(response);
                 alert(response.message || response.error || 'Unknown error');
             };

@@ -1,7 +1,6 @@
 function getWriteoffs() {
     get(
         {
-            db: 'canteen',
             table: 'writeoffs',
             query: [`item_id=${path[3]}`]
         },

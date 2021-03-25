@@ -1,6 +1,6 @@
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/stores/get/adjusts', pm, al('access_adjusts', {send: true}), (req, res) => {
-        m.stores.adjusts.findAll({
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/get/adjusts', pm.check('access_adjusts', {send: true}), (req, res) => {
+        m.adjusts.findAll({
             where:   req.query,
             include: [
                 inc.users(), 
@@ -11,9 +11,9 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/adjusts',    pm, al('adjust_add',     {send: true}), (req, res) => {
+    app.post('/adjusts',    pm.check('adjustment_add', {send: true}), (req, res) => {
         if (req.body.adjust.stock_id && req.body.adjust._qty && req.body.adjust._type) {
-            m.stores.stocks.findOne({
+            m.stocks.findOne({
                 where: {stock_id: req.body.adjust.stock_id},
                 attributes: ['stock_id', 'size_id', '_qty']
             })
@@ -32,7 +32,7 @@ module.exports = (app, al, inc, pm, m) => {
                     if (action) {
                         return action
                         .then(result => {
-                            return m.stores.adjusts.create(req.body.adjust)
+                            return m.adjusts.create(req.body.adjust)
                             .then(adjust => res.send({success: true, message: 'Adjustment added'}))
                             .catch(err => res.error.send(err, res));
                         })

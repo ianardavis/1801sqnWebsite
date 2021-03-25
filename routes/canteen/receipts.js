@@ -1,9 +1,8 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/canteen/receipts',        pm, al('access_receipts'),               (req, res) => res.render('canteen/receipts/index'));
-    app.get('/canteen/receipts/:id',    pm, al('access_receipts'),               (req, res) => res.render('canteen/receipts/show'));
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/receipts',     pm.get, pm.check('access_receipts'),     (req, res) => res.render('canteen/receipts/index'));
+    app.get('/receipts/:id', pm.get, pm.check('access_receipts'),     (req, res) => res.render('canteen/receipts/show'));
     
-    app.get('/canteen/get/receipts',    pm, al('access_receipts', {send: true}), (req, res) => {
+    app.get('/get/receipts',    pm.check('access_receipts', {send: true}), (req, res) => {
         m.receipts.findAll({
             where: req.query,
             include: [
@@ -14,7 +13,7 @@ module.exports = (app, al, inc, pm, m) => {
         .then(receipts => res.send({success: true,  result: receipts}))
         .catch(err =>     res.send({success: false, message: `Error getting receipts: ${err.message}`}))
     });
-    app.get('/canteen/get/receipt',     pm, al('access_receipts', {send: true}), (req, res) => {
+    app.get('/get/receipt',     pm.check('access_receipts', {send: true}), (req, res) => {
         m.receipts.findOne({
             where: req.query,
             include: [
@@ -29,11 +28,11 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res))
     });
 
-    app.post('/canteen/receipts',       pm, al('receipt_add',     {send: true}), (req, res) => {
+    app.post('/receipts',       pm.check('receipt_add',     {send: true}), (req, res) => {
         if      (!req.body.receipt._qty)  res.send({success: false, message: 'No quantity submitted'})
         else if (!req.body.receipt._cost) res.send({success: false, message: 'No cost submitted'})
         else {
-            m.items.findOne({
+            m.canteen_items.findOne({
                 where:      {item_id: req.body.receipt.item_id},
                 attributes: ['item_id', '_cost', '_qty']
             })
@@ -97,7 +96,7 @@ module.exports = (app, al, inc, pm, m) => {
         };
     });
     
-    app.delete('/canteen/receipts/:id', pm, al('receipt_delete',  {send: true}), (req, res) => {
+    app.delete('/receipts/:id', pm.check('receipt_delete',  {send: true}), (req, res) => {
         m.receipts.findOne({
             where: {receipt_id: req.params.id},
             attributes: ['receipt_id']

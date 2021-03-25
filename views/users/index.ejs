@@ -1,0 +1,59 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/users',  text: 'Users'}) %>
+<% if (permissions.user_add) { %>
+	<%- include(`${partials}/breadcrumb`, {text: '<i class="fas fa-plus"></i>', modal: 'user_add'}) %>
+<% } %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'users'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+	<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'sel_ranks',    spinner_id: 'ranks', 	 reload_id: 'reload_ranks'}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'sel_statuses', spinner_id: 'statuses', reload_id: 'reload_statuses'}) %>
+	<table class="table table-sm table-hover">
+		<thead class="thead-dark">
+			<th class="w-20" onclick="sortTable(0, 'tbl_users')">Bader/Service #</th>
+			<th class="w-10" onclick="sortTable(1, 'tbl_users')">Rank</th>
+			<th class="w-40" onclick="sortTable(2, 'tbl_users')">Surname</th>
+			<th class="w-30" onclick="sortTable(3, 'tbl_users')">First Name</th>
+			<th><i class='fas fa-search'></i></th>
+		</thead>
+		<tbody id="tbl_users"></tbody>
+	</table>
+	<div id="div_modals">
+		<% if (permissions.user_add) { %>
+			<div id='mdl_user_add' class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<form class="modal-content" id='form_user_add'>
+						<div class="modal-header">
+							<h5 class="modal-title">Add User</h5>
+						</div>
+						<div class="modal-body">
+							<%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number', maxlength: 20}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',   	 required: true, id: 'sel_ranks_add',  	   spinner_id: 'ranks_add'}) %>
+							<%- include(`${partials}/inputs/text`,   {title: 'Surname',    name: 'user[surname]', 	   	 required: true, id: 'inp_surname',        maxelngth: 50}) %>
+							<%- include(`${partials}/inputs/text`,   {title: 'First Name', name: 'user[first_name]', 	 required: true, id: 'inp_first_name', 	   maxlength: 20}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]', 	 required: true, id: 'sel_statuses_add',   spinner_id: 'statuses_add'}) %>
+							<%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',  	 required: true, id: 'inp_login_id',  	   maxLength: 30}) %>
+						</div>
+						<div class="modal-footer">
+							<input type="submit" id='save_user' class="btn btn-success w-100" value='Save User' disabled>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			<script src="/js/users/loginBaderMirror.js"></script>
+			<script src="/js/users/userFieldCheck.js"></script>
+			<script src="/js/addFormListener.js"></script>
+			<script src="/js/users/index/add.js"></script>
+		<% } %>
+	</div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/utils/list/statuses.js"></script>
+<script src="/js/utils/list/ranks.js"></script>
+<script src="/js/users/index/users.js"></script>
+<script async>getStatuses()</script>
+<script async>getRanks()</script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

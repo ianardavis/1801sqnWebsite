@@ -3,7 +3,7 @@ module.exports = (permission, options = {}) => {
         req.allowed = (res.locals.permissions[permission] === true);
         if (req.allowed || options.allow) next();
         else {
-            if (options.send) res.send({result: false, error: `Permission denied - ${permission}`})
+            if (options.send) res.send({success: false, error: `Permission denied - ${permission}`})
             else {
                 req.flash('danger', `Permission denied - ${permission}`);
                 res.redirect('/resources');

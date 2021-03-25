@@ -1,15 +1,14 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
-    app.get('/stores/get/actions', pm, al('access_actions', {send: true}), (req, res) => {
-        m.stores.actions.findAll({
+module.exports = (app, m, pm, op, inc, send_error) => {
+    app.get('/get/actions', pm.check('access_actions', {send: true}), (req, res) => {
+        m.actions.findAll({
             where:      req.query,
             attributes: ['action_id', '_action', 'createdAt']
         })
         .then(actions => res.send({success: true, result: actions}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/action' , pm, al('access_actions', {send: true}), (req, res) => {
-        m.stores.actions.findOne({
+    app.get('/get/action' , pm.check('access_actions', {send: true}), (req, res) => {
+        m.actions.findOne({
             where:   req.query,
             include: [
                 inc.issues(),

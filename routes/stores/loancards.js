@@ -1,12 +1,11 @@
-const op = require('sequelize').Op;
-module.exports = (app, al, inc, pm, m) => {
+module.exports = (app, m, pm, op, inc, send_error) => {
     let loancards = {}, locations = {}, allowed = require('../functions/allowed');
     require('./functions/loancards') (m, inc, loancards);
     require('./functions/locations') (m, locations);
-    app.get('/stores/loancards',              pm, al('access_loancards'),                    (req, res) => res.render('stores/loancards/index'));
-    app.get('/stores/loancards/:id',          pm, al('access_loancards'),                    (req, res) => res.render('stores/loancards/show'));
-    app.get('/stores/loancards/:id/download', pm, al('access_loancards'),                    (req, res) => {
-        m.stores.loancards.findOne({
+    app.get('/loancards',              pm.get, pm.check('access_loancards'),          (req, res) => res.render('stores/loancards/index'));
+    app.get('/loancards/:id',          pm.get, pm.check('access_loancards'),          (req, res) => res.render('stores/loancards/show'));
+    app.get('/loancards/:id/download', pm.check('access_loancards'),                    (req, res) => {
+        m.loancards.findOne({
             where: {loancard_id: req.params.id},
             attributes: ['_filename']
         })
@@ -22,16 +21,16 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.get('/stores/count/loancards',        pm, al('access_loancards',      {send: true}), (req, res) => {
-        m.stores.loancards.count({where: req.query})
+    app.get('/count/loancards',        pm.check('access_loancards',      {send: true}), (req, res) => {
+        m.loancards.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => {
             console.log(err);
             res.send({success: false, message: 'Error counting loancards'})
         });
     });
-    app.get('/stores/get/loancard',           pm, al('access_loancards',      {send: true}), (req, res) => {
-        m.stores.loancards.findOne({
+    app.get('/get/loancard',           pm.check('access_loancards',      {send: true}), (req, res) => {
+        m.loancards.findOne({
             where: req.query,
             include: [
                 inc.loancard_lines(),
@@ -45,8 +44,8 @@ module.exports = (app, al, inc, pm, m) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/loancards',          pm, al('access_loancards',      {send: true}), (req, res) => {
-        m.stores.loancards.findAll({
+    app.get('/get/loancards',          pm.check('access_loancards',      {send: true}), (req, res) => {
+        m.loancards.findAll({
             where:   req.query,
             include: [
                 inc.loancard_lines(),
@@ -57,8 +56,8 @@ module.exports = (app, al, inc, pm, m) => {
         .then(loancards => res.send({success: true, result: loancards}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/loancard_lines',     pm, al('access_loancard_lines', {send: true}), (req, res) => {
-        m.stores.loancard_lines.findAll({
+    app.get('/get/loancard_lines',     pm.check('access_loancard_lines', {send: true}), (req, res) => {
+        m.loancard_lines.findAll({
             where:   req.query,
             include: [
                 inc.sizes(),
@@ -69,8 +68,8 @@ module.exports = (app, al, inc, pm, m) => {
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => res.error.send(err, res));
     });
-    app.get('/stores/get/loancard_line',      pm, al('access_loancard_lines', {send: true}), (req, res) => {
-        m.stores.loancard_lines.findOne({
+    app.get('/get/loancard_line',      pm.check('access_loancard_lines', {send: true}), (req, res) => {
+        m.loancard_lines.findOne({
             where:   req.query,
             include: [
                 inc.sizes(),
@@ -83,7 +82,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.post('/stores/loancards',             pm, al('loancard_add',          {send: true}), (req, res) => {
+    app.post('/loancards',             pm.check('loancard_add',          {send: true}), (req, res) => {
         loancards.create({
             loancard: {
                 user_id_loancard: req.body.supplier_id,
@@ -97,7 +96,7 @@ module.exports = (app, al, inc, pm, m) => {
         .catch(err => res.error.send(err, res));
     });
 
-    app.put('/stores/loancards/raise/:id',    pm, al('access_loancards'),                    (req, res) => {
+    app.put('/loancards/raise/:id',    pm.check('access_loancards'),                    (req, res) => {
         loancards.createPDF(req.params.id)
         .then(loancard => res.send({success: true, message: 'Loancard raised'}))
         .catch(err => {
@@ -105,7 +104,7 @@ module.exports = (app, al, inc, pm, m) => {
             res.send({success: false, message: `Error raising loancard: ${err.message}`});
         });
     });
-    app.put('/stores/loancards/:id',          pm, al('loancard_edit',         {send: true}), (req, res) => {
+    app.put('/loancards/:id',          pm.check('loancard_edit',         {send: true}), (req, res) => {
         if (Number(req.body._status) === 2) {
             complete_loancard(req.params.id, req.user.user_id)
             .then(result => {
@@ -126,7 +125,7 @@ module.exports = (app, al, inc, pm, m) => {
             });
         } else res.send({success: false, message: 'Invalid request'});
     });
-    app.put('/stores/loancard_lines',         pm, al('loancard_line_edit',    {send: true}), (req, res) => {
+    app.put('/loancard_lines',         pm.check('loancard_line_edit',    {send: true}), (req, res) => {
         let actions = [],
             cancels = req.body.actions.filter(e => e._status === '0'),
             returns = req.body.actions.filter(e => e._status === '3');
@@ -140,8 +139,8 @@ module.exports = (app, al, inc, pm, m) => {
         });
     });
     
-    app.delete('/stores/loancards/:id',       pm, al('loancard_delete',       {send: true}), (req, res) => {
-        m.stores.loancards.findOne({
+    app.delete('/loancards/:id',       pm.check('loancard_delete',       {send: true}), (req, res) => {
+        m.loancards.findOne({
             where:      {loancard_id: req.params.id},
             include:    [inc.loancard_lines({where: {_status: {[op.not]: 0}}})],
             attributes: ['loancard_id', '_status']
@@ -155,7 +154,7 @@ module.exports = (app, al, inc, pm, m) => {
                 .then(result => {
                     if (!result) res.send({success: false, message: `Error updating loancard: ${err.message}`})
                     else {
-                        m.stores.notes.create({
+                        m.notes.create({
                             _id: loancard.loancard_id,
                             _table: 'loancards',
                             _note: 'Cancelled',
@@ -180,8 +179,8 @@ module.exports = (app, al, inc, pm, m) => {
             res.send({success: false, message: `Error getting loancard: ${err.message}`});
         });
     });
-    app.delete('/stores/loancard_lines/:id',  pm, al('loancard_line_delete',  {send: true}), (req, res) => {
-        m.stores.loancard_lines.findOne({
+    app.delete('/loancard_lines/:id',  pm.check('loancard_line_delete',  {send: true}), (req, res) => {
+        m.loancard_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status']
         })
@@ -193,7 +192,7 @@ module.exports = (app, al, inc, pm, m) => {
                 .then(result => {
                     if (!result) res.send({success: false, message: 'Line not updated'})
                     else {
-                        m.stores.notes.create({
+                        m.notes.create({
                             _table:  'loancard_lines',
                             _note:   `Line ${req.params.id} cancelled`,
                             _id:     line.line_id,
@@ -221,13 +220,13 @@ module.exports = (app, al, inc, pm, m) => {
 
     function cancel_lines(lines, user_id) {
         return new Promise((resolve, reject) => {
-            return allowed(m.stores.permissions, user_id, 'loancard_line_cancel')
+            return allowed(m.permissions, user_id, 'loancard_line_cancel')
             .then(permission => {
                 let actions = [];
                 lines.forEach(line => {
                     actions.push(
                         new Promise((resolve, reject) => {
-                            return m.stores.loancard_lines.findOne({
+                            return m.loancard_lines.findOne({
                                 where:      {line_id: line.line_id},
                                 attributes: ['line_id', '_status']
                             })
@@ -238,7 +237,7 @@ module.exports = (app, al, inc, pm, m) => {
                                     .then(result => {
                                         if (!result) reject(new Error('Line not updated'))
                                         else {
-                                            return m.stores.actions.findAll({
+                                            return m.actions.findAll({
                                                 where: {
                                                     loancard_line_id: line.line_id,
                                                     issue_id:         {[op.not]: null},
@@ -251,7 +250,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                 actions.forEach(action => {
                                                     update_issues.push(
                                                         new Promise((resolve, reject) => {
-                                                            return m.stores.issues.findOne({
+                                                            return m.issues.findOne({
                                                                 where:      {issue_id: action.issue_id},
                                                                 attributes: ['issue_id', '_status']
                                                             })
@@ -259,7 +258,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                                 if (issue._status === 4) {
                                                                     return issue.update({_status: 2})
                                                                     .then(results => {
-                                                                        return m.stores.actions.create({
+                                                                        return m.actions.create({
                                                                             issue_id: issue.issue_id,
                                                                             loancard_line_id: line.line_id,
                                                                             _action: 'Loancard line cancelled',
@@ -305,7 +304,7 @@ module.exports = (app, al, inc, pm, m) => {
                     new Promise((resolve, reject) => {
                         return locations.check(line.location)
                         .then(location_id => {
-                            return m.stores.loancard_lines.findOne({
+                            return m.loancard_lines.findOne({
                                 where:      {line_id: line.line_id},
                                 include:    [inc.sizes({attributes: ['_serials']})],
                                 attributes: ['line_id', '_status', 'size_id', 'serial_id', '_qty']
@@ -316,7 +315,7 @@ module.exports = (app, al, inc, pm, m) => {
                                 else if (line._status !== 2) reject(new Error('This line is not issued'))
                                 else {
                                     if (line.serial_id) {
-                                        return m.stores.serials.findOne({
+                                        return m.serials.findOne({
                                             where:      {serial_id: line.serial_id},
                                             attributes: ['serial_id', 'location_id', 'issue_id']
                                         })
@@ -328,7 +327,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                 update_actions.push(line.update({_status: 3}));
                                                 update_actions.push(
                                                     new Promise((resolve, reject) => {
-                                                        return m.stores.actions.findOne({
+                                                        return m.actions.findOne({
                                                             where: {
                                                                 loancard_line_id: line.line_id,
                                                                 issue_id:         {[op.not]: null},
@@ -337,7 +336,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                             attribute: ['action_id', 'issue_id']
                                                         })
                                                         .then(action => {
-                                                            return m.stores.issues.findOne({
+                                                            return m.issues.findOne({
                                                                 where:      {issue_id: action.issue_id},
                                                                 attributes: ['issue_id', '_status']
                                                             })
@@ -361,7 +360,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                     let issue = results.filter(e => e.issue_id)[0];
                                                     if (!issue) reject(new Error('Issue ID not found'))
                                                     else {
-                                                        return m.stores.actions.create({
+                                                        return m.actions.create({
                                                             issue_id:         issue.issue_id,
                                                             loancard_line_id: line.line_id,
                                                             serial_id:        serial.serial_id,
@@ -377,7 +376,7 @@ module.exports = (app, al, inc, pm, m) => {
                                         })
                                         .catch(err => reject(err));
                                     } else {
-                                        return m.stores.stocks.findOrCreate({
+                                        return m.stocks.findOrCreate({
                                             where: {
                                                 location_id: location_id,
                                                 size_id:     line.size_id
@@ -389,7 +388,7 @@ module.exports = (app, al, inc, pm, m) => {
                                             update_actions.push(line.update({_status: 3}));
                                             update_actions.push(
                                                 new Promise((resolve, reject) => {
-                                                    return m.stores.actions.findAll({
+                                                    return m.actions.findAll({
                                                         where: {
                                                             loancard_line_id: line.line_id,
                                                             issue_id:         {[op.not]: null},
@@ -402,7 +401,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                         _actions.forEach(action => {
                                                             return_actions.push(
                                                                 new Promise((resolve, reject) => {
-                                                                    return m.stores.issues.findOne({
+                                                                    return m.issues.findOne({
                                                                         where:      {issue_id: action.issue_id},
                                                                         attributes: ['issue_id', '_status']
                                                                     })
@@ -413,7 +412,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                                             .then(result => {
                                                                                 if (!result) reject(new Error('Issue not updated'))
                                                                                 else {
-                                                                                    return m.stores.actions.create({
+                                                                                    return m.actions.create({
                                                                                         issue_id:         issue.issue_id,
                                                                                         loancard_line_id: line.line_id,
                                                                                         stock_id:         stock.stock_id,
@@ -459,7 +458,7 @@ module.exports = (app, al, inc, pm, m) => {
 
     function get_loancard(loancard_id) {
         return new Promise((resolve, reject) => {
-            return m.stores.loancards.findOne({
+            return m.loancards.findOne({
                 where:      {loancard_id: loancard_id},
                 attributes: ['loancard_id', '_status']
             })
@@ -472,7 +471,7 @@ module.exports = (app, al, inc, pm, m) => {
     };
     function get_loancard_lines(loancard_id, _status) {
         return new Promise((resolve, reject) => {
-            return m.stores.loancard_lines.findAll({
+            return m.loancard_lines.findAll({
                 where: {
                     loancard_id: loancard_id,
                     _status:     _status
@@ -503,7 +502,7 @@ module.exports = (app, al, inc, pm, m) => {
                             .then(result => {
                                 if (!result) reject(new Error('Loancard not updated'))
                                 else {
-                                    return m.stores.loancard_lines.update(
+                                    return m.loancard_lines.update(
                                         {_status: 2},
                                         {where: {
                                             loancard_id: loancard.loancard_id,
@@ -517,7 +516,7 @@ module.exports = (app, al, inc, pm, m) => {
                                             lines.forEach(line => {
                                                 stock_actions.push(
                                                     new Promise((resolve, reject) => {
-                                                        return m.stores.actions.findAll({
+                                                        return m.actions.findAll({
                                                             where: {
                                                                 loancard_line_id: line.line_id,
                                                                 _action:          'Added to loancard'
@@ -527,7 +526,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                         .then(actions => {
                                                             actions.forEach(action => {
                                                                 if (action.serial_id) {
-                                                                    return m.stores.serials.findOne({
+                                                                    return m.serials.findOne({
                                                                         where:      {serial_id: action.serial_id},
                                                                         attributes: ['serial_id', 'location_id', 'issue_id']
                                                                     })
@@ -544,7 +543,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                                     })
                                                                     .catch(err => reject(err));
                                                                 } else if (action.stock_id) {
-                                                                    return m.stores.stocks.findOne({
+                                                                    return m.stocks.findOne({
                                                                         where:      {stock_id: action.stock_id},
                                                                         attributes: ['stock_id', 'location_id', '_qty']
                                                                     })
@@ -570,7 +569,7 @@ module.exports = (app, al, inc, pm, m) => {
                                             .then(results => {
                                                 let create_notes = [];
                                                 create_notes.push(
-                                                    m.stores.notes.create({
+                                                    m.notes.create({
                                                         _note:   'Loancard completed',
                                                         _table:  'loancards',
                                                         _id:     loancard.loancard_id,
@@ -580,7 +579,7 @@ module.exports = (app, al, inc, pm, m) => {
                                                 );
                                                 lines.forEach(line => {
                                                     create_notes.push(
-                                                        m.stores.notes.create({
+                                                        m.notes.create({
                                                             _note:   'Loancard completed',
                                                             _table:  'loancard_lines',
                                                             _id:     line.line_id,
@@ -622,7 +621,7 @@ module.exports = (app, al, inc, pm, m) => {
                             .then(result => {
                                 if (!result) reject(new Error('Loancard not updated'))
                                 else {
-                                    return m.stores.notes.create({
+                                    return m.notes.create({
                                         _note:   'Loancard closed',
                                         _id:     loancard.loancard_id,
                                         _table:  'loancards',

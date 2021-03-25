@@ -1,19 +1,10 @@
-const inc = {},
-      op = require('sequelize').Op;
-module.exports = (app, m) => {
-    var allowed     = require(`${process.env.ROOT}/middleware/allowed.js`),
-        permissions = require(`${process.env.ROOT}/middleware/permissions.js`)(m.users.permissions);
-    require('./includes')(inc, m);
-    require(`./users`)(app, allowed, inc, permissions, m.users);
-    
-    app.get('/users/get/statuses', permissions,                                           (req, res) => {
-        m.users.statuses.findAll({where: req.query})
-        .then(statuses => res.send({success: true,  result: statuses}))
-        .catch(err =>     res.send({success: false, message: `Error getting statuses: ${err.message}`}));
-    });
-    app.get('/users/get/ranks',    permissions,                                           (req, res) => {
-        m.users.ranks.findAll({where: req.query})
-        .then(ranks => res.send({success: true,  result: ranks}))
-        .catch(err =>  res.send({success: false, message: `Error getting ranks: ${err.message}`}));
-    });
+module.exports = (fs, app, m, pm, op, send_error) => {
+    let inc = {};
+    require('./includes.js')(inc, m);
+    fs
+    .readdirSync(__dirname)
+    .filter(function(file) {
+        return (file.indexOf(".") !== -1) && !["index.js", "includes.js"].includes(file);
+    })
+    .forEach(file => require(`./${file}`)(app, m, pm, op, inc, send_error));
 };
