@@ -2,7 +2,7 @@ function getSupplier() {
     get(
         {
             table: 'supplier',
-            query: [`supplier_id=${path[3]}`]
+            query: [`supplier_id=${path[2]}`]
         },
         function (supplier, options) {
             set_innerText({id: '_name', text: supplier._name});

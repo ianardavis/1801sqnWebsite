@@ -22,7 +22,7 @@ function getFiles() {
         get(
             {
                 table: 'files',
-                query: [`supplier_id=${path[3]}`]
+                query: [`supplier_id=${path[2]}`]
             },
             function (files, options) {
                 set_count({id: 'file', count: files.length || '0'});

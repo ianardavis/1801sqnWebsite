@@ -1,5 +1,5 @@
 <% if (permissions.access_notes) { %>
-    <%- include(`${partials}/inputs/select`, {id: 'sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '_system=0', selected: true}, {text: 'Only', value: '_system=1'}]}) %>
+    <%- include(`${partials}/inputs/select`, {id: 'sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: 'system=0', selected: true}, {text: 'Only', value: 'system=1'}]}) %>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
             <th class="w-30" onclick="sortTable(0, 'tbl_notes')">Date</th>

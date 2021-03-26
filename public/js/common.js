@@ -113,7 +113,7 @@ function remove_class(options) {
     if (e && options.class) e.classList.remove(options.class);
 };
 function print_user (user) {
-    if (user) return `${user.rank._rank } ${user.full_name}`
+    if (user) return `${user.rank.rank} ${user.full_name}`
     else return '';
 };
 function print_date (date, time = false) {
@@ -132,12 +132,12 @@ function table_date (date, time = false) {
 }
 function print_nsn (nsn) {
     if (nsn && nsn.group && nsn.classification && nsn.country) {
-        return `${String(nsn.group._code).padStart(2, '0')}${String(nsn.classification._code).padStart(2, '0')}-${String(nsn.country._code).padStart(2, '0')}-${nsn._item_number}`
+        return `${String(nsn.group.code).padStart(2, '0')}${String(nsn.classification.code).padStart(2, '0')}-${String(nsn.country.code).padStart(2, '0')}-${nsn.item_number}`
     } else return '';
 };
 function print_account (account) {
     if (account) {
-        return `${account._name} | ${account._number}`
+        return `${account.name} | ${account.number}`
     } else return '';
 };
 function clear_table(id) {

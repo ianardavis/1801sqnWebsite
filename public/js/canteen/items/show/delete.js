@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'delete',
         'DELETE',
-        `/canteen/items/${path[3]}`,
+        `/canteen/items/${path[2]}`,
         {redirect:'/canteen/items'}
     )
 });

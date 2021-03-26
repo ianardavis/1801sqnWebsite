@@ -45,7 +45,6 @@ function sendData(form, method, _location, options = {reload: false, _close: tru
                 };
 
                 if      (options.reload)   window.location.reload();
-                else if (options._close)   close();
                 else if (options.redirect) window.location.replace(options.redirect);
             } else {
                 if (options.onFail) {

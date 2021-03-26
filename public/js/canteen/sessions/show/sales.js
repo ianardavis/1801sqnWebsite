@@ -2,7 +2,7 @@ function getSales() {
     get(
         {
             table: 'sales',
-            query: [`session_id=${path[3]}`]
+            query: [`session_id=${path[2]}`]
         },
         function (sales, options) {
             clearElement('tbl_items');

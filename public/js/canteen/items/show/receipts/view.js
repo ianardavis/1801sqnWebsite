@@ -2,7 +2,7 @@ function getReceipts() {
     get(
         {
             table: 'receipts',
-            query: [`item_id=${path[3]}`]
+            query: [`item_id=${path[2]}`]
         },
         function (receipts, options) {
             set_count({id: 'receipt', count: receipts.length || '0'});

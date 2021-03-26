@@ -3,7 +3,7 @@ function getOrders() {
     get(
         {
             table: 'orders',
-            query: [`size_id=${path[3]}`]
+            query: [`size_id=${path[2]}`]
         },
         function (orders, options) {
             let table_body  = document.querySelector('#tbl_orders');

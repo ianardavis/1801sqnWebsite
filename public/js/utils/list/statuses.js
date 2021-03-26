@@ -1,28 +1,26 @@
-let statuses_loaded = false;
 function listStatuses(options = {}) {
-    statuses_loaded = false;
-    get(
-        {
-            table: 'statuses',
-            ...options
-        },
-        function (statuses, options) {
-            let select = document.querySelector(`#${options.select}`);
-            if (select) {
-                select.innerHTML = '';
-                if (options.blank === true) select.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
-                statuses.forEach(status => {
-                    let value = null;
-                    if (options.id_only) value = status.status_id
-                    else                 value = `status_id=${status.status_id}`;
-                    select.appendChild(new Option({
-                        value:    value,
-                        text:     status.status,
-                        selected: (options.selected === status.status_id)
-                    }).e);
-                });
-                statuses_loaded = true;
-            };
-        }
-    );
+    return new Promise((resolve, reject) => {
+        let select = document.querySelector(`#${options.select}`);
+        if (select) {
+            select.innerHTML = '';
+            if (options.blank === true) select.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
+            get(
+                {
+                    table: 'statuses',
+                    ...options
+                },
+                function (statuses, options) {
+                    statuses.forEach(status => {
+                        select.appendChild(new Option({
+                            value:    (options.id_only ? status.status_id : `status_id=${status.status_id}`),
+                            text:     status.status,
+                            selected: (options.selected === status.status_id)
+                        }).e);
+                    });
+                    resolve(true);
+                }
+            )
+            .catch(err => reject(err));
+        } else reject(new Error('Status select not found'));
+    });
 };

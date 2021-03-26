@@ -2,7 +2,7 @@ function getMovements (query_column) {
     get(
         {
             table: 'movements',
-            query: [`${query_column}=${path[3]}`]
+            query: [`${query_column}=${path[2]}`]
         },
         function (movements, options) {
             let table = '';

@@ -2,7 +2,7 @@ function getPayments() {
     get(
         {
             table: 'payments',
-            query: [`sale_id=${path[3]}`]
+            query: [`sale_id=${path[2]}`]
         },
         function (payments, options) {
             try {

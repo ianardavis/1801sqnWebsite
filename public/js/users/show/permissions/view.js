@@ -5,7 +5,7 @@ function getPermissions () {
         get(
             {
                 table: 'permissions',
-                query: [`user_id=${path[3]}`]
+                query: [`user_id=${path[2]}`]
             },
             function (permissions, options) {
                 set_count({id: 'permission', count: permissions.permissions.length || '0'});

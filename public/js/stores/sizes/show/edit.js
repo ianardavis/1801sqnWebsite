@@ -2,7 +2,7 @@ function viewSizeEdit() {
     get(
         {
             table: 'size',
-            query: [`size_id=${path[3]}`]
+            query: [`size_id=${path[2]}`]
         },
         function (size, options) {
             listSuppliers({
@@ -25,7 +25,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'size_edit',
         'PUT',
-        `/stores/sizes/${path[3]}`,
+        `/stores/sizes/${path[2]}`,
         {
             onComplete: [
                 getSize,

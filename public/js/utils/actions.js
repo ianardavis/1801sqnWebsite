@@ -1,11 +1,11 @@
 let table = '';
-if      (path[2] === 'orders') table = 'order'
-else if (path[2] === 'issues') table = 'issue';
+if      (path[1] === 'orders') table = 'order'
+else if (path[1] === 'issues') table = 'issue';
 function showActions() {
     get(
         {
             table: 'actions',
-            query: [`${table}_id=${path[3]}`]
+            query: [`${table}_id=${path[2]}`]
         },
         function (actions, options) {
             set_count({id: 'action', count: actions.length || '0'});

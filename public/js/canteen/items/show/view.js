@@ -2,7 +2,7 @@ function getItem() {
     get(
         {
             table: 'item',
-            query: [`item_id=${path[3]}`]
+            query: [`item_id=${path[2]}`]
         },
         function (item, options) {
             set_innerText({id: '_name', text: item._name});

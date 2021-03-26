@@ -2,7 +2,7 @@ function getSaleLines() {
     get(
         {
             table: 'sale_lines',
-            query: [`sale_id=${path[3]}`]
+            query: [`sale_id=${path[2]}`]
         },
         function (lines, options) {
             try {

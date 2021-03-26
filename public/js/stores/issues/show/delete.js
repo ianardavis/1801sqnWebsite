@@ -1,7 +1,7 @@
 get(
     {
         table: 'issue',
-        query: [`issue_id=${path[3]}`]
+        query: [`issue_id=${path[2]}`]
     },
     function(result, options) {
         set_attribute({id: `btn_delete`, attribute: 'disabled', value: true});
@@ -12,7 +12,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'delete',
         'DELETE',
-        `/stores/issues/${path[3]}`,
+        `/stores/issues/${path[2]}`,
         {
             onComplete: [
                 showIssue,

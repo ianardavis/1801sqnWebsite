@@ -5,7 +5,7 @@ function getCategories() {
         get(
             {
                 table: 'item_categories',
-                query: [`item_id=${path[3]}`]
+                query: [`item_id=${path[2]}`]
             },
             function (categories, options) {
                 categories.forEach(category => {

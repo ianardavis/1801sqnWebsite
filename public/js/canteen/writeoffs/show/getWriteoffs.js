@@ -3,7 +3,7 @@ function getWriteoff() {
     get(
         {
             table: 'writeoff',
-            query: [`writeoff_id=${path[3]}`]
+            query: [`writeoff_id=${path[2]}`]
         },
         function (writeoff, options) {
             for (let [id, value] of Object.entries(writeoff)) {

@@ -2,7 +2,7 @@ function getSale() {
     get(
         {
             table: 'sale',
-            query: [`sale_id=${path[3]}`]
+            query: [`sale_id=${path[2]}`]
         },
         function (sale, options) {
             for (let [id, value] of Object.entries(sale)) {

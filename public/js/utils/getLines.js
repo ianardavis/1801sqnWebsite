@@ -5,7 +5,7 @@ function getLines(table) {
     get(
         {
             table: `${table}_lines`,
-            query: [`${table}_id=${path[3]}`, sel_status.value]
+            query: [`${table}_id=${path[2]}`, sel_status.value]
         },
         function (lines, options) {
             set_count({id: 'line', count: lines.length || '0'});

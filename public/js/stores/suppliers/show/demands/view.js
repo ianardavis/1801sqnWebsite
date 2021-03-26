@@ -7,7 +7,7 @@ function getDemands() {
         get(
             {
                 table: 'demands',
-                query: [`supplier_id=${path[3]}`, sel_status.value]
+                query: [`supplier_id=${path[2]}`, sel_status.value]
             },
             function (demands, options) {
                 set_count({id: 'demand', count: demands.length || '0'});

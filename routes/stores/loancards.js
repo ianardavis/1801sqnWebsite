@@ -2,8 +2,8 @@ module.exports = (app, m, pm, op, inc, send_error) => {
     let loancards = {}, locations = {}, allowed = require('../functions/allowed');
     require('./functions/loancards') (m, inc, loancards);
     require('./functions/locations') (m, locations);
-    app.get('/loancards',              pm.get, pm.check('access_loancards'),          (req, res) => res.render('stores/loancards/index'));
-    app.get('/loancards/:id',          pm.get, pm.check('access_loancards'),          (req, res) => res.render('stores/loancards/show'));
+    app.get('/loancards',      pm.get, pm.check('access_loancards'),          (req, res) => res.render('stores/loancards/index'));
+    app.get('/loancards/:id',  pm.get, pm.check('access_loancards'),          (req, res) => res.render('stores/loancards/show'));
     app.get('/loancards/:id/download', pm.check('access_loancards'),                    (req, res) => {
         m.loancards.findOne({
             where: {loancard_id: req.params.id},
@@ -44,13 +44,14 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         })
         .catch(err => res.error.send(err, res));
     });
-    app.get('/get/loancards',          pm.check('access_loancards',      {send: true}), (req, res) => {
+    app.get('/get/loancards',          pm.check('access_loancards',      {send: true, allow: true}), (req, res) => {
+        if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
         m.loancards.findAll({
-            where:   req.query,
+            where: req.query,
             include: [
                 inc.loancard_lines(),
-                inc.users({as: 'user'}),
-                inc.users({as: 'user_loancard'})
+                inc.user({as: 'user'}),
+                inc.user({as: 'user_loancard'})
             ]
         })
         .then(loancards => res.send({success: true, result: loancards}))

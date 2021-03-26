@@ -2,7 +2,7 @@ function setLineButtons(table) {
     get(
         {
             table: table,
-            query: [`${table}_id=${path[3]}`]
+            query: [`${table}_id=${path[2]}`]
         },
         function(result, options) {
             ['action', 'sizeSelect'].forEach(e => set_attribute({id: `btn_${e}`, attribute: 'disabled', value: true}));

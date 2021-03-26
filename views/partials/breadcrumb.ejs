@@ -3,11 +3,11 @@
         class='nav-link<% if (locals.classes) classes.forEach(e => { %> <%= e %><% }) %>'
         <% if (locals.href) { %>
             href='<%= href %>'
-        <% } else if (locals.id) { %>
-            id='<%= id || 'breadcrumb' %>'
         <% } else if (locals.modal) { %>
             data-toggle="modal"
             data-target="#mdl_<%= modal %>"
+        <% } else { %>
+            id='<%= locals.id || 'breadcrumb' %>'
         <% } %>
     >
         <%- locals.text || '' %>

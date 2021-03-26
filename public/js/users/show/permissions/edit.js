@@ -2,7 +2,7 @@ function getPermissionsEdit () {
     get(
         {
             table: 'permissions',
-            query: [`user_id=${path[3]}`],
+            query: [`user_id=${path[2]}`],
             spinner: 'permission_edit'
         },
         function (permissions, options) {
@@ -51,7 +51,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'permissions_edit',
         'PUT',
-        `/${path[1]}/permissions/${path[3]}`,
+        `/${path[1]}/permissions/${path[2]}`,
         {
             onComplete: [
                 getPermissions,

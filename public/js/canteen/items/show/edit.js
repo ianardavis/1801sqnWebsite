@@ -2,7 +2,7 @@ function getItemEdit() {
     get(
         {
             table: 'item',
-            query: [`item_id=${path[3]}`]
+            query: [`item_id=${path[2]}`]
         },
         function(item, options) {
             set_value({id: '_name_edit',    value: item._name});
@@ -18,7 +18,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'item_edit',
         'PUT',
-        `/canteen/items/${path[3]}`,
+        `/canteen/items/${path[2]}`,
         {
             onComplete: [
                 getItem,

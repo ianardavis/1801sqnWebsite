@@ -2,7 +2,7 @@ function setButtons(table) {
     get(
         {
             table: table,
-            query: [`${table}_id=${path[3]}`]
+            query: [`${table}_id=${path[2]}`]
         },
         function(result, options) {
             ['complete', 'delete'].forEach(e => set_attribute({id: `btn_${e}`, attribute: 'disabled', value: true}));

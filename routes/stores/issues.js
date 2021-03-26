@@ -36,9 +36,9 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         m.issues.findAll({
             where: req.query,
             include: [
-                inc.sizes(),
-                inc.users({as: 'user_issue'}),
-                inc.users({as: 'user'})
+                inc.size(),
+                inc.user({as: 'user_issue'}),
+                inc.user({as: 'user'})
             ]
         })
         .then(issues => res.send({success: true, result: issues}))

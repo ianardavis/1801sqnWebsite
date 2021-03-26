@@ -178,19 +178,6 @@ module.exports = (inc, m) => {
             required:   options.required   || false
         };
     };
-    inc.loancard_lines = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
-        else include.push(inc.loancards())
-        return {
-            model:    m.loancard_lines,
-            attributes: options.attributes || null,
-            include:  include,
-            as:       options.as           || 'lines',
-            where:    options.where        || null,
-            required: options.required     || false
-        };
-    };
     inc.loancards = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
@@ -338,7 +325,6 @@ module.exports = (inc, m) => {
             where:    options.where    || null
         };
     };
-
     inc.users = (options = {}) => {
         let include = [];
         if (options.include) options.include;
@@ -352,14 +338,39 @@ module.exports = (inc, m) => {
             required:   options.required   || false
         };
     };
-    inc.ranks = (options = {}) => {
+
+    inc.item = () => {
         return {
-            model:      m.users.ranks,
-            attributes: options.attributes || ['_rank'],
-            as:         options.as         || 'rank',
-            include:    options.include    || [],
-            required:   options.required   || false,
-            where:      options.where      || null
+            model: m.items,
+            as:    'item'
+        };
+    };
+    inc.size = (options = {}) => {
+        return {
+            model:   m.sizes,
+            include: [inc.item()],
+            as:      options.as || 'size'
+        };
+    };
+    inc.user = (options = {}) => {
+        return {
+            model:      m.users,
+            include:    [inc.rank()],
+            attributes: options.attributes || ['full_name'],
+            as:         options.as         || 'user'
+        };
+    };
+    inc.rank = () => {
+        return {
+            model:      m.ranks,
+            attributes: ['rank'],
+            as:         'rank'
+        };
+    };
+    inc.loancard_lines = (options = {}) => {
+        return {
+            model: m.loancard_lines,
+            as:    options.as || 'lines'
         };
     };
 };

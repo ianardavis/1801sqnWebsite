@@ -9,11 +9,11 @@ function listUsers(options = {}) {
                 ...options
             },
             function (users, options) {
-                if (options.blank === true) select.appendChild(new Option(options.blank_opt || {}).e);
+                if (options.blank) select.appendChild(new Option(options.blank_opt || {}).e);
                 users.forEach(user => {
                     let value = '';
-                    if (options.id_only === true) value = user.user_id
-                    else                          value = `user_id${options.append || ''}=${user.user_id}`
+                    if (options.id_only) value = user.user_id
+                    else                 value = `user_id${options.append || ''}=${user.user_id}`
                     select.appendChild(
                         new Option({
                             value:    value,

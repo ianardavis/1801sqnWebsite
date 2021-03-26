@@ -1,15 +1,17 @@
 function addUserReset() {
-    ['service_number', 'rank_id', 'surname', 'first_name', 'status_id', 'login_id'].forEach(e => set_value({id: `inp_${e}`, value: ''}));
+    ['service_number', 'surname', 'first_name', 'login_id'].forEach(e => set_value({id: `inp_${e}`, value: ''}));
 };
 function getStatusesAdd() {
     listStatuses({
-        select: 'sel_statuses_add',
+        spinner: 'statuses_add',
+        select:  'sel_statuses_add',
         id_only: true
     });
 };
 function getRanksAdd() {
     listRanks({
-        select: 'sel_ranks_add',
+        spinner: 'ranks_add',
+        select:  'sel_ranks_add',
         id_only: true
     });
 };
@@ -28,6 +30,6 @@ window.addEventListener( "load", function () {
             ]
         }
     );
-    document.querySelector('#reload').addEventListener('click', getRanksAdd);
-    document.querySelector('#reload').addEventListener('click', getStatusesAdd);
+    document.querySelector('#reload_ranks_add')   .addEventListener("click", getRanksAdd);
+    document.querySelector('#reload_statuses_add').addEventListener("click", getStatusesAdd);
 });

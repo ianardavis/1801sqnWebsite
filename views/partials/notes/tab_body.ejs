@@ -1,125 +1,13 @@
 <% if (permissions.access_notes) { %>
-    <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
-        <%- include(`${partials}/notes/note_table`) %>
-        <script src="/js/addFormListener.js"></script>
-        <script src="/js/notes/showNotes.js"></script>
-        <script async>getNotes()</script>
+    <div class="tab-pane fade" id="notes" role="tabpanel">
+        <%- include(`${partials}/inputs/select`, {id: 'sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: 'system=0', selected: true}, {text: 'Only', value: 'system=1'}]}) %>
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+                <th class="w-30" onclick="sortTable(0, 'tbl_notes')">Date</th>
+                <th class="w-70" onclick="sortTable(1, 'tbl_notes')">Note</th>
+                <th><i class="fas fa-search"></i></th>
+            </thead>
+            <tbody id="tbl_notes"></tbody>
+        </table>
     </div>
-    <div id='mdl_note_view' class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        Note <span id="note_id_view"></span>
-                        <%- include(`${partials}/spinner`, {id: 'note_view'}) %>
-                    </h5>
-                    <span class='float-right'>
-                        <a class="btn btn-primary mr-1" id="note_view_reload"><i class="fas fa-redo"></i></a>
-                        <span id='note_view_buttons'></span>
-                    </span>
-                </div>
-                <div class="modal-body">
-                    <%- include(`${partials}/inputs/display`,  {id: 'note_createdAt', title: 'Added'}) %>
-                    <%- include(`${partials}/inputs/display`,  {id: 'note_user',      title: 'Added By', link: true}) %>
-                    <%- include(`${partials}/inputs/display`,  {id: 'note_system',    title: 'System'}) %>
-                    <%- include(`${partials}/inputs/textarea`, {id: 'note_note',      title: 'Note',     rows: 5}) %>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        window.addEventListener('load', function () {
-            let get_note_view = function (note_id) {
-                getNote(
-                    note_id,
-                    {
-                        edit:   <%= permissions.note_edit   || false %>,
-                        delete: <%= permissions.note_delete || false %>
-                    }
-                );
-            };
-            $('#mdl_note_view').on('show.bs.modal', function(event) {
-                if (event.relatedTarget.dataset.note_id) {
-                    get_note_view(event.relatedTarget.dataset.note_id)
-                };
-            });
-            document.querySelector('#note_view_reload').addEventListener('click', function () {
-                let note_id_view = document.querySelector('#note_id_view');
-                get_note_view(note_id_view.innerText);
-            });
-        });
-    </script>
-    <% if (permissions.note_add) { %>
-        <div id='mdl_note_add' class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_note_add'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Note</h5>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name='note[_table]' id='_table'>
-                        <input type="hidden" name='note[_id]'    id='_id'>
-                        <%- include(`${partials}/inputs/textarea`, {name: 'note[_note]', id: '_note', title: 'Note', maxlength: 1000, rows: 5, required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save Note'>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <script src="/js/notes/addNote.js"></script>
-    <% } %>
-    <% if (permissions.note_edit) { %>
-        <div id='mdl_note_edit' class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_note_edit'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            Note <span id="note_id_edit"></span>
-                            <%- include(`${partials}/spinner`, {id: 'note_edit'}) %>
-                        </h5>
-                        <a class="btn btn-primary float-right mr-1" id="note_edit_reload"><i class="fas fa-redo"></i></a>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" class='note_id' name='note_id'>
-                        <%- include(`${partials}/inputs/textarea`, {name: 'note[_note]', id: '_note_edit', title: 'Note', maxlength: 1000, rows: 5, required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save Note'>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <script src="/js/notes/editNote.js"></script>
-        <script>
-            window.addEventListener('load', function () {
-                let get_note_edit = function (note_id) {
-                    getNoteEdit(
-                        note_id,
-                        {
-                            edit:   <%= permissions.note_edit   || false %>,
-                            delete: <%= permissions.note_delete || false %>
-                        }
-                    );
-                };
-                $('#mdl_note_edit').on('show.bs.modal', function(event) {
-                    if (event.relatedTarget.dataset.source) {
-                        $(`#mdl_${event.relatedTarget.dataset.source}`).modal('hide');
-                    };
-                    if (event.relatedTarget.dataset.note_id) {
-                        get_note_edit(event.relatedTarget.dataset.note_id)
-                    };
-                });
-                document.querySelector('#note_edit_reload').addEventListener('click', function () {
-                    let note_id_edit = document.querySelector('#note_id_edit');
-                    get_note_edit(note_id_edit.innerText);
-                });
-            });
-        </script>
-    <% } %>
 <% } %>

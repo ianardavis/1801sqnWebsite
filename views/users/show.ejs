@@ -11,31 +11,54 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/users/show/menu_buttons`) %>
-                <% if (permissions.issue_add) { %>
-                    <form id="form_issue_add">
-                        <input type="hidden" class='user_id' name='user_id_issue'>
-                        <button class='dropdown-item'>
-                            New Issue
-                        </button>
-                    </form>
-                    <script>
-                        window.addEventListener( "load", function () {
-                            addFormListener('issue_add', 'POST', '/stores/issues', {onComplete: getIssues});
-                        });
-                    </script>
-                <% } %>
+                <%- include(`${partials}/menu/button`, {id: 'user_edit',        text: 'Edit User',        modal: 'user_edit'}) %>
+                <% if (permissions.user_edit) { %><form id='form_password_reset'><% } %>
+                <%- include(`${partials}/menu/button`, {id: 'password_reset',   text: 'Toggle Reset Password'}) %>
+                <% if (permissions.user_edit) { %></form><% } %>
+                <%- include(`${partials}/menu/button`, {id: 'user_password',    text: 'Change Password',  modal: 'user_password'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'permissions_edit', text: 'Edit Permissions', modal: 'permissions_edit'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add',         text: 'Add Note',         modal: 'note_add'}) %>
+                <div class="dropdown-divider"></div>
+                <% if (permissions.issue_add) { %><form id='form_issue_add'><% } %>
+                <%- include(`${partials}/menu/button`, {id: 'issue_add', text: 'New Issue'}) %>
+                <% if (permissions.issue_add) { %></form><% } %>
+                <div class="dropdown-divider"></div>
+                <% if (permissions.user_delete) { %><form id='form_user_delete'><% } %>
+                <%- include(`${partials}/menu/button`, {id: 'user_delete', text: 'Delete'}) %>
+                <% if (permissions.user_delete) { %></form><% } %>
             </div>
         </li>
-        <%- include(`${partials}/users/show/tab_heads`) %>
-        <%- include(`${partials}/tab_head`, {id: 'issues',    spinner: 'issues',    title: 'Issues',    count_id: 'issue'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'loancards', spinner: 'loancards', title: 'Loancards', count_id: 'loancards'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',     spinner: 'notes',     title: 'Notes',     count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'permissions', spinner: 'permissions', title: 'Permissions', count_id: 'permission', permission: 'access_permissions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'issues',      spinner: 'issues',      title: 'Issues',      count_id: 'issue'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'loancards',   spinner: 'loancards',   title: 'Loancards',   count_id: 'loancards'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',       spinner: 'notes',       title: 'Notes',       count_id: 'note',       permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
-        <%- include(`${partials}/users/show/tab_bodies`) %>
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/spinner`, {id: 'users'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'service_number', title: 'Service #'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'rank',           title: 'Rank'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'surname',        title: 'Surame'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'first_name',     title: 'First Name'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'status',         title: 'Status'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'login_id',       title: 'Login ID'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'last_login',     title: 'Last Login'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'reset',          title: 'Change password on next login'}) %>
+        </div>
+        <% if (permissions.access_permissions) { %>
+            <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+                <table class="table table-sm table-hover">
+                    <thead class="thead-dark">
+                        <th class="w-20" onclick="sortTable(0, 'tbl_permissions')">Date Granted</th>
+                        <th class="w-80" onclick="sortTable(1, 'tbl_permissions')">Permission</th>
+                    </thead>
+                    <tbody id="tbl_permissions"></tbody>
+                </table>
+            </div>
+        <% } %>
         <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_issues', options: [{text: 'All'}, {value: '_status=0', text: 'Cancelled/Declined'}, {value: '_status=1', text: 'Requested'}, {value: '_status=2', text: 'Approved'}, {value: '_status=3', text: 'Ordered'}, {value: '_status=4', text: 'Issued', selected: true}, {value: '_status=5', text: 'Returned'}]}) %>
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_issues', options: [{text: 'All'}, {value: 'status=0', text: 'Cancelled/Declined'}, {value: '_status=1', text: 'Requested'}, {value: 'status=2', text: 'Approved'}, {value: 'status=3', text: 'Ordered'}, {value: 'status=4', text: 'Issued', selected: true}, {value: 'status=5', text: 'Returned'}]}) %>
             <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Date</th>
@@ -49,7 +72,7 @@
             </table>
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
-            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Open', selected: true}, {value: '_status=3', text: 'Closed'}]}) %>
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Open', selected: true}, {value: 'status=3', text: 'Closed'}]}) %>
             <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-40" onclick="sortTable(0, 'tbl_loancards')">Date</th>
@@ -63,19 +86,147 @@
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
     <div id="div_modals">
-        <%- include(`${partials}/users/show/modals`) %>
+        <%- include(`${partials}/notes/modals`) %>
+        <% if (permissions.user_edit) { %>
+            <div id='mdl_user_edit' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_user_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit User</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`,   {title: 'Service #', name: 'user[service_number]', required: true, id: 'inp_service_number', placeholder: 'Required', maxLength: 20}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Rank',      name: 'user[rank_id]',        required: true, id: 'sel_ranks',          spinner_id:  'ranks'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Surname',   name: 'user[surname]', 	    required: true, id: 'inp_surname',        placeholder: 'Required', maxLength: 50}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Initials',  name: 'user[first_name]',     required: true, id: 'inp_first_name',     placeholder: 'Required', maxLength: 20}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Status',    name: 'user[status_id]',      required: true, id: 'sel_statuses',       spinner_id:  'statuses'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Login ID',  name: 'user[login_id]',       required: true, id: 'inp_login_id',       placeholder: 'Required', maxLength: 30}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" id='save_user' class="btn btn-success w-100" value='Save User'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+        <div id='mdl_user_password' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_user_password'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Change Password: <span class="full_name"></span></h5>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`, {title: 'Password', type: 'password', required: true, id: '_password', placeholder: 'Required', minlength: 8, name: '_password'}) %>
+                        <%- include(`${partials}/inputs/text`, {title: 'Confirm',  type: 'password', required: true, id: '_confirm',  placeholder: 'Required', minlength: 8}) %>
+                        <div>
+                            <p class='my-1'>
+                                Password MUST NOT be the current password
+                                Password MUST include:
+                            </p>
+                            <ul class='list-group mb-3'>
+                                <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                                    At Least 8 characters
+                                    <span class='badge badge-danger badge-pill' id='pwd_length'>
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                                </li>
+                                <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                                    A number
+                                    <span class='badge badge-danger badge-pill' id='pwd_number'>
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                                </li>
+                                <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                                    An upper case letter
+                                    <span class='badge badge-danger badge-pill' id='pwd_upper'>
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                                </li>
+                                <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                                    A lower case letter
+                                    <span class='badge badge-danger badge-pill' id='pwd_lower'>
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                                </li>
+                                <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                                    A special character ( ! ? @ # $ £ % ^ & * )
+                                    <span class='badge badge-danger badge-pill' id='pwd_special'>
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                                </li>
+                                <li class='list-group-item d-flex p-1 justify-content-between align-items-center'>
+                                    Entered and confirmed passwords must match
+                                    <span class='badge badge-danger badge-pill' id='pwd_match'>
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" id='save_password' class="btn btn-success w-100" value='Save Password' disabled>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <% if (permissions.permission_edit) { %>
+            <div id='mdl_permissions_edit' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_permissions_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                Edit Permissions
+                                <%- include(`${partials}/spinner`, {id: 'permission_edit'}) %>
+                            </h5>
+                            <a class="float-right btn btn-primary" id='reload_permission_edit'>
+                                <i class='fas fa-redo'></i>
+                            </a>
+                        </div>
+                        <div class="modal-body">
+                            <ul id="ul_tree" class='list-group'></ul>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Save Permissions'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
-
-<%- include(`${partials}/users/show/scripts`) %>
-
-<script src='/js/stores/users/issues.js'></script>
+<script src='/js/users/show/view.js'></script>
+<script src="/js/users/show/checkPassword.js"></script>
+<script async>getUser()</script>
+<% if (permissions.user_edit) { %>
+    <script src="/js/users/show/edit.js"></script>
+    <script src="/js/utils/list/statuses.js"></script>
+    <script src="/js/utils/list/ranks.js"></script>
+<% } %>
+<% if (permissions.user_delete) { %>
+    <script src="/js/users/show/delete.js"></script>
+<% } %>
+<% if (permissions.access_permissions) { %>
+    <script src='/js/users/show/permissions/view.js'></script>
+    <script async>getPermissions()</script>
+    <% if (permissions.permission_edit) { %>
+        <script src='/js/tree.js'></script>
+        <script src='/js/users/show/permissions/edit.js'></script>
+    <% } %>
+<% } %>
+<%- include(`${partials}/notes/scripts`) %>
+<script src='/js/users/show/issues/view.js'></script>
 <script async>getIssues()</script>
-<script src='/js/stores/users/loancards.js'></script>
+<% if (permissions.issue_add) { %>
+    <script src='/js/users/show/issues/add.js'></script>
+<% } %>
+<script src='/js/users/show/loancards/view.js'></script>
 <script async>getLoancards()</script>
 
 <%- include(`${partials}/foot/elements/htmlClose`) %>

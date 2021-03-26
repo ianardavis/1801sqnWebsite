@@ -2,7 +2,7 @@ function viewSupplierEdit() {
     get(
         {
             table: 'supplier',
-            query: [`supplier_id=${path[3]}`],
+            query: [`supplier_id=${path[2]}`],
             spinner: 'supplier_edit'
         },
         function (supplier, options) {
@@ -26,7 +26,7 @@ window.addEventListener("load", function () {
     addFormListener(
         'supplier_edit',
         'PUT',
-        `/stores/suppliers/${path[3]}`,
+        `/stores/suppliers/${path[2]}`,
         {onComplete: [
             getSupplier,
             function () {$('#mdl_supplier_edit').modal('hide')}

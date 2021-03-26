@@ -2,7 +2,7 @@ function getSize() {
     get(
         {
             table: 'size',
-            query: [`size_id=${path[3]}`]
+            query: [`size_id=${path[2]}`]
         },
         function (size, options) {
             set_innerText({id: '_issueable',        text: yesno(size._issueable)});

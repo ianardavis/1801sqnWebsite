@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/users',  text: 'Users'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Users'}) %>
 <% if (permissions.user_add) { %>
 	<%- include(`${partials}/breadcrumb`, {text: '<i class="fas fa-plus"></i>', modal: 'user_add'}) %>
 <% } %>
@@ -29,12 +29,12 @@
 							<h5 class="modal-title">Add User</h5>
 						</div>
 						<div class="modal-body">
-							<%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number', maxlength: 20}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',   	 required: true, id: 'sel_ranks_add',  	   spinner_id: 'ranks_add'}) %>
+							<%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number', maxlength: 20, autocomplete: 'off'}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',   	 required: true, id: 'sel_ranks_add',  	   spinner_id: 'ranks_add',    reload_id: 'reload_ranks_add'}) %>
 							<%- include(`${partials}/inputs/text`,   {title: 'Surname',    name: 'user[surname]', 	   	 required: true, id: 'inp_surname',        maxelngth: 50}) %>
 							<%- include(`${partials}/inputs/text`,   {title: 'First Name', name: 'user[first_name]', 	 required: true, id: 'inp_first_name', 	   maxlength: 20}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]', 	 required: true, id: 'sel_statuses_add',   spinner_id: 'statuses_add'}) %>
-							<%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',  	 required: true, id: 'inp_login_id',  	   maxLength: 30}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]', 	 required: true, id: 'sel_statuses_add',   spinner_id: 'statuses_add', reload_id: 'reload_statuses_add'}) %>
+							<%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',  	 required: true, id: 'inp_login_id',  	   maxLength: 30, autocomplete: 'off'}) %>
 						</div>
 						<div class="modal-footer">
 							<input type="submit" id='save_user' class="btn btn-success w-100" value='Save User' disabled>
@@ -43,17 +43,28 @@
 					</form>
 				</div>
 			</div>
-			<script src="/js/users/loginBaderMirror.js"></script>
-			<script src="/js/users/userFieldCheck.js"></script>
-			<script src="/js/addFormListener.js"></script>
-			<script src="/js/users/index/add.js"></script>
 		<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/utils/list/statuses.js"></script>
 <script src="/js/utils/list/ranks.js"></script>
-<script src="/js/users/index/users.js"></script>
-<script async>getStatuses()</script>
-<script async>getRanks()</script>
+<script src="/js/users/index/view.js"></script>
+<% if (permissions.user_add) { %>
+	<script src="/js/addFormListener.js"></script>
+	<script src="/js/users/index/add.js"></script>
+	<script src="/js/users/loginBaderMirror.js"></script>
+	<script src="/js/users/userFieldCheck.js"></script>
+<% } %>
+<script async>
+	let actions = [];
+	actions.push(getStatuses());
+	actions.push(getRanks());
+	Promise.allSettled(actions)
+	.then(results => getUsers())
+	.catch(error => {
+		console.log(error);
+		getUsers();
+	});
+</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

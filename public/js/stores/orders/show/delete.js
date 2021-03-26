@@ -2,7 +2,7 @@ function setDeleteButton() {
     get(
         {
             table: 'order',
-            query: [`order_id=${path[3]}`]
+            query: [`order_id=${path[2]}`]
         },
         function(result, options) {
             set_attribute({id: `btn_delete`, attribute: 'disabled', value: true});
@@ -14,7 +14,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'delete',
         'DELETE',
-        `/stores/orders/${path[3]}`,
+        `/stores/orders/${path[2]}`,
         {
             onComplete: [
                 showOrder,

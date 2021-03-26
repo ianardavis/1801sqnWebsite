@@ -3,7 +3,7 @@ function getLoancard() {
     get(
         {
             table: 'loancard',
-            query: [`loancard_id=${path[3]}`]
+            query: [`loancard_id=${path[2]}`]
         },
         function (loancard, options) {
             set_innerText({id: 'user_loancard',      text: print_user(loancard.user_loancard)});
@@ -35,5 +35,5 @@ function getLoancard() {
 document.querySelector('#reload').addEventListener('click', getLoancard);
 window.addEventListener('load', function () {
     let btn_download = document.querySelector('#btn_download')
-    if (btn_download) btn_download.addEventListener('click', function () {download('loancards', path[3])})
+    if (btn_download) btn_download.addEventListener('click', function () {download('loancards', path[2])})
 });

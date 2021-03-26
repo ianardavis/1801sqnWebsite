@@ -2,7 +2,7 @@ function getWriteoffs() {
     get(
         {
             table: 'writeoffs',
-            query: [`item_id=${path[3]}`]
+            query: [`item_id=${path[2]}`]
         },
         function (writeoffs, options) {
             set_count({id: 'writeoff', count: writeoffs.length || '0'});

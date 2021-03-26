@@ -2,7 +2,7 @@ function getSerials() {
     get(
         {
             table: 'serials',
-            query: [`size_id=${path[3]}`]
+            query: [`size_id=${path[2]}`]
         },
         function (serials, options) {
                 set_count({id: 'serial', count: serials.length});

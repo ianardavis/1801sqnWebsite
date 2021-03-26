@@ -2,7 +2,7 @@ function getReceipt() {
     get(
         {
             table: 'receipt',
-            query: [`receipt_id=${path[3]}`]
+            query: [`receipt_id=${path[2]}`]
         },
         function (receipt, options) {
             set_innerText({id: 'item',      text: receipt.item._name});

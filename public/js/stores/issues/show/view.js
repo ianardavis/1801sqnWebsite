@@ -3,7 +3,7 @@ function showIssue() {
     get(
         {
             table: 'issue',
-            query: [`issue_id=${path[3]}`],
+            query: [`issue_id=${path[2]}`],
             onFail: function () {window.location.href = '/stores/issues'}
         },
         function (issue, options) {

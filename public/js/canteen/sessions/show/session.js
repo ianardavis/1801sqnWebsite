@@ -3,7 +3,7 @@ function getSession() {
     get(
         {
             table: 'session',
-            query: [`session_id=${path[3]}`]
+            query: [`session_id=${path[2]}`]
         },
         function (session, options) {
             for (let [id, value] of Object.entries(session)) {

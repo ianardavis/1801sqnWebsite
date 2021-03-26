@@ -2,7 +2,7 @@ function viewItemEdit() {
     get(
         {
             table:   'item',
-            query:   [`item_id=${path[3]}`],
+            query:   [`item_id=${path[2]}`],
             spinner: 'item_edit'
         },
         function (item, options) {
@@ -23,7 +23,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'item_edit',
         'PUT',
-        `/stores/items/${path[3]}`,
+        `/stores/items/${path[2]}`,
         {onComplete: [
             getItem,
             function () {$('#mdl_item_edit').modal('hide')}

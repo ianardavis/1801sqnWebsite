@@ -2,7 +2,7 @@ function getNSNs() {
     get(
         {
             table: 'nsns',
-            query: [`size_id=${path[3]}`]
+            query: [`size_id=${path[2]}`]
         },
         function (nsns, options) {
             set_count({id: 'nsn', count: nsns.length || '0'});

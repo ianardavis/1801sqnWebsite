@@ -5,7 +5,7 @@ function getSizes() {
         get(
             {
                 table: 'sizes',
-                query: [`supplier_id=${path[3]}`]
+                query: [`supplier_id=${path[2]}`]
             },
             function (sizes, options) {
                 set_count({id: 'size', count: sizes.length || '0'});

@@ -2,7 +2,7 @@ function getResult(table) {
     get(
         {
             table: table,
-            query: [`${table}_id=${path[3]}`]
+            query: [`${table}_id=${path[2]}`]
         },
         function (result, options) {
             set_innerText({id: `user_${table}`,      text: print_user(result[`user_${table}`])});

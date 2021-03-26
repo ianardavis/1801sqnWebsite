@@ -2,7 +2,7 @@ function getStocks() {
     get(
         {
             table: 'stocks',
-            query: [`size_id=${path[3]}`]
+            query: [`size_id=${path[2]}`]
         },
         function (stocks, options) {
             set_count({id: 'stock', count: stocks.length || '0'});

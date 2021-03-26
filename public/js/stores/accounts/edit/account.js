@@ -2,7 +2,7 @@ function getAccount () {
     get(
         {
             table: 'account',
-            query:[`account_id=${path[3]}`]
+            query:[`account_id=${path[2]}`]
         },
         function (account, options) {
             for (let [id, value] of Object.entries(accounts[0])) {

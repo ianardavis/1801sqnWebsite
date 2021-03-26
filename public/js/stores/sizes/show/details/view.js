@@ -2,7 +2,7 @@ function getDetails() {
     get(
         {
             table: 'details',
-            query: [`size_id=${path[3]}`]
+            query: [`size_id=${path[2]}`]
         },
         function (details, options) {
             let tbl_details = document.querySelector('#tbl_details');

@@ -149,7 +149,7 @@ function setLineButtons() {
     get(
         {
             table: 'loancard',
-            query: [`loancard_id=${path[3]}`]
+            query: [`loancard_id=${path[2]}`]
         },
         function(loancard, options) {
             set_attribute({id: `btn_action`, attribute: 'disabled', value: true});

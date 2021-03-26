@@ -3,7 +3,7 @@ function getDemand() {
     get(
         {
             table: 'demand',
-            query: [`demand_id=${path[3]}`]
+            query: [`demand_id=${path[2]}`]
         },
         function (demand, options) {
             set_innerText({id: 'supplier',      text: demand.supplier._name});

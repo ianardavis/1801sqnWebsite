@@ -3,6 +3,6 @@ window.addEventListener("load", function () {
     addFormListener(
         'supplier_delete',
         'DELETE',
-        `/stores/suppliers/${path[3]}`
+        `/stores/suppliers/${path[2]}`
     )
 });

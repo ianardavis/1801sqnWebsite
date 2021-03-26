@@ -25,15 +25,6 @@ function getUsers() {
     })
     .catch(err => console.log(err));
 };
-let int_load_users = window.setInterval(
-    function () {
-        if (statuses_loaded === true && ranks_loaded === true) {
-            getUsers();
-            window.clearInterval(int_load_users);
-        }
-    },
-    100
-);
 function getStatuses() {
     listStatuses({
         select: 'sel_statuses',

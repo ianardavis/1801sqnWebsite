@@ -1,16 +1,16 @@
 const { scryptSync, randomBytes } = require("crypto");
 module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/users',     pm.get, pm.check('access_users',              {allow: true}), (req, res) => {
+    app.get('/users',     pm.get, pm.check('access_users',         {allow: true}), (req, res) => {
         if (req.allowed) res.render('users/index')
         else res.redirect(`/users/${req.user.user_id}`);
     });
-    app.get('/users/:id', pm.get, pm.check('access_users',              {allow: true}), (req, res) => {
+    app.get('/users/:id', pm.get, pm.check('access_users',         {allow: true}), (req, res) => {
         if (Number(req.params.id) === req.user.user_id || req.allowed) {
             res.render('users/show')
         } else res.redirect(`/users/${req.user.user_id}`);
     });
 
-    app.get('/get/user',          pm.check('access_users',  {send: true}),              (req, res) => {
+    app.get('/get/user',     pm.check('access_users',  {send: true}),              (req, res) => {
         m.users.findOne({
             where:      req.query,
             include:    [inc.rank(), inc.status()],
@@ -22,7 +22,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.get('/get/current',       pm.check('access_users',  {send: true, allow: true}), (req, res) => {
+    app.get('/get/current',  pm.check('access_users',  {send: true, allow: true}), (req, res) => {
         let where = {status_id: {[op.or]: [1, 2]}}
         if (!req.allowed) where.user_id = req.user.user_id;
         m.users.findAll({
@@ -33,7 +33,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         .then(users => res.send({success: true,  result: users}))
         .catch(err =>  send_error(res, err));
     });
-    app.get('/get/users',         pm.check('access_users',  {send: true, allow: true}), (req, res) => {
+    app.get('/get/users',    pm.check('access_users',  {send: true, allow: true}), (req, res) => {
         if (!req.allowed) req.query.user_id = req.user.user_id;
         m.users.findAll({
             where:      req.query,
@@ -44,7 +44,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         .catch(err =>  send_error(res, err));
     });
 
-    app.post('/users',            pm.check('user_add',      {send: true}),              (req, res) => {
+    app.post('/users',       pm.check('user_add',      {send: true}),              (req, res) => {
         let _user = req.body.user;
         if (
             (_user.service_number) &&
@@ -67,7 +67,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         } else send_error(res, 'Not all required information has been submitted');
     });
     
-    app.put('/password/:id',      pm.check('user_password', {send: true, allow: true}), (req, res) => {
+    app.put('/password/:id', pm.check('user_password', {send: true, allow: true}), (req, res) => {
         if      (!req.allowed && req.user.user_id !== Number(req.params.id)) send_error(res, 'Permission denied')
         else if (!req.body.password)                                        send_error(res, 'No password submitted')
         else {
@@ -90,7 +90,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             .catch(err => send_error(res, err));
         };
     });
-    app.put('/users/:id',         pm.check('user_edit',     {send: true}),              (req, res) => {
+    app.put('/users/:id',    pm.check('user_edit',     {send: true}),              (req, res) => {
         if (req.body.user) {
             if (!req.body.user._reset) req.body.user._reset = 0;
             ['user_id','full_name','_salt','_password','createdAt','updatedAt'].forEach(e => {
@@ -106,16 +106,25 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         } else send_error(res, 'No details submitted');
     });
     
-    app.delete('/users/:id',      pm.check('user_delete',   {send: true}),              (req, res) => {
-        if (Number(req.user.user_id) !== Number(req.params.id)) {
-            m.users.permissions.destroy({where: {user_id: req.params.id}})
-            .then(result => {
-                m.users.destroy({where: {user_id: req.params.id}})
-                .then(result => res.send({success: true, message: 'User/Permissions deleted'}))
-                .catch(err => send_error(res, err));
+    app.delete('/users/:id', pm.check('user_delete',   {send: true}),              (req, res) => {
+        if (Number(req.user.user_id) === Number(req.params.id)) send_error(res, 'You can not delete your own account')
+        else {
+            m.users.findOne({where: {user_id: req.params.id}})
+            .then(user => {
+                if (!user) send_error(res, 'User not found')
+                else {
+                    if (user.user_id === req.user.user_id) send_error(res, 'You can not delete your own account')
+                    else {
+                        let actions = [];
+                        actions.push(m.permissions.destroy({where: {user_id: user.user_id}}));
+                        actions.push(user.destroy());
+                        Promise.all(actions)
+                        .then(result => res.send({success: true, message: 'User deleted'}))
+                        .catch(err => send_error(res, err));
+                    };
+                };
             })
-            .catch(err => send_error(res, err));
-        } else send_error(res, 'You can not delete your own account');       
+        };
     });
 
     function generatePassword () {

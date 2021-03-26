@@ -3,7 +3,7 @@ function showOrder() {
     get(
         {
             table: 'order',
-            query: [`order_id=${path[3]}`],
+            query: [`order_id=${path[2]}`],
             onFail: function () {window.location.href = '/stores/orders'}
         },
         function (order, options) {

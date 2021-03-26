@@ -3,7 +3,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'item_delete',
         'DELETE',
-        `/stores/items/${path[3]}`,
+        `/stores/items/${path[2]}`,
         {redirect: '/stores/items'}
     );
 });

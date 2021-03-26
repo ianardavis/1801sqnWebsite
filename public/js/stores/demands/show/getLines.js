@@ -6,7 +6,7 @@ function getLines() {
     get(
         {
             table: 'loancard_lines',
-            query: [`loancard_id=${path[3]}`, sel_status.value]
+            query: [`loancard_id=${path[2]}`, sel_status.value]
         },
         function (lines, options) {
             set_count({id: 'line', count: lines.length || '0'});
