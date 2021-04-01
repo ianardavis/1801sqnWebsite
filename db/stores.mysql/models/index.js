@@ -7,12 +7,13 @@ var fs   = require("fs"),
         process.env.DB_STORES_USERNAME,
         process.env.DB_STORES_PASSWORD,
         {
-            host: process.env.DB_HOST,
+            host: '127.0.0.1',
             dialect: "mysql",
             logging: (process.env.DB_LOGGING === 1)
         }
     ),
-    db  = {};
+    db  = {},
+    queryInterface = seq.getQueryInterface();
 seq.dialect.supports.schemas = true;
 fs
     .readdirSync(__dirname)
@@ -25,4 +26,4 @@ fs
     });
 db.sequelize = seq;
 db.Sequelize = Sequelize;
-module.exports = db;
+module.exports = {db: db, queryInterface: queryInterface, DataTypes: DataTypes};

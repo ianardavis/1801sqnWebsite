@@ -1,13 +1,13 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
     let receipts = {}, demands = {},
         promiseResults = require('../functions/promise_results'),
         counter        = require('../functions/counter'),
         download       = require('../functions/download');
     // require('./functions/receipts')(m, receipts),
     require('./functions/demands') (m, demands),
-    app.get('/demands',      pm.get, pm.check('access_demands'),                    (req, res) => res.render('stores/demands/index'));
-    app.get('/demands/:id',  pm.get, pm.check('access_demands'),                    (req, res) => res.render('stores/demands/show'));
-    app.get('/demands/:id/download', pm.check('access_demands'),                    (req, res) => {
+    app.get('/demands',      li, pm.get, pm.check('access_demands'),                    (req, res) => res.render('stores/demands/index'));
+    app.get('/demands/:id',  li, pm.get, pm.check('access_demands'),                    (req, res) => res.render('stores/demands/show'));
+    app.get('/demands/:id/download', li, pm.check('access_demands'),                    (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['_filename']
@@ -19,7 +19,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.get('/count/demands',        pm.check('access_demands',      {send: true}), (req, res) => {
+    app.get('/count/demands',        li, pm.check('access_demands',      {send: true}), (req, res) => {
         m.demands.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => {
@@ -28,7 +28,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
     
-    app.get('/get/demand',           pm.check('access_demands',      {send: true}), (req, res) => {
+    app.get('/get/demand',           li, pm.check('access_demands',      {send: true}), (req, res) => {
         m.demands.findOne({
             where: req.query,
             include: [
@@ -41,9 +41,9 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             if (demand) res.send({success: true, result: demand})
             else        res.send({success: false, message: 'Demand not found'});
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/demands',          pm.check('access_demands',      {send: true}), (req, res) => {
+    app.get('/get/demands',          li, pm.check('access_demands',      {send: true}), (req, res) => {
         m.demands.findAll({
             where:   req.query,
             include: [
@@ -53,9 +53,9 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(demands => res.send({success: true, result: demands}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/demand_lines',     pm.check('access_demand_lines', {send: true}), (req, res) => {
+    app.get('/get/demand_lines',     li, pm.check('access_demand_lines', {send: true}), (req, res) => {
         m.demand_lines.findAll({
             where:   req.query,
             include: [
@@ -65,9 +65,9 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(lines => res.send({success: true, result: lines}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/demand_line',      pm.check('access_demand_lines', {send: true}), (req, res) => {
+    app.get('/get/demand_line',      li, pm.check('access_demand_lines', {send: true}), (req, res) => {
         m.demand_lines.findOne({
             where:   req.query,
             include: [
@@ -78,10 +78,10 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(demand_line => res.send({success: true, result: demand_line}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 
-    app.post('/demands',             pm.check('demand_add',          {send: true}), (req, res) => {
+    app.post('/demands',             li, pm.check('demand_add',          {send: true}), (req, res) => {
         demands.create({
             demand: {
                 supplier_id: req.body.supplier_id,
@@ -92,10 +92,10 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             if (demand.created) res.send({success: true, message: 'There is already a demand open for this supplier'})
             else                res.send({success: true, message: 'Demand raised'});
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 
-    app.put('/demands/raise/:id',    pm.check('demand_edit',         {send: true}), (req, res) => {
+    app.put('/demands/raise/:id',    li, pm.check('demand_edit',         {send: true}), (req, res) => {
         raise_demand(req.params.id, req.user.user_id)
         .then(result => res.send(result))
         .catch(err => {
@@ -103,7 +103,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             res.send({success: false, message: `Error raising demand: ${err.message}`})
         });
     });
-    app.put('/demands/:id',          pm.check('demand_edit',         {send: true}), (req, res) => {
+    app.put('/demands/:id',          li, pm.check('demand_edit',         {send: true}), (req, res) => {
         if (Number(req.body._status) === 2) {
             complete_demand(req.params.id, req.user.user_id)
             .then(filename => res.send({success: true,  message: `Demand completed. Filename: ${filename}`}))
@@ -120,7 +120,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             });
         } else                res.send({success: false, message: 'Invalid request'});
     });
-    app.put('/demand_lines/:id',     pm.check('receipt_add',         {send: true}), (req, res) => {
+    app.put('/demand_lines/:id',     li, pm.check('receipt_add',         {send: true}), (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['demand_id', 'supplier_id']
@@ -217,12 +217,12 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                 if (promiseResults(results)) res.send({success: true,  message: 'Lines actioned'})
                 else                         res.send({success: false, message: 'Some actions failed'});
             })
-            .catch(err => res.error.send(err, res));
+            .catch(err => send_error(res, err));
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
     
-    app.delete('/demands/:id',       pm.check('demand_delete',       {send: true}), (req, res) => {
+    app.delete('/demands/:id',       li, pm.check('demand_delete',       {send: true}), (req, res) => {
         m.demands.findOne({
             where:      {demand_id: req.params.id},
             include:    [inc.demand_lines({where: {_status: {[op.not]: 0}}})],
@@ -262,7 +262,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             res.send({success: false, message: `Error getting demand: ${err.message}`});
         });
     });
-    app.delete('/demand_lines/:id',  pm.check('demand_line_delete',  {send: true}), (req, res) => {
+    app.delete('/demand_lines/:id',  li, pm.check('demand_line_delete',  {send: true}), (req, res) => {
         m.demand_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status']

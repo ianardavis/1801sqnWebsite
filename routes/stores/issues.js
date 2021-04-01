@@ -1,9 +1,9 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
     let loancards = {}, orders = {}, allowed = require(`../functions/allowed`);
     require('./functions/loancards')(m, inc, loancards);
     require('./functions/orders')(m, orders);
-    app.get('/issues',        pm.get, pm.check('access_issues', {allow: true}),   (req, res) => res.render('stores/issues/index'));
-    app.get('/issues/:id',    pm.get, pm.check('access_issues', {allow: true}),   (req, res) => {
+    app.get('/issues',       li,  pm.get, pm.check('access_issues', {allow: true}),   (req, res) => res.render('stores/issues/index'));
+    app.get('/issues/:id',   li,  pm.get, pm.check('access_issues', {allow: true}),   (req, res) => {
         m.issues.findOne({
             where: {issue_id: req.params.id},
             attributes: ['issue_id', 'user_id_issue']
@@ -22,7 +22,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         })
     });
 
-    app.get('/count/issues',  pm.check('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/count/issues', li,  pm.check('access_issues', {allow: true, send: true}), (req, res) => {
         if (!allowed) req.query.user_id_issue = req.user.user_id;
         m.issues.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
@@ -31,7 +31,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             res.send({success: false, message: 'Error counting issues'})
         });
     });
-    app.get('/get/issues',    pm.check('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/get/issues',   li,  pm.check('access_issues', {allow: true, send: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_issue = req.user.user_id;
         m.issues.findAll({
             where: req.query,
@@ -47,7 +47,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             res.send({success: false, message: 'Error getting lines'});
         });
     });
-    app.get('/get/issue',     pm.check('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/get/issue',    li,  pm.check('access_issues', {allow: true, send: true}), (req, res) => {
         m.issues.findOne({
             where: req.query,
             include: [
@@ -70,7 +70,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
 
-    app.post('/issues',       pm.check('issue_add',     {allow: true, send: true}), (req, res) => {
+    app.post('/issues',      li,  pm.check('issue_add',     {allow: true, send: true}), (req, res) => {
         if (Number(req.body.line.user_id_issue) === 1) res.send({success: false, message: 'Issues can not be made to this user'})
         else {
             let _status = 1;
@@ -93,7 +93,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         };
     });
 
-    app.put('/issues',        pm.check('issue_edit',    {allow: true, send: true}), (req, res) => {
+    app.put('/issues',       li,  pm.check('issue_edit',    {allow: true, send: true}), (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e._status === '0').forEach(line => actions.push(decline_line(line, req.user.user_id)));
         req.body.lines.filter(e => e._status === '2').forEach(line => actions.push(approve_line(line, req.user.user_id)));
@@ -112,7 +112,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
 
-    app.delete('/issues/:id', pm.check('issue_delete',  {allow: true, send: true}), (req, res) => {
+    app.delete('/issues/:id', li, pm.check('issue_delete',  {allow: true, send: true}), (req, res) => {
         m.issues.findOne({
             where:      {issue_id: req.params.id},
             attributes: ['issue_id', '_status', 'user_id_issue']

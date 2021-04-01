@@ -1,9 +1,9 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
     let nullify = require(`../functions/nullify`);
-    app.get('/suppliers',        pm.get, pm.check('access_suppliers'),     (req, res) => res.render('stores/suppliers/index'));
-    app.get('/suppliers/:id',    pm.get, pm.check('access_suppliers'),     (req, res) => res.render('stores/suppliers/show'));
+    app.get('/suppliers',       li,  pm.get, pm.check('access_suppliers'),     (req, res) => res.render('stores/suppliers/index'));
+    app.get('/suppliers/:id',  li,   pm.get, pm.check('access_suppliers'),     (req, res) => res.render('stores/suppliers/show'));
 
-    app.get('/get/suppliers',    pm.check('access_suppliers', {send: true}), (req, res) => {
+    app.get('/get/suppliers',  li,   pm.check('access_suppliers', {send: true}), (req, res) => {
         m.suppliers.findAll({
             where:      req.query,
             include:    [inc.accounts()]
@@ -11,7 +11,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         .then(suppliers => res.send({success: true, result: suppliers}))
         .catch(err => res.send({success: false, message: `Error getting suppliers: ${err.message}`}));
     });
-    app.get('/get/supplier',     pm.check('access_suppliers', {send: true}), (req, res) => {
+    app.get('/get/supplier',   li,   pm.check('access_suppliers', {send: true}), (req, res) => {
         m.suppliers.findOne({
             where:      req.query,
             include:    [inc.accounts()]
@@ -22,13 +22,13 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         .catch(err => res.send({success: false, message: `Error getting supplier: ${err.message}`}));
     });
 
-    app.post('/suppliers',       pm.check('supplier_add',     {send: true}), (req, res) => {
+    app.post('/suppliers',     li,   pm.check('supplier_add',     {send: true}), (req, res) => {
         req.body.supplier = nullify(req.body.supplier);
         m.suppliers.create(req.body.supplier)
         .then(supplier => res.send({success: true, message: 'Supplier added'}))
         .catch(err => res.send({success: true, message: `Error creating supplier: ${err.message}`}));
     });
-    app.put('/suppliers/:id',    pm.check('supplier_edit',    {send: true}), (req, res) => {
+    app.put('/suppliers/:id',  li,   pm.check('supplier_edit',    {send: true}), (req, res) => {
         if (req.body.supplier.account_id === '') {req.body.supplier.account_id = null};
         m.suppliers.update(
             req.body.supplier,
@@ -38,7 +38,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         .catch(err => res.send({success: true, message: `Error updating supplier: ${err.message}`}));
     });
 
-    app.delete('/suppliers/:id', pm.check('supplier_delete',  {send: true}), (req, res) => {
+    app.delete('/suppliers/:id', li, pm.check('supplier_delete',  {send: true}), (req, res) => {
         m.suppliers.findOne({
             where: {supplier_id: req.params.id},
             attributes: ['supplier_id']

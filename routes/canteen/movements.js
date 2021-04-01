@@ -1,7 +1,7 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/movements',     pm.get, pm.check('access_movements'), (req, res) => res.render('canteen/movements/index'));
-    app.get('/movements/:id', pm.get, pm.check('access_movements'), (req, res) => res.render('canteen/movements/show'));
-    app.get('/get/movements',         pm.check('access_movements', {send: true}),   (req, res) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/movements',     li, pm.get, pm.check('access_movements'), (req, res) => res.render('canteen/movements/index'));
+    app.get('/movements/:id', li, pm.get, pm.check('access_movements'), (req, res) => res.render('canteen/movements/show'));
+    app.get('/get/movements', li,         pm.check('access_movements', {send: true}), (req, res) => {
         m.movements.findAll({
             where: req.query,
             include: [
@@ -14,6 +14,6 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(movements => res.send({success: true, movements: movements}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 };

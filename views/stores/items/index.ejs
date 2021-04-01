@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores',		  text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Items'}) %>
 <% if (permissions.item_add) { %>
 	<li class="nav-item">
 		<a class='nav-link' data-toggle="modal" data-target="#mdl_item_add"><i class="fas fa-plus"></i></a>
@@ -10,9 +10,7 @@
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<% if (permissions.access_genders) { %>
-		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
-	<% } %>
+	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
 	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>

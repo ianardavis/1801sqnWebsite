@@ -1,0 +1,21 @@
+<%- include(`${partials}/head/noTitle`) %>
+<section class='container'>
+    <h1>Select Size...</h1>
+    <div id="div_items">
+        <%- include(`${partials}/inputs/text`,   {title: 'Search Items', id: 'inp_item'}) %>
+        <%- include(`${partials}/inputs/select`, {title: 'Items',        id: 'sel_items'}) %>
+    </div>
+    <div id="div_sizes" class='hidden'>
+        <%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size'}) %>
+        <%- include(`${partials}/inputs/select`, {title: 'Sizes',        id: 'sel_sizes'}) %>
+        <button id='btn_size_select' disabled>Select</button>
+    </div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/get.js"></script>
+<script src="/js/spinner.js"></script>
+<script src="/js/stores/sizes/select/view.js"></script>
+<script src="/js/utils/list/items.js"></script>
+<script src="/js/utils/list/sizes.js"></script>
+<script async>getItems()</script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

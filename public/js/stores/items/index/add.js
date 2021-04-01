@@ -12,7 +12,7 @@ function getGenders_add () {
 				genders.forEach(gender => {
 					sel_genders.appendChild(
 						new Option({
-							text:  gender._gender,
+							text:  gender.gender,
 							value: gender.gender_id
 						}).e
 					)

@@ -57,20 +57,20 @@ module.exports = (inc, m) => {
             where:      options.where      || null
         };
     };
-    inc.demand_lines = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include;
-        if (options.demands) include.push(inc.demands());
-        if (options.sizes)   include.push(inc.sizes());
-        return {
-            model:    m.demand_lines,
-            attributes: options.attributes || null,
-            include:  include,
-            as:       options.as           || 'lines',
-            where:    options.where        || null,
-            required: options.required     || false
-        };
-    };
+    // inc.demand_lines = (options = {}) => {
+    //     let include = [];
+    //     if (options.include) include = options.include;
+    //     if (options.demands) include.push(inc.demands());
+    //     if (options.sizes)   include.push(inc.sizes());
+    //     return {
+    //         model:    m.demand_lines,
+    //         attributes: options.attributes || null,
+    //         include:  include,
+    //         as:       options.as           || 'lines',
+    //         where:    options.where        || null,
+    //         required: options.required     || false
+    //     };
+    // };
     inc.demands = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
@@ -371,6 +371,81 @@ module.exports = (inc, m) => {
         return {
             model: m.loancard_lines,
             as:    options.as || 'lines'
+        };
+    };
+    inc.demand_lines = (options = {}) => {
+        return {
+            model: m.demand_lines,
+            as:    options.as || 'lines'
+        };
+    };
+    inc.issue = (options = {}) => {
+        let include = [];
+        include.push(inc.user({as: 'user_issue'}));
+        include.push(inc.user());
+        return {
+            model:   m.issues,
+            include: include,
+            as:      options.as || 'issue'
+        };
+    };
+    inc.order = (options = {}) => {
+        let include = [];
+        include.push(inc.user());
+        return {
+            model:   m.orders,
+            include: include,
+            as:      options.as || 'order'
+        };
+    };
+    inc.location = (options = {}) => {
+        return {
+            model:    m.locations,
+            as:       'location',
+            required: options.required || false
+        };
+    };
+    inc.stock = (options = {}) => {
+        return {
+            model:   m.stocks,
+            as:      options.as || 'stocks',
+            include: [inc.location({required: options.require_locations || false})]
+        };
+    };
+    inc.serial = (options = {}) => {
+        return {
+            model:   m.serials,
+            as:      options.as           || 'serial',
+            include: [inc.location()]
+        };
+    };
+    inc.nsn_class = () => {
+        return {
+            model: m.nsn_classes,
+            as:    'class'
+        };
+    };
+    inc.nsn_country = () => {
+        return {
+            model: m.nsn_countries,
+            as:    'country'
+        };
+    };
+    inc.nsn_group = () => {
+        return {
+            model: m.nsn_groups,
+            as:    'group'
+        };
+    };
+    inc.nsn = (options = {}) => {
+        return {
+            model: m.nsns,
+            as:    'nsn',
+            include: [
+                inc.nsn_group(),
+                inc.nsn_class(),
+                inc.nsn_country()
+            ]
         };
     };
 };

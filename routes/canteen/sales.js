@@ -1,7 +1,7 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/sales/:id', pm.get, pm.check('access_sales'),               (req, res) => res.render('canteen/sales/show'));
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/sales/:id', li, pm.get, pm.check('access_sales'),               (req, res) => res.render('canteen/sales/show'));
 
-    app.get('/get/sales',           pm.check('access_sales', {send: true}), (req, res) => {
+    app.get('/get/sales',      li,      pm.check('access_sales', {send: true}), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
@@ -10,9 +10,9 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(sales => res.send({success: true, result: sales}))
-        .catch(err => res.error.send(err, res))
+        .catch(err => send_error(res, err))
     });
-    app.get('/get/sale',            pm.check('access_sales', {send: true}), (req, res) => {
+    app.get('/get/sale',       li,      pm.check('access_sales', {send: true}), (req, res) => {
         m.sales.findOne({
             where: req.query,
             include: [inc.users()]
@@ -21,9 +21,9 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             if (sale) res.send({success: true,  result: sale})
             else      res.send({success: false, message: 'Sale not found'})
         })
-        .catch(err => res.error.send(err, res))
+        .catch(err => send_error(res, err))
     });
-    app.get('/get/user_sale',       pm.check('access_pos',   {send: true}), (req, res) => {
+    app.get('/get/user_sale', li,       pm.check('access_pos',   {send: true}), (req, res) => {
         m.sessions.findAll({
             where: {_status: 1},
             attributes: ['session_id']
@@ -39,21 +39,21 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                     }
                 })
                 .then(([sale, created]) => res.send({success: true, result: sale.sale_id}))
-                .catch(err => res.error.send(err, res));
+                .catch(err => send_error(res, err));
             };
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/sale_lines',      pm.check('access_pos',   {send: true}), (req, res) => {
+    app.get('/get/sale_lines', li,      pm.check('access_pos',   {send: true}), (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
             include: [inc.items()]
         })
         .then(lines => res.send({success: true, result: lines}))
-        .catch(err => res.error.send(err, res))
+        .catch(err => send_error(res, err))
     });
 
-    app.post('/sale_lines',         pm.check('access_pos',   {send: true}), (req, res) => {
+    app.post('/sale_lines',     li,     pm.check('access_pos',   {send: true}), (req, res) => {
         if (!req.body.line) res.send({success: false, message: 'No line specified'})
         else {
             m.sales.findOne({
@@ -90,20 +90,20 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                                         if (result) res.send({success: true,  message: 'Line updated'})
                                         else        res.send({success: false, message: 'Line not updated'});
                                     })
-                                    .catch(err => res.error.send(err, res));
+                                    .catch(err => send_error(res, err));
                                 };
                             })
-                            .catch(err =>res.error.send(err, res));
+                            .catch(err =>send_error(res, err));
                         };
                     })
-                    .catch(err => res.error.send(err, res));
+                    .catch(err => send_error(res, err));
                 };
             })
-            .catch(err => res.error.send(err, res));
+            .catch(err => send_error(res, err));
         };
     });
     
-    app.put('/sale_lines',          pm.check('access_pos',   {send: true}), (req, res) => {
+    app.put('/sale_lines',    li,       pm.check('access_pos',   {send: true}), (req, res) => {
         if (req.body.line) {
             m.sale_lines.findOne({
                 where: {line_id: req.body.line.line_id},
@@ -136,15 +136,15 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                                 } else res.send({success: true,  message: 'Line updated'});
                             } else res.send({success: false, message: 'Line not updated'});
                         })
-                        .catch(err => res.error.send(err, res))
+                        .catch(err => send_error(res, err))
                     })
-                    .catch(err => res.error.send(err, res));
+                    .catch(err => send_error(res, err));
                 };
             })
-            .catch(err => res.error.send(err, res));
+            .catch(err => send_error(res, err));
         } else res.send({success: false, message: 'No line specified'});
     });
-    app.put('/sales',               pm.check('access_pos',   {send: true}), (req, res) => {
+    app.put('/sales',         li,       pm.check('access_pos',   {send: true}), (req, res) => {
         m.sales.findOne({
             where:      {sale_id: req.body.sale_id},
             attributes: ['sale_id', '_status']
@@ -217,15 +217,15 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                                                     })
                                                     return Promise.all(actions)
                                                     .then(result => res.send({success: true, message: 'Sale completed', change: 0.00}))
-                                                    .catch(err => res.error.send(err, res));
+                                                    .catch(err => send_error(res, err));
                                                 })
-                                                .catch(err => res.error.send(err, res));
+                                                .catch(err => send_error(res, err));
                                             })
-                                            .catch(err => res.error.send(err, res));
+                                            .catch(err => send_error(res, err));
                                         };
-                                    } else res.error.send(err, res);
+                                    } else send_error(res, err);
                                 })
-                                .catch(err => res.error.send(err, res));
+                                .catch(err => send_error(res, err));
                             } else res.send({success: false, message: 'Not enough tendered'});
                         } else {
                             let actions = [],
@@ -276,13 +276,13 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                             };
                             return Promise.all(actions)
                             .then(result => res.send({success: true, message: 'Sale completed', change: change}))
-                            .catch(err => res.error.send(err, res));
+                            .catch(err => send_error(res, err));
                         };
                     };
                 })
-                .catch(err => res.error.send(err, res));
+                .catch(err => send_error(res, err));
             };
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 };

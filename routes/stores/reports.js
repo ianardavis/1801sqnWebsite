@@ -1,10 +1,10 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
     let orders = {}, stock = {};
     require(`./functions/stock`) (m, stock);
     require(`./functions/orders`)(m, orders)
-    app.get('/reports', pm.get, pm.check('access_reports'), (req, res) => res.render('stores/reports/index'));
+    app.get('/reports', li, pm.get, pm.check('access_reports'), (req, res) => res.render('stores/reports/index'));
 
-    app.get('/reports/:id', pm.check('access_reports'), (req, res) => {
+    app.get('/reports/:id', li, pm.check('access_reports'), (req, res) => {
         if (Number(req.params.id) === 1) {
             m.stock.findAll({
                 where: {_qty: {[op.lt]: 0}},
@@ -77,7 +77,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         } else res.error.redirect(new Error('Invalid report'), req, res);
     });
 
-    app.post('/reports/3',  pm.check('access_reports'), (req, res) => {
+    app.post('/reports/3', li,  pm.check('access_reports'), (req, res) => {
         let selected = []
         for (let [key, line] of Object.entries(req.body.selected)) {
             if (Number(line) > 0) selected.push({size_id: key, _qty: line});
@@ -106,7 +106,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         };
     });
 
-    app.post('/reports/5',  pm.check('access_reports'), (req, res) => {
+    app.post('/reports/5', li,  pm.check('access_reports'), (req, res) => {
         let actions = [];
         for (let [key, value] of Object.entries(req.body.corrections)) {
             if (value) {

@@ -24,7 +24,7 @@ function listGenders(options = {}) {
 					sel_genders.appendChild(
 						new Option({
                             selected: (options.selected === gender.gender_id),
-							text:  gender._gender,
+							text:  gender.gender,
 							value: value
 						}).e
 					);

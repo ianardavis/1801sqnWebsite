@@ -1,5 +1,5 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/get/serials',    pm.check('access_serials', {send: true}), (req, res) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/get/serials',  li,   pm.check('access_serials', {send: true}), (req, res) => {
         m.serials.findAll({
             where:   req.query,
             include: [
@@ -8,9 +8,9 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(serials => res.send({success: true, result: serials}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/serial',     pm.check('access_serials', {send: true}), (req, res) => {
+    app.get('/get/serial',  li,    pm.check('access_serials', {send: true}), (req, res) => {
         m.serials.findOne({
             where:   req.query,
             include: [
@@ -19,23 +19,23 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(serial => res.send({success: true, result: serial}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 
-    app.post('/serials',       pm.check('serial_add',     {send: true}), (req, res) => {
+    app.post('/serials',    li,    pm.check('serial_add',     {send: true}), (req, res) => {
         if (!req.body._location) res.send({success: false, message: 'No location entered'})
         else {
             m.locations.findOrCreate({where: {_location: req.body._location}})
             .then(([location, created]) => {
                 return m.serials.create({...req.body.serial, ...{location_id: location.location_id}})
                 .then(serial => res.send({success: true, message: 'Serial saved'}))
-                .catch(err => res.error.send(err, res));
+                .catch(err => send_error(res, err));
             })
-            .catch(err => res.error.send(err, res));
+            .catch(err => send_error(res, err));
         };
     });
     
-    app.put('/serials',        pm.check('serial_edit',    {send: true}), (req, res) => {
+    app.put('/serials',      li,   pm.check('serial_edit',    {send: true}), (req, res) => {
         if (req.body.serial_id) res.send({success: false, message: 'No serial ID submitted'})
         else {
             m.locations.findOrCreate({where: {_location: req.body._location}})
@@ -45,15 +45,15 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                     {where: {serial_id: req.body.serial_id}}
                 )
                 .then(result => res.send({success: true, message: 'Serial saved'}))
-                .catch(err => res.error.send(err, res));
+                .catch(err => send_error(res, err));
             })
-            .catch(err => res.error.send(err, res));
+            .catch(err => send_error(res, err));
         };
     });
 
-    app.delete('/serials/:id', pm.check('serial_delete',  {send: true}), (req, res) => {
+    app.delete('/serials/:id', li, pm.check('serial_delete',  {send: true}), (req, res) => {
         m.serials.destroy({where: {serial_id: req.params.id}})
         .then(result => res.send({success: true, message: 'Serial deleted'}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 };

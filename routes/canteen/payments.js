@@ -1,5 +1,5 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/get/payments', pm.check('access_payments', {send: true}), (req, res) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/get/payments', li, pm.check('access_payments', {send: true}), (req, res) => {
         m.payments.findAll({
             where: req.query,
             include: [
@@ -8,6 +8,6 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(payments => res.send({success: true, result: payments}))
-        .catch(err => res.error.send(err, res))
+        .catch(err => send_error(res, err))
     });
 };

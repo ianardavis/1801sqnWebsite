@@ -1,5 +1,5 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/get/categories',    pm.check('access_categories', {send: true}), (req, res) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/get/categories',    li, pm.check('access_categories', {send: true}), (req, res) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
@@ -13,7 +13,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             res.send({success: false, message: `Error getting categories: ${err.message}`});
         });
     });
-    app.get('/get/category',      pm.check('access_categories', {send: true}), (req, res) => {
+    app.get('/get/category',      li, pm.check('access_categories', {send: true}), (req, res) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
@@ -34,7 +34,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
 
-    app.put('/categories',        pm.check('category_edit',     {send: true}), (req, res) => {
+    app.put('/categories',        li, pm.check('category_edit',     {send: true}), (req, res) => {
         if (req.body.category.parent_category_id === '') req.body.category.parent_category_id = null;
         m.categories.update(
             req.body.category,
@@ -50,7 +50,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
 
-    app.post('/categories',       pm.check('category_add',      {send: true}), (req, res) => {
+    app.post('/categories',       li, pm.check('category_add',      {send: true}), (req, res) => {
         if (req.body.category.parent_category_id === '') delete req.body.category.parent_category_id;
         m.categories.create({...req.body.category, ...{user_id: req.user.user_id}})
         .then(category => res.send({success: true, message: 'Category created'}))
@@ -60,7 +60,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
 
-    app.delete('/categories/:id', pm.check('category_delete',   {send: true}), (req, res) => {
+    app.delete('/categories/:id', li, pm.check('category_delete',   {send: true}), (req, res) => {
         m.categories.findOne({
             where:      {category_id: req.params.id},
             attributes: ['category_id']

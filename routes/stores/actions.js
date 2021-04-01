@@ -1,28 +1,28 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/get/actions', pm.check('access_actions', {send: true}), (req, res) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/get/actions', li, pm.check('access_actions', {send: true}), (req, res) => {
         m.actions.findAll({
             where:      req.query,
-            attributes: ['action_id', '_action', 'createdAt']
+            attributes: ['action_id', 'action', 'createdAt']
         })
         .then(actions => res.send({success: true, result: actions}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/action' , pm.check('access_actions', {send: true}), (req, res) => {
+    app.get('/get/action',  li, pm.check('access_actions', {send: true}), (req, res) => {
         m.actions.findOne({
             where:   req.query,
             include: [
-                inc.issues(),
-                inc.orders(),
-                inc.stocks({as: 'stock'}),
-                inc.serials({as: 'serial'}),
-                inc.locations({as: 'location'}),
-                inc.nsns({as: 'nsn'}),
+                inc.issue(),
+                inc.order(),
+                inc.stock(),
+                inc.serial(),
+                inc.location(),
+                inc.nsn(),
                 inc.demand_lines({as: 'demand_line'}),
                 inc.loancard_lines({as: 'loancard_line'}),
-                inc.users()
+                inc.user()
             ]
         })
         .then(action => res.send({success: true, result: action}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 };

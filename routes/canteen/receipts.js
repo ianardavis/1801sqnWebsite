@@ -1,8 +1,8 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/receipts',     pm.get, pm.check('access_receipts'),     (req, res) => res.render('canteen/receipts/index'));
-    app.get('/receipts/:id', pm.get, pm.check('access_receipts'),     (req, res) => res.render('canteen/receipts/show'));
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/receipts',     li, pm.get, pm.check('access_receipts'),     (req, res) => res.render('canteen/receipts/index'));
+    app.get('/receipts/:id', li, pm.get, pm.check('access_receipts'),     (req, res) => res.render('canteen/receipts/show'));
     
-    app.get('/get/receipts',    pm.check('access_receipts', {send: true}), (req, res) => {
+    app.get('/get/receipts', li,    pm.check('access_receipts', {send: true}), (req, res) => {
         m.receipts.findAll({
             where: req.query,
             include: [
@@ -13,7 +13,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         .then(receipts => res.send({success: true,  result: receipts}))
         .catch(err =>     res.send({success: false, message: `Error getting receipts: ${err.message}`}))
     });
-    app.get('/get/receipt',     pm.check('access_receipts', {send: true}), (req, res) => {
+    app.get('/get/receipt', li,     pm.check('access_receipts', {send: true}), (req, res) => {
         m.receipts.findOne({
             where: req.query,
             include: [
@@ -25,10 +25,10 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             if (receipt) res.send({success: true,  result: receipt})
             else         res.send({success: false, message: 'Receipt not found'});
         })
-        .catch(err => res.error.send(err, res))
+        .catch(err => send_error(res, err))
     });
 
-    app.post('/receipts',       pm.check('receipt_add',     {send: true}), (req, res) => {
+    app.post('/receipts',  li,      pm.check('receipt_add',     {send: true}), (req, res) => {
         if      (!req.body.receipt._qty)  res.send({success: false, message: 'No quantity submitted'})
         else if (!req.body.receipt._cost) res.send({success: false, message: 'No cost submitted'})
         else {
@@ -96,7 +96,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         };
     });
     
-    app.delete('/receipts/:id', pm.check('receipt_delete',  {send: true}), (req, res) => {
+    app.delete('/receipts/:id', li, pm.check('receipt_delete',  {send: true}), (req, res) => {
         m.receipts.findOne({
             where: {receipt_id: req.params.id},
             attributes: ['receipt_id']
@@ -112,6 +112,6 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                 .catch(err => res.send({success: false, message: `Error deleting receipt: ${err.message}`}));
             }
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 };

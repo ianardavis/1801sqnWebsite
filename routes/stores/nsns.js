@@ -1,5 +1,5 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/get/nsns',          pm.check('access_nsns', {send: true}), (req, res) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/get/nsns',         li,  pm.check('access_nsns', {send: true}), (req, res) => {
         m.nsns.findAll({
             where: req.query,
             include: [
@@ -10,9 +10,9 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]
         })
         .then(nsns => res.send({success: true, result: nsns}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/nsn',           pm.check('access_nsns', {send: true}), (req, res) => {
+    app.get('/get/nsn',          li,  pm.check('access_nsns', {send: true}), (req, res) => {
         m.nsns.findOne({
             where: req.query,
             include: [
@@ -26,31 +26,31 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             if (nsn) res.send({success: true, result: nsn})
             else     res.send({success: false, message: 'NSN not found'});
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/nsn_groups',    pm.check('access_nsns', {send: true}), (req, res) => {
+    app.get('/get/nsn_groups',   li,  pm.check('access_nsns', {send: true}), (req, res) => {
         m.nsn_groups.findAll({
             where: req.query
         })
         .then(nsn_groups => res.send({success: true, result: nsn_groups}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/nsn_classes',   pm.check('access_nsns', {send: true}), (req, res) => {
+    app.get('/get/nsn_classes',  li,  pm.check('access_nsns', {send: true}), (req, res) => {
         m.nsn_classes.findAll({
             where: req.query
         })
         .then(nsn_classes => res.send({success: true, result: nsn_classes}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/nsn_countries', pm.check('access_nsns', {send: true}), (req, res) => {
+    app.get('/get/nsn_countries', li, pm.check('access_nsns', {send: true}), (req, res) => {
         m.nsn_countries.findAll({
             where: req.query
         })
         .then(nsn_countries => res.send({success: true, result: nsn_countries}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 
-    app.post('/nsns',             pm.check('nsn_add',     {send: true}), (req, res) => {
+    app.post('/nsns',            li,  pm.check('nsn_add',     {send: true}), (req, res) => {
         m.nsns.findOrCreate({
             where: {
                 nsn_group_id: req.body.nsn.nsn_group_id,
@@ -64,10 +64,10 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             if (!created) res.send({success: false, message: 'NSN already exists'})
             else          res.send({success: true,  message: 'NSN added'});
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
     
-    app.put('/nsns',              pm.check('nsn_edit',    {send: true}), (req, res) => {
+    app.put('/nsns',             li,  pm.check('nsn_edit',    {send: true}), (req, res) => {
         if (!req.body.nsn_id) res.send({success: false, message: 'No NSN ID provided'})
         else {
             m.nsns.findOne({where: {nsn_id: req.body.nsn_id}})
@@ -76,14 +76,14 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                 else {
                     return nsn.update(req.body.nsn)
                     .then(result => res.send({success: true, message: 'NSN saved'}))
-                    .catch(err => res.error.send(err, res));
+                    .catch(err => send_error(res, err));
                 };
             })
-            .catch(err => res.error.send(err, res));
+            .catch(err => send_error(res, err));
         };
     });
     
-    app.delete('/nsns/:id',       pm.check('nsn_delete',  {send: true}), (req, res) => {
+    app.delete('/nsns/:id',      li,  pm.check('nsn_delete',  {send: true}), (req, res) => {
         m.nsns.findOne({
             where: {nsn_id: req.params.id},
             attributes: ['nsn_id']
@@ -98,11 +98,11 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                         {where: {nsn_id: req.params.id}}
                     )
                     .then(result => res.send({success: true, message: 'NSN deleted'}))
-                    .catch(err => res.error.send(err, res));
+                    .catch(err => send_error(res, err));
                 })
-                .catch(err => res.error.send(err, res));
+                .catch(err => send_error(res, err));
             };
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 };

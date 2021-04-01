@@ -1,4 +1,4 @@
-function getNoteEdit(note_id) {
+function viewNoteEdit(note_id) {
     get(
         {
             table:   'note',
@@ -8,7 +8,7 @@ function getNoteEdit(note_id) {
         },
         function (note, options) {
             set_innerText({id: 'note_id_edit', text: note.note_id});
-            set_innerText({id: '_note_edit',   text: note.note});
+            set_innerText({id: 'note_edit',    text: note.note});
             document.querySelectorAll('.note_id').forEach(e => e.setAttribute('value', note.note_id));
             $('#mdl_note_view').modal('hide')
         }
@@ -50,6 +50,7 @@ window.addEventListener('load', function() {
     );
     $('#mdl_note_view').on('show.bs.modal', function(event) {addNoteEditBtn( event.relatedTarget.dataset.id)});
     $('#mdl_note_edit').on('show.bs.modal', function(event) {
-        getNoteEdit(event.relatedTarget.dataset.id)
-        $(`#mdl_note_view`).modal('hide')});
+        viewNoteEdit(event.relatedTarget.dataset.id);
+        $(`#mdl_note_view`).modal('hide');
+    });
 });

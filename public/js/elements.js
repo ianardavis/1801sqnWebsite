@@ -160,15 +160,27 @@ function Tab_Body (options = {}) {
 function Button (options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
-    if      (options.small === true) this.e.classList.add('btn-sm');//
-    if      (options.float === true) this.e.classList.add('float-right');//
-    if      (options.type)           this.e.classList.add(`btn-${options.type}`)//
-    else                             this.e.classList.add('btn-primary');
-    if      (options.classes)        options.classes.forEach(e => this.e.classList.add(e));//
-    if      (options.click)          this.e.addEventListener('click', options.click);//
-    if      (options.text)           this.e.innerText = options.text//
-    else if (options.html)           this.e.innerHTML = options.html;//
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
+    if (options.type === 'edit') {
+        this.e.classList.add('btn-success');
+        this.e.innerHTML = _edit();
+    } else if (options.type === 'move') {
+        this.e.classList.add('btn-success');
+        this.e.innerHTML = _move(options.type_attribute || '');
+    } else {
+        this.e.classList.add('btn-primary');
+        this.e.innerHTML = _search();
+    };
+    if (options.modal) {
+        this.e.setAttribute('data-toggle', 'modal');
+        this.e.setAttribute('data-target', `#mdl_${options.modal}`);
+    };
+    if (options.source) {
+        this.e.setAttribute('data-source', options.source);
+    };
+    if (options.data)  this.e.setAttribute(`data-${options.data.field}`, options.data.value);
+    if (options.small) this.e.classList.add('btn-sm');
+    if (options.float) this.e.classList.add('float-right');
 };
 function Select (options = {}) {
     this.e = document.createElement('select');

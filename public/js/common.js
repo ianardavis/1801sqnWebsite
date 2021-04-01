@@ -81,10 +81,6 @@ function set_innerText(options = {}) {
     let element = document.querySelector(`#${options.id}`);
     if (element) element.innerText = options.text || '';
 };
-function set_attribute(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) element.setAttribute(options.attribute || '', options.value || '');
-};
 function set_breadcrumb(options = {}) {
     let breadcrumb = document.querySelector('#breadcrumb');
     if (breadcrumb) {
@@ -92,13 +88,32 @@ function set_breadcrumb(options = {}) {
         if (options.href) breadcrumb.setAttribute('href', options.href);
     };
 };
+function set_href(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element) {
+        if (options.value) element.setAttribute('href', options.value);
+        else               element.removeAttribute('href');
+    };
+};
 function set_value(options = {}) {
     let element = document.querySelector(`#${options.id}`);
     if (element) element.value = options.value || '';
 };
+function set_attribute(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element && options.attribute) {
+        if (Array.isArray(options.attribute)) { 
+            options.attribute.forEach(e => element.setAttribute(e.attribute, e.value || ''))
+        } else element.setAttribute(options.attribute, options.value || '');
+    };
+};
 function remove_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);
-    if (element && options.attribute) element.removeAttribute(options.attribute);
+    if (element && options.attribute) {
+        if (Array.isArray(options.attribute)) {
+            options.attribute.forEach(e => element.removeAttribute(e))
+        } else element.removeAttribute(options.attribute);
+    };
 };
 function add_class(options) {
     let e = document.querySelector(`#${options.id}`);
@@ -112,30 +127,30 @@ function remove_class(options) {
     let e = document.querySelector(`#${options.id}`);
     if (e && options.class) e.classList.remove(options.class);
 };
-function print_user (user) {
+function print_user(user) {
     if (user) return `${user.rank.rank} ${user.full_name}`
     else return '';
 };
-function print_date (date, time = false) {
+function print_date(date, time = false) {
     if (date) {
         let str = new Date(date).toDateString();
         if (time) str += ` ${new Date(date).toLocaleTimeString()}`;
         return str
     } else return '';
 };
-function table_date (date, time = false) {
+function table_date(date, time = false) {
     let _date = {
         sort: new Date(date).getTime(),
         text: print_date(date, time)
     };
     return _date;
 }
-function print_nsn (nsn) {
+function print_nsn(nsn) {
     if (nsn && nsn.group && nsn.classification && nsn.country) {
         return `${String(nsn.group.code).padStart(2, '0')}${String(nsn.classification.code).padStart(2, '0')}-${String(nsn.country.code).padStart(2, '0')}-${nsn.item_number}`
     } else return '';
 };
-function print_account (account) {
+function print_account(account) {
     if (account) {
         return `${account.name} | ${account.number}`
     } else return '';
@@ -149,5 +164,11 @@ function clear_table(id) {
             resolve(table);
         };
     })
+};
+function addReloadListener(func) {
+    window.addEventListener('load', function () {
+        let reload = document.querySelector('#reload')
+        if (reload) reload.addEventListener('click', func);
+    });
 };
 let path = window.location.pathname.toString().split('/');

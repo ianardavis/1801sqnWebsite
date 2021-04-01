@@ -1,4 +1,4 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
     let permission_tree = [
         {_permission: 'access_stores', children: [
             {_permission: 'access_actions',   children: []},
@@ -226,15 +226,15 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             ]}
         ]}
     ];
-    app.get('/get/permissions', pm.check('access_permissions', {send: true}), (req, res) => {
+    app.get('/get/permissions', li, pm.check('access_permissions', {send: true}), (req, res) => {
         m.permissions.findAll({
             where:      req.query,
             attributes: ['permission_id', 'permission', 'createdAt']
         })
         .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree}}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.put('/permissions/:id', pm.check('permission_edit',    {send: true}), (req, res) => {
+    app.put('/permissions/:id', li, pm.check('permission_edit',    {send: true}), (req, res) => {
         m.users.findOne({
             where:      {user_id: req.params.id},
             attributes: ['user_id']
@@ -268,11 +268,11 @@ module.exports = (app, m, pm, op, inc, send_error) => {
                     });
                     return Promise.allSettled(actions)
                     .then(results => res.send({success: true, message: 'Permissions edited'}))
-                    .catch(err => res.error.send(err, res));
+                    .catch(err => send_error(res, err));
                 })
-                .catch(err => res.error.send(err, res));
+                .catch(err => send_error(res, err));
             };
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 };

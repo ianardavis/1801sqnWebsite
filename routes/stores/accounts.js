@@ -1,47 +1,46 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/get/accounts',    pm.check('access_accounts', {send: true}), (req, res) => {
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/get/accounts',    li, pm.check('access_accounts', {send: true}), (req, res) => {
         return m.accounts.findAll({
             where:   req.query,
-            include: [inc.users({as: 'user_account'})]
+            include: [inc.user({as: 'user_account'})]
         })
         .then(accounts => res.send({success: true, result: accounts}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/account',     pm.check('access_accounts', {send: true}), (req, res) => {
+    app.get('/get/account',     li, pm.check('access_accounts', {send: true}), (req, res) => {
         return m.accounts.findOne({
             where:   req.query,
             include: [
-                inc.users({as: 'user'}),
-                inc.users({as: 'user_account'})
+                inc.user(),
+                inc.user({as: 'user_account'})
             ]
         })
         .then(account => {
             if (account) res.send({success: true,  result: account})
             else         res.send({success: false, message: 'Account not found'});
         })
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 
-    app.put('/accounts/:id',    pm.check('account_edit',    {send: true}), (req, res) => {
+    app.put('/accounts/:id',    li, pm.check('account_edit',    {send: true}), (req, res) => {
         m.accounts.update(
             req.body.account,
             {where: {account_id: req.params.id}}
         )
         .then(result => res.send({success: true, message: 'Account saved'}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
     
-    app.post('/accounts',       pm.check('account_add',     {send: true}), (req, res) => {
+    app.post('/accounts',       li, pm.check('account_add',     {send: true}), (req, res) => {
         m.accounts.create({
             ...req.body.account,
             ...{user_id: req.user.user_id}
         })
         .then(account => res.send({success: true, message: 'Account created'}))
-        .catch(err => res.error.send(err, res));
+        .catch(err => send_error(res, err));
     });
 
-    app.delete('/accounts/:id', pm.check('account_delete',  {send: true}), (req, res) => {
-        console.log(req.params.id)
+    app.delete('/accounts/:id', li, pm.check('account_delete',  {send: true}), (req, res) => {
         m.accounts.findOne({
             where: {account_id: req.params.id},
             attributes: ['account_id']

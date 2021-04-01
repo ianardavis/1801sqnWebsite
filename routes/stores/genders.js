@@ -1,7 +1,7 @@
-module.exports = (app, m, pm, op, inc, send_error) => {
-    app.get('/settings', pm.get, pm.check('access_settings'),          (req, res) => res.render('stores/settings/show'));
+module.exports = (app, m, pm, op, inc, li, send_error) => {
+    app.get('/settings', li, pm.get, pm.check('access_settings'),          (req, res) => res.render('stores/settings/show'));
 
-    app.get('/get/genders',    pm.check('access_genders', {send: true}), (req, res) => {
+    app.get('/get/genders',    li, pm.check('access_genders', {send: true}), (req, res) => {
         m.genders.findAll({where: req.query})
         .then(genders => res.send({success: true, result: genders}))
         .catch(err => {
@@ -9,7 +9,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
             res.send({success: false, message: `Error getting genders: ${err.message}`});
         });
     });
-    app.get('/get/gender',     pm.check('access_genders', {send: true}), (req, res) => {
+    app.get('/get/gender',     li, pm.check('access_genders', {send: true}), (req, res) => {
         m.genders.findOne({
             where:   req.query,
             include: [inc.users()]
@@ -24,7 +24,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
 
-    app.put('/genders',        pm.check('gender_edit',    {send: true}), (req, res) => {
+    app.put('/genders',       li,  pm.check('gender_edit',    {send: true}), (req, res) => {
         m.genders.update(
             {_gender: req.body.gender._gender},
             {where: {gender_id: req.body.gender.gender_id}}
@@ -39,7 +39,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
     
-    app.post('/genders',       pm.check('gender_add',     {send: true}), (req, res) => {
+    app.post('/genders',      li,  pm.check('gender_add',     {send: true}), (req, res) => {
         m.genders.create({...req.body.gender, ...{user_id: req.user.user_id}})
         .then(gender => res.send({success: true, message: 'Gender created'}))
         .catch(err => {
@@ -48,7 +48,7 @@ module.exports = (app, m, pm, op, inc, send_error) => {
         });
     });
     
-    app.delete('/genders/:id', pm.check('gender_delete',  {send: true}), (req, res) => {
+    app.delete('/genders/:id', li, pm.check('gender_delete',  {send: true}), (req, res) => {
         m.genders.findOne({
             where: {gender_id: req.params.id},
             attributes: ['gender_id']

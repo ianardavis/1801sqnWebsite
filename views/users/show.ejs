@@ -19,9 +19,7 @@
                 <%- include(`${partials}/menu/button`, {id: 'permissions_edit', text: 'Edit Permissions', modal: 'permissions_edit'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'note_add',         text: 'Add Note',         modal: 'note_add'}) %>
                 <div class="dropdown-divider"></div>
-                <% if (permissions.issue_add) { %><form id='form_issue_add'><% } %>
-                <%- include(`${partials}/menu/button`, {id: 'issue_add', text: 'New Issue'}) %>
-                <% if (permissions.issue_add) { %></form><% } %>
+                <%- include(`${partials}/menu/button`, {id: 'issue_add', text: 'New Issue', modal: 'issue_add'}) %>
                 <div class="dropdown-divider"></div>
                 <% if (permissions.user_delete) { %><form id='form_user_delete'><% } %>
                 <%- include(`${partials}/menu/button`, {id: 'user_delete', text: 'Delete'}) %>
@@ -195,6 +193,27 @@
                 </div>
             </div>
         <% } %>
+        <% if (permissions.issue_add) { %>
+            <div id='mdl_issue_add' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                New Issue
+                                <%- include(`${partials}/spinner`, {id: 'issue_add'}) %>
+                            </h5>
+                        </div>
+                        <form class="modal-body" id='form_issue_add'>
+                            <input type="hidden" name='issue[size_id]'>
+                            <%- include(`${partials}/inputs/display`, {title: 'Item', id: 'selectedItem'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Size', id: 'selectedSize', link: true}) %>
+                        
+                        </div>
+                        <div class="modal-footer"></div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -224,6 +243,7 @@
 <script src='/js/users/show/issues/view.js'></script>
 <script async>getIssues()</script>
 <% if (permissions.issue_add) { %>
+    <script src='/js/stores/sizes/select/showWindow.js'></script>
     <script src='/js/users/show/issues/add.js'></script>
 <% } %>
 <script src='/js/users/show/loancards/view.js'></script>

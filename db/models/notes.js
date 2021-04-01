@@ -27,6 +27,7 @@ module.exports = function(sequelize, DataTypes) {
     'system': {
       type: DataTypes.BOOLEAN,
       allowNull: true,
+      defaultValue: false,
       comment: "null"
     },
     'createdAt': {
@@ -43,7 +44,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"
-    },
+    }
   }, {
     tableName: 'notes',
     schema: 'core'

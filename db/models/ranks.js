@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'designatator': {
+    'designator': {
       type: DataTypes.TEXT,
       allowNull: false,
       comment: "null"
