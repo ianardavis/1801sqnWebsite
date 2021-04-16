@@ -2,9 +2,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     let loancards = {}, locations = {}, allowed = require('../functions/allowed');
     require('./functions/loancards') (m, inc, loancards);
     require('./functions/locations') (m, locations);
-    app.get('/loancards',      li, pm.get, pm.check('access_loancards'),          (req, res) => res.render('stores/loancards/index'));
-    app.get('/loancards/:id',  li, pm.get, pm.check('access_loancards'),          (req, res) => res.render('stores/loancards/show'));
-    app.get('/loancards/:id/download', li, pm.check('access_loancards'),                    (req, res) => {
+    app.get('/loancards',              li, pm.get, pm.check('access_loancards'),                                 (req, res) => res.render('stores/loancards/index'));
+    app.get('/loancards/:id',          li, pm.get, pm.check('access_loancards'),                                 (req, res) => res.render('stores/loancards/show'));
+    app.get('/loancards/:id/download', li,         pm.check('access_loancards'),                                 (req, res) => {
         m.loancards.findOne({
             where: {loancard_id: req.params.id},
             attributes: ['_filename']
@@ -21,15 +21,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => res.error.redirect(err, req, res));
     });
 
-    app.get('/count/loancards',        li, pm.check('access_loancards',      {send: true}), (req, res) => {
+    app.get('/count/loancards',        li,         pm.check('access_loancards',      {send: true}),              (req, res) => {
         m.loancards.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: 'Error counting loancards'})
-        });
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/loancard',           li, pm.check('access_loancards',      {send: true}), (req, res) => {
+    app.get('/get/loancard',           li,         pm.check('access_loancards',      {send: true}),              (req, res) => {
         m.loancards.findOne({
             where: req.query,
             include: [
@@ -40,11 +37,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .then(loancard => {
             if (loancard) res.send({success: true,  result: loancard})
-            else          res.send({success: false, message: 'Loancard not found'});
+            else          send_error(res, 'Loancard not found');
         })
         .catch(err => send_error(res, err));
     });
-    app.get('/get/loancards',          li, pm.check('access_loancards',      {send: true, allow: true}), (req, res) => {
+    app.get('/get/loancards',          li,         pm.check('access_loancards',      {send: true, allow: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
         m.loancards.findAll({
             where: req.query,
@@ -57,7 +54,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(loancards => res.send({success: true, result: loancards}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/loancard_lines',     li, pm.check('access_loancard_lines', {send: true}), (req, res) => {
+    app.get('/get/loancard_lines',     li,         pm.check('access_loancard_lines', {send: true}),              (req, res) => {
         m.loancard_lines.findAll({
             where:   req.query,
             include: [
@@ -69,7 +66,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/loancard_line',      li, pm.check('access_loancard_lines', {send: true}), (req, res) => {
+    app.get('/get/loancard_line',      li,         pm.check('access_loancard_lines', {send: true}),              (req, res) => {
         m.loancard_lines.findOne({
             where:   req.query,
             include: [
@@ -83,7 +80,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/loancards',             li, pm.check('loancard_add',          {send: true}), (req, res) => {
+    app.post('/loancards',             li,         pm.check('loancard_add',          {send: true}),              (req, res) => {
         loancards.create({
             loancard: {
                 user_id_loancard: req.body.supplier_id,
@@ -97,15 +94,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.put('/loancards/raise/:id',   li,  pm.check('access_loancards'),                    (req, res) => {
+    app.put('/loancards/raise/:id',    li,         pm.check('access_loancards'),                                 (req, res) => {
         loancards.createPDF(req.params.id)
         .then(loancard => res.send({success: true, message: 'Loancard raised'}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error raising loancard: ${err.message}`});
-        });
+        .catch(err => send_error(res, err));
     });
-    app.put('/loancards/:id',         li,  pm.check('loancard_edit',         {send: true}), (req, res) => {
+    app.put('/loancards/:id',          li,         pm.check('loancard_edit',         {send: true}),              (req, res) => {
         if (Number(req.body._status) === 2) {
             complete_loancard(req.params.id, req.user.user_id)
             .then(result => {
@@ -113,20 +107,14 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 .then(filename => res.send({success: true, message: `Loancard completed. Filename: ${filename}`}))
                 .catch(err =>     res.send({success: true, message: `Loancard completed. Error creating PDF: ${err.message}`}))
             })
-            .catch(err => {
-                console.log(err);
-                res.send({success: false, message: `Error completing loancard: ${err.message}`});
-            });
+            .catch(err => send_error(res, err));
         } else if (Number(req.body._status) === 3) {
             close_loancard(req.params.id, req.user.user_id)
             .then(result => res.send({success: true, message: 'Loancard closed.'}))
-            .catch(err => {
-                console.log(err);
-                res.send({success: false, message: `Error closing loancard: ${err.message}`});
-            });
-        } else res.send({success: false, message: 'Invalid request'});
+            .catch(err => send_error(res, err));
+        } else send_error(res, 'Invalid request');
     });
-    app.put('/loancard_lines',         li, pm.check('loancard_line_edit',    {send: true}), (req, res) => {
+    app.put('/loancard_lines',         li,         pm.check('loancard_line_edit',    {send: true}),              (req, res) => {
         let actions = [],
             cancels = req.body.actions.filter(e => e._status === '0'),
             returns = req.body.actions.filter(e => e._status === '3');
@@ -134,26 +122,23 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         if (returns.length > 0) actions.push(return_lines(returns, req.user.user_id));
         Promise.all(actions)
         .then(results => res.send({success: true, message: 'Lines actioned'}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error actioning lines: ${err.message}`});
-        });
+        .catch(err => send_error(res, err));
     });
     
-    app.delete('/loancards/:id',       li, pm.check('loancard_delete',       {send: true}), (req, res) => {
+    app.delete('/loancards/:id',       li,         pm.check('loancard_delete',       {send: true}),              (req, res) => {
         m.loancards.findOne({
             where:      {loancard_id: req.params.id},
             include:    [inc.loancard_lines({where: {_status: {[op.not]: 0}}})],
             attributes: ['loancard_id', '_status']
         })
         .then(loancard => {
-            if      (!loancard)                                 res.send({success: false, message: 'Loancard not found'})
-            else if (loancard._status === 0)                    res.send({success: false, message: 'This loancard is already cancelled'})
-            else if (loancard.lines && loancard.lines.length > 0) res.send({success: false, message: 'Can not cancel a loancard with it has pending, open or received lines'})
+            if      (!loancard)                                   send_error(res, 'Loancard not found')
+            else if (loancard._status === 0)                      send_error(res, 'This loancard is already cancelled')
+            else if (loancard.lines && loancard.lines.length > 0) send_error(res, 'Can not cancel a loancard with it has pending, open or received lines')
             else {
                 loancard.update({_status: 0})
                 .then(result => {
-                    if (!result) res.send({success: false, message: `Error updating loancard: ${err.message}`})
+                    if (!result) send_error(res, `Error updating loancard: ${err.message}`)
                     else {
                         m.notes.create({
                             _id: loancard.loancard_id,
@@ -169,18 +154,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         });
                     };
                 })
-                .catch(err => {
-                    console.log(err);
-                    res.send({success: false, message: `Error updating loancard: ${err.message}`});
-                })
+                .catch(err => send_error(res, err))
             };
         })
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error getting loancard: ${err.message}`});
-        });
+        .catch(err => send_error(res, err));
     });
-    app.delete('/loancard_lines/:id',  li, pm.check('loancard_line_delete',  {send: true}), (req, res) => {
+    app.delete('/loancard_lines/:id',  li,         pm.check('loancard_line_delete',  {send: true}),              (req, res) => {
         m.loancard_lines.findOne({
             where: {line_id: req.params.id},
             attributes: ['line_id', '_status']
@@ -191,7 +170,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             else {
                 line.update({_status: 0})
                 .then(result => {
-                    if (!result) res.send({success: false, message: 'Line not updated'})
+                    if (!result) send_error(res, 'Line not updated')
                     else {
                         m.notes.create({
                             _table:  'loancard_lines',
@@ -207,16 +186,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         });
                     };
                 })
-                .catch(err => {
-                    console.log(err);
-                    res.send({success: false, message: `Error updating line: ${err.message}`});
-                });
+                .catch(err => send_error(res, err));
             };
         })
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error getting line: ${err.message}`});
-        });
+        .catch(err => send_error(res, err));
     });
 
     function cancel_lines(lines, user_id) {

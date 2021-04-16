@@ -1,10 +1,10 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 	<section>
 		<% let cards = [] %>
 		<% if (permissions.access_suppliers) cards.push({href: '/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
-		<% if (permissions.access_items)	 cards.push({href: '/items', 	   title: 'Items', 	   image: 'tshirt'}) %>
+		<% if (permissions.access_items)	 cards.push({href: '/items', 	   title: 'Items', 	 image: 'tshirt'}) %>
 		<% if (permissions.access_users) { %>
 			<% cards.push({href: '/users', title: 'Users', image: 'users'}) %>
 		<% } else { %>

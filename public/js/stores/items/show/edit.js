@@ -23,7 +23,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'item_edit',
         'PUT',
-        `/stores/items/${path[2]}`,
+        `/items/${path[2]}`,
         {onComplete: [
             getItem,
             function () {$('#mdl_item_edit').modal('hide')}

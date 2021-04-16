@@ -89,7 +89,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'nsn_add',
         'POST',
-        '/stores/nsns',
+        '/nsns',
         {onComplete: getNSNs}
     );
     let groups = document.querySelector('#nsn_group_id_add');

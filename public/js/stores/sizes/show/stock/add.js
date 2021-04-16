@@ -4,7 +4,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'stock_add',
         'POST',
-        '/stores/stock',
+        '/stock',
         {onComplete: getStocks}
     );
 });

@@ -2,7 +2,7 @@ window.addEventListener("load", function () {
     addFormListener(
         'file_add',
         'POST',
-        '/stores/files',
+        '/files',
         {onComplete: getFiles}
     );
 });

@@ -14,7 +14,7 @@ function getSizes() {
                     add_cell(row, {text: size.item._description, ellipsis: true})
                     add_cell(row, {text: size._size});
                     add_cell(row, {append: new Link({
-                        href: `/stores/sizes/${size.size_id}`,
+                        href: `/sizes/${size.size_id}`,
                         small: true
                     }).e});
                 });

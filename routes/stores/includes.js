@@ -50,7 +50,7 @@ module.exports = (inc, m) => {
     inc.categories = (options = {}) => {
         return {
             model:      m.categories,
-            attributes: options.attributes || ['category_id', '_category'],
+            attributes: options.attributes || ['category_id', 'category'],
             as:         options.as         || 'category',
             include:    options.include    || [],
             required:   options.required   || false,
@@ -142,7 +142,7 @@ module.exports = (inc, m) => {
     inc.genders = (options = {}) => {
         return {
             model:      m.genders,
-            attributes: options.attributes || ['gender_id', '_gender'],
+            attributes: options.attributes || ['gender_id', 'gender'],
             as:         options.as         || 'gender',
             include:    options.include    || [],
             required:   options.required   || false,
@@ -415,7 +415,7 @@ module.exports = (inc, m) => {
     inc.serial = (options = {}) => {
         return {
             model:   m.serials,
-            as:      options.as           || 'serial',
+            as:      options.as || 'serial',
             include: [inc.location()]
         };
     };

@@ -5,7 +5,7 @@ function fileDeleteBtn(file_id) {
         span_file_delete_btn.appendChild(
             new Delete_Button({
                 descriptor: 'file',
-                path: `/stores/files/${file_id}`,
+                path: `/files/${file_id}`,
                 options: {onComplete: [
                     getFiles,
                     function () {$('#mdl_file_view').modal('hide')}

@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'file_detail_add',
         'POST',
-        '/stores/file_details',
+        '/file_details',
         {
             onComplete: function () {
                 let file_id = document.querySelector('#file_id_view');

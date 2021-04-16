@@ -17,7 +17,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .then(account => {
             if (account) res.send({success: true,  result: account})
-            else         res.send({success: false, message: 'Account not found'});
+            else         send_error(res, 'Account not found');
         })
         .catch(err => send_error(res, err));
     });
@@ -46,23 +46,23 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             attributes: ['account_id']
         })
         .then(account => {
-            if (!account) res.send({success: false, message: 'Account not found'})
+            if (!account) send_error(res, 'Account not found')
             else {
                 return account.destroy()
                 .then(result => {
-                    if (!result) res.send({success: false, message: 'Account not deleted'})
+                    if (!result) send_error(res, 'Account not deleted')
                     else {
                         return m.suppliers.update(
                             {account_id: null},
                             {where: {account_id: account.account_id}}
                         )
                         .then(result => res.send({success: true, message: 'Account deleted'}))
-                        .catch(err => res.send({success: false, message: `Error updating suppliers: ${err.message}`}));
+                        .catch(err => send_error(res, `Error updating suppliers: ${err.message}`));
                     };
                 })
-                .catch(err => res.send({success: false, message: `Error deleting account: ${err.message}`}));
+                .catch(err => send_error(res, `Error deleting account: ${err.message}`));
             };
         })
-        .catch(err => res.send({success: false, message: `Error getting account: ${err.message}`}));
+        .catch(err => send_error(res, `Error getting account: ${err.message}`));
     });
 };

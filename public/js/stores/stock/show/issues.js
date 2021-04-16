@@ -10,7 +10,7 @@ showIssues = (lines, options) => {
             add_cell(row, {text: line.issue._to.rank._rank + ' ' + line.issue._to.full_name});
             add_cell(row, {text: line._qty});
             add_cell(row, {append: new Link({
-                href: '/stores/issues/' + line.issue_id,
+                href: '/issues/' + line.issue_id,
                 small: true
             }).e});
         });

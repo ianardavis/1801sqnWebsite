@@ -1,5 +1,5 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/pos',             li, pm.get, pm.check('access_pos'),     (req, res) => {
+    app.get('/pos',             li, pm.get, pm.check('access_pos'),               (req, res) => {
         m.sessions.findAll({
             where: {_status: 1},
             attributes: ['session_id']
@@ -12,14 +12,14 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => res.error.redirect(err, req, res));
     });
-    app.get('/get/pos_pages',   li, pm.check('access_pos', {send: true}), (req, res) => {
+    app.get('/get/pos_pages',   li,         pm.check('access_pos', {send: true}), (req, res) => {
         m.pos_pages.findAll({
             include: [inc.pos_layouts()]
         })
         .then(pos_pages => res.send({success: true, result: pos_pages}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/pos_layouts', li, pm.check('access_pos', {send: true}), (req, res) => {
+    app.get('/get/pos_layouts', li,         pm.check('access_pos', {send: true}), (req, res) => {
         m.pos_layouts.findAll({
             include: [inc.items()]
         })

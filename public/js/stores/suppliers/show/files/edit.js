@@ -31,7 +31,7 @@ window.addEventListener("load", function () {
     addFormListener(
         'file_edit',
         'PUT',
-        '/stores/files',
+        '/files',
         {
             onComplete: [
                 getFiles,

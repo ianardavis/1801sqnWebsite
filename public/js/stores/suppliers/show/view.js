@@ -18,7 +18,7 @@ function getSupplier() {
                 set_attribute({id: '_account_link', attribute: 'data-id', value: supplier.account_id})
             };
             set_innerText({id: '_stores',    text: yesno(supplier._stores)});
-            set_breadcrumb({href: `/stores/suppliers/${supplier.supplier_id}`, text: supplier._name});
+            set_breadcrumb({href: `/suppliers/${supplier.supplier_id}`, text: supplier._name});
             document.querySelectorAll('.supplier_id').forEach(e => e.value = supplier.supplier_id);
         }
     )

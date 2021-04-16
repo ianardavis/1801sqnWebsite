@@ -44,7 +44,7 @@
             <%- include(`${partials}/inputs/display`, {id: '_telephone', title: 'Telephone'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_email',     title: 'Email'}) %>
             <%- include(`${partials}/inputs/display`, {id: '_account',   title: 'Account', link: true, modal: 'account_view'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_stores',    title: 'RAF Stores'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'is_stores',    title: 'RAF Stores'}) %>
             <% if (permissions.access_settings) { %>
             <%- include(`${partials}/inputs/display`, {id: '_default',   title: 'Default Supplier'}) %>
             <% } %>

@@ -10,7 +10,7 @@ showReturns = (lines, options) => {
             add_cell(row, {text: line.return._from.rank._rank + ' ' + line.return._from.full_name});
             add_cell(row, {text: line._qty});
             add_cell(row, {append: new Link({
-                href: '/stores/returns/' + line.return_id,
+                href: '/returns/' + line.return_id,
                 small: true
             }).e});
         });

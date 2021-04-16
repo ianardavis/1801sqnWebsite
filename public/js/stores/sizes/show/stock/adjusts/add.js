@@ -6,7 +6,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'adjust_add',
         'POST',
-        '/stores/adjusts',
+        '/adjusts',
         {onComplete: [
             getStocks,
             function() {$('#mdl_stock_view').modal('hide')}

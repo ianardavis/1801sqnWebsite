@@ -10,7 +10,7 @@ showReceipts = (lines, options) => {
             add_cell(row, {text: line.stock.location._location});
             add_cell(row, {text: line._qty});
             add_cell(row, {append: new Link({
-                href: '/stores/receipts/' + line.receipt_id,
+                href: '/receipts/' + line.receipt_id,
                 small: true
             }).e});
         });

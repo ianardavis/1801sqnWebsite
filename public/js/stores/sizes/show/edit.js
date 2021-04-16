@@ -25,7 +25,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'size_edit',
         'PUT',
-        `/stores/sizes/${path[2]}`,
+        `/sizes/${path[2]}`,
         {
             onComplete: [
                 getSize,

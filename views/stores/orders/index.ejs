@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores/orders', text: 'Orders'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Orders'}) %>
 <% if (permissions.order_add) { %>
 	<li class="nav-item">
 		<a class="nav-link" data-toggle="modal" data-target="#mdl_order_add">

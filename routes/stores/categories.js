@@ -8,10 +8,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             include: [inc.categories({as: 'parent'})]
         })
         .then(categories => res.send({success: true, result: categories}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error getting categories: ${err.message}`});
-        });
+        .catch(err => send_error(res, err));
     });
     app.get('/get/category',      li, pm.check('access_categories', {send: true}), (req, res) => {
         for (let [key, value] of Object.entries(req.query)) {
@@ -25,13 +22,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(category => {
-            if (!category) res.send({success: false, message: 'Category not found'})
+            if (!category) send_error(res, 'Category not found')
             else           res.send({success: true, result: category})
         })
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error getting category: ${err.message}`});
-        });
+        .catch(err => send_error(res, err));
     });
 
     app.put('/categories',        li, pm.check('category_edit',     {send: true}), (req, res) => {
@@ -44,20 +38,14 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             if (!result) res.send({success: true, message: 'Category not updated'})
             else         res.send({success: true, message: 'Category updated'});
         })
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error updating category: ${err.message}`});
-        });
+        .catch(err => send_error(res, err));
     });
 
     app.post('/categories',       li, pm.check('category_add',      {send: true}), (req, res) => {
         if (req.body.category.parent_category_id === '') delete req.body.category.parent_category_id;
         m.categories.create({...req.body.category, ...{user_id: req.user.user_id}})
         .then(category => res.send({success: true, message: 'Category created'}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: `Error creating category: ${err.message}`});
-        });
+        .catch(err => send_error(res, err));
     });
 
     app.delete('/categories/:id', li, pm.check('category_delete',   {send: true}), (req, res) => {
@@ -66,7 +54,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             attributes: ['category_id']
         })
         .then(category => {
-            if (!category) res.send({success: false, message: 'Category not found'})
+            if (!category) send_error(res, 'Category not found')
             else {
                 return m.item_categories.destroy(
                     {where: {category_id: category.category_id}}
@@ -74,14 +62,14 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 .then(result => {
                     return category.destroy()
                     .then(result => {
-                        if (!result) res.send({success: false, message: 'Category not deleted'})
+                        if (!result) send_error(res, 'Category not deleted')
                         else         res.send({success: true,  message: 'Category deleted'})
                     })
-                    .catch(err => res.send({success: false, message: `Error deleting category: ${err.message}`}))
+                    .catch(err => send_error(res, err));
                 })
-                .catch(err => res.send({success: false, message: `Error deleting item categories: ${err.message}`}))
+                .catch(err => send_error(res, err));
             };
         })
-        .catch(err => res.send({success: false, message: `Error getting category: ${err.message}`}));
+        .catch(err => send_error(res, err));
     });
 };

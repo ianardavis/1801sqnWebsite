@@ -1,5 +1,5 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/get/serials',  li,   pm.check('access_serials', {send: true}), (req, res) => {
+    app.get('/get/serials',    li, pm.check('access_serials', {send: true}), (req, res) => {
         m.serials.findAll({
             where:   req.query,
             include: [
@@ -10,7 +10,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(serials => res.send({success: true, result: serials}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/serial',  li,    pm.check('access_serials', {send: true}), (req, res) => {
+    app.get('/get/serial',     li, pm.check('access_serials', {send: true}), (req, res) => {
         m.serials.findOne({
             where:   req.query,
             include: [
@@ -22,8 +22,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/serials',    li,    pm.check('serial_add',     {send: true}), (req, res) => {
-        if (!req.body._location) res.send({success: false, message: 'No location entered'})
+    app.post('/serials',       li, pm.check('serial_add',     {send: true}), (req, res) => {
+        if (!req.body._location) send_error(res, 'No location entered')
         else {
             m.locations.findOrCreate({where: {_location: req.body._location}})
             .then(([location, created]) => {
@@ -35,8 +35,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         };
     });
     
-    app.put('/serials',      li,   pm.check('serial_edit',    {send: true}), (req, res) => {
-        if (req.body.serial_id) res.send({success: false, message: 'No serial ID submitted'})
+    app.put('/serials',        li, pm.check('serial_edit',    {send: true}), (req, res) => {
+        if (req.body.serial_id) send_error(res, 'No serial ID submitted')
         else {
             m.locations.findOrCreate({where: {_location: req.body._location}})
             .then(([location, created]) => {

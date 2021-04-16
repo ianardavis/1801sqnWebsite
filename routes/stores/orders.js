@@ -4,19 +4,16 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     require(`./functions/orders`) (m, orders);
     require(`./functions/demands`)(m, demands);
     // require(`./functions/receipts`)(m, receipts);
-    app.get('/orders',       li,  pm.get, pm.check('access_orders'),     (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
-    app.get('/orders/:id',   li,  pm.get, pm.check('access_orders'),     (req, res) => res.render('stores/orders/show'));
+    app.get('/orders',       li, pm.get, pm.check('access_orders'),              (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
+    app.get('/orders/:id',   li, pm.get, pm.check('access_orders'),              (req, res) => res.render('stores/orders/show'));
     
-    app.get('/count/orders', li,  pm.check('access_orders', {send: true}), (req, res) => {
+    app.get('/count/orders', li,         pm.check('access_orders', {send: true}), (req, res) => {
         m.orders.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: 'Error counting orders'})
-        });
+        .catch(err => send_error(res, err));
     });
 
-    app.get('/get/orders',   li,  pm.check('access_orders', {send: true}), (req, res) => {
+    app.get('/get/orders',   li,         pm.check('access_orders', {send: true}), (req, res) => {
         m.orders.findAll({
             where:   req.query,
             include: [
@@ -27,7 +24,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(orders => res.send({success: true, result: orders}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/order',    li,  pm.check('access_orders', {send: true}), (req, res) => {
+    app.get('/get/order',    li,         pm.check('access_orders', {send: true}), (req, res) => {
         m.orders.findOne({
             where:   req.query,
             include: [
@@ -39,13 +36,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/orders',      li,  pm.check('order_add',     {send: true}), (req, res) => {
+    app.post('/orders',      li,         pm.check('order_add',     {send: true}), (req, res) => {
         orders.create(req.body.line, req.user.user_id)
         .then(result => res.send(result))
-        .catch(err => res.send({success: false, message: err.message}));
+        .catch(err => send_error(res, err));
     });
     
-    app.put('/orders',       li,  pm.check('order_edit',    {send: true}), (req, res) => {
+    app.put('/orders',       li,         pm.check('order_edit',    {send: true}), (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e._status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
         actions.push(demand_orders(req.body.lines.filter(e => e._status === '2'), req.user.user_id));
@@ -57,21 +54,21 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 res.send({success: true, message: 'Some lines failed'});
             } else res.send({success: true, message: 'Lines actioned'});
         })
-        .catch(err => res.send({success: false, message: 'Some lines failed'}));
+        .catch(err => send_error(res, err));
     });
     
-    app.delete('/orders/:id', li, pm.check('order_delete',  {send: true}), (req, res) => {
+    app.delete('/orders/:id', li,        pm.check('order_delete',  {send: true}), (req, res) => {
         m.orders.findOne({
             where:      {order_id: req.params.id},
             attributes: ['order_id', '_status']
         })
         .then(order => {
-            if      (!order)              res.send({success: false, message: 'Order not found'});
-            else if (order._status !== 1) res.send({success: false, message: 'Only placed orders can be cancelled'});
+            if      (!order)              send_error(res, 'Order not found');
+            else if (order._status !== 1) send_error(res, 'Only placed orders can be cancelled');
             else {
                 return order.update({_status: 0})
                 .then(results => {
-                    if (!result) res.send({success: false, message: 'Order not cancelled'})
+                    if (!result) send_error(res, 'Order not cancelled')
                     else {
                         return m.actions.findAll({
                             where:      {order_id: order_id},

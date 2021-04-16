@@ -18,7 +18,7 @@ function getIssues() {
                         add_cell(row, {text: issue._qty});
                         add_cell(row, {text: issue_statuses[issue._status]});
                         add_cell(row, {append: new Link({
-                            href: `/stores/issues/${issue.issue_id}`,
+                            href: `/issues/${issue.issue_id}`,
                             small: true
                         }).e});
                     } catch (error) {

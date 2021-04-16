@@ -1,36 +1,36 @@
 function listGenders(options = {}) {
-	let sel_genders = document.querySelector(`#${options.select || 'sel_genders'}`);
-	if (sel_genders) {
-		get(
-			{
+	return new Promise((resolve, reject) => {
+		clear_select(options.select || 'genders')
+		.then(sel_genders => {
+			get({
 				table: 'genders',
-                spinner: options.spinner || 'genders',
-                ...options
-			},
-			function (genders, options) {
-				sel_genders.innerHTML= '';
+				spinner: options.spinner || 'genders',
+				...options
+			})
+			.then(function ([genders, options]) {
 				if (options.blank === true) {
-                    sel_genders.appendChild(
-                        new Option({
-                            selected: (!options.selected),
-                            text:     options.blank_text || ''
-                        }).e
-                    );
-                };
-                genders.forEach(gender => {
+					sel_genders.appendChild(
+						new Option({
+							selected: (!options.selected),
+							text:     options.blank_text || ''
+						}).e
+					);
+				};
+				genders.forEach(gender => {
 					let value = '';
 					if (options.id_only === true) value = gender.gender_id
 					else						  value = `gender_id=${gender.gender_id}`
 					sel_genders.appendChild(
 						new Option({
-                            selected: (options.selected === gender.gender_id),
+							selected: (options.selected === gender.gender_id),
 							text:  gender.gender,
 							value: value
 						}).e
 					);
 				});
-                if (options.onComplete) options.onComplete();
-			}
-		);
-	} else if (options.onComplete) options.onComplete();
+				resolve(true);
+			});
+		})
+		.catch(err => reject(err));
+	});
 };

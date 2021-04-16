@@ -9,7 +9,7 @@ function categoryDeleteBtns() {
                 e.appendChild(
                     new Delete_Button({
                         descriptor: 'category',
-                        path:       `/stores/item_categories/${item_category.item_category_id}`,
+                        path:       `/item_categories/${item_category.item_category_id}`,
                         small:      true,
                         options:    {onComplete: getCategories}
                     }).e

@@ -2,8 +2,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     let loancards = {}, orders = {}, allowed = require(`../functions/allowed`);
     require('./functions/loancards')(m, inc, loancards);
     require('./functions/orders')(m, orders);
-    app.get('/issues',       li,  pm.get, pm.check('access_issues', {allow: true}),   (req, res) => res.render('stores/issues/index'));
-    app.get('/issues/:id',   li,  pm.get, pm.check('access_issues', {allow: true}),   (req, res) => {
+    app.get('/issues',        li, pm.get, pm.check('access_issues', {allow: true}),             (req, res) => res.render('stores/issues/index'));
+    app.get('/issues/:id',    li, pm.get, pm.check('access_issues', {allow: true}),             (req, res) => {
         m.issues.findOne({
             where: {issue_id: req.params.id},
             attributes: ['issue_id', 'user_id_issue']
@@ -22,16 +22,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
     });
 
-    app.get('/count/issues', li,  pm.check('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/count/issues',  li,         pm.check('access_issues', {allow: true, send: true}), (req, res) => {
         if (!allowed) req.query.user_id_issue = req.user.user_id;
         m.issues.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: 'Error counting issues'})
-        });
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/issues',   li,  pm.check('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/get/issues',    li,         pm.check('access_issues', {allow: true, send: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_issue = req.user.user_id;
         m.issues.findAll({
             where: req.query,
@@ -42,12 +39,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(issues => res.send({success: true, result: issues}))
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: 'Error getting lines'});
-        });
+        .catch(err => send_error(res, err));
     });
-    app.get('/get/issue',    li,  pm.check('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/get/issue',     li,         pm.check('access_issues', {allow: true, send: true}), (req, res) => {
         m.issues.findOne({
             where: req.query,
             include: [
@@ -57,21 +51,18 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(issue => {
-            if (!issue) res.send({success: false, message: 'Issue not found'})
+            if (!issue) send_error(res, 'Issue not found')
             else if (
                 !req.allowed &&
                 issue.user_id_issue !== req.user.user_id
-            )           res.send({success: false, message: 'Permission denied'})
+            )           send_error(res, 'Permission denied')
             else        res.send({success: true,  result: issue});
         })
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: 'Error getting line'});
-        });
+        .catch(err => send_error(res, err));
     });
 
-    app.post('/issues',      li,  pm.check('issue_add',     {allow: true, send: true}), (req, res) => {
-        if (Number(req.body.line.user_id_issue) === 1) res.send({success: false, message: 'Issues can not be made to this user'})
+    app.post('/issues',       li,         pm.check('issue_add',     {allow: true, send: true}), (req, res) => {
+        if (Number(req.body.line.user_id_issue) === 1) send_error(res, 'Issues can not be made to this user')
         else {
             let _status = 1;
             if (req.allowed) _status = 2
@@ -86,14 +77,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 req.user.user_id
             )
             .then(result => res.send(result))
-            .catch(err => {
-                console.log(err);
-                res.send({success: false, message: 'Error creating line'});
-            });
+            .catch(err => send_error(res, err));
         };
     });
 
-    app.put('/issues',       li,  pm.check('issue_edit',    {allow: true, send: true}), (req, res) => {
+    app.put('/issues',        li,         pm.check('issue_edit',    {allow: true, send: true}), (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e._status === '0').forEach(line => actions.push(decline_line(line, req.user.user_id)));
         req.body.lines.filter(e => e._status === '2').forEach(line => actions.push(approve_line(line, req.user.user_id)));
@@ -106,25 +94,22 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 res.send({success: true, message: 'Some lines failed'});
             } else res.send({success: true, message: 'Lines actioned'});
         })
-        .catch(err => {
-            console.log(results);
-            res.send({success: false, message: 'Some lines failed'});
-        });
+        .catch(err => send_error(res, err));
     });
 
-    app.delete('/issues/:id', li, pm.check('issue_delete',  {allow: true, send: true}), (req, res) => {
+    app.delete('/issues/:id', li,         pm.check('issue_delete',  {allow: true, send: true}), (req, res) => {
         m.issues.findOne({
             where:      {issue_id: req.params.id},
             attributes: ['issue_id', '_status', 'user_id_issue']
         })
         .then(issue => {
-            if      (!issue)                                                            res.send({success: false, message: 'Issue not found'})
-            else if (!req.allowed && issue.user_id_issue !== req.user.user_id)          res.send({success: false, message: 'Permission denied'})
-            else if (issue._status !== 1 && issue._status !== 2 && issue._status !== 3) res.send({success: false, message: 'Only requested, approved and ordered lines can be cancelled'})
+            if      (!issue)                                                            send_error(res, 'Issue not found')
+            else if (!req.allowed && issue.user_id_issue !== req.user.user_id)          send_error(res, 'Permission denied')
+            else if (issue._status !== 1 && issue._status !== 2 && issue._status !== 3) send_error(res, 'Only requested, approved and ordered lines can be cancelled')
             else {
                 return issue.update({_status: 0})
                 .then(result => {
-                    if (!result) res.send({success: false, message: 'Issue not cancelled'})
+                    if (!result) send_error(res, 'Issue not cancelled')
                     else {
                         return m.actions.create({
                             issue_id: issue.issue_id,
@@ -138,16 +123,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         });
                     };
                 })
-                .catch(err => {
-                    console.log(err);
-                    res.send({success: false, message: 'Error updating line'});
-                });
+                .catch(err => send_error(res, err));
             };
         })
-        .catch(err => {
-            console.log(err);
-            res.send({success: false, message: 'Error getting line'})
-        });
+        .catch(err => send_error(res, err));
     });
 
     function get_user(user_id) {

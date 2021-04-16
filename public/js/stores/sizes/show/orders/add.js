@@ -3,7 +3,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'order_add',
         'POST',
-        '/stores/orders',
+        '/orders',
         {onComplete: getOrders}
     );
 });

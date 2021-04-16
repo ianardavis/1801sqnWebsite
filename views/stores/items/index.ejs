@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Items'}) %>
 <% if (permissions.item_add) { %>
 	<li class="nav-item">
@@ -10,7 +10,9 @@
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
+	<% if (permissions.access_genders) { %>
+		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
+	<% } %>
 	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
@@ -28,9 +30,9 @@
 							<h5 class="modal-title">Add Item</h5>
 						</div>
 						<div class="modal-body">
-							<%- include(`${partials}/inputs/text`,	 {title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
-							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text',	name: 'item[_size_text]',	placeholder: 'Required', maxLength: 45, required: true}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Gender',		name: 'item[gender_id]', 	id:   'sel_genders_add', spinner_id: 'genders_add', reload_id: 'reload_genders_add'}) %>
+							<%- include(`${partials}/inputs/text`,	 {title: 'Description', name: 'item[description]', placeholder: 'Required', maxLength: 45, required: true}) %>
+							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text',	name: 'item[size_text]',   placeholder: 'Required', maxLength: 45, required: true}) %>
+							<%- include(`${partials}/inputs/select`, {title: 'Gender',		name: 'item[gender_id]',   id: 'sel_genders_add',	spinner_id: 'genders_add', reload_id: 'reload_genders_add'}) %>
 						</div>
 						<div class="modal-footer">
 							<input type="submit" class="btn btn-success w-100" value='Save Item'>
@@ -45,22 +47,17 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/search/table.js"></script>
 <script src="/js/addFormListener.js"></script>
+<script src="/js/stores/items/index/view.js"></script>
+<script async>getItems()</script>
 <% if (permissions.access_genders) { %>
 	<script src="/js/utils/list/genders.js"></script>
-	<script src="/js/stores/items/index/items.js"></script>
-	<script async>
-		listGenders({
-			onComplete: getItems,
-			blank_text: 'All',
-			select: 	'sel_genders',
-			blank: 		true
-		});
-	</script>
-<% } else { %>
-	<script src="/js/stores/items/index/items.js"></script>
-	<script async>getItems()</script>
+	<script src="/js/stores/items/index/genders/view.js"></script>
+	<script async>getGenders()</script>
 <% } %>
 <% if (permissions.item_add) { %>
 	<script src="/js/stores/items/index/add.js"></script>
+	<% if (permissions.access_genders) { %>
+		<script src="/js/stores/items/index/genders/add.js"></script>
+	<% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

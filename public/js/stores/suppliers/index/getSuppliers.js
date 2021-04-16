@@ -16,7 +16,7 @@ function getSuppliers() {
                         subtitle   = document.createElement('p');
                     if (options.id) card.setAttribute('id', options.id);
                     card.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
-                    a.setAttribute('href', `/stores/suppliers/${supplier.supplier_id}`);
+                    a.setAttribute('href', `/suppliers/${supplier.supplier_id}`);
                     a.classList.add('card', 'm-3', 'text-left');
                     header.classList.add('card-header');
                     title.classList.add('card-title');

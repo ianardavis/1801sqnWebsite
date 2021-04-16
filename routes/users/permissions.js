@@ -240,8 +240,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             attributes: ['user_id']
         })
         .then(user => {
-            if      (!user)                             res.send({success: false, message: 'User not found'})
-            else if (user.user_id === req.user.user_id) res.send({success: false, message: 'You can not edit your own permissions'})
+            if      (!user)                             send_error(res, 'User not found')
+            else if (user.user_id === req.user.user_id) send_error(res, 'You can not edit your own permissions')
             else {
                 return m.permissions.findAll({
                     where: {user_id: user.user_id},

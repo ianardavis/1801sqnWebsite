@@ -22,7 +22,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'detail_add',
         'POST',
-        '/stores/details',
+        '/details',
         {
             onComplete: [
                 getDetails,

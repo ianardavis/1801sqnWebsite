@@ -19,8 +19,6 @@ port_check()
     let m = {};
     m = require(`${process.env.ROOT}/db/models`);
 
-    // require('./mysql_migration')(m); //////////////////////////////////////////////
-
     console.log('   Loaded');
     require(`${process.env.ROOT}/db/associations`)(m);
     console.log('   Tables associated');

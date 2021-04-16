@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/items', text: 'Items'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/items',  text: 'Items'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/navbar/close`) %>
@@ -29,9 +29,9 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: '_description', title: 'Description'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_gender',      title: 'Gender'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_size_text',   title: 'Size Text'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'description', title: 'Description'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'gender',      title: 'Gender'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'size_text',   title: 'Size Text'}) %>
             <div id="div_categories">
                 <% if (permissions.item_edit) { %>
                     <form id='form_category_add' class='bordered my-3'>
@@ -79,9 +79,9 @@
                             </a>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {id: '_description_edit', title: 'Description', name: 'item[_description]', placeholder: 'Required', maxLength: 45, required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: '_size_text_edit',   title: 'Size Text',   name: 'item[_size_text]',   placeholder: 'Required', maxLength: 45, required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {id: 'sel_gender_edit',   title: 'Gender',      spinner_id: 'genders'}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'description_edit', title: 'Description', name: 'item[description]', placeholder: 'Required', maxLength: 45, required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'size_text_edit',   title: 'Size Text',   name: 'item[size_text]',   placeholder: 'Required', maxLength: 45, required: true}) %>
+                            <%- include(`${partials}/inputs/select`, {id: 'sel_gender_edit',  title: 'Gender',      spinner_id: 'genders'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit"  class="btn btn-success w-100" value='Save Item'>
@@ -100,11 +100,11 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name='size[item_id]' id='item_id_add_size'>
-                            <%- include(`${partials}/inputs/text`,          {name: 'size[_size]',       title: 'Size',         id:'_size',        maxlength: 15, placeholder: 'Required', required: true}) %>
-                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_issueable]',  title: 'Issueable',    id: '_issueable'}) %>
-                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_orderable]',  title: 'Orderable',    id: '_orderable'}) %>
-                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_serials]',    title: 'Has Serial #', id: '_serials'}) %>
-                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[_nsns]',       title: 'Has NSNs',     id: '_nsns'}) %>
+                            <%- include(`${partials}/inputs/text`,          {name: 'size[size]',        title: 'Size',         id: 'size',        maxlength: 15, placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[issueable]',   title: 'Issueable',    id: 'issueable'}) %>
+                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[orderable]',   title: 'Orderable',    id: 'orderable'}) %>
+                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'has_serials'}) %>
+                            <%- include(`${partials}/inputs/select_yes_no`, {name: 'size[has_nsns]',    title: 'Has NSNs',     id: 'has_nsns'}) %>
                             <%- include(`${partials}/inputs/select`,        {name: 'size[supplier_id]', title: 'Supplier',     id: 'sel_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
                         </div>
                         <div class="modal-footer">

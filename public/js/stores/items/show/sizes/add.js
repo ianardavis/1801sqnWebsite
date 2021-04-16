@@ -12,7 +12,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'size_add',
         'POST',
-        '/stores/sizes',
+        '/sizes',
         {onComplete: [
             getSizes,
             function () {set_value({id: '_size', value: ''})}

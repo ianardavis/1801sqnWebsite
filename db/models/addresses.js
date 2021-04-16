@@ -5,6 +5,7 @@ module.exports = function(sequelize, DataTypes) {
     'address_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
+      defaultValue: sequelize.fn('stores.uuid_generate_v1'),
       comment: "null",
       primaryKey: true
     },

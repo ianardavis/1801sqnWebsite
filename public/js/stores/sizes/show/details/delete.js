@@ -9,7 +9,7 @@ function detailDeleteBtns() {
                 e.appendChild(
                     new Delete_Button({
                         descriptor: 'detail',
-                        path:       `/stores/details/${detail.detail_id}`,
+                        path:       `/details/${detail.detail_id}`,
                         small:      true,
                         options:    {onComplete: getDetails}
                     }).e

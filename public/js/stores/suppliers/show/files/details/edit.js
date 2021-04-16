@@ -37,7 +37,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'file_detail_edit',
         'PUT',
-        '/stores/file_details',
+        '/file_details',
         {onComplete: function () {$('#mdl_file_detail_edit').modal('hide')}}
     );
     $('#mdl_file_detail_edit').on('show.bs.modal', function (event) {viewDetailEdit(event.relatedTarget.dataset.id)});

@@ -61,7 +61,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'category_add',
         'POST',
-        '/stores/item_categories',
+        '/item_categories',
         {onComplete: [
             getCategories,
             reset_categories_add

@@ -17,7 +17,7 @@ function getOrders() {
                         add_cell(row, {text: order._qty});
                         add_cell(row, {text: order_statuses[order._status]});
                         add_cell(row, {append: new Link({
-                            href: `/stores/orders/${order.order_id}`,
+                            href: `/orders/${order.order_id}`,
                             small: true
                         }).e});
                     } catch (error) {

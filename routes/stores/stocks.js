@@ -7,7 +7,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/stock',    li,  pm.check('access_stocks', {send: true}), (req, res) => {
+    app.get('/get/stock',     li, pm.check('access_stocks', {send: true}), (req, res) => {
         m.stocks.findOne({
             where:   req.query,
             include: [
@@ -19,7 +19,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/stocks',     li,   pm.check('stock_add',     {send: true}), (req, res) => {
+    app.post('/stocks',       li, pm.check('stock_add',     {send: true}), (req, res) => {
         m.locations.findOrCreate({where: {_location: req.body._location}})
         .then(([location, created]) => {
             req.body.stock.location_id = location.location_id;
@@ -29,7 +29,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.put('/stocks/:id',   li,  pm.check('stock_edit',    {send: true}), (req, res) => {
+    app.put('/stocks/:id',    li, pm.check('stock_edit',    {send: true}), (req, res) => {
         m.stocks.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             return m.locations.findOrCreate({where: {_location: req.body._location}})
@@ -38,7 +38,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 else {
                     if (location.location_id !== stock.location_id) {
                         updateStockLocation(location.location_id, req.params.id, res)
-                    } else res.send({success: false, message: 'No changes'});
+                    } else send_error(res, 'No changes');
                 };
             })
             .catch(err => send_error(res, err));

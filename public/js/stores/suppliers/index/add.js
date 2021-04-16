@@ -3,7 +3,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'supplier_add',
         'POST',
-        '/stores/suppliers',
+        '/suppliers',
         {onComplete: getSuppliers}
     );
     document.querySelector('#reload_accounts').addEventListener('click', listAccounts);

@@ -26,7 +26,7 @@ window.addEventListener("load", function () {
     addFormListener(
         'supplier_edit',
         'PUT',
-        `/stores/suppliers/${path[2]}`,
+        `/suppliers/${path[2]}`,
         {onComplete: [
             getSupplier,
             function () {$('#mdl_supplier_edit').modal('hide')}

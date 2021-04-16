@@ -1,14 +1,14 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
     let nullify = require(`../functions/nullify`);
-    app.get('/sizes/select', li, pm.get, pm.check('access_sizes'),         (req, res) => res.render('stores/sizes/select'));
-    app.get('/sizes/:id',    li, pm.get, pm.check('access_sizes'),         (req, res) => res.render('stores/sizes/show'));
+    app.get('/sizes/select',   li, pm.get, pm.check('access_sizes'),             (req, res) => res.render('stores/sizes/select'));
+    app.get('/sizes/:id',      li, pm.get, pm.check('access_sizes'),             (req, res) => res.render('stores/sizes/show'));
 
-    app.get('/count/sizes',  li,   pm.check('access_sizes', {send: true}), (req, res) => {
+    app.get('/count/sizes',    li,       pm.check('access_sizes', {send: true}), (req, res) => {
         m.sizes.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/sizes',    li,   pm.check('access_sizes', {send: true}), (req, res) => {
+    app.get('/get/sizes',      li,       pm.check('access_sizes', {send: true}), (req, res) => {
         m.sizes.findAll({
             where: req.query,
             include: [
@@ -19,7 +19,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(sizes => res.send({success: true, result: sizes}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/size',     li,   pm.check('access_sizes', {send: true}), (req, res) => {
+    app.get('/get/size',       li,       pm.check('access_sizes', {send: true}), (req, res) => {
         m.sizes.findOne({
             where: req.query,
             include: [
@@ -29,28 +29,28 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .then(size => {
             if (size) res.send({success: true, result: size})
-            else      res.send({success: false, message: 'Size not found'});
+            else      send_error(res, 'Size not found');
         })
         .catch(err => send_error(res, err));
     });
-    app.get('/get/details',  li,   pm.check('access_sizes', {send: true}), (req, res) => {
+    app.get('/get/details',    li,       pm.check('access_sizes', {send: true}), (req, res) => {
         m.details.findAll({
             where: req.query,
             attributes: ['detail_id', 'size_id',  '_name', '_value']
         })
         .then(details => res.send({success: true,  result: details}))
-        .catch(err =>    res.send({success: false, message: `Error getting details: ${err.message}`}));
+        .catch(err =>    send_error(res, err));
     });
-    app.get('/get/detail',   li,   pm.check('access_sizes', {send: true}), (req, res) => {
+    app.get('/get/detail',     li,       pm.check('access_sizes', {send: true}), (req, res) => {
         m.details.findOne({
             where: req.query,
             attributes: ['detail_id', 'size_id', '_name', '_value']
         })
         .then(detail => res.send({success: true,  result: detail}))
-        .catch(err =>   res.send({success: false, message: `Error getting detail: ${err.message}`}));
+        .catch(err =>   send_error(res, err));
     });
 
-    app.post('/sizes',       li,   pm.check('size_add',     {send: true}), (req, res) => {
+    app.post('/sizes',         li,       pm.check('size_add',     {send: true}), (req, res) => {
         req.body.size._ordering_details = req.body.size._ordering_details.trim()
         req.body.size = nullify(req.body.size);
         m.sizes.findOrCreate({
@@ -67,9 +67,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.post('/details',     li,   pm.check('size_edit',    {send: true}), (req, res) => {
-        if      (!req.body.detail._name) res.send({success: false, message: 'Name not submitted'})
-        else if (!req.body.detail._name) res.send({success: false, message: 'Value not submitted'})
+    app.post('/details',       li,       pm.check('size_edit',    {send: true}), (req, res) => {
+        if      (!req.body.detail._name) send_error(res, 'Name not submitted')
+        else if (!req.body.detail._name) send_error(res, 'Value not submitted')
         else {
             m.details.findOrCreate({
                 where:    {
@@ -79,13 +79,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 defaults: {_value: req.body.detail._value}
             })
             .then(([detail, created]) => {
-                if (!created) res.send({success: false, message: 'Detail already exists'})
+                if (!created) send_error(res, 'Detail already exists')
                 else          res.send({success: true,  message: 'Detail saved'});
             })
-            .catch(err => res.send({success: false, message: `Error saving detail: ${err.message}`}))
+            .catch(err => send_error(res, err))
         };
     });
-    app.put('/sizes/:id',    li,   pm.check('size_edit',    {send: true}), (req, res) => {
+    app.put('/sizes/:id',      li,       pm.check('size_edit',    {send: true}), (req, res) => {
         m.sizes.update(
             req.body.size,
             {where: {size_id: req.params.id}}
@@ -94,7 +94,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.delete('/sizes/:id', li,   pm.check('size_delete',  {send: true}), (req, res) => {
+    app.delete('/sizes/:id',   li,       pm.check('size_delete',  {send: true}), (req, res) => {
         m.stock.findOne({where: {size_id: req.params.id}})
         .then(stock => {
             if (stock) send_error(res, 'Cannot delete a size whilst it has stock')
@@ -113,12 +113,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.delete('/details/:id', li, pm.check('size_edit',    {send: true}), (req, res) => {
+    app.delete('/details/:id', li,       pm.check('size_edit',    {send: true}), (req, res) => {
         m.details.destroy({where: {detail_id: req.params.id}})
         .then(result => {
-            if (!result) res.send({success: false, message: 'Detail not deleted'})
+            if (!result) send_error(res, 'Detail not deleted')
             else         res.send({success: true,  message: 'Detail deleted'})
         })
-        .catch(err => res.send({success: false, message: `Error deleting detail: ${err.message}`}));
+        .catch(err => send_error(res, err));
     });
 };

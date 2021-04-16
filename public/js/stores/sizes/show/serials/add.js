@@ -3,7 +3,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'serial_add',
         'POST',
-        '/stores/serials',
+        '/serials',
         {onComplete: getSerials}
     );
     $('#mdl_serial_add').on('show.bs.modal', getLocations);

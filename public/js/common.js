@@ -155,6 +155,16 @@ function print_account(account) {
         return `${account.name} | ${account.number}`
     } else return '';
 };
+function clear_select(id) {
+    return new Promise((resolve, reject) => {
+        let select = document.querySelector(`#sel_${id}`);
+        if (!select) reject(new Error('Select not found'))
+        else {
+            select.innerHTML = '';
+            resolve(select);
+        };
+    })
+};
 function clear_table(id) {
     return new Promise((resolve, reject) => {
         let table = document.querySelector(`#tbl_${id}`);
