@@ -5,7 +5,7 @@ function categoryDeleteBtn(category_id) {
         span_delete.appendChild(
             new Delete_Button({
                 descriptor: 'category',
-                path: `/stores/categories/${category_id}`,
+                path: `/categories/${category_id}`,
                 options: {
                     onComplete: [
                         getCategories,

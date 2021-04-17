@@ -43,7 +43,7 @@ function getIssues(status) {
                             }
                         });
                     };
-                    add_cell(row, {append: new Link({href: `/stores/issues/${issue.issue_id}`, small: true}).e});
+                    add_cell(row, {append: new Link({href: `/issues/${issue.issue_id}`, small: true}).e});
                 });
                 if (status === '1' && typeof getRequestedActions === 'function') getRequestedActions();
                 if (
@@ -76,13 +76,13 @@ window.addEventListener('load', function () {
     addFormListener(
         'lines_2',
         'PUT',
-        '/stores/issues',
+        '/issues',
         {onComplete: loadAll}
     );
     addFormListener(
         'lines_3',
         'PUT',
-        '/stores/issues',
+        '/issues',
         {onComplete: loadAll}
     );
     document.querySelector('#reload_users').addEventListener('click',  getUsers);

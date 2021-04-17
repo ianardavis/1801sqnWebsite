@@ -22,4 +22,4 @@ function getItems() {
     })
     .catch(err => console.log(err));
 };
-document.querySelector('#reload').addEventListener('click', getItems);
+addReloadListener(getItems);

@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'setting_add',
         'POST',
-        '/stores/settings',
+        '/settings',
         {
             onComplete: [
                 getSettings,

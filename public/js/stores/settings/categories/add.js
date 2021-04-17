@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'category_add',
         'POST',
-        '/stores/categories',
+        '/categories',
         {
             onComplete: [
                 getCategories,

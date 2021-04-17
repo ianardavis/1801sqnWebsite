@@ -43,7 +43,7 @@ function getOrders(status) {
                             }
                         });
                     };
-                    add_cell(row, {append: new Link({href: `/stores/orders/${order.order_id}`, small: true}).e});
+                    add_cell(row, {append: new Link({href: `/orders/${order.order_id}`, small: true}).e});
                 });
             };
             lines_loaded[status] = true;

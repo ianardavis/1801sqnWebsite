@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'gender_add',
         'POST',
-        '/stores/genders',
+        '/genders',
         {
             onComplete: [
                 getGenders,

@@ -5,7 +5,7 @@ function settingDeleteBtn(setting_id) {
         span_delete.appendChild(
             new Delete_Button({
                 descriptor: 'setting',
-                path:       `/stores/settings/${setting_id}`,
+                path:       `/settings/${setting_id}`,
                 options: {
                     onComplete: [
                         getSettings,

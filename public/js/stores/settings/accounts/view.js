@@ -41,7 +41,7 @@ function viewAccount(account_id) {
             set_innerText({id: 'account_user',      text: print_user(account.user_account)});
             set_innerText({id: 'account_createdAt', text: print_date(account.createdAt, true)});
             set_innerText({id: 'account_updatedAt', text: print_date(account.updatedAt, true)});
-            set_attribute({id: 'account_user_link', attribute: 'href', value: `/stores/users/${account.user_id}`});
+            set_attribute({id: 'account_user_link', attribute: 'href', value: `/users/${account.user_id}`});
         }
     );
 };

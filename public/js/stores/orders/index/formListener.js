@@ -2,7 +2,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'lines_1',
         'PUT',
-        '/stores/orders',
+        '/orders',
         {
             onComplete: function () {
                 getOrders('0');

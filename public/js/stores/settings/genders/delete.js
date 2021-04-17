@@ -5,7 +5,7 @@ function genderDeleteBtn(gender_id) {
         span_delete.appendChild(
             new Delete_Button({
                 descriptor: 'gender',
-                path:       `/stores/genders/${gender_id}`,
+                path:       `/genders/${gender_id}`,
                 options: {
                     onComplete: [
                         getGenders,

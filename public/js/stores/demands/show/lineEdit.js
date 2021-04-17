@@ -189,7 +189,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'action',
         'PUT',
-        `/stores/loancard_lines/${path[2]}`,
+        `/loancard_lines/${path[2]}`,
         {
             onComplete: [
                 getLines,

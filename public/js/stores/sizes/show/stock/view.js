@@ -40,7 +40,7 @@ function viewStock(event) {
             set_innerText({id: '_qty',                 text: stock._qty});
             set_innerText({id: 'stock_id',             text: stock.stock_id});
             set_attribute({id: 'btn_stock_adjust_add', attribute: 'data-stock_id', value: stock.stock_id});
-            set_attribute({id: 'btn_stock_link',       attribute: 'href', value: `/stores/stocks/${stock.stock_id}`});
+            set_attribute({id: 'btn_stock_link',       attribute: 'href', value: `/stocks/${stock.stock_id}`});
         }
     );
 };

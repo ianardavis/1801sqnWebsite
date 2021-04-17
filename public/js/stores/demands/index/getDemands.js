@@ -17,7 +17,7 @@ function getDemands() {
                     add_cell(row, {text: demand.supplier._name});
                     add_cell(row, {text: demand.lines.length});
                     add_cell(row, {text: statuses[demand._status]});
-                    add_cell(row, {append: new Link({href: `/stores/demands/${demand.demand_id}`, small: true}).e});
+                    add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`, small: true}).e});
                 });
             }
         );

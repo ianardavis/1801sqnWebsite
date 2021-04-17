@@ -39,7 +39,7 @@ function viewSerial(event) {
             set_innerText({id: 'serial_location', text: serial.location._location});
             set_innerText({id: '_serial_view',    text: serial._serial});
             set_innerText({id: 'serial_id',       text: serial.serial_id});
-            set_attribute({id: 'btn_serial_link', attribute: 'href', value: `/stores/serials/${serial.serial_id}`});
+            set_attribute({id: 'btn_serial_link', attribute: 'href', value: `/serials/${serial.serial_id}`});
         }
     );
 };

@@ -43,7 +43,7 @@ function viewNSN(event) {
             set_innerText({id: 'nsn_id',                text: nsn.nsn_id});
             set_innerText({id: '_nsn_view',             text: print_nsn(nsn)});
             set_innerText({id: '_default',              text: yesno((nsn.nsn_id === nsn.size.nsn_id))});
-            set_attribute({id: 'btn_nsn_link',          attribute: 'href', value: `/stores/nsns/${nsn.nsn_id}`});
+            set_attribute({id: 'btn_nsn_link',          attribute: 'href', value: `/nsns/${nsn.nsn_id}`});
         }
     );
 };

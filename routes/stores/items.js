@@ -6,10 +6,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.get('/get/items',              li,         pm.check('access_items', {send: true}), (req, res) => {
         m.items.findAll({
             where:   req.query,
-            include: [
-                // inc.categories(),
-                inc.genders()
-            ]
+            include: [inc.genders()]
         })
         .then(items => res.send({success: true, result: items}))
         .catch(err => send_error(res, err));
@@ -17,20 +14,17 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.get('/get/item',               li,         pm.check('access_items', {send: true}), (req, res) => {
         m.items.findOne({
             where:   req.query,
-            include: [
-                // inc.categories(),
-                inc.genders()
-            ]
+            include: [inc.genders()]
         })
         .then(item => {
-            if (item) res.send({success: true,  result: item})
-            else      send_error(res, 'Item not found');
+            if (item) res.send({success: true, result: item})
+            else send_error(res, 'Item not found');
         })
         .catch(err => send_error(res, err));
     });
     app.get('/get/item_categories',    li,         pm.check('access_items', {send: true}), (req, res) => {
         m.item_categories.findAll({
-            where: req.query,
+            where:   req.query,
             include: [inc.categories()]
         })
         .then(categories => res.send({success: true, result: categories}))
@@ -38,7 +32,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     });
     app.get('/get/item_category',      li,         pm.check('access_items', {send: true}), (req, res) => {
         m.item_categories.findOne({
-            where: req.query,
+            where:   req.query,
             include: [inc.categories()]
         })
         .then(category => res.send({success: true, result: category}))
@@ -85,7 +79,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 m.items.destroy({where: {item_id: req.params.id}})
                 .then(result => {
                     if (!result) send_error(res, 'Item not deleted')
-                    else         res.send({success: true,  message: 'Item deleted'});
+                    else res.send({success: true, message: 'Item deleted'});
                 })
                 .catch(err => send_error(res, err));
             } else send_error(res, 'Cannot delete item while it has sizes assigned');
@@ -96,7 +90,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.item_categories.destroy({where: {item_category_id: req.params.id}})
         .then(result => {
             if (!result) send_error(res, 'Category not deleted')
-            else         res.send({success: true,  message: 'Category deleted'});
+            else res.send({success: true, message: 'Category deleted'});
         })
         .catch(err => send_error(res, err));
     });

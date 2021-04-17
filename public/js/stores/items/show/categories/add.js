@@ -4,31 +4,29 @@ function reset_categories_add() {
     listCategories('1');
 };
 function listCategories(select, parent_id = '') {
-    let sel_category = document.querySelector(`#sel_category_${select}`);
-    if (sel_category) {
-        sel_category.innerHTML = '';
-        get(
-            {
-                table: 'categories',
-                query: [`parent_category_id=${parent_id}`]
-            },
-            function (categories, options) {
-                if (categories.length === 0) {
-                    sel_category.remove();
-                } else {
-                    sel_category.appendChild(new Option({text: '... Select Category', selected: true}).e);
-                    categories.forEach(category => {
-                        sel_category.appendChild(
-                            new Option({
-                                text:  category._category,
-                                value: category.category_id
-                            }).e
-                        )
-                    });
-                };
-            }
-        );
-    };
+    clear_select(`category_${select}`)
+    .then(sel_category => {
+        get({
+            table: 'categories',
+            query: [`category_id_parent=${parent_id}`]
+        })
+        .then(function ([categories, options]) {
+            if (categories.length === 0) sel_category.remove();
+            else {
+                sel_category.appendChild(new Option({text: '... Select Category', selected: true}).e);
+                categories.forEach(category => {
+                    sel_category.appendChild(
+                        new Option({
+                            text:  category.category,
+                            value: category.category_id
+                        }).e
+                    )
+                });
+            };
+        })
+        .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
 };
 function addCategorySelect() {
     let select         = document.querySelectorAll('.sel_category').length + 1 || 1,

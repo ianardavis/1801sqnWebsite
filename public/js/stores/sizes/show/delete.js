@@ -4,6 +4,6 @@ window.addEventListener( "load", function () {
         'size_delete',
         'DELETE',
         `/sizes/${path[2]}`,
-        {redirect: '/stores/items'}
+        {redirect: '/items'}
     );
 });

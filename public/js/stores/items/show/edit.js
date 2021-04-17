@@ -1,21 +1,21 @@
 function viewItemEdit() {
-    get(
-        {
-            table:   'item',
-            query:   [`item_id=${path[2]}`],
-            spinner: 'item_edit'
-        },
-        function (item, options) {
-            set_value({id: '_description_edit', value: item._description});
-            set_value({id: '_size_text_edit',   value: item._size_text});
+    get({
+        table:   'item',
+        query:   [`item_id=${path[2]}`],
+        spinner: 'item_edit'
+    })
+    .then(function ([item, options]) {
+        set_value({id: 'description_edit', value: item.description});
+        set_value({id: 'size_text_edit',   value: item.size_text});
+        if (typeof listGenders === 'function') {
             listGenders({
+                select:   'genders',
                 selected: item.gender_id,
-                select:   'sel_gender_edit',
                 blank:    true,
-                id_only:   true
+                id_only:  true
             });
-        }
-    );
+        };
+    });
 };
 window.addEventListener('load', function () {
     remove_attribute({id: 'btn_item_edit', attribute: 'disabled'});
@@ -29,5 +29,4 @@ window.addEventListener('load', function () {
             function () {$('#mdl_item_edit').modal('hide')}
         ]}
     );
-    document.querySelector('#reload_item_edit').addEventListener('click', viewItemEdit);
 });

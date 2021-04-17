@@ -181,4 +181,8 @@ function addReloadListener(func) {
         if (reload) reload.addEventListener('click', func);
     });
 };
+function addClickListener(btn, func) {
+    let e = document.querySelector(`#${btn}`)
+    if (e) e.addEventListener('click', func);
+};
 let path = window.location.pathname.toString().split('/');

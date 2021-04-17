@@ -5,8 +5,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
 
     app.get('/get/suppliers',    li,         pm.check('access_suppliers', {send: true}), (req, res) => {
         m.suppliers.findAll({
-            where:      req.query,
-            include:    [inc.accounts()]
+            where: req.query
+            // include: [inc.accounts()]
         })
         .then(suppliers => res.send({success: true, result: suppliers}))
         .catch(err => send_error(res, err));

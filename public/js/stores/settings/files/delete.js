@@ -5,7 +5,7 @@ function addFileDeleteBtns() {
                 new Delete_Button({
                     descriptor: 'file',
                     small: true,
-                    path: `/stores/fs_files/${e.dataset.file}`
+                    path: `/fs_files/${e.dataset.file}`
                 }).e
             );
         } else if (e.dataset.id) {
@@ -13,7 +13,7 @@ function addFileDeleteBtns() {
                 new Delete_Button({
                     descriptor: 'file',
                     small: true,
-                    path: `/stores/files/${e.dataset.id}`
+                    path: `/files/${e.dataset.id}`
                 }).e
             );
         };

@@ -88,7 +88,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'line',
         'POST',
-        `/stores/issues`,
+        `/issues`,
         {
             onComplete: [
                 function () {

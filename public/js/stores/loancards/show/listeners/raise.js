@@ -2,7 +2,7 @@ window.addEventListener("load", function () {
     addFormListener(
         'raise',
         'PUT',
-        `/stores/loancards/raise/${path[2]}`,
+        `/loancards/raise/${path[2]}`,
         {
             onComplete: [
                 getLoancard,

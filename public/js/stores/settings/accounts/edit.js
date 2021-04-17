@@ -34,7 +34,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'account_edit',
         'PUT',
-        '/stores/accounts',
+        '/accounts',
         {
             onComplete: [
                 getAccounts,

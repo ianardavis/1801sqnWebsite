@@ -9,7 +9,7 @@ function viewAccount(account_id) {
             set_innerText({id: '_name_account_view',     text: account._name});
             set_innerText({id: '_number_account_view',   text: account._number});
             set_innerText({id: 'user_account_view',      text: print_user(account.user_account)});
-            set_attribute({id: 'user_account_view_link', attribute: 'href', value: `/stores/users/${account.user_id_account}`});
+            set_attribute({id: 'user_account_view_link', attribute: 'href', value: `/users/${account.user_id_account}`});
             set_innerText({id: 'createdAt_account_view', text: print_date(account.createdAt, true)});
             set_innerText({id: 'updatedAt_account_view', text: print_date(account.updatedAt, true)});
         }

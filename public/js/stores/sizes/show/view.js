@@ -10,7 +10,7 @@ function getSize() {
             set_innerText({id: '_serials',          text: yesno(size._serials)});
             set_innerText({id: '_nsns',             text: yesno(size._nsns)});
             set_innerText({id: 'supplier',          text: size.supplier._name});
-            set_attribute({id: 'supplier_link',     attribute: 'href', value: `/stores/suppliers/${size.supplier_id}`});
+            set_attribute({id: 'supplier_link',     attribute: 'href', value: `/suppliers/${size.supplier_id}`});
             set_innerText({id: '_demand_page',      text: size._demand_page});
             set_innerText({id: '_demand_cell',      text: size._demand_cell});
             set_innerText({id: '_ordering_details', text: size._ordering_details});
@@ -30,8 +30,8 @@ function getSize() {
             });
             let _item = document.querySelector('#_item');
             _item.innerText = size.item._description;
-            _item.href      = `/stores/items/${size.item_id}`;
-            set_breadcrumb({text: `${size.item._size_text || 'Size'}: ${size._size}`, href: `/stores/sizes/${size.size_id}`});
+            _item.href      = `/items/${size.item_id}`;
+            set_breadcrumb({text: `${size.item._size_text || 'Size'}: ${size._size}`, href: `/sizes/${size.size_id}`});
             document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
         }
     );

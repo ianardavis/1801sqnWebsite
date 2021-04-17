@@ -1,16 +1,15 @@
 function listCategories(options = {}) {
-    get(
-        {
-            table: 'categories',
-            ...options
-        },
-        function (categories, options) {
-            let select = document.querySelector(`#${options.select || 'sel_category'}`);
-            if (select) {
-                select.innerHTML = '';
-                select.appendChild(new Option({text: '---None---', selected: (options.selected === '')}).e);
+    return new Promise((resolve, reject) => {
+        clear_select(options.select || 'category')
+        .then(sel_category => {
+            get({
+                table: 'categories',
+                ...options
+            })
+            .then(function ([categories, options]) {
+                sel_category.appendChild(new Option({text: '---None---', selected: (options.selected === '')}).e);
                 categories.forEach(category => {
-                    select.appendChild(
+                    sel_category.appendChild(
                         new Option({
                             text:     `${category._category} (${category.category_id})`,
                             value:    category.category_id,
@@ -18,7 +17,10 @@ function listCategories(options = {}) {
                         }).e
                     );
                 });
-            };
-        }
-    );
+				resolve(true);
+            })
+            .catch(err => reject(err));
+        })
+        .catch(err => reject(err));
+    });
 };

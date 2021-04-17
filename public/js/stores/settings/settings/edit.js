@@ -29,7 +29,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'setting_edit',
         'PUT',
-        '/stores/settings',
+        '/settings',
         {
             onComplete: [
                 getSettings,

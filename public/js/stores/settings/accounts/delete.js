@@ -5,7 +5,7 @@ function accountDeleteBtn(account_id) {
         span_delete.appendChild(
             new Delete_Button({
                 descriptor: 'account',
-                path:       `/stores/accounts/${account_id}`,
+                path:       `/accounts/${account_id}`,
                 options: {
                     onComplete: [
                         getAccounts,

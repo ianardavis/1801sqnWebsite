@@ -1,5 +1,4 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    let nullify = require(`../functions/nullify`);
     app.get('/sizes/select',   li, pm.get, pm.check('access_sizes'),             (req, res) => res.render('stores/sizes/select'));
     app.get('/sizes/:id',      li, pm.get, pm.check('access_sizes'),             (req, res) => res.render('stores/sizes/show'));
 
@@ -51,20 +50,15 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     });
 
     app.post('/sizes',         li,       pm.check('size_add',     {send: true}), (req, res) => {
-        req.body.size._ordering_details = req.body.size._ordering_details.trim()
-        req.body.size = nullify(req.body.size);
+        if (req.body.size.supplier_id === '') req.body.size.supplier_id = null;
         m.sizes.findOrCreate({
             where: {
                 item_id: req.body.size.item_id,
-                _size: req.body.size._size
+                size: req.body.size.size
             },
             defaults: req.body.size
         })
-        .then(([size, created]) => {
-            let message = 'Size added';
-            if (!created) message = 'Size already exists'
-            res.send({success: true, message: message})
-        })
+        .then(([size, created]) => res.send({success: true, message: (created ? 'Size already exists' : 'Size added')}))
         .catch(err => send_error(res, err));
     });
     app.post('/details',       li,       pm.check('size_edit',    {send: true}), (req, res) => {

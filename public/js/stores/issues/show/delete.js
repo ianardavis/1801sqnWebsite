@@ -12,7 +12,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'delete',
         'DELETE',
-        `/stores/issues/${path[2]}`,
+        `/issues/${path[2]}`,
         {
             onComplete: [
                 showIssue,

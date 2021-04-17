@@ -21,7 +21,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'lines_1',
         'PUT',
-        '/stores/issues',
+        '/issues',
         {
             onComplete: function () {
                 getIssues('0');

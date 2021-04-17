@@ -14,7 +14,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'delete',
         'DELETE',
-        `/stores/orders/${path[2]}`,
+        `/orders/${path[2]}`,
         {
             onComplete: [
                 showOrder,

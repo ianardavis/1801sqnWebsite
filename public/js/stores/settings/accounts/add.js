@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'account_add',
         'POST',
-        '/stores/accounts',
+        '/accounts',
         {
             onComplete: [
                 getAccounts,

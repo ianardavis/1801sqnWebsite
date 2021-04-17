@@ -75,7 +75,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'line',
         'POST',
-        `/stores/orders`,
+        `/orders`,
         {
             onComplete: [
                 function () {

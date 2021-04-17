@@ -28,7 +28,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'gender_edit',
         'PUT',
-        '/stores/genders',
+        '/genders',
         {
             onComplete: [
                 getGenders,

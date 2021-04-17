@@ -44,7 +44,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'category_edit',
         'PUT',
-        '/stores/categories',
+        '/categories',
         {
             onComplete: [
                 getCategories,
@@ -59,7 +59,7 @@ window.addEventListener('load', function () {
         addFormListener(
             'category_move',
             'PUT',
-            '/stores/categories',
+            '/categories',
             {
                 noConfirm: true,
                 noConfirmAlert: true,

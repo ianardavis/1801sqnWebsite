@@ -1,10 +1,16 @@
 function resetAddSize() {
-    ['_issueable', '_orderable', '_nsns', '_serials'].forEach(e => set_value({id: e, value: '0'}));
-    set_value({id: '_size', value: ''});
-    listSuppliers({
-        select: 'sel_suppliers',
-        blank: true
-    });
+    ['issueable', 'orderable', 'has_nsns', 'has_serials'].forEach(e => set_value({id: e, value: '0'}));
+    set_value({id: 'size', value: ''});
+    getSuppliers();
+};
+function getSuppliers() {
+    if (typeof listSuppliers === 'function') {
+        listSuppliers({
+            select: 'suppliers',
+            blank: true,
+            blank_text: 'None'
+        });
+    };
 };
 window.addEventListener('load', function () {
     $('#mdl_size_add').on('show.bs.modal', resetAddSize);
@@ -15,13 +21,8 @@ window.addEventListener('load', function () {
         '/sizes',
         {onComplete: [
             getSizes,
-            function () {set_value({id: '_size', value: ''})}
+            function () {set_value({id: 'size', value: ''})}
         ]}
     );
-    document.querySelector('#reload_suppliers').addEventListener('click', function (){
-        listSuppliers({
-            select: 'sel_suppliers',
-            blank: true
-        });
-    });
+    addClickListener('reload_suppliers', getSuppliers);
 });

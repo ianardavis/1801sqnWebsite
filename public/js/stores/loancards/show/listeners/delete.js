@@ -3,7 +3,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'delete',
         'DELETE',
-        `/stores/loancards/${path[2]}`,
+        `/loancards/${path[2]}`,
         {
             onComplete: [
                 getLoancard,
