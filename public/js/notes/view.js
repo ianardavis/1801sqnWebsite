@@ -46,7 +46,7 @@ window.addEventListener('load', function () {
     $('#mdl_note_view').on('show.bs.modal', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewNote(event.relatedTarget.dataset.id)
-        };
+        } else $('#mdl_note_view').modal('hide');
     });
     document.querySelector('#sel_system').addEventListener('change', getNotes);
 });

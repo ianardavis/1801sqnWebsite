@@ -2,7 +2,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.get('/get/stocks',    li, pm.check('access_stocks', {send: true}), (req, res) => {
         m.stocks.findAll({
             where:   req.query,
-            include: [inc.locations({as: 'location'})],
+            include: [inc.location()],
         })
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => send_error(res, err));

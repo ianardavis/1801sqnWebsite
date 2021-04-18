@@ -58,7 +58,7 @@
                         </h5>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" class='note_id' name='note_id'>
+                        <input type="hidden" id='note_id_edit' name='note_id'>
                         <%- include(`${partials}/inputs/textarea`, {name: 'note[note]', id: 'note_edit', title: 'Note', maxlength: 1000, rows: 5, required: true}) %>
                     </div>
                     <div class="modal-footer">

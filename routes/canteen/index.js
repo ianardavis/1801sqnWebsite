@@ -9,10 +9,4 @@ module.exports = (fs, app, m, pm, op, li, send_error) => {
     .forEach(file => require(`./${file}`)(app, m, pm, op, inc, li, send_error));
 
     app.get('/canteen',      li, pm.get, pm.check('access_canteen'), (req, res) => res.render('canteen/index'));
-
-    app.get('/get/settings', li, pm.check('access_canteen'),     (req, res) => {
-        m.settings.findOne({where: req.query})
-        .then(settings => res.send({success: true, result: settings}))
-        .catch(err => send_error(res, err));
-    });
 };

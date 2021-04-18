@@ -9,10 +9,12 @@
     </div>
     <textarea
         class='form-control'
-        <% if (locals.id) { %>        id='<%= id %>'<% } %>
-        <% if (locals.name) { %>      name='<%= name %>'<% } %>
-        <% if (locals.rows) { %>      rows='<%= rows %>'<% } %>
-        <% if (locals.maxLength) { %> maxlength='<%= maxLength %>'<% } %>
-        <% if (locals.readonly){ %>readonly<% } %>
+        <% if (locals.id) { %>          id='<%= id %>'<% } %>
+        <% if (locals.name) { %>        name='<%= name %>'<% } %>
+        <% if (locals.rows) { %>        rows='<%= rows %>'<% } %>
+        <% if (locals.maxlength) { %>   maxlength='<%= maxlength %>'<% } %>
+        <% if (locals.readonly){ %>     readonly<% } %>
+        <% if (locals.autocomplete) { %>autocomplete='<%= autocomplete %>'<% } %>
+        <% if (locals.required) { %>    required<% } %>
     ><% if (locals.value) { %><%=  value %><% } %></textarea>
 </div>

@@ -5,10 +5,9 @@ function viewNoteEdit(note_id) {
         spinner: 'note_edit'
     })
     .then(function ([note, options]) {
-        set_innerText({id: 'note_id_edit', text: note.note_id});
+        set_attribute({id: 'note_id_edit', attribute: 'value', value: note.note_id});
         set_innerText({id: 'note_edit',    text: note.note});
-        document.querySelectorAll('.note_id').forEach(e => e.setAttribute('value', note.note_id));
-        $('#mdl_note_view').modal('hide')
+        $('#mdl_note_view').modal('hide');
     })
     .catch(err => {
         $('#mdl_note_edit').modal('hide');

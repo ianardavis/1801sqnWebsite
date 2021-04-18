@@ -1,23 +1,24 @@
 function viewSizeEdit() {
-    get(
-        {
-            table: 'size',
-            query: [`size_id=${path[2]}`]
-        },
-        function (size, options) {
-            listSuppliers({
-                blank:    true,
-                id_only:  true,
-                select:   'supplier_id_edit',
-                selected: size.supplier_id
-            });
-            set_value({id: '_issueable_edit', value: size._issueable});
-            set_value({id: '_orderable_edit', value: size._orderable});
-            set_value({id: '_serials_edit',   value: size._serials});
-            set_value({id: '_nsns_edit',      value: size._nsns});
-            set_value({id: '_size_edit',      value: size._size});
-        }
-    );
+    get({
+        table: 'size',
+        query: [`size_id=${path[2]}`]
+    })
+    .then(function ([size, options]) {
+        getSuppliers(size.supplier_id);
+        set_value({id: 'sel_issueable', value: (size.issueable   ? '1' : '0')});
+        set_value({id: 'sel_orderable', value: (size.orderable   ? '1' : '0')});
+        set_value({id: 'sel_serials',   value: (size.has_serials ? '1' : '0')});
+        set_value({id: 'sel_nsns',      value: (size.has_nsns    ? '1' : '0')});
+        set_value({id: 'size_edit',     value: size.size});
+    });
+};
+function getSuppliers(selected = null) {
+    listSuppliers({
+        blank:    true,
+        id_only:  true,
+        select:   'suppliers',
+        selected: selected
+    });
 };
 
 window.addEventListener('load', function () {
@@ -34,11 +35,5 @@ window.addEventListener('load', function () {
         }
     );
     $('#mdl_size_edit').on('show.bs.modal', viewSizeEdit);
-    document.querySelector('#reload_suppliers').addEventListener('click', function () {
-        listSuppliers({
-            blank:   true,
-            id_only: true,
-            select:  'supplier_id_edit'
-        });
-    });
+    document.querySelector('#reload_suppliers').addEventListener('click', function () {getSuppliers()});
 });
