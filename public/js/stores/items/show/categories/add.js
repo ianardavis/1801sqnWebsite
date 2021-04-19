@@ -56,6 +56,7 @@ function addCategory(parent_select) {
     };
 };
 window.addEventListener('load', function () {
+    enable_button('category_add');
     addFormListener(
         'category_add',
         'POST',

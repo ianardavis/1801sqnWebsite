@@ -11,8 +11,9 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'item_edit', text: 'Edit',     modal: 'item_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'note_add',  text: 'Add Note', modal: 'note_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',         modal: 'item_edit'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add',     text: 'Add Note',     modal: 'note_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category', modal: 'category_add'}) %>
                 <% if (permissions.item_delete) { %>
                     <form id='form_item_delete'>
                 <% } %>
@@ -34,19 +35,10 @@
             <%- include(`${partials}/inputs/display`, {id: 'size_text',   title: 'Size Text'}) %>
             <% if (permissions.access_item_categories) { %>
                 <div id="div_categories">
-                    <% if (permissions.item_category_add) { %>
-                        <form id='form_category_add' class='bordered my-3'>
-                            <h5>Add Category</h5>
-                            <input type="hidden" class='item_id' name='category[item_id]'>
-                            <select name="category[category_id][]" id="sel_category_1" class='form-control sel_category' required></select>
-                            <div id="sub_categories"></div>
-                            <button class='btn btn-success w-100 mb-1'>Save</button>
-                        </form>
-                    <% } %>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th class='w-100' onclick='sortTable(0, "tbl_categories")'>Categories</th>
-                            <th><i class='fas fa-trash-alt'></i></th>
+                            <th><i class='fas fa-search'></i></th>
                         </thead>
                         <tbody id='tbl_categories'></tbody>
                     </table>
@@ -68,6 +60,54 @@
     </div>
     <div id="div_modals">
         <%- include(`${partials}/notes/modals`) %>
+        <% if (permissions.access_item_categories) { %>
+            <div     id='mdl_category_view' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Category</h5>
+                            <%- include(`${partials}/spinner`, {id: 'category_view'}) %>
+                            <span class='float-right'>
+                                <% if (permissions.item_category_delete) { %>
+                                    <span id='category_delete_btn' class='float-right mr-1'></span>
+                                <% } %>
+                            </span>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`,  {title: 'Category', id: 'category_category'}) %>
+                            <%- include(`${partials}/inputs/display`,  {title: 'Created',  id: 'category_createdAt'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <p class='mr-auto text-left'>
+                                Category ID: <span id='category_id'></span><br>
+                                Link ID: <span id='item_category_id'></span>
+                            </p>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% if (permissions.item_category_add) { %>
+                <div id='mdl_category_add'  class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <form class="modal-content" id='form_category_add'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Category</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" class='item_id' name='category[item_id]'>
+                                <select name="category[category_id][]" id="sel_category_1" class='form-control sel_category' required></select>
+                                <div id="sub_categories"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <input  type="submit" class="btn btn-success w-100" value='Add Category'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+        <% } %>
         <% if (permissions.item_edit) { %>
             <div id='mdl_item_edit' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">

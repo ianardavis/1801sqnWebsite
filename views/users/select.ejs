@@ -1,0 +1,27 @@
+<%- include(`${partials}/head/noTitle`) %>
+<section class='container'>
+    <h1>Select User...</h1>
+    <div id="div_filters">
+        <%- include(`${partials}/inputs/select`, {id: 'sel_ranks',    title: 'Rank',   spinner_id: 'ranks',    reload_id: 'reload_ranks'}) %>
+        <%- include(`${partials}/inputs/select`, {id: 'sel_statuses', title: 'Status', spinner_id: 'statuses', reload_id: 'reload_statuses'}) %>
+        <button id="btn_select" class="btn btn-success w-100">Select Users</button>
+    </div>
+    <div id="div_users">
+        <table class='table table-sm table-hover'>
+            <thead class='thead-dark'>
+                <th class='w-20' onclick='sortTable(0, "tbl_users")'><i class="fas fa-check"></i></th>
+                <th class='w-30' onclick='sortTable(1, "tbl_users")'>Service Number</th>
+                <th class='w-50' onclick='sortTable(1, "tbl_users")'>User</th>
+            </thead>
+            <tbody id='tbl_users'></tbody>
+        </table>
+    </div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/get.js"></script>
+<script src="/js/spinner.js"></script>
+<script src="/js/utils/list/ranks.js"></script>
+<script src="/js/utils/list/statuses.js"></script>
+<script src="/js/users/select/view.js"></script>
+<script async></script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

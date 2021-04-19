@@ -41,5 +41,4 @@ window.addEventListener('load', function () {
             viewDetail(event.relatedTarget.dataset.id)
         } else $('#mdl_detail_view').modal('hide');
     });
-    document.querySelector('#sel_system').addEventListener('change', getDetails);
 });

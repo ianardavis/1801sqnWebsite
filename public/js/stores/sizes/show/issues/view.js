@@ -15,8 +15,9 @@ function getIssues() {
                     add_cell(row, {text: print_user(issue.user_issue)});
                     add_cell(row, {text: issue.qty});
                     add_cell(row, {text: issue_statuses[issue.status]});
-                    add_cell(row, {append: new Link({
-                        href: `/issues/${issue.issue_id}`,
+                    add_cell(row, {append: new Button({
+                        modal: 'issue_view',
+                        data: {field: 'id', value: issue.issue_id},
                         small: true
                     }).e});
                 } catch (error) {
@@ -27,4 +28,28 @@ function getIssues() {
     })
     .catch(err => console.log(err));
 };
+function viewIssue(issue_id) {
+    get({
+        table: 'issue',
+        query: [`issue_id=${issue_id}`],
+        spinner: 'issue_view'
+    })
+    .then(function ([issue, options]){
+
+        set_innerText({id: 'issue_user_to',   text: print_user(issue.user_issue)});
+        set_innerText({id: 'issue_user_by',   text: print_user(issue.user)});
+        set_innerText({id: 'issue_qty',       text: issue.qty});
+        set_innerText({id: 'issue_status',    text: issue_statuses[issue.status]});
+        set_innerText({id: 'issue_createdAt', text: print_date(issue.createdAt)});
+        set_innerText({id: 'issue_updatedAt', text: print_date(issue.updatedAt)});
+        set_innerText({id: 'issue_id',        text: issue.issue_id});
+        set_href({id: 'btn_issue_link', value: `/issues/${issue.issue_id}`});
+        set_href({id: 'issue_user_to_link', value: `/users/${issue.user_id_issue}`});
+        set_href({id: 'issue_user_by_link', value: `/users/${issue.user_id}`});
+    })
+    .catch(err => console.log(err));
+};
 addReloadListener(getIssues);
+window.addEventListener('load', function () {
+    $('#mdl_issue_view').on('show.bs.modal', function (event) {viewIssue(event.relatedTarget.dataset.id)});
+});

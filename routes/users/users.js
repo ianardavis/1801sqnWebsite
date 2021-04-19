@@ -4,6 +4,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         if (req.allowed) res.render('users/index')
         else res.redirect(`/users/${req.user.user_id}`);
     });
+    app.get('/users/select', li, pm.get, pm.check('access_users'),                             (req, res) => res.render('users/select'));
+
     app.get('/users/:id',    li, pm.get, pm.check('access_users',              {allow: true}), (req, res) => {
         if (Number(req.params.id) === req.user.user_id || req.allowed) {
             res.render('users/show')

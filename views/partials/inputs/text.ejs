@@ -1,12 +1,14 @@
 <div class="input-group mb-1">
     <div class="input-group-prepend w-30">
         <% if (locals.id) { %>          
-            <label class="input-group-text w-100" for='<%= id %>'><%= title %></label>
+            <label class="input-group-text w-100" for='<%= id %>'>
+                <%= title %>
+                <% if (locals.spinner_id) { %>
+                    <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
+                <% } %>
+            </label>
         <% } else { %>
             <span class="input-group-text w-100"><%= title %></span>
-        <% } %>
-        <% if (locals.spinner_id) { %>
-            <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
         <% } %>
     </div>
     <input
@@ -25,4 +27,11 @@
             autocomplete='off'
         <% } %>
     >
+    <% if (locals.reload_id) { %>
+        <div class="input-group-append">
+            <a class='btn btn-primary' id='<%= reload_id %>'>
+                <i class="fas fa-redo"></i>
+            </a>
+        </div>
+    <% } %>
 </div>

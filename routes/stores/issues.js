@@ -45,9 +45,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.issues.findOne({
             where: req.query,
             include: [
-                inc.sizes(),
-                inc.users({as: 'user_issue'}),
-                inc.users({as: 'user'})
+                inc.size(),
+                inc.user({as: 'user_issue'}),
+                inc.user()
             ]
         })
         .then(issue => {

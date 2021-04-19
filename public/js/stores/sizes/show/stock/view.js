@@ -32,7 +32,7 @@ function viewStock(stock_id) {
     })
     .then(function([stock, options]) {
         set_innerText({id: 'stock_location',       text: stock.location.location});
-        set_innerText({id: '_qty',                 text: stock.qty});
+        set_innerText({id: 'qty',                  text: stock.qty});
         set_innerText({id: 'stock_id',             text: stock.stock_id});
         set_attribute({id: 'btn_stock_adjust_add', attribute: 'data-stock_id', value: stock.stock_id});
         set_attribute({id: 'btn_stock_link',       attribute: 'href', value: `/stocks/${stock.stock_id}`});
