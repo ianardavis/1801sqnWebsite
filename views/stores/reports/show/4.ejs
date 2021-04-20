@@ -3,10 +3,10 @@
     <a class="nav-link" href="/stores">Stores</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="/stores/reports">Reports</a>
+    <a class="nav-link" href="/reports">Reports</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="/stores/reports/4">Stock - By Item</a>
+    <a class="nav-link" href="/reports/4">Stock - By Item</a>
 </li>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class="mb-2">
@@ -20,7 +20,7 @@
                         </h5>
                     </a>
                     <div class="collapse mb-3" id="collapse<%= item.item_id %>">
-                        <a class="float-left btn btn-primary mb-2" href="/stores/items/<%= item.item_id %>"><i class="fas fa-search"></i></a>
+                        <a class="float-left btn btn-primary mb-2" href="/items/<%= item.item_id %>"><i class="fas fa-search"></i></a>
                         <table class="table table-sm table-hover">
                             <thead class="thead-dark">
                                 <th class="w-40" onclick="sortTable(0, 'table<%= item.item_id %>')">Size</th>
@@ -48,7 +48,7 @@
                                     <% } %>
                                     <tr>
                                         <td>
-                                            <a class="btn btn-sm btn-primary float-right" href="/stores/sizes/<%= size.size_id %>"><i class="fas fa-search"></i></a>
+                                            <a class="btn btn-sm btn-primary float-right" href="/sizes/<%= size.size_id %>"><i class="fas fa-search"></i></a>
                                             <%= size._size %>
                                         </td>
                                         <td <% if (_stock <= 0) { %> class="cardRed"<% } %>>

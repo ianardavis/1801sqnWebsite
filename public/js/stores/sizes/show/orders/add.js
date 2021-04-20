@@ -1,5 +1,5 @@
 window.addEventListener( "load", function () {
-    remove_attribute({id: 'btn_order_add', attribute: 'disabled'});
+    enable_button('order_add');
     addFormListener(
         'order_add',
         'POST',

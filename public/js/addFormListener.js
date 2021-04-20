@@ -30,14 +30,14 @@ function sendData(form, method, _location, options = {reload: false, _close: tru
                         options.onComplete.forEach(func => {
                             try {
                                 // func(response)
-                                func()
+                                if (typeof func === 'function') func()
                             } catch (error) {
                                 console.log(error);
                             };
                         })
                     } else {
                         try {
-                            options.onComplete();
+                            if (typeof options.onComplete === 'function') options.onComplete();
                         } catch (error) {
                             console.log(error);
                         };

@@ -1,0 +1,85 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'NSNs'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%- include(`${partials}/menu/button`, {id: 'nsn_edit', text: 'Edit',     modal: 'nsn_edit'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
+                <% if (permissions.nsn_delete) { %><form id='form_nsn_delete'><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',   text: 'Delete'}) %>
+                <% if (permissions.nsn_delete) { %></form><% } %>
+            </div>
+        </li>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'nsn'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancards', permission: 'access_loancards'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',     spinner: 'notes',     count_id: 'note',      permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/inputs/display`, {id: 'nsn_group',   title: 'Group'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'nsn_class',   title: 'Classification'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'nsn_country', title: 'Country'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_number', title: 'Item Number'}) %>
+        </div>
+        <% if (permissions.access_loancards) { %>
+            <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-50' onclick='sortTable(0, "tbl_loancards")'>Date</th>
+                        <th class='w-50' onclick='sortTable(1, "tbl_loancards")'>Issued To</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='tbl_loancards'></tbody>
+                </table>
+            </div>
+        <% } %>
+        <%- include(`${partials}/notes/tab_body`) %>
+    </div>
+    <div id="div_modals">
+        <%- include(`${partials}/notes/modals`) %>
+        <% if (permissions.nsn_edit) { %>
+            <div id='mdl_nsn_edit' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_nsn_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit NSN</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]',   required: true, id: 'sel_nsn_classes'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]', required: true, id: 'sel_nsn_countries'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, id: 'item_number_edit', maxlength: '8', placeholder: 'Required'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit"  class="btn btn-success w-100" value='Save NSN'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/addFormListener.js"></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('<%= tab %>')</script>
+<%- include(`${partials}/notes/scripts`) %>
+<script src='/js/stores/nsns/show/view.js'></script>
+<script async>getNSN()</script>
+<% if (permissions.nsn_edit) { %>
+    <script src="/js/utils/list/nsns.js"></script>
+    <script src='/js/stores/nsns/show/edit.js'></script>
+<% } %>
+<% if (permissions.nsn_delete) { %>
+    <script src="/js/stores/nsns/show/delete.js"></script>
+<% } %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

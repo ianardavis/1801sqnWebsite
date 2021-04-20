@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores',		    text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores/demands', text: 'Demands'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/demands', text: 'Demands'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/navbar/close`) %>
@@ -112,7 +112,7 @@
 			addFormListener(
 				'complete',
 				'PUT',
-				`/stores/demands/${path[3]}`,
+				`/demands/${path[3]}`,
 				{
 					onComplete: [
 						getDemand,
@@ -123,7 +123,7 @@
 			addFormListener(
 				'raise',
 				'PUT',
-				`/stores/demands/raise/${path[3]}`,
+				`/demands/raise/${path[3]}`,
 				{
 					onComplete: [
 						getDemand,

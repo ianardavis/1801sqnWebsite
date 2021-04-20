@@ -35,7 +35,7 @@ function sortTable(n, tableName) {
     };
 };
 function removeID(id) {
-    if (typeof(id) === 'string') document.querySelector('#' + id).remove();
+    if (typeof(id) === 'string') document.querySelector(`#${id}`).remove();
     else id.remove();
 };
 function clearElement(id) {
@@ -79,7 +79,7 @@ function hide(id) {
 };
 function set_innerText(options = {}) {
     let element = document.querySelector(`#${options.id}`);
-    if (element) element.innerText = options.text || '';
+    if (element) element.innerText = options.text || options.value|| '';
 };
 function set_breadcrumb(options = {}) {
     let breadcrumb = document.querySelector('#breadcrumb');
@@ -97,7 +97,7 @@ function set_href(options = {}) {
 };
 function set_value(options = {}) {
     let element = document.querySelector(`#${options.id}`);
-    if (element) element.value = options.value || '';
+    if (element) element.value = options.value || options.text || '';
 };
 function set_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);
@@ -146,8 +146,8 @@ function table_date(date, time = false) {
     return _date;
 }
 function print_nsn(nsn) {
-    if (nsn && nsn.group && nsn.classification && nsn.country) {
-        return `${String(nsn.group.code).padStart(2, '0')}${String(nsn.classification.code).padStart(2, '0')}-${String(nsn.country.code).padStart(2, '0')}-${nsn.item_number}`
+    if (nsn && nsn.nsn_group && nsn.nsn_class && nsn.nsn_country) {
+        return `${String(nsn.nsn_group.code).padStart(2, '0')}${String(nsn.nsn_class.code).padStart(2, '0')}-${String(nsn.nsn_country.code).padStart(2, '0')}-${nsn.item_number}`
     } else return '';
 };
 function print_account(account) {

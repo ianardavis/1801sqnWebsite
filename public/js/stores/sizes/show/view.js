@@ -29,4 +29,4 @@ function getSize() {
         document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
     });
 };
-document.querySelector('#reload').addEventListener('click', getSize);
+addReloadListener(getSize);

@@ -7,9 +7,10 @@ module.exports = (inc, m) => {
     };
     inc.size = (options = {}) => {
         return {
-            model:   m.sizes,
-            include: [inc.item()],
-            as:      options.as || 'size'
+            model:      m.sizes,
+            include:    options.include || [inc.item()],
+            attributes: options.attributes || null,
+            as:         options.as || 'size'
         };
     };
     inc.user = (options = {}) => {
@@ -82,19 +83,19 @@ module.exports = (inc, m) => {
     inc.nsn_class = () => {
         return {
             model: m.nsn_classes,
-            as:    'class'
+            as:    'nsn_class'
         };
     };
     inc.nsn_country = () => {
         return {
             model: m.nsn_countries,
-            as:    'country'
+            as:    'nsn_country'
         };
     };
     inc.nsn_group = () => {
         return {
             model: m.nsn_groups,
-            as:    'group'
+            as:    'nsn_group'
         };
     };
     inc.nsn = (options = {}) => {

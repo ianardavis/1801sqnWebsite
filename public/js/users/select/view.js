@@ -38,6 +38,7 @@ function selectUsers() {
         let users = [];
         document.querySelectorAll("input[type='checkbox']:checked").forEach(e => {
             users.push(e.dataset.id);
+            e.checked = false;
         });
         window.opener.selectedUsers(users);
     } else alert('Source window not found');

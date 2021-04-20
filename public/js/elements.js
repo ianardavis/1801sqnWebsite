@@ -132,8 +132,8 @@ function Input (options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'text');
     this.e.classList.add('form-control');
-    if (options.classes)    options.classes.forEach(e => this.e.classList.add(e))
     if (options.small)      this.e.classList.add('form-control-sm');
+    if (options.classes)    options.classes.forEach(e => this.e.classList.add(e));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Tab_Header (options = {}) { 
@@ -161,16 +161,23 @@ function Button (options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
+    if (options.small) this.e.classList.add('btn-sm');
+    if (options.float) this.e.classList.add('float-right');
+
     if (options.type === 'edit') {
         this.e.classList.add('btn-success');
         this.e.innerHTML = _edit();
     } else if (options.type === 'move') {
         this.e.classList.add('btn-success');
         this.e.innerHTML = _move(options.type_attribute || '');
+    } else if (options.type === 'delete') {
+        this.e.classList.add('btn-danger');
+        this.e.innerHTML = _delete();
     } else {
         this.e.classList.add('btn-primary');
         this.e.innerHTML = _search();
     };
+
     if (options.modal) {
         this.e.setAttribute('data-toggle', 'modal');
         this.e.setAttribute('data-target', `#mdl_${options.modal}`);
@@ -178,9 +185,8 @@ function Button (options = {}) {
     if (options.source) {
         this.e.setAttribute('data-source', options.source);
     };
-    if (options.data)  this.e.setAttribute(`data-${options.data.field}`, options.data.value);
-    if (options.small) this.e.classList.add('btn-sm');
-    if (options.float) this.e.classList.add('float-right');
+    if (options.data) this.e.setAttribute(`data-${options.data.field}`, options.data.value);
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Select (options = {}) {
     this.e = document.createElement('select');

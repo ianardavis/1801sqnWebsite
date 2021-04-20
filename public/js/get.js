@@ -9,7 +9,7 @@ function get(options) {
                 let response = JSON.parse(event.target.responseText);
                 if (response.success) resolve([response.result, options])
                 else {
-                    console.log(response.message);
+                    console.log(response.message || response);
                     reject(new Error(response.message));
                 };
             } catch (error) {

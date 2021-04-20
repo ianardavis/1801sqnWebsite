@@ -1,21 +1,81 @@
-function listNSNs(line_id, size) {
-    get(
-        {
-            table: 'nsns',
-            query: [`size_id=${size.size_id}`]
-        },
-        function (nsns, options) {
-            let sel_nsn = document.querySelector(`#sel_nsn_${line_id}`);
-            if (sel_nsn) {
-                sel_nsn.innerHTML = '';
-                nsns.forEach(nsn => {
-                    sel_nsn.appendChild(new Option({
-                        text: print_nsn(nsn),
-                        value: nsn.nsn_id,
-                        selected: (nsn.nsn_id === size.nsn_id)
-                    }).e)
+function getNSNGroups(options = {}) {
+    clear_select('nsn_groups')
+    .then(sel_nsn_groups => {
+        get({
+            table:                   'nsn_groups',
+            selected:                options.selected,
+            selected_classification: options.selected_classification || null
+        })
+        .then(function ([nsn_groups, options]) {
+            sel_nsn_groups.appendChild(new Option({text: 'Select Group Code', selected: (options.selected === null)}).e);
+            let selected = options.selected;
+            nsn_groups.forEach(e => {
+                if (!options.selected && e.code === 84) selected = true
+                sel_nsn_groups.appendChild(
+                    new Option({
+                        text:     `${String(e.code).padStart(2, '0')} | ${e.group}`,
+                        value:     e.nsn_group_id,
+                        selected: (options.selected ? (e.nsn_group_id === options.selected) : (e.code === 84))
+                    }).e
+                );
+            });
+            getNSNClassifications({select: options.select, selected: options.selected_classification});
+        });
+    })
+    .catch(err => console.log(err));
+};
+function getNSNClassifications(options = {}) {
+    clear_select('nsn_classes')
+    .then(sel_nsn_classes => {
+        let group = document.querySelector('#sel_nsn_groups');
+        if (group) {
+            get({
+                table:    'nsn_classes',
+                query:    [`nsn_group_id=${group.value}`],
+                selected: options.selected || null
+            })
+            .then(function ([nsn_classes, options]) {
+                sel_nsn_classes.appendChild(
+                    new Option({
+                        text: 'Select Classification Code',
+                        selected: (options.selected === null)
+                    }).e
+                );
+                nsn_classes.forEach(e => {
+                    sel_nsn_classes.appendChild(
+                        new Option({
+                            text:     `${String(e.code).padStart(2, '0')} | ${e.class}`,
+                            value:     e.nsn_class_id,
+                            selected: (e.nsn_class_id === options.selected)
+                        }).e
+                    );
                 });
-            };
-        }
-    );
+            });
+        };
+    })
+    .catch(err => console.log(err));
+};
+function getNSNCountries(options = {}) {
+    clear_select('nsn_countries')
+    .then(sel_nsn_countries => {
+        get({
+            table:    'nsn_countries',
+            selected: options.selected
+        })
+        .then(function ([nsn_countries, options]) {
+            sel_nsn_countries.appendChild(
+                new Option({text: 'Select Country Code'}).e
+            );
+            nsn_countries.forEach(e => {
+                sel_nsn_countries.appendChild(
+                    new Option({
+                        text:     `${String(e.code).padStart(2, '0')} | ${e.country}`,
+                        value:     e.nsn_country_id,
+                        selected: (options.selected ? (e.nsn_country_id === options.selected) : (e.code === 99))
+                    }).e
+                );
+            });
+        });
+    })
+    .catch(err => console.log(err));
 };

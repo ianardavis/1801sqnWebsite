@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores/items', text: 'Items'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/items', text: 'Items'}) %>
 <%- include(`${partials}/breadcrumb`, {id: 'item'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
@@ -13,15 +13,16 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				<%- include(`${partials}/menu/button`, {id: 'size_edit',  text: 'Edit',               modal: 'size_edit'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'detail_add', text: 'Add Detail',         modal: 'detail_add'}) %>
                 <div class="dropdown-divider"></div>
+                <%- include(`${partials}/menu/button`, {id: 'detail_add', text: 'Add Detail',         modal: 'detail_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'note_add',   text: 'Add Note',           modal: 'note_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'nsn_add',    text: 'Add NSN',            modal: 'nsn_add',    classes: ['has_nsns_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'serial_add', text: 'Add Serial #',       modal: 'serial_add', classes: ['serial_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'stock_add',  text: 'Add Stock Location', modal: 'stock_add',  classes: ['stock_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'order_add',  text: 'Add Order',          modal: 'order_add',  classes: ['orderable_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'issue_add',  text: 'Add Issue',          modal: 'issue_add',  classes: ['issueable_element']}) %>
-				<% if (permissions.item_delete) { %><form id='form_size_delete'><% } %>
+                <div class="dropdown-divider"></div>
+                <% if (permissions.item_delete) { %><form id='form_size_delete'><% } %>
                 <%- include(`${partials}/menu/button`, {id: 'delete',     text: 'Delete'}) %>
                 <% if (permissions.item_delete) { %></form><% } %>
             </div>
@@ -56,6 +57,7 @@
         </div>
         <% if (permissions.access_nsns) { %>
             <div id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
+                <% if (permissions.size_edit) { %><form id='form_nsn_default'><% } %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-80' onclick='sortTable(0, "tbl_nsns")'>NSN</th>
@@ -64,6 +66,7 @@
                     </thead>
                     <tbody id='tbl_nsns'></tbody>
                 </table>
+                <% if (permissions.size_edit) { %></form><% } %>
             </div>
         <% } %>
         <% if (permissions.access_serials) { %>
@@ -105,6 +108,7 @@
         <% } %>
         <% if (permissions.access_issues) { %>
             <div id="issues"  role="tabpanel" aria-labelledby="issues-tab"  class="tab-pane fade">
+                <%- include(`${partials}/inputs/select`, {id: 'sel_issue_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled/Declined', value: 'status=0'}, {text: 'Requested', value: 'status=1'}, {text: 'Approved', value: 'status=2'}, {text: 'Ordered', value: 'status=3'}, {text: 'Issued', value: 'status=4'}, {text: 'Returned', value: 'status=5'}]}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-20' onclick='sortTable(0, "tbl_issues")'>Date</th>
@@ -237,7 +241,7 @@
             </div>
         <% } %>
         <% if (permissions.access_issues) { %>
-            <div     id='mdl_issue_view' class="modal fade" tabindex="-1" role="dialog">
+            <div     id='mdl_issue_view'  class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -261,19 +265,19 @@
                 </div>
             </div>
             <% if (permissions.issue_add) { %>
-                <div     id='mdl_issue_add'   class="modal fade" tabindex="-1" role="dialog">
+                <div id='mdl_issue_add'   class="modal fade" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-lg" role="document">
                         <form class="modal-content" id='form_issue_add'>
                             <div class="modal-header">
                                 <h5 class="modal-title">Issue Item</h5>
                             </div>
                             <div class="modal-body">
-                                <input type="hidden" name='line[size_id]' class='size_id'>
-                                <button type='button' class='btn btn-success w-100' id='btn_issue_users'>Add Users</button>
+                                <%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
+                                <button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_users'>Add Users</button>
                                 <table class='table table-sm table-hover'>
                                     <thead class='thead-dark'>
-                                        <th class='w-40' onclick='sortTable(0, "tbl_issue_add")'>User ID</th>
-                                        <th class='w-40' onclick='sortTable(1, "tbl_issue_add")'>User</th>
+                                        <th class='w-30' onclick='sortTable(0, "tbl_issue_add")'>Service Number</th>
+                                        <th class='w-60' onclick='sortTable(1, "tbl_issue_add")'>User</th>
                                         <th class='w-20' onclick='sortTable(2, "tbl_issue_add")'>Quantity</th>
                                         <th><i class='fas fa-trash-alt'></i></th>
                                     </thead>
@@ -295,19 +299,20 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5   class="modal-title">NSN ID: <span id="nsn_id"></span> | <span id="_nsn_view"></span></h5>
+                            <h5   class="modal-title">NSN: <span id="nsn_view"></span></h5>
                             <span class='float-right' id='nsn_buttons'>
                                 <a class='btn btn-primary' id='btn_nsn_link'><i class="fas fa-search"></i></a>
                             </span>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',          classes: ['text-left'], title: 'Group'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'nsn_class_id', classes: ['text-left'], title: 'Classification'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id',        classes: ['text-left'], title: 'Country'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: '_item_number',          classes: ['text-left'], title: 'Item Number'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: '_default',              classes: ['text-left'], title: 'Is Default?'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',   classes: ['text-left'], title: 'Group'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_class_id',   classes: ['text-left'], title: 'Classification'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id', classes: ['text-left'], title: 'Country'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'item_number',    classes: ['text-left'], title: 'Item Number'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: '_default',       classes: ['text-left'], title: 'Is Default?'}) %>
                         </div>
                         <div class="modal-footer">
+                            <p class='mr-auto'>ID: <span id='nsn_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -322,10 +327,10 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" class='size_id' name='nsn[size_id]'>
-                                <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',          placeholder: 'Required', required: true, id: 'nsn_group_id_add'}) %>
-                                <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]', placeholder: 'Required', required: true, id: 'nsn_class_id_add'}) %>
-                                <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]',        placeholder: 'Required', required: true, id: 'nsn_country_id_add'}) %>
-                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[_item_number]',          placeholder: 'Required', required: true, maxLength: '8'}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]',   required: true, id: 'sel_nsn_classes'}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]', required: true, id: 'sel_nsn_countries'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, maxlength: '8', placeholder: 'Required'}) %>
                                 <%- include(`${partials}/inputs/select`, {title: 'Default?',       name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
                             </div>
                             <div class="modal-footer">
@@ -338,122 +343,45 @@
             <% } %>
         <% } %>
 
-        <% if (permissions.access_serials) { %>
-            <div     id='mdl_serial_view' class="modal fade" tabindex="-1" role="dialog">
+        <% if (permissions.serial_add) { %>
+            <div id='mdl_serial_add'  class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
+                    <form class="modal-content" id='form_serial_add'>
                         <div class="modal-header">
-                            <h5   class="modal-title">Serial ID: <span id="serial_id"></span> | <span id="_serial_view"></span></h5>
-                            <span class='float-right' id='serial_buttons'>
-                                <a class='btn btn-primary' id='btn_serial_link'><i class="fas fa-search"></i></a>
-                            </span>
+                            <h5 class="modal-title">Add Serial</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'serial_location', classes: ['text-left'], title: 'Location'}) %>
+                            <input type="hidden" class='size_id' name='serial[size_id]'>
+                            <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: 'serial_serial',   name: 'serial[serial]', maxlength: 45, required: true, autocomplete: 'off'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_location', name: 'location',       maxlength: 20, required: true, list_id: 'locations_list', spinner_id: 'locations', reload_id: 'reload_locations_serial'}) %>
                         </div>
                         <div class="modal-footer">
+                            <input  type="submit" class="btn btn-success w-100" value='Save Serial'>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
-            <% if (permissions.serial_add) { %>
-                <div id='mdl_serial_add'  class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <form class="modal-content" id='form_serial_add'>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add Serial</h5>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" class='size_id' name='serial[size_id]'>
-                                <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: '_serial',          name: 'serial[_serial]', maxlength: 45, required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_locations', name: '_location',       maxlength: 20, required: true, list: true, spinner: true, spinner_id: 'locations'}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save Size'>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <% } %>
         <% } %>
 
-        <% if (permissions.access_stocks) { %>
-            <div     id='mdl_stock_view'  class="modal fade" tabindex="-1" role="dialog">
+        <% if (permissions.stock_add) { %>
+            <div     id='mdl_stock_add'   class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
+                    <form class="modal-content" id='form_stock_add'>
                         <div class="modal-header">
-                            <h5 class="modal-title">Stock ID</h5>
+                            <h5 class="modal-title">Add Stock Location</h5>
                         </div>
                         <div class="modal-body">
-                            <ul class="nav nav-tabs" id="stockTab" role="tablist">
-                                <%- include(`${partials}/tab_head`, {id: 'stock-view',    title: 'Stock',       spinner: 'stock_view',    active: true}) %>
-                                <%- include(`${partials}/tab_head`, {id: 'stock-adjusts', title: 'Adjustments', spinner: 'stock_adjusts', count_id: 'stock_adjusts', permission: 'access_adjusts'}) %>
-                            </ul>
-                            <div class="tab-content pt-3" id="stockContent">
-                                <div class="tab-pane fade show active" id="stock-view" role="tabpanel" aria-labelledby="stock-view-tab">
-                                    <%- include(`${partials}/inputs/display`, {id: 'stock_location', classes: ['text-left'], title: 'Location'}) %>
-                                    <%- include(`${partials}/inputs/display`, {id: 'qty',            classes: ['text-left'], title: 'Quantity'}) %>
-                                </div>
-                                <% if (permissions.access_adjusts) { %>
-                                    <div class="tab-pane fade" id="stock-adjusts" role="tabpanel" aria-labelledby="stock-adjusts-tab">
-                                        <% if (permissions.adjust_add) { %>
-                                            <form class='row' id='form_adjust_add'>
-                                                <input type="hidden" name='adjust[stock_id]' id='stock_id_adjust'>
-                                                <div class="col-4">
-                                                    <select class='form-control' name='adjust[type]' required>
-                                                        <option value="Count">Count</option>
-                                                        <option value="Scrap">Scrap</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-4">
-                                                    <input id='stock_id_qty' class='form-control' type="number" inputmode="numeric" min='0' maxlength="11" name='adjust[_qty]' required>
-                                                </div>
-                                                <div class="col-4">
-                                                    <button class='btn btn-success w-100'>Save</button>
-                                                </div>
-                                            </form>
-                                        <% } %>
-                                        <table class='table table-sm table-hover'>
-                                            <thead class='thead-dark'>
-                                                <th class='w-30' onclick='sortTable(0, "tbl_adjusts")'>Date</th>
-                                                <th class='w-30' onclick='sortTable(1, "tbl_adjusts")'>Type</th>
-                                                <th class='w-20' onclick='sortTable(2, "tbl_adjusts")'>Qty</th>
-                                                <th class='w-20' onclick='sortTable(3, "tbl_adjusts")'>Variance</th>
-                                            </thead>
-                                            <tbody id='tbl_adjusts'></tbody>
-                                        </table>
-                                    </div>
-                                <% } %>
-                            </div>
+                            <input type="hidden" class='size_id' name='stock[size_id]'>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: 'location', maxlength: 20, required: true, list_id: 'locations_list', spinner_id: 'locations', reload_id: 'reload_locations_stock'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='stock_id'></span></p>
+                            <input  type="submit" class="btn btn-success w-100" value='Save Location'>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
-            <% if (permissions.stock_add) { %>
-                <div id='mdl_stock_add'   class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <form class="modal-content" id='form_stock_add'>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add Serial</h5>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" class='size_id' name='stock[size_id]'>
-                                <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: '_location', maxlength: 20, required: true, list_id: 'locations_list', spinner: true, spinner_id: 'locations'}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save Location'>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <% } %>
         <% } %>
     </div>
 </section>
@@ -497,6 +425,7 @@
     <script src="/js/stores/sizes/show/nsns/view.js"></script>
     <script async>getNSNs()</script>
     <% if (permissions.nsn_add) { %>
+        <script src="/js/utils/list/nsns.js"></script>
         <script src="/js/stores/sizes/show/nsns/add.js"></script>
     <% } %>
 <% } %>

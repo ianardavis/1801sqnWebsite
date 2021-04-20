@@ -2,9 +2,10 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function getIssues() {
     clear_table('issues')
     .then(tbl_issues => {
+        let status = document.querySelector('#sel_issue_status') || {value: ''}
         get({
             table: 'issues',
-            query: [`size_id=${path[2]}`]
+            query: [`size_id=${path[2]}`, status.value]
         })
         .then(function ([issues, options]) {
             set_count({id: 'issue', count: issues.length});
@@ -51,5 +52,6 @@ function viewIssue(issue_id) {
 };
 addReloadListener(getIssues);
 window.addEventListener('load', function () {
+    document.querySelector('#sel_issue_status').addEventListener('change', getIssues);
     $('#mdl_issue_view').on('show.bs.modal', function (event) {viewIssue(event.relatedTarget.dataset.id)});
 });

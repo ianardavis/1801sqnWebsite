@@ -37,7 +37,7 @@
             addFormListener(
                 'line',
                 'POST',
-                `/stores/<%= table.toLowerCase() %>_lines`,
+                `/<%= table.toLowerCase() %>_lines`,
                 {
                     onComplete: [
                         showLines,

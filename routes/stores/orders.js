@@ -17,8 +17,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.orders.findAll({
             where:   req.query,
             include: [
-                inc.sizes(),
-                inc.users()
+                inc.size(),
+                inc.user()
             ]
         })
         .then(orders => res.send({success: true, result: orders}))
@@ -28,8 +28,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.orders.findOne({
             where:   req.query,
             include: [
-                inc.sizes(),
-                inc.users()
+                inc.size(),
+                inc.user()
             ]
         })
         .then(order => res.send({success: true, result: order}))
@@ -44,9 +44,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     
     app.put('/orders',       li,         pm.check('order_edit',    {send: true}), (req, res) => {
         let actions = [];
-        req.body.lines.filter(e => e._status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
-        actions.push(demand_orders(req.body.lines.filter(e => e._status === '2'), req.user.user_id));
-        req.body.lines.filter(e => e._status === '3').forEach(line => actions.push(receive_line(line, req.user.user_id)));
+        req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
+        actions.push(demand_orders(req.body.lines.filter(e => e.status === '2'), req.user.user_id));
+        req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(receive_line(line, req.user.user_id)));
         Promise.allSettled(actions)
         .then(results => {
             if (results.filter(e => e.status === 'rejected').length > 0) {
@@ -60,26 +60,26 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.delete('/orders/:id', li,        pm.check('order_delete',  {send: true}), (req, res) => {
         m.orders.findOne({
             where:      {order_id: req.params.id},
-            attributes: ['order_id', '_status']
+            attributes: ['order_id', 'status']
         })
         .then(order => {
-            if      (!order)              send_error(res, 'Order not found');
-            else if (order._status !== 1) send_error(res, 'Only placed orders can be cancelled');
+            if      (!order)             send_error(res, 'Order not found');
+            else if (order.status !== 1) send_error(res, 'Only placed orders can be cancelled');
             else {
-                return order.update({_status: 0})
+                return order.update({status: 0})
                 .then(results => {
                     if (!result) send_error(res, 'Order not cancelled')
                     else {
                         return m.actions.findAll({
                             where:      {order_id: order_id},
                             attributes: ['action_id'],
-                            include: [inc.issues({attributes: ['issue_id', '_status']})]
+                            include: [inc.issue({attributes: ['issue_id', 'status']})]
                         })
                         .then(issues => {
                             let issue_actions = [];
                             issues.forEach(issue => {
-                                if (issue.issue._status === 3) {
-                                    issue_actions.push(issue.issue.update({_status: 2}));
+                                if (issue.issue.status === 3) {
+                                    issue_actions.push(issue.issue.update({status: 2}));
                                     issue_actions.push(m.actions.create({
                                         issue_id: issue.issue_id,
                                         _action:  'Order cancelled',
@@ -141,8 +141,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     new Promise((resolve, reject) => {
                         return m.orders.findOne({
                             where:      {order_id: line.order_id},
-                            include:    [inc.sizes({attributes: ['size_id', 'supplier_id']})],
-                            attributes: ['order_id', 'size_id', '_status', '_qty']
+                            include:    [inc.size({attributes: ['size_id', 'supplier_id']})],
+                            attributes: ['order_id', 'size_id', 'status', 'qty']
                         })
                         .then(order => {
                             if      (!order)                  reject(new Error('Order not found'))
@@ -253,18 +253,18 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 return m.orders.findOne({
                     where:      {order_id: line.order_id},
                     attributes: ['order_id', 'size_id', '_status', '_qty'],
-                    include:    [inc.sizes({attributes: ['size_id', '_serials', 'supplier_id']})]
+                    include:    [inc.size({attributes: ['size_id', 'has_serials', 'supplier_id']})]
                 })
                 .then(order => {
-                    if      (!order)              reject(new Error('Order not found'));
-                    else if (order._status !== 1) reject(new Error('Only placed orders can be received'))
+                    if      (!order)             reject(new Error('Order not found'));
+                    else if (order.status !== 1) reject(new Error('Only placed orders can be received'))
                     else {
                         let receive_action = null
-                        if (order.size._serials) receive_action = receive_line_serial({...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}})
+                        if (order.size.has_serials) receive_action = receive_line_serial({...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}})
                         else                     receive_action = receive_line_stock( {...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}});
                         receive_action
                         .then(result => {
-                            order.update({_status: 3})
+                            order.update({status: 3})
                             .then(update_result => {
                                 if (!result) resolve({success: true, message: 'Order received, line not updated'})
                                 else {
@@ -272,7 +272,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                         ...result,
                                         ...{
                                             order_id: order.order_id,
-                                            _action:  'Order received',
+                                            action:   'Order received',
                                             user_id:  user_id
                                         }
                                     })
@@ -319,7 +319,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 return m.stocks.findOne({
                     where:      {stock_id: options.stock_id},
                     attributes: ['stock_id', 'location_id', '_qty'],
-                    include:    [inc.locations({as: 'location'})]
+                    include:    [inc.location()]
                 })
                 .then(stock => {
                     if (!stock) reject(new Error('Stock record not found'))
@@ -472,8 +472,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         return new Promise((resolve, reject) => {
             return m.order_lines.findOne({
                 where:      {line_id: line_id},
-                include:    [inc.sizes({attributes: ['supplier_id']})],
-                attributes: ['line_id', 'size_id', '_qty']
+                include:    [inc.size({attributes: ['supplier_id']})],
+                attributes: ['line_id', 'size_id', 'qty']
             })
             .then(order_line => {
                 if      (!order_line)                                                         resolve({success: false, message: 'Order line not found'});
@@ -532,8 +532,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         return new Promise((resolve, reject) => {
             return m.order_lines.findOne({
                 where: {line_id: line.line_id},
-                include: [inc.sizes({attributes: ['supplier_id']})],
-                attributes: ['line_id', 'size_id', '_qty']
+                include: [inc.size({attributes: ['supplier_id']})],
+                attributes: ['line_id', 'size_id', 'qty']
             })
             .then(order_line => {
                 if      (!order_line)                                                        resolve({success: false, message: 'Order line not found'});
@@ -594,8 +594,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         new Promise((resolve, reject) => {
             return m.order_lines.findOne({
                 where:      {line_id: line.line_id},
-                include:    [inc.orders()],
-                attributes: ['line_id', 'size_id', 'order_id', '_qty']
+                include:    [inc.order()],
+                attributes: ['line_id', 'size_id', 'order_id', 'qty']
             })
             .then(order_line => {
                 if (!order_line) resolve({success: false, message: 'Order line not found'})
@@ -608,7 +608,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         user_id:   user_id,
                         nsn_id:    line.nsn_id    || null,
                         _line:     issue.count + line.offset + 1,
-                        _qty:      order_line._qty
+                        _qty:      order_line.qty
                     })
                     .then(line_result => {
                         return m.order_line_actions.create({

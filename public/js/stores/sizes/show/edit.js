@@ -22,7 +22,7 @@ function getSuppliers(selected = null) {
 };
 
 window.addEventListener('load', function () {
-    remove_attribute({id: 'btn_size_edit', attribute: 'disabled'});
+    enable_button('size_edit');
     addFormListener(
         'size_edit',
         'PUT',
@@ -33,6 +33,12 @@ window.addEventListener('load', function () {
                 function () {$('#mdl_size_edit').modal('hide')}
             ]
         }
+    );
+    addFormListener(
+        'nsn_default',
+        'PUT',
+        `/sizes/${path[2]}/default_nsn`,
+        {onComplete: getNSNs}
     );
     $('#mdl_size_edit').on('show.bs.modal', viewSizeEdit);
     document.querySelector('#reload_suppliers').addEventListener('click', function () {getSuppliers()});

@@ -11,8 +11,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.stocks.findOne({
             where:   req.query,
             include: [
-                inc.sizes(),
-                inc.locations({as: 'location'})
+                inc.size(),
+                inc.location()
             ],
         })
         .then(stock => res.send({success: true, result: stock}))
@@ -20,12 +20,26 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     });
 
     app.post('/stocks',       li, pm.check('stock_add',     {send: true}), (req, res) => {
-        m.locations.findOrCreate({where: {_location: req.body._location}})
-        .then(([location, created]) => {
-            req.body.stock.location_id = location.location_id;
-            return m.stocks.create(req.body.stock)
-            .then(stock => res.send({success: true, message: 'Stock added'}))
-            .catch(err => send_error(res, err));
+        m.sizes.findOne({
+            where: {size_id: req.body.stock.size_id},
+            attributes: ['size_id']
+        })
+        .then(size => {
+            if (!size) send_error(res, 'Size not found')
+            else {
+                return m.locations.findOrCreate({where: {location: req.body.location}})
+                .then(([location, created]) => {
+                    return m.stocks.findOrCreate({
+                        where: {
+                            size_id:     size.size_id,
+                            location_id: location.location_id
+                        }
+                    })
+                    .then(([stock, created]) => res.send({success: true, message: 'Stock location added'}))
+                    .catch(err => send_error(res, err));
+                })
+                .catch(err => send_error(res, err));
+            };
         })
         .catch(err => send_error(res, err));
     });

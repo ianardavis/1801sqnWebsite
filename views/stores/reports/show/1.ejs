@@ -3,10 +3,10 @@
     <a class="nav-link" href="/stores">Stores</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="/stores/reports">Reports</a>
+    <a class="nav-link" href="/reports">Reports</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="/stores/reports/1">Negative Stock</a>
+    <a class="nav-link" href="/reports/1">Negative Stock</a>
 </li>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class="mb-2">
@@ -24,15 +24,15 @@
                     <% stock.forEach(item => { %>
                         <tr>
                             <td>
-                                <a class="btn btn-sm btn-primary float-right" href="/stores/items/<%= item.size.item_id %>"><i class="fas fa-search"></i></a>
+                                <a class="btn btn-sm btn-primary float-right" href="/items/<%= item.size.item_id %>"><i class="fas fa-search"></i></a>
                                 <%= item.size.item._description %>
                             </td>
                             <td>
-                                <a class="btn btn-sm btn-primary float-right" href="/stores/sizes/<%= item.size_id %>"><i class="fas fa-search"></i></a>
+                                <a class="btn btn-sm btn-primary float-right" href="/sizes/<%= item.size_id %>"><i class="fas fa-search"></i></a>
                                 <%= item.size._size %>
                             </td>
                             <td>
-                                <a class="btn btn-sm btn-primary float-right" href="/stores/stock/<%= item.stock_id %>/edit"><i class="fas fa-search"></i></a>
+                                <a class="btn btn-sm btn-primary float-right" href="/stock/<%= item.stock_id %>/edit"><i class="fas fa-search"></i></a>
                                 <%= item.location._location %>
                             </td>
                             <td>
