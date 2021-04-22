@@ -1,18 +1,23 @@
-function listLocations(line_id, blankselect = false) {
-    clear_select(`location_${line_id}`)
+function listLocations(options = {}) {
+    clear_select(options.select)
     .then(sel_location => {
-        get({table: 'locations'})
+        get({
+            table: 'locations',
+            ...options
+        })
         .then(function ([locations, options]) {
-            if (blankselect) sel_location.appendChild(
-                new Option({
-                    text: 'Select Location',
-                    value: ''
-                }).e
-            );
+            if (options.blank) {
+                sel_location.appendChild(
+                    new Option({
+                        text: options.blank_text || '',
+                        value: ''
+                    }).e
+                );
+            };
             locations.forEach(location => {
                 sel_location.appendChild(
                     new Option({
-                        text: location._location,
+                        text: location.location,
                         value: location.location_id
                     }).e
                 );

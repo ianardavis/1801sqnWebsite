@@ -20,8 +20,8 @@
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details',     spinner: 'stock'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'adjustments', title: 'Adjustments', spinner: 'adjustments', count_id: 'adjustments', permission: 'access_adjustments'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',       title: 'Notes',       spinner: 'notes',       count_id: 'note',        permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'adjustments', title: 'Adjustments', spinner: 'adjustments', count_id: 'adjustment', permission: 'access_adjustments'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',       title: 'Notes',       spinner: 'notes',       count_id: 'note',       permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -32,10 +32,10 @@
             <div class="tab-pane fade" id="adjustments" role="tabpanel" aria-labelledby="adjustments-tab">
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
-                        <th class='w-50' onclick='sortTable(0, "tbl_adjustments")'>Date</th>
-                        <th class='w-50' onclick='sortTable(1, "tbl_adjustments")'>Type</th>
-                        <th class='w-50' onclick='sortTable(2, "tbl_adjustments")'>Qty</th>
-                        <th class='w-50' onclick='sortTable(3, "tbl_adjustments")'>Variance</th>
+                        <th class='w-40' onclick='sortTable(0, "tbl_adjustments")'>Date</th>
+                        <th class='w-40' onclick='sortTable(1, "tbl_adjustments")'>Type</th>
+                        <th class='w-10' onclick='sortTable(2, "tbl_adjustments")'>Qty</th>
+                        <th class='w-10' onclick='sortTable(3, "tbl_adjustments")'>Variance</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_adjustments'></tbody>
@@ -51,21 +51,63 @@
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_stock_edit'>
                         <div class="modal-header">
-                            <h5 class="modal-title">Edit Stock</h5>
+                            <h5 class="modal-title">Edit Location</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'stock[stock_group_id]',   required: true, id: 'sel_stock_groups'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'stock[stock_class_id]',   required: true, id: 'sel_stock_classes'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'stock[stock_country_id]', required: true, id: 'sel_stock_countries'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'stock[item_number]',    required: true, id: 'item_number_edit', maxlength: '8', placeholder: 'Required'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', maxlength: '8', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
+                            <datalist id="locations_list"></datalist>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit"  class="btn btn-success w-100" value='Save Stock'>
+                            <input type="submit"  class="btn btn-success w-100" value='Save Location'>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </form>
                 </div>
             </div>
+        <% } %>
+        <% if (permissions.access_adjustments) { %>
+            <div     id='mdl_adjustment_view'    class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Adjustment</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_item',      title: 'Item', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_size',      title: 'Size', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_type',      title: 'Type'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_qty',       title: 'Quantity'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_variance',  title: 'Variance'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_user',      title: 'User', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_createdAt', title: 'Created'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <p class='mr-auto'>ID: <span id='adjustment_id'></span></p>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% if (permissions.adjustment_add) { %>
+                <div id='mdl_adjustment_add'     class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <form class="modal-content" id='form_adjustment_add'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Adjustment</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" class='stock_id' name='adjustment[stock_id]'>
+                                <%- include(`${partials}/inputs/select`, {title: 'Type',     name: 'adjustment[type]', options: [{value: 'Count', text: 'Count'}, {value: 'Scrap', text: 'Scrap'}]}) %>
+                                <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'adjustment[qty]',  id: 'adjustment_qty_add', required: true, placeholder: 'Required'}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-success w-100" value='Save Adjustmoent'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
         <% } %>
     </div>
 </section>
@@ -77,10 +119,17 @@
 <script src='/js/stores/stocks/show/view.js'></script>
 <script async>getStock()</script>
 <% if (permissions.stock_edit) { %>
-    <script src="/js/utils/list/stocks.js"></script>
+    <script src="/js/stores/locations/getLocations.js"></script>
     <script src='/js/stores/stocks/show/edit.js'></script>
 <% } %>
 <% if (permissions.stock_delete) { %>
     <script src="/js/stores/stocks/show/delete.js"></script>
+<% } %>
+<% if (permissions.access_adjustments) { %>
+    <script src='/js/stores/stocks/show/adjustments/view.js'></script>
+    <script async>getAdjustments()</script>
+    <% if (permissions.adjustment_add) { %>
+        <script src='/js/stores/stocks/show/adjustments/add.js'></script>
+    <% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

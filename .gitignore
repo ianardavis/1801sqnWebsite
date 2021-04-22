@@ -1,5 +1,5 @@
 node_modules
-.env
+.env*
 db/config.json
 public/lib/icons
 public/lib/css

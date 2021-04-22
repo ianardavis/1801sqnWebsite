@@ -76,7 +76,7 @@ module.exports = (inc, m) => {
     inc.stock = (options = {}) => {
         return {
             model:   m.stocks,
-            as:      options.as || 'stocks',
+            as:      options.as || 'stock',
             include: [inc.location({required: options.require_locations || false})]
         };
     };
@@ -144,6 +144,13 @@ module.exports = (inc, m) => {
         };
     };
     
+    inc.stocks = (options = {}) => {
+        return {
+            model:   m.stocks,
+            as:      options.as || 'stock',
+            include: [inc.location({required: options.require_locations || false})]
+        };
+    };
     inc.adjusts = (options = {}) => {
         let include = [];
         if (options.include) include = options.include
@@ -392,7 +399,7 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         else {
             include.push(m.items)
-            if (options.stock)   include.push(inc.stock());
+            if (options.stock)   include.push(inc.stocks());
             if (options.nsns)    include.push(inc.nsns());
             if (options.serials) include.push(inc.serials());
         };
