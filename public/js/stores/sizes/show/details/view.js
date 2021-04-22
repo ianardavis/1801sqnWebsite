@@ -17,8 +17,7 @@ function getDetails() {
                 }).e});
             });
         });
-    })
-    .catch(err => console.log(err));
+    });
 };
 function viewDetail(detail_id) {
     get({

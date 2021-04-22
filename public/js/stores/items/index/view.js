@@ -19,7 +19,6 @@ function getItems() {
                 }).e});
             });
         });
-    })
-    .catch(err => console.log(err));
+    });
 };
 addReloadListener(getItems);

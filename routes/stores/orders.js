@@ -1,5 +1,5 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    let orders = {}, demands = {}, receipts = {}, issues = {}, allowed = require(`../functions/allowed`),
+    let fn = {}, orders = {}, demands = {}, receipts = {}, issues = {}, allowed = require(`../functions/allowed`),
         promiseResults = require(`../functions/promise_results`);
     require(`./functions/orders`) (m, orders);
     require(`./functions/demands`)(m, demands);

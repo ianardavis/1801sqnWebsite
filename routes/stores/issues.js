@@ -1,5 +1,5 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    let loancards = {}, orders = {}, allowed = require(`../functions/allowed`);
+    let fn= {}, loancards = {}, orders = {}, allowed = require(`../functions/allowed`);
     require('./functions/loancards')(m, inc, loancards);
     require('./functions/orders')(m, orders);
     app.get('/issues',           li, pm.get, pm.check('access_issues', {allow: true}),             (req, res) => res.render('stores/issues/index'));

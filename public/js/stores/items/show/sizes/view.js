@@ -18,7 +18,6 @@ function getSizes() {
                 });
             });
         });
-    })
-    .catch(err => console.log(err));
+    });
 };
 addReloadListener(getSizes);

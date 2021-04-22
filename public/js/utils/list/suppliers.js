@@ -7,7 +7,6 @@ function listSuppliers(options = {}) {
                 ...options
             })
             .then(function ([suppliers, options]) {
-                // if (options.blank === true) sel_suppliers.appendChild(new Option(options.blank_opt || {}).e);
                 if (options.blank === true) sel_suppliers.appendChild(new Option({text: options.blank_text || ''}).e);
                 suppliers.forEach(supplier => {
                     sel_suppliers.appendChild(

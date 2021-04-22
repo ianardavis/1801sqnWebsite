@@ -25,8 +25,7 @@ function listCategories(select, parent_id = '') {
             };
         })
         .catch(err => console.log(err));
-    })
-    .catch(err => console.log(err));
+    });
 };
 function addCategorySelect() {
     let select         = document.querySelectorAll('.sel_category').length + 1 || 1,

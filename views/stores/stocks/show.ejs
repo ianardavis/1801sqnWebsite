@@ -1,0 +1,86 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Stocks'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%- include(`${partials}/menu/button`, {id: 'stock_edit',     text: 'Edit',           modal: 'stock_edit'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add',       text: 'Add Note',       modal: 'note_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'adjustment_add', text: 'Add Adjustment', modal: 'adjustment_add'}) %>
+                <% if (permissions.stock_delete) { %><form id='form_stock_delete'><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',   text: 'Delete'}) %>
+                <% if (permissions.stock_delete) { %></form><% } %>
+            </div>
+        </li>
+        <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details',     spinner: 'stock'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'adjustments', title: 'Adjustments', spinner: 'adjustments', count_id: 'adjustments', permission: 'access_adjustments'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',       title: 'Notes',       spinner: 'notes',       count_id: 'note',        permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'stock_qty',      title: 'Qty'}) %>
+        </div>
+        <% if (permissions.access_adjustments) { %>
+            <div class="tab-pane fade" id="adjustments" role="tabpanel" aria-labelledby="adjustments-tab">
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-50' onclick='sortTable(0, "tbl_adjustments")'>Date</th>
+                        <th class='w-50' onclick='sortTable(1, "tbl_adjustments")'>Type</th>
+                        <th class='w-50' onclick='sortTable(2, "tbl_adjustments")'>Qty</th>
+                        <th class='w-50' onclick='sortTable(3, "tbl_adjustments")'>Variance</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='tbl_adjustments'></tbody>
+                </table>
+            </div>
+        <% } %>
+        <%- include(`${partials}/notes/tab_body`) %>
+    </div>
+    <div id="div_modals">
+        <%- include(`${partials}/notes/modals`) %>
+        <% if (permissions.stock_edit) { %>
+            <div id='mdl_stock_edit' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_stock_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Stock</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'stock[stock_group_id]',   required: true, id: 'sel_stock_groups'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'stock[stock_class_id]',   required: true, id: 'sel_stock_classes'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'stock[stock_country_id]', required: true, id: 'sel_stock_countries'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'stock[item_number]',    required: true, id: 'item_number_edit', maxlength: '8', placeholder: 'Required'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit"  class="btn btn-success w-100" value='Save Stock'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/addFormListener.js"></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('<%= tab %>')</script>
+<%- include(`${partials}/notes/scripts`) %>
+<script src='/js/stores/stocks/show/view.js'></script>
+<script async>getStock()</script>
+<% if (permissions.stock_edit) { %>
+    <script src="/js/utils/list/stocks.js"></script>
+    <script src='/js/stores/stocks/show/edit.js'></script>
+<% } %>
+<% if (permissions.stock_delete) { %>
+    <script src="/js/stores/stocks/show/delete.js"></script>
+<% } %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

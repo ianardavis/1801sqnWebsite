@@ -31,8 +31,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             where: req.query,
             include: [
                 inc.loancard_lines(),
-                inc.users({as: 'user'}),
-                inc.users({as: 'user_loancard'})
+                inc.user(),
+                inc.user({as: 'user_loancard'})
             ]
         })
         .then(loancard => {
@@ -58,9 +58,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.loancard_lines.findAll({
             where:   req.query,
             include: [
-                inc.sizes(),
-                inc.users(),
-                inc.loancards()
+                inc.size(),
+                inc.user(),
+                inc.loancard({include: [inc.user(), inc.user({as: 'user_loancard'})]})
             ]
         })
         .then(lines => res.send({success: true, result: lines}))
@@ -70,10 +70,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.loancard_lines.findOne({
             where:   req.query,
             include: [
-                inc.sizes(),
-                inc.users(),
-                inc.loancards(),
-                inc.actions({include: [inc.orders()]})
+                inc.size(),
+                inc.user(),
+                inc.loancard({include: [inc.user(), inc.user({as: 'user_loancard'})]}),
+                inc.actions({include: [inc.order()]})
             ]
         })
         .then(loancard_line => res.send({success: true, result: loancard_line}))

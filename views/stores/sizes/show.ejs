@@ -95,6 +95,7 @@
         <% } %>
         <% if (permissions.access_orders) { %>
             <div id="orders"  role="tabpanel" aria-labelledby="orders-tab"  class="tab-pane fade">
+                <%- include(`${partials}/inputs/select`, {id: 'sel_order_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled', value: 'status=0'}, {text: 'Placed', value: 'status=1'}, {text: 'Demanded', value: 'status=2'}, {text: 'Received', value: 'status=3'}]}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
                         <th class='w-50' onclick='sortTable(0, "tbl_orders")'>Date</th>
@@ -114,7 +115,7 @@
                         <th class='w-20' onclick='sortTable(0, "tbl_issues")'>Date</th>
                         <th class='w-40' onclick='sortTable(1, "tbl_issues")'>To</th>
                         <th class='w-10' onclick='sortTable(2, "tbl_issues")'>Qty</th>
-                        <th class='w-30' onclick='sortTable(2, "tbl_orders")'>Status</th>
+                        <th class='w-30' onclick='sortTable(3, "tbl_issues")'>Status</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_issues'></tbody>
@@ -221,25 +222,50 @@
             </div>
         <% } %>
 
-        <% if (permissions.order_add) { %>
-            <div     id='mdl_order_add'   class="modal fade" tabindex="-1" role="dialog">
+        <% if (permissions.access_orders) { %>
+            <div     id='mdl_order_view'  class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
-                    <form class="modal-content" id='form_order_add'>
+                    <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Order Item</h5>
+                            <h5 class="modal-title">Order</h5>
+                            <%- include(`${partials}/spinner`, {id: 'order_view'}) %>
+                            <a id="btn_order_link" class='btn btn-primary float-right'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
-                            <input type="hidden" name='line[size_id]' class='size_id'>
-                            <%- include(`${partials}/inputs/number`, {name: 'line[qty]', title: 'Quantity', value: '1', maxlength: 8, placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Ordered By', id: 'order_user', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Quantity',   id: 'order_qty'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'order_status'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Ordered',    id: 'order_createdAt'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'order_updatedAt'}) %>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Order'>
+                            <p class='mr-auto'>ID: <span id='order_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
+            <% if (permissions.order_add) { %>
+                <div     id='mdl_order_add'   class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <form class="modal-content" id='form_order_add'>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Order Item</h5>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name='line[size_id]' class='size_id'>
+                                <%- include(`${partials}/inputs/number`, {name: 'line[qty]', title: 'Quantity', value: '1', maxlength: 8, placeholder: 'Required', required: true}) %>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-success w-100" value='Order'>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
         <% } %>
+
         <% if (permissions.access_issues) { %>
             <div     id='mdl_issue_view'  class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">

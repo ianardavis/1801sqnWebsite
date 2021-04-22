@@ -1,25 +1,22 @@
 function listLocations(line_id, blankselect = false) {
-    get(
-        {table: 'locations'},
-        function (locations, options) {
-            let sel_location = document.querySelector(`#sel_location_${line_id}`);
-            if (sel_location) {
-                sel_location.innerHTML = '';
-                if (blankselect) sel_location.appendChild(
+    clear_select(`location_${line_id}`)
+    .then(sel_location => {
+        get({table: 'locations'})
+        .then(function ([locations, options]) {
+            if (blankselect) sel_location.appendChild(
+                new Option({
+                    text: 'Select Location',
+                    value: ''
+                }).e
+            );
+            locations.forEach(location => {
+                sel_location.appendChild(
                     new Option({
-                        text: 'Select Location',
-                        value: ''
+                        text: location._location,
+                        value: location.location_id
                     }).e
                 );
-                locations.forEach(location => {
-                    sel_location.appendChild(
-                        new Option({
-                            text: location._location,
-                            value: location.location_id
-                        }).e
-                    );
-                });
-            };
-        }
-    );
+            });
+        });
+    })
 };

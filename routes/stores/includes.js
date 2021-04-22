@@ -34,6 +34,13 @@ module.exports = (inc, m) => {
             as:    options.as || 'lines'
         };
     };
+    inc.loancard = (options = {}) => {
+        return {
+            model: m.loancards,
+            include: options.include || [],
+            as:    options.as || 'loancard'
+        };
+    };
     inc.demand_lines = (options = {}) => {
         return {
             model: m.demand_lines,
@@ -116,6 +123,15 @@ module.exports = (inc, m) => {
             as:      options.as || 'account'
         };
     };
+    inc.actions = (options = {}) => {
+        let include = [];
+        include.push(inc.user());
+        return {
+            model:   m.actions,
+            include: include,
+            as:      options.as || 'actions'
+        };
+    };
 
     function template (options) {
         return {
@@ -128,18 +144,6 @@ module.exports = (inc, m) => {
         };
     };
     
-    inc.actions = (options = {}) => {
-        let include = [];
-        include.push(inc.users());
-        return {
-            model:      m.actions,
-            attributes: options.attributes || null,
-            include:    include,
-            as:         options.as         || 'actions',
-            where:      options.where      || null,
-            required:   options.required   || false
-        };
-    };
     inc.adjusts = (options = {}) => {
         let include = [];
         if (options.include) include = options.include

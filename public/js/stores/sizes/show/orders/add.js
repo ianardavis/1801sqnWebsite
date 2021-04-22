@@ -4,6 +4,11 @@ window.addEventListener( "load", function () {
         'order_add',
         'POST',
         '/orders',
-        {onComplete: getOrders}
+        {
+            onComplete: [
+                getOrders,
+                function () {$('#mdl_order_add').modal('hide')}
+            ]
+        }
     );
 });

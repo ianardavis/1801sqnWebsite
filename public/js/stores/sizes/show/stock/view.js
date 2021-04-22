@@ -20,7 +20,6 @@ function getStocks() {
                 } catch (error) {console.log(error)};
             });
         });
-    })
-    .catch(err => console(err));
+    });
 };
 addReloadListener(getStocks);

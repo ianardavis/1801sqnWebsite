@@ -158,8 +158,10 @@ function print_account(account) {
 function clear_select(id) {
     return new Promise((resolve, reject) => {
         let select = document.querySelector(`#sel_${id}`);
-        if (!select) reject(new Error('Select not found'))
-        else {
+        if (!select) {
+            console.log('Select not found');
+            reject(new Error('Select not found'));
+        } else {
             select.innerHTML = '';
             resolve(select);
         };
@@ -168,8 +170,10 @@ function clear_select(id) {
 function clear_table(id) {
     return new Promise((resolve, reject) => {
         let table = document.querySelector(`#tbl_${id}`);
-        if (!table) reject(new Error('Table not found'))
-        else {
+        if (!table) {
+            console.log('Table not found');
+            reject(new Error('Table not found'));
+        } else {
             table.innerHTML = '';
             resolve(table);
         };

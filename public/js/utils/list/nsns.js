@@ -21,8 +21,7 @@ function getNSNGroups(options = {}) {
             });
             getNSNClassifications({select: options.select, selected: options.selected_classification});
         });
-    })
-    .catch(err => console.log(err));
+    });
 };
 function getNSNClassifications(options = {}) {
     clear_select('nsn_classes')
@@ -52,8 +51,7 @@ function getNSNClassifications(options = {}) {
                 });
             });
         };
-    })
-    .catch(err => console.log(err));
+    });
 };
 function getNSNCountries(options = {}) {
     clear_select('nsn_countries')
@@ -76,6 +74,5 @@ function getNSNCountries(options = {}) {
                 );
             });
         });
-    })
-    .catch(err => console.log(err));
+    });
 };

@@ -16,8 +16,7 @@ function getCategories() {
                 }).e});
             });
         });
-    })
-    .catch(err => console.log(err));
+    });
 };
 function viewCategory(category_id) {
     get({

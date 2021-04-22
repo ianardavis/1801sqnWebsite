@@ -16,8 +16,7 @@ function getGenders_add () {
 				);
 			});
 		});
-	})
-	.catch(err => console.log(err));
+	});
 };
 window.addEventListener( "load", function () {
     addFormListener(

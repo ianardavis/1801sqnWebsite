@@ -26,8 +26,7 @@ function getIssues() {
                 };
             });
         });
-    })
-    .catch(err => console.log(err));
+    });
 };
 function viewIssue(issue_id) {
     get({
@@ -36,7 +35,6 @@ function viewIssue(issue_id) {
         spinner: 'issue_view'
     })
     .then(function ([issue, options]){
-
         set_innerText({id: 'issue_user_to',   text: print_user(issue.user_issue)});
         set_innerText({id: 'issue_user_by',   text: print_user(issue.user)});
         set_innerText({id: 'issue_qty',       text: issue.qty});
