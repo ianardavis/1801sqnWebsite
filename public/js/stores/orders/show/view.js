@@ -17,10 +17,7 @@ function showOrder() {
             set_innerText({id: '_status',   text: statuses[order._status]});
             set_innerText({id: 'user',      text: print_user(order.user)});
             set_attribute({id: 'user_link', attribute: 'href', value: `/users/${order.user_id}`});
-            set_breadcrumb({
-                text: order.order_id,
-                href: `/orders/${order.order_id}`
-            });
+            set_breadcrumb({text: order.order_id});
         }
     );
 };

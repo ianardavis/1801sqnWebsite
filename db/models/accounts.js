@@ -19,11 +19,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'user_id_account': {
-      type: DataTypes.UUIDV4,
-      allowNull: false,
-      comment: "null"
-    },
     'user_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,

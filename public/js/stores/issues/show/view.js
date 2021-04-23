@@ -19,10 +19,7 @@ function showIssue() {
             set_innerText({id: '_status',         text: statuses[issue._status]});
             set_innerText({id: 'user',            text: print_user(issue.user)});
             set_attribute({id: 'user_link',       attribute: 'href', value: `/users/${issue.user_id}`});
-            set_breadcrumb({
-                text: issue.issue_id,
-                href: `/issues/${issue.issue_id}`
-            });
+            set_breadcrumb({text: issue.issue_id});
         }
     );
 };

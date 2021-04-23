@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores',       text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/items', text: 'Items'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/items',  text: 'Items'}) %>
 <%- include(`${partials}/breadcrumb`, {id: 'item'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
@@ -326,9 +326,8 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5   class="modal-title">NSN: <span id="nsn_view"></span></h5>
-                            <span class='float-right' id='nsn_buttons'>
-                                <a class='btn btn-primary' id='btn_nsn_link'><i class="fas fa-search"></i></a>
-                            </span>
+                            <%- include(`${partials}/spinner`, {id: 'nsn_view'}) %>
+                            <a class='btn btn-primary float-right' id='btn_nsn_link'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',   classes: ['text-left'], title: 'Group'}) %>

@@ -6,7 +6,7 @@ module.exports = function (m) {
     m.users.hasMany(m.loancards,   {foreignKey: 'user_id_loancard', targetKey: 'user_id'});
     
     m.adjustments   .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
-    m.accounts      .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id_account',  constraints: false});
+    m.accounts      .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.issues        .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id_issue',    constraints: false, as: 'user_issue'});
     m.issues        .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false, as: 'user'});
     m.notes         .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});

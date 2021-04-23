@@ -1,24 +1,14 @@
-<div
-    class="col-12col-md-6 col-lg-4 col-xl-3<% if (locals.hidden === true) { %> hidden<% } %>"
-    <% if (locals.id) { %>id='<%= id %>'<% } %>
->
-    <div class="card m-3">
-        <a
-            <% if (locals.href) { %>href="<%= href %>"<% } %>
-            <% if (locals.id) { %>id='<%= id %>_a'<% } %>
-        >
-            <div
-                class="card-header"
-                <% if (locals.id) { %>id='<%= id %>_header'<% } %>
-            >
-                <h3><%= title %></h3>
-            </div>
-            <div
-                class="card-body"
-                <% if (locals.id) { %>id='<%= id %>_body'<% } %>
-            >
-            <i class="fas fa-<%- image %> fa-5x"></i>
-            </div>
-        </a>
+<% if (!locals.permission || permissions[permission]) { %>
+    <div class="col-12 col-md-6 col-lg-4 col-xl-3"<% if (locals.id) { %>id='crd_<%= id %>'<% } %>>
+        <div class="card m-3">
+            <a href="<%= locals.href || '' %>">
+                <div class="card-header">
+                    <h3><%= title %></h3>
+                </div>
+                <div class="card-body">
+                    <i class="fas fa-<%= image %> fa-5x"></i>
+                </div>
+            </a>
+        </div>
     </div>
-</div>
+<% } %>

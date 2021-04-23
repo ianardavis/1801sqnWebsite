@@ -45,8 +45,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             where:   req.query,
             include: [
                 inc.demand_lines(),
-                inc.users(),
-                inc.suppliers({as: 'supplier'})
+                inc.user(),
+                inc.supplier()
             ]
         })
         .then(demands => res.send({success: true, result: demands}))

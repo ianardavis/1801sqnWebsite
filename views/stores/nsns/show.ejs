@@ -33,8 +33,9 @@
             <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
-                        <th class='w-50' onclick='sortTable(0, "tbl_loancards")'>Date</th>
-                        <th class='w-50' onclick='sortTable(1, "tbl_loancards")'>Issued To</th>
+                        <th class='w-40' onclick='sortTable(0, "tbl_loancards")'>Date</th>
+                        <th class='w-40' onclick='sortTable(1, "tbl_loancards")'>Issued To</th>
+                        <th class='w-20' onclick='sortTable(2, "tbl_loancards")'>Status</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_loancards'></tbody>
@@ -76,19 +77,20 @@
                             <a id="btn_loancard_link" class='btn btn-primary float-right'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
-                            <h5>Loancard Details</h5>
-                            <%- include(`${partials}/inputs/display`, {title: 'Issued To',  id: 'loancard_user_to',   link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Issued By',  id: 'loancard_user_by',   link: true}) %>
+                            <h5>Loancard</h5>
+                            <%- include(`${partials}/inputs/display`, {title: 'Issued To',  id: 'loancard_user_to', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Issued By',  id: 'loancard_user_by', link: true}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'loancard_status'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Due Back',   id: 'loancard_date_due'}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'loancard_createdAt'}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'loancard_updatedAt'}) %>
-                            <h5>Line Details</h5>
+                            <h5>Line</h5>
                             <%- include(`${partials}/inputs/display`, {title: 'Quantity',   id: 'loancard_line_qty'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Item',       id: 'loancard_line_item',      link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Size',       id: 'loancard_line_size',      link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Serial #',   id: 'loancard_line_serial',    link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Item',       id: 'loancard_line_item',   link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Size',       id: 'loancard_line_size',   link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Serial #',   id: 'loancard_line_serial', link: true}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'loancard_line_status'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'loancard_line_user', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'loancard_line_user',   link: true}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'loancard_line_createdAt'}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'loancard_line_updatedAt'}) %>
                         </div>

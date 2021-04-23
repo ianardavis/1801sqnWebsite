@@ -1,0 +1,170 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Serials'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%- include(`${partials}/menu/button`, {id: 'serial_edit', text: 'Edit',     modal: 'serial_edit'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add',    text: 'Add Note', modal: 'note_add'}) %>
+                <% if (permissions.serial_delete) { %><form id='form_serial_delete'><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',      text: 'Delete'}) %>
+                <% if (permissions.serial_delete) { %></form><% } %>
+            </div>
+        </li>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'serial'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard', permission: 'access_loancard_lines'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'actions',   title: 'Actions',   spinner: 'actions',   count_id: 'action',   permission: 'access_actions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',     spinner: 'notes',     count_id: 'note',     permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/inputs/display`, {id: 'serial_item',     title: 'Item',     link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'serial_size',     title: 'Size',     link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'serial_location', title: 'Location', link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'serial_serial',   title: 'Serial #'}) %>
+        </div>
+        <% if (permissions.access_loancard_lines) { %>
+            <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-40' onclick='sortTable(0, "tbl_loancards")'>Date</th>
+                        <th class='w-40' onclick='sortTable(1, "tbl_loancards")'>Issued To</th>
+                        <th class='w-20' onclick='sortTable(2, "tbl_loancards")'>Status</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='tbl_loancards'></tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (permissions.access_actions) { %>
+            <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-50' onclick='sortTable(0, "tbl_actions")'>Date</th>
+                        <th class='w-50' onclick='sortTable(1, "tbl_actions")'>Action</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='tbl_actions'></tbody>
+                </table>
+            </div>
+        <% } %>
+        <%- include(`${partials}/notes/tab_body`) %>
+    </div>
+    <div id="div_modals">
+        <%- include(`${partials}/notes/modals`) %>
+        <% if (permissions.serial_edit) { %>
+            <div id='mdl_serial_edit' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_serial_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Location</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'serial_location_edit', maxlength: '8', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
+                            <datalist id="locations_list"></datalist>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit"  class="btn btn-success w-100" value='Save Location'>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+        <% if (permissions.access_loancard_lines) { %>
+            <div id='mdl_loancard_view' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Loancard</h5>
+                            <%- include(`${partials}/spinner`, {id: 'loancard_view'}) %>
+                            <a class='btn btn-primary float-right' id='btn_loancard_link'><i class="fas fa-search"></i></a>
+                        </div>
+                        <div class="modal-body">
+                            <h5>Loancard</h5>
+                            <%- include(`${partials}/inputs/display`, {title: 'Issued To',  id: 'loancard_user_to', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Issued By',  id: 'loancard_user_by', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'loancard_status'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Due Back',   id: 'loancard_date_due'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'loancard_createdAt'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'loancard_updatedAt'}) %>
+                            <h5>Line</h5>
+                            <%- include(`${partials}/inputs/display`, {title: 'Item',       id: 'loancard_line_item', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Size',       id: 'loancard_line_size', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'NSN',        id: 'loancard_line_nsn',  link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'loancard_line_status'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'loancard_line_user', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'loancard_line_createdAt'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'loancard_line_updatedAt'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <p class='mr-auto'>
+                                Loancard ID: <span id='loancard_id'></span><br>
+                                Line ID: <span id='loancard_line_id'></span>
+                            </p>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        <% if (permissions.access_actions) { %>
+            <div id='mdl_action_view'     class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Action</h5>
+                            <%- include(`${partials}/spinner`, {id: 'action_view'}) %>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`, {id: 'action_createdAt', title: 'Date'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_action',    title: 'Action'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_issue',     title: 'Issue',          link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_order',     title: 'Order',          link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_stock',     title: 'Stock Location', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_location',  title: 'Location',       link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_nsn',       title: 'NSN',            link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_loancard',  title: 'Loancard',       link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_demand',    title: 'Demand',         link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_user',      title: 'User',           link: true}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <p class='mr-auto'>ID: <span id='action_id'></span></p>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/addFormListener.js"></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('<%= tab %>')</script>
+<%- include(`${partials}/notes/scripts`) %>
+<script src='/js/stores/serials/show/view.js'></script>
+<script async>getSerial()</script>
+<% if (permissions.serial_edit) { %>
+    <script src="/js/stores/locations/getLocations.js"></script>
+    <script src='/js/stores/serials/show/edit.js'></script>
+<% } %>
+<% if (permissions.serial_delete) { %>
+    <script src="/js/stores/serials/show/delete.js"></script>
+<% } %>
+<% if (permissions.access_loancard_lines) { %>
+    <script src='/js/stores/serials/show/loancards/view.js'></script>
+    <script async>getLoancards()</script>
+<% } %>
+<% if (permissions.access_actions) { %>
+    <script src='/js/stores/serials/show/actions/view.js'></script>
+    <script async>getActions()</script>
+<% } %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

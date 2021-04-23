@@ -10,10 +10,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
     app.get('/get/setting',     li,         pm.check('access_settings', {send: true}), (req, res) => {
-        m.settings.findOne({
-            where:   req.query,
-            include: [inc.users()]
-        })
+        m.settings.findOne({where: req.query})
         .then(setting => {
             if (!setting) send_error(res, 'Setting not found')
             else          res.send({success: true, result: setting})
@@ -24,7 +21,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.put('/settings',        li,         pm.check('setting_edit',    {send: true}), (req, res) => {
         m.settings.update(
             {_value: req.body.setting._value},
-            {where: {_name: req.body.setting._name}}
+            {where: {name: req.body.setting.name}}
         )
         .then(result => {
             if (!result) res.send({success: true, message: 'Setting not updated'})

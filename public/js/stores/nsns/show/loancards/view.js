@@ -11,6 +11,7 @@ function getLoancards() {
                 let row = tbl_loancards.insertRow(-1);
                 add_cell(row, table_date(line.createdAt));
                 add_cell(row, {text: print_user(line.loancard.user_loancard)});
+                add_cell(row, {text: line.status});
                 add_cell(row, {append: new Button({
                     modal: 'loancard_view',
                     data: {field: 'id', value: line.loancard_line_id},
@@ -41,13 +42,13 @@ function viewLoancard(loancard_line_id) {
         set_innerText({id: 'loancard_line_createdAt', text: print_date(line.createdAt, true)});
         set_innerText({id: 'loancard_line_updatedAt', text: print_date(line.updatedAt, true)});
         set_innerText({id: 'loancard_line_user',      text: print_user(line.user)});
-        set_href({id: 'btn_loancard_link',          value: `/loancards/${line.loancard_id})`});
-        set_href({id: 'loancard_line_item_link',    value: (line.size                   ? (line.size.item ? `/items/${line.size.item_id}` : '') : '')});
-        set_href({id: 'loancard_user_to_link',      value: (line.loancard.user_loancard ? `/users/${line.loancard.user_id_loancard}` : '')});
-        set_href({id: 'loancard_user_by_link',      value: (line.loancard.user          ? `/users/${line.loancard.user_id}`          : '')});
-        set_href({id: 'loancard_line_size_link',    value: (line.size                   ? `/sizes/${line.size_id}`                   : '')});
-        set_href({id: 'loancard_line_sierial_link', value: (line.serial                 ? `/serials/${line.serial_id}`               : '')});
-        set_href({id: 'loancard_line_user_link',    value: (line.user                   ? `/users/${line.user_id})`                  : '')});
+        set_href({id: 'btn_loancard_link',         value: `/loancards/${line.loancard_id})`});
+        set_href({id: 'loancard_line_item_link',   value: (line.size                   ? (line.size.item ? `/items/${line.size.item_id}` : '') : '')});
+        set_href({id: 'loancard_user_to_link',     value: (line.loancard.user_loancard ? `/users/${line.loancard.user_id_loancard}` : '')});
+        set_href({id: 'loancard_user_by_link',     value: (line.loancard.user          ? `/users/${line.loancard.user_id}`          : '')});
+        set_href({id: 'loancard_line_size_link',   value: (line.size                   ? `/sizes/${line.size_id}`                   : '')});
+        set_href({id: 'loancard_line_serial_link', value: (line.serial                 ? `/serials/${line.serial_id}`               : '')});
+        set_href({id: 'loancard_line_user_link',   value: (line.user                   ? `/users/${line.user_id})`                  : '')});
     });
 };
 addReloadListener(getLoancards);

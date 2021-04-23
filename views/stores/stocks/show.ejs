@@ -21,11 +21,14 @@
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details',     spinner: 'stock'}) %>
         <%- include(`${partials}/tab_head`, {id: 'adjustments', title: 'Adjustments', spinner: 'adjustments', count_id: 'adjustment', permission: 'access_adjustments'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'actions',     title: 'Actions',     spinner: 'actions',     count_id: 'action',     permission: 'access_actions'}) %>
         <%- include(`${partials}/tab_head`, {id: 'notes',       title: 'Notes',       spinner: 'notes',       count_id: 'note',       permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'stock_item',     title: 'Item',     link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'stock_size',     title: 'Size',     link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location', link: true}) %>
             <%- include(`${partials}/inputs/display`, {id: 'stock_qty',      title: 'Qty'}) %>
         </div>
         <% if (permissions.access_adjustments) { %>
@@ -42,12 +45,24 @@
                 </table>
             </div>
         <% } %>
+        <% if (permissions.access_actions) { %>
+            <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+                <table class='table table-sm table-hover w-100'>
+                    <thead class='thead-dark'>
+                        <th class='w-50' onclick='sortTable(0, "tbl_actions")'>Date</th>
+                        <th class='w-50' onclick='sortTable(1, "tbl_actions")'>Action</th>
+                        <th><i class='fas fa-search'></i></th>
+                    </thead>
+                    <tbody id='tbl_actions'></tbody>
+                </table>
+            </div>
+        <% } %>
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
     <div id="div_modals">
         <%- include(`${partials}/notes/modals`) %>
         <% if (permissions.stock_edit) { %>
-            <div id='mdl_stock_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div     id='mdl_stock_edit'      class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_stock_edit'>
                         <div class="modal-header">
@@ -66,11 +81,12 @@
             </div>
         <% } %>
         <% if (permissions.access_adjustments) { %>
-            <div     id='mdl_adjustment_view'    class="modal fade" tabindex="-1" role="dialog">
+            <div     id='mdl_adjustment_view' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Adjustment</h5>
+                            <%- include(`${partials}/spinner`, {id: 'adjustment_view'}) %>
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/display`, {id: 'adjustment_item',      title: 'Item', link: true}) %>
@@ -89,7 +105,7 @@
                 </div>
             </div>
             <% if (permissions.adjustment_add) { %>
-                <div id='mdl_adjustment_add'     class="modal fade" tabindex="-1" role="dialog">
+                <div id='mdl_adjustment_add'  class="modal fade" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-lg" role="document">
                         <form class="modal-content" id='form_adjustment_add'>
                             <div class="modal-header">
@@ -108,6 +124,34 @@
                     </div>
                 </div>
             <% } %>
+        <% } %>
+        <% if (permissions.access_actions) { %>
+            <div     id='mdl_action_view'     class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Action</h5>
+                            <%- include(`${partials}/spinner`, {id: 'action_view'}) %>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/display`, {id: 'action_createdAt', title: 'Date'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_action',    title: 'Action'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_issue',     title: 'Issue',    link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_order',     title: 'Order',    link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_serial',    title: 'Serial #', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_location',  title: 'Location', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_nsn',       title: 'NSN',      link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_loancard',  title: 'Loancard', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_demand',    title: 'Demand',   link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'action_user',      title: 'User',     link: true}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <p class='mr-auto'>ID: <span id='action_id'></span></p>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         <% } %>
     </div>
 </section>
@@ -131,5 +175,9 @@
     <% if (permissions.adjustment_add) { %>
         <script src='/js/stores/stocks/show/adjustments/add.js'></script>
     <% } %>
+<% } %>
+<% if (permissions.access_actions) { %>
+    <script src='/js/stores/stocks/show/actions/view.js'></script>
+    <script async>getActions()</script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

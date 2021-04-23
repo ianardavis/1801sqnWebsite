@@ -132,6 +132,25 @@ module.exports = (inc, m) => {
             as:      options.as || 'actions'
         };
     };
+    inc.supplier = (options = {}) => {
+        return {
+            model: m.suppliers,
+            as:    options.as || 'supplier'
+        };
+    };
+    inc.address = (options = {}) => {
+        return {
+            model: m.addresses,
+            as:    options.as || 'address'
+        };
+    };
+    inc.contact = (options = {}) => {
+        return {
+            model: m.contacts,
+            as:    options.as || 'contact'
+        };
+    };
+    
 
     function template (options) {
         return {
@@ -445,7 +464,7 @@ module.exports = (inc, m) => {
     inc.users = (options = {}) => {
         let include = [];
         if (options.include) options.include;
-        include.push(inc.ranks());
+        include.push(inc.rank());
         return {
             model:      m.users.users,
             include:    include,

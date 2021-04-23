@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores',		   text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/orders', text: 'Orders'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
@@ -42,6 +42,7 @@
         <%- include(`${partials}/notes/tab_body`) %>
     </div>
 	<div id="div_modals">
+        <%- include(`${partials}/notes/modals`) %>
 		<%- include(`${partials}/stores/mdl_action_view`, {permission: 'access_order_lines', table: 'Order'}) %>
 	</div>
 </section>
@@ -51,6 +52,7 @@
 <script src="/js/search/select.js"></script>
 <script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
+<%- include(`${partials}/notes/scripts`) %>
 
 <script src="/js/stores/orders/show/view.js"></script>
 <script async>showOrder()</script>

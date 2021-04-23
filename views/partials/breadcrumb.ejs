@@ -1,14 +1,8 @@
 <li class='nav-item'>
     <a
-        class='nav-link<% if (locals.classes) classes.forEach(e => { %> <%= e %><% }) %>'
-        <% if (locals.href) { %>
-            href='<%= href %>'
-        <% } else if (locals.modal) { %>
-            data-toggle="modal"
-            data-target="#mdl_<%= modal %>"
-        <% } else { %>
-            id='<%= locals.id || 'breadcrumb' %>'
-        <% } %>
+        class='nav-link'
+        <% if (locals.href) { %> href='<%= href %>'<% } %>
+        <% if (!locals.text) { %>id='<%= locals.id || 'breadcrumb' %>'<% } %>
     >
         <%- locals.text || '' %>
     </a>

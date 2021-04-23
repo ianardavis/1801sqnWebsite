@@ -1,22 +1,3 @@
-function viewAdjustment(adjustment_id) {
-    get({
-        table: 'adjustment',
-        query: [`adjustment_id=${adjustment_id}`]
-    })
-    .then(function ([adjustment, options]) {
-        set_innerText({id: 'adjustment_id',        text: adjustment.adjustment_id});
-        set_innerText({id: 'adjustment_item',      text: adjustment.size.item.description});
-        set_innerText({id: 'adjustment_size',      text: adjustment.size.size});
-        set_innerText({id: 'adjustment_type',      text: adjustment.type});
-        set_innerText({id: 'adjustment_qty',       text: adjustment.qty});
-        set_innerText({id: 'adjustment_variance',  text: adjustment.variance || '0'});
-        set_innerText({id: 'adjustment_user',      text: print_user(adjustment.user)});
-        set_innerText({id: 'adjustment_createdAt', text: print_date(adjustment.createdAt, true)});
-        set_href({id: 'adjustment_item_link', value: `/items/${adjustment.size.item_id}`});
-        set_href({id: 'adjustment_size_link', value: `/sizes/${adjustment.size_id}`});
-        set_href({id: 'adjustment_user_link', value: `/users/${adjustment.user_id}`});
-    })
-};
 function getAdjustments() {
     clear_table('adjustments')
     .then(tbl_adjustments => {
@@ -40,6 +21,25 @@ function getAdjustments() {
             });
         });
     });
+};
+function viewAdjustment(adjustment_id) {
+    get({
+        table: 'adjustment',
+        query: [`adjustment_id=${adjustment_id}`]
+    })
+    .then(function ([adjustment, options]) {
+        set_innerText({id: 'adjustment_id',        text: adjustment.adjustment_id});
+        set_innerText({id: 'adjustment_item',      text: adjustment.size.item.description});
+        set_innerText({id: 'adjustment_size',      text: adjustment.size.size});
+        set_innerText({id: 'adjustment_type',      text: adjustment.type});
+        set_innerText({id: 'adjustment_qty',       text: adjustment.qty});
+        set_innerText({id: 'adjustment_variance',  text: adjustment.variance || '0'});
+        set_innerText({id: 'adjustment_user',      text: print_user(adjustment.user)});
+        set_innerText({id: 'adjustment_createdAt', text: print_date(adjustment.createdAt, true)});
+        set_href({id: 'adjustment_item_link', value: `/items/${adjustment.size.item_id}`});
+        set_href({id: 'adjustment_size_link', value: `/sizes/${adjustment.size_id}`});
+        set_href({id: 'adjustment_user_link', value: `/users/${adjustment.user_id}`});
+    })
 };
 window.addEventListener('load', function () {
     $('#mdl_adjustment_view').on('show.bs.modal', function (event) {viewAdjustment(event.relatedTarget.dataset.id)});

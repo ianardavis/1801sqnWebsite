@@ -98,7 +98,7 @@ function Link(options = {}) {
     if (options.small) this.e.classList.add('btn-sm');
     if (options.float) this.e.classList.add('float-right');
 };
-function Delete_Button (options = {}) {
+function Delete_Button(options = {}) {
     this.e = document.createElement('form');
     let btn = document.createElement('button');
     btn.classList.add('btn', 'btn-danger');
@@ -114,7 +114,7 @@ function Delete_Button (options = {}) {
         };
     });
 };
-function Checkbox (options = {}) {
+function Checkbox(options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'checkbox');
     this.e.classList.add('form-control');
@@ -122,13 +122,13 @@ function Checkbox (options = {}) {
     if (options.float)   this.e.classList.add('w-50', 'float-right');
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
-function Hidden (options = {}) {
+function Hidden(options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'hidden');
     if (options.classes)    options.classes.forEach(   e => this.e.classList.add(e));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
-function Input (options = {}) {
+function Input(options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'text');
     this.e.classList.add('form-control');
@@ -136,7 +136,7 @@ function Input (options = {}) {
     if (options.classes)    options.classes.forEach(e => this.e.classList.add(e));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
-function Tab_Header (options = {}) { 
+function Tab_Header(options = {}) { 
     this.e = document.createElement('li');
     let a  = document.createElement('a');
     this.e.classList.add('nav_item');
@@ -150,14 +150,14 @@ function Tab_Header (options = {}) {
     a.innerText = options.text;
     this.e.appendChild(a);
 };
-function Tab_Body (options = {}) {
+function Tab_Body(options = {}) {
     this.e = document.createElement('div');
     this.e.classList.add('tab-pane', 'fade');
     this.e.setAttribute('id', `${options.id}`);
     this.e.setAttribute('role', 'tabpanel');
     this.e.setAttribute('aria-labelledby', `${options.id}-tab`);
 };
-function Button (options = {}) {
+function Button(options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
@@ -188,7 +188,7 @@ function Button (options = {}) {
     if (options.data) this.e.setAttribute(`data-${options.data.field}`, options.data.value);
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
-function Select (options = {}) {
+function Select(options = {}) {
     this.e = document.createElement('select');
     if (options.classes)    options.classes.forEach(e => this.e.classList.add(e))
     else this.e.classList.add('form-control');
@@ -197,7 +197,7 @@ function Select (options = {}) {
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
     if (options.listener)   this.e.addEventListener(options.listener.event, options.listener.func);
 };
-function Option (options = {}) {
+function Option(options = {}) {
     this.e = document.createElement('option');
     let _text = '', pre_text = '';
     if (options.selected === true) {
@@ -211,10 +211,47 @@ function Option (options = {}) {
     else               this.e.setAttribute('value', '');
     this.e.innerText = `${pre_text}${options.text || ''}${_text}`;
 };
-function Spinner (options = {}) {
+function Spinner(options = {}) {
     this.e = document.createElement('div');
     this.e.setAttribute('id', `spn_${options.id || random_id}`);
     this.e.classList.add('spinner-border', 'text-primary', 'hidden');
     this.e.setAttribute('role', 'status');
     this.e.innerHTML = '<span class="sr-only">Loading...</span>';
+};
+function Card(options = {}) {
+    this.e       = document.createElement('div');
+    let a        = document.createElement('a'),
+        header   = document.createElement('div'),
+        title    = document.createElement('h3'),
+        body     = document.createElement('div'),
+        subtitle = document.createElement('p');
+    if (options.id) this.e.setAttribute('id', options.id);
+    this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
+    a.setAttribute('href', options.href);
+    a.classList.add('card', 'm-3', 'text-left');
+    header.classList.add('card-header');
+    title.classList.add('card-title');
+    if (options.search.title === true) title.classList.add('search');
+    title.innerText = options.title;
+    header.appendChild(title);
+    if (options.subtitle) {
+        subtitle.classList.add('card-subtitle', 'text-muted', 'f-10');
+        if (options.subtitle.id) subtitle.setAttribute('id', options.subtitle.id);
+        subtitle.innerText = options.subtitle.text || ''
+        header.appendChild(subtitle);
+    };
+    body.classList.add('card-body');
+    if (options.body && options.body.id)   body.setAttribute('id', options.body.id);
+    if (options.body && options.body.data) body.setAttribute(`data-${options.body.data.field}`, options.body.data.value);
+    a.appendChild(header);
+    a.appendChild(body);
+    this.e.appendChild(a);
+};
+function Badge(options = {}) {
+    this.e = document.createElement('span');
+    this.e.classList.add('mx-1', `float-${options.float}`, 'badge', `badge-${options.colour}`);
+    this.e.setAttribute('data-toggle',    'tooltip');
+    this.e.setAttribute('data-placement', 'top');
+    this.e.setAttribute('title', `${options.text} ${options.table}`);
+    this.e.innerText = options.count;
 };

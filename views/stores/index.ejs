@@ -1,55 +1,35 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Stores'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
-	<section>
-		<% let cards = [] %>
-		<% if (permissions.access_suppliers) cards.push({href: '/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
-		<% if (permissions.access_items)	 cards.push({href: '/items', 	   title: 'Items', 	 image: 'tshirt'}) %>
-		<% if (permissions.access_users) { %>
-			<% cards.push({href: '/users', title: 'Users', image: 'users'}) %>
-		<% } else { %>
-			<% cards.push({href: `/users/${user.user_id}`, title: 'Your Account', image: 'user'}) %>
-		<% } %>
-		<% if (permissions.access_issues)   cards.push({href: '/issues',    title: 'Issues',    image: 'address-card'}) %>
-		<% if (permissions.access_issues)   cards.push({href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
-		<% if (permissions.access_orders)   cards.push({href: '/orders',	title: 'Orders',    image: 'list'}) %>
-		<% if (permissions.access_demands)  cards.push({href: '/demands',   title: 'Demands',   image: 'stream'}) %>
-		<% if (permissions.access_reports) 	cards.push({href: '/reports',   title: 'Reports',   image: 'chart-pie'}) %>
-		<% if (permissions.access_settings) cards.push({href: '/settings',  title: 'Settings',  image: 'cog'}) %>
-		<div class="row container m-auto p-0 menu">
-			<% cards.forEach(card => { %>
-				<div class="col-md-6 col-lg-4 col-xl-3">
-					<div class="card m-3">
-						<a href="<%= card.href %>">
-							<div class="card-header">
-								<h3><%= card.title %></h3>
-								<p id='subtitle<%= card.title %>'></p>
-							</div>
-							<div class="card-body">
-								<i class="fas fa-<%= card.image %> fa-5x"></i>
-							</div>
-						</a>
-					</div>
-				</div>
-			<% }) %>
-		</div>
-	</section>
-	<%- include(`${partials}/foot/app`) %>
-	<script src="/js/stores/index/show.js"></script>
-	<% if (permissions.access_orders) { %>
-		<script async>getCount('orders',  ['status=1'], {text: 'Placed',   colour: 'danger',  float: 'left'})</script>
-		<script async>getCount('orders',  ['status=2'], {text: 'Demanded', colour: 'warning', float: 'right'})</script>
-	<% } %>
-	<% if (permissions.access_demands) { %>
-		<script async>getCount('demands', ['status=1'], {text: 'Draft', colour: 'warning', float: 'left'})</script>
-		<script async>getCount('demands', ['status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
-	<% } %>
-	<% if (permissions.access_issues) { %>
-		<script async>getCount('issues',  ['status=1'], {text: 'Requested', colour: 'danger',  float: 'left'})</script>
-		<script async>getCount('issues',  ['status=2'], {text: 'Approved',  colour: 'warning', float: 'right'})</script>
-	<% } %>
-	<% if (permissions.access_loancards) { %>
-		<script async>getCount('loancards', ['status=1'], {text: 'Draft', colour: 'danger',  float: 'left'})</script>
-		<script async>getCount('loancards', ['status=2'], {text: 'Open',  colour: 'success', float: 'right'})</script>
-	<% } %>
-	<%- include(`${partials}/foot/elements/htmlClose`) %>
+<section>
+	<div class="row container m-auto p-0 menu">
+		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
+		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
+		<%- include(`${partials}/card`, {id: 'users', 	  href: '/users', 	  title: 'Users', 	  image: 'users'}) %>
+		<%- include(`${partials}/card`, {id: 'issues', 	  href: '/issues', 	  title: 'Issues', 	  image: 'address-card'}) %>
+		<%- include(`${partials}/card`, {id: 'loancards', href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
+		<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list'}) %>
+		<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream'}) %>
+		<%- include(`${partials}/card`, {id: 'reports',   href: '/reports',   title: 'Reports',   image: 'chart-pie'}) %>
+		<%- include(`${partials}/card`, {id: 'settings',  href: '/settings',  title: 'Settings',  image: 'cog'}) %>
+	</div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/stores/index/show.js"></script>
+<% if (permissions.access_orders) { %>
+	<script async>getCount('orders',  	['status=1'], {text: 'Placed',    colour: 'danger',  float: 'left'})</script>
+	<script async>getCount('orders',  	['status=2'], {text: 'Demanded',  colour: 'warning', float: 'right'})</script>
+<% } %>
+<% if (permissions.access_demands) { %>
+	<script async>getCount('demands', 	['status=1'], {text: 'Draft', 	  colour: 'warning', float: 'left'})</script>
+	<script async>getCount('demands', 	['status=2'], {text: 'Open',  	  colour: 'success', float: 'right'})</script>
+<% } %>
+<% if (permissions.access_issues) { %>
+	<script async>getCount('issues',  	['status=1'], {text: 'Requested', colour: 'danger',  float: 'left'})</script>
+	<script async>getCount('issues',  	['status=2'], {text: 'Approved',  colour: 'warning', float: 'right'})</script>
+<% } %>
+<% if (permissions.access_loancards) { %>
+	<script async>getCount('loancards', ['status=1'], {text: 'Draft', 	  colour: 'danger',  float: 'left'})</script>
+	<script async>getCount('loancards', ['status=2'], {text: 'Open',  	  colour: 'success', float: 'right'})</script>
+<% } %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>
