@@ -1,14 +1,12 @@
 function setDefaultBtn() {
-    get(
-        {
-            table: 'setting',
-            query: ['_name=default_supplier']
-        },
-        function (setting, options) {
-            if (setting._value === path[2]) set_attribute(   {id: 'btn_default', attribute: 'disabled', value: true});
-            else                            remove_attribute({id: 'btn_default', attribute: 'disabled'});
-        }
-    );
+    get({
+        table: 'setting',
+        query: ['name=default_supplier']
+    })
+    .then(function ([setting, options]) {
+        if (setting.value === path[2]) disable_button('default');
+        else                           enable_button('default');
+    });
 };
 window.addEventListener("load", function () {
     addFormListener(

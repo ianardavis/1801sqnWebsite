@@ -4,6 +4,6 @@ function getDefault() {
         query: ['name=default_supplier']
     })
     .then(function ([setting, options]) {
-        set_innerText({id: 'is_default', text: yesno((setting.value === path[2]))});
+        set_innerText({id: 'supplier_is_default', text: yesno((setting.value === path[2]))});
     });
 };

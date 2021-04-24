@@ -75,14 +75,15 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.delete('/items/:id',           li,         pm.check('item_delete',  {send: true}), (req, res) => {
         m.sizes.findOne({where: {item_id: req.params.id}})
         .then(sizes => {
-            if (!sizes) {
-                m.items.destroy({where: {item_id: req.params.id}})
+            if (sizes) send_error(res, 'Cannot delete item while it has sizes assigned')
+            else {
+                return m.items.destroy({where: {item_id: req.params.id}})
                 .then(result => {
                     if (!result) send_error(res, 'Item not deleted')
                     else res.send({success: true, message: 'Item deleted'});
                 })
                 .catch(err => send_error(res, err));
-            } else send_error(res, 'Cannot delete item while it has sizes assigned');
+            };
         })
         .catch(err => send_error(res, err));
     });

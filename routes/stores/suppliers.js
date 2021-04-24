@@ -44,21 +44,19 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             attributes: ['supplier_id']
         })
         .then(supplier => {
-            if      (!supplier)                  send_error(res, 'Supplier not found')
-            else if (supplier.supplier_id === 1) send_error(res, 'This supplier can not be deleted!')
-            else if (supplier.supplier_id === 2) send_error(res, 'This supplier can not be deleted!')
+            if (!supplier) send_error(res, 'Supplier not found')
             else {
-                supplier.destroy({where: {supplier_id: req.params.id}})
+                return supplier.destroy({where: {supplier_id: req.params.id}})
                 .then(result => {
-                    m.settings.findOne({
-                        where: {_name: 'default_supplier'},
-                        attributes: ['setting_id', '_value']
+                    return m.settings.findOne({
+                        where: {name: 'default_supplier'},
+                        attributes: ['setting_id', 'value']
                     })
                     .then(setting => {
                         if (!setting)           res.send({success: true, message: 'Supplier deleted'})
                         else {
                             if (Number(setting._value) === Number(req.params.id)) {
-                                setting.destroy()
+                                return setting.destroy()
                                 .then(result => {
                                     if (result) res.send({success: true, message: 'Default supplier deleted, settings updated'})
                                     else        res.send({success: true, message: 'Default supplier deleted, settings NOT updated'});

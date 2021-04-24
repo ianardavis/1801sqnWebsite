@@ -27,6 +27,7 @@ function getSize() {
         set_innerText({id: 'item', text: size.item.description});
         set_href(     {id: 'item', value: `/items/${size.item_id}`});
         document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
-    });
+    })
+    .catch(err => window.location.replace('/items'));
 };
 addReloadListener(getSize);

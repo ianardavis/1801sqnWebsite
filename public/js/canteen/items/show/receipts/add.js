@@ -6,7 +6,7 @@ function calculate_cost() {
     };
 };
 window.addEventListener('load', function () {
-    remove_attribute({id: 'btn_receipt_add', attribute: 'disabled'});
+    enable_button('receipt_add');
     set_attribute({id: 'item_id_receipt', attribute: 'value', value: path[2]});
     ['qty_receipt', 'cost_total'].forEach(e => {
         let input = document.querySelector(`#${e}`)

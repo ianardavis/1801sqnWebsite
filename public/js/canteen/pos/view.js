@@ -67,8 +67,8 @@ function getSaleLines() {
                 set_attribute({id: 'btn_complete_sale', attribute: 'disabled', value: true});
                 set_attribute({id: 'btn_finish',        attribute: 'disabled', value: true});
             } else {
-                remove_attribute({id: 'btn_complete_sale', attribute: 'disabled'});
-                remove_attribute({id: 'btn_finish',        attribute: 'disabled'});
+                enable_button('complete_sale');
+                enable_button('finish');
                 lines.forEach(line => {
                     total += line._qty * line._price;
                     let row = tbl_sale_lines.insertRow(-1);

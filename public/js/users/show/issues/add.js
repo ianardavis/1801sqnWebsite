@@ -1,5 +1,5 @@
 window.addEventListener( "load", function () {
-    remove_attribute({id: 'btn_issue_add', attribute: 'disabled'});
+    enable_button('issue_add');
     document.querySelector('#selectedSize_link').addEventListener('click', selectSize)
     addFormListener(
         'issue_add',

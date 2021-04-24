@@ -13,7 +13,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     inc.sizes()
             ]})
             .then(stock => res.render('stores/reports/show/1', {stock: stock}))
-            .catch(err => res.error.redirect(err, req, res));
+            .catch(err => send_error(res, err));
         } else if (Number(req.params.id) === 2) {
             m.issues.findAll({
                 where: {
@@ -26,7 +26,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     ]
             })
             .then(issues => res.render('stores/reports/show/2', {issues: issues}))
-            .catch(err => res.error.redirect(err, req, res));
+            .catch(err => send_error(res, err));
         } else if (Number(req.params.id) === 3) {
             m.items.findAll({
                 include: [{
@@ -41,9 +41,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             .then(items => {
                 m.suppliers.findAll()
                 .then(suppliers => res.render('stores/reports/show/3', {items: items, suppliers: suppliers, supplier_id: req.query.supplier_id || 1}))
-                .catch(err => res.error.redirect(err, req, res));
+                .catch(err => send_error(res, err));
             })
-            .catch(err => res.error.redirect(err, req, res));
+            .catch(err => send_error(res, err));
         } else if (Number(req.params.id) === 4) {
             m.items.findAll({
                 include: [{
@@ -52,7 +52,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 }]
             })
             .then(items => res.render('stores/reports/show/4', {items: items}))
-            .catch(err => res.error.redirect(err, req, res));
+            .catch(err => send_error(res, err));
         } else if (Number(req.params.id) === 5) {
             m.locations.findAll({
                 include: [inc.stock({size: true})]
@@ -73,8 +73,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                   });
                 res.render('stores/reports/show/5', {locations: locations})
             })
-            .catch(err => res.error.redirect(err, req, res));
-        } else res.error.redirect(new Error('Invalid report'), req, res);
+            .catch(err => send_error(res, err));
+        } else send_error(res, 'Invalid Report');
     });
 
     app.post('/reports/3',  li,         pm.check('access_reports'), (req, res) => {
@@ -97,9 +97,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 })
                 Promise.allSettled(actions)
                 .then(results => res.redirect('/reports/3'))
-                .catch(err => res.error.redirect(err, req, res));
+                .catch(err => send_error(res, err));
             })
-            .catch(err => res.error.redirect(err, req, res));
+            .catch(err => send_error(res, err));
         } else {
             req.flash('info', 'No items selected');
             res.redirect('/reports/3');

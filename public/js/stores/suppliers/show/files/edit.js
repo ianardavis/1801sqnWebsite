@@ -1,16 +1,14 @@
 function viewFileEdit(file_id) {
     $('#mdl_file_view').modal('hide');
-    get(
-        {
-            table: 'file',
-            query: [`file_id=${file_id}`],
-            spinner: 'file_edit'
-        },
-        function (file, options) {
-            set_attribute({id: 'file_id_edit', attribute: 'value', value: file.file_id});
-            set_value({id: '_description_edit', value: file._description});
-        }
-    );
+    get({
+        table: 'file',
+        query: [`file_id=${file_id}`],
+        spinner: 'file_edit'
+    })
+    .then(function ([file, options]) {
+        set_attribute({id: 'file_id_edit', attribute: 'value', value: file.file_id});
+        set_value({id: 'file_description_edit', value: file.description});
+    });
 };
 function fileEditBtn(file_id) {
     let span_file_edit_btn = document.querySelector('#span_file_edit_btn');

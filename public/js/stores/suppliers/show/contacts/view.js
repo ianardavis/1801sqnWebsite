@@ -3,8 +3,7 @@ function getContacts() {
     .then(tbl_contacts => {
         get({
             table: 'contacts',
-            query: [`supplier_id=${path[2]}`],
-            spinner: 'contact_view'
+            query: [`supplier_id=${path[2]}`]
         })
         .then(function ([contacts, options]) {
             set_count({id: 'contact', count: contacts.length || '0'});
@@ -25,7 +24,8 @@ function getContacts() {
 function viewContact(supplier_contact_id) {
     get({
         table: 'contact',
-        query: [`supplier_contact_id=${supplier_contact_id}`]
+        query: [`supplier_contact_id=${supplier_contact_id}`],
+        spinner: 'contact_view'
     })
     .then(function ([contact, options]) {
         set_innerText({id: 'supplier_contact_id', text: contact.supplier_contact_id});
@@ -37,6 +37,7 @@ function viewContact(supplier_contact_id) {
         set_innerText({id: 'contact_updatedAt',   text: print_date(contact.contact.updatedAt, true)});
     });
 };
+addReloadListener(getContacts);
 window.addEventListener('load', function () {
     $('#mdl_contact_view').on('show.bs.modal', function (event) {viewContact(event.relatedTarget.dataset.id)});
 });

@@ -10,7 +10,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 res.redirect('/canteen');
             } else res.render('canteen/pos');
         })
-        .catch(err => res.error.redirect(err, req, res));
+        .catch(err => send_error(res, err));
     });
     app.get('/get/pos_pages',   li,         pm.check('access_pos', {send: true}), (req, res) => {
         m.pos_pages.findAll({

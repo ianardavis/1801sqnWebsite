@@ -3,8 +3,7 @@ function getAddresses() {
     .then(tbl_addresses => {
         get({
             table: 'addresses',
-            query: [`supplier_id=${path[2]}`],
-            spinner: 'address_view'
+            query: [`supplier_id=${path[2]}`]
         })
         .then(function ([addresses, options]) {
             set_count({id: 'address', count: addresses.length || '0'});
@@ -25,7 +24,8 @@ function getAddresses() {
 function viewAddress(supplier_address_id) {
     get({
         table: 'address',
-        query: [`supplier_address_id=${supplier_address_id}`]
+        query: [`supplier_address_id=${supplier_address_id}`],
+        spinner: 'address_view'
     })
     .then(function ([address, options]) {
         set_innerText({id: 'supplier_address_id', text: address.supplier_address_id});
@@ -41,6 +41,7 @@ function viewAddress(supplier_address_id) {
         set_innerText({id: 'address_updatedAt',   text: print_date(address.address.updatedAt, true)});
     });
 };
+addReloadListener(getAddresses);
 window.addEventListener('load', function () {
     $('#mdl_address_view').on('show.bs.modal', function (event) {viewAddress(event.relatedTarget.dataset.id)});
 });

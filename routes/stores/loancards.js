@@ -18,7 +18,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 });
             };
         })
-        .catch(err => res.error.redirect(err, req, res));
+        .catch(err => send_error(res, err));
     });
 
     app.get('/count/loancards',        li,         pm.check('access_loancards',      {send: true}),              (req, res) => {

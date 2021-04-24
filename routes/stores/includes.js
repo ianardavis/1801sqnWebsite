@@ -150,7 +150,19 @@ module.exports = (inc, m) => {
             as:    options.as || 'contact'
         };
     };
-    
+    inc.demand = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        else {
+            include.push(inc.user());
+            if (options.lines) include.push(inc.demand_lines());
+        };
+        return {
+            model:    m.demands,
+            include:  include,
+            as:       options.as || 'demand',
+        };
+    };
 
     function template (options) {
         return {

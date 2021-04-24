@@ -1,8 +1,8 @@
 window.addEventListener("load", function () {
-    remove_attribute({id: 'btn_supplier_delete', attribute: 'disabled'});
+    enable_button('supplier_delete');
     addFormListener(
         'supplier_delete',
         'DELETE',
         `/suppliers/${path[2]}`
-    )
+    );
 });

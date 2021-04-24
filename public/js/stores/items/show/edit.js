@@ -18,7 +18,7 @@ function viewItemEdit() {
     });
 };
 window.addEventListener('load', function () {
-    remove_attribute({id: 'btn_item_edit', attribute: 'disabled'});
+    enable_button('item_edit');
     $('#mdl_item_edit').on('show.bs.modal', viewItemEdit);
     addFormListener(
         'item_edit',

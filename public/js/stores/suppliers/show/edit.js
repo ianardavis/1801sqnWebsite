@@ -1,35 +1,28 @@
 function viewSupplierEdit() {
-    get(
-        {
-            table: 'supplier',
-            query: [`supplier_id=${path[2]}`],
-            spinner: 'supplier_edit'
-        },
-        function (supplier, options) {
-            set_value({id: '_name_edit',      value: supplier._name});
-            set_value({id: '_address1_edit',  value: supplier._address1});
-            set_value({id: '_address2_edit',  value: supplier._address2});
-            set_value({id: '_address3_edit',  value: supplier._address3});
-            set_value({id: '_address4_edit',  value: supplier._address4});
-            set_value({id: '_address5_edit',  value: supplier._address5});
-            set_value({id: '_telephone_edit', value: supplier._telephone});
-            set_value({id: '_email_edit',     value: supplier._email});
-            set_value({id: '_stores_edit',    value: supplier._stores});
-            listAccounts({selected: supplier.account_id});
-        }
-    );
+    get({
+        table:   'supplier',
+        query:   [`supplier_id=${path[2]}`],
+        spinner: 'supplier_edit'
+    })
+    .then(function ([supplier, options]) {
+        set_value({id: 'supplier_name_edit',      value: supplier.name});
+        set_value({id: 'supplier_is_stores_edit', value: (supplier.is_stores ? '1' : '0')});
+        listAccounts({selected: supplier.account_id});
+    });
 };
 window.addEventListener("load", function () {
-    document.querySelector('#reload_accounts').addEventListener('click', listAccounts)
-    remove_attribute({id: 'btn_supplier_edit', attribute: 'disabled'});
+    document.querySelector('#reload_accounts').addEventListener('click', listAccounts);
+    enable_button('supplier_edit');
     $('#mdl_supplier_edit').on('show.bs.modal', viewSupplierEdit);
     addFormListener(
         'supplier_edit',
         'PUT',
         `/suppliers/${path[2]}`,
-        {onComplete: [
-            getSupplier,
-            function () {$('#mdl_supplier_edit').modal('hide')}
-        ]}
+        {
+            onComplete: [
+                getSupplier,
+                function () {$('#mdl_supplier_edit').modal('hide')}
+            ]
+        }
     );
 });

@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    remove_attribute({id: 'btn_user_delete', attribute: 'disabled'});
+    enable_button('user_delete');
     addFormListener(
         'user_delete',
         'DELETE',

@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    remove_attribute({id: 'btn_file_add', attribute: 'disabled'});
+    enable_button('file_add');
     addFormListener(
         'file_detail_add',
         'POST',
@@ -8,8 +8,8 @@ window.addEventListener('load', function () {
             onComplete: function () {
                 let file_id = document.querySelector('#file_id_view');
                 if (file_id) viewDetails(file_id.innerText);
-                set_value({id: '_name_file_detail_add',  value: ''});
-                set_value({id: '_value_file_detail_add', value: ''});
+                set_value({id: 'file_detail_name_add',  value: ''});
+                set_value({id: 'file_detail_value_add', value: ''});
             }
         }
     );

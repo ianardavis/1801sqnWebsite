@@ -22,12 +22,12 @@ function getLoancard() {
             set_attribute({id: 'btn_raise',    attribute: 'disabled', value: true});
             if (loancard._status === 2) {
                 if (!loancard._filename && loancard._filename !== '') {
-                    remove_attribute({id: 'btn_raise',    attribute: 'disabled'});
+                    enable_button('raise');
                 } else {
-                    remove_attribute({id: 'btn_download', attribute: 'disabled'});
+                    enable_button('download');
                 };
             } else if (loancard._status === 3 && loancard._filename && loancard._filename !== '') {
-                remove_attribute({id: 'btn_download', attribute: 'disabled'});
+                enable_button('download');
             };
         }
     );

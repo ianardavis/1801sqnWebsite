@@ -5,11 +5,11 @@ function getSuppliers() {
         .then(function ([suppliers, options]) {
             suppliers.forEach(supplier => {
                 tbl_suppliers.appendChild(new Card({
-                    href: `/suppliers/${supplier.supplier_id}`,
-                    title: supplier.name,
-                    search: {title: true},
+                    href:     `/suppliers/${supplier.supplier_id}`,
+                    title:    supplier.name,
+                    search:   {title: true},
                     subtitle: {id: `default_${supplier.supplier_id}`},
-                    body: {data: {field: 'id', value: supplier.supplier_id}}
+                    body:     {data: {field: 'id', value: supplier.supplier_id}}
                 }).e);
             });
             if (typeof getCounts  === 'function') getCounts();

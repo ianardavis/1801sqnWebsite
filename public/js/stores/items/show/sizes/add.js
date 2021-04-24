@@ -14,7 +14,7 @@ function getSuppliers() {
 };
 window.addEventListener('load', function () {
     $('#mdl_size_add').on('show.bs.modal', resetAddSize);
-    remove_attribute({id: 'btn_size_add', attribute: 'disabled'});
+    enable_button('size_add');
     addFormListener(
         'size_add',
         'POST',

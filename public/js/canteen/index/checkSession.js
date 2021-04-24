@@ -10,7 +10,7 @@ function checkSession() {
                 remove_attribute({id: 'card_pos_a', attribute: 'href'});
             } else {
                 remove_class({id: 'card_pos', class: 'hidden'});
-                set_attribute({id: 'card_pos_a', attribute: 'href', value: '/canteen/pos'});
+                set_href({id: 'card_pos_a', value: '/canteen/pos'});
             };
         }
     );

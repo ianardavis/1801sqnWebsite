@@ -10,13 +10,14 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.get('/demands/:id/download', li,         pm.check('access_demands'),                    (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
-            attributes: ['_filename']
+            attributes: ['filename']
         })
         .then(demand => {
-            if (demand._filename && demand._filename !== '') download(demand._filename, req, res);
-            else res.error.redirect(new Error('No file found'), req, res);
+            if      (!demand)          send_error(res, 'Demand not found')
+            else if (!demand.filename) send_error(res, '')
+            else download(demand.filename, req, res);
         })
-        .catch(err => res.error.redirect(err, req, res));
+        .catch(err => send_error(res, err));
     });
 
     app.get('/count/demands',        li,         pm.check('access_demands',      {send: true}), (req, res) => {
@@ -29,14 +30,14 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.demands.findOne({
             where: req.query,
             include: [
-                inc.demand_lines(),
-                inc.users(),
-                inc.suppliers({as: 'supplier'})
+                // inc.demand_lines(),
+                inc.user(),
+                inc.supplier()
             ]
         })
         .then(demand => {
             if (demand) res.send({success: true, result: demand})
-            else        send_error(res, 'Demand not found');
+            else send_error(res, 'Demand not found');
         })
         .catch(err => send_error(res, err));
     });
@@ -44,7 +45,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.demands.findAll({
             where:   req.query,
             include: [
-                inc.demand_lines(),
+                // inc.demand_lines(),
                 inc.user(),
                 inc.supplier()
             ]
@@ -56,9 +57,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.demand_lines.findAll({
             where:   req.query,
             include: [
-                inc.sizes(),
-                inc.users(),
-                inc.demands()
+                inc.size(),
+                inc.user(),
+                inc.demand()
             ]
         })
         .then(lines => res.send({success: true, result: lines}))
@@ -68,9 +69,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         m.demand_lines.findOne({
             where:   req.query,
             include: [
-                inc.sizes(),
-                inc.users(),
-                inc.demands(),
+                inc.size(),
+                inc.user(),
+                inc.demand(),
                 inc.actions({include: [inc.orders()]})
             ]
         })
@@ -98,13 +99,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
     app.put('/demands/:id',          li,         pm.check('demand_edit',         {send: true}), (req, res) => {
-        if (Number(req.body._status) === 2) {
+        if (Number(req.body.status) === 2) {
             complete_demand(req.params.id, req.user.user_id)
             .then(filename => res.send({success: true,  message: `Demand completed. Filename: ${filename}`}))
             .catch(err => send_error(res, err));
         } else if (Number(req.body._status) === 3) {
             close_demand(req.params.id, req.user.user_id)
-            .then(result =>   res.send({success: true,  message: 'Demand closed.'}))
+            .then(result =>   res.send({success: true,  message: 'Demand closed'}))
             .catch(err => send_error(res, err));
         } else send_error(res, 'Invalid request');
     });
@@ -116,11 +117,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(demand => {
             let actions = [], receives = [];
             for (let [lineID, line] of Object.entries(req.body.actions)) {
-                if      (line._status === '3') receives.push(line);
-                else if (line._status === '0') {
+                if      (line.status === '3') receives.push(line);
+                else if (line.status === '0') {
                     actions.push(
                         m.demand_lines.update(
-                            {_status: 0},
+                            {status: 0},
                             {where: {line_id: line.line_id}}
                         )
                     );
@@ -128,7 +129,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         new Promise((resolve, reject) => {
                             m.order_line_actions.findAll({
                                 where: {
-                                    _action: 'Demand',
+                                    action: 'Demand',
                                     action_line_id: line.line_id
                                 },
                                 attributes: ['order_line_id']
@@ -139,10 +140,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                     actions.forEach(e => {
                                         order_actions.push(
                                             m.order_lines.update(
-                                                {_status: 2},
+                                                {status: 2},
                                                 {where: {
                                                     line_id: e.order_line_id,
-                                                    _status: 3
+                                                    status: 3
                                                 }}
                                             )
                                         );
@@ -150,7 +151,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                             m.order_line_actions.create({
                                                 order_line_id:  e.order_line_id,
                                                 action_line_id: line.line_id,
-                                                _action:        'Demand line cancelled',
+                                                action:        'Demand line cancelled',
                                                 user_id:        req.user.user_id
                                             })
                                         );
@@ -166,7 +167,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     actions.push(
                         m.demand_line_actions.create({
                             demand_line_id: line.line_id,
-                            _action:        `Cancelled`,
+                            action:         `Cancelled`,
                             user_id:        req.user.user_id
                         })
                     );
@@ -203,7 +204,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             Promise.allSettled(actions)
             .then(results => {
                 if (promiseResults(results)) res.send({success: true,  message: 'Lines actioned'})
-                else                         send_error(res, 'Some actions failed');
+                else send_error(res, 'Some actions failed');
             })
             .catch(err => send_error(res, err));
         })
@@ -213,23 +214,23 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.delete('/demands/:id',       li,         pm.check('demand_delete',       {send: true}), (req, res) => {
         m.demands.findOne({
             where:      {demand_id: req.params.id},
-            include:    [inc.demand_lines({where: {_status: {[op.not]: 0}}})],
-            attributes: ['demand_id', '_status']
+            include:    [inc.demand_lines({where: {status: {[op.not]: 0}}})],
+            attributes: ['demand_id', 'status']
         })
         .then(demand => {
             if      (!demand)                                 send_error(res, 'Demand not found')
-            else if (demand._status === 0)                    send_error(res, 'This demand is already cancelled')
+            else if (demand.status === 0)                     send_error(res, 'This demand is already cancelled')
             else if (demand.lines && demand.lines.length > 0) send_error(res, 'Can not cancel a demand with it has pending, open or received lines')
             else {
-                demand.update({_status: 0})
+                demand.update({status: 0})
                 .then(result => {
                     if (!result) send_error(res, `Error updating demand: ${err.message}`)
                     else {
                         m.notes.create({
-                            _id: demand.demand_id,
+                            id: demand.demand_id,
                             _table: 'demands',
-                            _note: 'Cancelled',
-                            _system: 1,
+                            note: 'Cancelled',
+                            system: 1,
                             user_id: req.user.user_id
                         })
                         .then(note => res.send({success: true,  message: 'Demand Cancelled'}))
@@ -247,20 +248,20 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.delete('/demand_lines/:id',  li,         pm.check('demand_line_delete',  {send: true}), (req, res) => {
         m.demand_lines.findOne({
             where: {line_id: req.params.id},
-            attributes: ['line_id', '_status']
+            attributes: ['line_id', 'status']
         })
         .then(line => {
-            if      (line._status === 0) res.send({succes: false, message: 'This line has already been cancelled'})
-            else if (line._status === 3) res.send({succes: false, message: 'This line has already been received'})
+            if      (line.status === 0) res.send({succes: false, message: 'This line has already been cancelled'})
+            else if (line.status === 3) res.send({succes: false, message: 'This line has already been received'})
             else {
-                line.update({_status: 0})
+                line.update({status: 0})
                 .then(result => {
                     if (!result) send_error(res, 'Line not updated')
                     else {
                         m.notes.create({
                             _table:  'demand_lines',
-                            _note:   `Line ${req.params.id} cancelled`,
-                            _id:     line.line_id,
+                            note:   `Line ${req.params.id} cancelled`,
+                            id:     line.line_id,
                             user_id: req.user.user_id,
                             system:  1
                         })
@@ -281,12 +282,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         return new Promise((resolve, reject) => {
             m.demands.findOne({
                 where:      {demand_id: demand_id},
-                include:    [inc.demand_lines({where: {_status: 1}})],
-                attributes: ['demand_id', '_status']
+                include:    [inc.demand_lines({where: {status: 1}})],
+                attributes: ['demand_id', 'status']
             })
             .then(demand => {
                 if      (!demand)                                    reject(new Error('Demand not found'))
-                else if (demand._status !== 1)                       reject(new Error('This demand is not in draft'))
+                else if (demand.status !== 1)                       reject(new Error('This demand is not in draft'))
                 else if (!demand.lines || demand.lines.length === 0) reject(new Error('No pending lines for this demand'))
                 else {
                     demand.update({_status: 2})
@@ -294,10 +295,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         if (!result) reject(new Error('demand not updated'))
                         else {
                             m.demand_lines.update(
-                                {_status: 2},
+                                {status: 2},
                                 {where: {
                                     demand_id: demand.demand_id,
-                                    _status: 1
+                                    status: 1
                                 }
                             })
                             .then(result => {
@@ -305,9 +306,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                 else {
                                     m.notes.create({
                                         _table: 'demands',
-                                        _id: demand.demand_id,
-                                        _note: 'Completed',
-                                        _system: 1,
+                                        id: demand.demand_id,
+                                        note: 'Completed',
+                                        system: 1,
                                         user_id: user_id
                                     })
                                     .then(note => {
@@ -331,24 +332,24 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         return new Promise((resolve, reject) => {
             return m.demands.findOne({
                 where: {demand_id: demand_id},
-                include: [inc.demand_lines({where: {_status: {[op.or]: [1, 2]}}})],
-                attributes: ['demand_id', '_status']
+                include: [inc.demand_lines({where: {status: {[op.or]: [1, 2]}}})],
+                attributes: ['demand_id', 'status']
             })
             .then(demand => {
                 if      (!demand)                                 reject(new Error('Demand not found'))
-                else if (demand._status !== 2)                    reject(new Error('This demand is not complete'))
+                else if (demand.status !== 2)                     reject(new Error('This demand is not complete'))
                 else if (demand.lines && demand.lines.length > 0) reject(new Error('This demand has pending or open lines'))
                 else {
-                    demand.update({_status: 3})
+                    demand.update({status: 3})
                     .then(result => {
                         if (!result) reject(new Error('Demand not updated'))
                         else {
                             m.notes.create({
                                 _table:  'demands',
-                                _id:     demand.demand_id,
-                                _note:   'Closed',
+                                id:     demand.demand_id,
+                                note:   'Closed',
                                 user_id: req.user.user_id,
-                                _system:  1
+                                system:  1
                             })
                             .then(note => resolve(true))
                             .catch(err => {
@@ -368,12 +369,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         return new Promise((resolve, reject) => {
             return m.demands.findOne({
                 where: {demand_id: demand_id},
-                attributes: ['demand_id', '_status', '_filename', 'supplier_id']
+                attributes: ['demand_id', 'status', 'filename', 'supplier_id']
             })
             .then(demand => {
-                if      (!demand)                                     reject(new Error('Demand not found'))
-                if      (demand._status !== 2)                        reject(new Error('This demand is not complete'))
-                else if (demand._filename && demand._filename !== '') reject(new Error('This demand has already been raised'))
+                if      (!demand)                                   reject(new Error('Demand not found'))
+                if      (demand.status !== 2)                       reject(new Error('This demand is not complete'))
+                else if (demand.filename && demand.filename !== '') reject(new Error('This demand has already been raised'))
                 else {
                     return get_template(demand.supplier_id)
                     .then(([template, account, supplier_id]) => {
@@ -421,10 +422,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 include:    [
                     inc.files({
                         include:    [inc.file_details()],
-                        attributes: ['file_id', '_filename'],
-                        where:      {_description: 'Demand'}
+                        attributes: ['file_id', 'filename'],
+                        where:      {description: 'Demand'}
                     }),
-                    inc.accounts()
+                    inc.account()
                 ],
                 attributes: ['supplier_id']
             })
@@ -444,13 +445,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             return m.demand_lines.findAll({
                 where: {
                     demand_id: demand_id,
-                    _status: 2
+                    status: 2
                 },
                 include:    [inc.sizes({
                     attributes: ['size_id', 'supplier_id'],
                     include:    [inc.details()]
                 })],
-                attributes: ['line_id', 'size_id', '_qty', '_status']
+                attributes: ['line_id', 'size_id', 'qty', 'status']
             })
             .then(lines => {
                 if (!lines || lines.length === 0) reject(new Error('No lines for this demand'))
@@ -499,11 +500,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             lines.forEach(line => {
                 if (
                     line.size.supplier_id === supplier_id &&
-                    line.size.details.findIndex(e => e._name === 'Demand Page') !== -1 &&
-                    line.size.details.findIndex(e => e._name === 'Demand Cell') !== -1
+                    line.size.details.findIndex(e => e.name === 'Demand Page') !== -1 &&
+                    line.size.details.findIndex(e => e.name === 'Demand Cell') !== -1
                 ) {
-                    let demand_page = line.size.details[line.size.details.findIndex(e => e._name === 'Demand Page')]._value,
-                        demand_cell = line.size.details[line.size.details.findIndex(e => e._name === 'Demand Cell')]._value;
+                    let demand_page = line.size.details[line.size.details.findIndex(e => e.name === 'Demand Page')]._value,
+                        demand_cell = line.size.details[line.size.details.findIndex(e => e.name === 'Demand Cell')]._value;
                     if (
                         demand_page !== '' &&
                         demand_cell !== ''
@@ -512,7 +513,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         if (sizeIndex === -1) {
                             sizes.push({
                                 size_id: line.size_id,
-                                qty:     line._qty,
+                                qty:     line.qty,
                                 page:    demand_page,
                                 cell:    demand_cell
                             })
@@ -561,9 +562,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         if (users.findIndex(e => e.user_id === user.user_id) === -1) {
                             users.push({
                                 user_id: user.user_id,
-                                name:    user._name,
-                                rank:    user.rank._rank,
-                                ini:     user._ini
+                                name:    user.surname,
+                                rank:    user.rank.rank,
+                                ini:     user.first_name
                             })
                         };
                     });
@@ -580,7 +581,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             if (file) {
                 let path     = `${process.env.ROOT}/public/res`,
                     new_file = `demands/demand-${demand_id}.xlsx`;
-                fs.copyFile(`${path}/files/${file._filename}`, `${path}/${new_file}`, COPYFILE_EXCL, function (err) {
+                fs.copyFile(`${path}/files/${file.filename}`, `${path}/${new_file}`, COPYFILE_EXCL, function (err) {
                     if (err) {
                         if (err.code === 'EEXIST') reject(new Error('File already exists for this demand'))
                         else                       reject(new Error(err));
@@ -591,7 +592,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function write_cover_sheet(template, account, file, users) {
         return new Promise((resolve, reject) => {
-            if (template.details.filter(e => e._name === 'Cover sheet').length === 1) {
+            if (template.details.filter(e => e.name === 'Cover sheet').length === 1) {
                 let ex       = require('exceljs'),
                     workbook = new ex.Workbook(),
                     path     = `${process.env.ROOT}/public/res/`;
@@ -599,42 +600,42 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 .then(() => {
                     try {
                         let worksheet = workbook.getWorksheet(template._cover_sheet);
-                        if (template.details.filter(e => e._name === 'Code').length === 1) {
-                            let cell_code = worksheet.getCell(template.details.filter(e => e._name === 'Code')[0]._value);
+                        if (template.details.filter(e => e.name === 'Code').length === 1) {
+                            let cell_code = worksheet.getCell(template.details.filter(e => e.name === 'Code')[0]._value);
                             cell_code.value = account._number;
                         };
 
-                        if (template.details.filter(e => e._name === 'Rank').length === 1) {
-                            let cell_rank = worksheet.getCell(template.details.filter(e => e._name === 'Rank')[0]._value);
+                        if (template.details.filter(e => e.name === 'Rank').length === 1) {
+                            let cell_rank = worksheet.getCell(template.details.filter(e => e.name === 'Rank')[0]._value);
                             cell_rank.value = account.user.rank._rank;
                         };
 
-                        if (template.details.filter(e => e._name === 'Holder').length === 1) {
-                            let cell_name = worksheet.getCell(template.details.filter(e => e._name === 'Holder')[0]._value);
-                            cell_name.value = account.user._name;
+                        if (template.details.filter(e => e.name === 'Holder').length === 1) {
+                            let cell_name = worksheet.getCell(template.details.filter(e => e.name === 'Holder')[0]._value);
+                            cell_name.value = account.user.name;
                         };
 
-                        if (template.details.filter(e => e._name === 'Squadron').length === 1) {
-                            let cell_sqn = worksheet.getCell(template.details.filter(e => e._name === 'Squadron')[0]._value);
-                            cell_sqn.value = account._name;
+                        if (template.details.filter(e => e.name === 'Squadron').length === 1) {
+                            let cell_sqn = worksheet.getCell(template.details.filter(e => e.name === 'Squadron')[0]._value);
+                            cell_sqn.value = account.name;
                         };
 
-                        if (template.details.filter(e => e._name === 'Date').length === 1) {
-                            let cell_date = worksheet.getCell(template.details.filter(e => e._name === 'Date')[0]._value);
+                        if (template.details.filter(e => e.name === 'Date').length === 1) {
+                            let cell_date = worksheet.getCell(template.details.filter(e => e.name === 'Date')[0]._value);
                             cell_date.value = new Date().toDateString();
                         };
                         if (
                             users &&
-                            template.details.filter(e => e._name === 'Rank column').length === 1 &&
-                            template.details.filter(e => e._name === 'Name column').length === 1 &&
-                            template.details.filter(e => e._name === 'User start') .length === 1 &&
-                            template.details.filter(e => e._name === 'User end')   .length === 1
+                            template.details.filter(e => e.name === 'Rank column').length === 1 &&
+                            template.details.filter(e => e.name === 'Name column').length === 1 &&
+                            template.details.filter(e => e.name === 'User start') .length === 1 &&
+                            template.details.filter(e => e.name === 'User end')   .length === 1
                         ) {
                             let line = new counter();
                             console.log(users);
-                            for (let r = Number(template.details.filter(e => e._name === 'User start')[0]._value); r <= Number(template.details.filter(e => e._name === 'User end')[0]._value); r++) {
-                                let rankCell = worksheet.getCell(template.details.filter(e => e._name === 'Rank column')[0]._value + r),
-                                    nameCell = worksheet.getCell(template.details.filter(e => e._name === 'Name column')[0]._value + r),
+                            for (let r = Number(template.details.filter(e => e.name === 'User start')[0]._value); r <= Number(template.details.filter(e => e.name === 'User end')[0].value); r++) {
+                                let rankCell = worksheet.getCell(template.details.filter(e => e.name === 'Rank column')[0]._value + r),
+                                    nameCell = worksheet.getCell(template.details.filter(e => e.name === 'Name column')[0]._value + r),
                                     currentLine = line() - 1,
                                     sortedKeys = Object.keys(users).sort(),
                                     user = users[sortedKeys[currentLine]];
@@ -684,17 +685,17 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         return new Promise((resolve, reject) => {
             m.demand_lines.findOne({
                 where: {line_id: line.line_id},
-                attributes: ['size_id', '_qty']
+                attributes: ['size_id', 'qty']
             })
             .then(demand_line => {
                 let new_receipt_line = {
                     receipt_id: receipt_id,
                     size_id:    demand_line.size_id,
                     stock_id:   line.stock_id,
-                    _qty:       demand_line._qty,
+                    qty:       demand_line._qty,
                     user_id:    user_id
                 };
-                if (line._serial) new_receipt_line._serial = line._serial
+                if (line.serial) new_receipt_line.serial = line.serial
                 receipts.createLine({line: new_receipt_line})
                 .then(receipt_line_id => {
                     let actions = [];
@@ -702,7 +703,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         m.demand_lines.update(
                             {
                                 receipt_line_id: receipt_line_id,
-                                _status:         3
+                                status:         3
                             },
                             {where: {line_id: line.line_id}}
                         )

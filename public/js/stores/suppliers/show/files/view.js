@@ -29,12 +29,12 @@ function viewFile(file_id) {
     })
     .then(function ([file, options]) {
         set_attribute({id: 'form_file_download', attribute: 'action', value: `/files/${file.file_id}/download`});
-        set_innerText({id: 'file_id_view', text: file.file_id});
-        set_innerText({id: '_filename',    text: file._filename});
-        set_innerText({id: '_description', text: file._description});
-        set_innerText({id: 'user_file',    text: print_user(file.user)});
-        set_innerText({id: 'createdAt',    text: print_date(file.createdAt, true)});
-        set_innerText({id: 'updatedAt',    text: print_date(file.updatedAt, true)});
+        set_innerText({id: 'file_id',          text: file.file_id});
+        set_innerText({id: 'file_filename',    text: file.filename});
+        set_innerText({id: 'file_description', text: file.description});
+        set_innerText({id: 'file_user',        text: print_user(file.user)});
+        set_innerText({id: 'file_createdAt',   text: print_date(file.createdAt, true)});
+        set_innerText({id: 'file_updatedAt',   text: print_date(file.updatedAt, true)});
     });
 };
 window.addEventListener('load', function () {

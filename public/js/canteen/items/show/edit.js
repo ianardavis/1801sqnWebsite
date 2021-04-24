@@ -14,7 +14,7 @@ function getItemEdit() {
 };
 window.addEventListener('load', function () {
     $('#mdl_item_edit').on('show.bs.modal', getItemEdit);
-    remove_attribute({id: 'btn_item_edit', attribute: 'disabled'});
+    enable_button('item_edit');
     addFormListener(
         'item_edit',
         'PUT',

@@ -155,7 +155,7 @@ module.exports = (app, m, pm, al, op, inc, li, send_error) => {
                                             }
                                         )
                                         .then(result => res.send({success: true, message: `Session closed.\nTakings: £${sales.takings.toFixed(2)}.\nPaid Out: £${sales.paid_out.toFixed(2)}.\nPaid In: £${sales.paid_in.toFixed(2)}.\nCash Returned: £${Number(balance.cash).toFixed(2)}.\nCheques Returned: £${Number(balance.cheques).toFixed(2)}`}))
-                                        .catch(err => res.error.redirect(err, req, res));
+                                        .catch(err => send_error(res, err));
                                     })
                                     .catch(err => send_error(res, err));
                                 })
@@ -163,11 +163,11 @@ module.exports = (app, m, pm, al, op, inc, li, send_error) => {
                             })
                             .catch(err => send_error(res, err));
                         })
-                        .catch(err => res.error.redirect(err, req, res));
+                        .catch(err => send_error(res, err));
                     })
-                    .catch(err => res.error.redirect(err, req, res));
+                    .catch(err => send_error(res, err));
                 })
-                .catch(err => res.error.redirect(err, req, res));
+                .catch(err => send_error(res, err));
             };
         })
         .catch(err => send_error(res, err));

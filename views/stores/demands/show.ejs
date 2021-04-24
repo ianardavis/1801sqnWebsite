@@ -18,7 +18,7 @@
 				</form>
 				<% if (permissions.demand_edit) { %>
 					<form id='form_complete'>
-					<input type="hidden" name='_status' value='2'>
+					<input type="hidden" name='status' value='2'>
 				<% } %>
 					<button id='btn_complete' class='dropdown-item' disabled>Complete</button>
 				<% if (permissions.demand_edit) { %></form><% } %>
@@ -34,16 +34,16 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'supplier',  title: 'Supplier',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user',		title: 'Raised By', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_status',   title: 'Status'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'file',   	title: 'Filename'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'demand_supplier',  title: 'Supplier',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'demand_user',	   title: 'Raised By', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'demand_createdAt', title: 'Date'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'demand_updatedAt', title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'demand_status',    title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'demand_file',      title: 'Filename'}) %>
 		</div>
 		<% if (permissions.access_demand_lines) { %>
 			<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-				<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Received'}]}) %>
+				<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Pending'}, {value: 'status=2', text: 'Open'}, {value: 'status=3', text: 'Received'}]}) %>
 				<% if (permissions.demand_line_edit) { %><form id='form_action'><% } %>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
@@ -61,32 +61,25 @@
         <%- include(`${partials}/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
+        <%- include(`${partials}/notes/modals`) %>
 		<% if (permissions.access_demand_lines) { %>
 			<div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title">Demand Line <span id="line_id_view"></span></h5>
+							<h5 class="modal-title">Demand Line</h5>
 							<span id="span_view_buttons" class="float-right"></span>
 						</div>
 						<div class="modal-body">
-							<ul class="nav nav-tabs" role="tablist">
-								<%- include(`${partials}/tab_head`, {id: 'demand_line', 	   title: 'Details', spinner: 'demand_line_view',  active: true}) %>
-								<%- include(`${partials}/tab_head`, {id: 'demand_lines-notes', title: 'Notes',   spinner: 'demand_line_notes', count_id: 'demand_lines_note', permission: 'access_notes'}) %>
-							</ul>
-							<div class="tab-content pt-3" id="myTabContent">
-								<div class="tab-pane fade active show" id="demand_line" role="tabpanel" aria-labelledby="demand_line-tab">
-									<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item_view', link: true}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size_view', link: true}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Quantity', 	  id: 'line_qty_view'}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user_view', link: true}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Raised',	  	  id: 'line_createdAt_view'}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt_view'}) %>
-								</div>
-								<%- include(`${partials}/notes/line_note_table`, {line: `demand_lines`}) %>
-							</div>
+							<%- include(`${partials}/inputs/display`, {title: 'Item', 	   id: 'line_item', link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Size', 	   id: 'line_size', link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Quantity',  id: 'line_qty'}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Raised by', id: 'line_user', link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Created',   id: 'line_createdAt'}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Updated',   id: 'line_updatedAt'}) %>
 						</div>
 						<div class="modal-footer">
+							<p class='mr-auto'>ID: <span id='demand_line_id'></span></p>
 							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
 						</div>
 					</div>
@@ -100,67 +93,29 @@
 <script src="/js/search/select.js"></script>
 <script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
+<%- include(`${partials}/notes/scripts`) %>
 
-<script src="/js/stores/demands/show/getDemand.js"></script>
+<script src="/js/stores/demands/show/view.js"></script>
 <script async>getDemand()</script>
 
 <% if (permissions.demand_edit) { %>
 	<script src="/js/utils/setButtons.js"></script>
+	<script src="/js/stores/demands/show/edit.js"></script>
 	<script async>setButtons('demand')</script>
-	<script>
-		window.addEventListener( "load", function () {
-			addFormListener(
-				'complete',
-				'PUT',
-				`/demands/${path[3]}`,
-				{
-					onComplete: [
-						getDemand,
-						function () {if (typeof getLines === 'function') getLines('demand')}
-					]
-				}
-			);
-			addFormListener(
-				'raise',
-				'PUT',
-				`/demands/raise/${path[3]}`,
-				{
-					onComplete: [
-						getDemand,
-						function () {if (typeof getLines === 'function') getLines('demand')}
-					]
-				}
-			);
-		});
-	</script>
+<% } %>
+<% if (permissions.demand_delete) { %>
+	<script src="/js/stores/demands/show/delete.js"></script>
 <% } %>
 <% if (permissions.access_demand_lines) { %>
-	<script src="/js/stores/demands/show/getLines.js"></script>
+	<script src="/js/stores/demands/show/lines/view.js"></script>
 	<script async>getLines()</script>
-	<% if (permissions.access_notes) { %>
-		<script>
-            set_attribute({id: 'btn_demand_lines_note_add', attribute: 'data-source', value: 'line_view'});
-			$('#mdl_line_view').on('show.bs.modal', function (event) {
-				set_attribute({id: 'btn_demand_lines_note_add', attribute: 'data-_table', value: 'demand_lines'});
-				set_attribute({id: 'btn_demand_lines_note_add', attribute: 'data-_id',    value: event.relatedTarget.dataset.demand_line_id});
-				getLineNotes({
-					line_id: 'demand_lines',
-					table: 	 'demand_lines',
-					id:		 event.relatedTarget.dataset.demand_line_id
-				})
-			});
-		</script>
-	<% } %>
 	<% if (permissions.demand_line_edit) { %>
 		<script src="/js/stores/stock/list.js"></script>
 		<script src="/js/stores/serials/list.js"></script>
-		<script src="/js/stores/demands/show/lineEdit.js"></script>
+		<script src="/js/stores/demands/show/lines/edit.js"></script>
 		<script src="/js/utils/setLineButtons.js"></script>
 		<script async>setActions()</script>
 		<script async>setLineButtons('demand');</script>
 	<% } %>
-<% } %>
-<% if (permissions.demand_delete) { %>
-	<script src="/js/stores/demands/show/delete.js"></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

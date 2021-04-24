@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    remove_attribute({id: 'btn_writeoff_add', attribute: 'disabled'});
+    enable_button('writeoff_add');
     set_attribute({id: 'item_id_writeoff', attribute: 'value', value: path[2]});
     addFormListener(
         'writeoff_add',

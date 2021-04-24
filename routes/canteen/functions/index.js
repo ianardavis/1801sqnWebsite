@@ -12,9 +12,7 @@ module.exports = {
                 res.redirect('/canteen');
             } else resolve(setting._value);
         })
-        .catch(err => {
-            res.error.redirect(err, req, res)
-        })
+        .catch(err => send_error(res, err))
     }),
     completeMovement: (options = {}, action, line, table) => new Promise((resolve, reject) => {
         stock[options.action]({
@@ -62,15 +60,15 @@ module.exports = {
                             })
                             .then(result => {
                                 if (result) resolve(sale.sale_id)
-                                else res.error.redirect(new error('User sale not saved to setting'), req, res);
+                                else send_error(res, 'User sale not saved to setting');
                             })
-                            .catch(err => res.error.redirect(err, req, res));
+                            .catch(err => send_error(res, err));
                         })
-                        .catch(err => res.error.redirect(err, req, res));
+                        .catch(err => send_error(res, err));
                     };
                 })
             } else resolve(sale_id);
         })
-        .catch(err => res.error.redirect(err, req, res));
+        .catch(err => send_error(res, err));
     })
 };

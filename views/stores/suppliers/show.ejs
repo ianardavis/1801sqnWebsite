@@ -39,18 +39,16 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'name',      title: 'Name'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'account',   title: 'Account', link: true, modal: 'account_view'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'is_stores', title: 'RAF Stores'}) %>
-            <% if (permissions.access_settings) { %>
-            <%- include(`${partials}/inputs/display`, {id: 'is_default',title: 'Default Supplier'}) %>
-            <% } %>
+            <%- include(`${partials}/inputs/display`, {id: 'supplier_name',       title: 'Name'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'supplier_account',    title: 'Account', link: true, modal: 'account_view'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'supplier_is_stores',  title: 'RAF Stores'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'supplier_is_default', title: 'Default Supplier', permission: 'access_settings'}) %>
         </div>
         <% if (permissions.access_files) { %>
             <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-50" onclick="sortTable(0, 'tbl_files')">Filenames</th>
+                        <th class="w-50" onclick="sortTable(0, 'tbl_files')">Filename</th>
                         <th class="w-50" onclick="sortTable(1, 'tbl_files')">Description</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
@@ -98,7 +96,7 @@
         <% } %>
         <% if (permissions.access_demands) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_demand_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft'}, {value: '_status=2', text: 'Complete'}, {value: '_status=3', text: 'Closed'}]}) %>
+                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_demand_status', options: [{value: '', text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Complete'}, {value: 'status=3', text: 'Closed'}]}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-50" onclick="sortTable(0, 'tbl_demands')">Date</th>
@@ -123,16 +121,9 @@
                             <%- include(`${partials}/spinner`, {id: 'supplier_edit'}) %>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {id: '_name_edit',      title: 'Supplier Name', name: 'supplier[_name]',      maxLength: 20, required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: '_address1_edit',  title: 'Address',       name: 'supplier[_address1]',  maxLength: 45}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: '_address2_edit',  title: '',              name: 'supplier[_address2]',  maxLength: 45}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: '_address3_edit',  title: '',              name: 'supplier[_address3]',  maxLength: 45}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: '_address4_edit',  title: '',              name: 'supplier[_address4]',  maxLength: 45}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: '_address5_edit',  title: '',              name: 'supplier[_address5]',  maxLength: 45}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: '_telephone_edit', title: 'Telephone',     name: 'supplier[_telephone]', maxLength: 20}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: '_email_edit',     title: 'Email',         name: 'supplier[_email]',     maxLength: 255}) %>
-                            <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',    title: 'Account',       name: 'supplier[account_id]', spinner: true, spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
-                            <%- include(`${partials}/inputs/select`, {id: '_stores_edit',    title: 'RAF Stores?',   name: 'supplier[_stores]',    options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Supplier Name', name: 'supplier[name]',       maxLength: 20, required: true}) %>
+                            <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',       name: 'supplier[account_id]', spinner: true, spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
+                            <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?',   name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save Supplier'>
@@ -148,17 +139,18 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Account: <span id="account_id_view"></span></h5>
+                            <h5 class="modal-title">Account</h5>
                             <%- include(`${partials}/spinner`, {id: 'account_view'}) %>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id:'_name_account_view',     title: 'Name'}) %>
-                            <%- include(`${partials}/inputs/display`, {id:'_number_account_view',   title: 'Number'}) %>
-                            <%- include(`${partials}/inputs/display`, {id:'user_account_view',      title: 'Owner', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id:'createdAt_account_view', title: 'Created'}) %>
-                            <%- include(`${partials}/inputs/display`, {id:'updatedAt_account_view', title: 'Updated'}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'account_name',      title: 'Name'}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'account_number',    title: 'Number'}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'account_user',      title: 'Owner', link: true}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'account_createdAt', title: 'Created'}) %>
+                            <%- include(`${partials}/inputs/display`, {id:'account_updatedAt', title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
+                            <p class='mr-auto text-left'>ID: <span id='account_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -171,29 +163,33 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">File: <span id="file_id_view"></span></h5>
+                            <h5 class="modal-title">File</h5>
                             <%- include(`${partials}/spinner`, {id: 'file_view'}) %>
                             <span class="float-right">
                                 <form id="form_file_download" method='GET' class='float-right ml-1'>
                                     <button class='btn btn-primary'><i class="fas fa-file-download"></i></button>
                                 </form>
-                                <span id="span_file_edit_btn"   class='float-right ml-1'></span>
-                                <span id="span_file_delete_btn" class='float-right ml-1'></span>
+                                <% if (permissions.file_edit) { %>
+                                    <span id="span_file_edit_btn"   class='float-right ml-1'></span>
+                                <% } %>
+                                <% if (permissions.file_delete) { %>
+                                    <span id="span_file_delete_btn" class='float-right ml-1'></span>
+                                <% } %>
                             </span>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: '_filename',    title: 'Filename'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: '_description', title: 'Description'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'user_file',    title: 'Added By'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'createdAt',    title: 'Added'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'updatedAt',    title: 'Updated'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'file_filename',    title: 'Filename'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'file_description', title: 'Description'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'file_user',        title: 'Added By'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'file_createdAt',   title: 'Added'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'file_updatedAt',   title: 'Updated'}) %>
                             <% if (permissions.access_file_details) { %>
                                 <h4>Details</h4>
                                 <% if (permissions.file_detail_add) { %>
                                     <form id="form_file_detail_add">
                                         <input type="hidden" id='file_id_detail_add' name='detail[file_id]'>
-                                        <%- include(`${partials}/inputs/text`, {id: '_name_file_detail_add',  title: 'Name',  name: 'detail[_name]',  maxLength: 45,  required: true}) %>
-                                        <%- include(`${partials}/inputs/text`, {id: '_value_file_detail_add', title: 'Value', name: 'detail[_value]', maxLength: 255, required: true}) %>
+                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_add',  title: 'Name',  name: 'detail[name]',  maxLength: 45,  required: true}) %>
+                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_add', title: 'Value', name: 'detail[value]', maxLength: 255, required: true}) %>
                                         <button class="btn btn-success w-100 mb-1">Save</button>
                                     </form>
                                 <% } %>
@@ -209,6 +205,7 @@
                             <% } %>
                         </div>
                         <div class="modal-footer">
+                            <p class='mr-auto text-left'>ID: <span id='file_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -224,7 +221,7 @@
                             </div>
                             <div class="modal-body">
                                 <input class='supplier_id' type="hidden" name='file[supplier_id]'>
-                                <%- include(`${partials}/inputs/text`, {id: '_description_add', title: 'Description', name: 'file[_description]', maxLength: 45, required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'file_description_add', title: 'Description', name: 'file[description]', required: true}) %>
                                 <div class="input-group">
                                     <div class="custom-file">
                                         <label class="custom-file-label" for="file_upload">Choose file</label>
@@ -250,7 +247,7 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" id='file_id_edit' name='file_id'>
-                                <%- include(`${partials}/inputs/text`, {id: '_description_edit', title: 'Description', name: 'file[_description]', maxLength: 45, required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'file_description_edit', title: 'Description', name: 'file[description]', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input  type="submit" class="btn btn-success w-100" value='Save File'>
@@ -270,8 +267,8 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" id='file_detail_id_edit' name='file_detail_id'>
-                                <%- include(`${partials}/inputs/text`, {id: '_name_detail_edit',  title: 'Name',  name: 'detail[_name]',  maxLength: 45,  required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: '_value_detail_edit', title: 'Value', name: 'detail[_value]', maxLength: 255, required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_edit',  title: 'Name',  name: 'detail[name]',  required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_edit', title: 'Value', name: 'detail[value]', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input type="submit"  class="btn btn-success w-100" value='Save File'>
@@ -291,10 +288,10 @@
                             <h5 class="modal-title">Address: <span id="file_id_view"></span></h5>
                             <%- include(`${partials}/spinner`, {id: 'address_view'}) %>
                             <span class='float-right'>
-                                <% if (permissions.customer_address_edit) { %>
+                                <% if (permissions.supplier_address_edit) { %>
                                     <span id='address_edit_btn' class='float-right mr-1'></span>
                                 <% } %>
-                                <% if (permissions.customer_address_delete) { %>
+                                <% if (permissions.supplier_address_delete) { %>
                                     <span id='address_delete_btn' class='float-right mr-1'></span>
                                 <% } %>
                             </span>
@@ -380,10 +377,10 @@
                             <h5 class="modal-title">Contact</h5>
                             <%- include(`${partials}/spinner`, {id: 'contact_view'}) %>
                             <span class='float-right'>
-                                <% if (permissions.customer_contact_edit) { %>
+                                <% if (permissions.supplier_contact_edit) { %>
                                     <span id='contact_edit_btn' class='float-right mr-1'></span>
                                 <% } %>
-                                <% if (permissions.customer_contact_delete) { %>
+                                <% if (permissions.supplier_contact_delete) { %>
                                     <span id='contact_delete_btn' class='float-right mr-1'></span>
                                 <% } %>
                             </span>
@@ -414,9 +411,9 @@
                             </div>
                             <div class="modal-body">
                                 <input class='supplier_id' type="hidden" name='supplier_id'>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_type_add',        title: 'Type',        required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_description_add', title: 'Description', required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_contact_add',     title: 'Contact',     required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'contact_type_add',        name: 'type',                 title: 'Type',        required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'contact_description_add', name: 'contact[description]', title: 'Description', required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'contact_contact_add',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input  type="submit" class="btn btn-success w-100" value='Save Contact'>
@@ -435,9 +432,9 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" id='supplier_contact_id_edit' name='supplier_contact_id'>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_type_edit',        title: 'Type',        required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_description_edit', title: 'Description', required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_contact_edit',     title: 'Contact',     required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'contact_type_edit',        name: 'contact[type]',        title: 'Type',        required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'contact_description_edit', name: 'contact[description]', title: 'Description', required: true}) %>
+                                <%- include(`${partials}/inputs/text`, {id: 'contact_contact_edit',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input  type="submit" class="btn btn-success w-100" value='Save Contact'>

@@ -45,7 +45,7 @@ window.addEventListener('load', function() {
             ]
         }
     );
-    $('#mdl_note_view').on('show.bs.modal', function(event) {addNoteEditBtn( event.relatedTarget.dataset.id)});
+    $('#mdl_note_view').on('show.bs.modal', function(event) {addNoteEditBtn(event.relatedTarget.dataset.id)});
     $('#mdl_note_edit').on('show.bs.modal', function(event) {
         viewNoteEdit(event.relatedTarget.dataset.id);
         $(`#mdl_note_view`).modal('hide');
