@@ -11,21 +11,12 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
-				<%- include(`${partials}/menu/action`) %>
-				<form id='form_raise'>
-					<button id='btn_raise' class='dropdown-item'>Raise</button>
-				</form>
-				<% if (permissions.demand_edit) { %>
-					<form id='form_complete'>
-					<input type="hidden" name='status' value='2'>
-				<% } %>
-					<button id='btn_complete' class='dropdown-item' disabled>Complete</button>
-				<% if (permissions.demand_edit) { %></form><% } %>
-				<form id="form_download">
-					<button id='btn_download' class='dropdown-item' disabled>Download</button>
-				</form>
-				<%- include(`${partials}/menu/delete`, {permission: 'demand_delete'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', 	  modal: 'note_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'size_add', text: 'Add Item'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'complete',	text: 'Complete',	  btn_form: {permission: 'demand_edit'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'action',	text: 'Action Lines', form:  'action'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'download',	text: 'Download', 	  btn_form: true}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Cancel',	  	  btn_form: {permission: 'demand_delete'}}) %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
@@ -99,9 +90,8 @@
 <script async>getDemand()</script>
 
 <% if (permissions.demand_edit) { %>
-	<script src="/js/utils/setButtons.js"></script>
 	<script src="/js/stores/demands/show/edit.js"></script>
-	<script async>setButtons('demand')</script>
+	<script async>setButtons()</script>
 <% } %>
 <% if (permissions.demand_delete) { %>
 	<script src="/js/stores/demands/show/delete.js"></script>
@@ -113,9 +103,7 @@
 		<script src="/js/stores/stock/list.js"></script>
 		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/demands/show/lines/edit.js"></script>
-		<script src="/js/utils/setLineButtons.js"></script>
-		<script async>setActions()</script>
-		<script async>setLineButtons('demand');</script>
+		<script async>setLineButtons();</script>
 	<% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

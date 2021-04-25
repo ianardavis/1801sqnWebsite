@@ -21,8 +21,8 @@ function getFiles() {
                             add_cell(row, {text: file.filename, classes: ['text-left']});
                             if (file.exists)  add_cell(row, {html: _check()})
                             else              add_cell(row);
-                            if (file.file_id) add_cell(row, {classes: ['files'], data: {field: 'id',   value: file.file_id}})
-                            else              add_cell(row, {classes: ['files'], data: {field: 'file', value: file.filename}})
+                            if (file.file_id) add_cell(row, {classes: ['files'], data: [{field: 'id',   value: file.file_id}]})
+                            else              add_cell(row, {classes: ['files'], data: [{field: 'file', value: file.filename}]})
                         });
                         if (typeof addFileDeleteBtns === 'function') addFileDeleteBtns();
                     }

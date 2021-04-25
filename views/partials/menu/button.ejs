@@ -1,12 +1,9 @@
-<% if (!locals.permission || permissions[permission]) { %> 
+<% if (!locals.permission || permissions[permission]) { %>
+    <% if (locals.btn_form && (!btn_form.permission || permissions[btn_form.permission])) { %><form id='form_<%= btn_form.id || locals.id || '' %>'><% } %>
     <button
         class='dropdown-item<% if (locals.classes) classes.forEach(e => { %> <%= e %><% }) %>'
-        <% if (locals.id) { %>
-            id='btn_<%= id %>'
-        <% } %>
-        <% if (locals.form) { %>
-            form='form_<%= form %>'
-        <% } %>
+        <% if (locals.id)   { %>id='btn_<%= id %>'<% } %>
+        <% if (locals.form) { %>form='form_<%= form %>'<% } %>
         <% if (locals.modal) { %>
             data-toggle="modal"
             data-target="#mdl_<%= modal %>"
@@ -15,4 +12,5 @@
     >
         <%- text %>
     </button> 
+    <% if (locals.btn_form && (!btn_form.permission || permissions[btn_form.permission])) { %></form><% } %>
 <% } %>

@@ -25,6 +25,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(count => res.send({success: true, result: count}))
         .catch(err => send_error(res, err));
     });
+    app.get('/count/demand_lines',   li,         pm.check('access_demand_lines', {send: true}), (req, res) => {
+        m.demand_lines.count({where: req.query})
+        .then(count => res.send({success: true, result: count}))
+        .catch(err => send_error(res, err));
+    });
     
     app.get('/get/demand',           li,         pm.check('access_demands',      {send: true}), (req, res) => {
         m.demands.findOne({

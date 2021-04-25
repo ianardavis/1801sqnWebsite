@@ -1,9 +1,7 @@
-let lines_loaded = false,
-    line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
+let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
 function getLines() {
     clear_table('lines')
     .then(tbl_lines => {
-        lines_loaded = false;
         let sel_status = document.querySelector('#sel_status') || {value: ''};
         get({
             table: 'demand_lines',
@@ -18,23 +16,20 @@ function getLines() {
                     add_cell(row, {text: line.size.size});
                     add_cell(row, {text: line.qty});
                     if (
-                        (line.status === 1 && line.demand.status === 1) ||
-                        (line.status === 2 && line.demand.status === 2)
+                        [1, 2].includes(line.status) ||
+                        [1, 2].includes(line.demand.status)
                     ) {
                         add_cell(row, {
                             text: line_statuses[line.status],
                             classes: ['actions'],
-                            data: {
-                                field: 'line_id',
-                                value: line.line_id
-                            }
+                            data: [{field: 'id', value: line.line_id}]
                         })
                     } else add_cell(row, {text: line_statuses[line.status]});
                     add_cell(row, {append: 
                         new Button({
                             small: true,
                             modal: 'line_view',
-                            data: {field: `id`, value: line.demand_line_id}
+                            data: {field: 'id', value: line.demand_line_id}
                         }).e
                     });
                 } catch (error) {
@@ -42,7 +37,7 @@ function getLines() {
                     console.log(error);
                 };
             });
-            lines_loaded = true;
+            if (typeof getLineActions === 'function') getLineActions();
         });
     });
 };

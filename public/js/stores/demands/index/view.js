@@ -13,11 +13,25 @@ function getDemands() {
                 let row = tbl_demands.insertRow(-1);
                 add_cell(row, table_date(demand.createdAt));
                 add_cell(row, {text: demand.supplier.name});
-                add_cell(row, {data: {field: 'id', value: demand.demand_id}});
+                add_cell(row, {classes: ['demand'], data: [{field: 'id', value: demand.demand_id}]});
                 add_cell(row, {text: statuses[demand.status]});
                 add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`, small: true}).e});
             });
             if (typeof countLines === 'function') countLines();
+            return true;
+        })
+        .then(result => {
+            document.querySelectorAll('.demand').forEach(e => {
+                count({
+                    table: 'demand_lines',
+                    query: [`demand_id=${e.dataset.id}`]
+                })
+                .then(function ([count, options]) {
+                    e.innerText = count || '0';
+                    e.removeAttribute('data-id');
+                    e.classList.remove('demand');
+                });
+            });
         });
     });
 };

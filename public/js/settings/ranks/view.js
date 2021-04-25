@@ -8,7 +8,7 @@ function getRanks() {
                 ranks.forEach(rank => {
                     let row = tbl_ranks.insertRow(-1);
                     add_cell(row, {text: rank._rank});
-                    add_cell(row, {classes: ['ranks'], data: {field: 'id', value: rank.rank_id}})
+                    add_cell(row, {classes: ['ranks'], data: [{field: 'id', value: rank.rank_id}]})
                 });
             }
         );

@@ -61,12 +61,12 @@ function set_count(options = {}) {
 function add_cell(row, options = {}) {
     let cell = row.insertCell();
     if (options.sort)      cell.setAttribute('data-sort', options.sort);
-    if (options.text)      cell.innerText = options.text || '';
+    if      (options.text) cell.innerText = options.text || '';
     else if (options.html) cell.innerHTML = options.html || '';
     if (options.classes)   options.classes.forEach(e => cell.classList.add(e));
     if (options.append)    cell.appendChild(options.append);
     if (options.id)        cell.setAttribute('id', options.id);
-    if (options.data)      cell.setAttribute(`data-${options.data.field}`, options.data.value)
+    if (options.data)      options.data.forEach(e => cell.setAttribute(`data-${e.field}`, e.value));
     if (options.ellipsis)  cell.classList.add('ellipsis1');
 };
 function show(id) {
