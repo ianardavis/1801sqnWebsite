@@ -13,9 +13,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'nsn_edit', text: 'Edit',     modal: 'nsn_edit'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
-                <% if (permissions.nsn_delete) { %><form id='form_nsn_delete'><% } %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',   text: 'Delete'}) %>
-                <% if (permissions.nsn_delete) { %></form><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   btn_form: {permission: 'nsn_delete'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'nsn'}) %>
@@ -57,7 +55,7 @@
                             <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]',   required: true, id: 'sel_nsn_classes'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]', required: true, id: 'sel_nsn_countries'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, id: 'item_number_edit', maxlength: '8', placeholder: 'Required'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, id: 'nsn_item_number_edit', maxlength: '8', placeholder: 'Required'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit"  class="btn btn-success w-100" value='Save NSN'>

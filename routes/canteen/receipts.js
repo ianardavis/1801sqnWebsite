@@ -1,8 +1,8 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/receipts',        li, pm.get, pm.check('access_receipts'),               (req, res) => res.render('canteen/receipts/index'));
-    app.get('/receipts/:id',    li, pm.get, pm.check('access_receipts'),               (req, res) => res.render('canteen/receipts/show'));
+    app.get('/receipts',        li, pm.get('access_receipts'),   (req, res) => res.render('canteen/receipts/index'));
+    app.get('/receipts/:id',    li, pm.get('access_receipts'),   (req, res) => res.render('canteen/receipts/show'));
     
-    app.get('/get/receipts',    li,         pm.check('access_receipts', {send: true}), (req, res) => {
+    app.get('/get/receipts',    li, pm.check('access_receipts'), (req, res) => {
         m.receipts.findAll({
             where: req.query,
             include: [
@@ -13,7 +13,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(receipts => res.send({success: true,  result: receipts}))
         .catch(err =>     send_error(res, err))
     });
-    app.get('/get/receipt',     li,         pm.check('access_receipts', {send: true}), (req, res) => {
+    app.get('/get/receipt',     li, pm.check('access_receipts'), (req, res) => {
         m.receipts.findOne({
             where: req.query,
             include: [
@@ -28,7 +28,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err))
     });
 
-    app.post('/receipts',       li,         pm.check('receipt_add',     {send: true}), (req, res) => {
+    app.post('/receipts',       li, pm.check('receipt_add'),     (req, res) => {
         if      (!req.body.receipt._qty)  send_error(res, 'No quantity submitted')
         else if (!req.body.receipt._cost) send_error(res, 'No cost submitted')
         else {
@@ -96,7 +96,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         };
     });
     
-    app.delete('/receipts/:id', li,         pm.check('receipt_delete',  {send: true}), (req, res) => {
+    app.delete('/receipts/:id', li, pm.check('receipt_delete'),  (req, res) => {
         m.receipts.findOne({
             where: {receipt_id: req.params.id},
             attributes: ['receipt_id']

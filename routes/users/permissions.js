@@ -226,7 +226,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]}
         ]}
     ];
-    app.get('/get/permissions', li, pm.check('access_permissions', {send: true}), (req, res) => {
+    app.get('/get/permissions', li, pm.check('access_permissions'), (req, res) => {
         m.permissions.findAll({
             where:      req.query,
             attributes: ['permission_id', 'permission', 'createdAt']
@@ -234,7 +234,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree}}))
         .catch(err => send_error(res, err));
     });
-    app.put('/permissions/:id', li, pm.check('permission_edit',    {send: true}), (req, res) => {
+    app.put('/permissions/:id', li, pm.check('permission_edit'),    (req, res) => {
         m.users.findOne({
             where:      {user_id: req.params.id},
             attributes: ['user_id']

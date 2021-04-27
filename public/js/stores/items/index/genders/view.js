@@ -7,6 +7,6 @@ function getGenders() {
     .then(getItems);
 };
 window.addEventListener('load', function () {
-    document.querySelector('#sel_genders').addEventListener('change', getItems);
-    addClickListener('reload_genders', getGenders);
+    addListener('sel_genders',    getItems, 'change');
+    addListener('reload_genders', getGenders);
 });

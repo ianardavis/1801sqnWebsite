@@ -12,7 +12,7 @@
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', 	  modal: 'note_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'size_add', text: 'Add Item'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'line_add', text: 'Add Item(s)',  modal: 'line_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'complete',	text: 'Complete',	  btn_form: {permission: 'demand_edit'}}) %>
 				<%- include(`${partials}/menu/button`, {id: 'action',	text: 'Action Lines', form:  'action'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'download',	text: 'Download', 	  btn_form: true}) %>
@@ -38,10 +38,10 @@
 				<% if (permissions.demand_line_edit) { %><form id='form_action'><% } %>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
-						<th class='w-30' onclick="sortTable(1,'tbl_lines')">Item</th>
-						<th class='w-40' onclick="sortTable(2,'tbl_lines')">Size</th>
-						<th class='w-10' onclick="sortTable(3,'tbl_lines')">Qty</th>
-						<th class='w-20' onclick="sortTable(4,'tbl_lines')">Status</th>
+						<th class='w-30' onclick="sortTable(0,'tbl_lines')">Item</th>
+						<th class='w-40' onclick="sortTable(1,'tbl_lines')">Size</th>
+						<th class='w-10' onclick="sortTable(2,'tbl_lines')">Qty</th>
+						<th class='w-20' onclick="sortTable(3,'tbl_lines')">Status</th>
 						<th><i class='fas fa-search'></i></th>
 					</thead>
 					<tbody id='tbl_lines'></tbody>
@@ -77,6 +77,37 @@
 				</div>
 			</div>
 		<% } %>
+		<% if (permissions.demand_line_add) { %>
+			<div id='mdl_line_add' class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<form class="modal-content" id='form_line_add'>
+						<div class="modal-header">
+							<h5 class="modal-title">
+								Add Line(s)
+								<%- include(`${partials}/spinner`, {id: 'line_add'}) %>
+							</h5>
+						</div>
+						<div class="modal-body">
+							<input type="hidden" class='demand_id' name='demand_id'>
+							<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'line_add_qty'}) %>
+							<button type='button' class='btn btn-success w-100 mb-1' id='btn_line_sizes'>Add Item(s)</button>
+							<table class='table table-sm table-hover'>
+								<thead class='thead-dark'>
+									<th class='w-30' onclick='sortTable(0, "tbl_line_add")'>Item</th>
+									<th class='w-60' onclick='sortTable(1, "tbl_line_add")'>Size</th>
+									<th class='w-20' onclick='sortTable(2, "tbl_line_add")'>Quantity</th>
+									<th><i class='fas fa-trash-alt'></i></th>
+								</thead>
+								<tbody id='tbl_line_add'></tbody>
+							</table></div>
+						<div class="modal-footer">
+							<input type="submit" class="btn btn-success w-100" value='Add Lines'>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -91,7 +122,6 @@
 
 <% if (permissions.demand_edit) { %>
 	<script src="/js/stores/demands/show/edit.js"></script>
-	<script async>setButtons()</script>
 <% } %>
 <% if (permissions.demand_delete) { %>
 	<script src="/js/stores/demands/show/delete.js"></script>
@@ -99,11 +129,14 @@
 <% if (permissions.access_demand_lines) { %>
 	<script src="/js/stores/demands/show/lines/view.js"></script>
 	<script async>getLines()</script>
+	<% if (permissions.demand_line_add) { %>
+		<script src="/js/stores/sizes/select/showWindow.js"></script>
+		<script src="/js/stores/demands/show/lines/add.js"></script>
+	<% } %>
 	<% if (permissions.demand_line_edit) { %>
-		<script src="/js/stores/stock/list.js"></script>
+		<script src="/js/stores/stocks/list.js"></script>
 		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/demands/show/lines/edit.js"></script>
-		<script async>setLineButtons();</script>
 	<% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

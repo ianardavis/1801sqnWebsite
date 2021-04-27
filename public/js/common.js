@@ -185,7 +185,11 @@ function addReloadListener(func) {
         if (reload) reload.addEventListener('click', func);
     });
 };
-function addClickListener(btn, func) {
+function addListener(btn, func, event = 'click') {
+    let e = document.querySelector(`#${btn}`)
+    if (e) e.addEventListener(event, func);
+};
+function addListener(btn, func) {
     let e = document.querySelector(`#${btn}`)
     if (e) e.addEventListener('click', func);
 };

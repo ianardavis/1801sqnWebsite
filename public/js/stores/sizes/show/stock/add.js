@@ -7,5 +7,5 @@ window.addEventListener( "load", function () {
         '/stocks',
         {onComplete: getStocks}
     );
-    addClickListener('reload_locations_stock', getLocations);
+    addListener('reload_locations_stock', getLocations);
 });

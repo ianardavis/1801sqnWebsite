@@ -37,7 +37,7 @@ function selectedUsers(users) {
 window.addEventListener('load', function () {
     enable_button('issue_add');
     $('#mdl_issue_add').on('show.bs.modal', function () {clear_table('issue_add')});
-    document.querySelector('#btn_issue_users').addEventListener('click', selectUser);
+    addListener('btn_issue_users', selectUser);
     addFormListener(
         'issue_add',
         'POST',

@@ -14,9 +14,8 @@
                 <%- include(`${partials}/menu/button`, {id: 'stock_edit',     text: 'Edit',           modal: 'stock_edit'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'note_add',       text: 'Add Note',       modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'adjustment_add', text: 'Add Adjustment', modal: 'adjustment_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	      text: 'Delete',         btn_form: {permission: 'stock_delete'}}) %>
                 <% if (permissions.stock_delete) { %><form id='form_stock_delete'><% } %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',   text: 'Delete'}) %>
-                <% if (permissions.stock_delete) { %></form><% } %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details',     spinner: 'stock'}) %>

@@ -1,7 +1,7 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/sales/:id',      li, pm.get, pm.check('access_sales'),               (req, res) => res.render('canteen/sales/show'));
+    app.get('/sales/:id',      li, pm.get('access_sales'),   (req, res) => res.render('canteen/sales/show'));
 
-    app.get('/get/sales',      li,         pm.check('access_sales', {send: true}), (req, res) => {
+    app.get('/get/sales',      li, pm.check('access_sales'), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
@@ -12,7 +12,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(sales => res.send({success: true, result: sales}))
         .catch(err => send_error(res, err))
     });
-    app.get('/get/sale',       li,         pm.check('access_sales', {send: true}), (req, res) => {
+    app.get('/get/sale',       li, pm.check('access_sales'), (req, res) => {
         m.sales.findOne({
             where: req.query,
             include: [inc.users()]
@@ -23,7 +23,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err))
     });
-    app.get('/get/user_sale',  li,         pm.check('access_pos',   {send: true}), (req, res) => {
+    app.get('/get/user_sale',  li, pm.check('access_pos'),   (req, res) => {
         m.sessions.findAll({
             where: {_status: 1},
             attributes: ['session_id']
@@ -44,7 +44,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.get('/get/sale_lines', li,         pm.check('access_pos',   {send: true}), (req, res) => {
+    app.get('/get/sale_lines', li, pm.check('access_pos'),   (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
             include: [inc.items()]
@@ -53,7 +53,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err))
     });
 
-    app.post('/sale_lines',    li,         pm.check('access_pos',   {send: true}), (req, res) => {
+    app.post('/sale_lines',    li, pm.check('access_pos'),   (req, res) => {
         if (!req.body.line) send_error(res, 'No line specified')
         else {
             m.sales.findOne({
@@ -103,7 +103,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         };
     });
     
-    app.put('/sale_lines',     li,         pm.check('access_pos',   {send: true}), (req, res) => {
+    app.put('/sale_lines',     li, pm.check('access_pos'),   (req, res) => {
         if (req.body.line) {
             m.sale_lines.findOne({
                 where: {line_id: req.body.line.line_id},
@@ -144,7 +144,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             .catch(err => send_error(res, err));
         } else send_error(res, 'No line specified');
     });
-    app.put('/sales',          li,         pm.check('access_pos',   {send: true}), (req, res) => {
+    app.put('/sales',          li, pm.check('access_pos'),   (req, res) => {
         m.sales.findOne({
             where:      {sale_id: req.body.sale_id},
             attributes: ['sale_id', '_status']

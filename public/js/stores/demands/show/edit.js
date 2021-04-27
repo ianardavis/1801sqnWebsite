@@ -1,4 +1,5 @@
 window.addEventListener( "load", function () {
+    setCompleteButton();
     addFormListener(
         'complete',
         'PUT',
@@ -11,18 +12,13 @@ window.addEventListener( "load", function () {
         }
     );
 });
-function setButtons() {
+function setCompleteButton() {
     get({
         table: 'demand',
         query: [`demand_id=${path[2]}`]
     })
     .then(function([demand, options]) {
-        if (demand.status === 1) {
-            enable_button('complete');
-            enable_button('delete');
-        } else {
-            disable_button('complete');
-            disable_button('delete');
-        };
+        if (demand.status === 1) enable_button('complete');
+        else                     disable_button('complete');
     });
 };

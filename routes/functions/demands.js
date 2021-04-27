@@ -1,5 +1,8 @@
-module.exports = function (m, demands) {
-    demands.create = function (options = {}) {
+module.exports = function (m, fn) {
+    fn.demands = {
+        lines: {}
+    };
+    fn.demands.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             return m.suppliers.findOne({
                 where:      {supplier_id: options.supplier_id},
@@ -11,7 +14,7 @@ module.exports = function (m, demands) {
                     return m.demands.findOrCreate({
                         where: {
                             supplier_id: supplier.supplier_id,
-                            _status:     1
+                            status:     1
                         },
                         defaults: {user_id: options.user_id}
                     })
@@ -22,47 +25,52 @@ module.exports = function (m, demands) {
             .catch(err => reject(err));
         });
     };
-    demands.createLine = function (options = {}) {
+    fn.demands.lines.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             return m.sizes.findOne({
-                where: {size_id: options.size_id},
-                attributes: ['size_id', 'supplier_id', '_demand_page', '_demand_cell']
+                where:      {size_id: options.size_id},
+                attributes: ['size_id', 'supplier_id'],
+                include:    [{
+                    model: m.details,
+                    where: {name: {[options.op_or]:['Demand Page', 'Demand Cell']}}
+                }]
             })
             .then(size => {
-                if      (!size)              reject(new Error('Size not found'))
-                else if (!size._demand_page) reject(new Error('No demand page for this size'))
-                else if (!size._demand_cell) reject(new Error('No demand cell for this size'))
+                if      (!size)                                               reject(new Error('Size not found'))
+                else if (!size.details)                                       reject(new Error('No demand page/cell for this size'))
+                else if (!size.details.filter(e => e.name === 'Demand Page')) reject(new Error('No demand page for this size'))
+                else if (!size.details.filter(e => e.name === 'Demand Cell')) reject(new Error('No demand cell for this size'))
                 else {
                     return m.demands.findOne({
-                        where: {demand_id: options.demand_id},
-                        attributes: ['demand_id', 'supplier_id', '_status']
+                        where:      {demand_id: options.demand_id},
+                        attributes: ['demand_id', 'supplier_id', 'status']
                     })
                     .then(demand => {
                         if      (!demand)                                 reject(new Error('Demand not found'))
-                        else if (demand._status !== 1)                    reject(new Error('Lines can only be added to draft demands'))
+                        else if (demand.status    !== 1)                  reject(new Error('Lines can only be added to draft demands'))
                         else if (size.supplier_id !== demand.supplier_id) reject(new Error('Size is not from this supplier'))
                         else {
                             return m.demand_lines.findOrCreate({
                                 where: {
                                     demand_id: demand.demand_id,
-                                    size_id: size.size_id
+                                    size_id:   size.size_id
                                 },
                                 defaults: {
-                                    _qty: options._qty,
+                                    qty:     options.qty,
                                     user_id: options.user_id
                                 }
                             })
                             .then(([line, created]) => {
                                 if (created) resolve({success: true, line_id: line.line_id, created: created})
                                 else {
-                                    return line.increment('_qty', {by: options._qty})
+                                    return line.increment('qty', {by: options.qty})
                                     .then(result => {
                                         return m.notes.create({
-                                            _id: line.line_id,
-                                            _table: 'demand_lines',
-                                            _note: `Incremented by ${options._qty}${options.note || ''}`,
+                                            id:      line.line_id,
+                                            _table:  'demand_lines',
+                                            note:    `Incremented by ${options.qty}${options.note || ''}`,
                                             user_id: options.user_id,
-                                            _system: 1
+                                            system:  1
                                         })
                                         .then(note => resolve({success: true, line_id: line.line_id, created: created}))
                                         .catch(err => reject(err));

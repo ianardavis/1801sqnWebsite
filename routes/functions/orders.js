@@ -1,5 +1,6 @@
-module.exports = function (m, orders) {
-    orders.create = function (line, user_id, source = {}) {
+module.exports = function (m, fn) {
+    fn.orders = {};
+    fn.orders.create = function (line, user_id, source = {}) {
         return new Promise((resolve, reject) => {
             return m.sizes.findOne({
                 where: {size_id: line.size_id},

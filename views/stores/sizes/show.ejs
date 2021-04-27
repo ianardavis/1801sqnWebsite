@@ -22,9 +22,7 @@
                 <%- include(`${partials}/menu/button`, {id: 'order_add',  text: 'Add Order',          modal: 'order_add',  classes: ['orderable_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'issue_add',  text: 'Add Issue',          modal: 'issue_add',  classes: ['issueable_element']}) %>
                 <div class="dropdown-divider"></div>
-                <% if (permissions.item_delete) { %><form id='form_size_delete'><% } %>
-                <%- include(`${partials}/menu/button`, {id: 'delete',     text: 'Delete'}) %>
-                <% if (permissions.item_delete) { %></form><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',     text: 'Delete',             btn_form: {permission: 'size_delete'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'size'}) %>

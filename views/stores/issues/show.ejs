@@ -46,7 +46,7 @@
 <%- include(`${partials}/notes/scripts`) %>
 
 <script src="/js/stores/issues/show/view.js"></script>
-<script async>showIssue()</script>
+<script async>getIssue()</script>
 <% if (permissions.issue_delete) { %>
 	<script src="/js/stores/issues/show/delete.js"></script>
 <% } %>

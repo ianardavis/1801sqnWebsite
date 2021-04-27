@@ -11,7 +11,7 @@ function viewNSNEdit() {
         getNSNCountries({
             selected: nsn.nsn_country_id
         });
-        set_value({id: 'item_number_edit', value: nsn.item_number});
+        set_value({id: 'nsn_item_number_edit', value: nsn.item_number});
     })
 };
 window.addEventListener( "load", function () {
@@ -27,7 +27,6 @@ window.addEventListener( "load", function () {
             ]
         }
     );
-    let groups = document.querySelector('#sel_nsn_groups');
-    if (groups) groups.addEventListener('change', getNSNClassifications);
+    addListener('sel_nsn_groups', getNSNClassifications, 'change');
     $('#mdl_nsn_edit').on('show.bs.modal', viewNSNEdit);
 });

@@ -9,16 +9,22 @@ function get(options) {
                 let response = JSON.parse(event.target.responseText);
                 if (response.success) resolve([response.result, options])
                 else {
+                    console.log(`********* Error getting ${options.table} *********`);
                     console.log(response.message || response);
+                    console.log('*******************************************');
                     reject(new Error(response.message));
                 };
             } catch (error) {
+                console.log(`********* Error getting ${options.table} *********`);
                 console.log(error);
+                console.log('*******************************************');
                 reject(error);
             };
         });
         XHR.addEventListener("error", function (event) {
+            console.log(`********* Error getting ${options.table} *********`);
             console.log(event);
+            console.log('*******************************************');
             hide_spinner(options.spinner || options.table || '');
             reject(event);
         });
@@ -36,16 +42,22 @@ function count(options, onComplete) {
                 let response = JSON.parse(event.target.responseText);
                 if (response.success === true) resolve([response.result || 0, options])
                 else {
-                    console.log(response.message);
+                    console.log(`********* Error counting ${options.table} *********`);
+                    console.log(response.message || response);
+                    console.log('*******************************************');
                     reject(new Error(response.message));
                 };
             } catch (error) {
+                console.log(`********* Error counting ${options.table} *********`);
                 console.log(error);
+                console.log('*******************************************');
                 reject(error);
             };
         });
         XHR.addEventListener("error", function (event) {
+            console.log(`********* Error counting ${options.table} *********`);
             console.log(event);
+            console.log('*******************************************');
             hide_spinner(options.spinner || options.table || '');
             reject(event);
         });

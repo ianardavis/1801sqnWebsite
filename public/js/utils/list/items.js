@@ -11,7 +11,7 @@ function listItems(options = {}) {
                 items.forEach(item => {
                     tbl_items.appendChild(new Option({
                         value:    (options.id_only ? item.item_id : `item_id=${item.item_id}`),
-                        text:     item.item,
+                        text:     item.description,
                         selected: (options.selected === item.item_id)
                     }).e);
                 });

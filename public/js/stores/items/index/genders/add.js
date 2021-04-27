@@ -10,5 +10,5 @@ function getGendersAdd() {
 };
 window.addEventListener( "load", function () {
     $('#mdl_item_add').on('show.bs.modal', getGendersAdd);
-    addClickListener('reload_genders_add', getGendersAdd);
+    addListener('reload_genders_add', getGendersAdd);
 });

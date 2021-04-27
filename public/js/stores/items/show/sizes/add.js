@@ -24,5 +24,5 @@ window.addEventListener('load', function () {
             function () {set_value({id: 'size', value: ''})}
         ]}
     );
-    addClickListener('reload_suppliers', getSuppliers);
+    addListener('reload_suppliers', getSuppliers);
 });

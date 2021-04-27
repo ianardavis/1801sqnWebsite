@@ -1,6 +1,6 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/stocks/:id',    li, pm.get, pm.check('access_stocks', {send: true}), (req, res) => res.render('stores/stocks/show'));
-    app.get('/get/stocks',    li,         pm.check('access_stocks', {send: true}), (req, res) => {
+    app.get('/stocks/:id',    li, pm.get('access_stocks'),   (req, res) => res.render('stores/stocks/show'));
+    app.get('/get/stocks',    li, pm.check('access_stocks'), (req, res) => {
         m.stocks.findAll({
             where:   req.query,
             include: [
@@ -11,7 +11,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/stock',     li,         pm.check('access_stocks', {send: true}), (req, res) => {
+    app.get('/get/stock',     li, pm.check('access_stocks'), (req, res) => {
         m.stocks.findOne({
             where:   req.query,
             include: [
@@ -23,7 +23,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/stocks',       li,         pm.check('stock_add',     {send: true}), (req, res) => {
+    app.post('/stocks',       li, pm.check('stock_add'),     (req, res) => {
         m.sizes.findOne({
             where: {size_id: req.body.stock.size_id},
             attributes: ['size_id']
@@ -47,7 +47,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.put('/stocks/:id',    li,         pm.check('stock_edit',    {send: true}), (req, res) => {
+    app.put('/stocks/:id',    li, pm.check('stock_edit'),    (req, res) => {
         m.stocks.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             if (!stock) send_error(res, 'Stock record not found')
@@ -65,7 +65,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         
     });
     
-    app.delete('/stocks/:id', li,         pm.check('stock_delete',  {send: true}), (req, res) => {
+    app.delete('/stocks/:id', li, pm.check('stock_delete'),  (req, res) => {
         m.stocks.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             if      (!stock)        send_error(res, 'Stock record not found')

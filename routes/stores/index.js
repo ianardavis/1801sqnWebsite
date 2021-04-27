@@ -8,5 +8,5 @@ module.exports = (fs, app, m, pm, op, li, send_error) => {
     })
     .forEach(file => require(`./${file}`)(app, m, pm, op, inc, li, send_error));
 
-    app.get('/stores', li, pm.get, pm.check('access_stores'), (req, res) => res.render('stores/index'));
+    app.get('/stores', li, pm.get('access_stores'), (req, res) => res.render('stores/index'));
 };

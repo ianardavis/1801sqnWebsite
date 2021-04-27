@@ -2,7 +2,7 @@ function getLineActions() {
     document.querySelectorAll('.actions').forEach(e => {
         get({
             table: 'demand_line',
-            query: [`line_id=${e.dataset.id}`]
+            query: [`demand_line_id=${e.dataset.id}`]
         })
         .then(function ([line, options]) {
             if ([1, 2].includes(line.status)) {
@@ -14,18 +14,18 @@ function getLineActions() {
                 opts.push({text: 'Cancel', value: '0'});
                 if (line.status === 2) opts.push({text: 'Receive', value: '3'});
                 let _status = new Select({
-                    attributes: [{field: 'id', value: `sel_${line.line_id}`}],
+                    attributes: [{field: 'id', value: `sel_${line.demand_line_id}`}],
                     small:      true,
                     options:    opts
                 }).e;
                 _status.addEventListener("change", function () {
-                    clearElement(`action_${line.line_id}`);
-                    clearElement(`details_${line.line_id}`);
+                    clearElement(`action_${line.demand_line_id}`);
+                    clearElement(`details_${line.demand_line_id}`);
                     if (this.value === '0' || this.value === '3') {
                         div_action.appendChild(
                             new Hidden({
                                 attributes: [
-                                    {field: 'name',  value: `actions[${line.line_id}][status]`},
+                                    {field: 'name',  value: `actions[${line.demand_line_id}][status]`},
                                     {field: 'value', value: this.value}
                                 ]
                             }).e
@@ -33,30 +33,30 @@ function getLineActions() {
                         div_action.appendChild(
                             new Hidden({
                                 attributes: [
-                                    {field: 'name',  value: `actions[${line.line_id}][line_id]`},
-                                    {field: 'value', value: line.line_id}
+                                    {field: 'name',  value: `actions[${line.demand_line_id}][line_id]`},
+                                    {field: 'value', value: line.demand_line_id}
                                 ]
                             }).e
                         );
                     };
                     if (this.value === '3') {
-                        let _cell = document.querySelector(`#details_${line.line_id}`);
+                        let _cell = document.querySelector(`#details_${line.demand_line_id}`);
                         if (_cell) {
                             _cell.innerHTML = '';
-                            add_spinner(_cell, {id: line.line_id});
+                            add_spinner(_cell, {id: line.demand_line_id});
                             get({
                                 table: 'size',
                                 query: [`size_id=${line.size_id}`]
                             })
                             .then(function ([size, options]) {
-                                showReceiptActions(size, line.line_id, line._qty);
-                                remove_spinner(line.line_id);
+                                showReceiptActions(size, line.demand_line_id, line._qty);
+                                remove_spinner(line.demand_line_id);
                             });
                         };
                     };
                 });
-                div_action.setAttribute( 'id', `action_${line.line_id}`);
-                div_details.setAttribute('id', `details_${line.line_id}`);
+                div_action.setAttribute( 'id', `action_${line.demand_line_id}`);
+                div_details.setAttribute('id', `details_${line.demand_line_id}`);
                 div_actions.appendChild(_status);
                 div_actions.appendChild(div_action);
                 div_actions.appendChild(div_details);
@@ -163,19 +163,18 @@ function getStock(size_id, line_id, cell, entry = false) {
         remove_spinner(`stocks_${line_id}`);
     });
 };
-function setLineButtons() {
+function setActionButton() {
     get({
         table: 'demand',
         query: [`demand_id=${path[2]}`]
     })
     .then(function([demand, options]) {
-        disable_button('action');
-        disable_button('size_add');
-        if      (demand.status === 1) enable_button('size_add');
-        else if (demand.status === 2) enable_button('action');
+        if ([1,2].includes(demand.status)) enable_button('action')
+        else                               disable_button('action');
     });
 };
 window.addEventListener( "load", function () {
+    setActionButton();
     addFormListener(
         'action',
         'PUT',
@@ -183,8 +182,8 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getLines,
-                setActions,
-                setLineButtons
+                // setActions,
+                setActionButton
             ]
         }
     );

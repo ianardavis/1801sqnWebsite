@@ -1,5 +1,7 @@
+// let suppliers_loaded = false;
 function listSuppliers(options = {}) {
     return new Promise((resolve, reject) => {
+        // suppliers_loaded = false;
         clear_select(options.select || 'suppliers')
         .then(sel_suppliers => {
             get({
@@ -17,10 +19,17 @@ function listSuppliers(options = {}) {
                         }).e
                     );
                 });
+                // suppliers_loaded = true;
                 resolve(true);
             })
-            .catch(err => reject(err));
+            .catch(err => {
+                // suppliers_loaded = true;
+                reject(err);
+            });
         })
-        .catch(err => reject(err));
+        .catch(err => {
+            // suppliers_loaded = true;
+            reject(err);
+        });
     });
 };

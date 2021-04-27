@@ -1,5 +1,8 @@
-module.exports = function (m, inc, loancard) {
-    loancard.createPDF  = function (loancard_id) {
+module.exports = function (m, inc, fn) {
+    fn.loancards = {
+        lines: {}
+    };
+    fn.loancards.createPDF  = function (loancard_id) {
         return new Promise((resolve, reject) => {
             m.loancards.findOne({
                 attributes: ['loancard_id', '_status', 'createdAt'],
@@ -157,7 +160,7 @@ module.exports = function (m, inc, loancard) {
         };
     };
 
-    loancard.create     = function (options = {}) {
+    fn.loancards.create     = function (options = {}) {
         return new Promise((resolve, reject) => {
             return m.loancards.findOrCreate({
                 where: {
@@ -173,7 +176,7 @@ module.exports = function (m, inc, loancard) {
             .catch(err => reject(err));
         });
     };
-    loancard.createLine = function(line = {}) {
+    fn.loancards.lines.create = function(line = {}) {
         return new Promise((resolve, reject) => {
             return m.loancards.findOne({
                 where: {loancard_id: line.loancard_id},

@@ -21,7 +21,7 @@ function reset_add_detail() {
     set_value({id: 'detail_value_add'});
 };
 window.addEventListener('load', function () {
-    addClickListener('reload_options', getDetailOptions)
+    addListener('reload_options', getDetailOptions)
     $('#mdl_detail_add').on('show.bs.modal', reset_add_detail);
     $('#mdl_detail_add').on('show.bs.modal', getDetailOptions);
     enable_button('detail_add');

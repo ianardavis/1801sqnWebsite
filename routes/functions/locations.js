@@ -1,5 +1,6 @@
-module.exports = function (m, location) {
-    location.create = function (options = {}) {
+module.exports = function (m, fn) {
+    fn.locations = {};
+    fn.locations.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.location) {
                 return m.locations.findOrCreate({
@@ -22,7 +23,7 @@ module.exports = function (m, location) {
             };
         });
     };
-    location.check = function (options = {}) {
+    fn.locations.check = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.location_id) {
                 m.locations.findOne({

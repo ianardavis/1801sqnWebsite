@@ -1,7 +1,7 @@
 const fs = require('fs');
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/files/:id',           li, pm.get, pm.check('access_files'),                      (req, res) => res.render('stores/files/show'));
-    app.get('/get/fs_files',        li, pm.get, pm.check('access_files',        {send: true}), (req, res) => {
+    app.get('/files/:id',           li, pm.get('access_files'),          (req, res) => res.render('stores/files/show'));
+    app.get('/get/fs_files',        li, pm.check('access_files'),        (req, res) => {
         fs.readdir(
             `${process.env.ROOT}/public/res/files`,
             function(err, files) {
@@ -9,12 +9,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             }
         );
     });
-    app.get('/get/files',           li,         pm.check('access_files',        {send: true}), (req, res) => {
+    app.get('/get/files',           li, pm.check('access_files'),        (req, res) => {
         m.files.findAll({where: req.query})
         .then(files => res.send({success: true, result: files}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/file',            li,         pm.check('access_files',        {send: true}), (req, res) => {
+    app.get('/get/file',            li, pm.check('access_files'),        (req, res) => {
         m.files.findOne({
             where:   req.query,
             include: [inc.users()]
@@ -25,12 +25,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.get('/get/file_details',    li,         pm.check('access_file_details', {send: true}), (req, res) => {
+    app.get('/get/file_details',    li, pm.check('access_file_details'), (req, res) => {
         m.file_details.findAll({where: req.query})
         .then(details => res.send({success: true, result: details}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/file_detail',     li,         pm.check('access_file_details', {send: true}), (req, res) => {
+    app.get('/get/file_detail',     li, pm.check('access_file_details'), (req, res) => {
         m.file_details.findOne({where: req.query})
         .then(detail => {
             if (!detail) send_error(res, 'Detail not found')
@@ -39,7 +39,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.get('/files/:id/download',  li,         pm.check('access_files',        {send: true}), (req, res) => {
+    app.get('/files/:id/download',  li, pm.check('access_files'),        (req, res) => {
         m.files.findOne({
             where: {file_id: req.params.id},
             attributes: ['file_id', '_filename']
@@ -61,7 +61,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.put('/files',               li,         pm.check('file_edit',           {send: true}), (req, res) => {
+    app.put('/files',               li, pm.check('file_edit'),           (req, res) => {
         m.files.findOne({
             where: {file_id: req.body.file_id}
         })
@@ -75,7 +75,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.put('/file_details',        li,         pm.check('file_edit',           {send: true}), (req, res) => {
+    app.put('/file_details',        li, pm.check('file_edit'),           (req, res) => {
         m.file_details.findOne({
             where: {file_detail_id: req.body.file_detail_id}
         })
@@ -90,7 +90,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/files',              li,         pm.check('file_add',            {send: true}), (req, res) => {
+    app.post('/files',              li, pm.check('file_add'),            (req, res) => {
         let uploaded = req.files.file;
         if      (!req.files)                          send_error(res, 'No file submitted')
         else if (Object.keys(req.files).length !== 1) send_error(res, 'Multiple files submitted')
@@ -138,7 +138,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             }
         );
     });
-    app.post('/file_details',       li,         pm.check('file_detail_add',     {send: true}), (req, res) => {
+    app.post('/file_details',       li, pm.check('file_detail_add'),     (req, res) => {
         m.files.findOne({
             where: {file_id: req.body.detail.file_id},
             attributes: ['file_id']
@@ -155,7 +155,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.delete('/files/:id',        li,         pm.check('file_delete',         {send: true}), (req, res) => {
+    app.delete('/files/:id',        li, pm.check('file_delete'),         (req, res) => {
         m.files.findOne({
             where: {file_id: req.params.id},
             attributes: ['file_id', '_filename']
@@ -174,12 +174,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err));
     });
-    app.delete('/fs_files/:id',     li,         pm.check('file_delete',         {send: true}), (req, res) => {
+    app.delete('/fs_files/:id',     li, pm.check('file_delete'),         (req, res) => {
         delete_fs_file(`${process.env.ROOT}/public/res/files/${req.params.id}`)
         .then(result => res.send({success: true,  message: 'File deleted'}))
         .catch(err =>   send_error(res, err));
     });
-    app.delete('/file_details/:id', li,         pm.check('file_detail_delete',  {send: true}), (req, res) => {
+    app.delete('/file_details/:id', li, pm.check('file_detail_delete'),  (req, res) => {
         m.file_details.destroy({
             where: {file_detail_id: req.params.id}
         })

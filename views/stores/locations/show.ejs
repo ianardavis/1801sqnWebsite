@@ -13,9 +13,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				<%- include(`${partials}/menu/button`, {id: 'note_add',      text: 'Add Note', modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'location_edit', text: 'Edit',     modal: 'location_edit'}) %>
-                <% if (permissions.location_delete) { %><form id='form_location_delete'><% } %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',   text: 'Delete'}) %>
-                <% if (permissions.location_delete) { %></form><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	     text: 'Delete',   btn_form: {permission: 'location_delete'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'location'}) %>

@@ -1,5 +1,5 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/get/payments', li, pm.check('access_payments', {send: true}), (req, res) => {
+    app.get('/get/payments', li, pm.check('access_payments'), (req, res) => {
         m.payments.findAll({
             where: req.query,
             include: [

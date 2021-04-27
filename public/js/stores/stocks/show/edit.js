@@ -22,5 +22,5 @@ window.addEventListener('load', function () {
     );
     $('#mdl_stock_edit').on('show.bs.modal', viewStockEdit);
     $('#mdl_stock_edit').on('show.bs.modal', getLocations);
-    addClickListener('reload_locations', getLocations);
+    addListener('reload_locations', getLocations);
 })

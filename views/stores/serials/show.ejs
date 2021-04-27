@@ -13,9 +13,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'serial_edit', text: 'Edit',     modal: 'serial_edit'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'note_add',    text: 'Add Note', modal: 'note_add'}) %>
-                <% if (permissions.serial_delete) { %><form id='form_serial_delete'><% } %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',      text: 'Delete'}) %>
-                <% if (permissions.serial_delete) { %></form><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete',   btn_form: {permission: 'serial_delete'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'serial'}) %>
@@ -67,7 +65,8 @@
                             <h5 class="modal-title">Edit Location</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'serial_location_edit', maxlength: '8', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Serial #', name: 'serial[serial]', id: 'serial_serial_edit', }) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location',       id: 'serial_location_edit', maxlength: '8', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
                             <datalist id="locations_list"></datalist>
                         </div>
                         <div class="modal-footer">

@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'delete',
         'DELETE',
-        `/nsns/${path[2]}`,
+        `/serials/${path[2]}`,
         {redirect: '/items'}
     );
 });

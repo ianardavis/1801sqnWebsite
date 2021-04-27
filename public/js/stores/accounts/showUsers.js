@@ -1,4 +1,4 @@
-showUsers = (users, options) => {
+function showUsers([users, options]) {
     clearElement('usersSelect');
     let _select  = document.querySelector('#usersSelect');
     _select.appendChild(new Option({value: '', text: ''}).e);

@@ -23,9 +23,7 @@
                         <%- include(`${partials}/menu/button`, {id: 'default', text: 'Make Default'}) %>
                     </form>
                 <% } %>
-				<% if (permissions.supplier_delete) { %><form id='form_supplier_delete'><% } %>
-				<%- include(`${partials}/menu/button`, {id: 'supplier_delete', text: 'Delete'}) %>
-				<% if (permissions.supplier_delete) { %></form><% } %>
+				<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete',   btn_form: {permission: 'supplier_delete'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'supplier'}) %>

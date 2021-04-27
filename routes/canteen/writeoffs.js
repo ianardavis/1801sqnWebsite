@@ -1,8 +1,8 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/writeoffs',             li, pm.get, pm.check('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/index'));
-    app.get('/writeoffs/:id',         li, pm.get, pm.check('access_writeoffs'),                    (req, res) => res.render('canteen/writeoffs/show'));
+    app.get('/writeoffs',             li, pm.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/index'));
+    app.get('/writeoffs/:id',         li, pm.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/show'));
     
-    app.get('/get/writeoffs',         li,         pm.check('access_writeoffs',      {send: true}), (req, res) => {
+    app.get('/get/writeoffs',         li, pm.check('access_writeoffs'),      (req, res) => {
         m.writeoffs.findAll({
             include: [inc.users()],
             where: req.query
@@ -10,7 +10,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(writeoffs => res.send({success: true, result: writeoffs}))
         .catch(err => send_error(res, err))
     });
-    app.get('/get/writeoff',          li,         pm.check('access_writeoffs',      {send: true}), (req, res) => {
+    app.get('/get/writeoff',          li, pm.check('access_writeoffs'),      (req, res) => {
         m.writeoffs.findOne({
             where: req.query,
             include: [inc.users()]
@@ -21,7 +21,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .catch(err => send_error(res, err))
     });
-    app.get('/get/writeoff_lines',    li,         pm.check('access_writeoff_lines', {send: true}), (req, res) => {
+    app.get('/get/writeoff_lines',    li, pm.check('access_writeoff_lines'), (req, res) => {
         m.writeoff_lines.findAll({
             include: [
                 inc.items(),
@@ -33,7 +33,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err))
     });
 
-    app.post('/writeoffs',            li,         pm.check('writeoff_add',          {send: true}), (req, res) => {
+    app.post('/writeoffs',            li, pm.check('writeoff_add'),          (req, res) => {
         m.writeoffs.findOrCreate({
             where: {
                 _status: 1,
@@ -47,7 +47,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
     
     });
-    app.post('/writeoff_lines/:id',   li,         pm.check('writeoff_line_add',     {send: true}), (req, res) => {
+    app.post('/writeoff_lines/:id',   li, pm.check('writeoff_line_add'),     (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id']
@@ -88,7 +88,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     
     });
 
-    app.put('/writeoffs/:id',         li,         pm.check('writeoff_edit',         {send: true}), (req, res) => {
+    app.put('/writeoffs/:id',         li, pm.check('writeoff_edit'),         (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status'],
@@ -148,12 +148,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => res.send(err, res));
     });
     
-    app.delete('/writeoff_lines/:id', li,         pm.check('writeoff_line_delete',  {send: true}), (req, res) => {
+    app.delete('/writeoff_lines/:id', li, pm.check('writeoff_line_delete'),  (req, res) => {
         m.writeoff_lines.update({_status: 0}, {where: {line_id: req.params.id}})
         .then(result => res.send({success: true, message: 'Line deleted'}))
         .catch(err => send_error(res, err));
     });
-    app.delete('/writeoffs/:id',      li,         pm.check('writeoff_delete',       {send: true}), (req, res) => {
+    app.delete('/writeoffs/:id',      li, pm.check('writeoff_delete'),       (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status']

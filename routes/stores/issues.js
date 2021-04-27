@@ -1,9 +1,10 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    let fn= {}, loancards = {}, orders = {}, allowed = require(`../functions/allowed`);
-    require('./functions/loancards')(m, inc, loancards);
-    require('./functions/orders')(m, orders);
-    app.get('/issues',           li, pm.get, pm.check('access_issues', {allow: true}),             (req, res) => res.render('stores/issues/index'));
-    app.get('/issues/:id',       li, pm.get, pm.check('access_issues', {allow: true}),             (req, res) => {
+    let fn = {};
+    require(`${process.env.FUNCS}/allowed`)(m.permissions, fn);
+    require(`${process.env.FUNCS}/loancards`)(m, inc, fn);
+    require(`${process.env.FUNCS}/orders`)(m, fn);
+    app.get('/issues',           li, pm.get('access_issues',   {allow: true}), (req, res) => res.render('stores/issues/index'));
+    app.get('/issues/:id',       li, pm.get('access_issues',   {allow: true}), (req, res) => {
         m.issues.findOne({
             where: {issue_id: req.params.id},
             attributes: ['issue_id', 'user_id_issue']
@@ -22,13 +23,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
     });
 
-    app.get('/count/issues',     li,         pm.check('access_issues', {allow: true, send: true}), (req, res) => {
-        if (!allowed) req.query.user_id_issue = req.user.user_id;
+    app.get('/count/issues',     li, pm.check('access_issues', {allow: true}), (req, res) => {
+        if (!req.allowed) req.query.user_id_issue = req.user.user_id;
         m.issues.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/issues',       li,         pm.check('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/get/issues',       li, pm.check('access_issues', {allow: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_issue = req.user.user_id;
         m.issues.findAll({
             where: req.query,
@@ -41,7 +42,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(issues => res.send({success: true, result: issues}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/issue',        li,         pm.check('access_issues', {allow: true, send: true}), (req, res) => {
+    app.get('/get/issue',        li, pm.check('access_issues', {allow: true}), (req, res) => {
         m.issues.findOne({
             where: req.query,
             include: [
@@ -61,7 +62,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/users/:id/issue', li,         pm.check('issue_add',     {allow: true, send: true}), (req, res) => {
+    app.post('/users/:id/issue', li, pm.check('issue_add',     {allow: true}), (req, res) => {
         let actions = [];
         if (req.body.lines) {
             req.body.lines.forEach(line => {
@@ -82,7 +83,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(result => res.send({success: true, message: 'Issues created'}))
         .catch(err => send_error(res, err));
     });
-    app.post('/sizes/:id/issue', li,         pm.check('issue_add',     {allow: true, send: true}), (req, res) => {
+    app.post('/sizes/:id/issue', li, pm.check('issue_add',     {allow: true}), (req, res) => {
         let actions = [];
         if (req.body.lines) {
             req.body.lines.forEach(line => {
@@ -103,7 +104,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(result => res.send({success: true, message: 'Issues created'}))
         .catch(err => send_error(res, err));
     });
-    app.post('/issues',          li,         pm.check('issue_add',     {allow: true, send: true}), (req, res) => {
+    app.post('/issues',          li, pm.check('issue_add',     {allow: true}), (req, res) => {
         create_line(
             {
                 ...req.body.line,
@@ -115,7 +116,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.put('/issues',           li,         pm.check('issue_edit',    {allow: true, send: true}), (req, res) => {
+    app.put('/issues',           li, pm.check('issue_edit',    {allow: true}), (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(decline_line(line, req.user.user_id)));
         req.body.lines.filter(e => e.status === '2').forEach(line => actions.push(approve_line(line, req.user.user_id)));
@@ -131,7 +132,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.delete('/issues/:id',    li,         pm.check('issue_delete',  {allow: true, send: true}), (req, res) => {
+    app.delete('/issues/:id',    li, pm.check('issue_delete',  {allow: true}), (req, res) => {
         m.issues.findOne({
             where:      {issue_id: req.params.id},
             attributes: ['issue_id', 'status', 'user_id_issue']
@@ -263,7 +264,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function decline_line(line, user_id) {
         return new Promise((resolve, reject) => {
-            return allowed(m.permissions, user_id, 'issue_approve')
+            return fn.allowed(user_id, 'issue_approve')
             .then(result => {
                 return get_issue(line.issue_id)
                 .then(issue => {
@@ -292,7 +293,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function approve_line(line, user_id) {
         return new Promise((resolve, reject) => {
-            return allowed(m.permissions, user_id, 'issue_approve')
+            return fn.allowed(user_id, 'issue_approve')
             .then(result => {
                 return get_issue(line.issue_id)
                 .then(issue => {
@@ -321,7 +322,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function order_line(line, user_id) {
         return new Promise((resolve, reject) => {
-            return allowed(m.permissions, user_id, 'order_add')
+            return fn.allowed(user_id, 'order_add')
             .then(result => {
                 let include = [inc.size({attributes: ['size_id', 'orderable', 'issueable', 'has_nsns', 'has_serials']})];
                 return get_issue(line.issue_id, include)
@@ -330,7 +331,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     else if (!issue.size)           reject(new Error('Size not found'))
                     else if (!issue.size.orderable) reject(new Error('This size can not be ordered'))
                     else {
-                        return orders.create(
+                        return fn.orders.create(
                             {
                                 size_id: issue.size_id,
                                 qty:     issue.qty
@@ -435,7 +436,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function issue_lines(lines, user_id) {
         return new Promise((resolve, reject) => {
-            return allowed(m.permissions, user_id, 'loancard_line_add')
+            return fn.allowed(user_id, 'loancard_line_add')
             .then(result => {
                 if (!lines || lines.length === 0) reject(new Error('No lines to issue'))
                 else {
@@ -447,7 +448,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                             users.forEach(user => {
                                 actions.push(
                                     new Promise((resolve, reject) => {
-                                        return loancards.create({
+                                        return fn.loancards.create({
                                             user_id_loancard: user.user_id_issue,
                                             user_id: user_id
                                         })
@@ -591,7 +592,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function issue_line_loancard (options = {}) {
         return new Promise((resolve, reject) => {
-            return loancards.createLine(options)
+            return fn.loancards.lines.create(options)
             .then(loancard_line => resolve(loancard_line.line_id))
             .catch(err => reject(err));
         });

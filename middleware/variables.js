@@ -13,12 +13,12 @@ module.exports = () => {
             req.flash('danger', err.message);
             res.redirect('/');
         };
-        res.locals.user     = req.user;
-        res.locals.info     = req.flash('info');
-        res.locals.danger   = req.flash('danger');
-        res.locals.success  = req.flash('success');
-        res.locals.partials = process.env.PARTIALS;
-        res.locals.tab      = req.query.tab || 'details';
+        res.locals.user      = req.user;
+        res.locals.info      = req.flash('info');
+        res.locals.danger    = req.flash('danger');
+        res.locals.success   = req.flash('success');
+        res.locals.partials  = process.env.PARTIALS;
+        res.locals.tab       = req.query.tab || 'details';
         next();
     };
 };

@@ -44,11 +44,11 @@ function selectUsers() {
     } else alert('Source window not found');
 };
 window.addEventListener('load', function () {
-    addClickListener('reload_ranks', getRanks);
-    addClickListener('reload_statuses', getStatuses);
-    document.querySelector('#sel_ranks').addEventListener('change', getUsers);
-    document.querySelector('#sel_statuses').addEventListener('change', getUsers);
-    addClickListener('btn_select', selectUsers);
+    addListener('reload_ranks',    getRanks);
+    addListener('reload_statuses', getStatuses);
+    addListener('sel_ranks',       getUsers, 'change');
+    addListener('sel_statuses',    getUsers, 'change');
+    addListener('btn_select',      selectUsers);
     getRanks();
     getStatuses();
     getUsers();

@@ -1,19 +1,20 @@
 module.exports = (app, m, pm, op, inc, li, send_error) => {
-    let fn = {}, orders = {}, demands = {}, receipts = {}, issues = {}, allowed = require(`../functions/allowed`),
-        promiseResults = require(`../functions/promise_results`);
-    require(`./functions/orders`) (m, orders);
-    require(`./functions/demands`)(m, demands);
-    // require(`./functions/receipts`)(m, receipts);
-    app.get('/orders',       li, pm.get, pm.check('access_orders'),              (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
-    app.get('/orders/:id',   li, pm.get, pm.check('access_orders'),              (req, res) => res.render('stores/orders/show'));
+    let fn = {}, receipts = {}, issues = {};
+    require(`${process.env.FUNCS}/allowed`)(m.permissions, fn);
+    require(`${process.env.FUNCS}/promise_results`)(fn);
+    require(`${process.env.FUNCS}/orders`) (m, fn);
+    require(`${process.env.FUNCS}/demands`)(m, fn);
+    // require(`${process.env.FUNCS}/receipts`)(m, receipts);
+    app.get('/orders',       li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
+    app.get('/orders/:id',   li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
     
-    app.get('/count/orders', li,         pm.check('access_orders', {send: true}), (req, res) => {
+    app.get('/count/orders', li, pm.check('access_orders'), (req, res) => {
         m.orders.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => send_error(res, err));
     });
 
-    app.get('/get/orders',   li,         pm.check('access_orders', {send: true}), (req, res) => {
+    app.get('/get/orders',   li, pm.check('access_orders'), (req, res) => {
         m.orders.findAll({
             where:   req.query,
             include: [
@@ -24,7 +25,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(orders => res.send({success: true, result: orders}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/order',    li,         pm.check('access_orders', {send: true}), (req, res) => {
+    app.get('/get/order',    li, pm.check('access_orders'), (req, res) => {
         m.orders.findOne({
             where:   req.query,
             include: [
@@ -36,13 +37,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/orders',      li,         pm.check('order_add',     {send: true}), (req, res) => {
-        orders.create(req.body.line, req.user.user_id)
+    app.post('/orders',      li, pm.check('order_add'),     (req, res) => {
+        fn.orders.create(req.body.line, req.user.user_id)
         .then(result => res.send(result))
         .catch(err => send_error(res, err));
     });
     
-    app.put('/orders',       li,         pm.check('order_edit',    {send: true}), (req, res) => {
+    app.put('/orders',       li, pm.check('order_edit'),    (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
         actions.push(demand_orders(req.body.lines.filter(e => e.status === '2'), req.user.user_id));
@@ -57,7 +58,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
     
-    app.delete('/orders/:id', li,        pm.check('order_delete',  {send: true}), (req, res) => {
+    app.delete('/orders/:id', li, pm.check('order_delete'), (req, res) => {
         m.orders.findOne({
             where:      {order_id: req.params.id},
             attributes: ['order_id', 'status']
@@ -106,7 +107,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
 
     function demand_orders(lines, user_id) {
         return new Promise((resolve, reject) => {
-            return allowed(m.permissions, user_id, 'demand_line_add')
+            return fn.allowed(user_id, 'demand_line_add')
             .then(result => {
                 return get_orders(lines)
                 .then(orders => {
@@ -190,7 +191,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             suppliers.forEach(supplier => {
                 demand_actions.push(
                     new Promise((resolve, reject) => {
-                        return demands.create({
+                        return fn.demands.create({
                             supplier_id: supplier.supplier_id,
                             user_Id:     user_id
                         })
@@ -215,7 +216,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function demand_line(order, demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return demands.createLine({
+            return fn.demands.lines.create({
                 demand_id: demand_id,
                 size_id:   order.size_id,
                 _qty:      order._qty,
@@ -248,7 +249,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
 
     function receive_line(line, user_id) {
         return new Promise((resolve, reject) => {
-            return allowed(m.permissions, user_id, 'demand_line_add')
+            return fn.allowed(user_id, 'demand_line_add')
             .then(result => {
                 return m.orders.findOne({
                     where:      {order_id: line.order_id},
@@ -440,7 +441,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                             if (demand_actions.length > 0) {
                                                 Promise.allSettled(demand_actions)
                                                 .then(results => {
-                                                    if (promiseResults(results)) resolve({success: true, message: 'Demand line cancelled'})
+                                                    if (fn.promise_results(results)) resolve({success: true, message: 'Demand line cancelled'})
                                                     else resolve({success: false, message: 'Some demand actions failed'})
                                                 })
                                                 .catch(err => reject(err));
@@ -462,7 +463,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             };
             Promise.allSettled(actions)
             .then(results => {
-                if (promiseResults(results)) resolve({success: true, message: 'Line cancelled'})
+                if (fn.promise_results(results)) resolve({success: true, message: 'Line cancelled'})
                 else resolve({success: false, message: 'Some actions failed cancelling line'});
             })
             .catch(err => reject(err));
@@ -480,13 +481,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 else if (!order_line.size)                                                    resolve({success: false, message: 'Size not found'});
                 else if (!order_line.size.supplier_id || order_line.size.supplier_id === '') {resolve({success: false, message: 'Size does not have a supplier specified'});
                 } else {
-                    demands.create({
+                    fn.demands.create({
                         supplier_id: order_line.size.supplier_id,
                         user_id:     user_id
                     })
                     .then(demand_result => {
                         if (demand_result.success) {
-                            demands.createLine({
+                            fn.demands.lines.create({
                                 demand_id: demand_result.demand.demand_id,
                                 size_id:   order_line.size_id,
                                 _qty:      order_line._qty,

@@ -17,7 +17,6 @@ function getDemands() {
                 add_cell(row, {text: statuses[demand.status]});
                 add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`, small: true}).e});
             });
-            if (typeof countLines === 'function') countLines();
             return true;
         })
         .then(result => {
@@ -38,13 +37,14 @@ function getDemands() {
 function getSuppliers() {
     listSuppliers({
         blank: true,
-        blank_opt: {text: 'All'}
+        blank_text: 'All'
     })
-    .then(result => getDemands());
+    .then(result => getDemands())
+    .catch(err =>   getDemands());
 };
 addReloadListener(getDemands)
 window.addEventListener('load', function () {
-    addClickListener('reload_suppliers', getSuppliers);
-    document.querySelector('#sel_status')   .addEventListener('change', getDemands);
-    document.querySelector('#sel_suppliers').addEventListener('change', getDemands);
+    addListener('reload_suppliers', getSuppliers);
+    addListener('sel_status',       getDemands, 'change');
+    addListener('sel_suppliers',    getDemands, 'change');
 });

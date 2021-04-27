@@ -1,6 +1,8 @@
-module.exports = function() {
-    let count = 0;
-    return () => {
-        return ++count;
+module.exports = function(fn) {
+    fn.counter = function () {
+        let count = 0;
+        return () => {
+            return ++count;
+        };
     };
 };

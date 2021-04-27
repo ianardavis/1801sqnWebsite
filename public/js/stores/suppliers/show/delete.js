@@ -1,7 +1,7 @@
 window.addEventListener("load", function () {
-    enable_button('supplier_delete');
+    enable_button('delete');
     addFormListener(
-        'supplier_delete',
+        'delete',
         'DELETE',
         `/suppliers/${path[2]}`
     );

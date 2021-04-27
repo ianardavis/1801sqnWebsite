@@ -17,5 +17,5 @@ window.addEventListener( "load", function () {
     );
     $('#mdl_serial_add').on('show.bs.modal', getLocations);
     $('#mdl_serial_add').on('show.bs.modal', reset_add_serial);
-    addClickListener('reload_locations_serial', getLocations);
+    addListener('reload_locations_serial', getLocations);
 });

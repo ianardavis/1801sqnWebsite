@@ -3,12 +3,17 @@
     <h1>Select Size...</h1>
     <div id="div_items">
         <%- include(`${partials}/inputs/text`,   {title: 'Search Items', id: 'inp_item'}) %>
-        <%- include(`${partials}/inputs/select`, {title: 'Items',        id: 'sel_items'}) %>
+        <%- include(`${partials}/inputs/select`, {title: 'Items',        id: 'sel_items', size: 10}) %>
     </div>
-    <div id="div_sizes" class='hidden'>
-        <%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size'}) %>
-        <%- include(`${partials}/inputs/select`, {title: 'Sizes',        id: 'sel_sizes'}) %>
-        <button id='btn_size_select' disabled>Select</button>
+    <div id="div_sizes" class=''>
+        <button id='btn_select' class='btn btn-success w-100 mb-1'>Select</button>
+        <table class='table table-sm table-hover'>
+            <thead class='thead-dark'>
+                <th class='w-20' onclick="sortTable(0,'tbl_sizes')"><i class="fas fa-check"></i></th>
+                <th class='w-80' onclick="sortTable(1,'tbl_sizes')">Size</th>
+            </thead>
+            <tbody id='tbl_sizes'></tbody>
+        </table>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>

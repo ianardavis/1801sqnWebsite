@@ -20,11 +20,11 @@ function getLines() {
                         [1, 2].includes(line.demand.status)
                     ) {
                         add_cell(row, {
-                            text: line_statuses[line.status],
+                            text: line_statuses[line.status] || 'Unknown',
                             classes: ['actions'],
-                            data: [{field: 'id', value: line.line_id}]
+                            data: [{field: 'id', value: line.demand_line_id}]
                         })
-                    } else add_cell(row, {text: line_statuses[line.status]});
+                    } else add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
                     add_cell(row, {append: 
                         new Button({
                             small: true,
@@ -61,6 +61,6 @@ function showLine(demand_line_id) {
 };
 addReloadListener(getLines);
 window.addEventListener('load', function () {
-    document.querySelector('#sel_status').addEventListener('change', getLines);
+    addListener('sel_status', getLines, 'change');
     $('#mdl_line_view').on('show.bs.modal', function (event) {showLine(event.relatedTarget.dataset.id)});
 });

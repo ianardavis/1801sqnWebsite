@@ -66,7 +66,7 @@ window.addEventListener('load', function () {
         ]}
     );
     listCategories('1');
-    document.querySelector('#sel_category_1').addEventListener('change', function () {
+    addListener('sel_category_1', function () {
         let sub_categories = document.querySelector('#sub_categories');
         if (sub_categories) {
             sub_categories.innerHTML = '';
@@ -74,5 +74,5 @@ window.addEventListener('load', function () {
                 addCategory(this);
             };
         };
-    });
+    }, 'change')
 });
