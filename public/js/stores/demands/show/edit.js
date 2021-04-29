@@ -3,7 +3,18 @@ window.addEventListener( "load", function () {
     addFormListener(
         'complete',
         'PUT',
-        `/demands/${path[2]}`,
+        `/demands/${path[2]}/complete`,
+        {
+            onComplete: [
+                getDemand,
+                function () {if (typeof getLines === 'function') getLines()}
+            ]
+        }
+    );
+    addFormListener(
+        'close',
+        'PUT',
+        `/demands/${path[2]}/close`,
         {
             onComplete: [
                 getDemand,
@@ -18,7 +29,9 @@ function setCompleteButton() {
         query: [`demand_id=${path[2]}`]
     })
     .then(function([demand, options]) {
-        if (demand.status === 1) enable_button('complete');
+        if (demand.status === 1) enable_button('complete')
         else                     disable_button('complete');
+        if (demand.status === 2) enable_button('close')
+        else                     disable_button('close');
     });
 };

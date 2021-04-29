@@ -68,6 +68,16 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
+    },
+    'loancard_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: true,
+      comment: "null"
+    },
+    'demand_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: true,
+      comment: "null"
     }
   }, {
     tableName: 'actions',
