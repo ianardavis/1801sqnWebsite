@@ -1,4 +1,5 @@
-let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
+let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'},
+    row_index = 0;
 function getLines() {
     clear_table('lines')
     .then(tbl_lines => {
@@ -15,16 +16,19 @@ function getLines() {
                     add_cell(row, {text: line.size.item.description});
                     add_cell(row, {text: line.size.size});
                     add_cell(row, {text: line.qty});
-                    if (
-                        [1, 2].includes(line.status) ||
-                        [1, 2].includes(line.demand.status)
-                    ) {
-                        add_cell(row, {
-                            text: line_statuses[line.status] || 'Unknown',
-                            classes: ['actions'],
-                            data: [{field: 'id', value: line.demand_line_id}]
-                        })
-                    } else add_cell(row, {text: line_statuses[line.status] || 'Unknown'});
+                    add_cell(row, {
+                        text: line_statuses[line.status] || 'Unknown',
+                        ...(
+                            [1, 2].includes(line.status) || [1, 2].includes(line.demand.status) ?
+                            {
+                                classes: ['actions'],
+                                data:    [
+                                    {field: 'id',    value: line.demand_line_id},
+                                    {field: 'index', value: row_index}
+                                ]
+                            } : {}
+                        )
+                    });
                     add_cell(row, {append: 
                         new Button({
                             small: true,
@@ -36,7 +40,10 @@ function getLines() {
                     console.log(`Error loading line ${line.line_id}:`)
                     console.log(error);
                 };
+                row_index ++
             });
+        })
+        .then(result => {
             if (typeof getLineActions === 'function') getLineActions();
         });
     });

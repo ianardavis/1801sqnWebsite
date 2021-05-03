@@ -10,54 +10,47 @@ function getLineActions() {
                     div_action  = document.createElement('div'),
                     div_actions = document.createElement('div'),
                     div_details = document.createElement('div');
+                div_actions.appendChild(new Hidden({
+                    attributes: [
+                        {field: 'name',  value: `actions[${e.dataset.index}][demand_line_id]`},
+                        {field: 'value', value: line.demand_line_id}
+                    ]
+                }).e);
                 opts.push({text: line_statuses[line.status], selected: true});
                 opts.push({text: 'Cancel', value: '0'});
                 if (line.status === 2) opts.push({text: 'Receive', value: '3'});
-                let _status = new Select({
-                    attributes: [{field: 'id', value: `sel_${line.demand_line_id}`}],
+                let status = new Select({
+                    attributes: [
+                        {field: 'name', value: `actions[${e.dataset.index}][status]`},
+                        {field: 'id',   value: `sel_${line.demand_line_id}`}
+                    ],
                     small:      true,
                     options:    opts
                 }).e;
-                _status.addEventListener("change", function () {
+                status.addEventListener("change", function () {
                     clearElement(`action_${line.demand_line_id}`);
                     clearElement(`details_${line.demand_line_id}`);
-                    if (this.value === '0' || this.value === '3') {
-                        div_action.appendChild(
-                            new Hidden({
-                                attributes: [
-                                    {field: 'name',  value: `actions[${line.demand_line_id}][status]`},
-                                    {field: 'value', value: this.value}
-                                ]
-                            }).e
-                        );
-                        div_action.appendChild(
-                            new Hidden({
-                                attributes: [
-                                    {field: 'name',  value: `actions[${line.demand_line_id}][line_id]`},
-                                    {field: 'value', value: line.demand_line_id}
-                                ]
-                            }).e
-                        );
-                    };
                     if (this.value === '3') {
-                        let _cell = document.querySelector(`#details_${line.demand_line_id}`);
-                        if (_cell) {
-                            _cell.innerHTML = '';
-                            add_spinner(_cell, {id: line.demand_line_id});
+                        let div_details = document.querySelector(`#details_${line.demand_line_id}`);
+                        if (div_details) {
+                            div_details.innerHTML = '';
+                            add_spinner(div_details, {id: line.demand_line_id});
                             get({
                                 table: 'size',
                                 query: [`size_id=${line.size_id}`]
                             })
                             .then(function ([size, options]) {
-                                showReceiptActions(size, line.demand_line_id, line._qty);
+                                if (size.has_serials) addSerialEntry(div_details, e.dataset.index, line.qty)
+                                else                  getStock(div_details, size.size_id, line.demand_line_id, true);
                                 remove_spinner(line.demand_line_id);
-                            });
+                            })
+                            .catch(err => remove_spinner(line.demand_line_id));
                         };
                     };
                 });
                 div_action.setAttribute( 'id', `action_${line.demand_line_id}`);
                 div_details.setAttribute('id', `details_${line.demand_line_id}`);
-                div_actions.appendChild(_status);
+                div_actions.appendChild(status);
                 div_actions.appendChild(div_action);
                 div_actions.appendChild(div_details);
                 e.innerText = '';
@@ -66,100 +59,51 @@ function getLineActions() {
         });
     });
 };
-function showReceiptActions(size, line_id, qty = 1) {
-    if (size.has_serials) {
-        let _cell = document.querySelector(`#details_${line_id}`);
-        add_spinner(_cell, {id: `actions_${line_id}`});
-        get({
-            table: 'stocks',
-            query: [`size_id=${size.size_id}`]
-        })
-        .then(function ([stocks, options]) {
-            get({
-                table: 'serials',
-                query: [`size_id=${size.size_id}`]
-            })
-            .then(function ([serials, options]) {
-                let locations = [{value: '', text: '... Select Location'}],
-                    _serials  = [{value: '', text:  '... Select Serial #'}];
-                serials.forEach(e => _serials.push({value: e.serial_id, text: e.serial}));
-                stocks.forEach(e => locations.push({value: e.stock_id,  text: `${e.location.location}, Qty: ${e.qty}`}));
-                
-                for (let i = 0; i < qty; i++) {
-                    _cell.appendChild(
-                        new Select({
-                            attributes: [
-                                {field: 'name', value: `actions[${line_id}][stocks][${i}][stock_id]`}
-                            ],
-                            small: true,
-                            options: locations
-                        }).e
-                    );
-                    _cell.appendChild(
-                        new Input({
-                            attributes: [
-                                {field: 'name',        value: `actions[${line_id}][stocks][${i}][location]`},
-                                {field: 'placeholder', value: 'Enter Location'}
-                            ],
-                            small: true
-                        }).e
-                    );
-                    _cell.appendChild(
-                        new Select({
-                            attributes: [
-                                {field: 'name', value: `actions[${line_id}][serials][${i}][serial_id]`}
-                            ],
-                            small: true,
-                            options: _serials
-                        }).e
-                    );
-                    _cell.appendChild(
-                        new Input({
-                            attributes: [
-                                {field: 'name',        value: `actions[${line_id}][serials][${i}][serial]`},
-                                {field: 'placeholder', value: 'Enter Serial #'}
-                            ],
-                            small: true
-                        }).e
-                    );
-                    _cell.appendChild(document.createElement('hr'));
-                };
-                remove_spinner(`actions_${line_id}`);
-            });
-        });
-    } else getStock(size.size_id, line_id, 'details', true);
+function addSerialEntry(div_details, index, qty) {
+    for (let i = 0; i < qty; i++) {
+        div_details.appendChild(
+            new Input({
+                attributes: [
+                    {field: 'name',        value: `actions[${index}][serials][${i}][location]`},
+                    {field: 'placeholder', value: `Enter Location (${i + 1})`}
+                ],
+                small: true
+            }).e
+        );
+        div_details.appendChild(
+            new Input({
+                attributes: [
+                    {field: 'name',        value: `actions[${index}][serials][${i}][serial]`},
+                    {field: 'placeholder', value: `Enter Serial # (${i + 1})`}
+                ],
+                small: true
+            }).e
+        );
+        div_details.appendChild(document.createElement('hr'));
+    };
 };
-function getStock(size_id, line_id, cell, entry = false) {
-    let _cell = document.querySelector(`#${cell}_${line_id}`);
-    add_spinner(_cell, {id: `stocks_${line_id}`});
+function getStock(div_details, index, size_id, line_id) {
+    add_spinner(div_details, {id: `stocks_${line_id}`});
     get({
         table: 'stocks',
         query: [`size_id=${size_id}`]
     })
     .then(function ([stocks, options]) {
-        let locations = [{value: '', text: '... Select Location'}];
-        stocks.forEach(e => locations.push({value: e.stock_id, text: `${e.location.location}, Qty: ${e.qty}`}));
-        _cell.appendChild(
-            new Select({
+        let location_list = document.createElement('datalist');
+        location_list.setAttribute('id', `locations_${index}`);
+        stocks.forEach(e => location_list.appendChild(new Option({text: e.location.location}).e));
+        div_details.appendChild(location_list);
+        div_details.appendChild(
+            new Input({
                 attributes: [
-                    {field: 'name',     value: `actions[${line_id}][stock_id]`},
-                    {field: 'required', value: (entry === false)}
+                    {field: 'name',         value: `actions[${index}][stock_id]`},
+                    {field: 'required',     value: (entry === false)},
+                    {field: 'list',         value: `locations_${index}`},
+                    {field: 'autocomplete', value: 'off'}
                 ],
-                small: true,
-                options: locations
+                small: true
             }).e
-        );
-        if (entry === true) {
-            _cell.appendChild(
-                new Input({
-                    attributes: [
-                        {field: 'name',        value: `actions[${line_id}][location]`},
-                        {field: 'placeholder', value: 'Enter Location'}
-                    ],
-                    small: true
-                }).e
-            );
-        };
+        );-
         remove_spinner(`stocks_${line_id}`);
     });
 };
@@ -182,7 +126,6 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getLines,
-                // setActions,
                 setActionButton
             ]
         }

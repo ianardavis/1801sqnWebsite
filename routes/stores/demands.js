@@ -116,12 +116,12 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     });
     app.put('/demands/:id/complete', li, pm.check('demand_edit'),         (req, res) => {
         fn.demands.complete(req.params.id, req.user.user_id)
-        .then(filename => res.send({success: true, message: `Demand completed. Filename: ${filename}`}))
+        .then(result => res.send(result))
         .catch(err => send_error(res, err));
     });
     app.put('/demands/:id/close',    li, pm.check('demand_edit'),         (req, res) => {
         fn.demands.close(req.params.id, req.user.user_id, op.or)
-        .then(result => res.send({success: true,  message: 'Demand closed'}))
+        .then(result => res.send({success: true, message: 'Demand closed'}))
         .catch(err => send_error(res, err));
     });
     app.put('/demand_lines/:id',     li, pm.check('receipt_add'),         (req, res) => {
@@ -218,20 +218,18 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(demand => {
             if      (!demand)                                 send_error(res, 'Demand not found')
             else if (demand.status === 0)                     send_error(res, 'This demand is already cancelled')
-            else if (demand.lines && demand.lines.length > 0) send_error(res, 'Can not cancel a demand with it has pending, open or received lines')
+            else if (demand.lines && demand.lines.length > 0) send_error(res, 'Can not cancel a demand with pending, open or received lines')
             else {
-                demand.update({status: 0})
+                return demand.update({status: 0})
                 .then(result => {
                     if (!result) send_error(res, `Error updating demand: ${err.message}`)
                     else {
-                        m.notes.create({
-                            id: demand.demand_id,
-                            _table: 'demands',
-                            note: 'Cancelled',
-                            system: 1,
+                        return m.actions.create({
+                            demand_id: demand.demand_id,
+                            action: 'Cancelled',
                             user_id: req.user.user_id
                         })
-                        .then(note => res.send({success: true,  message: 'Demand Cancelled'}))
+                        .then(action => res.send({success: true,  message: 'Demand Cancelled'}))
                         .catch(err => {
                             console.log(err);
                             res.send({success: true, message: `Demand cancelled. Error updating demand: ${err.message}`})
@@ -249,19 +247,17 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             attributes: ['line_id', 'status']
         })
         .then(line => {
-            if      (line.status === 0) res.send({succes: false, message: 'This line has already been cancelled'})
-            else if (line.status === 3) res.send({succes: false, message: 'This line has already been received'})
+            if      (line.status === 0) res.send({success: false, message: 'This line has already been cancelled'})
+            else if (line.status === 3) res.send({success: false, message: 'This line has already been received'})
             else {
-                line.update({status: 0})
+                return line.update({status: 0})
                 .then(result => {
                     if (!result) send_error(res, 'Line not updated')
                     else {
-                        m.notes.create({
-                            _table:  'demand_lines',
-                            note:   `Line ${req.params.id} cancelled`,
-                            id:     line.line_id,
-                            user_id: req.user.user_id,
-                            system:  1
+                        return m.actions.create({
+                            action:         'Cancelled',
+                            demand_line_id: line.line_id,
+                            user_id:        req.user.user_id
                         })
                         .then(result => res.send({success: true, message: 'Line cancelled'}))
                         .catch(err => {

@@ -43,8 +43,11 @@ module.exports = function (m, fn) {
                                     })
                                     .then(action => {
                                         return raise_demand(demand.demand_id)
-                                        .then(filename => resolve(filename))
-                                        .catch(err => reject(err));
+                                        .then(filename => resolve({success: true, message: `Demand completed. Filename: ${filename}`}))
+                                        .catch(err => {
+                                            console.log(err);
+                                            resolve({success: true, message: `Demand completed. Could not raise file: ${err.message}`})
+                                        });
                                     })
                                     .catch(err => reject(err));
                                 })
@@ -221,8 +224,8 @@ module.exports = function (m, fn) {
     function getSupplier(where = {}, include = []) {
         return new Promise((resolve, reject) => {
             return m.suppliers.findOne({
-                where:      where,
-                include:    include
+                where:   where,
+                include: include
             })
             .then(supplier => {
                 if (!supplier) reject(new Error('Supplier not found'))
@@ -244,7 +247,6 @@ module.exports = function (m, fn) {
             .catch(err => reject(err))
         });
     };
-
 
     function raise_demand(demand_id) {
         return new Promise((resolve, reject) => {
@@ -306,7 +308,7 @@ module.exports = function (m, fn) {
             return getSupplier(
                 {supplier_id: supplier_id},
                 [
-                    {model: m.files, as: 'file', include: [{model: m.file_details}], where: {description: 'Demand'}},
+                    {model: m.files, include: [{model: m.file_details, as: 'details'}], where: {description: 'Demand'}, required: false},
                     {model: m.accounts, as: 'account'}
                 ]
             )
