@@ -18,20 +18,20 @@ module.exports = function (app, m) {
         })
         .forEach(folder => require(`./${folder}`)(fs, app, m, pm, op, li, send_error));
 
-    app.get("/",          (req, res) => res.render("index"));
-    app.get("/resources", (req, res) => res.render("resources"));
-    app.get('/login',     (req, res) => {
+    app.get("/",           (req, res) => res.render("index"));
+    app.get("/resources",  (req, res) => res.render("resources"));
+    app.get('/login',      (req, res) => {
         if (req.isAuthenticated()) {
             req.flash('info', 'You are already logged in');
             res.redirect(req.query.redirect || '/stores');
         } else res.render('login', {redirect: req.query.redirect});
     });
-    app.get('/logout',   li,  (req, res) => {
+    app.get('/logout', li, (req, res) => {
         req.logout();
         res.redirect('/');
     });
-    app.get("*",          (req, res) => res.render("404"));
-    app.get("/get/*",    li,  (req, res) => send_error(res, 'Invalid request'));
+    app.get("*",           (req, res) => res.render("404"));
+    app.get("/get/*",  li, (req, res) => send_error(res, 'Invalid request'));
     
     app.post('/login', passport.authenticate('local', {failureRedirect: `/login`}), (req, res) => res.redirect(`${req.body.redirect || '/'}`));
 };

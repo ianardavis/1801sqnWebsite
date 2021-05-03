@@ -41,7 +41,7 @@ function getLineActions() {
                             })
                             .then(function ([size, options]) {
                                 if (size.has_serials) addSerialEntry(div_details, e.dataset.index, line.qty)
-                                else                  getStock(div_details, size.size_id, line.demand_line_id, true);
+                                else                  addStockEntry (div_details, e.dataset.index, size.size_id);
                                 remove_spinner(line.demand_line_id);
                             })
                             .catch(err => remove_spinner(line.demand_line_id));
@@ -82,8 +82,8 @@ function addSerialEntry(div_details, index, qty) {
         div_details.appendChild(document.createElement('hr'));
     };
 };
-function getStock(div_details, index, size_id, line_id) {
-    add_spinner(div_details, {id: `stocks_${line_id}`});
+function addStockEntry(div_details, index, size_id) {
+    add_spinner(div_details, {id: `stocks_${index}`});
     get({
         table: 'stocks',
         query: [`size_id=${size_id}`]
@@ -104,7 +104,7 @@ function getStock(div_details, index, size_id, line_id) {
                 small: true
             }).e
         );-
-        remove_spinner(`stocks_${line_id}`);
+        remove_spinner(`stocks_${index}`);
     });
 };
 function setActionButton() {

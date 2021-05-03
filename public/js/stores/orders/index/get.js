@@ -4,7 +4,7 @@ function getOrders(status) {
     get(
         {
             table: 'orders',
-            query: [`_status=${status}`],
+            query: [`status=${status}`],
             spinner: `status_${status}`
         },
         function (orders, options) {
@@ -15,8 +15,8 @@ function getOrders(status) {
                 orders.forEach(order => {
                     let row = tbl.insertRow(-1);
                     add_cell(row, table_date(order.createdAt));
-                    add_cell(row, {text: order.size.item._description});
-                    add_cell(row, {text: order.size._size});
+                    add_cell(row, {text: order.size.item.description});
+                    add_cell(row, {text: order.size.size});
                     add_cell(row, {text: order._qty});
                     if (status === '1') {
                         let div = new Div().e;

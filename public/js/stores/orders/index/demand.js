@@ -6,7 +6,7 @@ function getDemandActions() {
                 query: [`order_id=${row.dataset.order_id}`]
             },
             function (order, options) {
-                if (order._status === 1 && order.size._demand_page && order.size._demand_cell) {
+                if (order.status === 1) {
                     let select = document.querySelector(`#sel_action_${order.order_id}`);
                     if (select) select.appendChild(new Option({text: 'Demand', value: '2'}).e);
                 };
