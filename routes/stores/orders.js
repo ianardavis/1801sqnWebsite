@@ -5,16 +5,16 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     require(`${process.env.FUNCS}/orders`) (m, fn);
     require(`${process.env.FUNCS}/demands`)(m, fn);
     // require(`${process.env.FUNCS}/receipts`)(m, receipts);
-    app.get('/orders',       li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/index', {download: req.query.download || null}));
-    app.get('/orders/:id',   li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
+    app.get('/orders',        li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/index'));
+    app.get('/orders/:id',    li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
     
-    app.get('/count/orders', li, pm.check('access_orders'), (req, res) => {
+    app.get('/count/orders',  li, pm.check('access_orders'), (req, res) => {
         m.orders.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => send_error(res, err));
     });
 
-    app.get('/get/orders',   li, pm.check('access_orders'), (req, res) => {
+    app.get('/get/orders',    li, pm.check('access_orders'), (req, res) => {
         m.orders.findAll({
             where:   req.query,
             include: [
@@ -25,7 +25,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .then(orders => res.send({success: true, result: orders}))
         .catch(err => send_error(res, err));
     });
-    app.get('/get/order',    li, pm.check('access_orders'), (req, res) => {
+    app.get('/get/order',     li, pm.check('access_orders'), (req, res) => {
         m.orders.findOne({
             where:   req.query,
             include: [
@@ -37,13 +37,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    app.post('/orders',      li, pm.check('order_add'),     (req, res) => {
+    app.post('/orders',       li, pm.check('order_add'),     (req, res) => {
         fn.orders.create(req.body.line, req.user.user_id)
         .then(result => res.send(result))
         .catch(err => send_error(res, err));
     });
     
-    app.put('/orders',       li, pm.check('order_edit'),    (req, res) => {
+    app.put('/orders',        li, pm.check('order_edit'),    (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
         actions.push(demand_orders(req.body.lines.filter(e => e.status === '2'), req.user.user_id));
@@ -58,7 +58,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
     
-    app.delete('/orders/:id', li, pm.check('order_delete'), (req, res) => {
+    app.delete('/orders/:id', li, pm.check('order_delete'),  (req, res) => {
         m.orders.findOne({
             where:      {order_id: req.params.id},
             attributes: ['order_id', 'status']
@@ -490,7 +490,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                             fn.demands.lines.create({
                                 demand_id: demand_result.demand.demand_id,
                                 size_id:   order_line.size_id,
-                                _qty:      order_line._qty,
+                                qty:       order_line.qty,
                                 user_id:   user_id,
                                 note:      ` from order line ${order_line.line_id}`
                             })

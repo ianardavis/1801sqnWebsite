@@ -1,4 +1,4 @@
-module.exports = function (m, fn) {
+module.exports = function (m, fn, op) {
     fn.demands = {lines: {}};
     fn.demands.create = function (options = {}) {
         return new Promise((resolve, reject) => {
@@ -62,7 +62,134 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.demands.close = function (demand_id, user_id, op_or) {
+    fn.demands.cancel = function (demand_id, user_id) {
+        return new Promise((resolve, reject) => {
+            return m.demands.findOne({
+                where: {demand_id: demand_id},
+                attributes: ['demand_id', 'status']
+            })
+            .then(demand => {
+                if      (!demand)             reject(new Error('Demand not found'))
+                else if (demand.status === 0) reject(new Error('This demand has already been cancelled'))
+                else if (demand.status === 3) reject(new Error('This demand has already been closed'))
+                else {
+                    return m.demand_lines.findOne({
+                        where: {
+                            demand_id: demand.demand_id,
+                            status:    3
+                        }
+                    })
+                    .then(line => {
+                        if (line) reject(new Error('You can not cancel a demand with received lines'))
+                        else {
+                            let actions = [];
+                            actions.push(demand.update({status: 0}));
+                            actions.push(
+                                new Promise((resolve, reject) => {
+                                    return m.demand_lines.findAll({
+                                        where: {
+                                            demand_id: demand.demand_id,
+                                            status: {[op.or]: [1, 2]}
+                                        }
+                                    })
+                                    .then(lines => {
+                                        let line_actions = [];
+                                        lines.forEach(line => {
+                                            line_actions.push(
+                                                cancel_line(
+                                                    line.demand_line_id,
+                                                    user_id
+                                                )
+                                            );
+                                        });
+                                        Promise.all(line_actions)
+                                        .then(results => resolve(true))
+                                        .catch(err => reject(err));
+                                    })
+                                    .catch(err => reject(err));
+                                })
+                            );
+                            return Promise.all(actions)
+                            .then(result => {
+                                if (!result) reject(new Error('Demand not updated'))
+                                else {
+                                    return m.actions.create({
+                                        action:    'Demand cancelled',
+                                        demand_id: demand.demand_id,
+                                        user_id:   user_id
+                                    })
+                                    .then(action => resolve(true))
+                                    .catch(err => {
+                                        console.log(err);
+                                        resolve(new Error(`Demand cancelled. Error creating action: ${err.message}`))
+                                    });
+                                };
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function raise_demand(demand_id) {
+        return new Promise((resolve, reject) => {
+            getDemand({demand_id: demand_id})
+            .then(demand => {
+                if      (demand.status !== 2)                       reject(new Error('This demand is not complete'))
+                else if (demand.filename && demand.filename !== '') resolve(demand.filename)
+                else {
+                    return get_template(demand.supplier_id)
+                    .then(([template, account, supplier_id]) => {
+                        return getDemandLines(
+                            {where: demand.demand_id},
+                            [
+                                {
+                                    model: m.sizes,
+                                    as: 'size',
+                                    include: [m.details]
+                                }
+                            ]
+                        )
+                        .then(demand_lines => {
+                            return get_orders(demand_lines)
+                            .then(orders => {
+                                return get_sizes(demand_lines, supplier_id)
+                                .then(sizes => {
+                                    return get_users(orders)
+                                    .then(users => {
+                                        return create_file(template, demand.demand_id)
+                                        .then(file => {
+                                            return write_cover_sheet(template, account, file, users)
+                                            .then(result => {
+                                                return write_items(file, sizes)
+                                                .then(fails => {
+                                                    if (fails && fails.length > 0) resolve(file)
+                                                    else                           resolve(file);
+                                                })
+                                                .catch(err => reject(err));
+                                            })
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    })
+                                    .catch(err => reject(err));
+                                })
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.demands.close = function (demand_id, user_id) {
         return new Promise((resolve, reject) => {
             return getDemand({demand_id: demand_id})
             .then(demand => {
@@ -70,7 +197,7 @@ module.exports = function (m, fn) {
                 else {
                     return getDemandLines(
                         {demand_id: demand_id},
-                        [{model: m.demand_lines, as: 'lines', where: {status: {[op_or]: [1, 2]}}}],
+                        [{model: m.demand_lines, as: 'lines', where: {status: {[op.or]: [1, 2]}}}],
                         {allowNull: true}
                     )
                     .then(lines => {
@@ -101,13 +228,14 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+
     fn.demands.lines.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             return getSize(
                 {size_id: options.size_id},
                 [{
                     model: m.details,
-                    where: {name: {[options.op_or]:['Demand Page', 'Demand Cell']}}
+                    where: {name: {[op.or]:['Demand Page', 'Demand Cell']}}
                 }]
             )
             .then(size => {
@@ -157,29 +285,111 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.demands.lines.receive = function (demand_line_id, receipt, user_id) {
+    fn.demands.lines.receive = function (line, user_id) {
         return new Promise((resolve, reject) => {
-            return getDemandLine(demand_line_id)
-            .then(line => {
-                if      (line.status === 3) reject(new Error('This line has already been received'))
-                else if (line.status === 1) reject(new Error('This line is still in draft'))
-                else {
-                    return getSize({size_id: line.size_id})
-                    .then(size => {
-                        let actions = [];
-                        if (size.has_serials) {
-                            if (!receipt.serials) reject(new Error('This size requires serial #, but none were submitted'))
-                            else actions.push(receive_serials(receipt.serials, line, user_id));
-                        } else {
-                            if (!receipt.location) reject(new Error('No receipt location was submitted'))
-                            else actions.push(receive_stocks(receipt, line, user_id))
-                        };
-                        Promise.all(actions)
-                        .then(results => resolve(true))
+            if (!line.receipt) reject(new Error('No receipt details'))
+            else {
+                return getDemandLine(line.demand_line_id)
+                .then(demand_line => {
+                    if      (demand_line.status === 3) reject(new Error('This line has already been received'))
+                    else if (demand_line.status === 1) reject(new Error('This line is still in draft'))
+                    else {
+                        return getSize({size_id: demand_line.size_id})
+                        .then(size => {
+                            let actions = [];
+                            if (size.has_serials) {
+                                if (!line.receipt.serials) reject(new Error('This size requires serial #, but none were submitted'))
+                                else actions.push(receive_serials(line.receipt.serials, demand_line, user_id));
+                            } else {
+                                if (!line.receipt.location) reject(new Error('No receipt location was submitted'))
+                                else actions.push(receive_stocks(line.receipt, demand_line, user_id))
+                            };
+                            Promise.all(actions)
+                            .then(results => {
+                                return m.actions.findAll({
+                                    where: {
+                                        demand_line_id: demand_line.demand_line_id,
+                                        order_id: {[op.not]: null}
+                                    },
+                                    include: [{model: m.orders, as: 'order'}]
+                                })
+                                .then(actions => {
+                                    let order_actions = [];
+                                    actions.forEach(action => {
+                                        if (action.order && action.order.status === 2) {
+                                            order_actions.push(action.order.update({status: 3}))
+                                        };
+                                    });
+                                    return Promise.all(order_actions)
+                                    .then(results => resolve(true))
+                                    .catch(err => reject(err));
+                                })
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        })
                         .catch(err => reject(err));
-                    })
+                    };
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
+    fn.demands.lines.cancel = function (demand_line_id, user_id) {
+        return cancel_line(demand_line_id, user_id)
+    };
+    function cancel_line(demand_line_id, user_id) {
+        return new Promise ((resolve, reject) => {
+            return m.demand_lines.findOne({where: {demand_line_id: demand_line_id}})
+            .then(line => {
+                if      (!line)             reject(new Error('Demand line not found'))
+                else if (line.status === 0) reject(new Error('This line has already been cancelled'))
+                else if (line.status === 3) reject(new Error('This line has already been received'))
+                else {
+                    let actions = [];
+                    actions.push(line.update({status: 0}));
+                    actions.push(
+                        m.actions.create({
+                            action:         'Demand line cancelled',
+                            demand_line_id: line.demand_line_id,
+                            user_id:        user_id
+                        })
+                    );
+                    actions.push(
+                        new Promise((resolve, reject) => {
+                            return m.actions.findAll({
+                                where: {
+                                    demand_line_id: line.demand_line_id,
+                                    order_id:       {[op.not]: null}
+                                },
+                                include: [{model: m.orders, as: 'order'}]
+                            })
+                            .then(actions => {
+                                let order_actions = [];
+                                actions.forEach(action => {
+                                    if (action.order && action.order.status === 3) {
+                                        order_actions.push(action.order.update({status: 2}));
+                                        order_actions.push(
+                                            m.actions.create({
+                                                action:   'Demand line cancelled',
+                                                order_id: action.order_id,
+                                                user_id:  user_id
+                                            })
+                                        );
+                                    };
+                                });
+                                return Promise.allSettled(order_actions)
+                                .then(results => resolve(`${results.filter(e => e.status === 'rejected').length || '0'} orders failed`))
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        })
+                    );
+                    return Promise.all(actions)
+                    .then(results => resolve(true))
                     .catch(err => reject(err));
                 };
+
             })
             .catch(err => reject(err));
         });
@@ -248,61 +458,6 @@ module.exports = function (m, fn) {
         });
     };
 
-    function raise_demand(demand_id) {
-        return new Promise((resolve, reject) => {
-            getDemand({demand_id: demand_id})
-            .then(demand => {
-                if      (demand.status !== 2)                       reject(new Error('This demand is not complete'))
-                else if (demand.filename && demand.filename !== '') resolve(demand.filename)
-                else {
-                    return get_template(demand.supplier_id)
-                    .then(([template, account, supplier_id]) => {
-                        return getDemandLines(
-                            {where: demand.demand_id},
-                            [
-                                {
-                                    model: m.sizes,
-                                    as: 'size',
-                                    include: [m.details]
-                                }
-                            ]
-                        )
-                        .then(demand_lines => {
-                            return get_orders(demand_lines)
-                            .then(orders => {
-                                return get_sizes(demand_lines, supplier_id)
-                                .then(sizes => {
-                                    return get_users(orders)
-                                    .then(users => {
-                                        return create_file(template, demand.demand_id)
-                                        .then(file => {
-                                            return write_cover_sheet(template, account, file, users)
-                                            .then(result => {
-                                                return write_items(file, sizes)
-                                                .then(fails => {
-                                                    if (fails && fails.length > 0) resolve(file)
-                                                    else                           resolve(file);
-                                                })
-                                                .catch(err => reject(err));
-                                            })
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                })
-                                .catch(err => reject(err));
-                            })
-                            .catch(err => reject(err));
-                        })
-                        .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
     function get_template(supplier_id) {
         return new Promise((resolve, reject) => {
             return getSupplier(
@@ -347,10 +502,10 @@ module.exports = function (m, fn) {
                     })
                 );
             });
-            Promise.allSettled(actions)
+            Promise.all(actions)
             .then(results => {
                 let orders = [];
-                results.filter(e => e.status === 'fulfilled').forEach(e => orders = orders.concat(e.value));
+                results.forEach(e => orders = orders.concat(e));
                 resolve(orders);
             })
             .catch(err => reject(err));

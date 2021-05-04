@@ -160,6 +160,7 @@ function Tab_Body(options = {}) {
 function Button(options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
+    this.e.setAttribute('type', 'button');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
     if (options.small) this.e.classList.add('btn-sm');
     if (options.float) this.e.classList.add('float-right');

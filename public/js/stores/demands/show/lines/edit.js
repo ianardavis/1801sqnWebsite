@@ -41,7 +41,7 @@ function getLineActions() {
                             })
                             .then(function ([size, options]) {
                                 if (size.has_serials) addSerialEntry(div_details, e.dataset.index, line.qty)
-                                else                  addStockEntry (div_details, e.dataset.index, size.size_id);
+                                else                  addStockEntry (div_details, e.dataset.index, line.qty, size.size_id);
                                 remove_spinner(line.demand_line_id);
                             })
                             .catch(err => remove_spinner(line.demand_line_id));
@@ -82,7 +82,7 @@ function addSerialEntry(div_details, index, qty) {
         div_details.appendChild(document.createElement('hr'));
     };
 };
-function addStockEntry(div_details, index, size_id) {
+function addStockEntry(div_details, index, qty, size_id) {
     add_spinner(div_details, {id: `stocks_${index}`});
     get({
         table: 'stocks',
@@ -91,19 +91,32 @@ function addStockEntry(div_details, index, size_id) {
     .then(function ([stocks, options]) {
         let location_list = document.createElement('datalist');
         location_list.setAttribute('id', `locations_${index}`);
-        stocks.forEach(e => location_list.appendChild(new Option({text: e.location.location}).e));
+        stocks.forEach(e => location_list.appendChild(new Option({value: e.location.location}).e));
         div_details.appendChild(location_list);
         div_details.appendChild(
             new Input({
                 attributes: [
-                    {field: 'name',         value: `actions[${index}][stock_id]`},
-                    {field: 'required',     value: (entry === false)},
+                    {field: 'name',         value: `actions[${index}][receipt][location]`},
+                    {field: 'required',     value: true},
                     {field: 'list',         value: `locations_${index}`},
-                    {field: 'autocomplete', value: 'off'}
+                    {field: 'autocomplete', value: 'off'},
+                    {field: 'placeholder',  value: 'Location'}
                 ],
                 small: true
             }).e
-        );-
+        );
+        div_details.appendChild(
+            new Input({
+                attributes: [
+                    {field: 'name',         value: `actions[${index}][receipt][qty]`},
+                    {field: 'value',        value: qty},
+                    {field: 'required',     value: true},
+                    {field: 'autocomplete', value: 'off'},
+                    {field: 'placeholder',  value: 'Quantity'}
+                ],
+                small: true
+            }).e
+        );
         remove_spinner(`stocks_${index}`);
     });
 };
@@ -122,7 +135,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'action',
         'PUT',
-        `/demand_lines/${path[2]}`,
+        '/demand_lines',
         {
             onComplete: [
                 getLines,

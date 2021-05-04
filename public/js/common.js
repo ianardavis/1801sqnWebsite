@@ -189,8 +189,4 @@ function addListener(btn, func, event = 'click') {
     let e = document.querySelector(`#${btn}`)
     if (e) e.addEventListener(event, func);
 };
-function addListener(btn, func) {
-    let e = document.querySelector(`#${btn}`)
-    if (e) e.addEventListener('click', func);
-};
 let path = window.location.pathname.toString().split('/');

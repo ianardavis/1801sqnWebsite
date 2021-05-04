@@ -18,7 +18,7 @@ function setDeleteButton() {
         query: [`demand_id=${path[2]}`]
     })
     .then(function([demand, options]) {
-        if (demand.status === 1) enable_button('delete')
-        else                     disable_button('delete');
+        if ([1, 2].includes(demand.status)) enable_button('delete')
+        else                                disable_button('delete');
     });
 };

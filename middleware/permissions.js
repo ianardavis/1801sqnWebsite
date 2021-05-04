@@ -2,16 +2,17 @@ module.exports = (m, cb) => {
     cb.get = function (permission, options = {}) {
         return function (req, res, next) {
             if (req.user) {
-                m.findAll({
+                return m.findAll({
                     where:      {user_id: req.user.user_id},
                     attributes: ['permission']
                 })
                 .then(permissions => {
                     res.locals.permissions = {};
                     permissions.forEach(e => res.locals.permissions[e.permission] = true);
-                    req.allowed = (res.locals.permissions[permission] ? true : false);
-                    if (options.allow || res.locals.permissions[permission]) return next();
-                    else {
+                    if (res.locals.permissions[permission] ||options.allow) {
+                        req.allowed = (res.locals.permissions[permission] ? true : false);
+                        next();
+                    } else {
                         req.flash('danger', `Permission denied - ${permission}`);
                         res.redirect('/resources');
                     };
@@ -28,19 +29,20 @@ module.exports = (m, cb) => {
             };
         };
     };
-    cb.check = function (permission, options = {}) {
+    cb.check = function (_permission, options = {}) {
         return function (req, res, next) {
             return m.findOne({
                 where: {
                     user_id:    req.user.user_id,
-                    permission: permission
+                    permission: _permission
                 },
                 attributes: ['permission']
             })
             .then(permission => {
-                req.allowed = (permission);
-                if (req.allowed || options.allow) next();
-                else res.send({success: false, error: `Permission denied - ${permission}`});
+                if (permission || options.allow) {
+                    next();
+                    req.allowed = (permission);
+                } else res.send({success: false, error: `Permission denied - ${_permission}`});
             })
             .catch(err => {
                 console.log(err);
