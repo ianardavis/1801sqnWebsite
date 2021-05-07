@@ -189,4 +189,16 @@ function addListener(btn, func, event = 'click') {
     let e = document.querySelector(`#${btn}`)
     if (e) e.addEventListener(event, func);
 };
+function modalShow(id) {
+    let modal = document.querySelector(`#mdl_${id}`);
+    if (modal) modal.show();
+};
+function modalHide(id) {
+    let modal = document.querySelector(`#mdl_${id}`);
+    if (modal) modal.hide();
+};
+function modalOnShow(id, func) {
+    let modal = document.querySelector(`#mdl_${id}`);
+    modal.addEventListener('show.bs.modal', function (event){func(event)});
+};
 let path = window.location.pathname.toString().split('/');

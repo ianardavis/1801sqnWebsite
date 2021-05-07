@@ -16,9 +16,9 @@ function getRanksAdd() {
     });
 };
 window.addEventListener( "load", function () {
-    $('#mdl_user_add').on('show.bs.modal', addUserReset);
-    $('#mdl_user_add').on('show.bs.modal', getRanksAdd);
-    $('#mdl_user_add').on('show.bs.modal', getStatusesAdd);
+    modalOnShow('user_add', addUserReset);
+    modalOnShow('user_add', getRanksAdd);
+    modalOnShow('user_add', getStatusesAdd);
     addFormListener(
         'user_add',
         'POST',
@@ -26,7 +26,7 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getUsers,
-                function () {$('#mdl_user_add').modal('hide')}
+                function () {modalHide('user_add')}
             ]
         }
     );

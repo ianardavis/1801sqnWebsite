@@ -9,7 +9,7 @@ function settingDeleteBtn(setting_id) {
                 options: {
                     onComplete: [
                         getSettings,
-                        function () {$('#mdl_setting_view').modal('hide')}
+                        function () {modalHide('setting_view')}
                     ]
                 }
             }).e
@@ -17,5 +17,5 @@ function settingDeleteBtn(setting_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_setting_view').on('show.bs.modal', function (event) {settingDeleteBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('setting_view', function (event) {settingDeleteBtn(event.relatedTarget.dataset.id)});
 });

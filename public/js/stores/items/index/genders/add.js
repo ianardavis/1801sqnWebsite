@@ -9,6 +9,6 @@ function getGendersAdd() {
     });
 };
 window.addEventListener( "load", function () {
-    $('#mdl_item_add').on('show.bs.modal', getGendersAdd);
+    modalOnShow('item_add', getGendersAdd);
     addListener('reload_genders_add', getGendersAdd);
 });

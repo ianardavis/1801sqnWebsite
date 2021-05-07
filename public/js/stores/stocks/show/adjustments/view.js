@@ -42,5 +42,5 @@ function viewAdjustment(adjustment_id) {
     })
 };
 window.addEventListener('load', function () {
-    $('#mdl_adjustment_view').on('show.bs.modal', function (event) {viewAdjustment(event.relatedTarget.dataset.id)});
+    modalOnShow('adjustment_view', function (event) {viewAdjustment(event.relatedTarget.dataset.id)});
 });

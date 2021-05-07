@@ -43,5 +43,5 @@ function viewAddress(supplier_address_id) {
 };
 addReloadListener(getAddresses);
 window.addEventListener('load', function () {
-    $('#mdl_address_view').on('show.bs.modal', function (event) {viewAddress(event.relatedTarget.dataset.id)});
+    modalOnShow('address_view', function (event) {viewAddress(event.relatedTarget.dataset.id)});
 });

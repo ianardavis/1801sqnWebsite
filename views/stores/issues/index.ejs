@@ -2,7 +2,7 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Issue'}) %>
 <li class="nav-item">
-	<a class="nav-link" data-toggle="modal" data-target="#mdl_issue_add">
+	<a class="nav-link" data-bs-toggle="modal" data-bs-target="#mdl_issue_add">
 		<i class="fas fa-plus"></i>
 	</a>
 </li>
@@ -33,7 +33,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title">Add Issue</h5>
-						<a class='btn btn-primary float-right' id="reload_add"><i class='fas fa-redo'></i></a>
+						<a class='btn btn-primary float-end' id="reload_add"><i class='fas fa-redo'></i></a>
 					</div>
 					<form class="modal-body" id='form_line'>
 						<%- include(`${partials}/inputs/select`, 	 {title: 'User',     	 id: 'sel_users_add', name: 'line[user_id_issue]', spinner_id: 'users_add', reload_id: 'reload_users_add', required: true}) %>

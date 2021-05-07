@@ -48,5 +48,5 @@ function viewOrder(order_id) {
 addReloadListener(getOrders);
 window.addEventListener('load', function () {
     document.querySelector('#sel_order_status').addEventListener('change', getOrders);
-    $('#mdl_order_view').on('show.bs.modal', function (event) {viewOrder(event.relatedTarget.dataset.id)});
+    modalOnShow('order_view', function (event) {viewOrder(event.relatedTarget.dataset.id)});
 });

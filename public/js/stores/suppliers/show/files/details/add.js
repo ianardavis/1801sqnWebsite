@@ -13,7 +13,7 @@ window.addEventListener('load', function () {
             }
         }
     );
-    $('#mdl_file_view').on('show.bs.modal', function (event) {
+    modalOnShow('file_view', function (event) {
         set_attribute({id: 'file_id_detail_add', attribute: 'value', value: event.relatedTarget.dataset.id});
     });
 });

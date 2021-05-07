@@ -16,7 +16,7 @@ function selectedSizes(sizes) {
                     spinner: 'line_add'
                 })
                 .then(function([size, options]) {
-                    if (!tbl_line_add.querySelector(`#size-${size.size_id}`)) {
+                    if (size.orderable && !tbl_line_add.querySelector(`#size-${size.size_id}`)) {
                         if (size.supplier_id === demand.supplier_id) {
                             let row = tbl_line_add.insertRow(-1);
                             row.setAttribute('id', `size-${size.size_id}`);
@@ -69,7 +69,7 @@ function setAddButton() {
 window.addEventListener('load', function () {
     setAddButton();
     addListener('btn_line_sizes', selectSize);
-    $('#mdl_line_add').on('show.bs.modal', function () {clear_table('line_add')});
+    modalOnShow('line_add', function () {clear_table('line_add')});
     addFormListener(
         'line_add',
         'POST',
@@ -77,9 +77,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getLines,
-                function () {
-                    $('#mdl_line_add').modal('hide');
-                }
+                function () {modalHide('line_add')}
             ]
         }
     );

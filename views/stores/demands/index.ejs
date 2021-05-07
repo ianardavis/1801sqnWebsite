@@ -6,7 +6,20 @@
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<%- include(`${partials}/inputs/select`, {title: 'Supplier', id: 'sel_suppliers', spinner: true, spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
-	<%- include(`${partials}/inputs/select`, {title: 'Status', 	 id: 'sel_status', 	  options: [{text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Complete'}, {value: 'status=3', text: 'Closed'}]}) %>
+	<div class="row">
+		<div class="col-6 col-sm-3">
+			<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: 'status=0', classes: ['status']}) %>
+		</div>
+		<div class="col-6 col-sm-3">
+			<%- include(`${partials}/inputs/checkbox`, {title: 'Draft', 	id: 'status_1', value: 'status=1', classes: ['status'], checked: true}) %>
+		</div>
+		<div class="col-6 col-sm-3">
+			<%- include(`${partials}/inputs/checkbox`, {title: 'Complete', 	id: 'status_2', value: 'status=2', classes: ['status'], checked: true}) %>
+		</div>
+		<div class="col-6 col-sm-3">
+			<%- include(`${partials}/inputs/checkbox`, {title: 'Closed', 	id: 'status_3', value: 'status=3', classes: ['status']}) %>
+		</div>
+	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-30" onclick="sortTable(0, 'tbl_demands')">Date</th>

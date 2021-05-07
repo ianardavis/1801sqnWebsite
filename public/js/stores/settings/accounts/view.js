@@ -46,6 +46,6 @@ function viewAccount(account_id) {
     );
 };
 window.addEventListener('load', function () {
-    $('#mdl_account_view').on('show.bs.modal', function (event) {viewAccount(event.relatedTarget.dataset.id)});
+    modalOnShow('account_view', function (event) {viewAccount(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', getAccounts);
 });

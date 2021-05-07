@@ -39,5 +39,5 @@ function viewStock(stock_id) {
     })
 };
 window.addEventListener('load', function () {
-    $('#mdl_stock_view').on('show.bs.modal', function (event) {viewStock(event.relatedTarget.dataset.id)});
+    modalOnShow('stock_view', function (event) {viewStock(event.relatedTarget.dataset.id)});
 });

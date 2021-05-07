@@ -13,10 +13,10 @@ function viewAddressEdit(address_id) {
         set_value({id: 'address_county_edit',      value: address.address.county});
         set_value({id: 'address_country_edit',     value: address.address.country});
         set_value({id: 'address_postcode_edit',    value: address.address.postcode});
-        $('#mdl_address_view').modal('hide');
+        modalHide('address_view');
     })
     .catch(err => {
-        $('#mdl_address_edit').modal('hide');
+        modalHide('address_view');
     });
 };
 function addAddressEditBtn(address_id) {
@@ -44,13 +44,13 @@ window.addEventListener('load', function() {
         {
             onComplete: [
                 getAddresses,
-                function () {$('#mdl_address_edit').modal('hide')}
+                function () {modalHide('address_edit')}
             ]
         }
     );
-    $('#mdl_address_view').on('show.bs.modal', function(event) {addAddressEditBtn(event.relatedTarget.dataset.id)});
-    $('#mdl_address_edit').on('show.bs.modal', function(event) {
+    modalOnShow('address_view', function(event) {addAddressEditBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('address_edit', function(event) {
         viewAddressEdit(event.relatedTarget.dataset.id);
-        $(`#mdl_address_view`).modal('hide');
+        modalHide('address_view');
     });
 });

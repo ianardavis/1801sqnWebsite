@@ -16,11 +16,11 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getStock,
-                function () {$('#mdl_stock_edit').modal('hide')}
+                function () {modalHide('stock_edit')}
             ]
         }
     );
-    $('#mdl_stock_edit').on('show.bs.modal', viewStockEdit);
-    $('#mdl_stock_edit').on('show.bs.modal', getLocations);
+    modalOnShow('stock_edit', viewStockEdit);
+    modalOnShow('stock_edit', getLocations);
     addListener('reload_locations', getLocations);
 })

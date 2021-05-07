@@ -8,12 +8,12 @@ function fileDeleteBtn(file_id) {
                 path: `/files/${file_id}`,
                 options: {onComplete: [
                     getFiles,
-                    function () {$('#mdl_file_view').modal('hide')}
+                    function () {modalHide('file_view')}
                 ]}
             }).e
         );
     };
 }
 window.addEventListener("load", function () {
-    $('#mdl_file_view').on('show.bs.modal', function (event) {fileDeleteBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('file_view', function (event) {fileDeleteBtn(event.relatedTarget.dataset.id)});
 });

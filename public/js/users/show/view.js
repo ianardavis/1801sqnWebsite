@@ -27,7 +27,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getUser,
-                function () {$('#mdl_user_password').modal('hide')}
+                function () {modalHide('user_password')}
             ]
         }
     );

@@ -39,5 +39,5 @@ function viewContact(supplier_contact_id) {
 };
 addReloadListener(getContacts);
 window.addEventListener('load', function () {
-    $('#mdl_contact_view').on('show.bs.modal', function (event) {viewContact(event.relatedTarget.dataset.id)});
+    modalOnShow('contact_view', function (event) {viewContact(event.relatedTarget.dataset.id)});
 });

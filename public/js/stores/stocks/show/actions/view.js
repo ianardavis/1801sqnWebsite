@@ -48,5 +48,5 @@ function viewAction(action_id) {
     })
 };
 window.addEventListener('load', function () {
-    $('#mdl_action_view').on('show.bs.modal', function (event) {viewAction(event.relatedTarget.dataset.id)});
+    modalOnShow('action_view', function (event) {viewAction(event.relatedTarget.dataset.id)});
 });

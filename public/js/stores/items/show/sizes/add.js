@@ -13,7 +13,7 @@ function getSuppliers() {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_size_add').on('show.bs.modal', resetAddSize);
+    modalOnShow('size_add', resetAddSize);
     enable_button('size_add');
     addFormListener(
         'size_add',

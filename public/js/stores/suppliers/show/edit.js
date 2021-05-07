@@ -13,7 +13,7 @@ function viewSupplierEdit() {
 window.addEventListener("load", function () {
     document.querySelector('#reload_accounts').addEventListener('click', listAccounts);
     enable_button('supplier_edit');
-    $('#mdl_supplier_edit').on('show.bs.modal', viewSupplierEdit);
+    modalOnShow('supplier_edit', viewSupplierEdit);
     addFormListener(
         'supplier_edit',
         'PUT',
@@ -21,7 +21,7 @@ window.addEventListener("load", function () {
         {
             onComplete: [
                 getSupplier,
-                function () {$('#mdl_supplier_edit').modal('hide')}
+                function () {modalHide('supplier_edit')}
             ]
         }
     );

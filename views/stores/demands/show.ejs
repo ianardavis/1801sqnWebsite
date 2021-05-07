@@ -7,7 +7,7 @@
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
 		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
@@ -60,7 +60,7 @@
 					<div class="modal-content">
 						<div class="modal-header">
 							<h5 class="modal-title">Demand Line</h5>
-							<span id="span_view_buttons" class="float-right"></span>
+							<span id="span_view_buttons" class="float-end"></span>
 						</div>
 						<div class="modal-body">
 							<%- include(`${partials}/inputs/display`, {title: 'Item', 	   id: 'line_item', link: true}) %>
@@ -71,7 +71,7 @@
 							<%- include(`${partials}/inputs/display`, {title: 'Updated',   id: 'line_updatedAt'}) %>
 						</div>
 						<div class="modal-footer">
-							<p class='mr-auto'>ID: <span id='demand_line_id'></span></p>
+							<p class='me-auto'>ID: <span id='demand_line_id'></span></p>
 							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
 						</div>
 					</div>

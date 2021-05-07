@@ -23,7 +23,7 @@ function loadCategoriesEdit() {
     );
 };
 function viewCategoryEdit(category_id) {
-    $('#mdl_category_view').modal('hide');
+    modalHide('category_view');
     get(
         {
             table: 'category',
@@ -37,8 +37,8 @@ function viewCategoryEdit(category_id) {
     );
 };
 window.addEventListener('load', function () {
-    $('#mdl_category_view').on('show.bs.modal', function (event) {categoryEditBtn(event.relatedTarget.dataset.id)});
-    $('#mdl_category_edit').on('show.bs.modal', function (event) {viewCategoryEdit(event.relatedTarget.dataset.id)});
+    modalOnShow('category_view', function (event) {categoryEditBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('category_edit', function (event) {viewCategoryEdit(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', loadCategoriesEdit);
 
     addFormListener(
@@ -49,7 +49,7 @@ window.addEventListener('load', function () {
             onComplete: [
                 getCategories,
                 loadCategoriesEdit,
-                function () {$('#mdl_category_edit').modal('hide')}
+                function () {modalHide('category_edit')}
             ]
         }
     );

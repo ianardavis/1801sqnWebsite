@@ -19,14 +19,14 @@ function viewItemEdit() {
 };
 window.addEventListener('load', function () {
     enable_button('item_edit');
-    $('#mdl_item_edit').on('show.bs.modal', viewItemEdit);
+    modalOnShow('item_edit', viewItemEdit);
     addFormListener(
         'item_edit',
         'PUT',
         `/items/${path[2]}`,
         {onComplete: [
             getItem,
-            function () {$('#mdl_item_edit').modal('hide')}
+            function () {modalHide('item_edit')}
         ]}
     );
 });

@@ -7,7 +7,7 @@
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -81,7 +81,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Stock</h5>
-                            <a class='btn btn-primary float-right' id='btn_stock_link'><i class="fas fa-search"></i></a>
+                            <a class='btn btn-primary float-end' id='btn_stock_link'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/display`, {id: 'stock_item',      title: 'Item', link: true}) %>
@@ -91,7 +91,7 @@
                             <%- include(`${partials}/inputs/display`, {id: 'stock_updatedAt', title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='stock_id'></span></p>
+                            <p class='me-auto'>ID: <span id='stock_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -104,7 +104,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Serial</h5>
-                            <a class='btn btn-primary float-right' id='btn_serial_link'><i class="fas fa-search"></i></a>
+                            <a class='btn btn-primary float-end' id='btn_serial_link'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/display`, {id: 'serial_item',      title: 'Item', link: true}) %>
@@ -114,7 +114,7 @@
                             <%- include(`${partials}/inputs/display`, {id: 'serial_updatedAt', title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='serial_id'></span></p>
+                            <p class='me-auto'>ID: <span id='serial_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>

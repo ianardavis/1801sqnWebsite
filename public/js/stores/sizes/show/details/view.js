@@ -35,9 +35,9 @@ function viewDetail(detail_id) {
 };
 addReloadListener(getDetails);
 window.addEventListener('load', function () {
-    $('#mdl_detail_view').on('show.bs.modal', function(event) {
+    modalOnShow('detail_view', function (event) {
         if (event.relatedTarget.dataset.id) {
             viewDetail(event.relatedTarget.dataset.id)
-        } else $('#mdl_detail_view').modal('hide');
+        } else modalHide('detail_view');
     });
 });

@@ -51,5 +51,5 @@ function viewIssue(issue_id) {
 addReloadListener(getIssues);
 window.addEventListener('load', function () {
     document.querySelector('#sel_issue_status').addEventListener('change', getIssues);
-    $('#mdl_issue_view').on('show.bs.modal', function (event) {viewIssue(event.relatedTarget.dataset.id)});
+    modalOnShow('issue_view', function (event) {viewIssue(event.relatedTarget.dataset.id)});
 });

@@ -9,7 +9,7 @@ function genderDeleteBtn(gender_id) {
                 options: {
                     onComplete: [
                         getGenders,
-                        function () {$('#mdl_gender_view').modal('hide')}
+                        function () {modalHide('gender_view')}
                     ]
                 }
             }).e
@@ -17,5 +17,5 @@ function genderDeleteBtn(gender_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_gender_view').on('show.bs.modal', function (event) {genderDeleteBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('gender_view', function (event) {genderDeleteBtn(event.relatedTarget.dataset.id)});
 });

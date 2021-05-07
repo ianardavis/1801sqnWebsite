@@ -13,10 +13,10 @@ function getSession() {
                         element.innerText = statuses[value];
                         let btn_close = document.querySelector('#btn_close');
                         if (value === 1) {
-                            btn_close.addEventListener('click', function () {$("#mdl_close_session").modal("show")});
+                            btn_close.addEventListener('click', function () {modalShow('close_session')});
                             btn_close.removeAttribute('disabled');
                         } else {
-                            btn_close.removeEventListener('click', function () {$("#mdl_close_session").modal("show")});
+                            btn_close.removeEventListener('click', function () {modalShow('close_session')});
                             btn_close.setAttribute('disabled', true);
                         };
                     } else if (id === 'createdAt' || id === '_end') {

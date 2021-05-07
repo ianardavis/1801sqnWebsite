@@ -8,9 +8,9 @@ window.addEventListener('load', function () {
             onComplete: [
                 getCategories,
                 loadCategoriesEdit,
-                function () {$('#mdl_category_add').modal('hide')}
+                function () {modalHide('category_add')}
             ]
         }
     );
-    $('#mdl_category_add').on('show.bs.modal', function (){listCategories({select: 'sel_category_add'})});
+    modalOnShow('category_add', function (){listCategories({select: 'sel_category_add'})});
 });

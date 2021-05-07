@@ -30,7 +30,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getSize,
-                function () {$('#mdl_size_edit').modal('hide')}
+                function () {modalHide('size_edit')}
             ]
         }
     );
@@ -40,6 +40,6 @@ window.addEventListener('load', function () {
         `/sizes/${path[2]}/default_nsn`,
         {onComplete: getNSNs}
     );
-    $('#mdl_size_edit').on('show.bs.modal', viewSizeEdit);
+    modalOnShow('size_edit', viewSizeEdit);
     document.querySelector('#reload_suppliers').addEventListener('click', function () {getSuppliers()});
 });

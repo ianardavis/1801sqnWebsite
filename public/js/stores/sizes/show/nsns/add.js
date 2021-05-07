@@ -8,6 +8,6 @@ window.addEventListener( "load", function () {
     );
     let groups = document.querySelector('#sel_nsn_groups');
     if (groups) groups.addEventListener('change', getNSNClassifications);
-    $('#mdl_nsn_add').on('show.bs.modal', getNSNGroups);
-    $('#mdl_nsn_add').on('show.bs.modal', getNSNCountries);
+    modalOnShow('nsn_add', getNSNGroups);
+    modalOnShow('nsn_add', getNSNCountries);
 });

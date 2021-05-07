@@ -14,7 +14,7 @@ function addContactDeleteBtn(supplier_contact_id) {
                     options: {
                         onComplete: [
                             getContacts,
-                            function () {$('#mdl_contact_view').modal('hide')}
+                            function () {modalHide('contact_view')}
                         ]
                     }
                 }).e
@@ -23,5 +23,5 @@ function addContactDeleteBtn(supplier_contact_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_contact_view').on('show.bs.modal', function (event) {addContactDeleteBtn(event.relatedTarget.dataset.id)})
+    modalOnShow('contact_view', function (event) {addContactDeleteBtn(event.relatedTarget.dataset.id)});
 });

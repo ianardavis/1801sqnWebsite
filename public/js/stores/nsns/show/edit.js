@@ -23,10 +23,10 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getNSN,
-                function () {$('#mdl_nsn_edit').modal('hide')}
+                function () {modalHide('nsn_edit')}
             ]
         }
     );
     addListener('sel_nsn_groups', getNSNClassifications, 'change');
-    $('#mdl_nsn_edit').on('show.bs.modal', viewNSNEdit);
+    modalOnShow('nsn_edit', viewNSNEdit);
 });

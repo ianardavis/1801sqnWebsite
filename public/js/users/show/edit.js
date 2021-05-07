@@ -24,7 +24,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getUser,
-                function () {$('#mdl_user_edit').modal('hide')}
+                function () {modalHide('user_edit')}
             ]
         }
     );
@@ -34,5 +34,5 @@ window.addEventListener('load', function () {
         `/users/users/${path[2]}`,
         {onComplete: getUser}
     );
-    $('#mdl_user_edit').on('show.bs.modal', viewUserEdit);
+    modalOnShow('user_edit', viewUserEdit);
 });

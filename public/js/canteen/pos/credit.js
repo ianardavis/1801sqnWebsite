@@ -9,6 +9,6 @@ function getUsers() {
     });
 };
 window.addEventListener('load', function () {
-    $('#mdl_sale_complete').on('show.bs.modal', getUsers);
+    modalOnShow('sale_complete', getUsers);
     document.querySelector('#reload_credit').addEventListener('click', getUsers);
 });

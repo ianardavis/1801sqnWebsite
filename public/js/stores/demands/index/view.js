@@ -1,12 +1,14 @@
 function getDemands() {
     clear_table('demands')
     .then(tbl_demands => {
-        let sel_status    = document.querySelector('#sel_status')    || {value: ''},
-            sel_suppliers = document.querySelector('#sel_suppliers') || {value: ''},
-            statuses      = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"};
+        let sel_suppliers   = document.querySelector('#sel_suppliers') || {value: ''},
+            demand_statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"},
+            statuses        = document.querySelectorAll("input[type='checkbox']:checked") || [],
+            query = [];
+        statuses.forEach(e => query.push(e.value));;
         get({
             table: 'demands',
-            query: [sel_status.value, sel_suppliers.value]
+            query: [query.join('&'), sel_suppliers.value]
         })
         .then(function ([demands, options]) {
             demands.forEach(demand => {
@@ -14,7 +16,7 @@ function getDemands() {
                 add_cell(row, table_date(demand.createdAt));
                 add_cell(row, {text: demand.supplier.name});
                 add_cell(row, {classes: ['demand'], data: [{field: 'id', value: demand.demand_id}]});
-                add_cell(row, {text: statuses[demand.status]});
+                add_cell(row, {text: demand_statuses[demand.status]});
                 add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`, small: true}).e});
             });
             return true;
@@ -45,6 +47,9 @@ function getSuppliers() {
 addReloadListener(getDemands)
 window.addEventListener('load', function () {
     addListener('reload_suppliers', getSuppliers);
-    addListener('sel_status',       getDemands, 'change');
     addListener('sel_suppliers',    getDemands, 'change');
+    addListener('status_0',         getDemands, 'change');
+    addListener('status_1',         getDemands, 'change');
+    addListener('status_2',         getDemands, 'change');
+    addListener('status_3',         getDemands, 'change');
 });

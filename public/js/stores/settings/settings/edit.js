@@ -12,7 +12,7 @@ function settingEditBtn(setting_id) {
     };
 };
 function viewSettingEdit(setting_id) {
-    $('#mdl_setting_view').modal('hide');
+    modalHide('setting_view');
     get(
         {
             table: 'setting',
@@ -33,10 +33,10 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getSettings,
-                function () {$('#mdl_setting_edit').modal('hide')}
+                function () {modalHide('setting_edit')}
             ]
         }
     );
-    $('#mdl_setting_edit').on('show.bs.modal', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});
-    $('#mdl_setting_view').on('show.bs.modal', function (event) {settingEditBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('setting_edit', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});
+    modalOnShow('setting_view', function (event) {settingEditBtn(event.relatedTarget.dataset.id)});
 });

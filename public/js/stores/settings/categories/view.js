@@ -56,6 +56,6 @@ function viewCategory(category_id) {
     );
 };
 window.addEventListener('load', function () {
-    $('#mdl_category_view').on('show.bs.modal', function (event) {viewCategory(event.relatedTarget.dataset.id)});
+    modalOnShow('category_view', function (event) {viewCategory(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', function () {getCategories()});
 });

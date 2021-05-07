@@ -1,5 +1,5 @@
 function viewFileEdit(file_id) {
-    $('#mdl_file_view').modal('hide');
+    modalHide('file_view');
     get({
         table: 'file',
         query: [`file_id=${file_id}`],
@@ -24,8 +24,8 @@ function fileEditBtn(file_id) {
     };
 };
 window.addEventListener("load", function () {
-    $('#mdl_file_edit').on('show.bs.modal', function (event) {viewFileEdit(event.relatedTarget.dataset.id)});
-    $('#mdl_file_view').on('show.bs.modal', function (event) {fileEditBtn( event.relatedTarget.dataset.id)});
+    modalOnShow('file_view', function (event) {viewFileEdit(event.relatedTarget.dataset.id)});
+    modalOnShow('file_view', function (event) {fileEditBtn( event.relatedTarget.dataset.id)});
     addFormListener(
         'file_edit',
         'PUT',
@@ -33,7 +33,7 @@ window.addEventListener("load", function () {
         {
             onComplete: [
                 getFiles,
-                function () {$('#mdl_file_edit').modal('hide')}
+                function () {modalHide('file_edit')}
             ]
         }
     );

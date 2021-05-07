@@ -33,9 +33,9 @@ function viewCategory(category_id) {
 };
 addReloadListener(getCategories);
 window.addEventListener('load', function () {
-    $('#mdl_category_view').on('show.bs.modal', function(event) {
+    modalOnShow('category_view', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewCategory(event.relatedTarget.dataset.id)
-        } else $('#mdl_category_view').modal('hide');
+        } else modalHide('category_view');
     });
 });

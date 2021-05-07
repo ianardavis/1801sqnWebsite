@@ -42,6 +42,6 @@ function viewNSN(event) {
     });
 };
 window.addEventListener('load', function() {
-    $('#mdl_nsn_view').on('show.bs.modal', viewNSN);
+    modalOnShow('nsn_view', viewNSN);
     document.querySelector('#reload').addEventListener('click', getNSNs);
 });

@@ -3,7 +3,7 @@ function reset_add_adjustment() {
 };
 window.addEventListener('load', function () {
     enable_button('adjustment_add');
-    $('#mdl_adjustment_add').on('show.bs.modal', reset_add_adjustment);
+    modalOnShow('adjustment_add', reset_add_adjustment);
     addFormListener(
         'adjustment_add',
         'POST',
@@ -12,7 +12,7 @@ window.addEventListener('load', function () {
             onComplete: [
                 getStock,
                 getAdjustments,
-                function () {$('#mdl_adjustment_add').modal('hide')}
+                function () {modalHide('adjustment_add')}
             ]
         }
     );

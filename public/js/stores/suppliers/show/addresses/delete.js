@@ -14,7 +14,7 @@ function addAddressDeleteBtn(supplier_address_id) {
                     options: {
                         onComplete: [
                             getAddresses,
-                            function () {$('#mdl_address_view').modal('hide')}
+                            function () {modalHide('address_view')}
                         ]
                     }
                 }).e
@@ -23,5 +23,5 @@ function addAddressDeleteBtn(supplier_address_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_address_view').on('show.bs.modal', function (event) {addAddressDeleteBtn(event.relatedTarget.dataset.id)})
+    modalOnShow('address_view', function (event) {addAddressDeleteBtn(event.relatedTarget.dataset.id)});
 });

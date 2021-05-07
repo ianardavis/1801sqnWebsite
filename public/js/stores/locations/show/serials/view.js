@@ -39,5 +39,5 @@ function viewSerial(serial_id) {
     })
 };
 window.addEventListener('load', function () {
-    $('#mdl_serial_view').on('show.bs.modal', function (event) {viewSerial(event.relatedTarget.dataset.id)});
+    modalOnShow('serial_view', function (event) {viewSerial(event.relatedTarget.dataset.id)});
 });

@@ -7,7 +7,7 @@
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -97,7 +97,7 @@
                             <%- include(`${partials}/inputs/display`, {id: 'adjustment_createdAt', title: 'Created'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='adjustment_id'></span></p>
+                            <p class='me-auto'>ID: <span id='adjustment_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                                 <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'adjustment[qty]',  id: 'adjustment_qty_add', required: true, placeholder: 'Required'}) %>
                             </div>
                             <div class="modal-footer">
-                                <input type="submit" class="btn btn-success w-100" value='Save Adjustmoent'>
+                                <input type="submit" class="btn btn-success w-100" value='Save Adjustment'>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </form>
@@ -145,7 +145,7 @@
                             <%- include(`${partials}/inputs/display`, {id: 'action_user',      title: 'User',     link: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='action_id'></span></p>
+                            <p class='me-auto'>ID: <span id='action_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>

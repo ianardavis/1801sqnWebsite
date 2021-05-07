@@ -83,8 +83,8 @@ function getUsersAdd() {
     reset_issue_add();
 };
 window.addEventListener('load', function () {
-    $('#mdl_issue_add').on('show.bs.modal', getUsersAdd);
-    $('#mdl_issue_add').on('show.bs.modal', reset_issue_add);
+    modalOnShow('issue_add', getUsersAdd);
+    modalOnShow('issue_add', reset_issue_add);
     addFormListener(
         'line',
         'POST',

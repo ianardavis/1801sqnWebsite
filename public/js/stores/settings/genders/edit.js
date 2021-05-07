@@ -12,7 +12,7 @@ function genderEditBtn(gender_id) {
     };
 };
 function viewGenderEdit(gender_id) {
-    $('#mdl_gender_view').modal('hide');
+    modalHide('gender_view');
     get(
         {
             table: 'gender',
@@ -32,10 +32,10 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getGenders,
-                function () {$('#mdl_gender_edit').modal('hide')}
+                function () {modalHide('gender_edit')}
             ]
         }
     );
-    $('#mdl_gender_edit').on('show.bs.modal', function (event) {viewGenderEdit(event.relatedTarget.dataset.id)});
-    $('#mdl_gender_view').on('show.bs.modal', function (event) {genderEditBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('gender_edit', function (event) {viewGenderEdit(event.relatedTarget.dataset.id)});
+    modalOnShow('gender_view', function (event) {genderEditBtn(event.relatedTarget.dataset.id)});
 });

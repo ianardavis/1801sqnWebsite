@@ -8,7 +8,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getWriteoffs,
-                function () {$('#mdl_writeoff_add').modal('hide')}
+                function () {modalHide('writeoff_add')}
             ]
         }
     );

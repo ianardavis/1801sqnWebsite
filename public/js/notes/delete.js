@@ -15,7 +15,7 @@ function addNoteDeleteBtn(note_id) {
                         options: {
                             onComplete: [
                                 getNotes,
-                                function () {$('#mdl_note_view').modal('hide')}
+                                function () {modalHide('note_view')}
                             ]
                         }
                     }).e
@@ -25,5 +25,5 @@ function addNoteDeleteBtn(note_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_note_view').on('show.bs.modal', function (event) {addNoteDeleteBtn(event.relatedTarget.dataset.id)})
+    modalOnShow('note_view', function(event) {addNoteDeleteBtn(event.relatedTarget.dataset.id)});
 });

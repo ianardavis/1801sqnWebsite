@@ -14,7 +14,7 @@ function addDetailDeleteBtn(detail_id) {
                     options: {
                         onComplete: [
                             getDetails,
-                            function () {$('#mdl_detail_view').modal('hide')}
+                            function () {modalHide('detail_view')}
                         ]
                     }
                 }).e
@@ -23,5 +23,5 @@ function addDetailDeleteBtn(detail_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_detail_view').on('show.bs.modal', function (event) {addDetailDeleteBtn(event.relatedTarget.dataset.id)})
+    modalOnShow('detail_view', function (event) {addDetailDeleteBtn(event.relatedTarget.dataset.id)});
 });

@@ -11,7 +11,7 @@ function categoryDeleteBtn(category_id) {
                         getCategories,
                         function () {
                             if (typeof loadCategoriesEdit === 'function') loadCategoriesEdit();
-                            $('#mdl_category_view').modal('hide')
+                            modalHide('category_view');
                         }
                     ]
                 }
@@ -20,5 +20,5 @@ function categoryDeleteBtn(category_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_category_view').on('show.bs.modal', function (event) {categoryDeleteBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('category_view', function (event) {categoryDeleteBtn(event.relatedTarget.dataset.id)});
 });

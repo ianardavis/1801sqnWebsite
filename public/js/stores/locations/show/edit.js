@@ -16,9 +16,9 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getLocation,
-                function () {$('#mdl_location_edit').modal('hide')}
+                function () {modalHide('location_edit')}
             ]
         }
     );
-    $('#mdl_location_edit').on('show.bs.modal', viewLocationEdit);
+    modalOnShow('location_edit', viewLocationEdit);
 })

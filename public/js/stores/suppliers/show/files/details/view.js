@@ -19,5 +19,5 @@ function viewDetails(file_id) {
     });
 };
 window.addEventListener('load', function () {
-    $('#mdl_file_view').on('show.bs.modal', function (event) {viewDetails(event.relatedTarget.dataset.id)});
+    modalOnShow('file_view', function (event) {viewDetails(event.relatedTarget.dataset.id)});
 });

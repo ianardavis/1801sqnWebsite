@@ -10,7 +10,7 @@ function random_id() {return Math.floor(Math.random()*10000)};
 
 function List_Item(options = {}) {
     this.e = document.createElement('li');
-    this.e.classList.add('list-group-item', 'text-left', 'p-4');
+    this.e.classList.add('list-group-item', 'text-start', 'p-4');
     this.e.appendChild(
         new Checkbox({
             attributes: [
@@ -34,22 +34,22 @@ function List_Item(options = {}) {
 function Category_LI(options = {}) {
     this.e = document.createElement('li');
     this.e.setAttribute('data-id', options.li_id || random_id);
-    this.e.classList.add('list-group-item', 'text-left', 'category_li', 'my-1');
+    this.e.classList.add('list-group-item', 'text-start', 'category_li', 'my-1');
     let span = document.createElement('span'),
         ul   = document.createElement('ul');
     span.innerText = options.text || '';
     span.classList.add('caret'); ///////////////////////////// 
-    span.classList.add('ml-3');
+    span.classList.add('ms-3');
     span.setAttribute('id', `caret_${options.li_id}`)
     this.e.appendChild(new Link({
         type: 'move',
         type_attribute: `data-id="${options.li_id || ''}"`,
         data: {field: 'id', value: options.li_id || ''},
         small: true,
-        classes: ['mr-1']
+        classes: ['me-1']
     }).e);
     if (options.append) this.e.appendChild(options.append);
-    ul.classList.add('nested', 'list-group', 'ml-4', 'category_ul'); ////////////////////
+    ul.classList.add('nested', 'list-group', 'ms-4', 'category_ul'); ////////////////////
     ul.setAttribute('id', `ul_${options.ul_id || random_id()}`);
     this.e.appendChild(span);
     this.e.appendChild(ul);
@@ -96,7 +96,7 @@ function Link(options = {}) {
     };
     if (options.data)  this.e.setAttribute(`data-${options.data.field}`, options.data.value);
     if (options.small) this.e.classList.add('btn-sm');
-    if (options.float) this.e.classList.add('float-right');
+    if (options.float) this.e.classList.add('float-end');
 };
 function Delete_Button(options = {}) {
     this.e = document.createElement('form');
@@ -104,7 +104,7 @@ function Delete_Button(options = {}) {
     btn.classList.add('btn', 'btn-danger');
     btn.innerHTML = _delete();
     if (options.small)  btn.classList.add('btn-sm');
-    if (options.float)  this.e.classList.add('float-right');
+    if (options.float)  this.e.classList.add('float-end');
     if (options.inline) this.e.classList.add('inline-form');
     this.e.appendChild(btn);
     this.e.addEventListener("submit", function (event) {
@@ -119,7 +119,7 @@ function Checkbox(options = {}) {
     this.e.setAttribute('type', 'checkbox');
     this.e.classList.add('form-control');
     if (options.small)   this.e.classList.add('form-control-sm');
-    if (options.float)   this.e.classList.add('w-50', 'float-right');
+    if (options.float)   this.e.classList.add('w-50', 'float-end');
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Hidden(options = {}) {
@@ -163,7 +163,7 @@ function Button(options = {}) {
     this.e.setAttribute('type', 'button');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
     if (options.small) this.e.classList.add('btn-sm');
-    if (options.float) this.e.classList.add('float-right');
+    if (options.float) this.e.classList.add('float-end');
 
     if (options.type === 'edit') {
         this.e.classList.add('btn-success');
@@ -229,7 +229,7 @@ function Card(options = {}) {
     if (options.id) this.e.setAttribute('id', options.id);
     this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
     a.setAttribute('href', options.href);
-    a.classList.add('card', 'm-3', 'text-left');
+    a.classList.add('card', 'm-3', 'text-start');
     header.classList.add('card-header');
     title.classList.add('card-title');
     if (options.search.title === true) title.classList.add('search');
@@ -250,7 +250,7 @@ function Card(options = {}) {
 };
 function Badge(options = {}) {
     this.e = document.createElement('span');
-    this.e.classList.add('mx-1', `float-${options.float}`, 'badge', `badge-${options.colour}`);
+    this.e.classList.add('mx-1', `float-${options.float}`, 'badge', `bg-${options.colour}`);
     this.e.setAttribute('data-toggle',    'tooltip');
     this.e.setAttribute('data-placement', 'top');
     this.e.setAttribute('title', `${options.text} ${options.table}`);

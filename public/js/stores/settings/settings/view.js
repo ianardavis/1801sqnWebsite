@@ -41,6 +41,6 @@ function viewSetting(setting_id) {
     );
 };
 window.addEventListener('load', function () {
-    $('#mdl_setting_view').on('show.bs.modal', function (event) {viewSetting(event.relatedTarget.dataset.id)});
+    modalOnShow('setting_view', function (event) {viewSetting(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', getSettings);
 });

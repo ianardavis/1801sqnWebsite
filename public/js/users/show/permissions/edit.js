@@ -55,9 +55,9 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getPermissions,
-                function() {$('#mdl_permissions_edit').modal('hide')}
+                function() {modalHide('permissions_edit')}
             ]
         }
     );
-    $('#mdl_permissions_edit').on('show.bs.modal', getPermissionsEdit);
+    modalOnShow('permissions_edit', getPermissionsEdit);
 });

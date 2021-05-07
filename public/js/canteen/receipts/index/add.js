@@ -36,7 +36,7 @@ function getItems() {
     )
 }
 window.addEventListener('load', function () {
-    $('#mdl_receipt_add').on('show.bs.modal', getItems);
+    modalOnShow('receipt_add', getItems);
     ['qty', 'cost_total'].forEach(e => {
         let input = document.querySelector(`#${e}`)
         if (input) input.addEventListener('input', calculate_cost);

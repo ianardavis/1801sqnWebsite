@@ -9,10 +9,10 @@ function viewContactEdit(contact_id) {
         set_value({id: 'contact_type_edit',        value: contact.contact.type});
         set_value({id: 'contact_description_edit', value: contact.contact.description});
         set_value({id: 'contact_contact_edit',     value: contact.contact.contact});
-        $('#mdl_contact_view').modal('hide');
+        modalHide('contact_view');
     })
     .catch(err => {
-        $('#mdl_contact_edit').modal('hide');
+        modalHide('contact_edit');
     });
 };
 function addContactEditBtn(contact_id) {
@@ -40,13 +40,13 @@ window.addEventListener('load', function() {
         {
             onComplete: [
                 getContacts,
-                function () {$('#mdl_contact_edit').modal('hide')}
+                function () {modalHide('contact_edit')}
             ]
         }
     );
-    $('#mdl_contact_view').on('show.bs.modal', function(event) {addContactEditBtn(event.relatedTarget.dataset.id)});
-    $('#mdl_contact_edit').on('show.bs.modal', function(event) {
+    modalOnShow('contact_view', function(event) {addContactEditBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('contact_edit', function(event) {
         viewContactEdit(event.relatedTarget.dataset.id);
-        $(`#mdl_contact_view`).modal('hide');
+        modalHide('contact_view');
     });
 });

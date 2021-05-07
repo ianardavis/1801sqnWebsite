@@ -3,7 +3,7 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Orders'}) %>
 <% if (permissions.order_add) { %>
 	<li class="nav-item">
-		<a class="nav-link" data-toggle="modal" data-target="#mdl_order_add">
+		<a class="nav-link" data-bs-toggle="modal" data-bs-target="#mdl_order_add">
 			<i class="fas fa-plus"></i>
 		</a>
 	</li>
@@ -12,7 +12,35 @@
 <%- include(`${partials}/spinner`, {id: 'orders'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{text: 'All'}, {value: 'status=1', text: 'Placed'}, {value: 'status=2', text: 'Demanded'}, {value: 'status=1&status=2', text: 'Placed & Demanded'}, {value: 'status=3', text: 'Closed'}]}) %>
+	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
+		Filter
+	</button>
+	<div class="collapse" id="col-filter">
+		<h5 class='text-start'>Status:</h5>
+		<div class="row">
+			<div class="col-6 col-sm-3">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: 'status=0', colour: 'secondary', classes: ['status']}) %>
+			</div>
+			<div class="col-6 col-sm-3">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Placed', 	id: 'status_1', value: 'status=1', colour: 'info', 		classes: ['status'], checked: true}) %>
+			</div>
+			<div class="col-6 col-sm-3">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Demanded', 	id: 'status_2', value: 'status=2', colour: 'primary', 	classes: ['status'], checked: true}) %>
+			</div>
+			<div class="col-6 col-sm-3">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Received', 	id: 'status_3', value: 'status=3', colour: 'success', 	classes: ['status']}) %>
+			</div>
+		</div>
+		<h5 class='text-start'>Date From -> To:</h5>
+		<div class="row">
+			<div class="col-sm-6">
+				<input type="date" class='form-control' id='createdAt_from'>
+			</div>
+			<div class="col-sm-6">
+				<input type="date" class='form-control' id='createdAt_to'>
+			</div>
+		</div>
+	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-20" onclick="sortTable(0, 'tbl_orders')">Date</th>
@@ -28,36 +56,39 @@
 		<% if (permissions.order_add) { %>
 			<div class="modal fade" id="mdl_order_add" tabindex="-1" aria-hidden="true">
 				<div class="modal-dialog">
-					<div class="modal-content">
+					<form class="modal-content" id='form_order_add'>
 						<div class="modal-header">
 							<h5 class="modal-title">Add Order</h5>
 						</div>
-						<form class="modal-body" id='form_line'>
+						<div class="modal-body">
 							<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'order_add_qty'}) %>
 							<button type='button' class='btn btn-success w-100 mb-1' id='btn_order_sizes'>Add Item(s)</button>
 							<table class="table table-sm table-hover">
 								<thead class="thead-dark">
-									<th class="w-40" onclick="sortTable(0, 'tbl_order_new')">Item</th>
-									<th class="w-40" onclick="sortTable(1, 'tbl_order_new')">Size</th>
-									<th class="w-20" onclick="sortTable(2, 'tbl_order_new')">Quantity</th>
+									<th class="w-40" onclick="sortTable(0, 'tbl_order_add')">Item</th>
+									<th class="w-40" onclick="sortTable(1, 'tbl_order_add')">Size</th>
+									<th class="w-20" onclick="sortTable(2, 'tbl_order_add')">Quantity</th>
 									<th><i class="fas fa-trash-alt"></i></th>
 								</thead>
-								<tbody id="tbl_order_new"></tbody>
+								<tbody id="tbl_order_add"></tbody>
 							</table>
-						</form>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
 						</div>
-					</div>
+						<div class="modal-footer">
+							<input type="submit" class="btn btn-success w-100" value='Add Orders'>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+						</div>
+					</form>
 				</div>
 			</div>
 		<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
+<script src="/js/addFormListener.js"></script>
 <script src='/js/stores/orders/index/view.js'></script>
 <script async>getOrders()</script>
 <% if (permissions.order_add) { %>
+	<script src="/js/stores/sizes/select/showWindow.js"></script>
 	<script src='/js/stores/orders/index/add.js'></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

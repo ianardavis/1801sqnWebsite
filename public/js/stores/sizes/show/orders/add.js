@@ -7,7 +7,7 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getOrders,
-                function () {$('#mdl_order_add').modal('hide')}
+                function () {modalHide('order_add')}
             ]
         }
     );

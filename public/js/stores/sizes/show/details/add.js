@@ -22,8 +22,8 @@ function reset_add_detail() {
 };
 window.addEventListener('load', function () {
     addListener('reload_options', getDetailOptions)
-    $('#mdl_detail_add').on('show.bs.modal', reset_add_detail);
-    $('#mdl_detail_add').on('show.bs.modal', getDetailOptions);
+    modalOnShow('detail_add', reset_add_detail);
+    modalOnShow('detail_add', getDetailOptions);
     enable_button('detail_add');
     addFormListener(
         'detail_add',

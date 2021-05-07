@@ -36,7 +36,7 @@ function selectedUsers(users) {
 };
 window.addEventListener('load', function () {
     enable_button('issue_add');
-    $('#mdl_issue_add').on('show.bs.modal', function () {clear_table('issue_add')});
+    modalOnShow('issue_add', function () {clear_table('issue_add')});
     addListener('btn_issue_users', selectUser);
     addFormListener(
         'issue_add',
@@ -45,9 +45,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getIssues,
-                function () {
-                    $('#mdl_issue_add').modal('hide');
-                }
+                function () {modalHide('issue_add')}
             ]
         }
     );

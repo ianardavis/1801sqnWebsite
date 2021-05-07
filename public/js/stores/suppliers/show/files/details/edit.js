@@ -1,5 +1,5 @@
 function viewDetailEdit(file_detail_id) {
-    $('#mdl_file_view').modal('hide');
+    modalHide('file_view');
     get({
         table:   'file_detail',
         query:   [`file_detail_id=${file_detail_id}`],
@@ -34,7 +34,7 @@ window.addEventListener('load', function () {
         'file_detail_edit',
         'PUT',
         '/file_details',
-        {onComplete: function () {$('#mdl_file_detail_edit').modal('hide')}}
+        {onComplete: function () {modalHide('file_detail_edit')}}
     );
-    $('#mdl_file_detail_edit').on('show.bs.modal', function (event) {viewDetailEdit(event.relatedTarget.dataset.id)});
+    modalOnShow('file_detail_edit', function (event) {viewDetailEdit(event.relatedTarget.dataset.id)});
 });

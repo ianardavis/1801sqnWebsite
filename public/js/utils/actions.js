@@ -49,7 +49,7 @@ function resetActionView() {
     });
 };
 window.addEventListener('load', function () {
-    $('#mdl_action_view').on('show.bs.modal', function (event) {
+    modalOnShow('action_view', function (event) {
         resetActionView();
         get(
             {

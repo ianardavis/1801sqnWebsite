@@ -38,6 +38,6 @@ function viewFile(file_id) {
     });
 };
 window.addEventListener('load', function () {
-    $('#mdl_file_view').on('show.bs.modal', function (event) {viewFile(event.relatedTarget.dataset.id)});
+    modalOnShow('file_view', function (event) {viewFile(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', getFiles);
 });

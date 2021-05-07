@@ -20,7 +20,7 @@ window.addEventListener('load', function () {
             onComplete: [
                 getReceipts,
                 getItem,
-                function () {$('#mdl_receipt_add').modal('hide')}
+                function () {modalHide('receipt_add')}
             ]
         }
     );

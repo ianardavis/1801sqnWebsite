@@ -16,9 +16,9 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getSerial,
-                function () {$('#mdl_serial_edit').modal('hide')}
+                function () {modalHide('serial_edit')}
             ]
         }
     );
-    $('#mdl_serial_edit').on('show.bs.modal', viewSerialEdit);
+    modalOnShow('serial_edit', viewSerialEdit);
 });

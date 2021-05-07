@@ -3,7 +3,7 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Items'}) %>
 <% if (permissions.item_add) { %>
 	<li class="nav-item">
-		<a class='nav-link' data-toggle="modal" data-target="#mdl_item_add"><i class="fas fa-plus"></i></a>
+		<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_item_add"><i class="fas fa-plus"></i></a>
 	</li>
 <% } %>
 <%- include(`${partials}/reload`) %>

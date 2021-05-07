@@ -7,7 +7,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getGenders,
-                function () {$('#mdl_gender_add').modal('hide')}
+                function () {modalHide('gender_add')}
             ]
         }
     );

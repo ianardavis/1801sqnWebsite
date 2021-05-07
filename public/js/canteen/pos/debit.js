@@ -17,6 +17,6 @@ function getCredits() {
     );
 };
 window.addEventListener('load', function () {
-    $('#mdl_sale_complete').on('show.bs.modal', getCredits);
+    modalOnShow('sale_complete', getCredits);
     document.querySelector('#reload_debit').addEventListener('click', getCredits);
 });

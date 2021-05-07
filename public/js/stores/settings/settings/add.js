@@ -7,7 +7,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getSettings,
-                function () {$('#mdl_setting_add').modal('hide')}
+                function () {modalHide('setting_add')}
             ]
         }
     );

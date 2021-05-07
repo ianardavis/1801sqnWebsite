@@ -14,7 +14,7 @@ function addCategoryDeleteBtn(category_id) {
                     options: {
                         onComplete: [
                             getCategories,
-                            function () {$('#mdl_category_view').modal('hide')}
+                            function () {modalHide('category_view')}
                         ]
                     }
                 }).e
@@ -23,5 +23,5 @@ function addCategoryDeleteBtn(category_id) {
     };
 };
 window.addEventListener('load', function () {
-    $('#mdl_category_view').on('show.bs.modal', function (event) {addCategoryDeleteBtn(event.relatedTarget.dataset.id)})
+    modalOnShow('category_view', function (event) {addCategoryDeleteBtn(event.relatedTarget.dataset.id)});
 });

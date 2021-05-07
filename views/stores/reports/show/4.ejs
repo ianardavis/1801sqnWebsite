@@ -14,13 +14,13 @@
         <div class="row">
             <% items.forEach(item => { %>
                 <div class="col-12 bordered">
-                    <a class="my-3" data-toggle="collapse" href="#collapse<%= item.item_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= item.item_id %>">
-                        <h5 class="text-left">
+                    <a class="my-3" data-bs-toggle="collapse" href="#collapse<%= item.item_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= item.item_id %>">
+                        <h5 class="text-start">
                             <%= item._description %>
                         </h5>
                     </a>
                     <div class="collapse mb-3" id="collapse<%= item.item_id %>">
-                        <a class="float-left btn btn-primary mb-2" href="/items/<%= item.item_id %>"><i class="fas fa-search"></i></a>
+                        <a class="float-start btn btn-primary mb-2" href="/items/<%= item.item_id %>"><i class="fas fa-search"></i></a>
                         <table class="table table-sm table-hover">
                             <thead class="thead-dark">
                                 <th class="w-40" onclick="sortTable(0, 'table<%= item.item_id %>')">Size</th>
@@ -48,7 +48,7 @@
                                     <% } %>
                                     <tr>
                                         <td>
-                                            <a class="btn btn-sm btn-primary float-right" href="/sizes/<%= size.size_id %>"><i class="fas fa-search"></i></a>
+                                            <a class="btn btn-sm btn-primary float-end" href="/sizes/<%= size.size_id %>"><i class="fas fa-search"></i></a>
                                             <%= size._size %>
                                         </td>
                                         <td <% if (_stock <= 0) { %> class="cardRed"<% } %>>

@@ -13,7 +13,7 @@ function getItemEdit() {
     );
 };
 window.addEventListener('load', function () {
-    $('#mdl_item_edit').on('show.bs.modal', getItemEdit);
+    modalOnShow('item_edit', getItemEdit);
     enable_button('item_edit');
     addFormListener(
         'item_edit',
@@ -22,7 +22,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getItem,
-                function () {$('#mdl_item_edit').modal('hide')}
+                function () {modalHide('item_edit')}
             ]
         }
     )

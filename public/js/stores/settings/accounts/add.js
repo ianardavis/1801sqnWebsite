@@ -7,11 +7,11 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getAccounts,
-                function () {$('#mdl_account_add').modal('hide')}
+                function () {modalHide('account_add')}
             ]
         }
     );
-    $('#mdl_account_add').on('show.bs.modal', function (event) {
+    modalOnShow('account_add', function (event) {
         listUsers({
             select:    'sel_account_user_add',
             id_only:   true,

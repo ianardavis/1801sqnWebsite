@@ -1,13 +1,11 @@
-<script src="/lib/js/jquery-3.3.1.min.js"></script>
-<script src="/lib/js/popper.min.js"></script>
-<script src="/lib/js/bootstrap.min.js"></script>
-<!-- <script src="/lib/js/mdb.min.js"></script> -->
+<script
+    src="/lib/js/bootstrap.bundle.min.js"
+    integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
+    crossorigin="anonymous"
+></script>
 <script async>
-    $(function () {
-        $('[data-toggle="popover"]').popover()
-    });
-
-    $('.popover-dismiss').popover({
-        trigger: 'focus'
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
     });
 </script>

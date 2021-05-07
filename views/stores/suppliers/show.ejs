@@ -7,7 +7,7 @@
 <section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -148,7 +148,7 @@
                             <%- include(`${partials}/inputs/display`, {id:'account_updatedAt', title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto text-left'>ID: <span id='account_id'></span></p>
+                            <p class='me-auto text-start'>ID: <span id='account_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -163,15 +163,15 @@
                         <div class="modal-header">
                             <h5 class="modal-title">File</h5>
                             <%- include(`${partials}/spinner`, {id: 'file_view'}) %>
-                            <span class="float-right">
-                                <form id="form_file_download" method='GET' class='float-right ml-1'>
+                            <span class="float-end">
+                                <form id="form_file_download" method='GET' class='float-end ms-1'>
                                     <button class='btn btn-primary'><i class="fas fa-file-download"></i></button>
                                 </form>
                                 <% if (permissions.file_edit) { %>
-                                    <span id="span_file_edit_btn"   class='float-right ml-1'></span>
+                                    <span id="span_file_edit_btn"   class='float-end ms-1'></span>
                                 <% } %>
                                 <% if (permissions.file_delete) { %>
-                                    <span id="span_file_delete_btn" class='float-right ml-1'></span>
+                                    <span id="span_file_delete_btn" class='float-end ms-1'></span>
                                 <% } %>
                             </span>
                         </div>
@@ -203,7 +203,7 @@
                             <% } %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto text-left'>ID: <span id='file_id'></span></p>
+                            <p class='me-auto text-start'>ID: <span id='file_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -285,12 +285,12 @@
                         <div class="modal-header">
                             <h5 class="modal-title">Address: <span id="file_id_view"></span></h5>
                             <%- include(`${partials}/spinner`, {id: 'address_view'}) %>
-                            <span class='float-right'>
+                            <span class='float-end'>
                                 <% if (permissions.supplier_address_edit) { %>
-                                    <span id='address_edit_btn' class='float-right mr-1'></span>
+                                    <span id='address_edit_btn' class='float-end me-1'></span>
                                 <% } %>
                                 <% if (permissions.supplier_address_delete) { %>
-                                    <span id='address_delete_btn' class='float-right mr-1'></span>
+                                    <span id='address_delete_btn' class='float-end me-1'></span>
                                 <% } %>
                             </span>
                         </div>
@@ -306,7 +306,7 @@
                             <%- include(`${partials}/inputs/display`, {id: 'address_updatedAt',   title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto text-left'>
+                            <p class='me-auto text-start'>
                                 Address ID: <span id='address_id'></span><br>
                                 Link ID: <span id='supplier_address_id'></span>
                             </p>
@@ -374,12 +374,12 @@
                         <div class="modal-header">
                             <h5 class="modal-title">Contact</h5>
                             <%- include(`${partials}/spinner`, {id: 'contact_view'}) %>
-                            <span class='float-right'>
+                            <span class='float-end'>
                                 <% if (permissions.supplier_contact_edit) { %>
-                                    <span id='contact_edit_btn' class='float-right mr-1'></span>
+                                    <span id='contact_edit_btn' class='float-end me-1'></span>
                                 <% } %>
                                 <% if (permissions.supplier_contact_delete) { %>
-                                    <span id='contact_delete_btn' class='float-right mr-1'></span>
+                                    <span id='contact_delete_btn' class='float-end me-1'></span>
                                 <% } %>
                             </span>
                         </div>
@@ -391,7 +391,7 @@
                             <%- include(`${partials}/inputs/display`, {id: 'contact_updatedAt',   title: 'Updated'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto text-left'>
+                            <p class='me-auto text-start'>
                                 Contact ID: <span id='contact_id'></span><br>
                                 Link ID: <span id='supplier_contact_id'></span>
                             </p>

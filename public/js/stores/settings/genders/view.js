@@ -39,6 +39,6 @@ function viewGender(gender_id) {
     );
 };
 window.addEventListener('load', function () {
-    $('#mdl_gender_view').on('show.bs.modal', function (event) {viewGender(event.relatedTarget.dataset.id)});
+    modalOnShow('gender_view', function (event) {viewGender(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', getGenders);
 });

@@ -43,10 +43,10 @@ function viewNote(note_id) {
 };
 addReloadListener(getNotes);
 window.addEventListener('load', function () {
-    $('#mdl_note_view').on('show.bs.modal', function(event) {
+    modalOnShow('note_view', function(event) {
         if (event.relatedTarget.dataset.id) {
             viewNote(event.relatedTarget.dataset.id)
-        } else $('#mdl_note_view').modal('hide');
+        } else modalHide('note_view');
     });
     document.querySelector('#sel_system').addEventListener('change', getNotes);
 });

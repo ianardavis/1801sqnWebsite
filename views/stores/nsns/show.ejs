@@ -7,7 +7,7 @@
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -72,7 +72,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title">Loancard Line</h5>
                             <%- include(`${partials}/spinner`, {id: 'loancard_view'}) %>
-                            <a id="btn_loancard_link" class='btn btn-primary float-right'><i class="fas fa-search"></i></a>
+                            <a id="btn_loancard_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
                             <h5>Loancard</h5>
@@ -93,7 +93,7 @@
                             <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'loancard_line_updatedAt'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto text-left'>
+                            <p class='me-auto text-start'>
                                 Loancard ID: <span id='loancard_id'></span><br>
                                 Line ID: <span id='loancard_line_id'></span>
                             </p>

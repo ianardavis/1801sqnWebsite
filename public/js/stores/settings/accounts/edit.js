@@ -12,7 +12,7 @@ function accountEditBtn(account_id) {
     };
 };
 function viewAccountEdit(account_id) {
-    $('#mdl_account_view').modal('hide');
+    modalHide('account_view');
     get(
         {
             table: 'account',
@@ -38,10 +38,10 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getAccounts,
-                function () {$('#mdl_account_edit').modal('hide')}
+                function () {modalHide('account_edit')}
             ]
         }
     );
-    $('#mdl_account_edit').on('show.bs.modal', function (event) {viewAccountEdit(event.relatedTarget.dataset.id)});
-    $('#mdl_account_view').on('show.bs.modal', function (event) {accountEditBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('account_edit', function (event) {viewAccountEdit(event.relatedTarget.dataset.id)});
+    modalOnShow('account_view', function (event) {accountEditBtn(event.relatedTarget.dataset.id)});
 });

@@ -8,7 +8,7 @@
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -132,12 +132,12 @@
                         <div class="modal-header">
                             <h5 class="modal-title">Detail</h5>
                             <%- include(`${partials}/spinner`, {id: 'detail_view'}) %>
-                            <span class='float-right'>
+                            <span class='float-end'>
                                 <% if (permissions.detail_edit) { %>
-                                    <span id='detail_edit_btn' class='float-right mr-1'></span>
+                                    <span id='detail_edit_btn' class='float-end me-1'></span>
                                 <% } %>
                                 <% if (permissions.detail_delete) { %>
-                                    <span id='detail_delete_btn' class='float-right mr-1'></span>
+                                    <span id='detail_delete_btn' class='float-end me-1'></span>
                                 <% } %>
                             </span>
                         </div>
@@ -148,7 +148,7 @@
                             <%- include(`${partials}/inputs/display`,  {title: 'Updated', id: 'detail_updatedAt'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='detail_id'></span></p>
+                            <p class='me-auto'>ID: <span id='detail_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -227,7 +227,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title">Order</h5>
                             <%- include(`${partials}/spinner`, {id: 'order_view'}) %>
-                            <a id="btn_order_link" class='btn btn-primary float-right'><i class="fas fa-search"></i></a>
+                            <a id="btn_order_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/display`, {title: 'Ordered By', id: 'order_user', link: true}) %>
@@ -237,7 +237,7 @@
                             <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'order_updatedAt'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='order_id'></span></p>
+                            <p class='me-auto'>ID: <span id='order_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -271,7 +271,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title">Issue</h5>
                             <%- include(`${partials}/spinner`, {id: 'issue_view'}) %>
-                            <a id="btn_issue_link" class='btn btn-primary float-right'><i class="fas fa-search"></i></a>
+                            <a id="btn_issue_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/display`, {title: 'Issued To', id: 'issue_user_to', link: true}) %>
@@ -282,7 +282,7 @@
                             <%- include(`${partials}/inputs/display`, {title: 'Updated',   id: 'issue_updatedAt'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='issue_id'></span></p>
+                            <p class='me-auto'>ID: <span id='issue_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -325,17 +325,17 @@
                         <div class="modal-header">
                             <h5   class="modal-title">NSN: <span id="nsn_view"></span></h5>
                             <%- include(`${partials}/spinner`, {id: 'nsn_view'}) %>
-                            <a class='btn btn-primary float-right' id='btn_nsn_link'><i class="fas fa-search"></i></a>
+                            <a class='btn btn-primary float-end' id='btn_nsn_link'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',   classes: ['text-left'], title: 'Group'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'nsn_class_id',   classes: ['text-left'], title: 'Classification'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id', classes: ['text-left'], title: 'Country'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'item_number',    classes: ['text-left'], title: 'Item Number'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: '_default',       classes: ['text-left'], title: 'Is Default?'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_group_id',   classes: ['text-start'], title: 'Group'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_class_id',   classes: ['text-start'], title: 'Classification'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'nsn_country_id', classes: ['text-start'], title: 'Country'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: 'item_number',    classes: ['text-start'], title: 'Item Number'}) %>
+                            <%- include(`${partials}/inputs/display`, {id: '_default',       classes: ['text-start'], title: 'Is Default?'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='nsn_id'></span></p>
+                            <p class='me-auto'>ID: <span id='nsn_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>

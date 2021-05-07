@@ -8,10 +8,10 @@ function viewDetailEdit(detail_id) {
         set_attribute({id: 'detail_id_edit', attribute: 'value', value: detail.detail_id});
         set_value({id: 'detail_name_edit',  value: detail.name});
         set_innerText({id: 'detail_value_edit', text: detail.value});
-        $('#mdl_detail_view').modal('hide')
+        modalHide('detail_view');
     })
     .catch(err => {
-        $('#mdl_detail_edit').modal('hide');
+        modalHide('detail_edit');
     });
 };
 function addDetailEditBtn(detail_id) {
@@ -24,7 +24,7 @@ function addDetailEditBtn(detail_id) {
         })
         .then(function ([detail, options]) {
             detail_edit_btn.appendChild(new Button({
-                classes: ['float-right'],
+                classes: ['float-end'],
                 modal:   'detail_edit',
                 data:    {field: 'id', value: detail.detail_id},
                 type:    'edit',
@@ -40,13 +40,13 @@ window.addEventListener('load', function() {
         {
             onComplete: [
                 getDetails,
-                function () {$('#mdl_detail_edit').modal('hide')}
+                function () {modalHide('detail_edit')}
             ]
         }
     );
-    $('#mdl_detail_view').on('show.bs.modal', function(event) {addDetailEditBtn( event.relatedTarget.dataset.id)});
-    $('#mdl_detail_edit').on('show.bs.modal', function(event) {
+    modalOnShow('detail_view', function(event) {addDetailEditBtn( event.relatedTarget.dataset.id)});
+    modalOnShow('detail_edit', function(event) {
         viewDetailEdit(event.relatedTarget.dataset.id);
-        $(`#mdl_detail_view`).modal('hide');
+        modalHide('detail_view');
     });
 });

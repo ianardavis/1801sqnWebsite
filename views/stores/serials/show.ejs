@@ -7,7 +7,7 @@
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -84,7 +84,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title">Loancard</h5>
                             <%- include(`${partials}/spinner`, {id: 'loancard_view'}) %>
-                            <a class='btn btn-primary float-right' id='btn_loancard_link'><i class="fas fa-search"></i></a>
+                            <a class='btn btn-primary float-end' id='btn_loancard_link'><i class="fas fa-search"></i></a>
                         </div>
                         <div class="modal-body">
                             <h5>Loancard</h5>
@@ -104,7 +104,7 @@
                             <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'loancard_line_updatedAt'}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>
+                            <p class='me-auto'>
                                 Loancard ID: <span id='loancard_id'></span><br>
                                 Line ID: <span id='loancard_line_id'></span>
                             </p>
@@ -135,7 +135,7 @@
                             <%- include(`${partials}/inputs/display`, {id: 'action_user',      title: 'User',           link: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <p class='mr-auto'>ID: <span id='action_id'></span></p>
+                            <p class='me-auto'>ID: <span id='action_id'></span></p>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>

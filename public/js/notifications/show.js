@@ -13,7 +13,7 @@ function Notification (options = {}) {
         body    = document.createElement('p');
     heading.classList.add('alert-heading');
     heading.innerText = options.title || '';
-    date.classList.add('float-right', 'f-10');
+    date.classList.add('float-end', 'f-10');
     date.innerText = options.date || '';
     heading.appendChild(date);
     body.classList.add('f-09', 'm-0');

@@ -18,7 +18,7 @@ function getFiles() {
                         table_files.forEach(file => {
                             let row = tbl_files.insertRow(-1);
                             add_cell(row, {text: file.file_id || ''});
-                            add_cell(row, {text: file.filename, classes: ['text-left']});
+                            add_cell(row, {text: file.filename, classes: ['text-start']});
                             if (file.exists)  add_cell(row, {html: _check()})
                             else              add_cell(row);
                             if (file.file_id) add_cell(row, {classes: ['files'], data: [{field: 'id',   value: file.file_id}]})

@@ -5,7 +5,7 @@ function noteAddReset() {
 };
 window.addEventListener('load', function() {
     enable_button('note_add');
-    $('#mdl_note_add').on('show.bs.modal', noteAddReset);
+    modalOnShow('note_add', noteAddReset);
     addFormListener(
         'note_add',
         'POST',
@@ -13,7 +13,7 @@ window.addEventListener('load', function() {
         {
             onComplete: [
                 getNotes,
-                function () {$('#mdl_note_add').modal('hide')}
+                function () {modalHide('note_add')}
             ]
         }
     );

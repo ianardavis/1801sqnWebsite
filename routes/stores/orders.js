@@ -38,9 +38,18 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     });
 
     app.post('/orders',       li, pm.check('order_add'),     (req, res) => {
-        fn.orders.create(req.body.line, req.user.user_id)
-        .then(result => res.send(result))
-        .catch(err => send_error(res, err));
+        if (!req.body.lines || req.body.lines.length === 0) send_error(res, 'No lines submitted')
+        else {
+            let actions = [];
+            req.body.lines.forEach(line => {
+                actions.push(
+                    fn.orders.create(line, req.user.user_id)
+                );
+            });
+            Promise.all(actions)
+            .then(result => res.send({success: true, message: 'Orders placed'}))
+            .catch(err => send_error(res, err));
+        };
     });
     
     app.put('/orders',        li, pm.check('order_edit'),    (req, res) => {

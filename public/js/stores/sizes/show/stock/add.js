@@ -1,6 +1,6 @@
 window.addEventListener( "load", function () {
     enable_button('stock_add');
-    $('#mdl_stock_add').on('show.bs.modal', getLocations);
+    modalOnShow('stock_add', getLocations);
     addFormListener(
         'stock_add',
         'POST',
