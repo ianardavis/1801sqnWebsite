@@ -31,27 +31,40 @@
 				<%- include(`${partials}/inputs/checkbox`, {title: 'Received', 	id: 'status_3', value: 'status=3', colour: 'success', 	classes: ['status']}) %>
 			</div>
 		</div>
-		<h5 class='text-start'>Date From -> To:</h5>
 		<div class="row">
 			<div class="col-sm-6">
+				<h5 class='text-start'>Date From:</h5>
 				<input type="date" class='form-control' id='createdAt_from'>
 			</div>
 			<div class="col-sm-6">
+				<h5 class='text-start'>Date To:</h5>
 				<input type="date" class='form-control' id='createdAt_to'>
 			</div>
 		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<h5 class='text-start'>Item:</h5>
+				<input type="text" class='form-control' id='item'>
+			</div>
+			<div class="col-sm-6">
+				<h5 class='text-start'>Size:</h5>
+				<input type="text" class='form-control' id='size'>
+			</div>
+		</div>
 	</div>
-	<table class="table table-sm table-hover">
-		<thead class="thead-dark">
-			<th class="w-20" onclick="sortTable(0, 'tbl_orders')">Date</th>
-			<th class="w-25" onclick="sortTable(1, 'tbl_orders')">Item</th>
-			<th class="w-20" onclick="sortTable(2, 'tbl_orders')">Size</th>
-			<th class="w-15" onclick="sortTable(3, 'tbl_orders')">Quantity</th>
-			<th class="w-20" onclick="sortTable(4, 'tbl_orders')">Status</th>
-			<th><i class="fas fa-search"></i></th>
-		</thead>
-		<tbody id="tbl_orders"></tbody>
-	</table>
+	<% if (permissions.order_edit) { %><form id='form_order_edit'><% } %>
+		<table class="table table-sm table-hover">
+			<thead class="thead-dark">
+				<th class="w-20" onclick="sortTable(0, 'tbl_orders')">Date</th>
+				<th class="w-25" onclick="sortTable(1, 'tbl_orders')">Item</th>
+				<th class="w-20" onclick="sortTable(2, 'tbl_orders')">Size</th>
+				<th class="w-15" onclick="sortTable(3, 'tbl_orders')">Quantity</th>
+				<th class="w-20" onclick="sortTable(4, 'tbl_orders')">Status</th>
+				<th><i class="fas fa-search"></i></th>
+			</thead>
+			<tbody id="tbl_orders"></tbody>
+		</table>
+	<% if (permissions.order_edit) { %></form><% } %>
 	<div id="div_modals">
 		<% if (permissions.order_add) { %>
 			<div class="modal fade" id="mdl_order_add" tabindex="-1" aria-hidden="true">
@@ -90,5 +103,11 @@
 <% if (permissions.order_add) { %>
 	<script src="/js/stores/sizes/select/showWindow.js"></script>
 	<script src='/js/stores/orders/index/add.js'></script>
+<% } %>
+<% if (permissions.order_edit) { %>
+	<script src='/js/stores/orders/index/edit.js'></script>
+	<% if (permissions.demand_line_add) { %>
+		<script src='/js/stores/orders/index/demand.js'></script>
+	<% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

@@ -34,15 +34,29 @@ function getOrders() {
                     href: `/orders/${order.order_id}`,
                     small: true
                 }).e})
+                row_index ++;
             });
-        });
+            if (typeof addEditSelect === 'function') addEditSelect();
+            return tbl_orders;
+        })
+        .then(tbl_orders => filter(tbl_orders))
     });
 };
-function filterDate() {
-    let from = document.querySelector('#createdAt_from'),
-        to   = document.querySelector('#createdAt_to');
-    if (from.value) console.log('from: ', new Date(from.value).getTime() || '');
-    if (to.value)   console.log('to: ',   new Date(to.value).getTime() || '');
+function filter(tbl_orders) {
+    if (!tbl_orders) tbl_orders = document.querySelector('#tbl_orders');
+    let from = new Date(document.querySelector('#createdAt_from').value).getTime() || '',
+        to   = new Date(document.querySelector('#createdAt_to').value)  .getTime() || '',
+        item = document.querySelector('#item').value.trim() || '',
+        size = document.querySelector('#size').value.trim() || '';
+    tbl_orders.childNodes.forEach(row => {
+        if (
+            (!from || row.childNodes[0].dataset.sort > from) &&
+            (!to   || row.childNodes[0].dataset.sort < to)   &&
+            (!item || row.childNodes[1].innerText.toLowerCase().includes(item.toLowerCase())) &&
+            (!size || row.childNodes[2].innerText.toLowerCase().includes(size.toLowerCase()))
+        )    row.classList.remove('hidden')
+        else row.classList.add(   'hidden');
+    });
 };
 addReloadListener(getOrders);
 window.addEventListener('load', function () {
@@ -51,6 +65,8 @@ window.addEventListener('load', function () {
     addListener('status_1',   getOrders, 'change');
     addListener('status_2',   getOrders, 'change');
     addListener('status_3',   getOrders, 'change');
-    addListener('createdAt_from', filterDate, 'change');
-    addListener('createdAt_to',   filterDate, 'change');
+    addListener('createdAt_from', function (){filter()}, 'change');
+    addListener('createdAt_to',   function (){filter()}, 'change');
+    addListener('item', function (){filter()}, 'input');
+    addListener('size', function (){filter()}, 'input');
 });
