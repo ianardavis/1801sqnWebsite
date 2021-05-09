@@ -2,9 +2,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     let fn = {}, receipts = {}, issues = {};
     require(`${process.env.FUNCS}/allowed`)(m.permissions, fn);
     require(`${process.env.FUNCS}/promise_results`)(fn);
+    require(`${process.env.FUNCS}/demands`)(m, fn, op);
     require(`${process.env.FUNCS}/orders`) (m, fn);
-    require(`${process.env.FUNCS}/demands`)(m, fn);
-    // require(`${process.env.FUNCS}/receipts`)(m, receipts);
     app.get('/orders',        li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/index'));
     app.get('/orders/:id',    li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
     
@@ -54,9 +53,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     
     app.put('/orders',        li, pm.check('order_edit'),    (req, res) => {
         let actions = [];
-        req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
-        actions.push(demand_orders(req.body.lines.filter(e => e.status === '2'), req.user.user_id));
-        req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(receive_line(line, req.user.user_id)));
+        actions.push(demand_orders(req.body.orders.filter(e => e.status === '2'), req.user.user_id))
+        // req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
+        // actions.push(demand_orders(req.body.lines.filter(e => e.status === '2'), req.user.user_id));
+        // req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(receive_line(line, req.user.user_id)));
         Promise.allSettled(actions)
         .then(results => {
             if (results.filter(e => e.status === 'rejected').length > 0) {
@@ -119,21 +119,18 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             return fn.allowed(user_id, 'demand_line_add')
             .then(result => {
                 return get_orders(lines)
-                .then(orders => {
-                    return sort_suppliers(orders)
+                .then(suppliers => {
+                    return create_demands(suppliers, user_id)
                     .then(suppliers => {
-                        return create_demands(suppliers, user_id)
-                        .then(suppliers => {
-                            let demand_actions = []
-                            suppliers.forEach(supplier => {
-                                supplier.orders.forEach(order => {
-                                    demand_actions.push(demand_line(order, supplier.demand_id, user_id));
-                                })
-                            });
-                            Promise.all(demand_actions)
-                            .then(results => resolve(true))
-                            .catch(err => reject(err));
-                        })
+                        console.log(suppliers);
+                        let actions = []
+                        suppliers.forEach(supplier => {
+                            supplier.orders.forEach(order => {
+                                actions.push(demand_line(order, supplier.demand_id, user_id));
+                            })
+                        });
+                        Promise.all(actions)
+                        .then(results => resolve(true))
                         .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
@@ -151,15 +148,20 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     new Promise((resolve, reject) => {
                         return m.orders.findOne({
                             where:      {order_id: line.order_id},
-                            include:    [inc.size({attributes: ['size_id', 'supplier_id']})],
+                            include:    [
+                                inc.size({
+                                    include: [inc.supplier()],
+                                    attributes: ['size_id', 'supplier_id']
+                                })
+                            ],
                             attributes: ['order_id', 'size_id', 'status', 'qty']
                         })
                         .then(order => {
-                            if      (!order)                  reject(new Error('Order not found'))
-                            else if (order._status !== 1)     reject(new Error('Only placed orders can be demanded'))
-                            else if (!order.size)             reject(new Error('Size not found'))
-                            else if (!order.size.supplier_id) reject(new Error('Supplier not found'))
-                            else                              resolve(order);
+                            if      (!order)               reject(new Error('Order not found'))
+                            else if (order.status !== 1)   reject(new Error('Only placed orders can be demanded'))
+                            else if (!order.size)          reject(new Error('Size not found'))
+                            else if (!order.size.supplier) reject(new Error('Supplier not found'))
+                            else                           resolve(order);
                         })
                         .catch(err => reject(err));
                     })
@@ -167,38 +169,24 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             });
             Promise.allSettled(actions)
             .then(results => {
-                let orders = [];
-
+                let suppliers = [];
                 results
-                .filter( e => e.status === 'fulfilled')
-                .forEach(e => orders.push(e.value));
-
-                resolve(orders);
+                .filter(e => e.status === 'fulfilled')
+                .forEach(order => {
+                    if (suppliers.find(e => e.supplier_id === order.value.size.supplier_id)) {
+                        suppliers.find(e => e.supplier_id === order.value.size.supplier_id).orders.push(order.value)
+                    } else suppliers.push({supplier_id: order.value.size.supplier_id, orders: [order.value]});
+                });
+                resolve(suppliers);
             })
             .catch(err => reject(err));
         });
     };
-    function sort_suppliers(orders) {
-        return new Promise((resolve, reject) => {
-            let suppliers = [];
-            orders.forEach(order => {
-                let index = suppliers.findIndex(e => e.supplier_id === order.size.supplier_id)
-                if (index === -1) {
-                    suppliers.push({
-                        supplier_id: order.size.supplier_id,
-                        orders:      [order]
-                    })
-                } else suppliers[index].orders.push(order);
-            });
-            if (suppliers && suppliers.length === 0) reject(new Error('No suppliers'))
-            else                                     resolve(suppliers);
-        });
-    };
     function create_demands(suppliers, user_id) {
         return new Promise((resolve, reject) => {
-            let demand_actions = [];
+            let actions = [];
             suppliers.forEach(supplier => {
-                demand_actions.push(
+                actions.push(
                     new Promise((resolve, reject) => {
                         return fn.demands.create({
                             supplier_id: supplier.supplier_id,
@@ -206,53 +194,55 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         })
                         .then(demand => {
                             supplier.demand_id = demand.demand_id;
-                            resolve({supplier_id: supplier.supplier_id, demand_id: demand.demand_id});
+                            resolve(true);
+                            // resolve({supplier_id: supplier.supplier_id, demand_id: demand.demand_id});
                         })
                         .catch(err => reject(err));
                     })
                 );
             });
-            Promise.all(demand_actions)
+            Promise.all(actions)
             .then(results => {
-                console.log(results);
-                results.forEach(result => {
-                    suppliers[suppliers.findIndex(e => e.supplier_id === result.supplier__id)].demand_id = result.demand_id;
-                });
-                resolve(suppliers)
+                // results.forEach(result => {
+                //     suppliers[suppliers.findIndex(e => e.supplier_id === result.supplier__id)].demand_id = result.demand_id;
+                // });
+                resolve(suppliers);
             })
             .catch(err => reject(err));
         });
     };
     function demand_line(order, demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.demands.lines.create({
-                demand_id: demand_id,
-                size_id:   order.size_id,
-                _qty:      order._qty,
-                user_id:   user_id,
-                note:      ' from order'
-            })
-            .then(line => {
-                return order.update({_status: 2})
-                .then(result => {
-                    if (!result) resolve({success: true, message: 'Order added to demand, order not updated'})
-                    else {
-                        m.actions.create({
-                            order_id:       order.order_id,
-                            _action:        'Order added to demand',
-                            demand_line_id: line.line_id,
-                            user_id:        user_id
-                        })
-                        .then(action => resolve({success: true, message: 'Order added to demand'}))
-                        .catch(err => {
-                            console.log(err);
-                            resolve({success: true, message: `Order added to demand, error creating action: ${err.message}`});
-                        })
-                    };
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
+            console.log(order)
+            resolve(true)
+            // return fn.demands.lines.create({
+            //     demand_id: demand_id,
+            //     size_id:   order.size_id,
+            //     qty:       order.qty,
+            //     user_id:   user_id,
+            //     note:      ' from order'
+            // })
+            // .then(line => {
+            //     return order.update({_status: 2})
+            //     .then(result => {
+            //         if (!result) resolve({success: true, message: 'Order added to demand, order not updated'})
+            //         else {
+            //             m.actions.create({
+            //                 order_id:       order.order_id,
+            //                 action:         'Order added to demand',
+            //                 demand_line_id: line.line_id,
+            //                 user_id:        user_id
+            //             })
+            //             .then(action => resolve({success: true, message: 'Order added to demand'}))
+            //             .catch(err => {
+            //                 console.log(err);
+            //                 resolve({success: true, message: `Order added to demand, error creating action: ${err.message}`});
+            //             })
+            //         };
+            //     })
+            //     .catch(err => reject(err));
+            // })
+            // .catch(err => reject(err));
         });
     };
 

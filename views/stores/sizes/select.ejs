@@ -2,23 +2,24 @@
 <section class='container'>
     <h1>Select Size...</h1>
     <div id="div_items">
-        <%- include(`${partials}/inputs/text`,   {title: 'Search Items', id: 'inp_item'}) %>
+        <%- include(`${partials}/inputs/text`,   {title: 'Filter Items', id: 'filter_items'}) %>
         <%- include(`${partials}/inputs/select`, {title: 'Items',        id: 'sel_items', size: 10}) %>
     </div>
     <div id="div_sizes" class=''>
-        <button id='btn_select' class='btn btn-success w-100 mb-1'>Select</button>
         <table class='table table-sm table-hover'>
             <thead class='thead-dark'>
-                <th class='w-20' onclick="sortTable(0,'tbl_sizes')"><i class="fas fa-check"></i></th>
-                <th class='w-80' onclick="sortTable(1,'tbl_sizes')">Size</th>
+                <th class='w-10' onclick="sortTable(0,'tbl_sizes')"><i class="fas fa-check"></i></th>
+                <th class='w-90' onclick="sortTable(1,'tbl_sizes')">Size</th>
             </thead>
             <tbody id='tbl_sizes'></tbody>
         </table>
+        <button id='btn_select' class='btn btn-success w-100 m-1 fixed-bottom'>Select</button>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/get.js"></script>
 <script src="/js/spinner.js"></script>
+<script src="/js/search/select.js"></script>
 <script src="/js/stores/sizes/select/view.js"></script>
 <script src="/js/utils/list/items.js"></script>
 <script src="/js/utils/list/sizes.js"></script>

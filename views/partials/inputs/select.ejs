@@ -1,16 +1,14 @@
 <% if (!locals.permission || permissions[permission]) { %>
     <div class="input-group mb-1">
-        <div class="input-group-prepend w-30">
-            <label
-                class="input-group-text w-100"
-                <% if (locals.id) { %>for="<%= id %>"<% } %>
-            >
-                <%= title %>
-                <% if (locals.spinner_id) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id, small: true}) %><% } %>
-            </label>
-        </div>
+        <label
+            class="input-group-text w-30"
+            <% if (locals.id) { %>for="<%= id %>"<% } %>
+        >
+            <%= title %>
+            <% if (locals.spinner_id) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id, small: true}) %><% } %>
+        </label>
         <select
-            class="custom-select<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
+            class="form-select<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
             <% if (locals.id) { %>id='<%= id %>'<% } %>
             <% if (locals.name) { %>name=<%= name %><% } %>
             <% if (locals.required) { %>required<% } %>
@@ -23,11 +21,9 @@
         <% } %>
         </select>
         <% if (locals.reload_id) { %>
-            <div class="input-group-append">
-                <a class='btn btn-primary' id='<%= reload_id %>'>
-                    <i class="fas fa-redo"></i>
-                </a>
-            </div>
+            <a class='btn btn-primary' id='<%= reload_id %>'>
+                <i class="fas fa-redo"></i>
+            </a>
         <% } %>
     </div>
 <% } %>

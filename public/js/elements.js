@@ -90,8 +90,8 @@ function Link(options = {}) {
     };
     if      (options.href)  this.e.setAttribute('href', options.href)
     else if (options.modal) {
-        this.e.setAttribute('data-toggle', 'modal');
-        this.e.setAttribute('data-target', `#mdl_${options.modal}`);
+        this.e.setAttribute('data-bs-toggle', 'modal');
+        this.e.setAttribute('data-bs-target', `#mdl_${options.modal}`);
         if (options.source) this.e.setAttribute(`data-source`, options.source);
     };
     if (options.data)  this.e.setAttribute(`data-${options.data.field}`, options.data.value);
@@ -117,8 +117,7 @@ function Delete_Button(options = {}) {
 function Checkbox(options = {}) {
     this.e = document.createElement('input');
     this.e.setAttribute('type', 'checkbox');
-    this.e.classList.add('form-control');
-    if (options.small)   this.e.classList.add('form-control-sm');
+    this.e.classList.add('form-check-input');
     if (options.float)   this.e.classList.add('w-50', 'float-end');
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
@@ -142,7 +141,7 @@ function Tab_Header(options = {}) {
     this.e.classList.add('nav_item');
     a.classList.add('nav-link', 'btn', 'btn-lg', 'btn-info', 'm-2', 'w-100-px');
     a.setAttribute('id', `${options.id}-tab`);
-    a.setAttribute('data-toggle', 'tab');
+    a.setAttribute('data-bs-toggle', 'tab');
     a.setAttribute('href', `#${options.id}`);
     a.setAttribute('role', 'tab');
     a.setAttribute('aria-controls', `${options.id}`);
@@ -180,13 +179,17 @@ function Button(options = {}) {
     };
 
     if (options.modal) {
-        this.e.setAttribute('data-toggle', 'modal');
-        this.e.setAttribute('data-target', `#mdl_${options.modal}`);
+        this.e.setAttribute('data-bs-toggle', 'modal');
+        this.e.setAttribute('data-bs-target', `#mdl_${options.modal}`);
     };
     if (options.source) {
         this.e.setAttribute('data-source', options.source);
     };
-    if (options.data) this.e.setAttribute(`data-${options.data.field}`, options.data.value);
+    if (options.data) {
+        options.data.forEach(e => {
+            this.e.setAttribute(`data-${e.field}`, e.value);
+        });
+    };
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Select(options = {}) {
@@ -251,7 +254,7 @@ function Card(options = {}) {
 function Badge(options = {}) {
     this.e = document.createElement('span');
     this.e.classList.add('mx-1', `float-${options.float}`, 'badge', `bg-${options.colour}`);
-    this.e.setAttribute('data-toggle',    'tooltip');
+    this.e.setAttribute('data-bs-toggle',    'tooltip');
     this.e.setAttribute('data-placement', 'top');
     this.e.setAttribute('title', `${options.text} ${options.table}`);
     this.e.innerText = options.count;

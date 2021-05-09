@@ -26,7 +26,7 @@ function addContactEditBtn(contact_id) {
         .then(function ([contact, options]) {
             contact_edit_btn.appendChild(new Button({
                 modal:   'contact_edit',
-                data:    {field: 'id', value: contact.supplier_contact_id},
+                data:    [{field: 'id', value: contact.supplier_contact_id}],
                 type:    'edit',
             }).e);
         });

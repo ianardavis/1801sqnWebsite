@@ -1,13 +1,7 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Orders'}) %>
-<% if (permissions.order_add) { %>
-	<li class="nav-item">
-		<a class="nav-link" data-bs-toggle="modal" data-bs-target="#mdl_order_add">
-			<i class="fas fa-plus"></i>
-		</a>
-	</li>
-<% } %>
+<%- include(`${partials}/menu/breadcrumb_add`, {permission: 'order_add', modal: 'order_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'orders'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
@@ -52,7 +46,10 @@
 			</div>
 		</div>
 	</div>
-	<% if (permissions.order_edit) { %><form id='form_order_edit'><% } %>
+	<% if (permissions.order_edit) { %>
+		<form id='form_order_edit'>
+		<button class='btn btn-success w-100 mb-1'>Action Selected Orders</button>
+	<% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
 				<th class="w-20" onclick="sortTable(0, 'tbl_orders')">Date</th>

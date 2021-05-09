@@ -33,7 +33,7 @@ function getLines() {
                         new Button({
                             small: true,
                             modal: 'line_view',
-                            data: {field: 'id', value: line.demand_line_id}
+                            data: [{field: 'id', value: line.demand_line_id}]
                         }).e
                     });
                 } catch (error) {

@@ -13,7 +13,7 @@ function getActions() {
                 add_cell(row, {text: action.action});
                 add_cell(row, {append: new Button({
                     modal: 'action_view',
-                    data: {field: 'id', value: action.action_id},
+                    data: [{field: 'id', value: action.action_id}],
                     small: true
                 }).e});
             })

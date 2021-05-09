@@ -18,7 +18,7 @@ function getNotes() {
                 add_cell(row, {text: note.note, ellipsis: true});
                 add_cell(row, {append: new Button({
                     modal: 'note_view',
-                    data: {field: 'id', value: note.note_id},
+                    data: [{field: 'id', value: note.note_id}],
                     small: true
                 }).e});
             });

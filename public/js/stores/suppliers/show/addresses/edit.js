@@ -30,7 +30,7 @@ function addAddressEditBtn(address_id) {
         .then(function ([address, options]) {
             address_edit_btn.appendChild(new Button({
                 modal:   'address_edit',
-                data:    {field: 'id', value: address.supplier_address_id},
+                data:    [{field: 'id', value: address.supplier_address_id}],
                 type:    'edit',
             }).e);
         });

@@ -15,7 +15,7 @@ function getAdjustments() {
                 add_cell(row, {text: adjustment.variance});
                 add_cell(row, {append: new Button({
                     modal: 'adjustment_view',
-                    data: {field: 'id', value: adjustment.adjustment_id},
+                    data: [{field: 'id', value: adjustment.adjustment_id}],
                     small: true
                 }).e});
             });

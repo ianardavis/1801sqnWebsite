@@ -14,7 +14,7 @@ function getAddresses() {
                 add_cell(row, {text: address.address.street});
                 add_cell(row, {append: new Button({
                     modal: 'address_view',
-                    data: {field: 'id', value: address.supplier_address_id},
+                    data: [{field: 'id', value: address.supplier_address_id}],
                     small: true
                 }).e});
             });

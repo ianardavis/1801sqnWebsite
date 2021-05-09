@@ -24,7 +24,8 @@ function addEditSelect() {
                     ],
                     small: true,
                     options: [
-                        {text: order_statuses[order.status]},
+                        {text: 'Cancel', value: '0'},
+                        {text: order_statuses[order.status], selected: true},
                         {text: 'Receive', value: '3'}
                     ]
                 }).e

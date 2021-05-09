@@ -1,0 +1,7 @@
+<% if (!locals.permission || permissions[permission]) { %>
+	<li class="nav-item">
+		<a class="nav-link" data-bs-toggle="modal" data-bs-target="#mdl_<%= modal %>">
+			<i class="fas fa-plus"></i>
+		</a>
+	</li>
+<% } %>

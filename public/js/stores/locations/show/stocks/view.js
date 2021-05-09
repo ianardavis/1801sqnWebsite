@@ -14,7 +14,7 @@ function getStocks() {
                 add_cell(row, {text: stock.qty || '0'});
                 add_cell(row, {append: new Button({
                     modal: 'stock_view',
-                    data: {field: 'id', value: stock.stock_id},
+                    data: [{field: 'id', value: stock.stock_id}],
                     small: true
                 }).e});
             });

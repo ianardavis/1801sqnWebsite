@@ -1,19 +1,18 @@
 <div class="input-group mb-1">
-    <div class="input-group-prepend w-30">
-        <% if (locals.id) { %>          
-            <label class="input-group-text w-100" for='<%= id %>'>
-                <%= title %>
-                <% if (locals.spinner_id) { %>
-                    <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
-                <% } %>
-            </label>
-        <% } else { %>
-            <span class="input-group-text w-100"><%= title %></span>
-        <% } %>
-    </div>
+    <% if (locals.id) { %>          
+        <label class="input-group-text w-30" for='<%= id %>'>
+            <%= title %>
+            <% if (locals.spinner_id) { %>
+                <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
+            <% } %>
+        </label>
+    <% } else { %>
+        <span class="input-group-text w-100"><%= title %></span>
+    <% } %>
     <input
-        class="form-control"
+        class="form-control mb-0"
         type="<%= locals.type || 'text' %>"
+        autocomplete='off'
         <% if (locals.id) { %>          id='<%= id %>'<% } %>
         <% if (locals.name) { %>        name='<%= name %>'<% } %>
         <% if (locals.value) { %>       value='<%= value %>'<% } %>
@@ -21,17 +20,14 @@
         <% if (locals.minlength) { %>   minlength='<%= minlength %>'<% } %>
         <% if (locals.maxlength) { %>   maxlength='<%= maxlength %>'<% } %>
         <% if (locals.placeholder) { %> placeholder='<%= placeholder %>'<% } %>
-        <% if (locals.autocomplete) { %>autocomplete='<%= autocomplete %>'<% } %>
         <% if (locals.list_id) { %>       
             list='<%= list_id %>'
             autocomplete='off'
         <% } %>
     >
     <% if (locals.reload_id) { %>
-        <div class="input-group-append">
-            <a class='btn btn-primary' id='<%= reload_id %>'>
-                <i class="fas fa-redo"></i>
-            </a>
-        </div>
+        <a class='btn btn-primary' id='<%= reload_id %>'>
+            <i class="fas fa-redo"></i>
+        </a>
     <% } %>
 </div>

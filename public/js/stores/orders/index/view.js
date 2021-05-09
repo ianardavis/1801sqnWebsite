@@ -67,6 +67,6 @@ window.addEventListener('load', function () {
     addListener('status_3',   getOrders, 'change');
     addListener('createdAt_from', function (){filter()}, 'change');
     addListener('createdAt_to',   function (){filter()}, 'change');
-    addListener('item', function (){filter()}, 'input');
-    addListener('size', function (){filter()}, 'input');
+    addListener('item',           function (){filter()}, 'input');
+    addListener('size',           function (){filter()}, 'input');
 });

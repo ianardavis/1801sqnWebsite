@@ -16,7 +16,7 @@ function getOrders() {
                     add_cell(row, {text: order_statuses[order.status] || 'Unknown'});
                     add_cell(row, {append: new Button({
                         modal: 'order_view',
-                        data: {field: 'id', value: order.order_id},
+                        data: [{field: 'id', value: order.order_id}],
                         small: true
                     }).e});
                 } catch (error) {

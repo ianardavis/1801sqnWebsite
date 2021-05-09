@@ -14,7 +14,7 @@ function getSerials() {
                 add_cell(row, {text: serial.serial});
                 add_cell(row, {append: new Button({
                     modal: 'serial_view',
-                    data: {field: 'id', value: serial.serial_id},
+                    data: [{field: 'id', value: serial.serial_id}],
                     small: true
                 }).e});
             });

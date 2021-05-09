@@ -25,7 +25,7 @@ function selectedUsers(users) {
                         small: true,
                         type: 'delete',
                         attributes: [{field: 'type', value: 'button'}],
-                        data: {field: 'id', value: user.user_id}
+                        data: [{field: 'id', value: user.user_id}]
                     }).e
                     delete_button.addEventListener('click', function () {removeID(`user-${this.dataset.id}`)});
                     add_cell(row, {append: delete_button});

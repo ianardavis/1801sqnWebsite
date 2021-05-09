@@ -47,4 +47,13 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.orders.demand = function (orders, user_id) {
+        return new Promise((resolve, reject) => {
+            return fn.allowed(user_id, 'demand_line_add')
+            .then(result => {
+
+            })
+            .catch(err => reject(err));
+        });
+    };
 };

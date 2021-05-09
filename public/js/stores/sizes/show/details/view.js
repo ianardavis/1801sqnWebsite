@@ -12,7 +12,7 @@ function getDetails() {
                 add_cell(row, {text: detail.value});
                 add_cell(row, {append: new Button({
                     modal: 'detail_view',
-                    data: {field: 'id', value: detail.detail_id},
+                    data: [{field: 'id', value: detail.detail_id}],
                     small: true
                 }).e});
             });

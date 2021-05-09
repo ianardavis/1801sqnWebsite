@@ -44,7 +44,7 @@ function selectedSizes(sizes) {
                                 small: true,
                                 type: 'delete',
                                 attributes: [{field: 'type', value: 'button'}],
-                                data: {field: 'id', value: size.size_id}
+                                data: [{field: 'id', value: size.size_id}]
                             }).e
                             delete_button.addEventListener('click', function () {removeID(`size-${this.dataset.id}`)});
                             add_cell(row, {append: delete_button});

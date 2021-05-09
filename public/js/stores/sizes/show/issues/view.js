@@ -18,7 +18,7 @@ function getIssues() {
                     add_cell(row, {text: issue_statuses[issue.status]});
                     add_cell(row, {append: new Button({
                         modal: 'issue_view',
-                        data: {field: 'id', value: issue.issue_id},
+                        data: [{field: 'id', value: issue.issue_id}],
                         small: true
                     }).e});
                 } catch (error) {

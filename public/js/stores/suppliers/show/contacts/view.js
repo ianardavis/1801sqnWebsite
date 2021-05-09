@@ -14,7 +14,7 @@ function getContacts() {
                 add_cell(row, {text: contact.contact.contact});
                 add_cell(row, {append: new Button({
                     modal: 'contact_view',
-                    data: {field: 'id', value: contact.supplier_contact_id},
+                    data: [{field: 'id', value: contact.supplier_contact_id}],
                     small: true
                 }).e});
             });

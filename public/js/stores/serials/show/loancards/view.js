@@ -14,7 +14,7 @@ function getLoancards() {
                 add_cell(row, {text: line.status});
                 add_cell(row, {append: new Button({
                     modal: 'loancard_view',
-                    data: {field: 'id', value: line.loancard_line_id},
+                    data: [{field: 'id', value: line.loancard_line_id}],
                     small: true
                 }).e});
             });

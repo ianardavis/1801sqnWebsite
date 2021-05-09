@@ -8,7 +8,6 @@ function viewDetailEdit(detail_id) {
         set_attribute({id: 'detail_id_edit', attribute: 'value', value: detail.detail_id});
         set_value({id: 'detail_name_edit',  value: detail.name});
         set_innerText({id: 'detail_value_edit', text: detail.value});
-        modalHide('detail_view');
     })
     .catch(err => {
         modalHide('detail_edit');
@@ -26,7 +25,10 @@ function addDetailEditBtn(detail_id) {
             detail_edit_btn.appendChild(new Button({
                 classes: ['float-end'],
                 modal:   'detail_edit',
-                data:    {field: 'id', value: detail.detail_id},
+                data:    [
+                    {field: 'id', value: detail.detail_id},
+                    {field: 'bs-dismiss', value: 'modal'}
+                ],
                 type:    'edit',
             }).e);
         });
@@ -45,8 +47,5 @@ window.addEventListener('load', function() {
         }
     );
     modalOnShow('detail_view', function(event) {addDetailEditBtn( event.relatedTarget.dataset.id)});
-    modalOnShow('detail_edit', function(event) {
-        viewDetailEdit(event.relatedTarget.dataset.id);
-        modalHide('detail_view');
-    });
+    modalOnShow('detail_edit', function(event) {viewDetailEdit(event.relatedTarget.dataset.id);});
 });

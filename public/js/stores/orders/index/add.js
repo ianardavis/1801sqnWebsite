@@ -2,7 +2,6 @@ function reset_order_add() {
     clear_table('order_add');
     set_value({id: 'order_add_qty', value: '0'});
 };
-
 let row_count = 0;
 function selectedSizes(sizes) {
     if (sizes) {
@@ -42,7 +41,7 @@ function selectedSizes(sizes) {
                             small: true,
                             type: 'delete',
                             attributes: [{field: 'type', value: 'button'}],
-                            data: {field: 'id', value: size.size_id}
+                            data: [{field: 'id', value: size.size_id}]
                         }).e
                         delete_button.addEventListener('click', function () {removeID(`size-${this.dataset.id}`)});
                         add_cell(row, {append: delete_button});
