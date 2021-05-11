@@ -39,7 +39,7 @@ function getOrders() {
             if (typeof addEditSelect === 'function') addEditSelect();
             return tbl_orders;
         })
-        .then(tbl_orders => filter(tbl_orders))
+        .then(tbl_orders => filter(tbl_orders));
     });
 };
 function filter(tbl_orders) {

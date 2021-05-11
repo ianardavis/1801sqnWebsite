@@ -105,15 +105,18 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
     app.post('/issues',          li, pm.check('issue_add',     {allow: true}), (req, res) => {
-        create_line(
-            {
-                ...req.body.line,
-                ...{status: (req.allowed ? 2 : 1)}
-            },
-            req.user.user_id
-        )
-        .then(result => res.send(result))
-        .catch(err => send_error(res, err));
+        // create_line(
+        //     {
+        //         ...req.body.line,
+        //         ...{status: (req.allowed ? 2 : 1)}
+        //     },
+        //     req.user.user_id
+        // )
+        // .then(result => res.send(result))
+        // .catch(err => send_error(res, err));
+        console.log(req.body.issues.users);
+        console.log(req.body.issues.sizes);
+        res.send({success: true, message: 'tada'})
     });
 
     app.put('/issues',           li, pm.check('issue_edit',    {allow: true}), (req, res) => {

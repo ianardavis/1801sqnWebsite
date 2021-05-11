@@ -218,7 +218,7 @@ function Option(options = {}) {
 function Spinner(options = {}) {
     this.e = document.createElement('div');
     this.e.setAttribute('id', `spn_${options.id || random_id}`);
-    this.e.classList.add('spinner-border', 'text-primary', 'hidden');
+    this.e.classList.add('spinner-border', 'spinner-border-sm', 'text-primary');
     this.e.setAttribute('role', 'status');
     this.e.innerHTML = '<span class="sr-only">Loading...</span>';
 };

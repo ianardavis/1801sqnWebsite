@@ -7,14 +7,11 @@ function listUsers(options = {}) {
             ...options
         })
         .then(function ([users, options]) {
-            if (options.blank) select.appendChild(new Option(options.blank_opt || {}).e);
+            if (options.blank) sel_users.appendChild(new Option({text: options.blank_text || ''}).e);
             users.forEach(user => {
-                let value = '';
-                if (options.id_only) value = user.user_id
-                else                 value = `user_id${options.append || ''}=${user.user_id}`
-                select.appendChild(
+                sel_users.appendChild(
                     new Option({
-                        value:    value,
+                        value:    (options.id_only ? user.user_id : `user_id${options.append || ''}=${user.user_id}`),
                         text:     print_user(user),
                         selected: (options.selected === user.user_id)
                     }).e

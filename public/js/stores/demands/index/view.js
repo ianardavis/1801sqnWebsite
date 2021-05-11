@@ -19,9 +19,9 @@ function getDemands() {
                 add_cell(row, {text: demand_statuses[demand.status]});
                 add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`, small: true}).e});
             });
-            return true;
+            return tbl_demands;
         })
-        .then(result => {
+        .then(tbl_demands => {
             document.querySelectorAll('.demand').forEach(e => {
                 count({
                     table: 'demand_lines',
@@ -33,7 +33,21 @@ function getDemands() {
                     e.classList.remove('demand');
                 });
             });
-        });
+            return tbl_demands;
+        })
+        .then(tbl_demands => filter(tbl_demands));
+    });
+};
+function filter(tbl_demands) {
+    if (!tbl_demands) tbl_demands = document.querySelector('#tbl_demands');
+    let from = new Date(document.querySelector('#createdAt_from').value).getTime() || '',
+        to   = new Date(document.querySelector('#createdAt_to').value)  .getTime() || '';
+    tbl_demands.childNodes.forEach(row => {
+        if (
+            (!from || row.childNodes[0].dataset.sort > from) &&
+            (!to   || row.childNodes[0].dataset.sort < to)
+        )    row.classList.remove('hidden')
+        else row.classList.add(   'hidden');
     });
 };
 function getSuppliers() {
@@ -52,4 +66,6 @@ window.addEventListener('load', function () {
     addListener('status_1',         getDemands, 'change');
     addListener('status_2',         getDemands, 'change');
     addListener('status_3',         getDemands, 'change');
+    addListener('createdAt_from', function (){filter()}, 'change');
+    addListener('createdAt_to',   function (){filter()}, 'change');
 });

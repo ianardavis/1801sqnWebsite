@@ -40,8 +40,8 @@ module.exports = (m, cb) => {
             })
             .then(permission => {
                 if (permission || options.allow) {
-                    next();
                     req.allowed = (permission);
+                    next();
                 } else res.send({success: false, error: `Permission denied - ${_permission}`});
             })
             .catch(err => {

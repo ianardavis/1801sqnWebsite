@@ -17,6 +17,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 inc.serial(),
                 inc.location(),
                 inc.nsn(),
+                inc.demand(),
                 inc.demand_lines({as: 'demand_line'}),
                 inc.loancard_lines({as: 'loancard_line'}),
                 inc.user()

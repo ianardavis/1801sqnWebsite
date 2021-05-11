@@ -43,7 +43,12 @@ function selectUsers() {
         window.opener.selectedUsers(users);
     } else alert('Source window not found');
 };
+function selectRowCheckBox(event) {
+    let checkbox = event.target.parentNode.childNodes[0].querySelector('input');
+    if (checkbox) checkbox.click();
+};
 window.addEventListener('load', function () {
+    addListener('tbl_users', selectRowCheckBox)
     addListener('reload_ranks',    getRanks);
     addListener('reload_statuses', getStatuses);
     addListener('sel_ranks',       getUsers, 'change');

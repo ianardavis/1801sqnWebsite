@@ -12,7 +12,7 @@
     <input
         class="form-control mb-0"
         type="<%= locals.type || 'text' %>"
-        autocomplete='off'
+        autocomplete='<%= locals.autocomplete || 'off' %>'
         <% if (locals.id) { %>          id='<%= id %>'<% } %>
         <% if (locals.name) { %>        name='<%= name %>'<% } %>
         <% if (locals.value) { %>       value='<%= value %>'<% } %>
@@ -22,7 +22,6 @@
         <% if (locals.placeholder) { %> placeholder='<%= placeholder %>'<% } %>
         <% if (locals.list_id) { %>       
             list='<%= list_id %>'
-            autocomplete='off'
         <% } %>
     >
     <% if (locals.reload_id) { %>

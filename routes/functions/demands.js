@@ -259,18 +259,17 @@ module.exports = function (m, fn, op) {
                                 }
                             })
                             .then(([line, created]) => {
-                                if (created) resolve({success: true, demand_line_id: line.demand_line_id, created: created})
+                                if (created) resolve(line.demand_line_id)
                                 else {
                                     return line.increment('qty', {by: options.qty})
                                     .then(result => {
-                                        return m.notes.create({
-                                            id:      line.line_id,
-                                            _table:  'demand_lines',
-                                            note:    `Incremented by ${options.qty}${options.note || ''}`,
-                                            user_id: options.user_id,
-                                            system:  1
+                                        return m.actions.create({
+                                            demand_line_id: line.line_id,
+                                            action:         `Demand line incremented by ${options.qty}${(options.order_id ? ' by order' : '')}`,
+                                            order_id:       options.order_id || null,
+                                            user_id:        options.user_id
                                         })
-                                        .then(note => resolve({success: true, demand_line_id: line.demand_line_id, created: created}))
+                                        .then(action => resolve(line.demand_line_id))
                                         .catch(err => reject(err));
                                     })
                                     .catch(err => reject(err));
@@ -439,7 +438,7 @@ module.exports = function (m, fn, op) {
             })
             .then(supplier => {
                 if (!supplier) reject(new Error('Supplier not found'))
-                else           resolve([supplier.files[0], supplier.account, supplier.supplier_id]);
+                else           resolve(supplier);
             })
             .catch(err => reject(err));
         });

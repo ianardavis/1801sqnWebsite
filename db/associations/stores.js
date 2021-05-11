@@ -8,11 +8,11 @@ module.exports = function (m) {
     m.actions.hasOne(          m.nsns,           {foreignKey: 'nsn_id',             sourceKey: 'nsn_id',         constraints: false});
     m.actions.belongsTo(       m.loancard_lines, {foreignKey: 'loancard_line_id',   targetKey: 'loancard_line_id'});
     m.actions.hasOne(          m.demand_lines,   {foreignKey: 'demand_line_id',     sourceKey: 'demand_line_id', constraints: false});
+    m.actions.hasOne(          m.demands,        {foreignKey: 'demand_id',          sourceKey: 'demand_id',      constraints: false});
     m.adjustments.hasOne(      m.stocks,         {foreignKey: 'stock_id',           sourceKey: 'stock_id',       constraints: false});
     m.adjustments.hasOne(      m.sizes,          {foreignKey: 'size_id',            sourceKey: 'size_id',        constraints: false});
     m.categories.hasMany(      m.categories,     {foreignKey: 'category_id_parent', sourceKey: 'category_id',                        as: 'children'});
     m.categories.belongsTo(    m.categories,     {foreignKey: 'category_id_parent', targetKey: 'category_id',                        as: 'parent'});
-    // m.categories.belongsToMany(m.items,          {foreignKey: 'category_id',        otherKey:  'item_id',        through: m.item_categories})
     m.demand_lines.hasOne(     m.sizes,          {foreignKey: 'size_id',            sourceKey: 'size_id',        constraints: false});
     m.demand_lines.belongsTo(  m.demands,        {foreignKey: 'demand_id',          targetKey: 'demand_id'});
     m.demand_lines.hasMany(    m.actions,        {foreignKey: 'demand_line_id',     sourceKey: 'demand_line_id'});

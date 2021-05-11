@@ -1,3 +1,4 @@
+let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
 function getLines() {
     clear_table('lines')
     .then(tbl_lines => {
@@ -7,8 +8,7 @@ function getLines() {
             query: [`demand_id=${path[2]}`, sel_status.value]
         })
         .then(function ([lines, options]) {
-            let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'},
-                row_index = 0;
+            let row_index = 0;
             set_count({id: 'line', count: lines.length || '0'});
             lines.forEach(line => {
                 try {

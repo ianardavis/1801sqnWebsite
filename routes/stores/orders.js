@@ -114,15 +114,14 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
 
-    function demand_orders(lines, user_id) {
+    function demand_orders(orders, user_id) {
         return new Promise((resolve, reject) => {
             return fn.allowed(user_id, 'demand_line_add')
             .then(result => {
-                return get_orders(lines)
+                return get_orders(orders)
                 .then(suppliers => {
                     return create_demands(suppliers, user_id)
                     .then(suppliers => {
-                        console.log(suppliers);
                         let actions = []
                         suppliers.forEach(supplier => {
                             supplier.orders.forEach(order => {
@@ -213,36 +212,34 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function demand_line(order, demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            console.log(order)
-            resolve(true)
-            // return fn.demands.lines.create({
-            //     demand_id: demand_id,
-            //     size_id:   order.size_id,
-            //     qty:       order.qty,
-            //     user_id:   user_id,
-            //     note:      ' from order'
-            // })
-            // .then(line => {
-            //     return order.update({_status: 2})
-            //     .then(result => {
-            //         if (!result) resolve({success: true, message: 'Order added to demand, order not updated'})
-            //         else {
-            //             m.actions.create({
-            //                 order_id:       order.order_id,
-            //                 action:         'Order added to demand',
-            //                 demand_line_id: line.line_id,
-            //                 user_id:        user_id
-            //             })
-            //             .then(action => resolve({success: true, message: 'Order added to demand'}))
-            //             .catch(err => {
-            //                 console.log(err);
-            //                 resolve({success: true, message: `Order added to demand, error creating action: ${err.message}`});
-            //             })
-            //         };
-            //     })
-            //     .catch(err => reject(err));
-            // })
-            // .catch(err => reject(err));
+            return fn.demands.lines.create({
+                demand_id: demand_id,
+                size_id:   order.size_id,
+                qty:       order.qty,
+                user_id:   user_id,
+                order_id:  order.order_id
+            })
+            .then(demand_line_id => {
+                return order.update({status: 2})
+                .then(result => {
+                    if (!result) resolve(false)
+                    else {
+                        m.actions.create({
+                            order_id:       order.order_id,
+                            action:         'Order added to demand',
+                            demand_line_id: demand_line_id,
+                            user_id:        user_id
+                        })
+                        .then(action => resolve(true))
+                        .catch(err => {
+                            console.log(err);
+                            resolve(false);
+                        })
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
         });
     };
 

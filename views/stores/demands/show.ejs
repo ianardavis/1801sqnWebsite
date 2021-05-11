@@ -21,8 +21,9 @@
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines', count_id: 'line', permission: 'access_demand_lines'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 	   count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line', 	permission: 'access_demand_lines'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'order_actions', count_id: 'action', permission: 'access_actions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 	    count_id: 'note', 	permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -50,10 +51,49 @@
 				<% if (permissions.demand_line_edit) { %></form><% } %>
 			</div>
 		<% } %>
+		<% if (permissions.access_actions) { %>
+			<div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+				<table class='table table-sm table-hover mx-auto w-100'>
+					<thead id='table_header_lines' class="thead-dark">
+						<th class='w-50' onclick="sortTable(0, 'tbl_actions')">Date</th>
+						<th class='w-50' onclick="sortTable(1, 'tbl_actions')">Action</th>
+						<th><i class='fas fa-search'></i></th>
+					</thead>
+					<tbody id="tbl_actions"></tbody>
+				</table>
+			</div>
+		<% } %>
         <%- include(`${partials}/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
         <%- include(`${partials}/notes/modals`) %>
+		<% if (permissions.access_actions) { %>
+			<div id='mdl_action_view' class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Action</h5>
+						</div>
+						<div class="modal-body">
+							<%- include(`${partials}/inputs/display`, {title: 'Action',   	   id: 'action_action'}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Date',     	   id: 'action_createdAt'}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'User',     	   id: 'action_user',     	   link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Location', 	   id: 'action_location', 	   link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Serial #', 	   id: 'action_serial',   	   link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'NSN',      	   id: 'action_nsn',      	   link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Issue',    	   id: 'action_issue',    	   link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Order',   	   id: 'action_order',	  	   link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Loancard', 	   id: 'action_loancard', 	   link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Loancard Line', id: 'action_loancard_line', link: true}) %>
+						</div>
+						<div class="modal-footer">
+							<p class='me-auto'>ID: <span id='action_id'></span></p>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% } %>
 		<% if (permissions.access_demand_lines) { %>
 			<div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
@@ -139,5 +179,9 @@
 		<script src="/js/stores/serials/list.js"></script>
 		<script src="/js/stores/demands/show/lines/edit.js"></script>
 	<% } %>
+<% } %>
+<% if (permissions.access_actions) { %>
+	<script src="/js/stores/demands/show/actions/view.js"></script>
+	<script async>getActions()</script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

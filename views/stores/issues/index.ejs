@@ -1,73 +1,126 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
-<%- include(`${partials}/breadcrumb`, {text: 'Issue'}) %>
-<li class="nav-item">
-	<a class="nav-link" data-bs-toggle="modal" data-bs-target="#mdl_issue_add">
-		<i class="fas fa-plus"></i>
-	</a>
-</li>
+<%- include(`${partials}/breadcrumb`, {text: 'Issues'}) %>
+<%- include(`${partials}/menu/breadcrumb_add`, {permission: 'issue_add', modal: 'issue_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'issues'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class="container">
-	<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
-	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <%- include(`${partials}/tab_head`, {id: 'status_0', count_id: 'status_0', spinner: 'status_0', title: 'Cancelled'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'status_1', count_id: 'status_1', spinner: 'status_1', title: 'Requested'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'status_2', count_id: 'status_2', spinner: 'status_2', title: 'Approved'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'status_3', count_id: 'status_3', spinner: 'status_3', title: 'Ordered'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'status_4', count_id: 'status_4', spinner: 'status_4', title: 'Issued'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'status_5', count_id: 'status_5', spinner: 'status_5', title: 'Returned'}) %>
-    </ul>
-    <div class="tab-content pt-3" id="myTabContent">
-		<%- include(`${partials}/tables/issue_tab_body`, {status: '0'}) %>
-		<%- include(`${partials}/tables/issue_tab_body`, {status: '1'}) %>
-		<%- include(`${partials}/tables/issue_tab_body`, {status: '2'}) %>
-		<%- include(`${partials}/tables/issue_tab_body`, {status: '3'}) %>
-		<%- include(`${partials}/tables/issue_tab_body`, {status: '4'}) %>
-		<%- include(`${partials}/tables/issue_tab_body`, {status: '5'}) %>
-	</div>
-	<div id="div_modals">
-		<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Add Issue</h5>
-						<a class='btn btn-primary float-end' id="reload_add"><i class='fas fa-redo'></i></a>
-					</div>
-					<form class="modal-body" id='form_line'>
-						<%- include(`${partials}/inputs/select`, 	 {title: 'User',     	 id: 'sel_users_add', name: 'line[user_id_issue]', spinner_id: 'users_add', reload_id: 'reload_users_add', required: true}) %>
-						<div id="div_items"   class='hidden'>
-							<%- include(`${partials}/inputs/text`,   {title: 'Search Items', id: 'inp_item',  autocomplete: 'off'}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items', size: '10', spinner_id: 'items'}) %>
-						</div>
-						<div id="div_sizes"   class='hidden'>
-							<%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size',  autocomplete: 'off'}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Size',         id: 'sel_sizes', name: 'line[size_id]', required: true, size: '10', spinner_id: 'sizes'}) %>
-						</div>
-						<div id="div_details" class='hidden'>
-							<%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: '_qty',	  name: 'line[_qty]',    required: true, value: '1', min: '1'}) %>
-							<button class="btn btn-success w-100">Add</button>
-						</div>
-					</form>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-					</div>
-				</div>
+	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
+		Filter
+	</button>
+	<div class="collapse" id="col-filter">
+		<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
+		<h5 class='text-start'>Status:</h5>
+		<div class="row">
+			<div class="col-6 col-sm-4">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: 'status=0', colour: 'secondary', classes: ['status']}) %>
+			</div>
+			<div class="col-6 col-sm-4">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: 'status=1', colour: 'warning', 	classes: ['status'], checked: true}) %>
+			</div>
+			<div class="col-6 col-sm-4">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: 'status=2', colour: 'success', 	classes: ['status'], checked: true}) %>
+			</div>
+			<div class="col-6 col-sm-6">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_3', value: 'status=3', colour: 'primary', 	classes: ['status']}) %>
+			</div>
+			<div class="col-6 col-sm-6">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_4', value: 'status=4', colour: 'secondary', classes: ['status']}) %>
 			</div>
 		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<h5 class='text-start'>Date From:</h5>
+				<input type="date" class='form-control' id='createdAt_from'>
+			</div>
+			<div class="col-sm-6">
+				<h5 class='text-start'>Date To:</h5>
+				<input type="date" class='form-control' id='createdAt_to'>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<h5 class='text-start'>Item:</h5>
+				<input type="text" class='form-control' id='item'>
+			</div>
+			<div class="col-sm-6">
+				<h5 class='text-start'>Size:</h5>
+				<input type="text" class='form-control' id='size'>
+			</div>
+		</div>
+	</div>
+	<% if (permissions.issue_edit) { %>
+		<form id='form_issue_edit'>
+		<button class='btn btn-success w-100 mb-1'>Action Selected Issues</button>
+	<% } %>
+		<table class="table table-sm table-hover">
+			<thead class="thead-dark">
+				<th class="w-15" onclick="sortTable(0, 'tbl_issues')">Date</th>
+				<th class="w-20" onclick="sortTable(1, 'tbl_issues')">User</th>
+				<th class="w-20" onclick="sortTable(1, 'tbl_issues')">Item</th>
+				<th class="w-20" onclick="sortTable(2, 'tbl_issues')">Size</th>
+				<th class="w-10" onclick="sortTable(3, 'tbl_issues')">Quantity</th>
+				<th class="w-15" onclick="sortTable(4, 'tbl_issues')">Status</th>
+				<th><i class="fas fa-search"></i></th>
+			</thead>
+			<tbody id="tbl_issues"></tbody>
+		</table>
+	<% if (permissions.issue_edit) { %></form><% } %>
+	<div id="div_modals">
+		<% if (permissions.issue_add) { %>
+			<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">
+				<div class="modal-dialog modal-xl">
+					<form class="modal-content" id='form_issue_add'>
+						<div class="modal-header">
+							<h5 class="modal-title">Add Issue(s)</h5>
+						</div>
+						<div class="modal-body">
+							<button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_users'>Add User(s)</button>
+							<table class="table table-sm table-hover">
+								<thead class="thead-dark">
+									<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Service #</th>
+									<th class="w-60" onclick="sortTable(1, 'tbl_issue_add')">User</th>
+									<th><i class="fas fa-trash-alt"></i></th>
+								</thead>
+								<tbody id="tbl_issue_users_add"></tbody>
+							</table>
+							<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
+							<button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_sizes'>Add Item(s)</button>
+							<table class="table table-sm table-hover">
+								<thead class="thead-dark">
+									<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Item</th>
+									<th class="w-40" onclick="sortTable(1, 'tbl_issue_add')">Size</th>
+									<th class="w-20" onclick="sortTable(2, 'tbl_issue_add')">Quantity</th>
+									<th><i class="fas fa-trash-alt"></i></th>
+								</thead>
+								<tbody id="tbl_issue_sizes_add"></tbody>
+							</table>
+						</div>
+						<div class="modal-footer">
+							<input type="submit" class="btn btn-success w-100" value='Add Issues'>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		<% } %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/addFormListener.js'></script>
-<script src='/js/stores/issues/index/get.js'></script>
 <script src='/js/utils/list/users.js'></script>
-<script src='/js/stores/issues/index/add.js'></script>
 <script src='/js/search/select.js'></script>
 <script src='/js/tabs.js'></script>
-<script>showTab('status_1');</script>
-<% if (permissions.order_add) { %>
-	<script src='/js/stores/issues/index/order.js'></script>
+
+<script src='/js/stores/issues/index/view.js'></script>
+<script async>getIssues()</script>
+
+<% if (permissions.issue_add) { %>
+	<script src="/js/users/select/showWindow.js"></script>
+	<script src="/js/stores/sizes/select/showWindow.js"></script>
+	<script src='/js/stores/issues/index/add.js'></script>
+	<script src='/js/stores/issues/index/issue.js'></script>
 <% } %>
 <% if (permissions.issue_approve) { %>
 	<script src='/js/stores/issues/index/approve.js'></script>
