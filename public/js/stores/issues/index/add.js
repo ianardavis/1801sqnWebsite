@@ -71,7 +71,7 @@ function selectedUsers(users) {
                         text: print_user(user),
                         append: new Hidden({
                             attributes: [
-                                {field: 'name',  value: `issues[users][][${row_count_users}][user_id]`},
+                                {field: 'name',  value: `issues[users][][${row_count_users}][user_id_issue]`},
                                 {field: 'value', value: user.user_id}
                             ]
                         }).e

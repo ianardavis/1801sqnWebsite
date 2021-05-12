@@ -2,6 +2,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     let fn = {};
     require(`${process.env.FUNCS}/allowed`)(m.permissions, fn);
     require(`${process.env.FUNCS}/loancards`)(m, inc, fn);
+    require(`${process.env.FUNCS}/issues`)(m, fn);
     require(`${process.env.FUNCS}/orders`)(m, fn);
     app.get('/issues',           li, pm.get('access_issues',   {allow: true}), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',       li, pm.get('access_issues',   {allow: true}), (req, res) => {
@@ -105,18 +106,27 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
     app.post('/issues',          li, pm.check('issue_add',     {allow: true}), (req, res) => {
-        // create_line(
-        //     {
-        //         ...req.body.line,
-        //         ...{status: (req.allowed ? 2 : 1)}
-        //     },
-        //     req.user.user_id
-        // )
-        // .then(result => res.send(result))
-        // .catch(err => send_error(res, err));
-        console.log(req.body.issues.users);
-        console.log(req.body.issues.sizes);
-        res.send({success: true, message: 'tada'})
+        if      (!req.body.issues)                                             send_error(res, 'No users or sizes entered')
+        else if (!req.body.issues.users || req.body.issues.users.length === 0) send_error(res, 'No users entered')
+        else if (!req.body.issues.sizes || req.body.issues.sizes.length === 0) send_error(res, 'No sizes entered')
+        else {
+            let actions = [];
+            req.body.issues.users.forEach(user => {
+                req.body.issues.sizes.forEach(size => {
+                    actions.push(
+                        fn.issues.create({
+                            ...size,
+                            ...user,
+                            user_id: req.user.user_id,
+                            status: (req.allowed ? 2 : 1)
+                        })
+                    );
+                });
+            });
+            Promise.all(actions)
+            .then(result => res.send({success: true, message: 'Issues added'}))
+            .catch(err => send_error(res, err));
+        };
     });
 
     app.put('/issues',           li, pm.check('issue_edit',    {allow: true}), (req, res) => {
@@ -225,46 +235,6 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         });
     };
 
-    function create_line(line, user_id) {
-        return new Promise((resolve, reject) => {
-            return get_user(line.user_id_issue)
-            .then(user_id_issue => {
-                return get_size(line.size_id)
-                .then(size => {
-                    return m.issues.findOrCreate({
-                        where: {
-                            user_id_issue: user_id_issue,
-                            size_id:       size.size_id,
-                            status:        line.status
-                        },
-                        defaults: {
-                            user_id: user_id,
-                            qty:     line.qty
-                        }
-                    })
-                    .then(([issue, created]) => {
-                        if (created) resolve({success: true, message: 'Issue created'})
-                        else {
-                            return issue.increment('qty', {by: line.qty})
-                            .then(result => {
-                                return create_action(
-                                    `Issue incremented by ${line.qty}`,
-                                    user_id,
-                                    {issue_id: issue.issue_id}
-                                )
-                                .then(action => resolve({success: true, message: 'Existing issue incremented'}))
-                                .catch(err =>   resolve({success: true, message: `Existing issue incremented, error creating action: ${err.message}`}));
-                            })
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
     function decline_line(line, user_id) {
         return new Promise((resolve, reject) => {
             return fn.allowed(user_id, 'issue_approve')
