@@ -1,3 +1,4 @@
+let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Closed'};
 function getOrders() {
     clear_table('orders')
     .then(tbl_orders => {
@@ -9,8 +10,7 @@ function getOrders() {
             query: [query.join('&')]
         })
         .then(function ([orders, options]) {
-            let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Closed'},
-                row_index = 0;
+            let row_index = 0;
             orders.forEach(order => {
                 let row = tbl_orders.insertRow(-1);
                 add_cell(row, table_date(order.createdAt));
@@ -20,7 +20,7 @@ function getOrders() {
                 add_cell(row, {
                     text: order_statuses[order.status] || 'Unknown',
                     ...(
-                        [1, 2].includes(order.status) ?
+                        order.status === 1 ?
                         {
                             classes: ['actions'],
                             data:    [

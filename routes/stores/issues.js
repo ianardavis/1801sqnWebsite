@@ -2,21 +2,17 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     let fn = {};
     require(`${process.env.FUNCS}/allowed`)(m.permissions, fn);
     require(`${process.env.FUNCS}/loancards`)(m, inc, fn);
-    require(`${process.env.FUNCS}/issues`)(m, fn);
     require(`${process.env.FUNCS}/orders`)(m, fn);
+    require(`${process.env.FUNCS}/issues`)(m, fn);
     app.get('/issues',           li, pm.get('access_issues',   {allow: true}), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',       li, pm.get('access_issues',   {allow: true}), (req, res) => {
-        m.issues.findOne({
-            where: {issue_id: req.params.id},
-            attributes: ['issue_id', 'user_id_issue']
-        })
+        fn.issues.get(req.params.id)
         .then(issue => {
-            if      (!issue) res.redirect('/issues')
-            else if (
+            if (
                 !req.allowed &&
                 req.user.user_id !== issue.user_id_issue
-                )            res.redirect('/issues')
-            else             res.render('stores/issues/show');
+                ) res.redirect('/issues')
+            else  res.render('stores/issues/show');
         })
         .catch(err => {
             console.log(err);
@@ -44,20 +40,16 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         .catch(err => send_error(res, err));
     });
     app.get('/get/issue',        li, pm.check('access_issues', {allow: true}), (req, res) => {
-        m.issues.findOne({
-            where: req.query,
-            include: [
+        fn.issues.get(
+            req.query,
+            [
                 inc.size(),
                 inc.user({as: 'user_issue'}),
                 inc.user()
             ]
-        })
+        )
         .then(issue => {
-            if (!issue) send_error(res, 'Issue not found')
-            else if (
-                !req.allowed &&
-                issue.user_id_issue !== req.user.user_id
-            ) send_error(res, 'Permission denied')
+            if (!req.allowed && issue.user_id_issue !== req.user.user_id) send_error(res, 'Permission denied')
             else res.send({success: true,  result: issue});
         })
         .catch(err => send_error(res, err));
@@ -130,82 +122,67 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     });
 
     app.put('/issues',           li, pm.check('issue_edit',    {allow: true}), (req, res) => {
-        let actions = [];
-        req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(decline_line(line, req.user.user_id)));
-        req.body.lines.filter(e => e.status === '2').forEach(line => actions.push(approve_line(line, req.user.user_id)));
-        req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(order_line(  line, req.user.user_id)));
-        actions.push(issue_lines(req.body.lines.filter(e => e.status === '4'), req.user.user_id));
-        Promise.allSettled(actions)
-        .then(results => {
-            if (results.filter(e => e.status === 'rejected').length > 0) {
-                console.log(results);
-                res.send({success: true, message: 'Some lines failed'});
-            } else res.send({success: true, message: 'Lines actioned'});
-        })
-        .catch(err => send_error(res, err));
+        if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) send_error(res, 'No lines submitted')
+        else {
+            let actions = [];
+            req.body.issues.filter(e => e.status === '-1').forEach(issue => {
+                actions.push(
+                    fn.issues.decline({
+                        ...issue,
+                        user_id: req.user.user_id
+                    })
+                );
+            });
+            req.body.issues.filter(e => e.status === '0') .forEach(issue => {
+                actions.push(
+                    fn.issues.cancel({
+                        ...issue,
+                        user_id: req.user.user_id
+                    })
+                );
+            });
+            req.body.issues.filter(e => e.status === '2') .forEach(issue => {
+                actions.push(
+                    fn.issues.approve({
+                        ...issue,
+                        user_id: req.user.user_id
+                    })
+                );
+            });
+            req.body.issues.filter(e => e.status === '3') .forEach(issue => {
+                actions.push(
+                    fn.issues.order({
+                        ...issue,
+                        user_id: req.user.user_id
+                    })
+                );
+            });
+            actions.push(
+                fn.issues.issue({
+                    issues:  req.body.issues.filter(e => e.status === '4'),
+                    user_id: req.user.user_id
+                })
+            );
+            Promise.allSettled(actions)
+            .then(results => {
+                if (results.filter(e => e.status === 'rejected').length > 0) {
+                    console.log(results);
+                    res.send({success: true, message: 'Some lines failed'});
+                } else res.send({success: true, message: 'Lines actioned'});
+            })
+            .catch(err => send_error(res, err));
+        };
     });
 
     app.delete('/issues/:id',    li, pm.check('issue_delete',  {allow: true}), (req, res) => {
-        m.issues.findOne({
-            where:      {issue_id: req.params.id},
-            attributes: ['issue_id', 'status', 'user_id_issue']
+        fn.issues.cancel({
+            issue_id: req.params.id,
+            user_id:  req.user.user_id
         })
-        .then(issue => {
-            if      (!issue)                                                         send_error(res, 'Issue not found')
-            else if (!req.allowed && issue.user_id_issue !== req.user.user_id)       send_error(res, 'Permission denied')
-            else if (issue.status !== 1 && issue.status !== 2 && issue.status !== 3) send_error(res, 'Only requested, approved and ordered lines can be cancelled')
-            else {
-                return issue.update({_status: 0})
-                .then(result => {
-                    if (!result) send_error(res, 'Issue not cancelled')
-                    else {
-                        return m.actions.create({
-                            issue_id: issue.issue_id,
-                            action:   'Issue cancelled',
-                            user_id:  req.user.user_id
-                        })
-                        .then(action => res.send({success: true, message: 'Issue cancelled'}))
-                        .catch(err => {
-                            console.log(err);
-                            res.send({success: true, message: 'Line cancelled. Error creating action'});
-                        });
-                    };
-                })
-                .catch(err => send_error(res, err));
-            };
-        })
+        .then(result => res.send({success: true, message: 'Issue cancelled'}))
         .catch(err => send_error(res, err));
     });
 
-    function get_user(user_id) {
-        return new Promise((resolve, reject) => {
-            return m.users.findOne(
-                {where: {user_id: user_id}},
-                {attributes: ['user_id']}
-            )
-            .then(user => {
-                if (!user) reject(new Error('User not found'))
-                else       resolve(user.user_id);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function get_size(size_id, include = []) {
-        return new Promise((resolve, reject) => {
-            return m.sizes.findOne({
-                where:      {size_id: size_id},
-                include:    include,
-                attributes: ['size_id', 'orderable', 'issueable', 'has_nsns', 'has_serials']
-            })
-            .then(size => {
-                if      (!size)           reject(new Error('Size not found'))
-                else if (!size.issueable) reject(new Error('This size can not issued'))
-                else                      resolve(size);
-            })
-            .catch(err => reject(err));
-
-        });
-    };
     function get_issue(issue_id, include = []) {
         return new Promise((resolve, reject) => {
             return m.issues.findOne({
@@ -235,120 +212,6 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         });
     };
 
-    function decline_line(line, user_id) {
-        return new Promise((resolve, reject) => {
-            return fn.allowed(user_id, 'issue_approve')
-            .then(result => {
-                return get_issue(line.issue_id)
-                .then(issue => {
-                    if (issue._status !== 1) reject(new Error('This issue is not pending approval'))
-                    else {
-                        return issue.update({_status: 0})
-                        .then(result => {
-                            if (!result) reject(new Error('Issue not updated'))
-                            else {
-                                return create_action(
-                                    'Issue declined',
-                                    user_id,
-                                    {issue_id: issue.issue_id}
-                                )
-                                .then(action => resolve({success: true, message: 'Line declined'}))
-                                .catch(err =>   resolve({success: true, message: `Line declined. Error creating action: ${err.message}`}));
-                            };
-                        })
-                        .catch(err => reject(err));
-                    };
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function approve_line(line, user_id) {
-        return new Promise((resolve, reject) => {
-            return fn.allowed(user_id, 'issue_approve')
-            .then(result => {
-                return get_issue(line.issue_id)
-                .then(issue => {
-                    if (issue.status !== 1) reject(new Error('This issue is not pending approval'))
-                    else {
-                        return issue.update({status: 2})
-                        .then(result => {
-                            if (!result) reject(new Error('Issue not updated'))
-                            else {
-                                return create_action(
-                                    'Issue approved',
-                                    user_id,
-                                    {issue_id: issue.issue_id}
-                                )
-                                .then(action => resolve({success: true, message: 'Line approved'}))
-                                .catch(err =>   resolve({success: true, message: `Line approved. Error creating action: ${err.message}`}));
-                            };
-                        })
-                        .catch(err => reject(err));
-                    };
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function order_line(line, user_id) {
-        return new Promise((resolve, reject) => {
-            return fn.allowed(user_id, 'order_add')
-            .then(result => {
-                let include = [inc.size({attributes: ['size_id', 'orderable', 'issueable', 'has_nsns', 'has_serials']})];
-                return get_issue(line.issue_id, include)
-                .then(issue => {
-                    if      (issue.status !== 2)    reject(new Error('Only approved orders can be ordered'))
-                    else if (!issue.size)           reject(new Error('Size not found'))
-                    else if (!issue.size.orderable) reject(new Error('This size can not be ordered'))
-                    else {
-                        return fn.orders.create(
-                            {
-                                size_id: issue.size_id,
-                                qty:     issue.qty
-                            },
-                            user_id,
-                            {
-                                note: ' from issue',
-                                table: {
-                                    column: 'issue_id',
-                                    id:     issue.issue_id
-                                }
-                            }
-                        )
-                        .then(order => {
-                            return issue.update({status: 3})
-                            .then(result => {
-                                if (!result) reject(new Error('Issue not updated'))
-                                else {
-                                    return create_action(
-                                        'Issue ordered',
-                                        user_id,
-                                        {
-                                            issue_id: issue.issue_id,
-                                            order_id: order.order_id,
-                                        }
-                                    )
-                                    .then(action => resolve({success: true, message: 'Order incremented'}))
-                                    .catch(err =>   resolve({success: true, message: `Order incremented. Error creating issue action: ${err.message}`}));
-                                };
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                resolve({success: true, message: `Order incremented. Error updating issue: ${err.message}`});
-                            });
-                        })
-                        .catch(err => reject(err));
-                    };
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-
     function get_issues(lines) {
         return new Promise((resolve, reject) => {
             let actions = [];
@@ -370,8 +233,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         )
                         .then(issue => {
                             if      (!issue.size)                                               reject(new Error('Size not found'))
-                            else if (issue.size.has_nsns && !line.nsn_id)                       reject(new Error('No NSN specified'))
-                            else if (issue.size.has_nsns && issue.size.nsns.length === 0)       reject(new Error('NSN not found'))
+                            else if (issue.size.has_nsns    && !line.nsn_id)                    reject(new Error('No NSN specified'))
+                            else if (issue.size.has_nsns    && issue.size.nsns.length === 0)    reject(new Error('NSN not found'))
                             else if (issue.size.has_serials && !line.serial_id)                 reject(new Error('No Serial # specified'))
                             else if (issue.size.has_serials && issue.size.serials.length === 0) reject(new Error('Serial # not found'))
                             else                                                                resolve(issue);

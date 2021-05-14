@@ -7,7 +7,6 @@ function addEditSelect() {
         })
         .then(function ([order, options]) {
             if (order.status === 1) {
-                let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Closed'};
                 cell.innerHTML = '';
                 cell.appendChild(new Hidden({
                     attributes: [
@@ -42,79 +41,83 @@ function addEditSelect() {
 };
 function addReceiptOptions() {
     let div_details = document.querySelector(`#order_${this.dataset.id}_details`);
-    div_details.innerHTML = '';
-    if (div_details && this.value === '3') {
-        get({
-            table: 'order',
-            query: [`order_id=${this.dataset.id}`],
-            index: this.dataset.index
-        })
-        .then(function ([order, options]) {
-            if (order.size.has_serials) {
-                get({
-                    table: 'serials',
-                    query: [`size_id=${order.size_id}`]
-                })
-                .then(function ([serials, options]) {
-                    let locations = document.createElement('datalist'),
-                    locs = [];
-                    locations.setAttribute('id', `locations_${order.order_id}`);
-                    serials.forEach(serial => {
-                        if (locs.includes(serial.location.location)) {
-                            locations.appendChild(new Option({value: serial.location.location}).e);
-                            locs.push(serial.location.location);
+    if (div_details) {
+        div_details.innerHTML = '';
+        if (this.value === '3') {
+            get({
+                table: 'order',
+                query: [`order_id=${this.dataset.id}`],
+                index: this.dataset.index
+            })
+            .then(function ([order, options]) {
+                if (order.status === 2) {
+                    if (order.size.has_serials) {
+                        get({
+                            table: 'serials',
+                            query: [`size_id=${order.size_id}`]
+                        })
+                        .then(function ([serials, options]) {
+                            let locations = document.createElement('datalist'),
+                            locs = [];
+                            locations.setAttribute('id', `locations_${order.order_id}`);
+                            serials.forEach(serial => {
+                                if (locs.includes(serial.location.location)) {
+                                    locations.appendChild(new Option({value: serial.location.location}).e);
+                                    locs.push(serial.location.location);
+                                };
+                            });
+                            div_details.appendChild(locations);
+                        });
+                        for (let i = 0; i < order.qty; i++) {
+                            div_details.appendChild(new Input({
+                                small: true,
+                                attributes: [
+                                    {field: 'Placeholder', value: `Serial # ${i + 1}`},
+                                    {field: 'name',        value: `orders[][${options.index}][serials][][${i}][serial]`}
+                                ]
+                            }).e);
+                            div_details.appendChild(new Input({
+                                small: true,
+                                attributes: [
+                                    {field: 'Placeholder', value: `Location ${i + 1}`},
+                                    {field: 'name',        value: `orders[][${options.index}][serials][][${i}][location]`},
+                                    {field: 'list',        value: `locations_${order.order_id}`}
+                                ]
+                            }).e);
                         };
-                    });
-                    div_details.appendChild(locations);
-                });
-                for (let i = 0; i < order.qty; i++) {
-                    div_details.appendChild(new Input({
-                        small: true,
-                        attributes: [
-                            {field: 'Placeholder', value: `Serial # ${i + 1}`},
-                            {field: 'name',        value: `orders[][${options.index}][serials][][${i}][serial]`}
-                        ]
-                    }).e);
-                    div_details.appendChild(new Input({
-                        small: true,
-                        attributes: [
-                            {field: 'Placeholder', value: `Location ${i + 1}`},
-                            {field: 'name',        value: `orders[][${options.index}][serials][][${i}][location]`},
-                            {field: 'list',        value: `locations_${order.order_id}`}
-                        ]
-                    }).e);
+                    } else {
+                        get({
+                            table: 'stocks',
+                            query: [`size_id=${order.size_id}`]
+                        })
+                        .then(function ([stocks, options]) {
+                            let locations = document.createElement('datalist');
+                            locations.setAttribute('id', `locations_${order.order_id}`);
+                            stocks.forEach(stock => {
+                                locations.appendChild(new Option({value: stock.location.location}).e)
+                            });
+                            div_details.appendChild(locations);
+                        });
+                        div_details.appendChild(new Input({
+                            small: true,
+                            attributes: [
+                                {field: 'Placeholder', value: 'Location'},
+                                {field: 'name',        value: `orders[][${options.index}][location]`},
+                                {field: 'list',        value: `locations_${order.order_id}`}
+                            ]
+                        }).e);
+                        div_details.appendChild(new Input({
+                            small: true,
+                            attributes: [
+                                {field: 'value',       value: order.qty},
+                                {field: 'Placeholder', value: 'Quantity'},
+                                {field: 'name',        value: `orders[][${options.index}][qty]`}
+                            ]
+                        }).e);
+                    };
                 };
-            } else {
-                get({
-                    table: 'stocks',
-                    query: [`size_id=${order.size_id}`]
-                })
-                .then(function ([stocks, options]) {
-                    let locations = document.createElement('datalist');
-                    locations.setAttribute('id', `locations_${order.order_id}`);
-                    stocks.forEach(stock => {
-                        locations.appendChild(new Option({value: stock.location.location}).e)
-                    });
-                    div_details.appendChild(locations);
-                });
-                div_details.appendChild(new Input({
-                    small: true,
-                    attributes: [
-                        {field: 'Placeholder', value: 'Location'},
-                        {field: 'name',        value: `orders[][${options.index}][location]`},
-                        {field: 'list',        value: `locations_${order.order_id}`}
-                    ]
-                }).e);
-                div_details.appendChild(new Input({
-                    small: true,
-                    attributes: [
-                        {field: 'value',       value: order.qty},
-                        {field: 'Placeholder', value: 'Quantity'},
-                        {field: 'name',        value: `orders[][${options.index}][qty]`}
-                    ]
-                }).e);
-            };
-        });
+            });
+        };
     };
 };
 window.addEventListener('load', function () {

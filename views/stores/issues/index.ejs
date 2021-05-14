@@ -22,11 +22,14 @@
 			<div class="col-6 col-sm-4">
 				<%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: 'status=2', colour: 'success', 	classes: ['status'], checked: true}) %>
 			</div>
-			<div class="col-6 col-sm-6">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_3', value: 'status=3', colour: 'primary', 	classes: ['status']}) %>
+			<div class="col-6 col-sm-4">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: 'status=3', colour: 'primary', 	classes: ['status'], checked: true}) %>
 			</div>
-			<div class="col-6 col-sm-6">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_4', value: 'status=4', colour: 'secondary', classes: ['status']}) %>
+			<div class="col-6 col-sm-4">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: 'status=4', colour: 'info', 		classes: ['status']}) %>
+			</div>
+			<div class="col-6 col-sm-4">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: 'status=5', colour: 'secondary', classes: ['status']}) %>
 			</div>
 		</div>
 		<div class="row">
@@ -114,22 +117,24 @@
 <script src='/js/tabs.js'></script>
 
 <script src='/js/stores/issues/index/view.js'></script>
-<script async>getIssues()</script>
 
 <% if (permissions.issue_add) { %>
 	<script src="/js/users/select/showWindow.js"></script>
 	<script src="/js/stores/sizes/select/showWindow.js"></script>
 	<script src='/js/stores/issues/index/add.js'></script>
-	<script src='/js/stores/issues/index/issue.js'></script>
 <% } %>
-<% if (permissions.issue_approve) { %>
-	<script src='/js/stores/issues/index/approve.js'></script>
+<% if (permissions.issue_edit) { %>
+	<script src='/js/stores/issues/index/edit.js'></script>
+	<% if (permissions.issue_add) { %>
+		<script src='/js/stores/issues/index/edit_approve.js'></script>
+	<% } %>
+	<% if (permissions.order_add) { %>
+		<script src='/js/stores/issues/index/edit_order.js'></script>
+	<% } %>
+	<% if (permissions.loancard_line_add) { %>
+		<script src='/js/stores/issues/index/edit_issue.js'></script>
+	<% } %>
 <% } %>
-<% if (permissions.loancard_line_add) { %>
-	<script src='/js/utils/list/nsns.js'></script>
-	<script src='/js/utils/list/serials.js'></script>
-	<script src='/js/utils/list/stocks.js'></script>
-	<script src='/js/stores/issues/index/issue.js'></script>
-<% } %>
+<script async>getIssues()</script>
 <script async>getUsers()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

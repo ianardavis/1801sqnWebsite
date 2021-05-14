@@ -1,5 +1,5 @@
 module.exports = function(m, fn) {
-    fn.allowed = function (user_id, permission) {
+    fn.allowed = function (user_id, permission, allow = false) {
         return new Promise((resolve, reject) => {
             return m.findOne({
                 where: {
@@ -9,8 +9,10 @@ module.exports = function(m, fn) {
                 attributes: ['permission']
             })
             .then(permission => {
-                if (!permission) reject(new Error(`Permission denied: ${permission}`))
-                else             resolve(true);
+                if (!permission) {
+                    if (allow) resolve(false)
+                    else reject(new Error(`Permission denied: ${permission}`))
+                } else resolve(true);
             })
             .catch(err => reject(err));
         });

@@ -141,7 +141,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     };
     function get_orders(lines) {
         return new Promise((resolve, reject) => {
-            let actions = [];
+            let actions = [], suppliers = [];
             lines.forEach(line => {
                 actions.push(
                     new Promise((resolve, reject) => {
@@ -160,24 +160,19 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                             else if (order.status !== 1)   reject(new Error('Only placed orders can be demanded'))
                             else if (!order.size)          reject(new Error('Size not found'))
                             else if (!order.size.supplier) reject(new Error('Supplier not found'))
-                            else                           resolve(order);
+                            else {
+                                if (suppliers.find(e => e.supplier_id === order.size.supplier_id)) {
+                                    suppliers.find(e => e.supplier_id === order.size.supplier_id).orders.push(order);
+                                } else suppliers.push({supplier_id: order.size.supplier_id, orders: [order]});
+                                resolve(true);
+                            };
                         })
                         .catch(err => reject(err));
                     })
                 );
             });
             Promise.allSettled(actions)
-            .then(results => {
-                let suppliers = [];
-                results
-                .filter(e => e.status === 'fulfilled')
-                .forEach(order => {
-                    if (suppliers.find(e => e.supplier_id === order.value.size.supplier_id)) {
-                        suppliers.find(e => e.supplier_id === order.value.size.supplier_id).orders.push(order.value)
-                    } else suppliers.push({supplier_id: order.value.size.supplier_id, orders: [order.value]});
-                });
-                resolve(suppliers);
-            })
+            .then(results => resolve(suppliers))
             .catch(err => reject(err));
         });
     };

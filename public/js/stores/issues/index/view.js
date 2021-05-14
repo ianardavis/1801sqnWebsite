@@ -1,3 +1,4 @@
+let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function getIssues() {
     clear_table('issues')
     .then(tbl_issues => {
@@ -10,8 +11,7 @@ function getIssues() {
             query: [query.join('&'), sel_users.value]
         })
         .then(function ([issues, options]) {
-            let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Issued', '4': 'Returned'},
-                row_index = 0;
+            let row_index = 0;
             issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, table_date(issue.createdAt));
