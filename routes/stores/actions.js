@@ -9,7 +9,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     });
     app.get('/get/action',  li, pm.check('access_actions', {send: true}), (req, res) => {
         m.actions.findOne({
-            where:   req.query,
+            where: req.query,
             include: [
                 inc.issue(),
                 inc.order(),
@@ -18,8 +18,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 inc.location(),
                 inc.nsn(),
                 inc.demand(),
-                inc.demand_lines({as: 'demand_line'}),
-                inc.loancard_lines({as: 'loancard_line'}),
+                inc.demand_line(),
+                inc.loancard(),
+                inc.loancard_line(),
                 inc.user()
             ]
         })

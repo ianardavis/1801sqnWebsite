@@ -61,10 +61,22 @@
 			<thead class="thead-dark">
 				<th class="w-15" onclick="sortTable(0, 'tbl_issues')">Date</th>
 				<th class="w-20" onclick="sortTable(1, 'tbl_issues')">User</th>
-				<th class="w-20" onclick="sortTable(1, 'tbl_issues')">Item</th>
-				<th class="w-20" onclick="sortTable(2, 'tbl_issues')">Size</th>
-				<th class="w-10" onclick="sortTable(3, 'tbl_issues')">Quantity</th>
-				<th class="w-15" onclick="sortTable(4, 'tbl_issues')">Status</th>
+				<th class="w-20" onclick="sortTable(2, 'tbl_issues')">Item</th>
+				<th class="w-20" onclick="sortTable(3, 'tbl_issues')">Size</th>
+				<th class="w-10" onclick="sortTable(4, 'tbl_issues')">Quantity</th>
+				<th class="w-15">
+					<% if (permissions.issue_edit) { %>
+						<select id="sel_all" class='form-select'>
+							<option>Select All</option>
+							<option value="-1">Decline</option>
+							<option value="0">Cancel</option>
+							<option value="2">Approve</option>
+							<option value="3">Order</option>
+							<option value="4">Issue</option>
+						</select>
+					<% } %>
+					Status
+				</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>
 			<tbody id="tbl_issues"></tbody>

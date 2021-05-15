@@ -21,14 +21,14 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'user_issue', title: 'For',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'item_name',	 title: 'Item', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'size_desc',	 title: 'Size', link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_qty',	 	 title: 'Quantity'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'createdAt',	 title: 'Date Raised'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'updatedAt',	 title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_status',  	 title: 'Status'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user', 		 title: 'By',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_user_issue', title: 'For',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_item',	   title: 'Item', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_size',	   title: 'Size', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_qty',	 	   title: 'Quantity'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_createdAt',  title: 'Date Raised'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_updatedAt',  title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_status',     title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'issue_user', 	   title: 'By',   link: true}) %>
 		</div>
 		<% if (permissions.access_actions) { %>
 			<div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">

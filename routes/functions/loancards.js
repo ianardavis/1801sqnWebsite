@@ -1,17 +1,15 @@
 module.exports = function (m, inc, fn) {
-    fn.loancards = {
-        lines: {}
-    };
-    fn.loancards.createPDF  = function (loancard_id) {
+    fn.loancards = {lines: {}};
+    fn.loancards.createPDF = function (loancard_id) {
         return new Promise((resolve, reject) => {
             m.loancards.findOne({
-                attributes: ['loancard_id', '_status', 'createdAt'],
+                attributes: ['loancard_id', 'status', 'createdAt'],
                 where:      {loancard_id: loancard_id},
                 include: [
                     inc.users({as: 'user_loancard'}),
                     inc.users({as: 'user'}),
                     inc.loancard_lines({
-                        where: {_status: 2},
+                        where: {status: 2},
                         include: [
                             inc.serials({as: 'serial'}),
                             inc.nsns(   {as: 'nsn'}),
@@ -83,11 +81,11 @@ module.exports = function (m, inc, fn) {
                 const fs  = require('fs'),
                       PDF = require('pdfkit');
                 try {
-                    let file        = `${loancard.loancard_id} - ${loancard.user_loancard._name}.pdf`,
+                    let file        = `${loancard.loancard_id} - ${loancard.user_loancard.name}.pdf`,
                         docMetadata = {},
                         writeStream = fs.createWriteStream(`${process.env.ROOT}/public/res/loancards/${file}`, {flags: 'wx'});
                     docMetadata.Title         = `Loan Card: ${loancard.loancard_id}`;
-                    docMetadata.Author        = `${loancard.user.rank._rank} ${loancard.user.full_name}`;
+                    docMetadata.Author        = `${loancard.user.rank.rank} ${loancard.user.full_name}`;
                     docMetadata.bufferPages   = true;
                     docMetadata.autoFirstPage = false;
                     const doc = new PDF(docMetadata);
@@ -120,10 +118,10 @@ module.exports = function (m, inc, fn) {
     function addHeader(doc, loancard, offset = 140) {
         doc
         .fontSize(15)
-        .text(`Rank: ${loancard.user_loancard.rank._rank}`,            28, offset + 20)
-        .text(`Surname: ${loancard.user_loancard._name}`,             140, offset + 20)
-        .text(`Initials: ${loancard.user_loancard._ini}`,             415, offset + 20)
-        .text(`Bader/Service #: ${loancard.user_loancard._bader}`,     28, offset + 40)
+        .text(`Rank: ${loancard.user_loancard.rank.rank}`,            28,  offset + 20)
+        .text(`Surname: ${loancard.user_loancard.name}`,              140, offset + 20)
+        .text(`First Name: ${loancard.user_loancard.first_name}`,     415, offset + 20)
+        .text(`Service #: ${loancard.user_loancard.service_number}`,  28,  offset + 40)
         .text(`Date: ${new Date(loancard.createdAt).toDateString()}`, 415, offset + 40)
         .fontSize(10)
         .text('Item',        161.29,  offset + 65)
@@ -160,33 +158,33 @@ module.exports = function (m, inc, fn) {
         };
     };
 
-    fn.loancards.create     = function (options = {}) {
+    fn.loancards.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             return m.loancards.findOrCreate({
                 where: {
                     user_id_loancard: options.user_id_loancard,
-                    _status:          1
+                    status:           1
                 },
                 defaults: {
-                    user_id:   options.user_id,
-                    _date_due: options._date_due || Date.now()
+                    user_id:  options.user_id,
+                    date_due: options.date_due || Date.now()
                 }
             })
-            .then(([loancard, created]) => resolve({success: true, loancard_id: loancard.loancard_id, created: created}))
+            .then(([loancard, created]) => resolve(loancard.loancard_id))
             .catch(err => reject(err));
         });
     };
 
     function check_nsn(size, options = {}) {
         return new Promise((resolve, reject) => {
-            if      (!size.has_nsns)  resolve(false)
+            if      (!size.has_nsns)  resolve(null)
             else if (!options.nsn_id) reject(new Error('No NSN ID submitted'))
             else {
                 return m.nsns.findOne({where: {nsn_id: options.nsn_id}})
                 .then(nsn => {
                     if      (!nsn)                         reject(new Error('NSN not found'))
                     else if (nsn.size_id !== size.size_id) reject(new Error('NSN is not for this size'))
-                    else resolve(true);
+                    else resolve(nsn.nsn_id);
                 })
                 .catch(err => reject(err));
             };
@@ -200,80 +198,156 @@ module.exports = function (m, inc, fn) {
                 .then(serial => {
                     if      (!serial)                         reject(new Error('Serial # not found'))
                     else if (serial.size_id !== size.size_id) reject(new Error('Serial # is not for this size'))
-                    else resolve(true);
+                    else resolve(serial);
                 })
                 .catch(err => reject(err));
             };
         });
     };
-    fn.loancards.lines.create = function(line = {}) {
+    function check_stock(size, options = {}) {
         return new Promise((resolve, reject) => {
-            return m.loancards.findOne({
-                where: {loancard_id: line.loancard_id},
-                attributes: ['loancard_id', 'status']
-            })
-            .then(loancard => {
-                if (!loancard) reject(new Error('Loancard not found'))
-                else {
-                    let include = [];
-                    if (line.nsn_id)    include.push(inc.nsns(   {where: {nsn_id:    line.nsn_id},    attributes: ['nsn_id']}));
-                    if (line.serial_id) include.push(inc.serials({where: {serial_id: line.serial_id}, attributes: ['serial_id']}))
-                    return m.sizes.findOne({
-                        where:      {size_id: line.size_id},
-                        attributes: ['size_id', 'has_serials', 'has_nsns'],
-                        include: include
+            if (!options.stock_id) reject(new Error('No Stock ID submitted'))
+            else {
+                return m.stocks.findOne({where: {stock_id: options.stock_id}})
+                .then(stock => {
+                    if      (!stock)                         reject(new Error('Stock record not found'))
+                    else if (stock.size_id !== size.size_id) reject(new Error('Stock record is not for this size'))
+                    else resolve(stock);
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
+    function add_serial(size, nsn_id, loancard_id, options) {
+        return new Promise((resolve, reject) => {
+            return check_serial(size, options)
+            .then(serial => {
+                return m.loancard_lines.create({
+                    loancard_id: loancard_id,
+                    serial_id:   serial.serial_id,
+                    size_id:     size.size_id,
+                    nsn_id:      nsn_id,
+                    qty:         1,
+                    user_id:     options.user_id
+                })
+                .then(loancard_line => {
+                    return serial.update({
+                        issue_id: options.issue_id,
+                        location_id: null
                     })
-                    .then(size => {
-                        if (!size) reject(new Error('Size not found'))
+                    .then(result => {
+                        return m.actions.create({
+                            action:           'Issue added to loancard',
+                            issue_id:         options.issue_id,
+                            loancard_line_id: loancard_line.loancard_line_id,
+                            user_id:          options.user_id
+                        })
+                        .then(action => resolve(loancard_line.loancard_line_id))
+                        .catch(err =>   resolve(loancard_line.loancard_line_id));
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function add_stock(size, nsn_id, loancard_id, options) {
+        return new Promise((resolve, reject) => {
+            return check_stock(size, options)
+            .then(stock => {
+                return m.loancard_lines.findOrCreate({
+                    where: {
+                        loancard_id: loancard_id,
+                        status:      1,
+                        size_id:     size.size_id,
+                        nsn_id:      nsn_id
+                    },
+                    defaults: {
+                        qty:     options.qty,
+                        user_id: options.user_id,
+                    }
+                })
+                .then(([loancard_line, created]) => {
+                    return stock.decrement('qty', {by: options.qty})
+                    .then(result => {
+                        if (created) resolve(loancard_line.loancard_line_id)
                         else {
-                            return check_nsn(size, line)
-                            .then(result => {
-                                if (size.has_serials) {
-                                    return check_serials(size, line)
-                                    .then(result => {
-                                        return m.loancard_lines.create({
-                                            loancard_id: loancard.loancard_id,
-                                            serial_id:   size.serials[0].serial_id,
-                                            size_id:     size.size_id,
-                                            nsn_id:      size.nsns[0].nsn_id || null,
-                                            qty:         1,
-                                            user_id:     line.user_id
-                                        })
-                                        .then(loancard_line => resolve(loancard_line.loancard_line_id))
-                                        .catch(err =>          reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                } else {
-                                    return m.loancard_lines.findOrCreate({
-                                        where: {
-                                            loancard_id: loancard.loancard_id,
-                                            status:      1,
-                                            size_id:     size.size_id,
-                                            nsn_id:      size.nsns[0].nsn_id
-                                        },
-                                        defaults: {
-                                            qty:     line.qty,
-                                            user_id: line.user_id,
-                                        }
-                                    })
-                                    .then(([loancard_line, created]) => {
-                                        if (created) resolve(loancard_line.loancard_line_id)
-                                        else {
-                                            return loancard_line.increment('_qty', {by: line.qty})
-                                            .then(result => resolve(loancard_line.loancard_line_id))
-                                            .catch(err => reject(err));
-                                        };
-                                    })
-                                    .catch(err => reject(err));
-                                };
-                            })
+                            return loancard_line.increment('qty', {by: options.qty})
+                            .then(result => resolve(loancard_line.loancard_line_id))
                             .catch(err => reject(err));
                         };
                     })
-                    .catch(err => reject(err))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    function update_issue(issue_id) {
+        return new Promise((resolve, reject) => {
+            return m.issues.findOne({where: {issue_id: issue_id}})
+            .then(issue => {
+                if (!issue) reject(new Error('Issue not found'))
+                else {
+                    return issue.update({status: 4})
+                    .then(result => {
+                        if (!result) reject(new Error('Issue not updated'))
+                        else resolve(true);
+                    })
+                    .catch(err => reject(err));
                 };
             })
             .catch(err => reject(err));
+        });
+    };
+    fn.loancards.lines.create = function(options = {}) {
+        return new Promise((resolve, reject) => {
+            if (!options.issue_id) reject(new Error('No issue ID submitted'))
+            else {
+                return m.loancards.findOne({
+                    where: {loancard_id: options.loancard_id},
+                    attributes: ['loancard_id', 'status']
+                })
+                .then(loancard => {
+                    if (!loancard) reject(new Error('Loancard not found'))
+                    else {
+                        return m.sizes.findOne({
+                            where:      {size_id: options.size_id},
+                            attributes: ['size_id', 'has_serials', 'has_nsns']
+                        })
+                        .then(size => {
+                            if (!size) reject(new Error('Size not found'))
+                            else {
+                                return check_nsn(size, options)
+                                .then(nsn_id => {
+                                    if (size.has_serials) {
+                                        return add_serial(size, nsn_id, loancard.loancard_id, options)
+                                        .then(loancard_line_id => {
+                                            return update_issue(options.issue_id)
+                                            .then(result => resolve(loancard_line_id))
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    } else {
+                                        return add_stock(size, nsn_id, loancard.loancard_id, options)
+                                        .then(loancard_line_id => {
+                                            return update_issue(options.issue_id)
+                                            .then(result => resolve(loancard_line_id))
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    };
+                                })
+                                .catch(err => reject(err));
+                            };
+                        })
+                        .catch(err => reject(err))
+                    };
+                })
+                .catch(err => reject(err));
+            };
         })
     };
 };

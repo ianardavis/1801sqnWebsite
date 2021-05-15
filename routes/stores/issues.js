@@ -6,7 +6,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     require(`${process.env.FUNCS}/issues`)(m, fn);
     app.get('/issues',           li, pm.get('access_issues',   {allow: true}), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',       li, pm.get('access_issues',   {allow: true}), (req, res) => {
-        fn.issues.get(req.params.id)
+        fn.issues.get({issue_id: req.params.id})
         .then(issue => {
             if (
                 !req.allowed &&

@@ -34,11 +34,23 @@ module.exports = (inc, m) => {
             as:    options.as || 'lines'
         };
     };
+    inc.loancard_line = (options = {}) => {
+        return {
+            model: m.loancard_lines,
+            as:    options.as || 'loancard_line'
+        };
+    };
     inc.loancard = (options = {}) => {
         return {
             model: m.loancards,
             include: options.include || [],
             as:    options.as || 'loancard'
+        };
+    };
+    inc.demand_line = (options = {}) => {
+        return {
+            model: m.demand_lines,
+            as:    options.as || 'demand_line'
         };
     };
     inc.demand_lines = (options = {}) => {

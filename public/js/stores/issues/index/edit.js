@@ -24,6 +24,7 @@ function addEditSelect() {
                         {field: 'data-id',    value: issue.issue_id},
                         {field: 'data-index', value: cell.dataset.index}
                     ],
+                    classes: ['issue_action'],
                     small: true,
                     options: options
                 }).e
@@ -41,7 +42,17 @@ function addEditSelect() {
         })
     });
 };
+function select_all() {
+    if (this.value !== 'Select All') {
+        document.querySelectorAll('.issue_action').forEach(select => {
+            if (select.innerHTML.indexOf(`value="${this.value}"`) !== -1) {
+                if (!select.value) select.value = String(this.value)
+            };
+        });
+    };
+};
 window.addEventListener('load', function () {
+    addListener('sel_all', select_all, 'change');
     addFormListener(
         'issue_edit',
         'PUT',
