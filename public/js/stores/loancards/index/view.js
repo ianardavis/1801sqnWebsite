@@ -42,11 +42,10 @@ function getUsers() {
         append: '_loancard'
     })  
 };
-addReloadListener(loadGetLoancards);
+addReloadListener(getLoancards);
 window.addEventListener('load', function () {
-    addListener('reload_users', function () {});
-    addListener('sel_status', loadGetLoancards)
-    document.querySelector('#sel_status').addEventListener('change', loadGetLoancards);
-    document.querySelector('#sel_users') .addEventListener('change', loadGetLoancards);
     getUsers();
+    addListener('reload_users', function () {});
+    addListener('sel_status', getLoancards, 'change');
+    addListener('sel_users',  getLoancards, 'change');
 });
