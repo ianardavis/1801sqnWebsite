@@ -46,16 +46,16 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-			<%- include(`${partials}/inputs/display`, {id: 'user_loancard', title: 'User',  link: true}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'createdAt', 	title: 'Date'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'updatedAt', 	title: 'Last Updated'}) %>
-			<%- include(`${partials}/inputs/display`, {id: '_status',   	title: 'Status'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'file',   		title: 'Filename'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'user',			title: 'Raised By', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_user_loancard', title: 'User',  link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_createdAt', 	 title: 'Date'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', 	 title: 'Last Updated'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_status',   	 title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_filename',  	 title: 'Filename'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_user',			 title: 'Raised By', link: true}) %>
 		</div>
 		<% if (permissions.access_loancard_lines) { %>
 			<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-				<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Pending'}, {value: '_status=2', text: 'Open'}, {value: '_status=3', text: 'Received'}]}) %>
+				<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Pending'}, {value: 'status=2', text: 'Open'}, {value: 'status=3', text: 'Returned'}]}) %>
 				<% if (permissions.loancard_line_edit) { %><form id='form_action'><% } %>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
@@ -82,21 +82,12 @@
 							<span id="span_view_buttons" class="float-end"></span>
 						</div>
 						<div class="modal-body">
-							<ul class="nav nav-tabs" role="tablist">
-								<%- include(`${partials}/tab_head`, {id: 'loancard_line', 	   	 title: 'Details', spinner: 'loancard_line_view',  active: true}) %>
-								<%- include(`${partials}/tab_head`, {id: 'loancard_lines-notes', title: 'Notes',   spinner: 'loancard_line_notes', count_id: 'loancard_lines_note', permission: 'access_notes'}) %>
-							</ul>
-							<div class="tab-content pt-3" id="myTabContent">
-								<div class="tab-pane fade active show" id="loancard_line" role="tabpanel" aria-labelledby="loancard_line-tab">
-									<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item_view', link: true}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size_view', link: true}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Quantity', 	  id: 'line_qty_view'}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user_view', link: true}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Raised',	  	  id: 'line_createdAt_view'}) %>
-									<%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt_view'}) %>
-								</div>
-								<%- include(`${partials}/notes/line_note_table`, {line: `loancard_lines`}) %>
-							</div>
+							<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item', link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size', link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Quantity', 	  id: 'line_qty'}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user', link: true}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Raised',	  	  id: 'line_createdAt'}) %>
+							<%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt'}) %>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -113,8 +104,8 @@
 <script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
 
-<script src="/js/stores/loancards/show/get.js"></script>
-<script src="/js/download.js"></script>
+<script src="/js/stores/loancards/show/view.js"></script>
+<!-- <script src="/js/download.js"></script> -->
 <script async>getLoancard()</script>
 
 <% if (permissions.loancard_edit) { %>
@@ -122,7 +113,7 @@
 	<script async>setButtons()</script>
 <% } %>
 <% if (permissions.access_loancard_lines) { %>
-	<script src="/js/stores/loancards/show/lines/get.js"></script>
+	<script src="/js/stores/loancards/show/lines/view.js"></script>
 	<script async>getLines()</script>
 	<% if (permissions.access_notes) { %>
 		<script>

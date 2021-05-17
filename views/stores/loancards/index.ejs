@@ -5,7 +5,7 @@
 <%- include(`${partials}/spinner`, {id: 'loancards'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {title: 'User',   id: 'sel_users',	 spinner: true, spinner_id: 'users', reload_id: 'reload_users'}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'User',   id: 'sel_users',	 spinner_id: 'users', reload_id: 'reload_users'}) %>
 	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All'}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft', selected: true}, {value: 'status=2', text: 'Complete'}, {value: 'status=3', text: 'Closed'}]}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
