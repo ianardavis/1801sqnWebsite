@@ -118,7 +118,7 @@
 	<% if (permissions.access_notes) { %>
 		<script>
             set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-source', value: 'line_view'});
-			$('#mdl_line_view').on('show.bs.modal', function (event) {
+			modalOnShow('line_view', function (event) {
 				set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-_table', value: 'loancard_lines'});
 				set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-_id',    value: event.relatedTarget.dataset.loancard_line_id});
 				getLineNotes({
@@ -126,7 +126,7 @@
 					table: 	 'loancard_lines',
 					id:		 event.relatedTarget.dataset.loancard_line_id
 				})
-			});
+			})
 		</script>
 	<% } %>
 	<% if (permissions.loancard_line_edit) { %>
