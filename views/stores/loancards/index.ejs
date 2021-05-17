@@ -6,7 +6,7 @@
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
 	<%- include(`${partials}/inputs/select`, {title: 'User',   id: 'sel_users',	 spinner: true, spinner_id: 'users', reload_id: 'reload_users'}) %>
-	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All'}, {value: '_status=0', text: 'Cancelled'}, {value: '_status=1', text: 'Draft', selected: true}, {value: '_status=2', text: 'Complete'}, {value: '_status=3', text: 'Closed'}]}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All'}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft', selected: true}, {value: 'status=2', text: 'Complete'}, {value: 'status=3', text: 'Closed'}]}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-30" onclick="sortTable(0, 'tbl_loancards')">Date</th>
@@ -19,13 +19,8 @@
 	</table>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/stores/loancards/index/getLoancards.js'></script>
+<script src='/js/stores/loancards/index/view.js'></script>
 <script src='/js/utils/list/users.js'></script>
 <script async>listUsers({blank: true, blank_opt: {text: 'All'}, append: '_loancard'})</script>
 <script async>loadGetLoancards()</script>
-<script>
-	window.addEventListener('load', function () {
-		document.querySelector('#reload_users').addEventListener('click', function () {listUsers({blank: true, blank_opt: {text: 'All'}})});
-	});
-</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>
