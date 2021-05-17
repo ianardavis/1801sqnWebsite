@@ -6,9 +6,7 @@ var express  = require('express'),
     bb       = require('express-busboy'),
     memStore = require('memorystore')(session);
 require('dotenv').config();
-if (!process.env.NODE_ENV) {
-    process.env.NODE_ENV = 'development';
-};
+if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
 let port_check = require(`${process.env.ROOT}/fn/port_check`);
 port_check()
 .then(port => {
