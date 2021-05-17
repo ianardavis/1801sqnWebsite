@@ -220,9 +220,9 @@ module.exports = function (m, fn) {
                             else if (_issue.size.has_nsns    && !issue.nsn_id)   reject(new Error('No NSN specified'))
                             else if (_issue.size.has_serials && !line.serial_id) reject(new Error('No Serial # specified'))
                             else {
-                                if (users.find(e => e.user_id === issue.user_id_issue)) {
-                                    users.find(e => e.user_id === issue.user_id_issue).issues.push(issue);
-                                } else users.push({user_id: issue.user_id_issue, issues: [issue]});
+                                if (users.find(e => e.user_id === _issue.user_id_issue)) {
+                                    users.find(e => e.user_id === _issue.user_id_issue).issues.push(issue);
+                                } else users.push({user_id: _issue.user_id_issue, issues: [issue]});
                                 resolve(true);
                             };
                         })
@@ -232,7 +232,7 @@ module.exports = function (m, fn) {
             });
             return Promise.allSettled(actions)
             .then(results => {
-                if (results.filter(e => e.status === 'fulfilled').length > 0) resolve(true)
+                if (results.filter(e => e.status === 'fulfilled').length > 0) resolve(users)
                 else reject(new Error('No issues to add to loancards'));
             })
             .catch(err => reject(err));
@@ -251,16 +251,13 @@ module.exports = function (m, fn) {
                         .then(loancard_id => {
                             let issue_actions = [];
                             user.issues.forEach(issue => {
+                                console.log(issue)
                                 issue_actions.push(
                                     new Promise((resolve, reject) => {
                                         return fn.loancards.lines.create({
                                             loancard_id: loancard_id,
-                                            issue_id:    issue.issue_id,
-                                            serial_id:   issue.serial_id || null,
-                                            nsn_id:      issue.nsn_id    || null,
-                                            size_id:     issue.size_id,
-                                            qty:         issue.qty       || null,
-                                            user_id:     user_id
+                                            user_id:     user_id,
+                                            ...issue
                                         })
                                         .then(loancard_line_id => resolve(loancard_line_id))
                                         .catch(err => reject(err));
@@ -269,8 +266,9 @@ module.exports = function (m, fn) {
                             });
                             return Promise.allSettled(issue_actions)
                             .then(results => {
+                                console.log(results);
                                 if (results.filter(e => e.status === 'fulfilled').length > 0) resolve(true)
-                                else reject(new Error('ALl lines failed'));
+                                else reject(new Error('All lines failed'));
                             })
                             .catch(err => reject(err));
                         })

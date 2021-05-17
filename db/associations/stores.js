@@ -1,13 +1,13 @@
 module.exports = function (m) {
     m.accounts.belongsTo(      m.suppliers,      {foreignKey: 'account_id',         targetKey: 'account_id'});
-    m.actions.hasOne(          m.issues,         {foreignKey: 'issue_id',           targetKey: 'issue_id',       constraints: false});
-    m.actions.hasOne(          m.orders,         {foreignKey: 'order_id',           targetKey: 'order_id',       constraints: false});
+    m.actions.hasOne(          m.issues,         {foreignKey: 'issue_id',           sourceKey: 'issue_id',       constraints: false});
+    m.actions.hasOne(          m.orders,         {foreignKey: 'order_id',           sourceKey: 'order_id',       constraints: false});
     m.actions.hasOne(          m.stocks,         {foreignKey: 'stock_id',           sourceKey: 'stock_id',       constraints: false});
     m.actions.hasOne(          m.serials,        {foreignKey: 'serial_id',          sourceKey: 'serial_id',      constraints: false});
     m.actions.hasOne(          m.locations,      {foreignKey: 'location_id',        sourceKey: 'location_id',    constraints: false});
     m.actions.hasOne(          m.nsns,           {foreignKey: 'nsn_id',             sourceKey: 'nsn_id',         constraints: false});
-    m.actions.hasOne(          m.loancard_lines, {foreignKey: 'loancard_line_id',   targetKey: 'loancard_line_id', constraints: false});
-    m.actions.hasOne(          m.loancards,      {foreignKey: 'loancard_id',        targetKey: 'loancard_id',      constraints: false});
+    m.actions.hasOne(          m.loancard_lines, {foreignKey: 'loancard_line_id',   sourceKey: 'loancard_line_id', constraints: false});
+    m.actions.hasOne(          m.loancards,      {foreignKey: 'loancard_id',        sourceKey: 'loancard_id',      constraints: false});
     m.actions.hasOne(          m.demand_lines,   {foreignKey: 'demand_line_id',     sourceKey: 'demand_line_id', constraints: false});
     m.actions.hasOne(          m.demands,        {foreignKey: 'demand_id',          sourceKey: 'demand_id',      constraints: false});
     m.adjustments.hasOne(      m.stocks,         {foreignKey: 'stock_id',           sourceKey: 'stock_id',       constraints: false});

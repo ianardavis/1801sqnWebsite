@@ -3,8 +3,8 @@ function getIssues() {
     clear_table('issues')
     .then(tbl_issues => {
         let sel_users = document.querySelector('#sel_users') || {value: ''},
-            statuses = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query = [];
+            statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
+            query     = [];
         statuses.forEach(e => query.push(e.value));
         get({
             table: 'issues',

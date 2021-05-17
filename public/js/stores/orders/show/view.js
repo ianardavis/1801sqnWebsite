@@ -1,10 +1,10 @@
+let statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Received'};
 function showOrder() {
     get({
         table: 'order',
         query: [`order_id=${path[2]}`]
     })
     .then(function ([order, options]) {
-        let statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Received'};
         set_breadcrumb({text: order.order_id});
         set_innerText({id: 'size_desc', text: order.size.size});
         set_innerText({id: 'item_name', text: order.size.item.description});

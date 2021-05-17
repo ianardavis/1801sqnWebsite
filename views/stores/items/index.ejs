@@ -16,7 +16,7 @@
 	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
-			<th class='w-100' onclick='sortTable(0, "tbl_items")'>Description</th>
+			<th class='w-100' onclick='sortTable(0, "tbl_items", this)'>Description</th>
 			<th><i class='fas fa-search'></i></th>
 		</thead>
 		<tbody id='tbl_items'></tbody>

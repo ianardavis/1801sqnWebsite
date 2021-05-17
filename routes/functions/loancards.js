@@ -235,16 +235,10 @@ module.exports = function (m, inc, fn) {
                         issue_id: options.issue_id,
                         location_id: null
                     })
-                    .then(result => {
-                        return m.actions.create({
-                            action:           'Issue added to loancard',
-                            issue_id:         options.issue_id,
-                            loancard_line_id: loancard_line.loancard_line_id,
-                            user_id:          options.user_id
-                        })
-                        .then(action => resolve(loancard_line.loancard_line_id))
-                        .catch(err =>   resolve(loancard_line.loancard_line_id));
-                    })
+                    .then(result => resolve({
+                        serial_id:        serial.serial_id,
+                        loancard_line_id: loancard_line.loancard_line_id
+                    }))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
@@ -271,10 +265,19 @@ module.exports = function (m, inc, fn) {
                 .then(([loancard_line, created]) => {
                     return stock.decrement('qty', {by: options.qty})
                     .then(result => {
-                        if (created) resolve(loancard_line.loancard_line_id)
-                        else {
+                        if (created) {
+                            resolve({
+                                stock_id: stock.stock_id,
+                                loancard_line_id: loancard_line.loancard_line_id
+                            });
+                        }else {
                             return loancard_line.increment('qty', {by: options.qty})
-                            .then(result => resolve(loancard_line.loancard_line_id))
+                            .then(result => {
+                                resolve({
+                                    stock_id:         stock.stock_id,
+                                    loancard_line_id: loancard_line.loancard_line_id
+                                });
+                            })
                             .catch(err => reject(err));
                         };
                     })
@@ -285,36 +288,19 @@ module.exports = function (m, inc, fn) {
             .catch(err => reject(err));
         });
     };
-    function update_issue(issue_id) {
-        return new Promise((resolve, reject) => {
-            return m.issues.findOne({where: {issue_id: issue_id}})
-            .then(issue => {
-                if (!issue) reject(new Error('Issue not found'))
-                else {
-                    return issue.update({status: 4})
-                    .then(result => {
-                        if (!result) reject(new Error('Issue not updated'))
-                        else resolve(true);
-                    })
-                    .catch(err => reject(err));
-                };
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.loancards.lines.create = function(options = {}) {
         return new Promise((resolve, reject) => {
-            if (!options.issue_id) reject(new Error('No issue ID submitted'))
-            else {
+            return m.issues.findOne({where: {issue_id: options.issue_id}})
+            .then(issue => {
                 return m.loancards.findOne({
-                    where: {loancard_id: options.loancard_id},
+                    where:      {loancard_id: options.loancard_id},
                     attributes: ['loancard_id', 'status']
                 })
                 .then(loancard => {
                     if (!loancard) reject(new Error('Loancard not found'))
                     else {
                         return m.sizes.findOne({
-                            where:      {size_id: options.size_id},
+                            where:      {size_id: issue.size_id},
                             attributes: ['size_id', 'has_serials', 'has_nsns']
                         })
                         .then(size => {
@@ -322,23 +308,26 @@ module.exports = function (m, inc, fn) {
                             else {
                                 return check_nsn(size, options)
                                 .then(nsn_id => {
-                                    if (size.has_serials) {
-                                        return add_serial(size, nsn_id, loancard.loancard_id, options)
-                                        .then(loancard_line_id => {
-                                            return update_issue(options.issue_id)
-                                            .then(result => resolve(loancard_line_id))
-                                            .catch(err => reject(err));
+                                    let action = null;
+                                    if (size.has_serials) action = add_serial(size, nsn_id, loancard.loancard_id, options)
+                                    else                  action = add_stock( size, nsn_id, loancard.loancard_id, options);
+                                    return action
+                                    .then(action_details => {
+                                        return issue.update({status: 4})
+                                        .then(result => {
+                                            return m.actions.create({
+                                                action:   'Issue added to loancard',
+                                                user_id:  options.user_id,
+                                                issue_id: issue.issue_id,
+                                                nsn_id:   nsn_id,
+                                                ...action_details
+                                            })
+                                            .then(action => resolve(true))
+                                            .catch(err =>   resolve(false));
                                         })
                                         .catch(err => reject(err));
-                                    } else {
-                                        return add_stock(size, nsn_id, loancard.loancard_id, options)
-                                        .then(loancard_line_id => {
-                                            return update_issue(options.issue_id)
-                                            .then(result => resolve(loancard_line_id))
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    };
+                                    })
+                                    .catch(err => reject(err));
                                 })
                                 .catch(err => reject(err));
                             };
@@ -347,7 +336,8 @@ module.exports = function (m, inc, fn) {
                     };
                 })
                 .catch(err => reject(err));
-            };
+            })
+            .catch(err => reject(err));
         })
     };
 };

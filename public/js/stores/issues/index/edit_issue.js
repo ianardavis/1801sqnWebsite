@@ -14,10 +14,30 @@ function issueOptions() {
             })
             .then(function ([issue, options]) {
                 if ([2,3].includes(issue.status)) {
+                    if (issue.size.has_nsns) {
+                        let nsn_select = new Select({
+                            small: true,
+                            attributes: [
+                                {field: 'name',     value: `issues[][${options.index}][nsn_id]`},
+                                {field: 'required', value: true}
+                            ],
+                            options: [{text: 'Select NSN'}]
+                        }).e;
+                        div_details.appendChild(nsn_select);
+                        get({
+                            table: 'nsns',
+                            query: [`size_id=${issue.size_id}`],
+                            index: options.index
+                        })
+                        .then(function ([nsns, options]) {
+                            nsns.forEach(e => nsn_select.appendChild(new Option({text: print_nsn(e), value: e.nsn_id}).e));
+                        });
+                    };
                     if (issue.size.has_serials) {
                         get({
                             table: 'current_serials',
-                            query: [`size_id=${issue.size_id}`]
+                            query: [`size_id=${issue.size_id}`],
+                            index: options.index
                         })
                         .then(function ([serials, options]) {
                             let serial_options = [{text: 'Select Serial #'}];
@@ -26,38 +46,43 @@ function issueOptions() {
                                 div_details.appendChild(new Select({
                                     small: true,
                                     attributes: [
-                                        {field: 'name', value: `issues[][${options.index}][serials][][${i}][serial_id]`}
+                                        {field: 'name',     value: `issues[][${options.index}][serials][][${i}][serial_id]`},
+                                        {field: 'required', value: true}
                                     ],
                                     options: serial_options
                                 }).e);
                             };
                         });
                     } else {
+                        let stock_select = new Select({
+                            small: true,
+                            attributes: [
+                                {field: 'name',     value: `issues[][${options.index}][stock_id]`},
+                                {field: 'required', value: true}
+                            ],
+                            options: [{text: 'Select Location'}]
+                        }).e;
+                        let stock_qty = new Input({
+                            small: true,
+                            attributes: [
+                                {field: 'type',        value: 'number'},
+                                {field: 'min',         value: '1'},
+                                {field: 'Placeholder', value: 'Quantity'},
+                                {field: 'name',        value: `issues[][${options.index}][qty]`},
+                                {field: 'required',    value: true}
+                            ]
+                        }).e;
+                        div_details.appendChild(stock_select);
+                        div_details.appendChild(stock_qty);
                         get({
                             table: 'stocks',
-                            query: [`size_id=${issue.size_id}`]
+                            query: [`size_id=${issue.size_id}`],
+                            index: options.index
                         })
                         .then(function ([stocks, options]) {
-                            let stock_options = [{text: 'Select Location'}];
-                            stocks.forEach(e => stock_options.push({text: e.location.location, value: e.stock_id}));
-                            div_details.appendChild(new Select({
-                                small: true,
-                                attributes: [
-                                    {field: 'name', value: `issues[][${options.index}][stock_id]`}
-                                ],
-                                options: stock_options
-                            }).e);
-                            div_details.appendChild(new Input({
-                                small: true,
-                                attributes: [
-                                    {field: 'type',        value: 'number'},
-                                    {field: 'max',         value: issue.qty},
-                                    {field: 'min',         value: '1'},
-                                    {field: 'value',       value: issue.qty},
-                                    {field: 'Placeholder', value: 'Quantity'},
-                                    {field: 'name',        value: `issues[][${options.index}][qty]`}
-                                ]
-                            }).e);
+                            stocks.forEach(e => stock_select.appendChild(new Option({text: e.location.location, value: e.stock_id}).e));
+                            stock_qty.setAttribute('max',   issue.qty);
+                            stock_qty.setAttribute('value', issue.qty);
                         });
                     };
                 };

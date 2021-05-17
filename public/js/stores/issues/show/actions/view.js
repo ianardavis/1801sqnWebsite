@@ -26,7 +26,6 @@ function viewAction(action_id) {
         query: [`action_id=${action_id}`]
     })
     .then(function ([action, options]) {
-        console.log(action)
         set_innerText({id: 'action_id',            value: action.action_id});
         set_innerText({id: 'action_action',        value: action.action});
         set_innerText({id: 'action_createdAt',     value: print_date(action.createdAt, true)});
@@ -35,7 +34,7 @@ function viewAction(action_id) {
         set_innerText({id: 'action_serial',        value: (action.serial        ? action.serial.serial     : '')});
         set_innerText({id: 'action_nsn',           value: (action.nsn           ? print_nsn(action.nsn)    : '')});
         set_innerText({id: 'action_order',         value: (action.order         ? action.order_id          : '')});
-        set_innerText({id: 'action_loancard',      value: (action.loancard      ? action.loancard_id       : (action.loancard_line ? action.loancard_id : ''))});
+        set_innerText({id: 'action_loancard',      value: (action.loancard      ? action.loancard_id       : (action.loancard_line ? action.loancard_line.loancard_id : ''))});
         set_innerText({id: 'action_loancard_line', value: (action.loancard_line ? action.loancard_line_id  : '')});
         set_innerText({id: 'action_demand',        value: (action.demand        ? action.demand_id         : '')});
         set_innerText({id: 'action_demand_line',   value: (action.demand_line   ? action.demand_line_id    : '')});

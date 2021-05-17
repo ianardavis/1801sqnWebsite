@@ -1,7 +1,7 @@
 function reset_issue_add() {
     clear_table('issue_users_add');
     clear_table('issue_sizes_add');
-    set_value({id: 'issue_add_qty', value: '0'});
+    set_value({id: 'issue_add_qty', value: '1'});
 };
 let row_count_sizes = 0;
 function selectedSizes(sizes) {
