@@ -39,7 +39,7 @@ port_check()
     require('./routes')(app, m);
     app.listen(port, err => {
         if (err) console.log(err);
-        else console.log(`${new Date()}: Server listening on port: ${port}`);
+        else console.log(`${new Date().toLocaleString()}: Server listening on port: ${port}`);
     });
 })
 .catch(err => console.log(err));
