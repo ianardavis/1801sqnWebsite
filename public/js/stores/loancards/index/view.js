@@ -38,7 +38,9 @@ function getUsers() {
     listUsers({
         select: 'users',
         blank: true,
-        blank_opt: {text: 'All'}})  
+        blank_opt: {text: 'All'},
+        append: '_loancard'
+    })  
 };
 addReloadListener(loadGetLoancards);
 window.addEventListener('load', function () {
@@ -46,4 +48,5 @@ window.addEventListener('load', function () {
     addListener('sel_status', loadGetLoancards)
     document.querySelector('#sel_status').addEventListener('change', loadGetLoancards);
     document.querySelector('#sel_users') .addEventListener('change', loadGetLoancards);
+    getUsers();
 });
