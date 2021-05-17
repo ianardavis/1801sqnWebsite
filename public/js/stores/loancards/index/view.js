@@ -34,9 +34,15 @@ function loadGetLoancards() {
         200
     );
 };
+function getUsers() {
+    listUsers({
+        select: 'users',
+        blank: true,
+        blank_opt: {text: 'All'}})  
+};
 addReloadListener(loadGetLoancards);
 window.addEventListener('load', function () {
-    addListener('reload_users', function () {listUsers({blank: true, blank_opt: {text: 'All'}})});
+    addListener('reload_users', function () {});
     addListener('sel_status', loadGetLoancards)
     document.querySelector('#sel_status').addEventListener('change', loadGetLoancards);
     document.querySelector('#sel_users') .addEventListener('change', loadGetLoancards);
