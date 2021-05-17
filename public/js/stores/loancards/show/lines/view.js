@@ -25,20 +25,20 @@ function getLines() {
                         add_cell(row, {
                             text: line_statuses[line.status],
                             classes: ['actions'],
-                            data: {
+                            data: [{
                                 field: 'line_id',
                                 value: line.line_id
-                            }
+                            }]
                         })
                     } else add_cell(row, {text: line_statuses[line.status]});
                     add_cell(row, {append: 
                         new Link({
                             small: true,
                             modal: 'line_view',
-                            data: {
+                            data: [{
                                 field: `loancard_line_id`,
                                 value: line.line_id
-                            }
+                            }]
                         }).e
                     });
                 } catch (error) {
