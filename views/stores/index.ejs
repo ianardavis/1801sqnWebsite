@@ -3,13 +3,13 @@
 <%- include(`${partials}/head/navbar/close`) %>
 <section>
 	<div class="row container m-auto p-0 menu">
+		<%- include(`${partials}/card`, {id: 'users', 	  href: '/users', 	  title: 'Users', 	  image: 'users'}) %>
 		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
 		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
-		<%- include(`${partials}/card`, {id: 'users', 	  href: '/users', 	  title: 'Users', 	  image: 'users'}) %>
 		<%- include(`${partials}/card`, {id: 'issues', 	  href: '/issues', 	  title: 'Issues', 	  image: 'address-card'}) %>
-		<%- include(`${partials}/card`, {id: 'loancards', href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
 		<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list'}) %>
 		<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream'}) %>
+		<%- include(`${partials}/card`, {id: 'loancards', href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
 		<%- include(`${partials}/card`, {id: 'reports',   href: '/reports',   title: 'Reports',   image: 'chart-pie'}) %>
 		<%- include(`${partials}/card`, {id: 'settings',  href: '/settings',  title: 'Settings',  image: 'cog'}) %>
 	</div>

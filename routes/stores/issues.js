@@ -121,7 +121,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         };
     });
 
-    app.put('/issues',           li, pm.check('issue_edit',    {allow: true}), (req, res) => {
+    app.put('/issues',           li, pm.check('issue_edit'),                   (req, res) => {
         if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) send_error(res, 'No lines submitted')
         else {
             let actions = [];

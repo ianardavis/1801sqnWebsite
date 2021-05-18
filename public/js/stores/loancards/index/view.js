@@ -2,11 +2,13 @@ let loancard_statuses   = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":
 function getLoancards() {
     clear_table('loancards')
     .then(tbl_loancards => {
-        let sel_status = document.querySelector('#sel_status') || {value: ''},
-            sel_users  = document.querySelector('#sel_users')  || {value: ''};
+        let sel_users  = document.querySelector('#sel_users')  || {value: ''},
+            statuses   = document.querySelectorAll("input[type='checkbox']:checked") || [],
+            query      = [];
+            statuses.forEach(e => query.push(e.value));
         get({
             table: 'loancards',
-            query: [sel_status.value, sel_users.value]
+            query: [query.join('&'), sel_users.value]
         })
         .then(function ([loancards, options]) {
             loancards.forEach(loancard => {
@@ -17,7 +19,21 @@ function getLoancards() {
                 add_cell(row, {text: loancard_statuses[loancard.status]});
                 add_cell(row, {append: new Link({href: `/loancards/${loancard.loancard_id}`, small: true}).e});
             });
-        });
+            return tbl_loancards;
+        })
+        .then(tbl_loancards => filter(tbl_loancards));
+    });
+};
+function filter(tbl_loancards) {
+    if (!tbl_loancards) tbl_loancards = document.querySelector('#tbl_loancards');
+    let from = new Date(document.querySelector('#createdAt_from').value).getTime() || '',
+        to   = new Date(document.querySelector('#createdAt_to').value)  .getTime() || '';
+        tbl_loancards.childNodes.forEach(row => {
+        if (
+            (!from || row.childNodes[0].dataset.sort > from) &&
+            (!to   || row.childNodes[0].dataset.sort < to)
+        )    row.classList.remove('hidden')
+        else row.classList.add(   'hidden');
     });
 };
 function getUsers() {
@@ -32,6 +48,12 @@ addReloadListener(getLoancards);
 window.addEventListener('load', function () {
     getUsers();
     addListener('reload_users', getUsers);
-    addListener('sel_status', getLoancards, 'change');
-    addListener('sel_users',  getLoancards, 'change');
+    addListener('status_0',     getLoancards, 'change');
+    addListener('status_1',     getLoancards, 'change');
+    addListener('status_2',     getLoancards, 'change');
+    addListener('status_3',     getLoancards, 'change');
+    addListener('sel_users',    getLoancards, 'change');
+    addListener('createdAt_from', function (){filter()}, 'change');
+    addListener('createdAt_to',   function (){filter()}, 'change');
+    getLoancards();
 });

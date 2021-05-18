@@ -5,8 +5,37 @@
 <%- include(`${partials}/spinner`, {id: 'loancards'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<%- include(`${partials}/inputs/select`, {title: 'User',   id: 'sel_users',	 spinner_id: 'users', reload_id: 'reload_users'}) %>
-	<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All'}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft', selected: true}, {value: 'status=2', text: 'Complete'}, {value: 'status=3', text: 'Closed'}]}) %>
+	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
+		Filter
+	</button>
+	<div class="collapse" id="col-filter">
+		<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
+		<h5 class='text-start'>Status:</h5>
+		<div class="row">
+			<div class="col-6 col-sm-6">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: 'status=0', colour: 'secondary', classes: ['status']}) %>
+			</div>
+			<div class="col-6 col-sm-6">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Draft', 	id: 'status_1', value: 'status=1', colour: 'warning', 	classes: ['status'], checked: true}) %>
+			</div>
+			<div class="col-6 col-sm-6">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Complete', 	id: 'status_2', value: 'status=2', colour: 'success', 	classes: ['status']}) %>
+			</div>
+			<div class="col-6 col-sm-6">
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Closed', 	id: 'status_3', value: 'status=3', colour: 'primary', 	classes: ['status']}) %>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<h5 class='text-start'>Date From:</h5>
+				<input type="date" class='form-control' id='createdAt_from'>
+			</div>
+			<div class="col-sm-6">
+				<h5 class='text-start'>Date To:</h5>
+				<input type="date" class='form-control' id='createdAt_to'>
+			</div>
+		</div>
+	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class="w-35" onclick="sortTable(0, 'tbl_loancards')">Date</th>
@@ -21,5 +50,4 @@
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/stores/loancards/index/view.js'></script>
 <script src='/js/utils/list/users.js'></script>
-<script async>getLoancards()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

@@ -78,6 +78,7 @@ window.addEventListener('load', function () {
     addListener('status_2',  getIssues, 'change');
     addListener('status_3',  getIssues, 'change');
     addListener('status_4',  getIssues, 'change');
+    addListener('status_5',  getIssues, 'change');
     addListener('createdAt_from', function (){filter()}, 'change');
     addListener('createdAt_to',   function (){filter()}, 'change');
     addListener('item',           function (){filter()}, 'input');

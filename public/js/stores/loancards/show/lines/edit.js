@@ -14,9 +14,7 @@ function getLineActions() {
                 if (line.status === 1) opts.push({text: 'Cancel', value: '0'});
                 if (line.status === 2) opts.push({text: 'Return', value: '3'});
                 let status = new Select({
-                    attributes: [
-                        {field: 'id', value: `sel_${line.line_id}`}
-                    ],
+                    attributes: [{field: 'id', value: `sel_${line.line_id}`}],
                     small:      true,
                     options:    opts,
                     listener:   {
@@ -130,24 +128,21 @@ function showReturnActions(size, line_id, qty = 1) {
         remove_spinner(`stocks_${line_id}`);
     });
 };
-function setActions() {
-    let actions_interval = window.setInterval(
-        function () {
-            if (lines_loaded === true) {
-                getLineActions();
-                clearInterval(actions_interval);
-            };
-        },
-        500
+function setActionButton(status) {
+    if (status === 1 || status === 2) enable_button('action');
+};
+addReloadListener(setActions);
+window.addEventListener( "load", function () {
+    addFormListener(
+        'action',
+        'PUT',
+        '/loancard_lines',
+        {
+            onComplete: [
+                getLines,
+                setActions,
+                setLineButtons
+            ]
+        }
     );
-};
-function setLineButtons() {
-    get({
-        table: 'loancard',
-        query: [`loancard_id=${path[2]}`]
-    })
-    .then(function([loancard, options]) {
-        disable_button('action');
-        if (loancard.status === 1 || loancard.status === 2) enable_button('action');
-    });
-};
+});

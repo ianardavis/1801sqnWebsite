@@ -11,13 +11,11 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'item_edit',    modal: 'item_edit',    text: 'Edit'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'writeoff_add', modal: 'writeoff_add', text: 'Writeoff Stock'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'receipt_add',  modal: 'receipt_add',  text: 'Receive Stock'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'note_add',     modal: 'note_add',     text: 'Add Note'}) %>
-                <% if (permissions.item_delete) { %>
-                    <%- include(`${partials}/menu/delete`, {permission: 'item_delete', text: 'Delete'}) %>
-                <% } %>
+                <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',           modal: 'item_edit'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'writeoff_add', text: 'Writeoff Stock', modal: 'writeoff_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'receipt_add',  text: 'Receive Stock',  modal: 'receipt_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add',     text: 'Add Note',       modal: 'note_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',         btn_form: {permission: 'item_delete'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',  spinner: 'item'}) %>

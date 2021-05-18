@@ -11,33 +11,11 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
-				
-				<% if (permissions.loancard_line_edit) { %>
-					<%- include(`${partials}/menu/button`, {id: 'action', text: 'Action Lines', form: 'action'}) %>
-					<script src="/js/stores/loancards/show/listeners/action.js"></script>
-				<% } %>
-
-				<form id='form_raise'>
-					<%- include(`${partials}/menu/button`, {id: 'raise', text: 'Raise'}) %>
-					<script src="/js/stores/loancards/show/listeners/raise.js"></script>
-				</form>
+				<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete', 	  btn_form: {permission: 'loancard_edit'}}) %>
 				<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download'}) %>
-
-				<% if (permissions.loancard_edit) { %>
-					<form id='form_complete'>
-						<input type="hidden" name='_status' value='2'>
-						<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete'}) %>
-					</form>
-					<script src="/js/stores/loancards/show/listeners/complete.js"></script>
-				<% } %>
-
-				<% if (permissions.loancard_delete) { %>
-					<form id='form_delete'>
-						<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Cancel'}) %>
-					</form>
-					<script src="/js/stores/loancards/show/listeners/delete.js"></script>
-				<% } %>
+				<%- include(`${partials}/menu/button`, {id: 'action', 	text: 'Action Lines', form: 'action'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', 	  modal: 'note_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   	  btn_form: {permission: 'loancard_delete'}}) %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
@@ -79,8 +57,8 @@
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title">Loancard Line <span id="line_id_view"></span></h5>
-							<span id="span_view_buttons" class="float-end"></span>
+							<h5 class="modal-title">Loancard Line</h5>
+                            <a id="btn_loancard_line_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
 						</div>
 						<div class="modal-body">
 							<%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item', link: true}) %>
@@ -91,6 +69,7 @@
 							<%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt'}) %>
 						</div>
 						<div class="modal-footer">
+							<p class='me-auto'>ID: <span id='loancard_line_id'></span></p>
 							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
 						</div>
 					</div>
@@ -109,28 +88,14 @@
 <script src="/js/stores/loancards/show/view.js"></script>
 <!-- <script src="/js/download.js"></script> -->
 <script async>getLoancard()</script>
-
 <% if (permissions.loancard_edit) { %>
 	<script src="/js/stores/loancards/show/edit.js"></script>
 	<script async>setButtons()</script>
 <% } %>
+
 <% if (permissions.access_loancard_lines) { %>
 	<script src="/js/stores/loancards/show/lines/view.js"></script>
 	<script async>getLines()</script>
-	<% if (permissions.access_notes) { %>
-		<script>
-            set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-source', value: 'line_view'});
-			modalOnShow('line_view', function (event) {
-				set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-_table', value: 'loancard_lines'});
-				set_attribute({id: 'btn_loancard_lines_note_add', attribute: 'data-_id',    value: event.relatedTarget.dataset.loancard_line_id});
-				getLineNotes({
-					line_id: 'loancard_lines',
-					table: 	 'loancard_lines',
-					id:		 event.relatedTarget.dataset.loancard_line_id
-				})
-			})
-		</script>
-	<% } %>
 	<% if (permissions.loancard_line_edit) { %>
 		<script src="/js/stores/stock/list.js"></script>
 		<script src="/js/stores/serials/list.js"></script>
