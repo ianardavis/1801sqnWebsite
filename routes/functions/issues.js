@@ -251,7 +251,6 @@ module.exports = function (m, fn) {
                         .then(loancard_id => {
                             let issue_actions = [];
                             user.issues.forEach(issue => {
-                                console.log(issue)
                                 issue_actions.push(
                                     new Promise((resolve, reject) => {
                                         return fn.loancards.lines.create({
@@ -259,7 +258,7 @@ module.exports = function (m, fn) {
                                             user_id:     user_id,
                                             ...issue
                                         })
-                                        .then(loancard_line_id => resolve(loancard_line_id))
+                                        .then(result => resolve(result))
                                         .catch(err => reject(err));
                                     })
                                 );

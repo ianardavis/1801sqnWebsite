@@ -340,4 +340,9 @@ module.exports = function (m, inc, fn) {
             .catch(err => reject(err));
         })
     };
+    fn.loancards.lines.return = function (options = {}) {
+        return new Promise((resolve, reject) => {
+
+        });
+    };
 };
