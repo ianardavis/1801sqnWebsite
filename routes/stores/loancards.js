@@ -7,14 +7,14 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
     app.get('/loancards/:id',          li, pm.get('access_loancards'),                  (req, res) => res.render('stores/loancards/show'));
     app.get('/loancards/:id/download', li, pm.check('access_loancards'),                (req, res) => {
         m.loancards.findOne({
-            where: {loancard_id: req.params.id},
-            attributes: ['_filename']
+            where:      {loancard_id: req.params.id},
+            attributes: ['filename']
         })
         .then(loancard => {
-            if      (!loancard)                                        res.render('stores/download/error', {error: 'Loancard not found'})
-            else if (!loancard._filename || loancard._filename === '') res.render('stores/download/error', {error: 'No file found'})
+            if      (!loancard)                                      send_error(res, 'Loancard not found')
+            else if (!loancard.filename || loancard.filename === '') send_error(res, 'No file found')
             else {
-                res.download(`${process.env.ROOT}/public/res/loancards/${loancard._filename}`, function (err) {
+                res.download(`${process.env.ROOT}/public/res/loancards/${loancard.filename}`, function (err) {
                     if (err) console.log(err);
                 });
             };

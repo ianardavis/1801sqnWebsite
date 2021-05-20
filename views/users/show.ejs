@@ -12,18 +12,14 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'user_edit',        text: 'Edit User',        modal: 'user_edit'}) %>
-                <% if (permissions.user_edit) { %><form id='form_password_reset'><% } %>
-                <%- include(`${partials}/menu/button`, {id: 'password_reset',   text: 'Toggle Reset Password'}) %>
-                <% if (permissions.user_edit) { %></form><% } %>
+                <%- include(`${partials}/menu/button`, {id: 'password_reset',   text: 'Toggle Reset Password', btn_form: {permission: 'user_edit'}}) %>
                 <%- include(`${partials}/menu/button`, {id: 'user_password',    text: 'Change Password',  modal: 'user_password'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'permissions_edit', text: 'Edit Permissions', modal: 'permissions_edit'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'note_add',         text: 'Add Note',         modal: 'note_add'}) %>
                 <div class="dropdown-divider"></div>
                 <%- include(`${partials}/menu/button`, {id: 'issue_add', text: 'New Issue', modal: 'issue_add'}) %>
                 <div class="dropdown-divider"></div>
-                <% if (permissions.user_delete) { %><form id='form_user_delete'><% } %>
-                <%- include(`${partials}/menu/button`, {id: 'user_delete', text: 'Delete'}) %>
-                <% if (permissions.user_delete) { %></form><% } %>
+                <%- include(`${partials}/menu/button`, {id: 'user_delete', text: 'Delete', btn_form: {permission: 'user_delete'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>
@@ -219,6 +215,7 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
+<%- include(`${partials}/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/users/show/view.js'></script>
 <script src="/js/users/show/checkPassword.js"></script>
@@ -239,7 +236,6 @@
         <script src='/js/users/show/permissions/edit.js'></script>
     <% } %>
 <% } %>
-<%- include(`${partials}/notes/scripts`) %>
 <script src='/js/users/show/issues/view.js'></script>
 <script async>getIssues()</script>
 <% if (permissions.issue_add) { %>

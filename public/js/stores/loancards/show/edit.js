@@ -1,8 +1,5 @@
-function setButtons(status) {
-    if (status === 1) {
-        enable_button('complete');
-        enable_button('delete');
-    };
+function setCompleteButton(status) {
+    if (status === 1) enable_button('complete');
 };
 window.addEventListener( "load", function () {
     addFormListener(
@@ -12,7 +9,7 @@ window.addEventListener( "load", function () {
         {
             onComplete: [
                 getLoancard,
-                function () {if (typeof getLines === 'function') getLines('loancard')}
+                function () {if (typeof getLines === 'function') getLines()}
             ]
         }
     );

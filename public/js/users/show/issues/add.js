@@ -1,6 +1,6 @@
 window.addEventListener( "load", function () {
+    addListener('selectedSize_link', selectSize)
     enable_button('issue_add');
-    document.querySelector('#selectedSize_link').addEventListener('click', selectSize)
     addFormListener(
         'issue_add',
         'POST',

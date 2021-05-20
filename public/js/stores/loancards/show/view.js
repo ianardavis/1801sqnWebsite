@@ -2,6 +2,7 @@ let statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
 function getLoancard() {
     disable_button('complete');
     disable_button('delete');
+    disable_button('download');
     get({
         table: 'loancard',
         query: [`loancard_id=${path[2]}`]
@@ -13,19 +14,23 @@ function getLoancard() {
         set_innerText({id: 'loancard_createdAt',     text: print_date(loancard.createdAt, true)});
         set_innerText({id: 'loancard_updatedAt',     text: print_date(loancard.updatedAt, true)});
         set_innerText({id: 'loancard_status',        text: statuses[loancard.status]});
-        set_innerText({id: 'loancard_filename',      text: String(loancard.filename || '') })
+        set_innerText({id: 'loancard_filename',      text: loancard.filename || ''})
         set_href({id: 'loancard_user_loancard_link', value: `/users/${loancard.user_id_loancard}`});
         set_href({id: 'loancard_user_link',          value: `/users/${loancard.user_id}`});
-        disable_button('download');
-        if (loancard.filename && loancard.filename !== '') enable_button('download');
-        return loancard;
+        if (loancard.filename && loancard.filename !== '') {
+            enable_button('download');
+            set_attribute({id: 'form_download', attribute: 'method', value: 'GET'});
+            set_attribute({id: 'form_download', attribute: 'action', value: `/loancards/${loancard.loancard_id}/download`});
+        } else {
+            remove_attribute({id: 'form_download', attribute: 'method'});
+            remove_attribute({id: 'form_download', attribute: 'action'});
+        };
+        return loancard.status;
     })
-    .then(loancard => {
-        if (typeof setButtons      === 'function') setButtons(loancard.status);
-        if (typeof setActionButton === 'function') setActionButton(loancard.status);
+    .then(status => {
+        if (typeof setDeleteButton   === 'function') setDeleteButton(status);
+        if (typeof setCompleteButton === 'function') setCompleteButton(status);
+        if (typeof setActionButton   === 'function') setActionButton(status);
     });
 };
 addReloadListener(getLoancard);
-window.addEventListener('load', function () {
-    addListener('btn_download', function () {download('loancards', path[2])});
-});

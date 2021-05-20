@@ -3,15 +3,15 @@ function addUserReset() {
 };
 function getStatusesAdd() {
     listStatuses({
+        select:  'statuses_add',
         spinner: 'statuses_add',
-        select:  'sel_statuses_add',
         id_only: true
     });
 };
 function getRanksAdd() {
     listRanks({
+        select:  'ranks_add',
         spinner: 'ranks_add',
-        select:  'sel_ranks_add',
         id_only: true
     });
 };
@@ -30,6 +30,6 @@ window.addEventListener( "load", function () {
             ]
         }
     );
-    document.querySelector('#reload_ranks_add')   .addEventListener("click", getRanksAdd);
-    document.querySelector('#reload_statuses_add').addEventListener("click", getStatusesAdd);
+    addListener('reload_ranks_add',    getRanksAdd);
+    addListener('reload_statuses_add', getStatusesAdd);
 });

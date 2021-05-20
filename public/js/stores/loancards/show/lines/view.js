@@ -2,14 +2,15 @@ let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Retu
 function getLines() {
     disable_button('action');
     let sel_status = document.querySelector('#sel_status') || {value: ''};
-    get({
-        table: 'loancard_lines',
-        query: [`loancard_id=${path[2]}`, sel_status.value]
-    })
-    .then(function ([lines, options]) {
-        clear_table('lines')
-        .then(tbl_lines => {
+    clear_table('lines')
+    .then(tbl_lines => {
+        get({
+            table: 'loancard_lines',
+            query: [`loancard_id=${path[2]}`, sel_status.value]
+        })
+        .then(function ([lines, options]) {
             set_count({id: 'line', count: lines.length || '0'});
+            let row_index = 0;
             lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);
@@ -23,10 +24,10 @@ function getLines() {
                             (line.status === 2 && line.loancard.status === 2)
                             ? {
                                 classes: ['actions'],
-                                data: [{
-                                    field: 'id',
-                                    value: line.loancard_line_id
-                                }]
+                                data: [
+                                    {field: 'id',    value: line.loancard_line_id},
+                                    {field: 'index', value: row_index}
+                                ]
                             }
                             : {}
                         )
@@ -45,12 +46,13 @@ function getLines() {
                     console.log(`Error loading line ${line.loancard_line_id}:`)
                     console.log(error);
                 };
+                row_index++
             });
             return true;
+        })
+        .then(result => {
+            if (typeof addEditSelect === 'function') addEditSelect();
         });
-    })
-    .then(result => {
-        if (typeof getLineActions === 'function') getLineActions();
     });
 };
 function showLine(loancard_line_id) {

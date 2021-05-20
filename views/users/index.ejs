@@ -1,9 +1,7 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Users'}) %>
-<% if (permissions.user_add) { %>
-	<%- include(`${partials}/breadcrumb`, {text: '<i class="fas fa-plus"></i>', modal: 'user_add'}) %>
-<% } %>
+<%- include(`${partials}/menu/breadcrumb_add`, {modal: 'user_add', permission: 'user_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'users'}) %>
 <%- include(`${partials}/head/navbar/close`) %>

@@ -12,7 +12,7 @@
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete', 	  btn_form: {permission: 'loancard_edit'}}) %>
-				<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download', 	  btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'action', 	text: 'Action Lines', form: 'action'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', 	  modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   	  btn_form: {permission: 'loancard_delete'}}) %>
@@ -37,10 +37,19 @@
 				<% if (permissions.loancard_line_edit) { %><form id='form_action'><% } %>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
-						<th class='w-30' onclick="sortTable(1,'tbl_lines')">Item</th>
-						<th class='w-40' onclick="sortTable(2,'tbl_lines')">Size</th>
-						<th class='w-10' onclick="sortTable(3,'tbl_lines')">Qty</th>
-						<th class='w-20' onclick="sortTable(4,'tbl_lines')">Status</th>
+						<th class='w-30' onclick="sortTable(0,'tbl_lines')">Item</th>
+						<th class='w-40' onclick="sortTable(1,'tbl_lines')">Size</th>
+						<th class='w-10' onclick="sortTable(2,'tbl_lines')">Qty</th>
+						<th class='w-20' onclick="sortTable(3,'tbl_lines')">
+							<% if (permissions.loancard_line_edit) { %>
+								<select id="sel_all" class='form-select form-select-sm hidden'>
+									<option>Select All</option>
+									<option value="0">Cancel</option>
+									<option value="3">Return</option>
+								</select>
+							<% } %>
+							Status
+						</th>
 						<th><i class='fas fa-search'></i></th>
 					</thead>
 					<tbody id='tbl_lines'></tbody>
@@ -86,22 +95,18 @@
 <%- include(`${partials}/notes/scripts`) %>
 
 <script src="/js/stores/loancards/show/view.js"></script>
-<!-- <script src="/js/download.js"></script> -->
 <script async>getLoancard()</script>
 <% if (permissions.loancard_edit) { %>
 	<script src="/js/stores/loancards/show/edit.js"></script>
-	<script async>setButtons()</script>
 <% } %>
 
 <% if (permissions.access_loancard_lines) { %>
 	<script src="/js/stores/loancards/show/lines/view.js"></script>
 	<script async>getLines()</script>
 	<% if (permissions.loancard_line_edit) { %>
-		<script src="/js/stores/stock/list.js"></script>
-		<script src="/js/stores/serials/list.js"></script>
+		<script src="/js/utils/list/stocks.js"></script>
+		<script src="/js/utils/list/serials.js"></script>
 		<script src="/js/stores/loancards/show/lines/edit.js"></script>
-		<script async>setActions()</script>
-		<script async>setLineButtons();</script>
 	<% } %>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

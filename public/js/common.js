@@ -3,12 +3,12 @@ function sortTable(n, tableName, obj) {
     table = document.querySelector(`#${tableName}`);
     switching = true;
     dir = "asc";
-    new Promise(resolve => {
-        let id = random_id();
-        add_spinner(obj, {id: id});
-        resolve(id);
-    })
-    .then(id => {
+    // new Promise(resolve => {
+    //     let id = random_id();
+    //     add_spinner(obj, {id: id});
+    //     resolve(id);
+    // })
+    // .then(id => {
         while (switching) {
             switching = false;
             rows = table.rows;
@@ -39,16 +39,16 @@ function sortTable(n, tableName, obj) {
                 };
             };
         };
-        return id
-    })
-    .then(id => {
-        // remove_spinner(id);
-        return id;
-    })
-    .catch(err => {
-        // remove_spinner(id);
-        console.log(err)
-    });
+    //     return id
+    // })
+    // .then(id => {
+    //     // remove_spinner(id);
+    //     return id;
+    // })
+    // .catch(err => {
+    //     // remove_spinner(id);
+    //     console.log(err)
+    // });
 };
 function removeID(id) {
     if (typeof(id) === 'string') document.querySelector(`#${id}`).remove();

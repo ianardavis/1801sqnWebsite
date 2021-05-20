@@ -39,6 +39,6 @@ function display_checker (id, status) {
     };
 };
 window.addEventListener('load', function () {
-    document.querySelector('#_password').addEventListener('input', pwd_compare);
-    document.querySelector('#_confirm').addEventListener('input', pwd_compare);
+    addListener('_password', pwd_compare, 'input');
+    addListener('_confirm',  pwd_compare, 'input');
 });
