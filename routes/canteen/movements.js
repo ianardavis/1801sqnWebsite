@@ -1,7 +1,7 @@
-module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/movements',     li, pm.get('access_movements'),   (req, res) => res.render('canteen/movements/index'));
-    app.get('/movements/:id', li, pm.get('access_movements'),   (req, res) => res.render('canteen/movements/show'));
-    app.get('/get/movements', li, pm.check('access_movements'), (req, res) => {
+module.exports = (app, m, inc, fn) => {
+    app.get('/movements',     fn.li(), fn.permissions.get('access_movements'),   (req, res) => res.render('canteen/movements/index'));
+    app.get('/movements/:id', fn.li(), fn.permissions.get('access_movements'),   (req, res) => res.render('canteen/movements/show'));
+    app.get('/get/movements', fn.li(), fn.permissions.check('access_movements'), (req, res) => {
         m.movements.findAll({
             where: req.query,
             include: [
@@ -14,6 +14,6 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(movements => res.send({success: true, movements: movements}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 };

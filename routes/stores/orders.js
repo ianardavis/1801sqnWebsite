@@ -1,19 +1,17 @@
-module.exports = (app, m, pm, op, inc, li, send_error) => {
-    let fn = {}, receipts = {}, issues = {};
-    require(`${process.env.FUNCS}/allowed`)(m.permissions, fn);
-    require(`${process.env.FUNCS}/promise_results`)(fn);
-    require(`${process.env.FUNCS}/demands`)(m, fn, op);
+module.exports = (app, m, inc, fn) => {
+    let receipts = {}, issues = {};
+    require(`${process.env.FUNCS}/demands`)(m, fn);
     require(`${process.env.FUNCS}/orders`) (m, fn);
-    app.get('/orders',        li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/index'));
-    app.get('/orders/:id',    li, pm.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
+    app.get('/orders',        fn.li(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/index'));
+    app.get('/orders/:id',    fn.li(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
     
-    app.get('/count/orders',  li, pm.check('access_orders'), (req, res) => {
+    app.get('/count/orders',  fn.li(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 
-    app.get('/get/orders',    li, pm.check('access_orders'), (req, res) => {
+    app.get('/get/orders',    fn.li(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.findAll({
             where:   req.query,
             include: [
@@ -22,9 +20,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(orders => res.send({success: true, result: orders}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/order',     li, pm.check('access_orders'), (req, res) => {
+    app.get('/get/order',     fn.li(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.findOne({
             where:   req.query,
             include: [
@@ -33,11 +31,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(order => res.send({success: true, result: order}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/orders',       li, pm.check('order_add'),     (req, res) => {
-        if (!req.body.lines || req.body.lines.length === 0) send_error(res, 'No lines submitted')
+    app.post('/orders',       fn.li(), fn.permissions.check('order_add'),     (req, res) => {
+        if (!req.body.lines || req.body.lines.length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
             req.body.lines.forEach(line => {
@@ -47,11 +45,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             });
             Promise.all(actions)
             .then(result => res.send({success: true, message: 'Orders placed'}))
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         };
     });
     
-    app.put('/orders',        li, pm.check('order_edit'),    (req, res) => {
+    app.put('/orders',        fn.li(), fn.permissions.check('order_edit'),    (req, res) => {
         let actions = [];
         actions.push(demand_orders(req.body.orders.filter(e => e.status === '2'), req.user.user_id))
         // req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
@@ -64,21 +62,21 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 res.send({success: true, message: 'Some lines failed'});
             } else res.send({success: true, message: 'Lines actioned'});
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/orders/:id', li, pm.check('order_delete'),  (req, res) => {
+    app.delete('/orders/:id', fn.li(), fn.permissions.check('order_delete'),  (req, res) => {
         m.orders.findOne({
             where:      {order_id: req.params.id},
             attributes: ['order_id', 'status']
         })
         .then(order => {
-            if      (!order)             send_error(res, 'Order not found');
-            else if (order.status !== 1) send_error(res, 'Only placed orders can be cancelled');
+            if      (!order)             fn.send_error(res, 'Order not found');
+            else if (order.status !== 1) fn.send_error(res, 'Only placed orders can be cancelled');
             else {
                 return order.update({status: 0})
                 .then(results => {
-                    if (!result) send_error(res, 'Order not cancelled')
+                    if (!result) fn.send_error(res, 'Order not cancelled')
                     else {
                         return m.actions.findAll({
                             where:      {order_id: order_id},
@@ -103,15 +101,15 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                 if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true,  message: 'Order cancelled, some issue actions have failed'})
                                 else                                                         res.send({success: true,  message: 'Order cancelled'});
                             })
-                            .catch(err => send_error(res, err));
+                            .catch(err => fn.send_error(res, err));
                         })
-                        .catch(err => send_error(res, err));
+                        .catch(err => fn.send_error(res, err));
                     };
                 })
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             };
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 
     function demand_orders(orders, user_id) {

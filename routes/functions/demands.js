@@ -1,4 +1,4 @@
-module.exports = function (m, fn, op) {
+module.exports = function (m, fn) {
     fn.demands = {lines: {}};
     fn.demands.create = function (options = {}) {
         return new Promise((resolve, reject) => {
@@ -89,7 +89,7 @@ module.exports = function (m, fn, op) {
                                     return m.demand_lines.findAll({
                                         where: {
                                             demand_id: demand.demand_id,
-                                            status: {[op.or]: [1, 2]}
+                                            status: {[fn.op.or]: [1, 2]}
                                         }
                                     })
                                     .then(lines => {
@@ -197,7 +197,7 @@ module.exports = function (m, fn, op) {
                 else {
                     return getDemandLines(
                         {demand_id: demand_id},
-                        [{model: m.demand_lines, as: 'lines', where: {status: {[op.or]: [1, 2]}}}],
+                        [{model: m.demand_lines, as: 'lines', where: {status: {[fn.op.or]: [1, 2]}}}],
                         {allowNull: true}
                     )
                     .then(lines => {
@@ -235,7 +235,7 @@ module.exports = function (m, fn, op) {
                 {size_id: options.size_id},
                 [{
                     model: m.details,
-                    where: {name: {[op.or]:['Demand Page', 'Demand Cell']}}
+                    where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
                 }]
             )
             .then(size => {
@@ -308,7 +308,7 @@ module.exports = function (m, fn, op) {
                                 return m.actions.findAll({
                                     where: {
                                         demand_line_id: demand_line.demand_line_id,
-                                        order_id: {[op.not]: null}
+                                        order_id: {[fn.op.not]: null}
                                     },
                                     include: [{model: m.orders, as: 'order'}]
                                 })
@@ -359,7 +359,7 @@ module.exports = function (m, fn, op) {
                             return m.actions.findAll({
                                 where: {
                                     demand_line_id: line.demand_line_id,
-                                    order_id:       {[op.not]: null}
+                                    order_id:       {[fn.op.not]: null}
                                 },
                                 include: [{model: m.orders, as: 'order'}]
                             })
@@ -485,7 +485,7 @@ module.exports = function (m, fn, op) {
                         m.actions.findAll({
                             where:      {
                                 demand_line_id: line.line_id,
-                                order_id:       {[op.not]: null}
+                                order_id:       {[fn.op.not]: null}
                             },
                             attributes: ['order_id']
                         })
@@ -547,7 +547,7 @@ module.exports = function (m, fn, op) {
                         m.actions.findAll({
                             where:      {
                                 order_id: order,
-                                issue_id: {[op.not]: null}
+                                issue_id: {[fn.op.not]: null}
                             },
                             include: [{model: m.issues, as: 'issue'}],
                             attributes: ['issue_id']

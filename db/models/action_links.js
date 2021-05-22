@@ -1,17 +1,27 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('locations', {
-    'location_id': {
+  return sequelize.define('action_links', {
+    'action_link_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
       comment: "null",
       primaryKey: true
     },
-    'location': {
+    'action_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: false,
+      comment: "null"
+    },
+    '_table': {
       type: DataTypes.TEXT,
       allowNull: false,
+      comment: "null"
+    },
+    'id': {
+      type: DataTypes.UUIDV4,
+      allowNull: true,
       comment: "null"
     },
     'createdAt': {
@@ -25,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null"
     }
   }, {
-    tableName: 'locations',
+    tableName: 'action_links',
     schema: 'core'
   });
 };

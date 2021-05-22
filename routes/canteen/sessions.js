@@ -1,9 +1,9 @@
-module.exports = (app, m, pm, al, op, inc, li, send_error) => {
+module.exports = (app, m, inc, fn) => {
     let settings = require(`${process.env.ROOT}/fn/settings`);
-    app.get('/sessions',     li, pm.get('access_canteen'),    (req, res) => res.render('canteen/sessions/index'));
-    app.get('/sessions/:id', li, pm.get('access_canteen'),    (req, res) => res.render('canteen/sessions/show'));
+    app.get('/sessions',     fn.li(), fn.permissions.get('access_canteen'),    (req, res) => res.render('canteen/sessions/index'));
+    app.get('/sessions/:id', fn.li(), fn.permissions.get('access_canteen'),    (req, res) => res.render('canteen/sessions/show'));
 
-    app.get('/get/sessions', li, pm.check('access_sessions'), (req, res) => {
+    app.get('/get/sessions', fn.li(), fn.permissions.check('access_sessions'), (req, res) => {
         m.sessions.findAll({
             where: req.query,
             include: [
@@ -12,9 +12,9 @@ module.exports = (app, m, pm, al, op, inc, li, send_error) => {
             ]
         })
         .then(sessions => res.send({success: true, result: sessions}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/session',  li, pm.check('access_sessions'), (req, res) => {
+    app.get('/get/session',  fn.li(), fn.permissions.check('access_sessions'), (req, res) => {
         m.sessions.findOne({
             where: req.query,
             include: [
@@ -25,12 +25,12 @@ module.exports = (app, m, pm, al, op, inc, li, send_error) => {
         .then(session => {
             return getSessionSales(session.session_id)
             .then(sales => res.send({success: true, result: {...session.dataValues, ...sales}}))
-            .catch(err => send_error(res, err))
+            .catch(err => fn.send_error(res, err))
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/sessions',    li, pm.check('session_add'),     (req, res) => {
+    app.post('/sessions',    fn.li(), fn.permissions.check('session_add'),     (req, res) => {
         let balance = countCash(req.body.balance);
         m.holdings.findOrCreate({
             where: {_description: 'Canteen'},
@@ -77,20 +77,20 @@ module.exports = (app, m, pm, al, op, inc, li, send_error) => {
                     if (created) res.send({success: true, message: `Session opened\nSession ID: ${session.session_id}`})
                     else         res.send({success: true, message: `Session already open\nSession ID: ${session.session_id}`})
                 })
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             })
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
     
-    app.put('/sessions/:id', li, pm.check('session_edit'),    (req, res) => {
+    app.put('/sessions/:id', fn.li(), fn.permissions.check('session_edit'),    (req, res) => {
         m.sessions.findOne({
             where: {session_id: req.params.id},
             attributes: ['session_id', '_status']
         })
         .then(session => {
-            if (session._status !== 1) send_error(res, 'This session is not open')
+            if (session._status !== 1) fn.send_error(res, 'This session is not open')
             else {
                 return m.sales.findAll({
                     where: {
@@ -155,22 +155,22 @@ module.exports = (app, m, pm, al, op, inc, li, send_error) => {
                                             }
                                         )
                                         .then(result => res.send({success: true, message: `Session closed.\nTakings: £${sales.takings.toFixed(2)}.\nPaid Out: £${sales.paid_out.toFixed(2)}.\nPaid In: £${sales.paid_in.toFixed(2)}.\nCash Returned: £${Number(balance.cash).toFixed(2)}.\nCheques Returned: £${Number(balance.cheques).toFixed(2)}`}))
-                                        .catch(err => send_error(res, err));
+                                        .catch(err => fn.send_error(res, err));
                                     })
-                                    .catch(err => send_error(res, err));
+                                    .catch(err => fn.send_error(res, err));
                                 })
-                                .catch(err => send_error(res, err));
+                                .catch(err => fn.send_error(res, err));
                             })
-                            .catch(err => send_error(res, err));
+                            .catch(err => fn.send_error(res, err));
                         })
-                        .catch(err => send_error(res, err));
+                        .catch(err => fn.send_error(res, err));
                     })
-                    .catch(err => send_error(res, err));
+                    .catch(err => fn.send_error(res, err));
                 })
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             };
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
     function getSessionSales(session_id) {
         return new Promise((resolve, reject) => {

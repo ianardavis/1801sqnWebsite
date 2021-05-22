@@ -1,13 +1,13 @@
-module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/get/actions', li, pm.check('access_actions', {send: true}), (req, res) => {
+module.exports = (app, m, inc, fn) => {
+    app.get('/get/actions', fn.li(), fn.permissions.check('access_actions', {send: true}), (req, res) => {
         m.actions.findAll({
             where:      req.query,
             attributes: ['action_id', 'action', 'createdAt']
         })
         .then(actions => res.send({success: true, result: actions}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/action',  li, pm.check('access_actions', {send: true}), (req, res) => {
+    app.get('/get/action',  fn.li(), fn.permissions.check('access_actions', {send: true}), (req, res) => {
         m.actions.findOne({
             where: req.query,
             include: [
@@ -25,6 +25,6 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(action => res.send({success: true, result: action}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 };

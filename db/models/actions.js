@@ -81,6 +81,6 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     tableName: 'actions',
-    schema: 'stores'
+    schema: 'core'
   });
 };

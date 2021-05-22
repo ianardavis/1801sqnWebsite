@@ -1,27 +1,27 @@
-module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/writeoffs',             li, pm.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/index'));
-    app.get('/writeoffs/:id',         li, pm.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/show'));
+module.exports = (app, m, inc, fn) => {
+    app.get('/writeoffs',             fn.li(), fn.permissions.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/index'));
+    app.get('/writeoffs/:id',         fn.li(), fn.permissions.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/show'));
     
-    app.get('/get/writeoffs',         li, pm.check('access_writeoffs'),      (req, res) => {
+    app.get('/get/writeoffs',         fn.li(), fn.permissions.check('access_writeoffs'),      (req, res) => {
         m.writeoffs.findAll({
             include: [inc.users()],
             where: req.query
         })
         .then(writeoffs => res.send({success: true, result: writeoffs}))
-        .catch(err => send_error(res, err))
+        .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/writeoff',          li, pm.check('access_writeoffs'),      (req, res) => {
+    app.get('/get/writeoff',          fn.li(), fn.permissions.check('access_writeoffs'),      (req, res) => {
         m.writeoffs.findOne({
             where: req.query,
             include: [inc.users()]
         })
         .then(writeoff => {
             if (writeoff) res.send({success: true, result: writeoff})
-            else          send_error(res, 'Writeoff not found');
+            else          fn.send_error(res, 'Writeoff not found');
         })
-        .catch(err => send_error(res, err))
+        .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/writeoff_lines',    li, pm.check('access_writeoff_lines'), (req, res) => {
+    app.get('/get/writeoff_lines',    fn.li(), fn.permissions.check('access_writeoff_lines'), (req, res) => {
         m.writeoff_lines.findAll({
             include: [
                 inc.items(),
@@ -30,10 +30,10 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             where: req.query
         })
         .then(lines => res.send({success: true, result: lines}))
-        .catch(err => send_error(res, err))
+        .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/writeoffs',            li, pm.check('writeoff_add'),          (req, res) => {
+    app.post('/writeoffs',            fn.li(), fn.permissions.check('writeoff_add'),          (req, res) => {
         m.writeoffs.findOrCreate({
             where: {
                 _status: 1,
@@ -43,11 +43,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .then(([writeoff, created]) => {
             if (created) res.send({success: true,  message: 'Writeoff created'})
-            else         send_error(res, 'Writeoff already open');
+            else         fn.send_error(res, 'Writeoff already open');
         })
     
     });
-    app.post('/writeoff_lines/:id',   li, pm.check('writeoff_line_add'),     (req, res) => {
+    app.post('/writeoff_lines/:id',   fn.li(), fn.permissions.check('writeoff_line_add'),     (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id']
@@ -78,25 +78,25 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         };
                         return Promise.all(actions)
                         .then(result => res.send({success: true, message: 'Line updated'}))
-                        .catch(err => send_error(res, err));
+                        .catch(err => fn.send_error(res, err));
                     };
                 })
-                .catch(err => send_error(res, err));
-            } else send_error(res, 'Writeoff not found');
+                .catch(err => fn.send_error(res, err));
+            } else fn.send_error(res, 'Writeoff not found');
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     
     });
 
-    app.put('/writeoffs/:id',         li, pm.check('writeoff_edit'),         (req, res) => {
+    app.put('/writeoffs/:id',         fn.li(), fn.permissions.check('writeoff_edit'),         (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status'],
             include: [inc.writeoff_lines({as: 'lines'})]
         })
         .then(writeoff => {
-            if      (!writeoff)              send_error(res, 'Writeoff not found')
-            else if (writeoff._status !== 1) send_error(res, 'Writeoff is not open')
+            if      (!writeoff)              fn.send_error(res, 'Writeoff not found')
+            else if (writeoff._status !== 1) fn.send_error(res, 'Writeoff is not open')
             else {
                 let actions = [];
                 actions.push(
@@ -142,25 +142,25 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 );
                 return Promise.all(actions)
                 .then(result => res.send({success: true, message: `Writeoff completed`}))
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             };
         })
         .catch(err => res.send(err, res));
     });
     
-    app.delete('/writeoff_lines/:id', li, pm.check('writeoff_line_delete'),  (req, res) => {
+    app.delete('/writeoff_lines/:id', fn.li(), fn.permissions.check('writeoff_line_delete'),  (req, res) => {
         m.writeoff_lines.update({_status: 0}, {where: {line_id: req.params.id}})
         .then(result => res.send({success: true, message: 'Line deleted'}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
-    app.delete('/writeoffs/:id',      li, pm.check('writeoff_delete'),       (req, res) => {
+    app.delete('/writeoffs/:id',      fn.li(), fn.permissions.check('writeoff_delete'),       (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status']
         })
         .then(writeoff => {
-            if      (!writeoff)              send_error(res, 'Writeoff not found')
-            else if (writeoff._status !== 1) send_error(res, 'Writeoff is not open')
+            if      (!writeoff)              fn.send_error(res, 'Writeoff not found')
+            else if (writeoff._status !== 1) fn.send_error(res, 'Writeoff is not open')
             else {
                 let actions = [];
                 actions.push(writeoff.update({_status: 0}));
@@ -176,9 +176,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 );
                 return Promise.all(actions)
                 .then(result => res.send({success: true, message: 'Writeoff cancelled'}))
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             }
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 };

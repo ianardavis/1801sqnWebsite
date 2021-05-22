@@ -1,4 +1,4 @@
-module.exports = (app, m, pm, op, inc, li, send_error) => {
+module.exports = (app, m, inc, fn) => {
     let permission_tree = [
         {_permission: 'access_stores', children: [
             {_permission: 'access_actions',   children: []},
@@ -226,22 +226,22 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]}
         ]}
     ];
-    app.get('/get/permissions', li, pm.check('access_permissions'), (req, res) => {
+    app.get('/get/permissions', fn.li(), fn.permissions.check('access_permissions'), (req, res) => {
         m.permissions.findAll({
             where:      req.query,
             attributes: ['permission_id', 'permission', 'createdAt']
         })
         .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree}}))
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
-    app.put('/permissions/:id', li, pm.check('permission_edit'),    (req, res) => {
+    app.put('/permissions/:id', fn.li(), fn.permissions.check('permission_edit'),    (req, res) => {
         m.users.findOne({
             where:      {user_id: req.params.id},
             attributes: ['user_id']
         })
         .then(user => {
-            if      (!user)                             send_error(res, 'User not found')
-            else if (user.user_id === req.user.user_id) send_error(res, 'You can not edit your own permissions')
+            if      (!user)                             fn.send_error(res, 'User not found')
+            else if (user.user_id === req.user.user_id) fn.send_error(res, 'You can not edit your own permissions')
             else {
                 return m.permissions.findAll({
                     where: {user_id: user.user_id},
@@ -268,11 +268,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     });
                     return Promise.allSettled(actions)
                     .then(results => res.send({success: true, message: 'Permissions edited'}))
-                    .catch(err => send_error(res, err));
+                    .catch(err => fn.send_error(res, err));
                 })
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             };
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 };

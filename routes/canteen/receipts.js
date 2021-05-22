@@ -1,8 +1,8 @@
-module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/receipts',        li, pm.get('access_receipts'),   (req, res) => res.render('canteen/receipts/index'));
-    app.get('/receipts/:id',    li, pm.get('access_receipts'),   (req, res) => res.render('canteen/receipts/show'));
+module.exports = (app, m, inc, fn) => {
+    app.get('/receipts',        fn.li(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/index'));
+    app.get('/receipts/:id',    fn.li(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/show'));
     
-    app.get('/get/receipts',    li, pm.check('access_receipts'), (req, res) => {
+    app.get('/get/receipts',    fn.li(), fn.permissions.check('access_receipts'), (req, res) => {
         m.receipts.findAll({
             where: req.query,
             include: [
@@ -11,9 +11,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(receipts => res.send({success: true,  result: receipts}))
-        .catch(err =>     send_error(res, err))
+        .catch(err =>     fn.send_error(res, err))
     });
-    app.get('/get/receipt',     li, pm.check('access_receipts'), (req, res) => {
+    app.get('/get/receipt',     fn.li(), fn.permissions.check('access_receipts'), (req, res) => {
         m.receipts.findOne({
             where: req.query,
             include: [
@@ -23,21 +23,21 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
         })
         .then(receipt => {
             if (receipt) res.send({success: true,  result: receipt})
-            else         send_error(res, 'Receipt not found');
+            else         fn.send_error(res, 'Receipt not found');
         })
-        .catch(err => send_error(res, err))
+        .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/receipts',       li, pm.check('receipt_add'),     (req, res) => {
-        if      (!req.body.receipt._qty)  send_error(res, 'No quantity submitted')
-        else if (!req.body.receipt._cost) send_error(res, 'No cost submitted')
+    app.post('/receipts',       fn.li(), fn.permissions.check('receipt_add'),     (req, res) => {
+        if      (!req.body.receipt._qty)  fn.send_error(res, 'No quantity submitted')
+        else if (!req.body.receipt._cost) fn.send_error(res, 'No cost submitted')
         else {
             m.canteen_items.findOne({
                 where:      {item_id: req.body.receipt.item_id},
                 attributes: ['item_id', 'cost', 'qty']
             })
             .then(item => {
-                if (!item) send_error(res, 'Item not found')
+                if (!item) fn.send_error(res, 'Item not found')
                 else {
                     return m.receipts.create({
                         item_id: item.item_id,
@@ -59,7 +59,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                         };
                         return item.increment('_qty', {by: receipt_qty})
                         .then(result => {
-                            if (!result) send_error(res, 'Item quantity not updated')
+                            if (!result) fn.send_error(res, 'Item quantity not updated')
                             else {
                                 if (item._cost !== receipt._cost) {
                                     let qty_current   = Math.max(0, Number(item._qty)),
@@ -87,31 +87,31 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                 } else res.send({success: true, message: 'Item received'});
                             };
                         })
-                        .catch(err => send_error(res, err));
+                        .catch(err => fn.send_error(res, err));
                     })
-                    .catch(err => send_error(res, err));
+                    .catch(err => fn.send_error(res, err));
                 };
             })
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         };
     });
     
-    app.delete('/receipts/:id', li, pm.check('receipt_delete'),  (req, res) => {
+    app.delete('/receipts/:id', fn.li(), fn.permissions.check('receipt_delete'),  (req, res) => {
         m.receipts.findOne({
             where: {receipt_id: req.params.id},
             attributes: ['receipt_id']
         })
         .then(receipt => {
-            if (!receipt) send_error(res, 'Receipt not found')
+            if (!receipt) fn.send_error(res, 'Receipt not found')
             else {
                 return receipt.destroy()
                 .then(result => {
-                    if (!result) send_error(res, 'Receipt not deleted')
+                    if (!result) fn.send_error(res, 'Receipt not deleted')
                     else         res.send({success: true,  message: 'Receipt deleted'});
                 })
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             }
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 };

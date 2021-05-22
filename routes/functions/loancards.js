@@ -168,6 +168,64 @@ module.exports = function (m, inc, fn, op) {
         };
     };
 
+    fn.loancards.cancel = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            fn.loancards.get(options.loancard_id)
+            .then(loancard => {
+                if      (loancard.status === 0) reject(new Error('This loancard has already been cancelled'))
+                else if (loancard.status === 2) reject(new Error('This loancard has already been completed'))
+                else if (loancard.status === 3) reject(new Error('This loancard has already been closed'))
+                else if (loancard.status === 1) {
+                    return m.loancard_lines.count({
+                        where: {
+                            loancard_id: loancard.loancard_id,
+                            status: {[fn.op.or]: [2, 3]}
+                        }
+                    })
+                    .then(line_count => {
+                        if (line_count && line_count.length > 0) reject(new Error('Can not cancel a loancard with complete or returned lines'))
+                        else {
+                            let actions = [];
+                            actions.push(loancard.update({status: 0}));
+                            actions.push(
+                                new Promise((resolve, reject) => {
+                                    return m.loancard_lines.update({
+                                        loancard_id: loancard.loancard_id,
+                                        status:      1
+                                    })
+                                    .then(result => {
+                                        return m.actions.create({
+                                            action: 'Loancard cancelled',
+                                            user_id: options.user_id 
+                                        })
+                                        .then(action => {
+                                            resolve(true);
+                                        })
+                                        .catch(err => reject(err));
+                                    })
+                                    .catch(err => reject(err));
+                                }));
+                            return Promise.all(actions)
+                            .then(result => {
+                                if (!result) reject(new Error('Loancard not updated'))
+                                else {
+                                    return m.actions.create({
+                                        action: 'Loancard cancelled',
+                                        loancard_id: loancard.loancard_id
+                                    })
+                                    .then(action => resolve(true))
+                                    .catch(err => resolve(false));
+                                };
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                } else reject(new Error('Unknown loancard status'));
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.loancards.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             return m.loancards.findOrCreate({
@@ -193,7 +251,7 @@ module.exports = function (m, inc, fn, op) {
                     return m.loancard_lines.findAll({
                         where: {
                             loancard_id: loancard.loancard_id,
-                            status:      {[op.or]: [1, 2]}
+                            status:      {[fn.op.or]: [1, 2]}
                         }
                     })
                     .then(lines => {
@@ -220,7 +278,7 @@ module.exports = function (m, inc, fn, op) {
                                 {status: 2},
                                 {where: {
                                     loancard_id: loancard.loancard_id,
-                                    status:      {[op.or]: [1, 2]}
+                                    status:      {[fn.op.or]: [1, 2]}
                                 }}
                             ));
                             return Promise.all(actions)
@@ -248,7 +306,7 @@ module.exports = function (m, inc, fn, op) {
             .then(loancard => {
                 return m.loancard_lines.count({
                     loancard: loancard.loancard_id,
-                    status:   {[op.or]: [1, 2]}
+                    status:   {[fn.op.or]: [1, 2]}
                 })
                 .then(line_count => {
                     if (line_count > 0) resolve(false)
@@ -444,7 +502,7 @@ module.exports = function (m, inc, fn, op) {
                                                     else {
                                                         return m.issues.findOne({where: {issue_id: actions[actions.length - 1].issue_id}})
                                                         .then(issue => {
-                                                            if (!issue) resolve(true)
+                                                            if      (!issue)                                 resolve(true)
                                                             else if ([0, 1, 2, 3, 5].includes(issue.status)) resolve(true)
                                                             else {
                                                                 return issue.update({status: 2})
@@ -456,7 +514,7 @@ module.exports = function (m, inc, fn, op) {
                                                                             loancard_line_id: line.loancard_line_id,
                                                                             user_id: options.user_id
                                                                         })
-                                                                        .then(action => resolve(false))
+                                                                        .then(action => resolve(true))
                                                                         .catch(err => {
                                                                             console.log(err);
                                                                             resolve(false);
@@ -465,13 +523,13 @@ module.exports = function (m, inc, fn, op) {
                                                                 })
                                                                 .catch(err => {
                                                                     console.log(err);
-                                                                    resolve(true);
+                                                                    resolve(false);
                                                                 });
                                                             };
                                                         })
                                                         .catch(err => {
                                                             console.log(err);
-                                                            resolve(true);
+                                                            resolve(false);
                                                         });
                                                     };
                                                 })

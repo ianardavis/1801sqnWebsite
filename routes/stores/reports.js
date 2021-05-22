@@ -1,23 +1,23 @@
-module.exports = (app, m, pm, op, inc, li, send_error) => {
+module.exports = (app, m, inc, fn) => {
     let orders = {}, stock = {};
     require(`${process.env.FUNCS}/stock`) (m, stock);
     require(`${process.env.FUNCS}/orders`)(m, orders)
-    app.get('/reports',     li, pm.get('access_reports'),   (req, res) => res.render('stores/reports/index'));
+    app.get('/reports',     fn.li(), fn.permissions.get('access_reports'),   (req, res) => res.render('stores/reports/index'));
 
-    app.get('/reports/:id', li, pm.check('access_reports'), (req, res) => {
+    app.get('/reports/:id', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
         if (Number(req.params.id) === 1) {
             m.stock.findAll({
-                where: {_qty: {[op.lt]: 0}},
+                where: {_qty: {[fn.op.lt]: 0}},
                 include: [
                     m.locations,
                     inc.sizes()
             ]})
             .then(stock => res.render('stores/reports/show/1', {stock: stock}))
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         } else if (Number(req.params.id) === 2) {
             m.issues.findAll({
                 where: {
-                    _date_due: {[op.lte]: Date.now()},
+                    _date_due: {[fn.op.lte]: Date.now()},
                     _complete: 0
                 },
                 include: [
@@ -26,7 +26,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     ]
             })
             .then(issues => res.render('stores/reports/show/2', {issues: issues}))
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         } else if (Number(req.params.id) === 3) {
             m.items.findAll({
                 include: [{
@@ -41,9 +41,9 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             .then(items => {
                 m.suppliers.findAll()
                 .then(suppliers => res.render('stores/reports/show/3', {items: items, suppliers: suppliers, supplier_id: req.query.supplier_id || 1}))
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             })
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         } else if (Number(req.params.id) === 4) {
             m.items.findAll({
                 include: [{
@@ -52,7 +52,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 }]
             })
             .then(items => res.render('stores/reports/show/4', {items: items}))
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         } else if (Number(req.params.id) === 5) {
             m.locations.findAll({
                 include: [inc.stock({size: true})]
@@ -73,11 +73,11 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                   });
                 res.render('stores/reports/show/5', {locations: locations})
             })
-            .catch(err => send_error(res, err));
-        } else send_error(res, 'Invalid Report');
+            .catch(err => fn.send_error(res, err));
+        } else fn.send_error(res, 'Invalid Report');
     });
 
-    app.post('/reports/3',  li, pm.check('access_reports'), (req, res) => {
+    app.post('/reports/3',  fn.li(), fn.permissions.check('access_reports'), (req, res) => {
         let selected = []
         for (let [key, line] of Object.entries(req.body.selected)) {
             if (Number(line) > 0) selected.push({size_id: key, _qty: line});
@@ -97,16 +97,16 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 })
                 Promise.allSettled(actions)
                 .then(results => res.redirect('/reports/3'))
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             })
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         } else {
             req.flash('info', 'No items selected');
             res.redirect('/reports/3');
         };
     });
 
-    app.post('/reports/5',  li, pm.check('access_reports'), (req, res) => {
+    app.post('/reports/5',  fn.li(), fn.permissions.check('access_reports'), (req, res) => {
         let actions = [];
         for (let [key, value] of Object.entries(req.body.corrections)) {
             if (value) {

@@ -1,4 +1,4 @@
-module.exports = (inc, m) => {
+module.exports = (m, inc) => {
     inc.item = () => {
         return {
             model: m.items,

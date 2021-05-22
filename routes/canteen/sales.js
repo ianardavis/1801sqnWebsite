@@ -1,7 +1,7 @@
-module.exports = (app, m, pm, op, inc, li, send_error) => {
-    app.get('/sales/:id',      li, pm.get('access_sales'),   (req, res) => res.render('canteen/sales/show'));
+module.exports = (app, m, inc, fn) => {
+    app.get('/sales/:id',      fn.li(), fn.permissions.get('access_sales'),   (req, res) => res.render('canteen/sales/show'));
 
-    app.get('/get/sales',      li, pm.check('access_sales'), (req, res) => {
+    app.get('/get/sales',      fn.li(), fn.permissions.check('access_sales'), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
@@ -10,26 +10,26 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
             ]
         })
         .then(sales => res.send({success: true, result: sales}))
-        .catch(err => send_error(res, err))
+        .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/sale',       li, pm.check('access_sales'), (req, res) => {
+    app.get('/get/sale',       fn.li(), fn.permissions.check('access_sales'), (req, res) => {
         m.sales.findOne({
             where: req.query,
             include: [inc.users()]
         })
         .then(sale => {
             if (sale) res.send({success: true,  result: sale})
-            else      send_error(res, 'Sale not found')
+            else      fn.send_error(res, 'Sale not found')
         })
-        .catch(err => send_error(res, err))
+        .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/user_sale',  li, pm.check('access_pos'),   (req, res) => {
+    app.get('/get/user_sale',  fn.li(), fn.permissions.check('access_pos'),   (req, res) => {
         m.sessions.findAll({
             where: {_status: 1},
             attributes: ['session_id']
         })
         .then(sessions => {
-            if (sessions.length !== 1) send_error(res, `${sessions.length} session(s) open`)
+            if (sessions.length !== 1) fn.send_error(res, `${sessions.length} session(s) open`)
             else {
                 return m.sales.findOrCreate({
                     where: {
@@ -39,22 +39,22 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     }
                 })
                 .then(([sale, created]) => res.send({success: true, result: sale.sale_id}))
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             };
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/sale_lines', li, pm.check('access_pos'),   (req, res) => {
+    app.get('/get/sale_lines', fn.li(), fn.permissions.check('access_pos'),   (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
             include: [inc.items()]
         })
         .then(lines => res.send({success: true, result: lines}))
-        .catch(err => send_error(res, err))
+        .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/sale_lines',    li, pm.check('access_pos'),   (req, res) => {
-        if (!req.body.line) send_error(res, 'No line specified')
+    app.post('/sale_lines',    fn.li(), fn.permissions.check('access_pos'),   (req, res) => {
+        if (!req.body.line) fn.send_error(res, 'No line specified')
         else {
             m.sales.findOne({
                 where: {sale_id: req.body.line.sale_id},
@@ -62,15 +62,15 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 attributes: ['sale_id']
             })
             .then(sale => {
-                if      (!sale)                      send_error(res, 'Sale not found')
-                else if (sale.session._status !== 1) send_error(res, 'Session for this sale is not open')
+                if      (!sale)                      fn.send_error(res, 'Sale not found')
+                else if (sale.session._status !== 1) fn.send_error(res, 'Session for this sale is not open')
                 else {
                     return m.canteen_items.findOne({
                         where: {item_id: req.body.line.item_id},
                         attributes: ['item_id', 'price']
                     })
                     .then(item => {
-                        if (!item) send_error(res, 'Item not found')
+                        if (!item) fn.send_error(res, 'Item not found')
                         else {
                             return m.sale_lines.findOrCreate({
                                 where: {
@@ -88,22 +88,22 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                     return line.increment('_qty', {by: req.body.line._qty})
                                     .then(result => {
                                         if (result) res.send({success: true,  message: 'Line updated'})
-                                        else        send_error(res, 'Line not updated');
+                                        else        fn.send_error(res, 'Line not updated');
                                     })
-                                    .catch(err => send_error(res, err));
+                                    .catch(err => fn.send_error(res, err));
                                 };
                             })
-                            .catch(err =>send_error(res, err));
+                            .catch(err =>fn.send_error(res, err));
                         };
                     })
-                    .catch(err => send_error(res, err));
+                    .catch(err => fn.send_error(res, err));
                 };
             })
-            .catch(err => send_error(res, err));
+            .catch(err => fn.send_error(res, err));
         };
     });
     
-    app.put('/sale_lines',     li, pm.check('access_pos'),   (req, res) => {
+    app.put('/sale_lines',     fn.li(), fn.permissions.check('access_pos'),   (req, res) => {
         if (req.body.line) {
             m.sale_lines.findOne({
                 where: {line_id: req.body.line.line_id},
@@ -117,8 +117,8 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                 attributes: ['line_id', '_qty']
             })
             .then(line => {
-                if      (!line)                           send_error(res, 'Line not found')
-                else if (line.sale.session._status !== 1) send_error(res, 'Session for this line is not open')
+                if      (!line)                           fn.send_error(res, 'Line not found')
+                else if (line.sale.session._status !== 1) fn.send_error(res, 'Session for this line is not open')
                 else {
                     return line.increment('_qty', {by: req.body.line._qty})
                     .then(result => {
@@ -131,26 +131,26 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                     return Promise.all(actions)
                                     .then(result => { 
                                         if (result) res.send({success: true,  message: 'Line updated'})
-                                        else send_error(res, 'Line not updated');
+                                        else fn.send_error(res, 'Line not updated');
                                     })
                                 } else res.send({success: true,  message: 'Line updated'});
-                            } else send_error(res, 'Line not updated');
+                            } else fn.send_error(res, 'Line not updated');
                         })
-                        .catch(err => send_error(res, err))
+                        .catch(err => fn.send_error(res, err))
                     })
-                    .catch(err => send_error(res, err));
+                    .catch(err => fn.send_error(res, err));
                 };
             })
-            .catch(err => send_error(res, err));
-        } else send_error(res, 'No line specified');
+            .catch(err => fn.send_error(res, err));
+        } else fn.send_error(res, 'No line specified');
     });
-    app.put('/sales',          li, pm.check('access_pos'),   (req, res) => {
+    app.put('/sales',          fn.li(), fn.permissions.check('access_pos'),   (req, res) => {
         m.sales.findOne({
             where:      {sale_id: req.body.sale_id},
             attributes: ['sale_id', '_status']
         })
         .then(sale => {
-            if (sale._status !== 1) send_error(res, 'Sale is not open')
+            if (sale._status !== 1) fn.send_error(res, 'Sale is not open')
             else {
                 return m.sale_lines.findAll({
                     where: {
@@ -160,7 +160,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                     attributes: ['line_id', 'item_id', '_qty', '_price']
                 })
                 .then(lines => {
-                    if (lines.length === 0) send_error(res, 'No open lines on this sale');
+                    if (lines.length === 0) fn.send_error(res, 'No open lines on this sale');
                     else {
                         let total = 0.00;
                         lines.forEach(line => {
@@ -171,7 +171,7 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                 return m.credits.findOne({where: {user_id: req.body.sale.user_id_debit}})
                                 .then(account => {
                                     if (account) {
-                                        if (account._credit < (total - req.body.sale.tendered)) send_error(res, 'Not enough on account')
+                                        if (account._credit < (total - req.body.sale.tendered)) fn.send_error(res, 'Not enough on account')
                                         else {
                                             let debit_amount = Number(total - req.body.sale.tendered)
                                             return account.decrement('_credit', {by: debit_amount})
@@ -216,16 +216,16 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                                                     })
                                                     return Promise.all(actions)
                                                     .then(result => res.send({success: true, message: 'Sale completed', change: 0.00}))
-                                                    .catch(err => send_error(res, err));
+                                                    .catch(err => fn.send_error(res, err));
                                                 })
-                                                .catch(err => send_error(res, err));
+                                                .catch(err => fn.send_error(res, err));
                                             })
-                                            .catch(err => send_error(res, err));
+                                            .catch(err => fn.send_error(res, err));
                                         };
-                                    } else send_error(res, err);
+                                    } else fn.send_error(res, err);
                                 })
-                                .catch(err => send_error(res, err));
-                            } else send_error(res, 'Not enough tendered');
+                                .catch(err => fn.send_error(res, err));
+                            } else fn.send_error(res, 'Not enough tendered');
                         } else {
                             let actions = [],
                                 change  = Number(req.body.sale.tendered - total);
@@ -275,13 +275,13 @@ module.exports = (app, m, pm, op, inc, li, send_error) => {
                             };
                             return Promise.all(actions)
                             .then(result => res.send({success: true, message: 'Sale completed', change: change}))
-                            .catch(err => send_error(res, err));
+                            .catch(err => fn.send_error(res, err));
                         };
                     };
                 })
-                .catch(err => send_error(res, err));
+                .catch(err => fn.send_error(res, err));
             };
         })
-        .catch(err => send_error(res, err));
+        .catch(err => fn.send_error(res, err));
     });
 };

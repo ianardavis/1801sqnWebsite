@@ -1,5 +1,6 @@
-module.exports = (m, cb) => {
-    cb.get = function (permission, options = {}) {
+module.exports = (m, fn) => {
+    fn.permissions = {};
+    fn.permissions.get = function (permission, options = {}) {
         return function (req, res, next) {
             if (req.user) {
                 return m.findAll({
@@ -7,9 +8,10 @@ module.exports = (m, cb) => {
                     attributes: ['permission']
                 })
                 .then(permissions => {
+                    console.log(permissions)
                     res.locals.permissions = {};
                     permissions.forEach(e => res.locals.permissions[e.permission] = true);
-                    if (res.locals.permissions[permission] ||options.allow) {
+                    if (res.locals.permissions[permission] || options.allow) {
                         req.allowed = (res.locals.permissions[permission] ? true : false);
                         next();
                     } else {
@@ -29,7 +31,7 @@ module.exports = (m, cb) => {
             };
         };
     };
-    cb.check = function (_permission, options = {}) {
+    fn.permissions.check = function (_permission, options = {}) {
         return function (req, res, next) {
             return m.findOne({
                 where: {
