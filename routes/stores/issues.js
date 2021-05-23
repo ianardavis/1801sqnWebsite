@@ -1,7 +1,4 @@
 module.exports = (app, m, inc, fn) => {
-    require(`${process.env.FUNCS}/loancards`)(m, inc, fn);
-    require(`${process.env.FUNCS}/orders`)(m, fn);
-    require(`${process.env.FUNCS}/issues`)(m, fn);
     app.get('/issues',           fn.li(), fn.permissions.get('access_issues',   {allow: true}), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',       fn.li(), fn.permissions.get('access_issues',   {allow: true}), (req, res) => {
         fn.issues.get({issue_id: req.params.id})

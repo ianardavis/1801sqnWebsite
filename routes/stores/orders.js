@@ -1,7 +1,5 @@
 module.exports = (app, m, inc, fn) => {
     let receipts = {}, issues = {};
-    require(`${process.env.FUNCS}/demands`)(m, fn);
-    require(`${process.env.FUNCS}/orders`) (m, fn);
     app.get('/orders',        fn.li(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/index'));
     app.get('/orders/:id',    fn.li(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
     

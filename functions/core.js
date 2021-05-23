@@ -1,4 +1,4 @@
-module.exports = function (m, fn, op) {
+module.exports = function (m, fn) {
     fn.send_error = function (res, err) {
         if (err.message) console.log(err);
         res.send({success: false, message: err.message || err});

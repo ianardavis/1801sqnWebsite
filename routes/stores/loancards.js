@@ -1,6 +1,4 @@
 module.exports = (app, m, inc, fn) => {
-    require(`${process.env.FUNCS}/loancards`) (m, inc, fn);
-    require(`${process.env.FUNCS}/locations`) (m, fn);
     app.get('/loancards',              fn.li(), fn.permissions.get('access_loancards'),                  (req, res) => res.render('stores/loancards/index'));
     app.get('/loancards/:id',          fn.li(), fn.permissions.get('access_loancards'),                  (req, res) => res.render('stores/loancards/show'));
     app.get('/loancards/:id/download', fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
@@ -79,7 +77,7 @@ module.exports = (app, m, inc, fn) => {
         fn.loancards.create({
             loancard: {
                 user_id_loancard: req.body.supplier_id,
-                user_id:     req.user.user_id
+                user_id:          req.user.user_id
             }
         })
         .then(loancard => {
@@ -166,12 +164,12 @@ module.exports = (app, m, inc, fn) => {
                             return m.loancard_lines.findOne({
                                 where:      {line_id: line.line_id},
                                 include:    [inc.sizes({attributes: ['_serials']})],
-                                attributes: ['line_id', '_status', 'size_id', 'serial_id', '_qty']
+                                attributes: ['line_id', 'status', 'size_id', 'serial_id', 'qty']
                             })
                             .then(line => {
-                                if      (!line)              reject(new Error('Loancard line not found'))
-                                else if (!line.size)         reject(new Error('Size not found'))
-                                else if (line._status !== 2) reject(new Error('This line is not issued'))
+                                if      (!line)             reject(new Error('Loancard line not found'))
+                                else if (!line.size)        reject(new Error('Size not found'))
+                                else if (line.status !== 2) reject(new Error('This line is not issued'))
                                 else {
                                     if (line.serial_id) {
                                         return m.serials.findOne({
@@ -183,26 +181,26 @@ module.exports = (app, m, inc, fn) => {
                                             else {
                                                 let update_actions = [];
                                                 update_actions.push(serial.update({issue_id: null, location_id: location_id}));
-                                                update_actions.push(line.update({_status: 3}));
+                                                update_actions.push(line.update({status: 3}));
                                                 update_actions.push(
                                                     new Promise((resolve, reject) => {
                                                         return m.actions.findOne({
                                                             where: {
                                                                 loancard_line_id: line.line_id,
                                                                 issue_id:         {[fn.op.not]: null},
-                                                                _action:          'Added to loancard'
+                                                                action:           'Added to loancard'
                                                             },
                                                             attribute: ['action_id', 'issue_id']
                                                         })
                                                         .then(action => {
                                                             return m.issues.findOne({
                                                                 where:      {issue_id: action.issue_id},
-                                                                attributes: ['issue_id', '_status']
+                                                                attributes: ['issue_id', 'status']
                                                             })
                                                             .then(issue => {
                                                                 if (!issue) reject(new Error('Issue not found'))
                                                                 else {
-                                                                    issue.update({_status: 5})
+                                                                    issue.update({status: 5})
                                                                     .then(result => {
                                                                         if (!result) reject(new Error('Issue not updated'))
                                                                         else         resolve({issue_id: issue.issue_id});

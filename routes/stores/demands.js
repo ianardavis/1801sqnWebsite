@@ -1,5 +1,4 @@
 module.exports = (app, m, inc, fn) => {
-    require(`${process.env.FUNCS}/demands`)(m, fn);
     app.get('/demands',              fn.li(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/index'));
     app.get('/demands/:id',          fn.li(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/show'));
     app.get('/demands/:id/download', fn.li(), fn.permissions.check('access_demands'),      (req, res) => {

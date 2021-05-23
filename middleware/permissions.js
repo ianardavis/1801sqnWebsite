@@ -8,7 +8,6 @@ module.exports = (m, fn) => {
                     attributes: ['permission']
                 })
                 .then(permissions => {
-                    console.log(permissions)
                     res.locals.permissions = {};
                     permissions.forEach(e => res.locals.permissions[e.permission] = true);
                     if (res.locals.permissions[permission] || options.allow) {

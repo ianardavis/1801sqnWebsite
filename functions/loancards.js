@@ -1,4 +1,4 @@
-module.exports = function (m, inc, fn, op) {
+module.exports = function (m, fn) {
     fn.loancards = {lines: {}};
     fn.loancards.get = function (loancard_id) {
         return new Promise((resolve, reject) => {
@@ -16,16 +16,18 @@ module.exports = function (m, inc, fn, op) {
                 attributes: ['loancard_id', 'status', 'createdAt'],
                 where:      {loancard_id: loancard_id},
                 include: [
-                    inc.users({as: 'user_loancard'}),
-                    inc.users({as: 'user'}),
-                    inc.loancard_lines({
+                    {model: m.users, as: 'user_loancard'},
+                    {model: m.users, as: 'user'},
+                    {
+                        model: m.loancard_lines,
+                        as:    'lines',
                         where: {status: 2},
                         include: [
-                            inc.serials({as: 'serial'}),
-                            inc.nsns(   {as: 'nsn'}),
-                            inc.sizes()
+                            {model: m.serials, as: 'serial'},
+                            {model: m.nsns,    as: 'nsn'},
+                            {model: m.sizes,   as: 'size', include: [{model: m.items, as: 'item'}]}
                         ]
-                    })
+                    }
                 ]
             })
             .then(loancard => {
@@ -606,7 +608,174 @@ module.exports = function (m, inc, fn, op) {
     };
     fn.loancards.lines.return = function (options = {}) {
         return new Promise((resolve, reject) => {
-            
+            return fn.loancards.lines.get(options.loancard_line_id)
+            .then(line => {
+                if      (line.status === 0) reject(new Error('This line has been cancelled'))
+                else if (line.status === 1) reject(new Error('This line is still pending'))
+                else if (line.status === 3) reject(new Error('This line has already been returned'))
+                else if (line.status === 2) {
+                    return m.sizes.findOne({
+                        where: {size_id: line.size_id}
+                    })
+                    .then(size => {
+                        return m.locations.findOrCreate({
+                            where: {location: options.location}
+                        })
+                        .then(([location, created]) => {
+                            if (line.serial_id) {
+                                return m.serials.findOne({where: {serial_id: line.serial_id}})
+                                .then(serial => {
+                                    if      (!serial)            reject(new Error('Serial # not found'))
+                                    else if (!serial.issue_id)   reject(new Error('Serial # not issued'))
+                                    else if (serial.location_id) reject(new Error('Serial # already in stock'))
+                                    else {
+                                        return serial.update({
+                                            location_id: location.location_id,
+                                            issue_id:    null
+                                        })
+                                        .then(result => {
+                                            if (!result) reject(new Error('Serial # not updated'))
+                                            else {
+                                                return m.issues.findOne({
+                                                    where: {issue_id: serial.issue_id}
+                                                })
+                                                .then(issue => {
+                                                    if      (!issue)             resolve(false)
+                                                    else if (issue.status !== 4) resolve(false)
+                                                    else {
+                                                        let update_actions = [];
+                                                        update_actions.push(issue.update({status: 5}));
+                                                        update_actions.push(line.update({status: 3}));
+                                                        return Promise.all(update_actions)
+                                                        .then(result => {
+                                                            if (!result) resolve(false)
+                                                            else {
+                                                                return fn.actions.create({
+                                                                    action:  'Loancard line returned',
+                                                                    user_id: options.user_id,
+                                                                    links: [
+                                                                        {table: 'loancard_lines', id: line.loancard_line_id},
+                                                                        {table: 'issues',         id: issue.issue_id}
+                                                                    ]
+                                                                })
+                                                                .then(result => resolve(true))
+                                                                .catch(err => resolve(false));
+                                                            };
+                                                        })
+                                                        .catch(err => resolve(false));
+                                                    };
+                                                })
+                                                .catch(err => reject(err));
+                                            };
+                                        })
+                                        .catch(err => reject(err));
+                                    };
+                                })
+                                .catch(err => reject(err));
+                            } else {
+                                return m.stocks.findOrCreate({
+                                    where: {
+                                        size_id: size.size_id,
+                                        location_id: location.location_id
+                                    }
+                                })
+                                .then(([stock, created]) => {
+                                    return stock.increment('qty', {by: line.qty})
+                                    .then(result => {
+                                        if (!result) reject(new Error('Stock not returned'))
+                                        else {
+                                            return m.actions.findAll({
+                                                where: {action: 'Issue added to loancard'},
+                                                include: [{
+                                                    model: m.action_links,
+                                                    as:    'link',
+                                                    where: {
+                                                        _table: 'loancard_lines',
+                                                        id:     line.loancard_line_id
+                                                    },
+                                                    required: true
+                                                }]
+                                            })
+                                            .then(actions => {
+                                                let _actions = [];
+                                                actions.forEach(action => {
+                                                    _actions.push(new Promise((resolve, reject) => {
+                                                        return m.action_links.findAll({
+                                                            where:   {
+                                                                action_id: action.action_id,
+                                                                _table:    'issues'
+                                                            }
+                                                        })
+                                                        .then(links => {
+                                                            let link_actions = [], issue_list = [];;
+                                                            links.forEach(link => {
+                                                                link_actions.push(new Promise((resolve, reject) => {
+                                                                    return m.issues.findOne({where: {issue_id: link.id}})
+                                                                    .then(issue => {
+                                                                        if (!issue) reject(new Error('Issue not found'))
+                                                                        else {
+                                                                            return issue.update({status: 5})
+                                                                            .then(result => {
+                                                                                if (!result) reject(new Error('Issue not updated'))
+                                                                                else {
+                                                                                    issue_list.push({table: 'issues', id: issue.issue_id})
+                                                                                    resolve(true);
+                                                                                };
+                                                                            })
+                                                                            .catch(err => reject(err));
+                                                                        };
+                                                                    })
+                                                                    .catch(err => reject(err))
+                                                                }));
+                                                            });
+                                                            Promise.allSettled(link_actions)
+                                                            .then(results => {
+                                                                return line.update({status: 3})
+                                                                .then(result => {
+                                                                    if (!result) resolve(false)
+                                                                    else {
+                                                                        return fn.actions.create({
+                                                                            action:  'Loancard line returned',
+                                                                            user_id: options.user_id,
+                                                                            links: [
+                                                                                {table: 'loancard_lines', id: line.loancard_line_id}
+                                                                            ].concat(issue_list)
+                                                                        })
+                                                                        .then(result => resolve(true))
+                                                                        .catch(err => resolve(false));
+                                                                    };
+                                                                })
+                                                                .catch(err => resolve(false));
+                                                            })
+                                                            .catch(err => reject(err));
+                                                        })
+                                                        .catch(err => reject(err));
+                                                    }));
+                                                });
+                                                Promise.allSettled(actions)
+                                                .then(results => resolve(true))
+                                                .catch(err => {
+                                                    console.log(err)
+                                                    resolve(false)
+                                                });
+                                            })
+                                            .catch(err => {
+                                                console.log(err)
+                                                resolve(false)
+                                            });
+                                        };
+                                    })
+                                    .catch(err => reject(err));
+                                })
+                                .catch(err => reject(err));
+                            };
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                } else reject(new Error('Unknown line status'));
+            })
+            .catch(err => reject(err));
         });
     };
 };
