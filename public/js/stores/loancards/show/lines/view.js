@@ -55,7 +55,7 @@ function getLines() {
         });
     });
 };
-function showLine(loancard_line_id) {
+function viewLine(loancard_line_id) {
     get({
         table: 'loancard_line',
         query: [`loancard_line_id=${loancard_line_id}`]
@@ -68,13 +68,14 @@ function showLine(loancard_line_id) {
         set_innerText({id: 'line_user',        text: print_user(line.user)});
         set_innerText({id: 'line_createdAt',   text: print_date(line.createdAt, true)});
         set_innerText({id: 'line_updatedAt',   text: print_date(line.updatedAt, true)});
-        set_href({id: 'line_item_link', value: `/items/${line.size.item_id}`});
-        set_href({id: 'line_size_link', value: `/sizes/${line.size_id}`});
-        set_href({id: 'line_user_link', value: `/users/${line.user_id}`});
+        set_href({id: 'btn_loancard_line_link', value: `/loancard_lines/${line.loancard_line_id}`});
+        set_href({id: 'line_item_link',         value: `/items/${line.size.item_id}`});
+        set_href({id: 'line_size_link',         value: `/sizes/${line.size_id}`});
+        set_href({id: 'line_user_link',         value: `/users/${line.user_id}`});
     });
 };
 addReloadListener(getLines);
 window.addEventListener('load', function () {
     addListener('sel_status', getLines, 'change');
-    modalOnShow('line_view', function (event) {showLine(event.relatedTarget.dataset.id)});
+    modalOnShow('line_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
 });

@@ -106,10 +106,10 @@
                 </table>
             </div>
         <% } %>
-        <%- include(`${partials}/notes/tab_body`) %>
+        <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
     <div id="div_modals">
-        <%- include(`${partials}/notes/modals`) %>
+        <%- include(`${partials}/common/notes/modals`) %>
         <% if (permissions.supplier_edit) { %>
             <div id='mdl_supplier_edit' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
@@ -449,7 +449,7 @@
 <script src='/js/addFormListener.js'></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>');</script>
-<%- include(`${partials}/notes/scripts`) %>
+<%- include(`${partials}/common/notes/scripts`) %>
 
 <script src='/js/stores/suppliers/show/view.js'></script>
 <script async>getSupplier()</script>

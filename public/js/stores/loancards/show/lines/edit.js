@@ -86,7 +86,7 @@ function returnOptions() {
                         let location = new Input({
                             small: true,
                             attributes: [
-                                {field: 'name',        value: `lines[][${options.index}][stock_id]`},
+                                {field: 'name',        value: `lines[][${options.index}][location]`},
                                 {field: 'required',    value: true},
                                 {field: 'placeholder', value: 'Location'},
                                 {field: 'list',        value: `locations_${options.index}`}

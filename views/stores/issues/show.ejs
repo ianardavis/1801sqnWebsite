@@ -30,50 +30,12 @@
 			<%- include(`${partials}/inputs/display`, {id: 'issue_status',     title: 'Status'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'issue_user', 	   title: 'By',   link: true}) %>
 		</div>
-		<% if (permissions.access_actions) { %>
-			<div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
-				<table class='table table-sm table-hover mx-auto w-100'>
-					<thead id='table_header_lines' class="thead-dark">
-						<th class='w-50' onclick="sortTable(0, 'tbl_actions')">Date</th>
-						<th class='w-50' onclick="sortTable(1, 'tbl_actions')">Action</th>
-						<th><i class='fas fa-search'></i></th>
-					</thead>
-					<tbody id="tbl_actions"></tbody>
-				</table>
-			</div>
-		<% } %>
-        <%- include(`${partials}/notes/tab_body`) %>
+        <%- include(`${partials}/common/actions/tab_body`) %>
+        <%- include(`${partials}/common/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
-        <%- include(`${partials}/notes/modals`) %>
-		<% if (permissions.access_actions) { %>
-			<div id='mdl_action_view' class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog modal-lg" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title">Action</h5>
-						</div>
-						<div class="modal-body">
-							<%- include(`${partials}/inputs/display`, {title: 'Action',   	   id: 'action_action'}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Date',     	   id: 'action_createdAt'}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'User',     	   id: 'action_user',     	   link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Location', 	   id: 'action_location', 	   link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Serial #', 	   id: 'action_serial',   	   link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'NSN',      	   id: 'action_nsn',      	   link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Order',    	   id: 'action_order',    	   link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Loancard', 	   id: 'action_loancard', 	   link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Loancard Line', id: 'action_loancard_line', link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Demand',   	   id: 'action_demand',	  	   link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Demand Line',   id: 'action_demand_line',   link: true}) %>
-						</div>
-						<div class="modal-footer">
-							<p class='me-auto'>ID: <span id='action_id'></span></p>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		<% } %>
+        <%- include(`${partials}/common/notes/modals`) %>
+        <%- include(`${partials}/common/actions/modals`) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -81,15 +43,12 @@
 <script src="/js/search/select.js"></script>
 <script src='/js/addFormListener.js'></script>
 <script>showTab('<%= tab %>');</script>
-<%- include(`${partials}/notes/scripts`) %>
+<%- include(`${partials}/common/notes/scripts`) %>
+<%- include(`${partials}/common/actions/scripts`) %>
 
 <script src="/js/stores/issues/show/view.js"></script>
 <script async>getIssue()</script>
 <% if (permissions.issue_delete) { %>
 	<script src="/js/stores/issues/show/delete.js"></script>
-<% } %>
-<% if (permissions.access_actions) { %>
-	<script src="/js/stores/issues/show/actions/view.js"></script>
-	<script async>getActions()</script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

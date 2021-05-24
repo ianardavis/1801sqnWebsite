@@ -1,0 +1,51 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/breadcrumb`, {href: '/stores',	   text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/loancards', text: 'Loancards'}) %>
+<%- include(`${partials}/breadcrumb`, {id: 'bcr_loancard'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+	<ul class="nav nav-tabs" id="mainTab" role="tablist">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Menu
+			</a>
+			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
+				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
+			</div>
+		</li>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard_line'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'actions', count_id: 'action', permission: 'access_actions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes',   count_id: 'note',   permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+			<%- include(`${partials}/inputs/display`, {id: 'line_item',  	 title: 'Item', 	link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'line_size',  	 title: 'Size', 	link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'line_qty',  	 title: 'Quantity'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'line_serial',  	 title: 'Serial #', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'line_user',		 title: 'Added By', link: true}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'line_status',    title: 'Status'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'line_createdAt', title: 'Created'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'line_updatedAt', title: 'Last Updated'}) %>
+		</div>
+        <%- include(`${partials}/common/actions/tab_body`) %>
+        <%- include(`${partials}/common/notes/tab_body`) %>
+	</div>
+	<div id="div_modals">
+        <%- include(`${partials}/common/notes/modals`) %>
+        <%- include(`${partials}/common/actions/modals`) %>
+	</div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/addFormListener.js"></script>
+<script src='/js/tabs.js'></script>
+<script>showTab('<%= tab %>')</script>
+<%- include(`${partials}/common/notes/scripts`) %>
+<%- include(`${partials}/common/actions/scripts`) %>
+
+<script src="/js/stores/loancard_lines/show/view.js"></script>
+<script async>getLoancardLine()</script>
+
+<%- include(`${partials}/foot/elements/htmlClose`) %>

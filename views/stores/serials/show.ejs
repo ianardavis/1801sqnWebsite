@@ -41,22 +41,12 @@
                 </table>
             </div>
         <% } %>
-        <% if (permissions.access_actions) { %>
-            <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
-                <table class='table table-sm table-hover w-100'>
-                    <thead class='thead-dark'>
-                        <th class='w-50' onclick='sortTable(0, "tbl_actions")'>Date</th>
-                        <th class='w-50' onclick='sortTable(1, "tbl_actions")'>Action</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id='tbl_actions'></tbody>
-                </table>
-            </div>
-        <% } %>
-        <%- include(`${partials}/notes/tab_body`) %>
+        <%- include(`${partials}/common/actions/tab_body`) %>
+        <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
     <div id="div_modals">
-        <%- include(`${partials}/notes/modals`) %>
+        <%- include(`${partials}/common/notes/modals`) %>
+        <%- include(`${partials}/common/actions/modals`) %>
         <% if (permissions.serial_edit) { %>
             <div id='mdl_serial_edit' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
@@ -148,7 +138,8 @@
 <script src="/js/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script>showTab('<%= tab %>')</script>
-<%- include(`${partials}/notes/scripts`) %>
+<%- include(`${partials}/common/notes/scripts`) %>
+<%- include(`${partials}/common/actions/scripts`) %>
 <script src='/js/stores/serials/show/view.js'></script>
 <script async>getSerial()</script>
 <% if (permissions.serial_edit) { %>
@@ -161,9 +152,5 @@
 <% if (permissions.access_loancard_lines) { %>
     <script src='/js/stores/serials/show/loancards/view.js'></script>
     <script async>getLoancards()</script>
-<% } %>
-<% if (permissions.access_actions) { %>
-    <script src='/js/stores/serials/show/actions/view.js'></script>
-    <script async>getActions()</script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

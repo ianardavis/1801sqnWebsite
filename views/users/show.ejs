@@ -77,10 +77,10 @@
                 <tbody id="tbl_loancards"></tbody>
             </table>
         </div>
-        <%- include(`${partials}/notes/tab_body`) %>
+        <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
     <div id="div_modals">
-        <%- include(`${partials}/notes/modals`) %>
+        <%- include(`${partials}/common/notes/modals`) %>
         <% if (permissions.user_edit) { %>
             <div id='mdl_user_edit' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
@@ -215,7 +215,7 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
-<%- include(`${partials}/notes/scripts`) %>
+<%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/users/show/view.js'></script>
 <script src="/js/users/show/checkPassword.js"></script>

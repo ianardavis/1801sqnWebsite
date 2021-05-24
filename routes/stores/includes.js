@@ -1,4 +1,12 @@
 module.exports = (m, inc) => {
+    inc.action_links = (options = {}) => {
+        return {
+            where:    options.where || null,
+            model:    m.action_links,
+            as:       'links',
+            required: true
+        };
+    };
     inc.item = () => {
         return {
             model: m.items,

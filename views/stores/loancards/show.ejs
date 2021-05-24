@@ -57,10 +57,12 @@
 				<% if (permissions.loancard_line_edit) { %></form><% } %>
 			</div>
 		<% } %>
-        <%- include(`${partials}/notes/tab_body`) %>
+        <%- include(`${partials}/common/actions/tab_body`) %>
+        <%- include(`${partials}/common/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
-        <%- include(`${partials}/notes/modals`) %>
+        <%- include(`${partials}/common/notes/modals`) %>
+        <%- include(`${partials}/common/actions/modals`) %>
 		<% if (permissions.access_loancard_lines) { %>
 			<div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
@@ -92,7 +94,8 @@
 <script src="/js/search/select.js"></script>
 <script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
-<%- include(`${partials}/notes/scripts`) %>
+<%- include(`${partials}/common/notes/scripts`) %>
+<%- include(`${partials}/common/actions/scripts`) %>
 
 <script src="/js/stores/loancards/show/view.js"></script>
 <script async>getLoancard()</script>

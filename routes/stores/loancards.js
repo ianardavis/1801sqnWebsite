@@ -1,6 +1,7 @@
 module.exports = (app, m, inc, fn) => {
     app.get('/loancards',              fn.li(), fn.permissions.get('access_loancards'),                  (req, res) => res.render('stores/loancards/index'));
     app.get('/loancards/:id',          fn.li(), fn.permissions.get('access_loancards'),                  (req, res) => res.render('stores/loancards/show'));
+    app.get('/loancard_lines/:id',     fn.li(), fn.permissions.get('access_loancard_lines'),             (req, res) => res.render('stores/loancard_lines/show'));
     app.get('/loancards/:id/download', fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
         fn.loancards.get(req.params.id)
         .then(loancard => {
@@ -100,11 +101,10 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/loancard_lines',         fn.li(), fn.permissions.check('loancard_line_edit'),              (req, res) => {
-        let actions = [],
-            cancels = req.body.actions.filter(e => e._status === '0'),
-            returns = req.body.actions.filter(e => e._status === '3');
-        if (cancels.length > 0) actions.push(cancel_lines(cancels, req.user.user_id));
-        if (returns.length > 0) actions.push(return_lines(returns, req.user.user_id));
+        let actions = [];
+        console.log(fn)
+        req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(fn.loancards.lines.return({...line, user_id: req.user.user_id})));
+        req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.loancards.lines.cancel({...line, user_id: req.user.user_id})));
         Promise.all(actions)
         .then(results => res.send({success: true, message: 'Lines actioned'}))
         .catch(err => fn.send_error(res, err));
@@ -152,164 +152,4 @@ module.exports = (app, m, inc, fn) => {
         .then(result => res.send({success: true, message: 'Line cancelled'}))
         .catch(err => fn.send_error(res, err));
     });
-    function return_lines(lines, user_id) {
-        console.log(lines);
-        return new Promise((resolve, reject) => {
-            let actions = [];
-            lines.forEach(line => {
-                actions.push(
-                    new Promise((resolve, reject) => {
-                        return fn.locations.check(line.location)
-                        .then(location_id => {
-                            return m.loancard_lines.findOne({
-                                where:      {line_id: line.line_id},
-                                include:    [inc.sizes({attributes: ['_serials']})],
-                                attributes: ['line_id', 'status', 'size_id', 'serial_id', 'qty']
-                            })
-                            .then(line => {
-                                if      (!line)             reject(new Error('Loancard line not found'))
-                                else if (!line.size)        reject(new Error('Size not found'))
-                                else if (line.status !== 2) reject(new Error('This line is not issued'))
-                                else {
-                                    if (line.serial_id) {
-                                        return m.serials.findOne({
-                                            where:      {serial_id: line.serial_id},
-                                            attributes: ['serial_id', 'location_id', 'issue_id']
-                                        })
-                                        .then(serial => {
-                                            if (!serial) reject(new Error('Serial not found'))
-                                            else {
-                                                let update_actions = [];
-                                                update_actions.push(serial.update({issue_id: null, location_id: location_id}));
-                                                update_actions.push(line.update({status: 3}));
-                                                update_actions.push(
-                                                    new Promise((resolve, reject) => {
-                                                        return m.actions.findOne({
-                                                            where: {
-                                                                loancard_line_id: line.line_id,
-                                                                issue_id:         {[fn.op.not]: null},
-                                                                action:           'Added to loancard'
-                                                            },
-                                                            attribute: ['action_id', 'issue_id']
-                                                        })
-                                                        .then(action => {
-                                                            return m.issues.findOne({
-                                                                where:      {issue_id: action.issue_id},
-                                                                attributes: ['issue_id', 'status']
-                                                            })
-                                                            .then(issue => {
-                                                                if (!issue) reject(new Error('Issue not found'))
-                                                                else {
-                                                                    issue.update({status: 5})
-                                                                    .then(result => {
-                                                                        if (!result) reject(new Error('Issue not updated'))
-                                                                        else         resolve({issue_id: issue.issue_id});
-                                                                    })
-                                                                };
-                                                            })
-                                                            .catch(err => reject(err));
-                                                        })
-                                                        .catch(err => reject(err));
-                                                    })
-                                                );
-                                                return Promise.all(update_actions)
-                                                .then(results => {
-                                                    let issue = results.filter(e => e.issue_id)[0];
-                                                    if (!issue) reject(new Error('Issue ID not found'))
-                                                    else {
-                                                        return m.actions.create({
-                                                            issue_id:         issue.issue_id,
-                                                            loancard_line_id: line.line_id,
-                                                            serial_id:        serial.serial_id,
-                                                            _action:          'Line returned',
-                                                            user_id:          user_id
-                                                        })
-                                                        .then(action => resolve(true))
-                                                        .catch(err => reject(err));
-                                                    };
-                                                })
-                                                .catch(err => reject(err));
-                                            };
-                                        })
-                                        .catch(err => reject(err));
-                                    } else {
-                                        return m.stocks.findOrCreate({
-                                            where: {
-                                                location_id: location_id,
-                                                size_id:     line.size_id
-                                            }
-                                        })
-                                        .then(([stock, created]) => {
-                                            let update_actions = [];
-                                            update_actions.push(stock.increment('_qty', {by: line._qty}));
-                                            update_actions.push(line.update({_status: 3}));
-                                            update_actions.push(
-                                                new Promise((resolve, reject) => {
-                                                    return m.actions.findAll({
-                                                        where: {
-                                                            loancard_line_id: line.line_id,
-                                                            issue_id:         {[fn.op.not]: null},
-                                                            _action:          'Added to loancard'
-                                                        },
-                                                        attribute: ['action_id', 'issue_id']
-                                                    })
-                                                    .then(_actions => {
-                                                        let return_actions = [];
-                                                        _actions.forEach(action => {
-                                                            return_actions.push(
-                                                                new Promise((resolve, reject) => {
-                                                                    return m.issues.findOne({
-                                                                        where:      {issue_id: action.issue_id},
-                                                                        attributes: ['issue_id', '_status']
-                                                                    })
-                                                                    .then(issue => {
-                                                                        if (!issue) reject(new Error('Issue not found'))
-                                                                        else {
-                                                                            return issue.update({_status: 5})
-                                                                            .then(result => {
-                                                                                if (!result) reject(new Error('Issue not updated'))
-                                                                                else {
-                                                                                    return m.actions.create({
-                                                                                        issue_id:         issue.issue_id,
-                                                                                        loancard_line_id: line.line_id,
-                                                                                        stock_id:         stock.stock_id,
-                                                                                        _action:          'Line returned',
-                                                                                        user_id:          user_id
-                                                                                    })
-                                                                                    .then(action => resolve(true))
-                                                                                    .catch(err => reject(err));
-                                                                                };
-                                                                            })
-                                                                        };
-                                                                    })
-                                                                    .catch(err => reject(err));
-                                                                })
-                                                            );
-                                                        });
-                                                        return Promise.all(return_actions)
-                                                        .then(results => resolve(true))
-                                                        .catch(err => reject(err));
-                                                    })
-                                                    .catch(err => reject(err));
-                                                })
-                                            );
-                                            return Promise.all(update_actions)
-                                            .then(results => resolve(true))
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    };
-                                };
-                            })
-                            .catch(err => reject(err));
-                        })
-                        .catch(err => reject(err));
-                    })
-                );
-            });
-            Promise.all(actions)
-            .then(results => resolve(true))
-            .catch(err => reject(err));
-        });
-    };
 };

@@ -1,5 +1,4 @@
-let promiseResults     = require(`../../functions/promise_results`),
-    increment = require(`./stock`).increment;
+let increment = require(`./stock`).increment;
 module.exports = function (m, returns) {
     returns.create = function (options = {}) {
         return new Promise((resolve, reject) => {
@@ -33,7 +32,7 @@ module.exports = function (m, returns) {
                         };
                         Promise.allSettled(actions)
                         .then(result => {
-                            if (promiseResults(result)) resolve({success: true, line_id: return_line.line_id})
+                            if (fn.promise_results(result)) resolve({success: true, line_id: return_line.line_id})
                             else resolve({success: false, message: 'Some actions failed'});
                         })
                         .catch(err => reject(err));
