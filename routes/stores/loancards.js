@@ -102,7 +102,6 @@ module.exports = (app, m, inc, fn) => {
     });
     app.put('/loancard_lines',         fn.li(), fn.permissions.check('loancard_line_edit'),              (req, res) => {
         let actions = [];
-        console.log(fn)
         req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(fn.loancards.lines.return({...line, user_id: req.user.user_id})));
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.loancards.lines.cancel({...line, user_id: req.user.user_id})));
         Promise.all(actions)
@@ -111,36 +110,13 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.delete('/loancards/:id',       fn.li(), fn.permissions.check('loancard_delete'),                 (req, res) => {
-        m.loancards.findOne({
-            where:      {loancard_id: req.params.id},
-            include:    [inc.loancard_lines({where: {_status: {[fn.op.not]: 0}}})],
-            attributes: ['loancard_id', '_status']
+        fn.loancards.cancel({
+            loancard_id: req.params.id,
+            user_id: req.user.user_id
         })
-        .then(loancard => {
-            if      (!loancard)                                   fn.send_error(res, 'Loancard not found')
-            else if (loancard._status === 0)                      fn.send_error(res, 'This loancard is already cancelled')
-            else if (loancard.lines && loancard.lines.length > 0) fn.send_error(res, 'Can not cancel a loancard with it has pending, open or received lines')
-            else {
-                loancard.update({_status: 0})
-                .then(result => {
-                    if (!result) fn.send_error(res, `Error updating loancard: ${err.message}`)
-                    else {
-                        m.notes.create({
-                            _id: loancard.loancard_id,
-                            _table: 'loancards',
-                            _note: 'Cancelled',
-                            _system: 1,
-                            user_id: req.user.user_id
-                        })
-                        .then(note => res.send({success: true,  message: 'Loancard Cancelled'}))
-                        .catch(err => {
-                            console.log(err);
-                            res.send({success: true, message: `Loancard cancelled. Error updating loancard: ${err.message}`})
-                        });
-                    };
-                })
-                .catch(err => fn.send_error(res, err))
-            };
+        .then(result => {
+            if (!result) res.send({success: true, message: 'Loancard cancelled'})
+            else res.send({success: true, message: 'Loancard cancelled, action not created'})
         })
         .catch(err => fn.send_error(res, err));
     });
