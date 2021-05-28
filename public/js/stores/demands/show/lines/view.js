@@ -61,6 +61,7 @@ function showLine(demand_line_id) {
         set_innerText({id: 'line_user',      text: print_user(line.user)});
         set_innerText({id: 'line_createdAt', text: print_date(line.createdAt, true)});
         set_innerText({id: 'line_updatedAt', text: print_date(line.updatedAt, true)});
+        set_href({id: 'btn_demand_line_link', value: `/demand_lines/${line.demand_line_id}`});
         set_href({id: 'line_item_link', value: `/items/${line.size.item_id}`});
         set_href({id: 'line_size_link', value: `/sizes/${line.size_id}`});
         set_href({id: 'line_user_link', value: `/users/${line.user_id}`});

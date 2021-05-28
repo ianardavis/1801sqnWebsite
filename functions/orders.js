@@ -22,19 +22,23 @@ module.exports = function (m, fn) {
                         if (!created) {
                             actions.push(order.increment('qty', {by: line.qty}));
                             actions.push(
-                                m.actions.create({
-                                    action:   `Order incremented${(issue_id ? ' from issue' : '')}`,
-                                    issue_id: issue_id,
-                                    user_id:  user_id,
-                                    order_id: order.order_id
+                                fn.actions.create({
+                                    action:  `Order incremented${(issue_id ? ' from issue' : '')}`,
+                                    user_id: user_id,
+                                    links: [
+                                        {table: 'issues', id: issue_id},
+                                        {table: 'orders', id: order.order_id}
+                                    ]
                                 })
                             )
                         } else if (issue_id) actions.push(
-                            m.actions.create({
-                                action:   'Order created from issue',
-                                issue_id: issue_id,
-                                user_id:  user_id,
-                                order_id: order.order_id
+                            fn.actions.create({
+                                action:  'Order created from issue',
+                                user_id: user_id,
+                                links: [
+                                    {table: 'issues', id: issue_id},
+                                    {table: 'orders', id: order.order_id}
+                                ]
                             })
                         );
                         return Promise.all(actions)

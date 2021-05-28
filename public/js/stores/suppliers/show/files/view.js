@@ -8,7 +8,7 @@ function getFiles() {
         .then(function ([files, options]) {
             set_count({id: 'file', count: files.length || '0'});
             files.forEach(file => {
-                let row = table_body.insertRow(-1);
+                let row = tbl_files.insertRow(-1);
                 add_cell(row, {text: file.filename})
                 add_cell(row, {text: file.description});
                 add_cell(row, {

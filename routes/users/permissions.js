@@ -1,13 +1,36 @@
 module.exports = (app, m, inc, fn) => {
     let permission_tree = [
-        {_permission: 'access_stores', children: [
+        {_permission: 'core_functions', children: [
             {_permission: 'access_actions',   children: []},
+            {_permission: 'access_locations', children: [
+                {_permission: 'location_add'},
+                {_permission: 'location_edit'},
+                {_permission: 'location_delete'}
+            ]},
+            {_permission: 'access_notes',     children: [
+                {_permission: 'note_add'},
+                {_permission: 'note_edit'},
+                {_permission: 'note_delete'}
+            ]},
+            {_permission: 'access_settings',  children: [
+                {_permission: 'setting_add'},
+                {_permission: 'setting_edit'},
+                {_permission: 'setting_delete'}
+            ]}
+        ]},
+        {_permission: 'access_users',     children: [
+            {_permission: 'user_add'},
+            {_permission: 'user_edit'},
+            {_permission: 'user_delete'},
+            {_permission: 'access_permissions', children: [
+                {_permission: 'permission_edit'}
+            ]}
+        ]},
+        {_permission: 'access_stores', children: [
             {_permission: 'access_issues',    children: [
                 {_permission: 'issue_add'},
                 {_permission: 'issue_edit'},
                 {_permission: 'issue_delete'},
-                {_permission: 'issue_approve'},
-                {_permission: 'issue_return'},
                 {_permission: 'access_loancards', children: [
                     {_permission: 'loancard_add'},
                     {_permission: 'loancard_edit'},
@@ -31,10 +54,10 @@ module.exports = (app, m, inc, fn) => {
                         {_permission: 'stock_add'},
                         {_permission: 'stock_edit'},
                         {_permission: 'stock_delete'},
-                        {_permission: 'access_adjusts',    children: [
-                            {_permission: 'adjust_add'},
-                            {_permission: 'adjust_edit'},
-                            {_permission: 'adjust_delete'}
+                        {_permission: 'access_adjustments',    children: [
+                            {_permission: 'adjustment_add'},
+                            {_permission: 'adjustment_edit'},
+                            {_permission: 'adjustment_delete'}
                         ]}
                     ]},
                     {_permission: 'access_serials',     children: [
@@ -47,9 +70,9 @@ module.exports = (app, m, inc, fn) => {
                         {_permission: 'nsn_edit'},
                         {_permission: 'nsn_delete'},
                         {_permission: 'access_nsn_classes', children: [
-                            {_permission: 'nsn_classification_add'},
-                            {_permission: 'nsn_classification_edit'},
-                            {_permission: 'nsn_classification_delete'}
+                            {_permission: 'nsn_class_add'},
+                            {_permission: 'nsn_class_edit'},
+                            {_permission: 'nsn_class_delete'}
                         ]},
                         {_permission: 'access_nsn_countries', children: [
                             {_permission: 'nsn_country_add'},
@@ -71,22 +94,7 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'access_categories', children: [
                     {_permission: 'category_add'},
                     {_permission: 'category_edit'},
-                    {_permission: 'category_delete'},
-                    {_permission: 'access_groups', children: [
-                        {_permission: 'group_add'},
-                        {_permission: 'group_edit'},
-                        {_permission: 'group_delete'},
-                        {_permission: 'access_types', children: [
-                            {_permission: 'type_add'},
-                            {_permission: 'type_edit'},
-                            {_permission: 'type_delete'},
-                            {_permission: 'access_subtypes', children: [
-                                {_permission: 'subtype_add'},
-                                {_permission: 'subtype_edit'},
-                                {_permission: 'subtype_delete'}
-                            ]}
-                        ]}
-                    ]}
+                    {_permission: 'category_delete'}
                 ]},
                 {_permission: 'access_genders',   children: [
                     {_permission: 'gender_add'},
@@ -94,25 +102,10 @@ module.exports = (app, m, inc, fn) => {
                     {_permission: 'gender_delete'}
                 ]}
             ]},
-            {_permission: 'access_locations', children: [
-                {_permission: 'location_add'},
-                {_permission: 'location_edit'},
-                {_permission: 'location_delete'}
-            ]},
-            {_permission: 'access_notes',     children: [
-                {_permission: 'note_add'},
-                {_permission: 'note_edit'},
-                {_permission: 'note_delete'}
-            ]},
             {_permission: 'access_orders',    children: [
                 {_permission: 'order_add'},
                 {_permission: 'order_edit'},
                 {_permission: 'order_delete'}
-            ]},
-            {_permission: 'access_settings',  children: [
-                {_permission: 'setting_add'},
-                {_permission: 'setting_edit'},
-                {_permission: 'setting_delete'}
             ]},
             {_permission: 'access_suppliers', children: [
                 {_permission: 'supplier_add'},
@@ -121,7 +114,12 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'access_files',    children: [
                     {_permission: 'file_add'},
                     {_permission: 'file_edit'},
-                    {_permission: 'file_delete'}
+                    {_permission: 'file_delete'},
+                    {_permission: 'access_file_details', children: [
+                        {_permission: 'file_detail_add'},
+                        {_permission: 'file_detail_edit'},
+                        {_permission: 'file_detail_delete'}
+                    ]}
                 ]},
                 {_permission: 'access_accounts', children: [
                     {_permission: 'account_add'},
@@ -138,11 +136,6 @@ module.exports = (app, m, inc, fn) => {
                         {_permission: 'demand_line_delete'}
                     ]}
                 ]},
-            ]},
-            {_permission: 'access_users',     children: [
-                {_permission: 'access_permissions', children: [
-                    {_permission: 'permission_edit'}
-                ]}
             ]}
         ]},
         {_permission: 'access_canteen', children: [
@@ -157,10 +150,10 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'holding_edit'},
                 {_permission: 'holding_delete'}
             ]},
-            {_permission: 'access_items',       children: [
-                {_permission: 'item_add'},
-                {_permission: 'item_edit'},
-                {_permission: 'item_delete'}
+            {_permission: 'access_canteen_items', children: [
+                {_permission: 'canteen_item_add'},
+                {_permission: 'canteen_item_edit'},
+                {_permission: 'canteen_item_delete'}
             ]},
             {_permission: 'access_movements',   children: [
                 {_permission: 'movement_add'},
@@ -169,15 +162,7 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'pay_out'},
                 {_permission: 'pay_in'}
             ]},
-            {_permission: 'access_notes',       children: [
-                {_permission: 'note_add'},
-                {_permission: 'note_edit'},
-                {_permission: 'note_delete'}
-            ]},
             {_permission: 'access_payments'},
-            {_permission: 'access_permissions', children: [
-                {_permission: 'permission_edit'}
-            ]},
             {_permission: 'access_pos_layouts', children: [
                 {_permission: 'pos_layout_add'},
                 {_permission: 'pos_layout_edit'},
@@ -205,11 +190,6 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'session_edit'},
                 {_permission: 'session_delete'}
             ]},
-            {_permission: 'access_settings',    children: [
-                {_permission: 'setting_add'},
-                {_permission: 'setting_edit'},
-                {_permission: 'setting_delete'}
-            ]},
             {_permission: 'access_writeoffs',   children: [
                 {_permission: 'writeoff_add'},
                 {_permission: 'writeoff_edit'},
@@ -217,11 +197,6 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'access_writeoff_lines', children: [
                     {_permission: 'writeoff_line_add'},
                     {_permission: 'writeoff_line_delete'}
-                ]}
-            ]},
-            {_permission: 'access_users',     children: [
-                {_permission: 'access_permissions', children: [
-                    {_permission: 'permission_edit'}
                 ]}
             ]}
         ]}

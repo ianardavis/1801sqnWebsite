@@ -13,6 +13,7 @@
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
 				<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete', 	  btn_form: {permission: 'loancard_edit'}}) %>
 				<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download', 	  btn_form: true}) %>
+				<%- include(`${partials}/menu/button`, {id: 'print', 	text: 'Print', 	  	  btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'action', 	text: 'Action Lines', form: 'action'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', 	  modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   	  btn_form: {permission: 'loancard_delete'}}) %>

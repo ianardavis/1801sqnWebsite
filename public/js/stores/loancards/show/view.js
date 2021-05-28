@@ -17,7 +17,8 @@ function getLoancard() {
         set_innerText({id: 'loancard_filename',      text: loancard.filename || ''})
         set_href({id: 'loancard_user_loancard_link', value: `/users/${loancard.user_id_loancard}`});
         set_href({id: 'loancard_user_link',          value: `/users/${loancard.user_id}`});
-        if (loancard.filename && loancard.filename !== '') {
+        if ((loancard.filename && loancard.filename !== '') || loancard.status >= 2) {
+            enable_button('print');
             enable_button('download');
             set_attribute({id: 'form_download', attribute: 'method', value: 'GET'});
             set_attribute({id: 'form_download', attribute: 'action', value: `/loancards/${loancard.loancard_id}/download`});
@@ -25,6 +26,8 @@ function getLoancard() {
             remove_attribute({id: 'form_download', attribute: 'method'});
             remove_attribute({id: 'form_download', attribute: 'action'});
         };
+        if ((loancard.filename && loancard.filename !== '')) enable_button('print');
+        else disable_button('print');
         return loancard.status;
     })
     .then(status => {
@@ -34,3 +37,10 @@ function getLoancard() {
     });
 };
 addReloadListener(getLoancard);
+window.addEventListener('load', function () {
+    addFormListener(
+        'print',
+        'GET',
+        `/loancards/${path[2]}/print`
+    );
+});

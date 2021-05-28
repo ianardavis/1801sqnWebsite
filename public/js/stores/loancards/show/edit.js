@@ -5,7 +5,7 @@ window.addEventListener( "load", function () {
     addFormListener(
         'complete',
         'PUT',
-        `/loancards/${path[2]}/complete`,
+        `/loancards/${path[2]}`,
         {
             onComplete: [
                 getLoancard,

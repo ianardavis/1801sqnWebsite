@@ -3,9 +3,9 @@ function viewUserEdit() {
         table: 'user',
         query: [`user_id=${path[2]}`]
     })
-    .then(function (user, options) {
-        listStatuses( {select: 'sel_statuses', selected: user.status_id, id_only: true});
-        listRanks(    {select: 'sel_ranks',    selected: user.rank_id,   id_only: true});
+    .then(function ([user, options]) {
+        listStatuses( {select: 'statuses', selected: user.status_id, id_only: true});
+        listRanks(    {select: 'ranks',    selected: user.rank_id,   id_only: true});
         set_innerText({id: 'full_name_edit',     text: print_user(user)});
         set_value(    {id: 'inp_service_number', value: user.service_number});
         set_value(    {id: 'inp_rank_id',        value: user.rank.rank});

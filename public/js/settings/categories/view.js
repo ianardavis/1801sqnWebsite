@@ -7,7 +7,7 @@ function getCategories(parent_id = '') {
         get(
             {
                 table: 'categories',
-                query: [`parent_category_id=${parent_id}`]
+                query: [`category_id_parent=${parent_id}`]
             },
             function (categories, options) {
                 if (categories.length === 0) {

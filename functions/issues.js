@@ -42,10 +42,10 @@ module.exports = function (m, fn) {
                                     .then(result => {
                                         if (!result) reject(new Error('Existing issue not incremented'))
                                         else {
-                                            return m.actions.create({
-                                                action: `Issue incremented by ${options.qty}`,
-                                                issue_id: issue.issue_id,
-                                                user_id: options.user_id
+                                            return fn.actions.create({
+                                                action:  `Issue incremented by ${options.qty}`,
+                                                user_id: options.user_id,
+                                                links: [{table: 'issues', id: issue.issue_id}]
                                             })
                                             .then(action => resolve(issue.issue_id))
                                             .catch(err => resolve(issue.issue_id));
@@ -69,10 +69,10 @@ module.exports = function (m, fn) {
             .then(result => {
                 if (!result) reject(new Error('Issue not updated'))
                 else {
-                    return m.actions.create({
-                        action:   `Issue ${action}`,
-                        issue_id: issue.issue_id,
-                        user_id:  user_id
+                    return fn.actions.create({
+                        action:  `Issue ${action}`,
+                        user_id: user_id,
+                        links: [{table: 'issues', id: issue.issue_id}]
                     })
                     .then(action => resolve(true))
                     .catch(err => reject(err));
@@ -159,14 +159,8 @@ module.exports = function (m, fn) {
                                 size_id: issue.size_id,
                                 qty:     issue.qty
                             },
-                            user_id,
-                            {
-                                note: ' from issue',
-                                table: {
-                                    column: 'issue_id',
-                                    id:     issue.issue_id
-                                }
-                            }
+                            options.user_id,
+                            issue.issue_id
                         )
                         .then(order => {
                             return update_issue(issue, 3, options.user_id, 'ordered')

@@ -10,14 +10,17 @@ function getDemands() {
         .then(function ([demands, options]) {
             set_count({id: 'demand', count: demands.length || '0'});
             demands.forEach(demand => {
-                let row = tbl_demands.insertRow(-1);
-                add_cell(row, table_date(demand.createdAt));
-                add_cell(row, {text: demand.lines.length});
-                add_cell(row, {text: demand_statuses[demand.status]});
-                add_cell(row, {append: new Link({
-                    href: `/demands/${demand.demand_id}`,
-                    small: true
-                }).e});
+                try {
+                    let row = tbl_demands.insertRow(-1);
+                    add_cell(row, table_date(demand.createdAt));
+                    add_cell(row, {text: demand_statuses[demand.status]});
+                    add_cell(row, {append: new Link({
+                        href: `/demands/${demand.demand_id}`,
+                        small: true
+                    }).e});
+                } catch (err) {
+                    console.log(err);
+                };
             });
         });
     })

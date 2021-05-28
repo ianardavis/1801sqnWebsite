@@ -81,7 +81,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[_name]',    id: '_name_edit',    required: true, maxLength: '45'}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[_name]',    id: '_name_edit',    required: true, maxlength: '45'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[_price]',   id: '_price_edit',   required: true, step: '0.01', min: '0'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[_cost]',    id: '_cost_edit',    required: true, step: '0.01', min: '0'}) %>
                         <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[_current]', id: '_current_edit', options: [{value: '1', text: 'Yes'}, {value: '0', text: 'No'}]}) %>
@@ -105,7 +105,7 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name='writeoff[item_id]' id='item_id_writeoff'>
-                        <%- include(`${partials}/inputs/text`,   {title: 'Reason',   name: 'writeoff[_reason]', required: true, maxLength: '45'}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Reason',   name: 'writeoff[_reason]', required: true, maxlength: '45'}) %>
                         <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'writeoff[_qty]',    required: true, min: '1'}) %>
                     </div>
                     <div class="modal-footer">

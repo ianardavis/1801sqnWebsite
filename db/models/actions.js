@@ -9,49 +9,9 @@ module.exports = function(sequelize, DataTypes) {
       comment: "null",
       primaryKey: true
     },
-    'issue_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
-    'order_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
     'action': {
       type: DataTypes.TEXT,
       allowNull: false,
-      comment: "null"
-    },
-    'stock_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
-    'serial_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
-    'location_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
-    'nsn_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
-    'loancard_line_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
-    'demand_line_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
       comment: "null"
     },
     'user_id': {
@@ -66,16 +26,6 @@ module.exports = function(sequelize, DataTypes) {
     },
     'updatedAt': {
       type: DataTypes.DATE,
-      allowNull: true,
-      comment: "null"
-    },
-    'loancard_id': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
-    'demand_id': {
-      type: DataTypes.UUIDV4,
       allowNull: true,
       comment: "null"
     }

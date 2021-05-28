@@ -4,16 +4,22 @@ module.exports = (app, m, inc, fn) => {
     app.get('/demands/:id/download', fn.li(), fn.permissions.check('access_demands'),      (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
-            attributes: ['filename']
+            attributes: ['demand_id', 'filename']
         })
         .then(demand => {
             if      (!demand)          fn.send_error(res, 'Demand not found')
-            else if (!demand.filename) fn.send_error(res, 'This demand does not have a file')
-            else fn.download(demand.filename, req, res);
+            else if (!demand.filename) {
+                return fn.demands.raise(demand.demand_id, req.user)
+                .then(file => {
+                    fn.download('demands', file, res);
+                })
+                .catch(err => fn.send_error(res, err));
+            } else fn.download('demands', demand.filename, res);
         })
         .catch(err => fn.send_error(res, err));
     });
-
+    app.get('/demand_lines/:id',     fn.li(), fn.permissions.get('access_demand_lines'),   (req, res) => res.render('stores/demand_lines/show'));
+    
     app.get('/count/demands',        fn.li(), fn.permissions.check('access_demands'),      (req, res) => {
         m.demands.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
@@ -68,8 +74,7 @@ module.exports = (app, m, inc, fn) => {
             include: [
                 inc.size(),
                 inc.user(),
-                inc.demand(),
-                inc.actions({include: [inc.orders()]})
+                inc.demand()
             ]
         })
         .then(line => res.send({success: true, result: line}))
@@ -103,7 +108,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/demands/:id/complete', fn.li(), fn.permissions.check('demand_edit'),         (req, res) => {
-        fn.demands.complete(req.params.id, req.user.user_id)
+        fn.demands.complete(req.params.id, req.user)
         .then(result => res.send(result))
         .catch(err => fn.send_error(res, err));
     });

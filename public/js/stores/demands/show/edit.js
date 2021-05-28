@@ -1,3 +1,15 @@
+function setCompleteButton() {
+    get({
+        table: 'demand',
+        query: [`demand_id=${path[2]}`]
+    })
+    .then(function([demand, options]) {
+        if (demand.status === 1) enable_button('complete')
+        else                     disable_button('complete');
+        if (demand.status === 2) enable_button('close')
+        else                     disable_button('close');
+    });
+};
 window.addEventListener( "load", function () {
     setCompleteButton();
     addFormListener(
@@ -23,15 +35,3 @@ window.addEventListener( "load", function () {
         }
     );
 });
-function setCompleteButton() {
-    get({
-        table: 'demand',
-        query: [`demand_id=${path[2]}`]
-    })
-    .then(function([demand, options]) {
-        if (demand.status === 1) enable_button('complete')
-        else                     disable_button('complete');
-        if (demand.status === 2) enable_button('close')
-        else                     disable_button('close');
-    });
-};

@@ -30,8 +30,8 @@
 							<h5 class="modal-title">Add Item</h5>
 						</div>
 						<div class="modal-body">
-							<%- include(`${partials}/inputs/text`,	 {title: 'Description', name: 'item[description]', placeholder: 'Required', maxLength: 45, required: true}) %>
-							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text',	name: 'item[size_text]',   placeholder: 'Required', maxLength: 45, required: true}) %>
+							<%- include(`${partials}/inputs/text`,	 {title: 'Description', name: 'item[description]', placeholder: 'Required', maxlength: 45, required: true}) %>
+							<%- include(`${partials}/inputs/text`,	 {title: 'Size Text',	name: 'item[size_text]',   placeholder: 'Required', maxlength: 45, required: true}) %>
 							<%- include(`${partials}/inputs/select`, {title: 'Gender',		name: 'item[gender_id]',   id: 'sel_genders_add',	spinner_id: 'genders_add', reload_id: 'reload_genders_add'}) %>
 						</div>
 						<div class="modal-footer">

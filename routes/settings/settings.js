@@ -1,5 +1,6 @@
+const ptp = require('pdf-to-printer');
 module.exports = (app, m, inc, fn) => {
-    app.get('/settings',        fn.li(), fn.permissions.get('access_settings'),   (req, res) => res.render('stores/settings/show'));
+    app.get('/settings',        fn.li(), fn.permissions.get('access_settings'),   (req, res) => res.render('settings/show'));
 
     app.get('/get/settings',    fn.li(), fn.permissions.check('access_settings'), (req, res) => {
         m.settings.findAll({
@@ -14,6 +15,13 @@ module.exports = (app, m, inc, fn) => {
         .then(setting => {
             if (!setting) fn.send_error(res, 'Setting not found')
             else          res.send({success: true, result: setting})
+        })
+        .catch(err => fn.send_error(res, err));
+    });
+    app.get('/get/printers',    fn.li(), fn.permissions.check('access_settings'), (req, res) => {
+        ptp.getPrinters()
+        .then(printers => {
+            res.send({success: true, result: printers});
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -34,6 +42,10 @@ module.exports = (app, m, inc, fn) => {
         m.settings.create({...req.body.setting, ...{user_id: req.user.user_id}})
         .then(setting => res.send({success: true, message: 'Setting created'}))
         .catch(err => fn.send_error(res, err));
+    });
+    app.post('/printers',       fn.li(), fn.permissions.check('setting_edit'),    (req, res) => {
+        console.log(req.body);
+        res.send({success: true, message: 'tada'});
     });
     
     app.delete('/settings/:id', fn.li(), fn.permissions.check('setting_delete'),  (req, res) => {

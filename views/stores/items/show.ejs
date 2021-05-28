@@ -113,8 +113,8 @@
                             </h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {id: 'description_edit', title: 'Description', name: 'item[description]', placeholder: 'Required', maxLength: 45, required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: 'size_text_edit',   title: 'Size Text',   name: 'item[size_text]',   placeholder: 'Required', maxLength: 45, required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'description_edit', title: 'Description', name: 'item[description]', placeholder: 'Required', maxlength: 45, required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'size_text_edit',   title: 'Size Text',   name: 'item[size_text]',   placeholder: 'Required', maxlength: 45, required: true}) %>
                             <%- include(`${partials}/inputs/select`, {id: 'sel_genders',      title: 'Gender',      spinner_id: 'genders',     permission: 'access_genders'}) %>
                         </div>
                         <div class="modal-footer">

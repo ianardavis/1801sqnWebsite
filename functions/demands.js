@@ -17,7 +17,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.demands.complete = function (demand_id, user_id) {
+    fn.demands.complete = function (demand_id, user) {
         return new Promise((resolve, reject) => {
             return getDemand({demand_id: demand_id})
             .then(demand => {
@@ -36,13 +36,13 @@ module.exports = function (m, fn) {
                                 lines.forEach(line => actions.push(line.update({status: 2})))
                                 return Promise.all(actions)
                                 .then(result => {
-                                    return m.actions.create({
-                                        demand_id: demand.demand_id,
-                                        action:    'Completed',
-                                        user_id:   user_id
+                                    return fn.actions.create({
+                                        action:  'Demand completed',
+                                        user_id: user.user_id,
+                                        links: [{table: 'demands', id: demand.demand_id}]
                                     })
                                     .then(action => {
-                                        return raise_demand(demand.demand_id)
+                                        return fn.demands.raise(demand.demand_id, user)
                                         .then(filename => resolve({success: true, message: `Demand completed. Filename: ${filename}`}))
                                         .catch(err => {
                                             console.log(err);
@@ -113,10 +113,10 @@ module.exports = function (m, fn) {
                             .then(result => {
                                 if (!result) reject(new Error('Demand not updated'))
                                 else {
-                                    return m.actions.create({
-                                        action:    'Demand cancelled',
-                                        demand_id: demand.demand_id,
-                                        user_id:   user_id
+                                    return fn.actions.create({
+                                        action:  'Demand cancelled',
+                                        user_id: user_id,
+                                        links: [{table: 'demands', id: demand.demand_id}]
                                     })
                                     .then(action => resolve(true))
                                     .catch(err => {
@@ -134,7 +134,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function raise_demand(demand_id) {
+    fn.demands.raise = function (demand_id, user) {
         return new Promise((resolve, reject) => {
             getDemand({demand_id: demand_id})
             .then(demand => {
@@ -144,14 +144,15 @@ module.exports = function (m, fn) {
                     return get_template(demand.supplier_id)
                     .then(([template, account, supplier_id]) => {
                         return getDemandLines(
-                            {where: demand.demand_id},
-                            [
-                                {
-                                    model: m.sizes,
-                                    as: 'size',
-                                    include: [m.details]
-                                }
-                            ]
+                            {
+                                demand_id: demand.demand_id,
+                                status: 2
+                            },
+                            [{
+                                model:   m.sizes,
+                                as:      'size',
+                                include: [m.details]
+                            }]
                         )
                         .then(demand_lines => {
                             return get_orders(demand_lines)
@@ -160,14 +161,15 @@ module.exports = function (m, fn) {
                                 .then(sizes => {
                                     return get_users(orders)
                                     .then(users => {
-                                        return create_file(template, demand.demand_id)
+                                        return create_file(template.filename, demand.demand_id)
                                         .then(file => {
-                                            return write_cover_sheet(template, account, file, users)
+                                            return write_cover_sheet(template, account, file, users, user)
                                             .then(result => {
                                                 return write_items(file, sizes)
                                                 .then(fails => {
-                                                    if (fails && fails.length > 0) resolve(file)
-                                                    else                           resolve(file);
+                                                    return demand.update({filename: file})
+                                                    .then(result => resolve(file))
+                                                    .catch(err => resolve(file));
                                                 })
                                                 .catch(err => reject(err));
                                             })
@@ -196,8 +198,11 @@ module.exports = function (m, fn) {
                 if (demand.status !== 2) reject(new Error('This demand is not complete'))
                 else {
                     return getDemandLines(
-                        {demand_id: demand_id},
-                        [{model: m.demand_lines, as: 'lines', where: {status: {[fn.op.or]: [1, 2]}}}],
+                        {
+                            demand_id: demand_id,
+                            status: {[fn.op.or]: [1, 2]}
+                        },
+                        [],
                         {allowNull: true}
                     )
                     .then(lines => {
@@ -207,10 +212,10 @@ module.exports = function (m, fn) {
                             .then(result => {
                                 if (!result) reject(new Error('Demand not updated'))
                                 else {
-                                    return m.actions.create({
-                                        demand_id: demand.demand_id,
+                                    return fn.actions.create({
                                         note:      'Closed',
-                                        user_id:   user_id
+                                        user_id:   user_id,
+                                        links: [{table: 'demands', id: demand.demand_id}]
                                     })
                                     .then(action => resolve(true))
                                     .catch(err => {
@@ -263,11 +268,13 @@ module.exports = function (m, fn) {
                                 else {
                                     return line.increment('qty', {by: options.qty})
                                     .then(result => {
-                                        return m.actions.create({
-                                            demand_line_id: line.line_id,
-                                            action:         `Demand line incremented by ${options.qty}${(options.order_id ? ' by order' : '')}`,
-                                            order_id:       options.order_id || null,
-                                            user_id:        options.user_id
+                                        return fn.actions.create({
+                                            action:  `Demand line incremented by ${options.qty}${(options.order_id ? ' by order' : '')}`,
+                                            user_id: options.user_id,
+                                            links: [
+                                                {table: 'demand_lines', id: line.demand_line_id},
+                                                ...(options.order_id ? {table: 'orders', id: options.order_id} : null)
+                                            ]
                                         })
                                         .then(action => resolve(line.demand_line_id))
                                         .catch(err => reject(err));
@@ -348,10 +355,10 @@ module.exports = function (m, fn) {
                     let actions = [];
                     actions.push(line.update({status: 0}));
                     actions.push(
-                        m.actions.create({
-                            action:         'Demand line cancelled',
-                            demand_line_id: line.demand_line_id,
-                            user_id:        user_id
+                        fn.actions.create({
+                            action:  'Demand line cancelled',
+                            user_id: user_id,
+                            links: [{table: 'demand_lines', id: line.demand_line_id}]
                         })
                     );
                     actions.push(
@@ -369,10 +376,10 @@ module.exports = function (m, fn) {
                                     if (action.order && action.order.status === 3) {
                                         order_actions.push(action.order.update({status: 2}));
                                         order_actions.push(
-                                            m.actions.create({
-                                                action:   'Demand line cancelled',
-                                                order_id: action.order_id,
-                                                user_id:  user_id
+                                            fn.actions.create({
+                                                action:  'Demand line cancelled',
+                                                user_id: user_id,
+                                                links: [{table: 'orders', id: action.order_id}]
                                             })
                                         );
                                     };
@@ -462,8 +469,30 @@ module.exports = function (m, fn) {
             return getSupplier(
                 {supplier_id: supplier_id},
                 [
-                    {model: m.files, include: [{model: m.file_details, as: 'details'}], where: {description: 'Demand'}, required: false},
-                    {model: m.accounts, as: 'account'}
+                    {
+                        model:    m.files,
+                        where:    {description: 'Demand'},
+                        required: false,
+                        include: [
+                            {model: m.file_details, as: 'details'}
+                        ]
+                    },
+                    {
+                        model: m.accounts,
+                        as: 'account',
+                        include: [
+                            {
+                                model: m.users,
+                                as: 'user',
+                                include: [
+                                    {
+                                        model: m.ranks,
+                                        as: 'rank'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ]
             )
             .then(supplier => {
@@ -482,18 +511,30 @@ module.exports = function (m, fn) {
             lines.forEach(line => {
                 actions.push(
                     new Promise((resolve, reject) => {
-                        m.actions.findAll({
-                            where:      {
-                                demand_line_id: line.line_id,
-                                order_id:       {[fn.op.not]: null}
-                            },
-                            attributes: ['order_id']
+                        m.action_links.findAll({
+                            where: {_table: 'orders'},
+                            include: [
+                                {
+                                    model: m.actions,
+                                    as: 'action',
+                                    where: {action: 'Order added to demand'},
+                                    include: [
+                                        {
+                                            model: m.action_links,
+                                            as: 'links',
+                                            where: {_table: 'demand_lines', id: line.demand_line_id},
+                                            required: true
+                                        }
+                                    ],
+                                    required: true
+                                }
+                            ]
                         })
                         .then(_actions => {
                             if (!_actions || _actions.length === 0) resolve([])//reject(new Error('No orders for this line'))
                             else {
                                 let orders = [];
-                                _actions.forEach(action => orders.push(action.order_id));
+                                _actions.forEach(action => orders.push(action.id));
                                 resolve(orders);
                             };
                         })
@@ -541,26 +582,56 @@ module.exports = function (m, fn) {
     function get_users(orders) {
         return new Promise((resolve, reject) => {
             let actions = [];
-            orders.forEach(order => {
+            orders.forEach(order_id => {
                 actions.push(
                     new Promise((resolve, reject) => {
-                        m.actions.findAll({
-                            where:      {
-                                order_id: order,
-                                issue_id: {[fn.op.not]: null}
-                            },
-                            include: [{model: m.issues, as: 'issue'}],
-                            attributes: ['issue_id']
+                        m.action_links.findAll({
+                            where: {_table: 'issues'},
+                            include: [
+                                {
+                                    model: m.actions,
+                                    as: 'action',
+                                    where: {
+                                        action: {[fn.op.or]: ['Order created from issue', 'Order incremented from issue']}
+                                    },
+                                    required: true,
+                                    include: [
+                                        {
+                                            model: m.action_links,
+                                            as: 'links',
+                                            where: {_table: 'orders', id: order_id},
+                                            required: true
+                                        }
+                                    ]
+                                }
+                            ]
                         })
-                        .then(_actions => {
-                            if (!_actions || _actions.length === 0) resolve([]) //reject(new Error('No issues for this order'))
+                        .then(links => {
+                            if (!links || links.length === 0) resolve([]) //reject(new Error('No issues for this order'))
                             else {
-                                let issues = [];
-                                _actions.forEach(action => {
-                                    if (action.issue) issues.push(action.issue.user_issue);
+                                let issues = [], get_issues = [];
+                                links.forEach(link => {
+                                    get_issues.push(
+                                        new Promise((resolve, reject) => {
+                                            return m.issues.findOne({
+                                                where: {issue_id: link.id},
+                                                include: [{model: m.users, as: 'user_issue', include: [{model: m.ranks, as: 'rank'}]}]
+                                            })
+                                            .then(issue => {
+                                                if      (!issue)            reject(new Error('Issue not found'))
+                                                else if (!issue.user_issue) reject(new Error('User not found'))
+                                                else {
+                                                    issues.push(issue.user_issue);
+                                                    resolve(true)
+                                                };
+                                            })
+                                            .catch(err => reject(err));
+                                        })
+                                    );
                                 });
-                                if (!issues || issues.length === 0) resolve([]) //reject(new Error('No issues for this order'))
-                                else                                resolve(issues);
+                                return Promise.allSettled(get_issues)
+                                .then(results => resolve(issues))
+                                .catch(err => reject(err))
                             };
                         })
                         .catch(err => reject(err))
@@ -570,12 +641,12 @@ module.exports = function (m, fn) {
             Promise.allSettled(actions)
             .then(results => {
                 let users = [];
-                results.filter(e => e.status === 'fulfilled').forEach(e => {
+                results.filter(e => e.status === 'fulfilled' && e.value.length > 0).forEach(e => {
                     e.value.forEach(user => {
                         if (users.findIndex(e => e.user_id === user.user_id) === -1) {
                             users.push({
                                 user_id: user.user_id,
-                                full:    user.full_name,
+                                name:    user.full_name,
                                 rank:    user.rank.rank
                             })
                         };
@@ -586,67 +657,56 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function create_file(file, demand_id) {
+    function create_file(filename, demand_id) {
         return new Promise((resolve, reject) => {
-            const fs = require('fs'),
-                  { COPYFILE_EXCL } = fs.constants;
-            if (file) {
-                let path     = `${process.env.ROOT}/public/res`,
-                    new_file = `demands/demand-${demand_id}.xlsx`;
-                fs.copyFile(`${path}/files/${file.filename}`, `${path}/${new_file}`, COPYFILE_EXCL, function (err) {
-                    if (err) {
-                        if (err.code === 'EEXIST') reject(new Error('File already exists for this demand'))
-                        else                       reject(new Error(err));
-                    } else resolve(new_file);
-                });
+            const fs = require('fs');
+            if (filename) {
+                let new_file = `${demand_id}.xlsx`;
+                fs.copyFile(
+                    `${process.env.ROOT}/public/res/files/${filename}`,
+                    `${process.env.ROOT}/public/res/demands/${new_file}`,
+                    function (err) {
+                        if (err) reject(new Error(err))
+                        else     resolve(new_file);
+                    }
+                );
             } else reject(new Error('No demand file specified'));
         });
     };
-    function write_cover_sheet(template, account, file, users) {
+    function write_cover_sheet(template, account, file, users, raised_by_user) {
         return new Promise((resolve, reject) => {
-            if (template.details.filter(e => e.name === 'Cover sheet').length === 1) {
+            let details = {};
+            details.cover_sheet = template.details.filter(e => e.name.toLowerCase() === 'cover sheet')[0].value
+            if (details.cover_sheet) {
+                ['code', 'name', 'rank', 'holder', 'squadron', 'date', 'rank column', 'name column', 'user start', 'user end'].forEach(e => {
+                    if (template.details.filter(d => d.name.toLowerCase() === e).length === 1) {
+                        details[e.replace(' ', '_')] = template.details.filter(d => d.name.toLowerCase() === e)[0].value
+                    };
+                });
                 let ex       = require('exceljs'),
                     workbook = new ex.Workbook(),
-                    path     = `${process.env.ROOT}/public/res/`;
+                    path     = `${process.env.ROOT}/public/res/demands`;
                 workbook.xlsx.readFile(`${path}/${file}`)
                 .then(() => {
                     try {
-                        let worksheet = workbook.getWorksheet(template._cover_sheet);
-                        if (template.details.filter(e => e.name === 'Code').length === 1) {
-                            let cell_code = worksheet.getCell(template.details.filter(e => e.name === 'Code')[0].value);
-                            cell_code.value = account.number;
-                        };
-
-                        if (template.details.filter(e => e.name === 'Rank').length === 1) {
-                            let cell_rank = worksheet.getCell(template.details.filter(e => e.name === 'Rank')[0].value);
-                            cell_rank.value = account.user.rank.rank;
-                        };
-
-                        if (template.details.filter(e => e.name === 'Holder').length === 1) {
-                            let cell_name = worksheet.getCell(template.details.filter(e => e.name === 'Holder')[0].value);
-                            cell_name.value = account.user.full_name;
-                        };
-
-                        if (template.details.filter(e => e.name === 'Squadron').length === 1) {
-                            let cell_sqn = worksheet.getCell(template.details.filter(e => e.name === 'Squadron')[0].value);
-                            cell_sqn.value = account.name;
-                        };
-
-                        if (template.details.filter(e => e.name === 'Date').length === 1) {
-                            let cell_date = worksheet.getCell(template.details.filter(e => e.name === 'Date')[0].value);
-                            cell_date.value = new Date().toDateString();
-                        };
+                        let worksheet = workbook.getWorksheet(details.cover_sheet);
+                        if (details.code)     worksheet.getCell(details.code)    .value = account.number;
+                        if (details.name)     worksheet.getCell(details.name)    .value = raised_by_user.full_name;
+                        if (details.rank)     worksheet.getCell(details.rank)    .value = raised_by_user.rank.rank;
+                        if (details.holder)   worksheet.getCell(details.holder)  .value = `${account.user.rank.rank} ${account.user.full_name}`;
+                        if (details.squadron) worksheet.getCell(details.squadron).value = account.name;
+                        if (details.date)     worksheet.getCell(details.date)    .value = new Date().toDateString();
                         if (
                             users &&
-                            template.details.filter(e => e.name === 'Rank column').length === 1 &&
-                            template.details.filter(e => e.name === 'Name column').length === 1 &&
-                            template.details.filter(e => e.name === 'User start') .length === 1 &&
-                            template.details.filter(e => e.name === 'User end')   .length === 1
+                            details.rank_column &&
+                            details.name_column &&
+                            details.user_start  &&
+                            details.user_end
                         ) {
-                            let line = new counter();
-                            for (let r = Number(template.details.filter(e => e.name === 'User start')[0].value); r <= Number(template.details.filter(e => e.name === 'User end')[0].value); r++) {
-                                let rankCell = worksheet.getCell(template.details.filter(e => e.name === 'Rank column')[0].value + r),
-                                    nameCell = worksheet.getCell(template.details.filter(e => e.name === 'Name column')[0].value + r),
+                            let line = new fn.counter();
+                            for (let r = Number(details.user_start); r <= Number(details.user_end); r++) {
+                                let rankCell = worksheet.getCell(details.rank_column + r),
+                                    nameCell = worksheet.getCell(details.name_column + r),
                                     currentLine = line() - 1,
                                     sortedKeys = Object.keys(users).sort(),
                                     user = users[sortedKeys[currentLine]];
@@ -656,7 +716,6 @@ module.exports = function (m, fn) {
                                 } else break;
                             };
                         };
-                        
                         workbook.xlsx.writeFile(`${path}/${file}`)
                         .then(() => resolve(true))
                         .catch(err => reject(err));
@@ -671,7 +730,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             let ex       = require('exceljs'),
                 workbook = new ex.Workbook(),
-                path     = `${process.env.ROOT}/public/res/`;
+                path     = `${process.env.ROOT}/public/res/demands`;
             workbook.xlsx.readFile(`${path}/${file}`)
             .then(() => {
                 let fails = [];
@@ -719,12 +778,14 @@ module.exports = function (m, fn) {
                                             .then(result => {
                                                 if (!result) reject(new Error('Existing serial not updated'))
                                                 else {
-                                                    return m.actions.create({
-                                                        action:         'Received',
-                                                        demand_line_id: line.demand_line_id,
-                                                        location_id:    location.location_id,
-                                                        serial_id:      serial.serial_id,
-                                                        user_id:        user_id
+                                                    return fn.actions.create({
+                                                        action:  'Received',
+                                                        user_id: user_id,
+                                                        links: [
+                                                            {table: 'demand_lines', id: line.demand_line_id},
+                                                            {table: 'locations', id: location.location_id},
+                                                            {table: 'serials', id: serial.serial_id}
+                                                        ]
                                                     })
                                                     .then(action => resolve(true))
                                                     .catch(err => {
@@ -736,12 +797,14 @@ module.exports = function (m, fn) {
                                             .catch(err => reject(err));
                                         }
                                     } else {
-                                        return m.actions.create({
-                                            action:         'Received',
-                                            demand_line_id: line.demand_line_id,
-                                            location_id:    location.location_id,
-                                            serial_id:      serial.serial_id,
-                                            user_id:        user_id
+                                        return fn.actions.create({
+                                            action:  'Received',
+                                            user_id: user_id,
+                                            links: [
+                                                {table: 'demand_lines', id: line.demand_line_id},
+                                                {table: 'locations', id: location.location_id},
+                                                {table: 'serials', id: serial.serial_id}
+                                            ]
                                         })
                                         .then(action => resolve(true))
                                         .catch(err => {
@@ -764,10 +827,10 @@ module.exports = function (m, fn) {
                 else {
                     let actions = [];
                     actions.push(line.update({status: 3}));
-                    actions.push(m.actions.create({
-                        action:         'Received',
-                        demand_line_id: line.demand_line_id,
-                        user_id:        user_id
+                    actions.push(fn.actions.create({
+                        action:  'Received',
+                        user_id: user_id,
+                        links: [{table: 'demand_lines', id: line.demand_line_id}]
                     }));
                     return Promise.all(actions)
                     .then(result => {
@@ -778,10 +841,10 @@ module.exports = function (m, fn) {
                                 if (!result) reject(new Error('Line quantity not updated'))
                                 else {
                                     if (success_count > line.qty) {
-                                        return m.actions.create({
-                                            action:         'Quantity increased by over receipt',
-                                            demand_line_id: line.demand_line_id,
-                                            user_id:        user_id
+                                        return fn.actions.create({
+                                            action:  'Quantity increased by over receipt',
+                                            user_id: user_id,
+                                            links: [{table: 'demand_lines', id: line.demand_line_id}]
                                         })
                                         .then(result => resolve(true))
                                         .catch(err => {
@@ -797,10 +860,10 @@ module.exports = function (m, fn) {
                                             user_id:   user_id
                                         })
                                         .then(new_line => {
-                                            return m.actions.create({
-                                                action:         'Line created by partial receipt',
-                                                demand_line_id: new_line.demand_line_id,
-                                                user_id:        user_id
+                                            return fn.actions.create({
+                                                action:  'Line created by partial receipt',
+                                                user_id: user_id,
+                                                links: [{table: 'demand_lines', id: new_line.demand_line_id}]
                                             })
                                             .then(result => resolve(true))
                                             .catch(err => {
@@ -835,10 +898,10 @@ module.exports = function (m, fn) {
                     let actions = [];
                     actions.push(stock.increment('qty', {by: receipt.qty}));
                     actions.push(line.update({status: 3}));
-                    actions.push(m.actions.create({
-                        action:         'Received',
-                        demand_line_id: line.demand_line_id,
-                        user_id:        user_id
+                    actions.push(fn.actions.create({
+                        action:  'Received',
+                        user_id: user_id,
+                        links: [{table: 'demand_lines', id: line.demand_line_id}]
                     }));
                     Promise.all(actions)
                     .then(result => {
@@ -855,10 +918,10 @@ module.exports = function (m, fn) {
                                         user_id:   user_id
                                     })
                                     .then(new_line => {
-                                        return m.actions.create({
-                                            action:         'Created from under receipt',
-                                            demand_line_id: new_line.demand_line_id,
-                                            user_id:        user_id
+                                        return fn.actions.create({
+                                            action:  'Created from under receipt',
+                                            user_id: user_id,
+                                            links: [{table: 'demand_lines', id: new_line.demand_line_id}]
                                         })
                                         .then(action => resolve(true))
                                         .catch(err => resolve(false));
@@ -869,10 +932,10 @@ module.exports = function (m, fn) {
                         } else if (receipt.qty > line.qty) {
                             line_actions.push(
                                 new Promise(resolve => {
-                                    return m.actions.create({
-                                        action:         `Quantity increased by ${receipt.qty - line.qty} due to over receipt`,
-                                        demand_line_id: line.demand_line_id,
-                                        user_id:        user_id
+                                    return fn.actions.create({
+                                        action:  `Quantity increased by ${receipt.qty - line.qty} due to over receipt`,
+                                        user_id: user_id,
+                                        links: [{table: 'demand_lines', id: line.demand_line_id}]
                                     })
                                     .then(action => resolve(true))
                                     .catch(err => resolve(false));

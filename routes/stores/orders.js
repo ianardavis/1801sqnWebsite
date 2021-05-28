@@ -86,11 +86,13 @@ module.exports = (app, m, inc, fn) => {
                             issues.forEach(issue => {
                                 if (issue.issue.status === 3) {
                                     issue_actions.push(issue.issue.update({status: 2}));
-                                    issue_actions.push(m.actions.create({
-                                        issue_id: issue.issue_id,
-                                        _action:  'Order cancelled',
-                                        order_id: order.order_id,
-                                        user_id:  req.user.user_id
+                                    issue_actions.push(fn.actions.create({
+                                        action:  'Order cancelled',
+                                        user_id: req.user.user_id,
+                                        links: [
+                                            {table: 'issues', id: issue.issue_id},
+                                            {table: 'orders', id: order.order_id}
+                                        ]
                                     }));
                                 };
                             });
@@ -215,11 +217,13 @@ module.exports = (app, m, inc, fn) => {
                 .then(result => {
                     if (!result) resolve(false)
                     else {
-                        m.actions.create({
-                            order_id:       order.order_id,
-                            action:         'Order added to demand',
-                            demand_line_id: demand_line_id,
-                            user_id:        user_id
+                        fn.actions.create({
+                            action:  'Order added to demand',
+                            user_id: user_id,
+                            links: [
+                                {table: 'orders', id: order.order_id},
+                                {table: 'demand_lines', id: demand_line_id}
+                            ]
                         })
                         .then(action => resolve(true))
                         .catch(err => {
@@ -249,20 +253,17 @@ module.exports = (app, m, inc, fn) => {
                     else {
                         let receive_action = null
                         if (order.size.has_serials) receive_action = receive_line_serial({...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}})
-                        else                     receive_action = receive_line_stock( {...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}});
+                        else                        receive_action = receive_line_stock( {...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}});
                         receive_action
                         .then(result => {
                             order.update({status: 3})
                             .then(update_result => {
                                 if (!result) resolve({success: true, message: 'Order received, line not updated'})
                                 else {
-                                    m.actions.create({
-                                        ...result,
-                                        ...{
-                                            order_id: order.order_id,
-                                            action:   'Order received',
-                                            user_id:  user_id
-                                        }
+                                    fn.actions.create({
+                                        action:  'Order received',
+                                        user_id: user_id,
+                                        links: [{table: 'orders', id: order.order_id}].concat(result)
                                     })
                                     .then(action => resolve({success: true, message: 'Order received'}))
                                     .catch(err => {
@@ -347,14 +348,14 @@ module.exports = (app, m, inc, fn) => {
                         }
                     })
                     .then(([serial,created]) => {
-                        if      (created)            resolve({serial_id: serial.serial_id, location_id: location_id})
+                        if      (created)            resolve([{table: 'serials', id: serial.serial_id}, {table: 'locations', id: location_id}])
                         else if (serial.issue_id)    reject(new Error('This serial # is already issued'))
                         else if (serial.location_id) reject(new Error('This serial # is already in stock'))
                         else {
                             serial.update({location_id: location_id})
                             .then(result => {
                                 if (!result) reject(new Error('Serial not received'))
-                                else         resolve({serial_id: serial.serial_id, location_id: location_id})
+                                else         resolve([{table: 'serials', id: serial.serial_id}, {table: 'locations', id: location_id}])
                             })
                             .catch(err => reject(err));
                         };
@@ -372,7 +373,7 @@ module.exports = (app, m, inc, fn) => {
                 stock.increment('_qty', {by: options._qty})
                 .then(result => {
                     if (!result) reject(new Error('Stock not received'))
-                    else         resolve({stock_id: stock.stock_id, location_id: stock.location_id})
+                    else         resolve([{table: 'stocks', id: stock.stock_id}, {table: 'locations', id: stock.location_id}])
                 })
                 .catch(err => reject(err));
             })

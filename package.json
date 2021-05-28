@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "bwip-js": "^3.0.0",
     "connect-flash": "^0.1.1",
     "core-js": "^3.8.1",
     "dotenv": "^8.2.0",
@@ -26,6 +27,7 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "passport-local-mysql": "^5.0.10",
+    "pdf-to-printer": "^2.0.4",
     "pdfkit": "^0.11.0",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",

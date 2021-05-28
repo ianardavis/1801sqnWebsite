@@ -21,6 +21,7 @@
         <%- include(`${partials}/tab_head`, {id: 'files',      title: 'Files',      spinner: 'files',      permission: 'access_files'}) %>
         <%- include(`${partials}/tab_head`, {id: 'accounts',   title: 'Accounts',   spinner: 'accounts',   permission: 'access_accounts'}) %>
         <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', permission: 'access_categories'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'printers',   title: 'Printers',   spinner: 'printers'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
@@ -77,12 +78,27 @@
                     <script>let dragging = false</script>
                     <form id='form_category_move'>
                         <input type="hidden" name='category_id' id='category_id_move'>
-                        <input type="hidden" name='category[parent_category_id]' id='parent_category_id_move'>
+                        <input type="hidden" name='category[category_id_parent]' id='category_id_parent_move'>
                 <% } %>
                     <ul class="list-group category_ul" id='ul_category_'></ul>
                 <% if (permissions.category_edit) { %></form><% } %>
             </div>
         <% } %>
+        <div class="tab-pane fade" id="printers" role="tabpanel" aria-labelledby="printers-tab">
+            <%- include(`${partials}/inputs/display`, {title: 'Printer', id: 'setting_printer'}) %>
+            <% if (permissions.setting_edit) { %>
+                <button class='btn btn-success w-100 mb-1 mt-2' id='btn_printers'>Find Printers</button>
+                <form id='form_printers'>
+                    <table class="table table-sm table-hover">
+                        <thead class="thead-dark">
+                            <th class="w-100" onclick="sortTable(0, 'tbl_printers')">Printer</th>
+                            <th><i class='fas fa-search'></i></th>
+                        </thead>
+                        <tbody id='tbl_printers'></tbody>
+                    </table>
+                </form>
+            <% } %>
+        </div>
     </div>
     <div id="div_modals">
         <div class="modal fade" id="mdl_setting_view" tabindex="-1" aria-labelledby="ttl_mdl_setting_view" aria-hidden="true">
@@ -96,11 +112,10 @@
                         </span>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {title: 'Name',       id: 'setting_name'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Value',      id: 'setting_value'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'setting_user'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'setting_createdAt'}) %>
-                        <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'setting_updatedAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Name',    id: 'setting_name'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Value',   id: 'setting_value'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Created', id: 'setting_createdAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Updated', id: 'setting_updatedAt'}) %>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -289,8 +304,8 @@
                             </span>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {title: 'Parent',     id: '_parent'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Category',   id: '_category'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Parent',     id: 'parent'}) %>
+                            <%- include(`${partials}/inputs/display`, {title: 'Category',   id: 'category'}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Created By', id: 'user_category'}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Created',    id: 'createdAt_category'}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'updatedAt_category'}) %>
@@ -309,8 +324,8 @@
                                 <h5 class="modal-title" id="ttl_mdl_category_add">Category</h5>
                             </div>
                             <div class="modal-body">
-                                <%- include(`${partials}/inputs/select`, {title: 'Parent',   name: 'category[parent_category_id]', id: 'sel_category_add'}) %>
-                                <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[_category]', required: true}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Parent',   name: 'category[category_id_parent]', id: 'sel_category_add'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[category]', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <button class='btn btn-success w-100'>Save</button>
@@ -329,8 +344,8 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" name='category_id' id='category_id_edit'>
-                                <%- include(`${partials}/inputs/select`, {title: 'Parent',   name: 'category[parent_category_id]', id: 'sel_category_edit'}) %>
-                                <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[_category]',          id: '_category_edit', required: true}) %>
+                                <%- include(`${partials}/inputs/select`, {title: 'Parent',   name: 'category[category_id_parent]', id: 'sel_category_edit'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[category]',           id: 'category_edit', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <button class='btn btn-success w-100'>Save</button>
@@ -347,53 +362,56 @@
 <script src="/js/tabs.js"></script>
 <script src="/js/addFormListener.js"></script>
 <script>showTab('settings')</script>
-<script src="/js/stores/settings/settings/view.js"></script>
+<script src="/js/settings/settings/view.js"></script>
+<script src="/js/settings/printers/view.js"></script>
 <% if (permissions.setting_add) { %>
-    <script src="/js/stores/settings/settings/add.js"></script>
+    <script src="/js/settings/settings/add.js"></script>
 <% } %>
 <% if (permissions.setting_edit) { %>
-    <script src="/js/stores/settings/settings/edit.js"></script>
+    <script src="/js/settings/settings/edit.js"></script>
+    <script src="/js/settings/printers/edit.js"></script>
 <% } %>
 <% if (permissions.setting_delete) { %>
-    <script src="/js/stores/settings/settings/delete.js"></script>
+    <script src="/js/settings/settings/delete.js"></script>
 <% } %>
 <script async>getSettings()</script>
+<script async>getPrinter()</script>
 
 <% if (permissions.access_genders) { %>
-    <script src="/js/stores/settings/genders/view.js"></script>
+    <script src="/js/settings/genders/view.js"></script>
     <% if (permissions.gender_add) { %>
-        <script src="/js/stores/settings/genders/add.js"></script>
+        <script src="/js/settings/genders/add.js"></script>
     <% } %>
     <% if (permissions.gender_edit) { %>
-        <script src="/js/stores/settings/genders/edit.js"></script>
+        <script src="/js/settings/genders/edit.js"></script>
     <% } %>
     <% if (permissions.gender_delete) { %>
-        <script src="/js/stores/settings/genders/delete.js"></script>
+        <script src="/js/settings/genders/delete.js"></script>
     <% } %>
     <script async>getGenders()</script>
 <% } %>
 
 <% if (permissions.access_files) { %>
-    <script src="/js/stores/settings/files/view.js"></script>
+    <script src="/js/settings/files/view.js"></script>
     <% if (permissions.file_delete) { %>
-        <script src="/js/stores/settings/files/delete.js"></script>
+        <script src="/js/settings/files/delete.js"></script>
     <% } %>
     <script async>getFiles()</script>
 <% } %>
 
 <% if (permissions.access_accounts) { %>
-    <script src="/js/stores/settings/accounts/view.js"></script>
+    <script src="/js/settings/accounts/view.js"></script>
     <% if (permissions.account_add || permissions.account_edit) { %>
         <script src="/js/utils/list/users.js"></script>
     <% } %>
     <% if (permissions.account_add) { %>
-        <script src="/js/stores/settings/accounts/add.js"></script>
+        <script src="/js/settings/accounts/add.js"></script>
     <% } %>
     <% if (permissions.account_edit) { %>
-        <script src="/js/stores/settings/accounts/edit.js"></script>
+        <script src="/js/settings/accounts/edit.js"></script>
     <% } %>
     <% if (permissions.account_delete) { %>
-        <script src="/js/stores/settings/accounts/delete.js"></script>
+        <script src="/js/settings/accounts/delete.js"></script>
     <% } %>
     <script async>getAccounts()</script>
 <% } %>
@@ -402,18 +420,18 @@
     <% if (permissions.category_add || permissions.category_edit) { %>
         <script src="/js/utils/list/categories.js"></script>
     <% } %>
-    <script src="/js/stores/settings/categories/view.js"></script>
+    <script src="/js/settings/categories/view.js"></script>
     <script src="/js/tree.js"></script>
     <script async>getCategories('')</script>
     <% if (permissions.category_add) { %>
-        <script src="/js/stores/settings/categories/add.js"></script>
+        <script src="/js/settings/categories/add.js"></script>
     <% } %>
     <% if (permissions.category_edit) { %>
-        <script src="/js/stores/settings/categories/edit.js"></script>
+        <script src="/js/settings/categories/edit.js"></script>
         <script async>loadCategoriesEdit()</script>
     <% } %>
     <% if (permissions.category_delete) { %>
-        <script src="/js/stores/settings/categories/delete.js"></script>
+        <script src="/js/settings/categories/delete.js"></script>
     <% } %>
 <% } %>
 

@@ -98,8 +98,7 @@
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-50" onclick="sortTable(0, 'tbl_demands')">Date</th>
-                        <th class="w-10" onclick="sortTable(1, 'tbl_demands')">Lines</th>
-                        <th class="w-40" onclick="sortTable(2, 'tbl_demands')">Status</th>
+                        <th class="w-50" onclick="sortTable(2, 'tbl_demands')">Status</th>
                         <th><i class="fas fa-search"></i></th>
                     </thead>
                     <tbody id="tbl_demands"></tbody>
@@ -119,7 +118,7 @@
                             <%- include(`${partials}/spinner`, {id: 'supplier_edit'}) %>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Supplier Name', name: 'supplier[name]',       maxLength: 20, required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Supplier Name', name: 'supplier[name]',       maxlength: 20, required: true}) %>
                             <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',       name: 'supplier[account_id]', spinner: true, spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
                             <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?',   name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
                         </div>
@@ -186,8 +185,9 @@
                                 <% if (permissions.file_detail_add) { %>
                                     <form id="form_file_detail_add">
                                         <input type="hidden" id='file_id_detail_add' name='detail[file_id]'>
-                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_add',  title: 'Name',  name: 'detail[name]',  maxLength: 45,  required: true}) %>
-                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_add', title: 'Value', name: 'detail[value]', maxLength: 255, required: true}) %>
+                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_add',  title: 'Name',  name: 'detail[name]',  maxlength: 45,  required: true, list_id: 'file_detail_names'}) %>
+                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_add', title: 'Value', name: 'detail[value]', maxlength: 255, required: true}) %>
+                                        <datalist id="file_detail_names"></datalist>
                                         <button class="btn btn-success w-100 mb-1">Save</button>
                                     </form>
                                 <% } %>
@@ -219,13 +219,9 @@
                             </div>
                             <div class="modal-body">
                                 <input class='supplier_id' type="hidden" name='file[supplier_id]'>
-                                <%- include(`${partials}/inputs/text`, {id: 'file_description_add', title: 'Description', name: 'file[description]', required: true}) %>
-                                <div class="input-group">
-                                    <div class="custom-file">
-                                        <label class="custom-file-label" for="file_upload">Choose file</label>
-                                        <input type="file" class="custom-file-input" name="file" id="file_upload" required>
-                                    </div>
-                                </div>
+                                <%- include(`${partials}/inputs/text`, {id: 'file_description_add', title: 'Description', name: 'file[description]', required: true, list_id: 'file_descriptions'}) %>
+                                <datalist id="file_descriptions"></datalist>
+                                <input type="file" class="form-control text-align-start" name="uploaded" id="file_upload" required>
                             </div>
                             <div class="modal-footer">
                                 <input  type="submit" class="btn btn-success w-100" value='Save File'>

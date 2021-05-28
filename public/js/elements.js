@@ -13,8 +13,8 @@ function List_Item(options = {}) {
     this.e.classList.add('list-group-item', 'text-start', 'p-4');
     this.e.appendChild(
         new Checkbox({
+            id: options.text,
             attributes: [
-                {field: 'id',    value: `permission_${options.text}`},
                 {field: 'name',  value: 'permissions[]'},
                 {field: 'value', value: options.text}
             ],
@@ -25,7 +25,7 @@ function List_Item(options = {}) {
     let span = document.createElement('span'),
         ul   = document.createElement('ul');
     span.innerText = options.text.replaceAll('_', ' ') || '';
-    span.classList.add('caret');
+    if (options.caret === true) span.classList.add('caret');
     this.e.appendChild(span);
     ul.classList.add('nested', 'list-group');
     ul.setAttribute('id', `ul_${options.text}`);
@@ -115,11 +115,28 @@ function Delete_Button(options = {}) {
     });
 };
 function Checkbox(options = {}) {
-    this.e = document.createElement('input');
-    this.e.setAttribute('type', 'checkbox');
-    this.e.classList.add('form-check-input');
-    if (options.float)   this.e.classList.add('w-50', 'float-end');
-    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (!options.id) options.id = random_id();
+    this.e = document.createElement('span');
+    let checkbox = document.createElement('input'),
+        label    = document.createElement('label');
+    checkbox.setAttribute('type', 'checkbox');
+    checkbox.setAttribute('autocomplete', 'off');
+    checkbox.setAttribute('id', `chk_${options.id}`);
+    checkbox.classList.add('btn-check');
+    if (options.attributes) options.attributes.forEach(a => checkbox.setAttribute(a.field, a.value));
+    label.classList.add('btn', 'btn-outline-success');
+    label.setAttribute('for', `chk_${options.id}`);
+    label.innerHTML = _check();
+    if (options.small) label.classList.add('btn-sm');
+    if (options.float) this.e.classList.add('float-end');
+    this.e.appendChild(checkbox);
+    this.e.appendChild(label);
+    
+    // this.e = document.createElement('input');
+    // this.e.setAttribute('type', 'checkbox');
+    // this.e.classList.add('form-check-input');
+    // if (options.float)   this.e.classList.add('w-50', 'float-end');
+    // if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };
 function Hidden(options = {}) {
     this.e = document.createElement('input');

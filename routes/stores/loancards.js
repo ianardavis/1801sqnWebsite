@@ -5,15 +5,33 @@ module.exports = (app, m, inc, fn) => {
     app.get('/loancards/:id/download', fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
         fn.loancards.get(req.params.id)
         .then(loancard => {
-            if (!loancard.filename) fn.send_error(res, 'No file found')
-            else {
-                res.download(`${process.env.ROOT}/public/res/loancards/${loancard.filename}`, function (err) {
-                    if (err) console.log(err);
-                });
+            if (!loancard.filename) {
+                return fn.loancards.createPDF(loancard.loancard_id)
+                .then(filename => {
+                    fn.download('loancards', filename, res)
+                    .catch(err => fn.send_error(res, err));
+                })
+                .catch(err => fn.send_error(res, err));
+            } else {
+                fn.download('loancards', loancard.filename, res)
+                .catch(err => fn.send_error(res, err));
             };
         })
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/loancards/:id/print',    fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
+        fn.loancards.get(req.params.id)
+        .then(loancard => {
+            if (!loancard.filename) fn.send_error(res, 'No file')
+            else {
+                fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${loancard.filename}`)
+                .then(result => res.send({success: true, message: 'Loancard sent to printer'}))
+                .catch(err => fn.send_error(res, err));
+            };
+        })
+        .catch(err => fn.send_error(res, err));
+    });
+
 
     app.get('/count/loancards',        fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
         m.loancards.count({where: req.query})
@@ -105,7 +123,9 @@ module.exports = (app, m, inc, fn) => {
         req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(fn.loancards.lines.return({...line, user_id: req.user.user_id})));
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.loancards.lines.cancel({...line, user_id: req.user.user_id})));
         Promise.all(actions)
-        .then(results => res.send({success: true, message: 'Lines actioned'}))
+        .then(results => {
+            res.send({success: true, message: 'Lines actioned'});
+        })
         .catch(err => fn.send_error(res, err));
     });
     

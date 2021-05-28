@@ -17,7 +17,7 @@ module.exports = (app, m, inc, fn) => {
     app.get('/get/file',            fn.li(), fn.permissions.check('access_files'),        (req, res) => {
         m.files.findOne({
             where:   req.query,
-            include: [inc.users()]
+            include: [inc.user()]
         })
         .then(file => {
             if (!file) fn.send_error(res, 'File not found')
@@ -42,21 +42,25 @@ module.exports = (app, m, inc, fn) => {
     app.get('/files/:id/download',  fn.li(), fn.permissions.check('access_files'),        (req, res) => {
         m.files.findOne({
             where: {file_id: req.params.id},
-            attributes: ['file_id', '_filename']
+            attributes: ['filename']
         })
         .then(file => {
-            if      (!file)                                    fn.send_error(res, 'File not found')
-            else if (!file._filename || file._filename === '') fn.send_error(res, 'No filename')
+            if      (!file)                                  fn.send_error(res, 'File not found')
+            else if (!file.filename || file.filename === '') fn.send_error(res, 'No filename')
             else {
-                let filepath = `${process.env.ROOT}/public/res/files/${file._filename}`;
-                fs.access(filepath, fs.constants.R_OK, function (err) {
-                    if (err) fn.send_error(res, err)
-                    else {
-                        res.download(filepath, function (err) {
-                            if (err) console.log(err);
-                        });
-                    };
-                });
+                let filepath = `${process.env.ROOT}/public/res/files/${file.filename}`;
+                fn.file_exists(filepath)
+                .then(exists => {
+                    fs.access(filepath, fs.constants.R_OK, function (err) {
+                        if (err) fn.send_error(res, err)
+                        else {
+                            res.download(filepath, function (err) {
+                                if (err) console.log(err);
+                            });
+                        };
+                    });
+                })
+                .catch(err => fn.send_error(res, err));
             };
         })
         .catch(err => fn.send_error(res, err));
@@ -75,7 +79,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/file_details',        fn.li(), fn.permissions.check('file_edit'),           (req, res) => {
+    app.put('/file_details',        fn.li(), fn.permissions.check('file_detail_add'),     (req, res) => {
         m.file_details.findOne({
             where: {file_detail_id: req.body.file_detail_id}
         })
@@ -91,52 +95,32 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.post('/files',              fn.li(), fn.permissions.check('file_add'),            (req, res) => {
-        let uploaded = req.files.file;
-        if      (!req.files)                          fn.send_error(res, 'No file submitted')
-        else if (Object.keys(req.files).length !== 1) fn.send_error(res, 'Multiple files submitted')
-        else {
-            m.suppliers.findOne({
-                where: {supplier_id: req.body.file.supplier_id},
-                attributes: ['supplier_id']
+        if      (!req.files) fn.send_error(res, 'No file submitted')
+        else if (Object.keys(req.files).length > 1) {
+            let actions = [];
+            for (const [key, value] of Object.entries(req.files)) {
+                actions.push(fn.rmdir(`${process.env.ROOT}/public/uploads/${value.uuid}`))
+            };
+            Promise.allSettled(actions)
+            .then(results => fn.send_error(res, 'Multiple files submitted'))
+            .catch(err =>    fn.send_error(res, err));
+        } else {
+            fn.upload_file({
+                ...req.files.uploaded,
+                ...req.body.file,
+                user_id: req.user.user_id
             })
-            .then(supplier => {
-                if (!supplier) fn.send_error(res, 'Supplier not found')
-                else {
-                    fs.copyFile(
-                        uploaded.file,
-                        `${process.env.ROOT}/public/res/files/${uploaded.filename}`,
-                        fs.constants.COPYFILE_EXCL,
-                        function (err) {
-                            if (err) {
-                                if (err.code === 'EEXIST') fn.send_error(res, 'Error copying file: This file already exists')
-                                else fn.send_error(res, err);
-                            } else {
-                                return m.files.findOrCreate({
-                                    where: {_filename: uploaded.filename},
-                                    defaults: {
-                                        ...req.body.file,
-                                        ...{user_id: req.user.user_id}
-                                    }
-                                })
-                                .then(([file, created]) => {
-                                    if (!created) fn.send_error(res, 'File already exists')
-                                    else          res.send({success: true,  message: 'File uploaded'});
-                                })
-                                .catch(err => fn.send_error(res, err));
-                            };
-                        }
-                    );
-                };
+            .then(result => {
+                fn.rmdir(`${process.env.ROOT}/public/uploads/${req.files.uploaded.uuid}`)
+                .then(result => res.send({success: true, message: 'FIle uploaded'}))
+                .catch(err => fn.send_error(res, err));
             })
-            .catch(err => fn.send_error(res, err));
+            .catch(error => {
+                fn.rmdir(`${process.env.ROOT}/public/uploads/${req.files.uploaded.uuid}`)
+                .then(result => fn.send_error(res, error))
+                .catch(err => fn.send_error(res, err));
+            });
         };
-        fs.rmdir(
-            `${process.env.ROOT}/public/uploads/${uploaded.uuid}`,
-            {recursive: true},
-            function (err) {
-                if (err) console.log('Error deleting temporary file', err);
-            }
-        );
     });
     app.post('/file_details',       fn.li(), fn.permissions.check('file_detail_add'),     (req, res) => {
         m.files.findOne({
@@ -146,9 +130,30 @@ module.exports = (app, m, inc, fn) => {
         .then(file => {
             if (!file) fn.send_error(res, 'File not found')
             else {
-                req.body.detail.user_id = req.user.user_id;
-                return m.file_details.create(req.body.detail)
-                .then(detail => res.send({success: true, message: 'Detail added'}))
+                return m.file_details.findOrCreate({
+                    where: {
+                        file_id: req.body.detail.file_id,
+                        name:    req.body.detail.name
+                    },
+                    defaults: {
+                        value: req.body.detail.value,
+                        user_id: req.user.user_id
+                    }
+                })
+                .then(([detail, created]) => {
+                    if (created) res.send({success: true, message: 'Detail added'})
+                    else {
+                        return detail.update({
+                            value:   req.body.detail.value,
+                            user_id: req.user.user_id
+                        })
+                        .then(result => {
+                            if (!result) fn.send_error(res, 'Existing detail not updated')
+                            else res.send({success: true, message: 'Existing detail updated'});
+                        })
+                        .catch(err => fn.send_error(res, err));
+                    };
+                })
                 .catch(err => fn.send_error(res, err));
             };
         })
@@ -158,14 +163,14 @@ module.exports = (app, m, inc, fn) => {
     app.delete('/files/:id',        fn.li(), fn.permissions.check('file_delete'),         (req, res) => {
         m.files.findOne({
             where: {file_id: req.params.id},
-            attributes: ['file_id', '_filename']
+            attributes: ['file_id', 'filename']
         })
         .then(file => {
             if (!file) fn.send_error(res, 'File not found')
             else {
                 file.destroy()
                 .then(result => {
-                    return delete_fs_file(`${process.env.ROOT}/public/res/files/${file._filename}`)
+                    return delete_fs_file(`${process.env.ROOT}/public/res/files/${file.filename}`)
                     .then(result => res.send({success: true, message: 'File deleted'}))
                     .catch(err =>   res.send({success: true, message: `Error deleting file: ${err.message}`}));
                 })

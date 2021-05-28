@@ -6,9 +6,9 @@ module.exports = function (m, fn) {
                 const fs  = require('fs'),
                       PDF = require('pdfkit');
                 try {
-                    let file        = `${loancard.loancard_id} - ${loancard.user_loancard.name}.pdf`,
+                    let file        = `${loancard.loancard_id}-${loancard.user_loancard.surname}.pdf`,
                         docMetadata = {},
-                        writeStream = fs.createWriteStream(`${process.env.ROOT}/public/res/loancards/${file}`, {flags: 'wx'});
+                        writeStream = fs.createWriteStream(`${process.env.ROOT}/public/res/loancards/${file}`, {flags: 'w'});
                     docMetadata.Title         = `Loan Card: ${loancard.loancard_id}`;
                     docMetadata.Author        = `${loancard.user.rank.rank} ${loancard.user.full_name}`;
                     docMetadata.bufferPages   = true;
@@ -44,8 +44,8 @@ module.exports = function (m, fn) {
         doc
         .fontSize(15)
         .text(`Rank: ${loancard.user_loancard.rank.rank}`,            28,  offset + 20)
-        .text(`Surname: ${loancard.user_loancard.name}`,              140, offset + 20)
-        .text(`First Name: ${loancard.user_loancard.first_name}`,     415, offset + 20)
+        .text(`Surname: ${loancard.user_loancard.surname}`,           140, offset + 20)
+        .text(`First Name: ${loancard.user_loancard.first_name}`,     380, offset + 20)
         .text(`Service #: ${loancard.user_loancard.service_number}`,  28,  offset + 40)
         .text(`Date: ${new Date(loancard.createdAt).toDateString()}`, 415, offset + 40)
         .fontSize(10)
@@ -62,12 +62,12 @@ module.exports = function (m, fn) {
     };
     function addDeclaration(doc, count, y) {
         let close_text = `END OF LOANCARD, ${count} LINES ISSUED`,
-            disclaimer = 'By signing below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
+            disclaimer = 'By signing in the box below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
         doc.text(close_text, 297.64 - (doc.widthOfString(close_text) / 2), y);
         y += 20;
         doc
         .text(disclaimer, 28, y, {width: 539.28, align: 'center'})
-        .rect(197.64, y += 60, 200, 100).stroke();
+        .rect(197.64, y += 30, 200, 100).stroke();
     };
     function addPageNumbers(doc, loancard_id) {
         const range = doc.bufferedPageRange();
@@ -76,15 +76,19 @@ module.exports = function (m, fn) {
             doc
             .switchToPage(i);
             doc
-            .text(`Page ${i + 1} of ${range.count}`, 28, 803.89)
-            .text(`Loancard ID: ${loancard_id}`, (567.28 - doc.widthOfString(`Loancard ID: ${loancard_id}`)), 803.89)
             .text(`Page ${i + 1} of ${range.count}`, 28, 28)
-            .text(`Loancard ID: ${loancard_id}`, (567.28 - doc.widthOfString(`Loancard ID: ${loancard_id}`)), 28);
+            .image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}.png`, 28, 780, {width: 539.28, height: 50});
         };
     };
     fn.loancards.get = function (loancard_id) {
         return new Promise((resolve, reject) => {
-            return m.loancards.findOne({where: {loancard_id: loancard_id}})
+            return m.loancards.findOne({
+                where: {loancard_id: loancard_id},
+                include: [
+                    {model: m.users, as: 'user', include: [{model: m.ranks, as: 'rank'}]},
+                    {model: m.users, as: 'user_loancard', include: [{model: m.ranks, as: 'rank'}]}
+                ]
+            })
             .then(loancard => {
                 if (!loancard) reject(new Error('Loancard not found'))
                 else  resolve(loancard);
@@ -94,77 +98,87 @@ module.exports = function (m, fn) {
     };
     fn.loancards.createPDF = function (loancard_id) {
         return new Promise((resolve, reject) => {
-            m.loancards.findOne({
-                attributes: ['loancard_id', 'status', 'createdAt'],
-                where:      {loancard_id: loancard_id},
-                include: [
-                    {model: m.users, as: 'user_loancard'},
-                    {model: m.users, as: 'user'},
-                    {
-                        model: m.loancard_lines,
-                        as:    'lines',
-                        where: {status: 2},
-                        include: [
-                            {model: m.serials, as: 'serial'},
-                            {model: m.nsns,    as: 'nsn'},
-                            {model: m.sizes,   as: 'size', include: [{model: m.items, as: 'item'}]}
-                        ]
-                    }
-                ]
-            })
+            fn.loancards.get(loancard_id)
             .then(loancard => {
                 if      (!loancard)             reject(new Error('Loancard not found'))
                 else if (loancard.status !== 2) reject(new Error('This loancard is not complete'))
-                else if (!loancard.lines)       reject(new Error('No open lines on this loancard'))
                 else {
-                    return createFile(loancard)
-                    .then(([doc, file, writeStream]) => {
-                        addPage(doc);
-                        addLogos(doc);
-                        addHeader(doc, loancard);
-                        let y = 225;
-                        loancard.lines.forEach(line => {
-                            let y_0 = y;
-                            if (y >= 761.89) {
-                                doc.text('END OF PAGE', 268, y);
-                                addPage(doc);
-                                addHeader(doc, loancard, 0);
-                                y = 85;
-                            };
-                            doc.text(line.qty,                  320, y);
-                            doc.text(line.size.item.description, 28, y);
-                            y += 15;
-                            doc.text(`${line.size.item.size_text}: ${line.size.size}`, 28, y);
-                            if (line.nsn) {
-                                y += 15;
-                                doc.text(`NSN: ${String(line.nsn.group.code).padStart(2, '0')}${String(line.nsn.classification.code).padStart(2, '0')}-${String(line.nsn.country._code).padStart(2, '0')}-${line.nsn.item_number}`, 28, y);
-                            };
-                            if (line.serial) {
-                                y += 15;
-                                doc.text(`Serial #: ${line.serial.serial}`, 28, y);
-                            };
-                            y += 15;
-                            doc
-                            .moveTo(28, y).lineTo(567.28, y).stroke()
-                            .moveTo(315, y_0).lineTo(315, y).stroke()
-                            .moveTo(345, y_0).lineTo(345, y).stroke()
-                            .moveTo(445, y_0).lineTo(445, y).stroke();
-                        });
-                        addDeclaration(doc, loancard.lines.length, y);
-                        addPageNumbers(doc, loancard.loancard_id);
-                        doc.end();
-                        writeStream.on('error', err => reject(err));
-                        writeStream.on('finish', function () {
-                            m.loancards.update(
-                                {filename: file},
-                                {where: {loancard_id: loancard.loancard_id}}
-                            )
-                            .then(result => resolve(file))
+                    return m.loancard_lines.findAll({
+                        where: {
+                            loancard_id: loancard.loancard_id,
+                            status:      2
+                        },
+                        include: [
+                            {model: m.serials, as: 'serial'},
+                            {model: m.nsns,    as: 'nsn', include: [{model: m.nsn_classes, as: 'nsn_class'}, {model: m.nsn_groups, as: 'nsn_group'}, {model: m.nsn_countries, as: 'nsn_country'}]},
+                            {model: m.sizes,   as: 'size', include: [{model: m.items, as: 'item'}]}
+                        ]
+                    })
+                    .then(lines => {
+                        if (!lines || lines.length === 0) reject(new Error('No open lines on this loancard'))
+                        else {
+                            return fn.create_barcode(loancard.loancard_id)
+                            .then(barcodeCreated => {
+                                return createFile(loancard)
+                                .then(([doc, file, writeStream]) => {
+                                    addPage(doc);
+                                    addLogos(doc);
+                                    addHeader(doc, loancard);
+                                    let y = 225;
+                                    lines.forEach(line => {
+                                        if (y >= 761.89) {
+                                            doc.text('END OF PAGE', 268, y);
+                                            addPage(doc);
+                                            addHeader(doc, loancard, 30);
+                                            y = 115;
+                                        };
+                                        let y_0 = y;
+                                        doc.text(line.qty,                  320, y);
+                                        doc.text(line.size.item.description, 28, y);
+                                        y += 15;
+                                        doc.text(`${line.size.item.size_text}: ${line.size.size}`, 28, y);
+                                        if (line.nsn) {
+                                            y += 15;
+                                            doc.text(`NSN: ${String(line.nsn.nsn_group.code).padStart(2, '0')}${String(line.nsn.nsn_class.code).padStart(2, '0')}-${String(line.nsn.nsn_country.code).padStart(2, '0')}-${line.nsn.item_number}`, 28, y);
+                                        };
+                                        if (line.serial) {
+                                            y += 15;
+                                            doc.text(`Serial #: ${line.serial.serial}`, 28, y);
+                                        };
+                                        y += 15;
+                                        doc
+                                        .moveTo(28, y).lineTo(567.28, y).stroke()
+                                        .moveTo(315, y_0).lineTo(315, y).stroke()
+                                        .moveTo(345, y_0).lineTo(345, y).stroke()
+                                        .moveTo(445, y_0).lineTo(445, y).stroke();
+                                    });
+                                    addDeclaration(doc, lines.length, y);
+                                    addPageNumbers(doc, loancard.loancard_id);
+                                    doc.end();
+                                    writeStream.on('error', err => reject(err));
+                                    writeStream.on('finish', function () {
+                                        m.loancards.update(
+                                            {filename: file},
+                                            {where: {loancard_id: loancard.loancard_id}}
+                                        )
+                                        .then(result => {
+                                            return fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${file}`)
+                                            .then(result => resolve(file))
+                                            .catch(err => {
+                                                console.log(err);
+                                                resolve(file);
+                                            });
+                                        })
+                                        .catch(err => reject(err));
+                                    });
+                                })
+                                .catch(err => reject(err));
+                            })
                             .catch(err => reject(err));
-                        });
+                        };
                     })
                     .catch(err => reject(err));
-                }
+                };
             })
             .catch(err => reject(err));
         })
@@ -211,9 +225,10 @@ module.exports = function (m, fn) {
                             .then(result => {
                                 if (!result) reject(new Error('Loancard not updated'))
                                 else {
-                                    return m.actions.create({
+                                    return fn.actions.create({
                                         action: 'Loancard cancelled',
-                                        loancard_id: loancard.loancard_id
+                                        user_id: options.user_id,
+                                        links: [{table: 'loancards', id: loancard.loancard_id}]
                                     })
                                     .then(action => resolve(true))
                                     .catch(err => resolve(false));
@@ -265,10 +280,10 @@ module.exports = function (m, fn) {
                                 actions.push(new Promise((resolve, reject) => {
                                     line.update({status: 2})
                                     .then(result => {
-                                        return m.actions.create({
-                                            action:           'Loancard completed',
-                                            loancard_line_id: line.loancard_line_id,
-                                            user_id:          options.user_id
+                                        return fn.actions.create({
+                                            action:  'Loancard completed',
+                                            user_id: options.user_id,
+                                            links: [{table: 'loancard_lines', id: line.loancard_line_id}]
                                         })
                                         .then(action => resolve(true))
                                         .catch(err => resolve(false));
@@ -285,10 +300,10 @@ module.exports = function (m, fn) {
                             ));
                             return Promise.all(actions)
                             .then(result => {
-                                return m.actions.create({
-                                    action:      'Loancard completed',
-                                    loancard_id: loancard.loancard_id,
-                                    user_id:     options.user_id
+                                return fn.actions.create({
+                                    action:  'Loancard completed',
+                                    user_id: options.user_id,
+                                    links: [{table: 'loancards', id: loancard.loancard_id}]
                                 })
                                 .then(action => resolve(true))
                                 .catch(err => resolve(false));
@@ -317,10 +332,10 @@ module.exports = function (m, fn) {
                         .then(result => {
                             if (!result) reject(new Error('Loancard not updated'))
                             else {
-                                return m.actions.create({
-                                    action:      'Loancard closed',
-                                    loancard_id: loancard.loancard_id,
-                                    user_id:     options.user_id
+                                return fn.actions.create({
+                                    action:  'Loancard closed',
+                                    user_id: options.user_id,
+                                    links: [{table: 'loancards', id: loancard.loancard_id}]
                                 })
                                 .then(action => resolve(true))
                                 .catch(err => resolve(true))
@@ -395,10 +410,10 @@ module.exports = function (m, fn) {
                         issue_id: options.issue_id,
                         location_id: null
                     })
-                    .then(result => resolve({
-                        serial_id:        serial.serial_id,
-                        loancard_line_id: loancard_line.loancard_line_id
-                    }))
+                    .then(result => resolve([
+                        {table: 'serials', id: serial.serial_id},
+                        {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                    ]))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
@@ -426,17 +441,17 @@ module.exports = function (m, fn) {
                     return stock.decrement('qty', {by: options.qty})
                     .then(result => {
                         if (created) {
-                            resolve({
-                                stock_id: stock.stock_id,
-                                loancard_line_id: loancard_line.loancard_line_id
-                            });
+                            resolve([
+                                {table: 'stocks', id: stock.stock_id},
+                                {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                            ]);
                         }else {
                             return loancard_line.increment('qty', {by: options.qty})
                             .then(result => {
-                                resolve({
-                                    stock_id:         stock.stock_id,
-                                    loancard_line_id: loancard_line.loancard_line_id
-                                });
+                                resolve([
+                                    {table: 'stocks', id: stock.stock_id},
+                                    {table: 'loancard_lines', id: loancard_line.loancard_line_id}
+                                ]);
                             })
                             .catch(err => reject(err));
                         };
@@ -594,10 +609,10 @@ module.exports = function (m, fn) {
                                                                     .then(result => {
                                                                         if (!result) resolve(true)
                                                                         else {
-                                                                            return m.actions.create({
-                                                                                action: 'Loancard line cancelled',
-                                                                                loancard_line_id: line.loancard_line_id,
-                                                                                user_id: options.user_id
+                                                                            return fn.actions.create({
+                                                                                action:  'Loancard line cancelled',
+                                                                                user_id: options.user_id,
+                                                                                links: [{table: 'loancard_lines', id: line.loancard_line_id}]
                                                                             })
                                                                             .then(action => resolve(true))
                                                                             .catch(err => {
@@ -672,12 +687,13 @@ module.exports = function (m, fn) {
                                 .then(action_details => {
                                     return issue.update({status: 4})
                                     .then(result => {
-                                        return m.actions.create({
-                                            action:   'Issue added to loancard',
-                                            user_id:  options.user_id,
-                                            issue_id: issue.issue_id,
-                                            nsn_id:   nsn_id,
-                                            ...action_details
+                                        return fn.actions.create({
+                                            action:  'Issue added to loancard',
+                                            user_id: options.user_id,
+                                            links: [
+                                                {table: 'issues', id: issue.issue_id},
+                                                (nsn_id ? {table: 'nsns', id: nsn_id} : {})
+                                            ].concat(action_details)
                                         })
                                         .then(action => resolve(true))
                                         .catch(err =>   resolve(false));
@@ -776,7 +792,7 @@ module.exports = function (m, fn) {
                                                             .catch(err => reject(err));
                                                         }));
                                                     });
-                                                    Promise.allSettled(_actions)
+                                                    return Promise.allSettled(_actions)
                                                     .then(results => resolve(issue_list))
                                                     .catch(err => reject(err));
                                                 })
@@ -811,8 +827,8 @@ module.exports = function (m, fn) {
                                                         action: 'Line created from partial return',
                                                         user_id: options.user_id,
                                                         links: [
-                                                            {table: 'lonacard_lines', id: line.loancard_line},
-                                                            {table: 'lonacard_lines', id: new_line.loancard_line}
+                                                            {table: 'loancard_lines', id: line.loancard_line},
+                                                            {table: 'loancard_lines', id: new_line.loancard_line}
                                                         ]
                                                     })
                                                     .then(result => resolve(true))
@@ -857,7 +873,10 @@ module.exports = function (m, fn) {
                                     return fn.actions.create({
                                         action:  'Loancard line returned',
                                         user_id: options.user_id,
-                                        links: [{table: 'loancard_lines', id: line.loancard_line_id}].concat(issue_links)
+                                        links: [
+                                            {table: 'loancard_lines', id: line.loancard_line_id},
+                                            {table: 'locations',      id: location.location_id}
+                                        ].concat(issue_links)
                                     })
                                     .then(result => resolve(true))
                                     .catch(err => resolve(false));

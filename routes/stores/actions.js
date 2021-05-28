@@ -1,7 +1,6 @@
 module.exports = (app, m, inc, fn) => {
     app.get('/get/actions', fn.li(), fn.permissions.check('access_actions', {send: true}), (req, res) => {
         m.actions.findAll({
-            attributes: ['action_id', 'action', 'createdAt'],
             include: [inc.action_links({where: req.query})]
         })
         .then(actions => res.send({success: true, result: actions}))
@@ -14,16 +13,6 @@ module.exports = (app, m, inc, fn) => {
         })
         .then(action => res.send({success: true, result: action}))
         .catch(err => fn.send_error(res, err));
-    });
-    app.get('/migrate_action_links',  fn.li(), fn.permissions.check('access_actions', {send: true}), (req, res) => {
-        fn.actions.migrate_links()
-        .then(result => {
-            req.flash('info', 'Links migrated');
-            res.redirect('/stores');
-        })
-        .catch(err => {
-            console.log(err);
-        });
     });
     app.get('/get/action_links', fn.li(), fn.permissions.check('access_actions', {send: true}), (req, res) => {
         m.action_links.findAll({where: req.query})
