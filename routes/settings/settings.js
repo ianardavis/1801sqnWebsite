@@ -44,8 +44,9 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.post('/printers',       fn.li(), fn.permissions.check('setting_edit'),    (req, res) => {
-        console.log(req.body);
-        res.send({success: true, message: 'tada'});
+        fn.settings.set('printer', req.body.printer)
+        .then(result => res.send({success: true, message: 'Printer saved'}))
+        .catch(err => fn.send_error(res, err));
     });
     
     app.delete('/settings/:id', fn.li(), fn.permissions.check('setting_delete'),  (req, res) => {

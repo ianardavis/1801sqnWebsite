@@ -51,11 +51,105 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+
+    function get_order(order_id) {
+        return new Promise((resolve, reject) => {
+            return m.orders.findOne({
+                where: {order_id: order_id},
+                include: [{
+                    model: m.sizes,
+                    as: 'size',
+                    include: [{
+                        model: m.suppliers,
+                        as: 'supplier'
+                    }]
+                }]
+            })
+            .then(order => {
+                if (!order) reject(new Error('Order not found'))
+                else resolve(order);
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.orders.demand = function (orders, user_id) {
         return new Promise((resolve, reject) => {
             return fn.allowed(user_id, 'demand_line_add')
             .then(result => {
-
+                let order_actions = [], suppliers = [];
+                orders.forEach(order => {
+                    order_actions.push(new Promise((resolve, reject) => {
+                        return get_order(order.order_id)
+                        .then(order => {
+                            if      (order.status !== 1)    reject(new Error('Only placed orders can be demanded'))
+                            else if (!order.size)           reject(new Error('Size not found'))
+                            else if (!order.size.orderable) reject(new Error('Size can not be ordered'))
+                            else if (!order.size.supplier)  reject(new Error('Supplier not found'))
+                            else if (suppliers.find(e => e.supplier_id === order.size.supplier_id)) {
+                                suppliers.find(e => e.supplier_id === order.size.supplier_id).orders.push(order);
+                                resolve(true);
+                            } else {
+                                suppliers.push({supplier_id: order.size.supplier_id, orders: [order]});
+                                resolve(true);
+                            };
+                        })
+                        .catch(err => reject(err));
+                    }));
+                });
+                return Promise.allSettled(order_actions)
+                .then(results => {
+                    let demand_actions = [];
+                    suppliers.forEach(supplier => {
+                        demand_actions.push(new Promise((resolve, reject) => {
+                            return fn.demands.create({
+                                supplier_id: supplier.supplier_id,
+                                user_id:     user_id
+                            })
+                            .then(demand => {
+                                let line_actions = [];
+                                supplier.orders.forEach(order => {
+                                    line_actions.push(new Promise((resolve, reject) => {
+                                        return fn.demands.lines.create({
+                                            demand_id: demand.demand_id,
+                                            size_id:   order.size_id,
+                                            qty:       order.qty,
+                                            order_id:  order.order_id,
+                                            user_id:   user_id
+                                        })
+                                        .then(demand_line_id => {
+                                            return order.update({status: 2})
+                                            .then(result => {
+                                                if (!result) reject(new Error('Order not updated'))
+                                                else {
+                                                    return fn.actions.create({
+                                                        action: 'Order added to demand',
+                                                        user_id: user_id,
+                                                        links: [
+                                                            {table: 'orders',       id: order.order_id},
+                                                            {table: 'demand_lines', id: demand_line_id}
+                                                        ]
+                                                    })
+                                                    .then(action => resolve(demand_line_id))
+                                                    .catch(err => resolve(demand_line_id));
+                                                };
+                                            })
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    }));
+                                });
+                                return Promise.allSettled(line_actions)
+                                .then(results => resolve(true))
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        }));
+                    });
+                    return Promise.allSettled(demand_actions)
+                    .then(results => resolve(true))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

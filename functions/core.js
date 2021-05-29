@@ -1,16 +1,5 @@
 const bwipjs = require('bwip-js'), fs = require("fs"), ptp = require('pdf-to-printer');
 module.exports = function (m, fn) {
-    fn.settings = {};
-    fn.settings.get = function (name) {
-        return new Promise((resolve, reject) => {
-            return m.settings.findAll({where: {name: name}})
-            .then(settings => {
-                if (!settings || settings.length === 0) reject(new Error('Setting not found'));
-                else resolve(settings);
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.file_exists = function (path) {
         return new Promise((resolve, reject) => {
             if (fs.existsSync(path)) resolve(path)

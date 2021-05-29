@@ -22,6 +22,16 @@ function getSettings() {
         });
     });
 };
+function getPrinter() {
+    get({
+        table: 'setting',
+        query: ['name=printer'],
+        spinner: 'printers'
+    })
+    .then(function ([setting, options]) {
+        set_innerText({id: 'setting_printer', value: setting.value})
+    })
+};
 function viewSetting(setting_id) {
     get({
         table: 'setting',
@@ -35,6 +45,7 @@ function viewSetting(setting_id) {
         set_innerText({id: 'setting_updatedAt', text: print_date(setting.updatedAt, true)});
     });
 };
+addReloadListener(getPrinter);
 addReloadListener(getSettings);
 window.addEventListener('load', function () {
     modalOnShow('setting_view', function (event) {viewSetting(event.relatedTarget.dataset.id)});

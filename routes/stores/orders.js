@@ -36,11 +36,7 @@ module.exports = (app, m, inc, fn) => {
         if (!req.body.lines || req.body.lines.length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
-            req.body.lines.forEach(line => {
-                actions.push(
-                    fn.orders.create(line, req.user.user_id)
-                );
-            });
+            req.body.lines.forEach(line => actions.push(fn.orders.create(line, req.user.user_id)));
             Promise.all(actions)
             .then(result => res.send({success: true, message: 'Orders placed'}))
             .catch(err => fn.send_error(res, err));
@@ -48,11 +44,13 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.put('/orders',        fn.li(), fn.permissions.check('order_edit'),    (req, res) => {
-        let actions = [];
-        actions.push(demand_orders(req.body.orders.filter(e => e.status === '2'), req.user.user_id))
-        // req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(cancel_line( line, req.user.user_id)));
-        // actions.push(demand_orders(req.body.lines.filter(e => e.status === '2'), req.user.user_id));
-        // req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(receive_line(line, req.user.user_id)));
+        let actions  = [],
+            cancels  = req.body.orders.filter(e => e.status === '0'),
+            demands  = req.body.orders.filter(e => e.status === '2'),
+            receipts = req.body.orders.filter(e => e.status === '3');
+        if (demands  && demands.length  > 0) actions.push(fn.orders.demand(demands, req.user.user_id));
+        if (cancels  && cancels.length  > 0) cancels.forEach( order => actions.push(fn.orders.cancel( order.order_id)));
+        if (receipts && receipts.length > 0) receipts.forEach(order => actions.push(fn.orders.receive(order.order_id)));
         Promise.allSettled(actions)
         .then(results => {
             if (results.filter(e => e.status === 'rejected').length > 0) {
@@ -111,132 +109,6 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-
-    function demand_orders(orders, user_id) {
-        return new Promise((resolve, reject) => {
-            return fn.allowed(user_id, 'demand_line_add')
-            .then(result => {
-                return get_orders(orders)
-                .then(suppliers => {
-                    return create_demands(suppliers, user_id)
-                    .then(suppliers => {
-                        let actions = []
-                        suppliers.forEach(supplier => {
-                            supplier.orders.forEach(order => {
-                                actions.push(demand_line(order, supplier.demand_id, user_id));
-                            })
-                        });
-                        Promise.all(actions)
-                        .then(results => resolve(true))
-                        .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function get_orders(lines) {
-        return new Promise((resolve, reject) => {
-            let actions = [], suppliers = [];
-            lines.forEach(line => {
-                actions.push(
-                    new Promise((resolve, reject) => {
-                        return m.orders.findOne({
-                            where:      {order_id: line.order_id},
-                            include:    [
-                                inc.size({
-                                    include: [inc.supplier()],
-                                    attributes: ['size_id', 'supplier_id']
-                                })
-                            ],
-                            attributes: ['order_id', 'size_id', 'status', 'qty']
-                        })
-                        .then(order => {
-                            if      (!order)               reject(new Error('Order not found'))
-                            else if (order.status !== 1)   reject(new Error('Only placed orders can be demanded'))
-                            else if (!order.size)          reject(new Error('Size not found'))
-                            else if (!order.size.supplier) reject(new Error('Supplier not found'))
-                            else {
-                                if (suppliers.find(e => e.supplier_id === order.size.supplier_id)) {
-                                    suppliers.find(e => e.supplier_id === order.size.supplier_id).orders.push(order);
-                                } else suppliers.push({supplier_id: order.size.supplier_id, orders: [order]});
-                                resolve(true);
-                            };
-                        })
-                        .catch(err => reject(err));
-                    })
-                );
-            });
-            Promise.allSettled(actions)
-            .then(results => resolve(suppliers))
-            .catch(err => reject(err));
-        });
-    };
-    function create_demands(suppliers, user_id) {
-        return new Promise((resolve, reject) => {
-            let actions = [];
-            suppliers.forEach(supplier => {
-                actions.push(
-                    new Promise((resolve, reject) => {
-                        return fn.demands.create({
-                            supplier_id: supplier.supplier_id,
-                            user_Id:     user_id
-                        })
-                        .then(demand => {
-                            supplier.demand_id = demand.demand_id;
-                            resolve(true);
-                            // resolve({supplier_id: supplier.supplier_id, demand_id: demand.demand_id});
-                        })
-                        .catch(err => reject(err));
-                    })
-                );
-            });
-            Promise.all(actions)
-            .then(results => {
-                // results.forEach(result => {
-                //     suppliers[suppliers.findIndex(e => e.supplier_id === result.supplier__id)].demand_id = result.demand_id;
-                // });
-                resolve(suppliers);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function demand_line(order, demand_id, user_id) {
-        return new Promise((resolve, reject) => {
-            return fn.demands.lines.create({
-                demand_id: demand_id,
-                size_id:   order.size_id,
-                qty:       order.qty,
-                user_id:   user_id,
-                order_id:  order.order_id
-            })
-            .then(demand_line_id => {
-                return order.update({status: 2})
-                .then(result => {
-                    if (!result) resolve(false)
-                    else {
-                        fn.actions.create({
-                            action:  'Order added to demand',
-                            user_id: user_id,
-                            links: [
-                                {table: 'orders', id: order.order_id},
-                                {table: 'demand_lines', id: demand_line_id}
-                            ]
-                        })
-                        .then(action => resolve(true))
-                        .catch(err => {
-                            console.log(err);
-                            resolve(false);
-                        })
-                    };
-                })
-                .catch(err => reject(err));
-            })
-            .catch(err => reject(err));
-        });
-    };
 
     function receive_line(line, user_id) {
         return new Promise((resolve, reject) => {

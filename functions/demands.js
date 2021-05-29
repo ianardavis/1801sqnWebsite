@@ -11,7 +11,7 @@ module.exports = function (m, fn) {
                     },
                     defaults: {user_id: options.user_id}
                 })
-                .then(([demand, created]) => resolve({success: true, demand_id: demand.demand_id, created: created}))
+                .then(([demand, created]) => resolve({demand_id: demand.demand_id, created: created}))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -273,7 +273,7 @@ module.exports = function (m, fn) {
                                             user_id: options.user_id,
                                             links: [
                                                 {table: 'demand_lines', id: line.demand_line_id},
-                                                ...(options.order_id ? {table: 'orders', id: options.order_id} : null)
+                                                (options.order_id ? {table: 'orders', id: options.order_id} : null)
                                             ]
                                         })
                                         .then(action => resolve(line.demand_line_id))

@@ -131,12 +131,24 @@ function Checkbox(options = {}) {
     if (options.float) this.e.classList.add('float-end');
     this.e.appendChild(checkbox);
     this.e.appendChild(label);
-    
-    // this.e = document.createElement('input');
-    // this.e.setAttribute('type', 'checkbox');
-    // this.e.classList.add('form-check-input');
-    // if (options.float)   this.e.classList.add('w-50', 'float-end');
-    // if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+};
+function Radio(options = {}) {
+    if (!options.id) options.id = random_id();
+    this.e = document.createElement('span');
+    let radio = document.createElement('input'),
+        label = document.createElement('label');
+    radio.setAttribute('type', 'radio');
+    radio.setAttribute('autocomplete', 'off');
+    radio.setAttribute('id', `chk_${options.id}`);
+    radio.classList.add('btn-check');
+    if (options.attributes) options.attributes.forEach(a => radio.setAttribute(a.field, a.value));
+    label.classList.add('btn', 'btn-outline-success');
+    label.setAttribute('for', `chk_${options.id}`);
+    label.innerHTML = _check();
+    if (options.small) label.classList.add('btn-sm');
+    if (options.float) this.e.classList.add('float-end');
+    this.e.appendChild(radio);
+    this.e.appendChild(label);
 };
 function Hidden(options = {}) {
     this.e = document.createElement('input');

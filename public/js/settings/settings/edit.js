@@ -25,6 +25,26 @@ function viewSettingEdit(setting_id) {
         }
     );
 };
+function getPrinters() {
+    clear_table('printers')
+    .then(tbl_printers => {
+        get({table: 'printers'})
+        .then(function ([printers, options]) {
+            console.log(printers)
+            printers.forEach(printer => {
+                let row = tbl_printers.insertRow(-1);
+                add_cell(row, {append: new Radio({
+                    attributes: [
+                        {field: 'name',  value: 'printer'},
+                        {field: 'value', value: printer.deviceId}
+                    ],
+                    small: true
+                }).e});
+                add_cell(row, {text: printer.deviceId});
+            });
+        });
+    });
+};
 window.addEventListener('load', function () {
     addFormListener(
         'setting_edit',
@@ -37,6 +57,13 @@ window.addEventListener('load', function () {
             ]
         }
     );
+    addFormListener(
+        'printers',
+        'POST',
+        '/printers',
+        {onComplete: getPrinter}
+    );
+    addListener('btn_printers', getPrinters);
     modalOnShow('setting_edit', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});
     modalOnShow('setting_view', function (event) {settingEditBtn(event.relatedTarget.dataset.id)});
 });
