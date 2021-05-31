@@ -162,11 +162,22 @@ module.exports = function (m, fn) {
                                             {where: {loancard_id: loancard.loancard_id}}
                                         )
                                         .then(result => {
-                                            return fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${file}`)
-                                            .then(result => resolve(file))
+                                            return fn.settings.get('Print loancard')
+                                            .then(settings => {
+                                                if      (settings.length !== 1)     resolve(file)
+                                                else if (settings[0].value !== '1') resolve(file)
+                                                else {
+                                                    return fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${file}`)
+                                                    .then(result => resolve(file))
+                                                    .catch(err => {
+                                                        console.log(err);
+                                                        resolve(file);
+                                                    });
+                                                };
+                                            })
                                             .catch(err => {
                                                 console.log(err);
-                                                resolve(file);
+                                                resolve(file)
                                             });
                                         })
                                         .catch(err => reject(err));

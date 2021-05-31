@@ -51,6 +51,7 @@ function viewLine(action_id) {
         });
     });
 };
+addReloadListener(getActions);
 window.addEventListener('load', function () {
     modalOnShow('action_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
 });

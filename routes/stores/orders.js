@@ -206,13 +206,13 @@ module.exports = (app, m, inc, fn) => {
     };
     function receive_line_serial (options) {
         return new Promise((resolve, reject) => {
-            if (!options._serial) reject(new Error('No serial specified'))
+            if (!options.serial) reject(new Error('No serial specified'))
             else {
                 location_check(options.location)
                 .then(location_id => {  
                     m.serials.findOrCreate({
                         where: {
-                            _serial: options._serial,
+                            serial:  options.serial,
                             size_id: options.size_id
                         },
                         defaults: {
@@ -242,7 +242,7 @@ module.exports = (app, m, inc, fn) => {
         return new Promise((resolve, reject) => {
             stock_check(options)
             .then(stock => {
-                stock.increment('_qty', {by: options._qty})
+                stock.increment('qty', {by: options.qty})
                 .then(result => {
                     if (!result) reject(new Error('Stock not received'))
                     else         resolve([{table: 'stocks', id: stock.stock_id}, {table: 'locations', id: stock.location_id}])
@@ -325,66 +325,6 @@ module.exports = (app, m, inc, fn) => {
             .then(results => {
                 if (fn.promise_results(results)) resolve({success: true, message: 'Line cancelled'})
                 else resolve({success: false, message: 'Some actions failed cancelling line'});
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function demand_order_line(line_id, user_id) {
-        return new Promise((resolve, reject) => {
-            return m.order_lines.findOne({
-                where:      {line_id: line_id},
-                include:    [inc.size({attributes: ['supplier_id']})],
-                attributes: ['line_id', 'size_id', 'qty']
-            })
-            .then(order_line => {
-                if      (!order_line)                                                         resolve({success: false, message: 'Order line not found'});
-                else if (!order_line.size)                                                    resolve({success: false, message: 'Size not found'});
-                else if (!order_line.size.supplier_id || order_line.size.supplier_id === '') {resolve({success: false, message: 'Size does not have a supplier specified'});
-                } else {
-                    fn.demands.create({
-                        supplier_id: order_line.size.supplier_id,
-                        user_id:     user_id
-                    })
-                    .then(demand_result => {
-                        if (demand_result.success) {
-                            fn.demands.lines.create({
-                                demand_id: demand_result.demand.demand_id,
-                                size_id:   order_line.size_id,
-                                qty:       order_line.qty,
-                                user_id:   user_id,
-                                note:      ` from order line ${order_line.line_id}`
-                            })
-                            .then(line_result => {
-                                if (line_result.success) {
-                                    let actions = [];
-                                    actions.push(order_line.update({_status: 3}));
-                                    actions.push(m.order_line_actions.create({
-                                        _action:        'Demand',
-                                        order_line_id:  order_line.line_id,
-                                        action_line_id: line_result.line.line_id,
-                                        user_id:        user_id
-                                    }));
-                                    if (line_result.line.created) {
-                                        actions.push(m.demand_line_actions.create({
-                                            demand_line_id: line_result.line.line_id,
-                                            action_line_id:  order_line.line_id,
-                                            _action:   `Created from order line`,
-                                            user_id: req.user.user_id
-                                        }));
-                                    };
-                                    Promise.allSettled(actions)
-                                    .then(new_note => resolve(line_result))
-                                    .catch(err => {
-                                        console.log(err);
-                                        resolve({success: true, message: 'Line demanded. Some errors occured', line: {line_id: line_result.line_Id}});
-                                    });
-                                } else resolve(line_result);
-                            })
-                            .catch(err => reject(err));
-                        } else resolve(demand_result);
-                    })
-                    .catch(err => reject(err));
-                };
             })
             .catch(err => reject(err));
         });

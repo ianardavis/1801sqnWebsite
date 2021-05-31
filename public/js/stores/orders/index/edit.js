@@ -50,7 +50,7 @@ function addReceiptOptions() {
                 index: this.dataset.index
             })
             .then(function ([order, options]) {
-                if (order.status === 2) {
+                if (order.status === 1) {
                     if (order.size.has_serials) {
                         get({
                             table: 'serials',

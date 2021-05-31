@@ -154,4 +154,65 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+
+    fn.orders.receive = function (_order, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.allowed(user_id, 'order_edit')
+            .then(allowed => {
+                return get_order(_order.order_id)
+                .then(order => {
+                    if      (!order.size)        reject(new Error('Size not found'))
+                    else if (order.status !== 1) reject(new Error('Only placed orders can be received'))
+                    else {
+                        let action = null;
+                        if (order.size.has_serials) {
+                            action = new Promise((resolve, reject) => {
+                                let serial_actions = [];
+                                _order.serials.forEach(serial => {
+                                    serial_actions.push(new Promise((resolve, reject) => {
+                                        if (!serial.location) reject(new Error('No location specified'))
+                                        else {
+                                            return m.locations.findOrCreate({where: {location: serial.location}})
+                                            .then(([location, created]) => {
+                                                
+                                            })
+                                            .catch(err => reject(err));
+                                        };
+                                    }));
+                                });
+                                return Promise.all(serial_actions)
+                                .then(results => {
+
+                                })
+                                .catch(err => reject(err));
+                            });
+                        } else {
+                            action = new Promise((resolve, reject) => {
+                                if (!_order.location) reject(new Error('No location specified'))
+                                else {
+                                    return m.locations.findOrCreate({where: {location: _order.location}})
+                                    .then(([location, created]) => {
+                                        return m.stocks.findOrCreate({
+                                            where: {
+                                                size_id:     order.size_id,
+                                                location_id: location.location_id
+                                            }
+                                        })
+                                    })
+                                    .catch(err => reject(err));
+                                };
+                            });
+                        };
+                        return action
+                        .then(result => {
+
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
 };

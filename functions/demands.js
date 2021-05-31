@@ -587,24 +587,22 @@ module.exports = function (m, fn) {
                     new Promise((resolve, reject) => {
                         m.action_links.findAll({
                             where: {_table: 'issues'},
-                            include: [
-                                {
-                                    model: m.actions,
-                                    as: 'action',
-                                    where: {
-                                        action: {[fn.op.or]: ['Order created from issue', 'Order incremented from issue']}
-                                    },
-                                    required: true,
-                                    include: [
-                                        {
-                                            model: m.action_links,
-                                            as: 'links',
-                                            where: {_table: 'orders', id: order_id},
-                                            required: true
-                                        }
-                                    ]
-                                }
-                            ]
+                            include: [{
+                                model: m.actions,
+                                as: 'action',
+                                where: {
+                                    action: {[fn.op.or]: ['Order created from issue', 'Order incremented from issue']}
+                                },
+                                required: true,
+                                include: [
+                                    {
+                                        model: m.action_links,
+                                        as: 'links',
+                                        where: {_table: 'orders', id: order_id},
+                                        required: true
+                                    }
+                                ]
+                            }]
                         })
                         .then(links => {
                             if (!links || links.length === 0) resolve([]) //reject(new Error('No issues for this order'))
