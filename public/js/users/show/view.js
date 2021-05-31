@@ -19,6 +19,7 @@ function getUser() {
 };
 addReloadListener(getUser);
 window.addEventListener('load', function () {
+    enable_button('user_password');
     addFormListener(
         'user_password',
         'PUT',

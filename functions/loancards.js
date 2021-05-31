@@ -85,7 +85,7 @@ module.exports = function (m, fn) {
             return m.loancards.findOne({
                 where: {loancard_id: loancard_id},
                 include: [
-                    {model: m.users, as: 'user', include: [{model: m.ranks, as: 'rank'}]},
+                    {model: m.users, as: 'user',          include: [{model: m.ranks, as: 'rank'}]},
                     {model: m.users, as: 'user_loancard', include: [{model: m.ranks, as: 'rank'}]}
                 ]
             })
@@ -110,8 +110,14 @@ module.exports = function (m, fn) {
                         },
                         include: [
                             {model: m.serials, as: 'serial'},
-                            {model: m.nsns,    as: 'nsn', include: [{model: m.nsn_classes, as: 'nsn_class'}, {model: m.nsn_groups, as: 'nsn_group'}, {model: m.nsn_countries, as: 'nsn_country'}]},
-                            {model: m.sizes,   as: 'size', include: [{model: m.items, as: 'item'}]}
+                            {model: m.nsns,    as: 'nsn',  include: [
+                                {model: m.nsn_classes,   as: 'nsn_class'},
+                                {model: m.nsn_groups,    as: 'nsn_group'},
+                                {model: m.nsn_countries, as: 'nsn_country'}
+                            ]},
+                            {model: m.sizes,   as: 'size', include: [
+                                {model: m.items, as: 'item'}
+                            ]}
                         ]
                     })
                     .then(lines => {

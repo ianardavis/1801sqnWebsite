@@ -259,7 +259,6 @@ module.exports = function (m, fn) {
                             });
                             return Promise.allSettled(issue_actions)
                             .then(results => {
-                                console.log(results);
                                 if (results.filter(e => e.status === 'fulfilled').length > 0) resolve(true)
                                 else reject(new Error('All lines failed'));
                             })
