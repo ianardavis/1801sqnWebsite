@@ -108,13 +108,13 @@ module.exports = function (m, fn) {
                 else {
                     fn.file_exists(file)
                     .then(path => {
-                        console.log(printers[0].value);
-                        console.log('printing!');
-                        resolve(true);
-                        // ptp
-                        // .print(path, {printer: printers[0].value, unix: ["-o sides=two-sided-long-edge"]})
-                        // .then(result => resolve(true))
-                        // .catch(err => reject(err));
+                        // console.log(printers[0].value);
+                        // console.log('printing!');
+                        // resolve(true);
+                        ptp
+                        .print(path, {printer: printers[0].value, unix: ["-o sides=two-sided-long-edge"]})
+                        .then(result => resolve(true))
+                        .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
                 };
