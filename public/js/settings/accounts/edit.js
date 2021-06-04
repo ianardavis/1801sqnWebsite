@@ -13,22 +13,20 @@ function accountEditBtn(account_id) {
 };
 function viewAccountEdit(account_id) {
     modalHide('account_view');
-    get(
-        {
-            table: 'account',
-            query: [`account_id=${account_id}`]
-        },
-        function(account, options) {
-            set_attribute({id: 'account_id_edit', attribute: 'value', value: account.account_id});
-            set_value({id: 'account_name_edit',   value: account._name});
-            set_value({id: 'account_number_edit', value: account._number});
-            listUsers({
-                select:   'sel_account_user_edit',
-                id_only:  true,
-                selected: account.user_id_account
-            })
-        }
-    );
+    get({
+        table: 'account',
+        query: [`account_id=${account_id}`]
+    })
+    .then(function([account, options]) {
+        set_attribute({id: 'account_id_edit', attribute: 'value', value: account.account_id});
+        set_value({id: 'account_name_edit',   value: account.name});
+        set_value({id: 'account_number_edit', value: account.number});
+        listUsers({
+            select:   'sel_account_user_edit',
+            id_only:  true,
+            selected: account.user_id_account
+        })
+    });
 };
 window.addEventListener('load', function () {
     addFormListener(

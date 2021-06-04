@@ -18,7 +18,7 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'setting_delete'}
             ]}
         ]},
-        {_permission: 'access_users',     children: [
+        {_permission: 'access_users',   children: [
             {_permission: 'user_add'},
             {_permission: 'user_edit'},
             {_permission: 'user_delete'},
@@ -26,7 +26,7 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'permission_edit'}
             ]}
         ]},
-        {_permission: 'access_stores', children: [
+        {_permission: 'access_stores',  children: [
             {_permission: 'access_issues',    children: [
                 {_permission: 'issue_add'},
                 {_permission: 'issue_edit'},
@@ -46,7 +46,7 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'item_add'},
                 {_permission: 'item_edit'},
                 {_permission: 'item_delete'},
-                {_permission: 'access_sizes', children: [
+                {_permission: 'access_sizes',      children: [
                     {_permission: 'size_add'},
                     {_permission: 'size_edit'},
                     {_permission: 'size_delete'},
@@ -96,7 +96,7 @@ module.exports = (app, m, inc, fn) => {
                     {_permission: 'category_edit'},
                     {_permission: 'category_delete'}
                 ]},
-                {_permission: 'access_genders',   children: [
+                {_permission: 'access_genders',    children: [
                     {_permission: 'gender_add'},
                     {_permission: 'gender_edit'},
                     {_permission: 'gender_delete'}
@@ -140,12 +140,12 @@ module.exports = (app, m, inc, fn) => {
         ]},
         {_permission: 'access_canteen', children: [
             {_permission: 'access_pos'},
-            {_permission: 'access_credits',     children: [
+            {_permission: 'access_credits',       children: [
                 {_permission: 'credit_add'},
                 {_permission: 'credit_edit'},
                 {_permission: 'credit_delete'}
             ]},
-            {_permission: 'access_holdings',    children: [
+            {_permission: 'access_holdings',      children: [
                 {_permission: 'holding_add'},
                 {_permission: 'holding_edit'},
                 {_permission: 'holding_delete'}
@@ -155,7 +155,7 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'canteen_item_edit'},
                 {_permission: 'canteen_item_delete'}
             ]},
-            {_permission: 'access_movements',   children: [
+            {_permission: 'access_movements',     children: [
                 {_permission: 'movement_add'},
                 {_permission: 'movement_edit'},
                 {_permission: 'movement_delete'},
@@ -163,17 +163,17 @@ module.exports = (app, m, inc, fn) => {
                 {_permission: 'pay_in'}
             ]},
             {_permission: 'access_payments'},
-            {_permission: 'access_pos_layouts', children: [
+            {_permission: 'access_pos_layouts',   children: [
                 {_permission: 'pos_layout_add'},
                 {_permission: 'pos_layout_edit'},
                 {_permission: 'pos_layout_delete'}
             ]},
-            {_permission: 'access_pos_pages',   children: [
+            {_permission: 'access_pos_pages',     children: [
                 {_permission: 'pos_page_add'},
                 {_permission: 'pos_page_edit'},
                 {_permission: 'pos_page_delete'}
             ]},
-            {_permission: 'access_receipts',    children: [
+            {_permission: 'access_receipts',      children: [
                 {_permission: 'receipt_add'},
                 {_permission: 'receipt_edit'},
                 {_permission: 'receipt_delete'},
@@ -182,15 +182,15 @@ module.exports = (app, m, inc, fn) => {
                     {_permission: 'receipt_line_delete'}
                 ]}
             ]},
-            {_permission: 'access_sales',       children: [
+            {_permission: 'access_sales',         children: [
                 {_permission: 'access_sale_lines'}
             ]},
-            {_permission: 'access_sessions',    children: [
+            {_permission: 'access_sessions',      children: [
                 {_permission: 'session_add'},
                 {_permission: 'session_edit'},
                 {_permission: 'session_delete'}
             ]},
-            {_permission: 'access_writeoffs',   children: [
+            {_permission: 'access_writeoffs',     children: [
                 {_permission: 'writeoff_add'},
                 {_permission: 'writeoff_edit'},
                 {_permission: 'writeoff_delete'},
@@ -202,10 +202,7 @@ module.exports = (app, m, inc, fn) => {
         ]}
     ];
     app.get('/get/permissions', fn.li(), fn.permissions.check('access_permissions'), (req, res) => {
-        m.permissions.findAll({
-            where:      req.query,
-            attributes: ['permission_id', 'permission', 'createdAt']
-        })
+        m.permissions.findAll({where: req.query})
         .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree}}))
         .catch(err => fn.send_error(res, err));
     });
@@ -229,7 +226,7 @@ module.exports = (app, m, inc, fn) => {
                             actions.push(
                                 m.permissions.destroy({where: {permission_id: permission.permission_id}})
                             );
-                        }
+                        };
                     });
                     req.body.permissions.forEach(permission => {
                         actions.push(

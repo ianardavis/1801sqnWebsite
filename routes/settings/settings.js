@@ -1,4 +1,5 @@
-const ptp = require('pdf-to-printer');
+const ptp = require('pdf-to-printer'),
+      fs  = require("fs");
 module.exports = (app, m, inc, fn) => {
     app.get('/settings',        fn.li(), fn.permissions.get('access_settings'),   (req, res) => res.render('settings/show'));
 
@@ -25,15 +26,43 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
+    // app.get('/get/logs',        fn.li(), fn.permissions.check('access_settings'), (req, res) => {
+    //     fn.settings.get(`log ${req.query.type || ''}`)
+    //     .then(settings => {
+    //         if (settings.length === 1) {
+    //             fs.readFile(settings[0].value, 'utf8', (err, data) => {
+    //                 if (err) fn.send_error(res, err)
+    //                 else res.send({success: true, result: data});
+    //             });
+    //         } else fn.send_error(res, 'Multiple log locations');
+    //     })
+    //     .catch(err => fn.send_error(res, err));
+    // });
+    app.get('/get/logs',        fn.li(), fn.permissions.check('access_settings'), (req, res) => {
+        fn.settings.get(`log ${req.query.type || ''}`)
+        .then(settings => {
+            if (settings.length === 1) {
+                let readStream = fs.createReadStream(settings[0].value);
+                readStream.on('open',  ()  => {readStream.pipe(res)});
+                readStream.on('close', ()  => {res.end()});
+                readStream.on('error', err => {res.end(err)});
+            } else fn.send_error(res, 'Multiple log locations');
+        })
+        .catch(err => fn.send_error(res, err));
+    });
 
     app.put('/settings',        fn.li(), fn.permissions.check('setting_edit'),    (req, res) => {
-        m.settings.update(
-            {_value: req.body.setting._value},
-            {where: {name: req.body.setting.name}}
-        )
-        .then(result => {
-            if (!result) res.send({success: true, message: 'Setting not updated'})
-            else         res.send({success: true, message: 'Setting updated'});
+        m.settings.findOne({where: {setting_id: req.body.setting_id}})
+        .then(setting => {
+            if (!setting) fn.send_error(res, 'Setting not found')
+            else {
+                return setting.update(req.body.setting)
+                .then(result => {
+                    if (!result) res.send({success: true, message: 'Setting not updated'})
+                    else         res.send({success: true, message: 'Setting updated'});
+                })
+                .catch(err => fn.send_error(res, err));
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

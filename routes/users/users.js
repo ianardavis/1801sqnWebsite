@@ -7,7 +7,7 @@ module.exports = (app, m, inc, fn) => {
     app.get('/users/select', fn.li(), fn.permissions.get('access_users'),                   (req, res) => res.render('users/select'));
 
     app.get('/users/:id',    fn.li(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
-        if (Number(req.params.id) === req.user.user_id || req.allowed) {
+        if (req.allowed || String(req.params.id) === String(req.user.user_id)) {
             res.render('users/show')
         } else res.redirect(`/users/${req.user.user_id}`);
     });
@@ -56,12 +56,22 @@ module.exports = (app, m, inc, fn) => {
             (_user.status_id)      &&
             (_user.login_id)
         ) {
-            m.users.findOne({where: {service_number: _user.service_number}})
-            .then(user => {
-                if (user) fn.send_error(res, 'There is already a user with this Bader/Service #')
+            m.users.findOrCreate({
+                where: {service_number: req.body.user.service_number},
+                defaults: {
+                    first_name: req.body.user.first_name,
+                    surname:    req.body.user.surname,
+                    rank_id:    req.body.user.rank_id,
+                    status_id:  req.body.user.status_id,
+                    login_id:   req.body.user.login_id,
+                    reset:      true
+                }
+            })
+            .then(([user, created]) => {
+                if (!created) fn.send_error(res, 'There is already a user with this service #')
                 else {
                     let password = generatePassword();
-                    m.users.create({..._user, ...{reset: 1}, ...encryptPassword(password.plain)})
+                    return user.update(encryptPassword(password.plain))
                     .then(user => res.send({success: true,  message: `User added. Password: ${password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
                     .catch(err => fn.send_error(res, err));
                 };
@@ -69,9 +79,9 @@ module.exports = (app, m, inc, fn) => {
         } else fn.send_error(res, 'Not all required information has been submitted');
     });
     
-    app.put('/password/:id', fn.li(), fn.permissions.check('user_password', {allow: true}), (req, res) => {
-        if      (!req.allowed && req.user.user_id !== Number(req.params.id)) fn.send_error(res, 'Permission denied')
-        else if (!req.body.password)                                        fn.send_error(res, 'No password submitted')
+    app.put('/password/:id', fn.li(), fn.permissions.check('user_edit',     {allow: true}), (req, res) => {
+        if      (!req.allowed && String(req.user.user_id) !== String(req.params.id)) fn.send_error(res, 'Permission denied')
+        else if (!req.body.password)                                         fn.send_error(res, 'No password submitted')
         else {
             m.users.findOne({
                 where:      {user_id: req.params.id},
@@ -84,7 +94,7 @@ module.exports = (app, m, inc, fn) => {
                     return user.update(encryptPassword(req.body.password))
                     .then(result => {
                         if (!result) fn.send_error(res, 'Password not changed')
-                        else         res.send({success: true,  message: 'Password changed'});
+                        else         res.send({success: true, message: 'Password changed'});
                     })
                     .catch(err => fn.send_error(res, err));
                 };
@@ -94,8 +104,8 @@ module.exports = (app, m, inc, fn) => {
     });
     app.put('/users/:id',    fn.li(), fn.permissions.check('user_edit'),                    (req, res) => {
         if (req.body.user) {
-            if (!req.body.user._reset) req.body.user._reset = 0;
-            ['user_id','full_name','_salt','_password','createdAt','updatedAt'].forEach(e => {
+            if (!req.body.user.reset) req.body.user.reset = 0;
+            ['user_id','full_name','salt','password','createdAt','updatedAt'].forEach(e => {
                 if (req.body.user[e]) delete req.body.user[e];
             });
             m.users.findOne({where: {user_id: req.params.id}})
@@ -120,7 +130,7 @@ module.exports = (app, m, inc, fn) => {
                         let actions = [];
                         actions.push(m.permissions.destroy({where: {user_id: user.user_id}}));
                         actions.push(user.destroy());
-                        Promise.all(actions)
+                        return Promise.all(actions)
                         .then(result => res.send({success: true, message: 'User deleted'}))
                         .catch(err => fn.send_error(res, err));
                     };
@@ -137,10 +147,10 @@ module.exports = (app, m, inc, fn) => {
         ['C','V','C','-','C','V','C','-','C','V','C'].forEach(l => {
             let rand = Math.random(), letter = '-';
             if (l === 'C') {
-                letter = consenants[Math.floor(rand*20)];
+                letter = consenants[Math.floor(rand*consenants.length)];
                 plain += letter;
             } else if (l === 'V'){
-                letter = vowels[Math.floor(rand*6)];
+                letter = vowels[Math.floor(rand*vowels.length)];
                 plain += letter;
             };
             readable += letter.toUpperCase();

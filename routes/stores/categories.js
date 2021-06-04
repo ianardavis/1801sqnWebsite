@@ -16,10 +16,7 @@ module.exports = (app, m, inc, fn) => {
         };
         m.categories.findOne({
             where: req.query,
-            include: [
-                inc.categories({as: 'parent'}),
-                inc.users()
-            ]
+            include: [inc.categories({as: 'parent'})]
         })
         .then(category => {
             if (!category) fn.send_error(res, 'Category not found')

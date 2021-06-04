@@ -1,18 +1,15 @@
 <% if (!locals.permission || permissions[permission]) { %>
     <div class="input-group mb-1">
-        <label
-            class="input-group-text w-30"
-            <% if (locals.id) { %>for="<%= id %>"<% } %>
-        >
+        <span class="input-group-text w-30">
             <%= title %>
             <% if (locals.spinner_id) { %><%- include(`${partials}/spinner`, {id: locals.spinner_id, small: true}) %><% } %>
-        </label>
+        </span>
         <select
             class="form-select<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
-            <% if (locals.id) { %>id='<%= id %>'<% } %>
-            <% if (locals.name) { %>name=<%= name %><% } %>
+            <% if (locals.id) { %>      id='<%= id %>'<% } %>
+            <% if (locals.name) { %>    name=<%= name %><% } %>
             <% if (locals.required) { %>required<% } %>
-            <% if (locals.size) { %>size='<%= size %>'<% } %>
+            <% if (locals.size) { %>    size='<%= size %>'<% } %>
         >
         <% if (locals.options) { %>
             <% options.forEach(option => { %>

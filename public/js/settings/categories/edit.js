@@ -24,22 +24,20 @@ function loadCategoriesEdit() {
 };
 function viewCategoryEdit(category_id) {
     modalHide('category_view');
-    get(
-        {
-            table: 'category',
-            query: [`category_id=${category_id}`]
-        },
-        function(category, options) {
-            set_attribute({id: 'category_id_edit', attribute: 'value', value: category.category_id});
-            set_value(    {id: '_category_edit',   value: category._category});
-            listCategories({select: 'sel_category_edit', selected: category.parent_category_id || ''});
-        }
-    );
+    get({
+        table: 'category',
+        query: [`category_id=${category_id}`]
+    })
+    .then(function([category, options]) {
+        set_attribute({id: 'category_id_edit', attribute: 'value', value: category.category_id});
+        set_value(    {id: '_category_edit',   value: category._category});
+        listCategories({select: 'sel_category_edit', selected: category.parent_category_id || ''});
+    });
 };
+addReloadListener(loadCategoriesEdit)
 window.addEventListener('load', function () {
     modalOnShow('category_view', function (event) {categoryEditBtn(event.relatedTarget.dataset.id)});
     modalOnShow('category_edit', function (event) {viewCategoryEdit(event.relatedTarget.dataset.id)});
-    document.querySelector('#reload').addEventListener('click', loadCategoriesEdit);
 
     addFormListener(
         'category_edit',

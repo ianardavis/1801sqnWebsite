@@ -113,8 +113,8 @@
                             </h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {id: 'description_edit', title: 'Description', name: 'item[description]', placeholder: 'Required', maxlength: 45, required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: 'size_text_edit',   title: 'Size Text',   name: 'item[size_text]',   placeholder: 'Required', maxlength: 45, required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'description_edit', title: 'Description', name: 'item[description]', required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'size_text_edit',   title: 'Size Text',   name: 'item[size_text]',   required: true}) %>
                             <%- include(`${partials}/inputs/select`, {id: 'sel_genders',      title: 'Gender',      spinner_id: 'genders',     permission: 'access_genders'}) %>
                         </div>
                         <div class="modal-footer">
@@ -134,7 +134,7 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" class='item_id' name='size[item_id]'>
-                            <%- include(`${partials}/inputs/text`,   {name: 'size[size]',        title: 'Size',         id: 'size',        maxlength: 15, placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size]',        title: 'Size',         id: 'size',        required: true}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[issueable]',   title: 'Issueable',    id: 'issueable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[orderable]',   title: 'Orderable',    id: 'orderable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'has_serials', options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>

@@ -11,13 +11,17 @@ function get(options) {
             else if (typeof event.target.responseText !== 'string') reject(new Error('No valid response'))
             else {
                 try {
-                    let response = JSON.parse(event.target.responseText);
-                    if (response.success) resolve([response.result, options])
-                    else {
-                        console.log(`********* Error getting ${options.table} *********`);
-                        console.log(response.message || response);
-                        console.log('*******************************************');
-                        reject(new Error(response.message));
+                    if (options.streamAction) {
+                        options.streamAction(event.target.responseText)
+                    } else {
+                        let response = JSON.parse(event.target.responseText);
+                        if (response.success) resolve([response.result, options])
+                        else {
+                            console.log(`********* Error getting ${options.table} *********`);
+                            console.log(response.message || response);
+                            console.log('*******************************************');
+                            reject(new Error(response.message));
+                        };
                     };
                 } catch (error) {
                     console.log(`********* Error getting ${options.table} *********`);

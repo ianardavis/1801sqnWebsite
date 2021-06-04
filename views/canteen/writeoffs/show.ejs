@@ -62,8 +62,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/select`, {title: 'Item',     id: 'sel_items',  name: 'line[item_id]',                        required: true}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'qty',        placeholder: 'Required', name: 'line[_qty]',  required: true, min: '1'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'Item',     id: 'sel_items', name: 'line[item_id]', required: true}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'qty',       name: 'line[qty]',     required: true, min: '1'}) %>
                     </div>
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-success w-100" value='Add Item'>

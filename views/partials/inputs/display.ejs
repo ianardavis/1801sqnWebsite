@@ -1,12 +1,15 @@
 <% if (!locals.permission || permissions[permission]) { %>
-    <div <% if (locals.inp_id) { %>id='<%= inp_id %>' <% } %>class="input-group mb-1<% if (locals.inp_classes) inp_classes.forEach(e => { %> <%= e %><% }) %>">
+    <div
+        <% if (locals.inp_id) { %>id='<%= inp_id %>' <% } %>
+        class="input-group mb-1<% if (locals.inp_classes) inp_classes.forEach(e => { %> <%= e %><% }) %>"
+    >
         <span class="input-group-text w-30"><%= title %></span>
         <% if (locals.html) { %>
             <%- html %>
         <% } else { %>
             <p
-        class="form-control mb-0<% if (locals.classes) { locals.classes.forEach(e => {%> <%= e %><% })%><% } %>"
-                <% if (locals.id) { %>id='<%= id %>'<% } %>
+                class="form-control mb-0<% if (locals.classes) { locals.classes.forEach(e => {%> <%= e %><% })%><% } %>"
+                <% if (locals.id)   { %>id='<%= id %>'<% } %>
             >
                 <% if (locals.text) { %><%= text %><% } %>
             </p>

@@ -9,7 +9,6 @@ function getPermissions () {
             set_count({id: 'permission', count: permissions.permissions.length || '0'});
             permissions.permissions.forEach(e => {
                 let row = tbl_permissions.insertRow(-1);
-                add_cell(row, table_date(e.createdAt));
                 add_cell(row, {text: e.permission.replaceAll('_', ' ')});
             });
         });

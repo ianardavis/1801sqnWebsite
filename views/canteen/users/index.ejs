@@ -6,8 +6,8 @@
 <%- include(`${partials}/spinner`, {id: 'users'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-    <%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 classes: ['ranks'], 	id: 'rank_id',   spinner: true, spinner_id: 'ranks'}) %>
-	<%- include(`${partials}/inputs/select`, {title: 'Statuses', classes: ['statuses'], id: 'status_id', spinner: true, spinner_id: 'statuses'}) %>
+    <%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 classes: ['ranks'], 	id: 'rank_id',   spinner_id: 'ranks'}) %>
+	<%- include(`${partials}/inputs/select`, {title: 'Statuses', classes: ['statuses'], id: 'status_id', spinner_id: 'statuses'}) %>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">
 			<th class="w-40" onclick="sortTable(0, 'tbl_users')">Bader/Service #</th>

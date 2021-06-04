@@ -57,7 +57,7 @@
                             <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]',   required: true, id: 'sel_nsn_classes'}) %>
                             <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]', required: true, id: 'sel_nsn_countries'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, id: 'nsn_item_number_edit', maxlength: '8', placeholder: 'Required'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, id: 'nsn_item_number_edit'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit"  class="btn btn-success w-100" value='Save NSN'>

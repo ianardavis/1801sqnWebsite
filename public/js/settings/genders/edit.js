@@ -13,16 +13,14 @@ function genderEditBtn(gender_id) {
 };
 function viewGenderEdit(gender_id) {
     modalHide('gender_view');
-    get(
-        {
-            table: 'gender',
-            query: [`gender_id=${gender_id}`]
-        },
-        function(gender, options) {
-            set_attribute({id: 'gender_id_edit', attribute: 'value', value: gender.gender_id});
-            set_value({id: 'gender_gender_edit', value: gender._gender});
-        }
-    );
+    get({
+        table: 'gender',
+        query: [`gender_id=${gender_id}`]
+    })
+    .then(function([gender, options]) {
+        set_attribute({id: 'gender_id_edit', attribute: 'value', value: gender.gender_id});
+        set_value({id: 'gender_gender_edit', value: gender._gender});
+    });
 };
 window.addEventListener('load', function () {
     addFormListener(

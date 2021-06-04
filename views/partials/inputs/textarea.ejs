@@ -1,18 +1,13 @@
 <div class="input-group mb-1">
-    <label
-        class="input-group-text w-30"
-        <% if (locals.id) { %>for="<%= id %>"<% } %>
-    >
+    <span class="input-group-text w-30">
         <%= title %>
-    </label>
+    </span>
     <textarea
         class='form-control mb-0'
-        <% if (locals.id) { %>          id='<%= id %>'<% } %>
-        <% if (locals.name) { %>        name='<%= name %>'<% } %>
-        <% if (locals.rows) { %>        rows='<%= rows %>'<% } %>
-        <% if (locals.maxlength) { %>   maxlength='<%= maxlength %>'<% } %>
-        <% if (locals.readonly){ %>     readonly<% } %>
-        <% if (locals.autocomplete) { %>autocomplete='<%= autocomplete %>'<% } %>
-        <% if (locals.required) { %>    required<% } %>
+        <% if (locals.id) { %>      id='<%= id %>'<% } %>
+        <% if (locals.name) { %>    name='<%= name %>'<% } %>
+        <% if (locals.rows) { %>    rows='<%= rows %>'<% } %>
+        <% if (locals.readonly){ %> readonly<% } %>
+        <% if (locals.required) { %>required<% } %>
     ><% if (locals.value) { %><%=  value %><% } %></textarea>
 </div>

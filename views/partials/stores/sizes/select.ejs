@@ -8,16 +8,16 @@
                 </div>
                 <div class="modal-body">
                     <div id="div_items">
-                        <%- include(`${partials}/inputs/text`,       {title: 'Search Items', id: 'inp_item',     autocomplete: 'off'}) %>
-                        <%- include(`${partials}/inputs/select`,     {title: 'Item',         id: 'sel_items',    size: '10', spinner: true, spinner_id: 'items'}) %>
+                        <%- include(`${partials}/inputs/text`,       {title: 'Search Items', id: 'inp_item'}) %>
+                        <%- include(`${partials}/inputs/select`,     {title: 'Item',         id: 'sel_items',    size: '10', spinner_id: 'items'}) %>
                     </div>
                     <form id="form_line">
                         <div id="div_sizes" class='hidden'>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size',     autocomplete: 'off'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Size',         id: 'sel_sizes',    name: 'line[size_id]', required: true, size: '10', spinner: true, spinner_id: 'sizes'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Search Sizes', id: 'inp_size'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Size',         id: 'sel_sizes',    name: 'line[size_id]', required: true, size: '10', spinner_id: 'sizes'}) %>
                         </div>
                         <div id="div_size" class='hidden'>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'size_add_qty', name: 'line[_qty]',    required: true, value: '1', min: '1'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'size_add_qty', name: 'line[qty]',     required: true, value: '1', min: '1'}) %>
                             <div id="div_locations" class='hidden'></div>
                             <div id="div_serials"   class='hidden'></div>
                             <button class="btn btn-success w-100">Add</button>

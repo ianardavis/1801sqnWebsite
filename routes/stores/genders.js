@@ -7,7 +7,7 @@ module.exports = (app, m, inc, fn) => {
     app.get('/get/gender',     fn.li(), fn.permissions.check('access_genders'), (req, res) => {
         m.genders.findOne({
             where:   req.query,
-            include: [inc.users()]
+            include: []
         })
         .then(gender => {
             if (!gender) fn.send_error(res, 'Gender not found')

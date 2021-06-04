@@ -1,25 +1,20 @@
 <div class="input-group mb-1">
-    <% if (locals.id) { %>          
-        <label class="input-group-text w-30" for='<%= id %>'>
-            <%= title %>
-            <% if (locals.spinner_id) { %>
-                <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
-            <% } %>
-        </label>
-    <% } else { %>
-        <span class="input-group-text w-100"><%= title %></span>
-    <% } %>
+    <span class="input-group-text w-30">
+        <%= title %>
+        <% if (locals.spinner_id) { %>
+            <%- include(`${partials}/spinner`, {id: locals.spinner_id || locals.id, small: true}) %>
+        <% } %>
+    </span>
     <input
         class="form-control mb-0"
-        type="<%= locals.type || 'text' %>"
+        type="text"
         autocomplete='<%= locals.autocomplete || 'off' %>'
-        <% if (locals.id) { %>          id='<%= id %>'<% } %>
-        <% if (locals.name) { %>        name='<%= name %>'<% } %>
-        <% if (locals.value) { %>       value='<%= value %>'<% } %>
-        <% if (locals.required) { %>    required<% } %>
-        <% if (locals.minlength) { %>   minlength='<%= minlength %>'<% } %>
-        <% if (locals.maxlength) { %>   maxlength='<%= maxlength %>'<% } %>
-        <% if (locals.placeholder) { %> placeholder='<%= placeholder %>'<% } %>
+        <% if (locals.id) { %>  id='<%= id %>'<% } %>
+        <% if (locals.name) { %>name='<%= name %>'<% } %>
+        <% if (locals.required) { %>
+            placeholder='Required'
+            required
+        <% } %>
         <% if (locals.list_id) { %>       
             list='<%= list_id %>'
         <% } %>

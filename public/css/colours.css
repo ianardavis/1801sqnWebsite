@@ -145,6 +145,10 @@ table, th, td, thead {
 	color: var(--alt-color2);
 	background-color: var(--main-color);
 }
+.input-group label {
+	color: var(--alt-color2);
+	background-color: var(--main-color);
+}
 
 /* #337ab7 */
 /* #4f6a99 */

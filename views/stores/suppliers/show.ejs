@@ -118,8 +118,8 @@
                             <%- include(`${partials}/spinner`, {id: 'supplier_edit'}) %>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Supplier Name', name: 'supplier[name]',       maxlength: 20, required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',       name: 'supplier[account_id]', spinner: true, spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
+                            <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',       name: 'supplier[account_id]', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
                             <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?',   name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
                         </div>
                         <div class="modal-footer">
@@ -185,8 +185,8 @@
                                 <% if (permissions.file_detail_add) { %>
                                     <form id="form_file_detail_add">
                                         <input type="hidden" id='file_id_detail_add' name='detail[file_id]'>
-                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_add',  title: 'Name',  name: 'detail[name]',  maxlength: 45,  required: true, list_id: 'file_detail_names'}) %>
-                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_add', title: 'Value', name: 'detail[value]', maxlength: 255, required: true}) %>
+                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_add',  title: 'Name',  name: 'detail[name]',  required: true, list_id: 'file_detail_names'}) %>
+                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_add', title: 'Value', name: 'detail[value]', required: true}) %>
                                         <datalist id="file_detail_names"></datalist>
                                         <button class="btn btn-success w-100 mb-1">Save</button>
                                     </form>

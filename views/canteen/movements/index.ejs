@@ -5,7 +5,7 @@
 <%- include(`${partials}/spinner`, {id: 'movements'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-    <%- include(`${partials}/inputs/select`, {title: 'Confirmed Movements', id: 'sel_confirmed', options: [{value:'', text: 'Include'},{value:'_status=1', text: 'Exclude', selected: true},{value:'_status=2', text: 'Only'}]}) %>
+    <%- include(`${partials}/inputs/select`, {title: 'Confirmed Movements', id: 'sel_confirmed', options: [{value:'', text: 'Include'},{value:'status=1', text: 'Exclude', selected: true},{value:'status=2', text: 'Only'}]}) %>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
             <th class="w-25" onclick="sortTable(0, 'tbl_movements')">From</th>

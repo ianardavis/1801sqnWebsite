@@ -57,7 +57,7 @@
                             <h5 class="modal-title">Edit Location</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', maxlength: '8', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
                             <datalist id="locations_list"></datalist>
                         </div>
                         <div class="modal-footer">
@@ -102,7 +102,7 @@
                             <div class="modal-body">
                                 <input type="hidden" class='stock_id' name='adjustment[stock_id]'>
                                 <%- include(`${partials}/inputs/select`, {title: 'Type',     name: 'adjustment[type]', options: [{value: 'Count', text: 'Count'}, {value: 'Scrap', text: 'Scrap'}]}) %>
-                                <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'adjustment[qty]',  id: 'adjustment_qty_add', required: true, placeholder: 'Required'}) %>
+                                <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'adjustment[qty]',  id: 'adjustment_qty_add', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input type="submit" class="btn btn-success w-100" value='Save Adjustment'>

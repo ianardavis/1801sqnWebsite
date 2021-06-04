@@ -32,13 +32,41 @@ function getPrinter() {
         set_innerText({id: 'setting_printer', value: setting.value})
     })
 };
+function getErrorLog() {
+    let log_error = document.querySelector('#log_error');
+    if (log_error) {
+        log_error.innerText = '';
+        get({
+            table: 'logs',
+            query: ['type=error'],
+            spinner: 'log_error',
+            streamAction: function (char) {
+                log_error.innerText += char;
+            }
+        });
+    };
+};
+function getOutLog() {
+    let log_out = document.querySelector('#log_out');
+    if (log_out) {
+        log_out.innerText = '';
+        get({
+            table: 'logs',
+            query: ['type=out'],
+            spinner: 'log_out',
+            streamAction: function (char) {
+                log_out.innerText += char;
+            }
+        });
+    };
+};
 function viewSetting(setting_id) {
     get({
         table: 'setting',
         query: [`setting_id=${setting_id}`]
     })
     .then(function([setting, options]) {
-        console.log(setting);
+        set_innerText({id: 'setting_id',        text: setting.setting_id});
         set_innerText({id: 'setting_name',      text: setting.name});
         set_innerText({id: 'setting_value',     text: setting.value});
         set_innerText({id: 'setting_createdAt', text: print_date(setting.createdAt, true)});

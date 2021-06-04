@@ -56,7 +56,7 @@
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`, {title: 'Serial #', name: 'serial[serial]', id: 'serial_serial_edit', }) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location',       id: 'serial_location_edit', maxlength: '8', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location',       id: 'serial_location_edit', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
                             <datalist id="locations_list"></datalist>
                         </div>
                         <div class="modal-footer">

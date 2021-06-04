@@ -28,7 +28,6 @@ table {
 select {
 	text-align-last: center;
 }
-
 /* /////////////////////////////////////////////////////////////////// */
 #title {
 	margin: 5px 5px 10px 5px;
@@ -88,8 +87,8 @@ input.dropdown-item {
 }
 .form-control {
 	text-align: center;
-	text-align-last: center;
-	margin-bottom: 5px;
+	/* text-align-last: center; */
+	/* margin-bottom: 5px; */
 }
 .hidden {
 	display: none;

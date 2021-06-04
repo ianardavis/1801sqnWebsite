@@ -163,8 +163,8 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" class='size_id' name='detail[size_id]'>
-                                <%- include(`${partials}/inputs/text`,     {title: 'Detail', id: 'detail_name_add',  name: 'detail[name]',  maxlength: 45,   autocomplete: 'off', required: true, list_id: 'list_detail_options', spinner_id: 'detail_options', reload_id: 'reload_options'}) %>
-                                <%- include(`${partials}/inputs/textarea`, {title: 'Value',  id: 'detail_value_add', name: 'detail[value]', maxlength: 1000, autocomplete: 'off', required: true}) %>
+                                <%- include(`${partials}/inputs/text`,     {title: 'Detail', id: 'detail_name_add',  name: 'detail[name]',  required: true, list_id: 'list_detail_options', spinner_id: 'detail_options', reload_id: 'reload_options'}) %>
+                                <%- include(`${partials}/inputs/textarea`, {title: 'Value',  id: 'detail_value_add', name: 'detail[value]', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input  type="submit" class="btn btn-success w-100" value='Save Detail'>
@@ -183,8 +183,8 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" id='detail_id_edit' name='detail_id'>
-                                <%- include(`${partials}/inputs/text`,     {title: 'Detail', id: 'detail_name_edit',  name: 'detail[name]',  maxlength: 45,   autocomplete: 'off', required: true, list_id: 'list_detail_options'}) %>
-                                <%- include(`${partials}/inputs/textarea`, {title: 'Value',  id: 'detail_value_edit', name: 'detail[value]', maxlength: 1000, autocomplete: 'off', required: true}) %>
+                                <%- include(`${partials}/inputs/text`,     {title: 'Detail', id: 'detail_name_edit',  name: 'detail[name]',  required: true, list_id: 'list_detail_options'}) %>
+                                <%- include(`${partials}/inputs/textarea`, {title: 'Value',  id: 'detail_value_edit', name: 'detail[value]', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input  type="submit" class="btn btn-success w-100" value='Save Detail'>
@@ -209,7 +209,7 @@
                             <%- include(`${partials}/inputs/select`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'sel_serials',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[has_nsns]',    title: 'Has NSNs',     id: 'sel_nsns',      options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'sel_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers', permission: 'access_suppliers'}) %>
-                            <%- include(`${partials}/inputs/text`,   {name: 'size[size]',        title: 'Size',         id: 'size_edit',     maxlength: 15, placeholder: 'Required', required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size]',        title: 'Size',         id: 'size_edit',     required: true}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save Size'>
@@ -252,7 +252,7 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" name='line[size_id]' class='size_id'>
-                                <%- include(`${partials}/inputs/number`, {name: 'line[qty]', title: 'Quantity', value: '1', maxlength: 8, placeholder: 'Required', required: true}) %>
+                                <%- include(`${partials}/inputs/number`, {name: 'line[qty]', title: 'Quantity', value: '1', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input type="submit" class="btn btn-success w-100" value='Order'>
@@ -353,7 +353,7 @@
                                 <%- include(`${partials}/inputs/select`, {title: 'Group',          name: 'nsn[nsn_group_id]',   required: true, id: 'sel_nsn_groups'}) %>
                                 <%- include(`${partials}/inputs/select`, {title: 'Classification', name: 'nsn[nsn_class_id]',   required: true, id: 'sel_nsn_classes'}) %>
                                 <%- include(`${partials}/inputs/select`, {title: 'Country',        name: 'nsn[nsn_country_id]', required: true, id: 'sel_nsn_countries'}) %>
-                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true, maxlength: '8', placeholder: 'Required'}) %>
+                                <%- include(`${partials}/inputs/text`,   {title: 'Item Number',    name: 'nsn[item_number]',    required: true}) %>
                                 <%- include(`${partials}/inputs/select`, {title: 'Default?',       name: 'default', options: [{text: 'Yes', value: '1'}, {text: 'No', value: '0', selected: true}]}) %>
                             </div>
                             <div class="modal-footer">
@@ -375,8 +375,8 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" class='size_id' name='serial[size_id]'>
-                            <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: 'serial_serial',   name: 'serial[serial]', maxlength: 45, required: true, autocomplete: 'off'}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_location', name: 'location',       maxlength: 20, required: true, list_id: 'locations_list', spinner_id: 'locations', reload_id: 'reload_locations_serial'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Serial #', id: 'serial_serial',   name: 'serial[serial]', required: true}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'serial_location', name: 'location',       required: true, list_id: 'locations_list', spinner_id: 'locations', reload_id: 'reload_locations_serial'}) %>
                         </div>
                         <div class="modal-footer">
                             <input  type="submit" class="btn btn-success w-100" value='Save Serial'>
@@ -396,7 +396,7 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" class='size_id' name='stock[size_id]'>
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: 'location', maxlength: 20, required: true, list_id: 'locations_list', spinner_id: 'locations', reload_id: 'reload_locations_stock'}) %>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', id: 'stock_locations', name: 'location', required: true, list_id: 'locations_list', spinner_id: 'locations', reload_id: 'reload_locations_stock'}) %>
                         </div>
                         <div class="modal-footer">
                             <input  type="submit" class="btn btn-success w-100" value='Save Location'>

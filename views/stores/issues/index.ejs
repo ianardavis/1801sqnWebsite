@@ -136,15 +136,15 @@
 	<script src='/js/stores/issues/index/add.js'></script>
 <% } %>
 <% if (permissions.issue_edit) { %>
-	<script src='/js/stores/issues/index/edit.js'></script>
+	<script src='/js/stores/issues/edit/edit.js'></script>
 	<% if (permissions.issue_add) { %>
-		<script src='/js/stores/issues/index/edit_approve.js'></script>
+		<script src='/js/stores/issues/edit/approve.js'></script>
 	<% } %>
 	<% if (permissions.order_add) { %>
-		<script src='/js/stores/issues/index/edit_order.js'></script>
+		<script src='/js/stores/issues/edit/order.js'></script>
 	<% } %>
 	<% if (permissions.loancard_line_add) { %>
-		<script src='/js/stores/issues/index/edit_issue.js'></script>
+		<script src='/js/stores/issues/edit/issue.js'></script>
 	<% } %>
 <% } %>
 <script async>getIssues()</script>

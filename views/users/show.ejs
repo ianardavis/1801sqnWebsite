@@ -11,15 +11,15 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'user_edit',        text: 'Edit User',        modal: 'user_edit'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'user_edit',        text: 'Edit User',             modal: 'user_edit'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'password_reset',   text: 'Toggle Reset Password', btn_form: {permission: 'user_edit'}}) %>
-                <%- include(`${partials}/menu/button`, {id: 'user_password',    text: 'Change Password',  modal: 'user_password'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'permissions_edit', text: 'Edit Permissions', modal: 'permissions_edit'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'note_add',         text: 'Add Note',         modal: 'note_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'user_password',    text: 'Change Password',       modal: 'user_password'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'permissions_edit', text: 'Edit Permissions',      modal: 'permissions_edit'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add',         text: 'Add Note',              modal: 'note_add'}) %>
                 <div class="dropdown-divider"></div>
-                <%- include(`${partials}/menu/button`, {id: 'issue_add', text: 'New Issue', modal: 'issue_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'issue_add',        text: 'New Issue',             modal: 'issue_add'}) %>
                 <div class="dropdown-divider"></div>
-                <%- include(`${partials}/menu/button`, {id: 'user_delete', text: 'Delete', btn_form: {permission: 'user_delete'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'user_delete',      text: 'Delete',                btn_form: {permission: 'user_delete'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>
@@ -33,7 +33,7 @@
             <%- include(`${partials}/spinner`, {id: 'users'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'service_number', title: 'Service #'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'rank',           title: 'Rank'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'surname',        title: 'Surame'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'surname',        title: 'Surname'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'first_name',     title: 'First Name'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'status',         title: 'Status'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'login_id',       title: 'Login ID'}) %>
@@ -44,26 +44,88 @@
             <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-20" onclick="sortTable(0, 'tbl_permissions')">Date Granted</th>
-                        <th class="w-80" onclick="sortTable(1, 'tbl_permissions')">Permission</th>
+                        <th class="w-100" onclick="sortTable(1, 'tbl_permissions')">Permission</th>
                     </thead>
                     <tbody id="tbl_permissions"></tbody>
                 </table>
             </div>
         <% } %>
         <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_issues', options: [{text: 'All'}, {value: 'status=0', text: 'Cancelled/Declined'}, {value: '_status=1', text: 'Requested'}, {value: 'status=2', text: 'Approved'}, {value: 'status=3', text: 'Ordered'}, {value: 'status=4', text: 'Issued', selected: true}, {value: 'status=5', text: 'Returned'}]}) %>
+            <button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
+                Filter
+            </button>
+            <div class="collapse" id="col-filter">
+                <%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
+                <h5 class='text-start'>Status:</h5>
+                <div class="row">
+                    <div class="col-6 col-sm-4">
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: 'status=0', colour: 'secondary', classes: ['status']}) %>
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: 'status=1', colour: 'warning', 	classes: ['status'], checked: true}) %>
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: 'status=2', colour: 'success', 	classes: ['status'], checked: true}) %>
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: 'status=3', colour: 'primary', 	classes: ['status'], checked: true}) %>
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: 'status=4', colour: 'info', 		classes: ['status']}) %>
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: 'status=5', colour: 'secondary', classes: ['status']}) %>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date From:</h5>
+                        <input type="date" class='form-control' id='createdAt_from'>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Date To:</h5>
+                        <input type="date" class='form-control' id='createdAt_to'>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Item:</h5>
+                        <input type="text" class='form-control' id='item'>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5 class='text-start'>Size:</h5>
+                        <input type="text" class='form-control' id='size'>
+                    </div>
+                </div>
+            </div>
+            <% if (permissions.issue_edit) { %>
+                <form id='form_issue_edit'>
+                <button class='btn btn-success w-100 mb-1'>Action Selected Issues</button>
+            <% } %>
             <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Date</th>
                     <th class="w-30" onclick="sortTable(1, 'tbl_issues')">Item</th>
                     <th class="w-20" onclick="sortTable(2, 'tbl_issues')">Size</th>
                     <th class="w-10" onclick="sortTable(3, 'tbl_issues')">Qty</th>
-                    <th class="w-20" onclick="sortTable(4, 'tbl_issues')">Status</th>
+                    <th class="w-20" onclick="sortTable(4, 'tbl_issues')">
+                        <% if (permissions.issue_edit) { %>
+                            <select id="sel_all" class='form-select form-select-sm hidden'>
+                                <option>Select All</option>
+                                <option value="-1">Decline</option>
+                                <option value="0">Cancel</option>
+                                <option value="2">Approve</option>
+                                <option value="3">Order</option>
+                                <option value="4">Issue</option>
+                            </select>
+                        <% } %>
+                        Status
+                    </th>
                     <th><i class="fas fa-search"></i></th>
                 </thead>
                 <tbody id="tbl_issues"></tbody>
             </table>
+            <% if (permissions.issue_edit) { %></form><% } %>
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
             <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Open', selected: true}, {value: 'status=3', text: 'Closed'}]}) %>
@@ -89,12 +151,12 @@
                             <h5 class="modal-title">Edit User</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {title: 'Service #', name: 'user[service_number]', required: true, id: 'inp_service_number', placeholder: 'Required', maxlength: 20}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Rank',      name: 'user[rank_id]',        required: true, id: 'sel_ranks',          spinner_id:  'ranks'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Surname',   name: 'user[surname]', 	    required: true, id: 'inp_surname',        placeholder: 'Required', maxlength: 50}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Initials',  name: 'user[first_name]',     required: true, id: 'inp_first_name',     placeholder: 'Required', maxlength: 20}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Status',    name: 'user[status_id]',      required: true, id: 'sel_statuses',       spinner_id:  'statuses'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Login ID',  name: 'user[login_id]',       required: true, id: 'inp_login_id',       placeholder: 'Required', maxlength: 30}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Service #', name: 'user[service_number]', required: true, id: 'inp_service_number'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Rank',      name: 'user[rank_id]',        required: true, id: 'sel_ranks',    spinner_id: 'ranks'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Surname',   name: 'user[surname]', 	    required: true, id: 'inp_surname'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Initials',  name: 'user[first_name]',     required: true, id: 'inp_first_name'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Status',    name: 'user[status_id]',      required: true, id: 'sel_statuses', spinner_id: 'statuses'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Login ID',  name: 'user[login_id]',       required: true, id: 'inp_login_id'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" id='save_user' class="btn btn-success w-100" value='Save User'>
@@ -111,8 +173,8 @@
                         <h5 class="modal-title">Change Password: <span class="full_name"></span></h5>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`, {title: 'Password', type: 'password', required: true, id: '_password', placeholder: 'Required', minlength: 8, name: '_password'}) %>
-                        <%- include(`${partials}/inputs/text`, {title: 'Confirm',  type: 'password', required: true, id: '_confirm',  placeholder: 'Required', minlength: 8}) %>
+                        <%- include(`${partials}/inputs/password`, {id: 'password', name: 'password'}) %>
+                        <%- include(`${partials}/inputs/password`, {id: 'confirm', confirm: true}) %>
                         <div>
                             <p class='my-1'>
                                 Password MUST NOT be the current password
@@ -238,6 +300,18 @@
 <% } %>
 <script src='/js/users/show/issues/view.js'></script>
 <script async>getIssues()</script>
+<% if (permissions.issue_edit) { %>
+	<script src='/js/stores/issues/edit/edit.js'></script>
+	<% if (permissions.issue_add) { %>
+		<script src='/js/stores/issues/edit/approve.js'></script>
+	<% } %>
+	<% if (permissions.order_add) { %>
+		<script src='/js/stores/issues/edit/order.js'></script>
+	<% } %>
+	<% if (permissions.loancard_line_add) { %>
+		<script src='/js/stores/issues/edit/issue.js'></script>
+	<% } %>
+<% } %>
 <% if (permissions.issue_add) { %>
     <script src='/js/stores/sizes/select/showWindow.js'></script>
     <script src='/js/users/show/issues/add.js'></script>

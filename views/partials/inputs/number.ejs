@@ -1,18 +1,17 @@
 <div class="input-group mb-1">
-    <div class="input-group-prepend w-30">
-        <span class="input-group-text w-100"><%= title %></span>
-    </div>
+    <span class="input-group-text w-30"><%= title %></span>
     <input
         class="form-control"
         type="number"
         inputMode='numeric'
-        <% if (locals.id) { %>         id="<%= id %>"<% } %>
-        <% if (locals.name) { %>       name='<%= name %>'<% } %>
-        <% if (locals.step) { %>       step='<%= step %>'<% } %>
-        <% if (locals.min) { %>        min='<%= min %>'<% } %>
-        <% if (locals.value) { %>      value="<%= value || null %>"<% } %>
-        <% if (locals.maxlength) { %>  maxlength="<%= maxlength || 45 %>"<% } %> 
-        <% if (locals.placeholder) { %>placeholder="<%= placeholder %>"<% } %>
-        <% if (locals.required) { %>   required<% } %>
+        <% if (locals.id) { %>   id="<%= id %>"<% } %>
+        <% if (locals.name) { %> name='<%= name %>'<% } %>
+        <% if (locals.step) { %> step='<%= step %>'<% } %>
+        <% if (locals.min) { %>  min='<%= min %>'<% } %>
+        <% if (locals.value) { %>value="<%= value || null %>"<% } %>
+        <% if (locals.required) { %>
+            placeholder='Required'
+            required
+        <% } %>
     >
 </div>
