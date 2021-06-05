@@ -11,6 +11,17 @@ module.exports = (app, m, inc, fn) => {
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/get/negative_stock', fn.li(), fn.permissions.check('access_stocks'), (req, res) => {
+        m.stocks.findAll({
+            where: {qty: {[fn.op.lt]: 0}},
+            include: [
+                inc.size(),
+                inc.location()
+            ],
+        })
+        .then(stocks => res.send({success: true, result: stocks}))
+        .catch(err => fn.send_error(res, err));
+    });
     app.get('/get/stock',     fn.li(), fn.permissions.check('access_stocks'), (req, res) => {
         m.stocks.findOne({
             where:   req.query,

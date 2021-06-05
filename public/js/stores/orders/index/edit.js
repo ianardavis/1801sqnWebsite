@@ -1,43 +1,59 @@
 function addEditSelect() {
-    let cells = document.querySelectorAll('.actions');
+    hide('sel_all');
+    let cells = document.querySelectorAll('.actions'),
+        actions = [];
     cells.forEach(cell => {
-        get({
-            table: 'order',
-            query: [`order_id=${cell.dataset.id}`]
-        })
-        .then(function ([order, options]) {
-            if (order.status === 1) {
-                cell.innerHTML = '';
-                cell.appendChild(new Hidden({
-                    attributes: [
-                        {field: 'name',  value: `orders[][${cell.dataset.index}][order_id]`},
-                        {field: 'value', value: order.order_id}
-                    ]
-                }).e);
-                let select = new Select({
-                    attributes: [
-                        {field: 'id',         value: `order_${order.order_id}`},
-                        {field: 'name',       value: `orders[][${cell.dataset.index}][status]`},
-                        {field: 'data-id',    value: order.order_id},
-                        {field: 'data-index', value: cell.dataset.index}
-                    ],
-                    small: true,
-                    options: [
-                        {text: 'Cancel', value: '0'},
-                        {text: order_statuses[order.status], selected: true},
-                        {text: 'Receive', value: '3'}
-                    ]
-                }).e
-                select.addEventListener('change', addReceiptOptions);
-                cell.appendChild(select);
-                let div_details = document.createElement('div');
-                div_details.setAttribute('id', `order_${order.order_id}_details`);
-                cell.appendChild(div_details);
-                return order.order_id
-            };
-        })
-        .then(order_id => {if (typeof addDemandOption === 'function') addDemandOption(order_id)})
+        actions.push(
+            new Promise(resolve => {
+                get({
+                    table: 'order',
+                    query: [`order_id=${cell.dataset.id}`]
+                })
+                .then(function ([order, options]) {
+                    if (order.status === 1) {
+                        cell.innerHTML = '';
+                        cell.appendChild(new Hidden({
+                            attributes: [
+                                {field: 'name',  value: `orders[][${cell.dataset.index}][order_id]`},
+                                {field: 'value', value: order.order_id}
+                            ]
+                        }).e);
+                        let select = new Select({
+                            attributes: [
+                                {field: 'id',         value: `order_${order.order_id}`},
+                                {field: 'name',       value: `orders[][${cell.dataset.index}][status]`},
+                                {field: 'data-id',    value: order.order_id},
+                                {field: 'data-index', value: cell.dataset.index}
+                            ],
+                            classes: ['order-selects'],
+                            small: true,
+                            options: [
+                                {text: 'Cancel', value: '0'},
+                                {text: order_statuses[order.status], selected: true},
+                                {text: 'Receive', value: '3'}
+                            ]
+                        }).e
+                        select.addEventListener('change', addReceiptOptions);
+                        cell.appendChild(select);
+                        let div_details = document.createElement('div');
+                        div_details.setAttribute('id', `order_${order.order_id}_details`);
+                        cell.appendChild(div_details);
+                        return order.order_id
+                    };
+                })
+                .then(order_id => {
+                    if (typeof addDemandOption === 'function') addDemandOption(order_id);
+                    resolve(true);
+                })
+                .catch(err => {
+                    console.log(err);
+                    resolve(false);
+                });
+            })
+        );
     });
+    Promise.all(actions)
+    .then(result => show('sel_all'));
 };
 function addReceiptOptions() {
     let div_details = document.querySelector(`#order_${this.dataset.id}_details`);
@@ -120,7 +136,21 @@ function addReceiptOptions() {
         };
     };
 };
+function select_all() {
+    if (this.value !== 'Select All') {
+        document.querySelectorAll('.order-selects').forEach(select => {
+            if (select.innerHTML.indexOf(`value="${this.value}"`) !== -1) {
+                if (!select.value) {
+                    console.log(select.value)
+                    select.value = String(this.value);
+                    addReceiptOptions.call(select);
+                };
+            };
+        });
+    };
+};
 window.addEventListener('load', function () {
+    addListener('sel_all', select_all, 'change');
     addFormListener(
         'order_edit',
         'PUT',

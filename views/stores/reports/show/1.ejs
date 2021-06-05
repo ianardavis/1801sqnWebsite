@@ -1,53 +1,25 @@
 <%- include(`${partials}/head/app`) %>
-<li class="nav-item">
-    <a class="nav-link" href="/stores">Stores</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports">Reports</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports/1">Negative Stock</a>
-</li>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Reports'}) %>
+<%- include(`${partials}/spinner`,    {id: 'negative_stock'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
-<section class="mb-2">
-    <div class="container">
+<section class='container'>
+    <form id="form_adjustments">
+        <button class="btn btn-success w-100 mb-1">Action lines</button>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
-                <th class="w-40" onclick="sortTable(0, 'tableItems')">Item</th>
-                <th class="w-40" onclick="sortTable(1, 'tableItems')">Size</th>
-                <th class="w-10" onclick="sortTable(2, 'tableItems')">Location</th>
-                <th class="w-10" onclick="sortTable(3, 'tableItems')">Qty</th>
-                <th><i class="fas fa-pencil-alt"></i></th>
+                <th class="w-40" onclick="sortTable(0, 'tbl_stocks')">Item</th>
+                <th class="w-30" onclick="sortTable(1, 'tbl_stocks')">Size</th>
+                <th class="w-10" onclick="sortTable(2, 'tbl_stocks')">Location</th>
+                <th class="w-10" onclick="sortTable(3, 'tbl_stocks')">Qty</th>
+                <th class="w-10"><i class="fas fa-pencil-alt"></i></th>
             </thead>
-            <tbody id="tableItems">
-                <% if (stock) { %>
-                    <% stock.forEach(item => { %>
-                        <tr>
-                            <td>
-                                <a class="btn btn-sm btn-primary float-end" href="/items/<%= item.size.item_id %>"><i class="fas fa-search"></i></a>
-                                <%= item.size.item._description %>
-                            </td>
-                            <td>
-                                <a class="btn btn-sm btn-primary float-end" href="/sizes/<%= item.size_id %>"><i class="fas fa-search"></i></a>
-                                <%= item.size._size %>
-                            </td>
-                            <td>
-                                <a class="btn btn-sm btn-primary float-end" href="/stock/<%= item.stock_id %>/edit"><i class="fas fa-search"></i></a>
-                                <%= item.location._location %>
-                            </td>
-                            <td>
-                                <%= item._qty %></a>
-                            <td>
-                                <a class="btn btn-sm btn-primary" href='javascript:add("adjusts",{"height":361,"queries":"stock_id=<%= item.stock_id %>&adjustType=Count"})'>
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                <% } %>
-            </tbody>
+            <tbody id="tbl_stocks"></tbody>
         </table>
-    </div>
+    </form>
 </section>
-<% include ../../../partials/foot/app %>
-<% include ../../../partials/foot/elements/htmlClose %>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/addFormListener.js"></script>
+<script src="/js/stores/reports/1/view.js"></script>
+<script async>getSizes()</script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

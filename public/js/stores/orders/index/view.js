@@ -1,4 +1,4 @@
-let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Closed'};
+let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Received'};
 function getOrders() {
     clear_table('orders')
     .then(tbl_orders => {

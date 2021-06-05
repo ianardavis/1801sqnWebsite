@@ -13,7 +13,7 @@
 	<% if (permissions.access_genders) { %>
 		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
 	<% } %>
-	<input class='form-control' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
+	<input class='form-control mb-1' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<table class='table table-sm table-hover'>
 		<thead class='thead-dark'>
 			<th class='w-100' onclick='sortTable(0, "tbl_items", this)'>Description</th>

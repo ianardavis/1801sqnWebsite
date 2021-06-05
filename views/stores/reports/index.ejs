@@ -1,36 +1,15 @@
 <%- include(`${partials}/head/app`) %>
-<li class="nav-item">
-    <a class="nav-link" href="/stores">Stores</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports">Reports</a>
-</li>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Reports'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
-<section class="mb-2">
-    <div class="container">
-        <% let cards = [] %>
-        <% cards.push({id: '1', title: 'Negative Stock',      image: 'search-minus'}) %>
-        <% cards.push({id: '2', title: 'Issues Due Back',     image: 'calendar-check'}) %>
-        <% cards.push({id: '3', title: 'Orderable Stock',     image: 'tshirt'}) %>
-        <% cards.push({id: '4', title: 'Stock - By Item',     image: 'tshirt'}) %>
-        <% cards.push({id: '5', title: 'Stock - By Location', image: 'tshirt'}) %>
-        <div class="row container m-auto p-0 menu">
-            <% cards.forEach(card => { %>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                    <div class="card m-3">
-                        <a href="/reports/<%= card.id %>">
-                            <div class="card-header">
-                                <h3><%= card.title %></h3>
-                            </div>
-                            <div class="card-body">
-                                <i class="fas fa-<%= card.image %> fa-5x"></i>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            <% }) %>
-        </div>
+<section class='container'>
+    <div class="row">
+        <%- include(`${partials}/card`, {id: '1', href: '/reports/1', title: 'Negative Stock',      image: 'search-minus'. permission: 'adjustment_add'}) %>
+        <%- include(`${partials}/card`, {id: '2', href: '/reports/2', title: 'Issues Due Back',     image: 'calendar-check'}) %>
+        <%- include(`${partials}/card`, {id: '3', href: '/reports/3', title: 'Orderable Stock',     image: 'tshirt'}) %>
+        <%- include(`${partials}/card`, {id: '4', href: '/reports/4', title: 'Stock - By Item',     image: 'tshirt'}) %>
+        <%- include(`${partials}/card`, {id: '5', href: '/reports/5', title: 'Stock - By Location', image: 'tshirt'}) %>
     </div>
 </section>
-<% include ../../partials/foot/app %>
-<% include ../../partials/foot/elements/htmlClose %>
+<%- include(`${partials}/foot/app`) %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

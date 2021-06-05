@@ -3,15 +3,15 @@
 <%- include(`${partials}/head/navbar/close`) %>
 <section>
 	<div class="row container m-auto p-0 menu">
-		<%- include(`${partials}/card`, {id: 'users', 	  href: '/users', 	  title: 'Users', 	  image: 'users'}) %>
-		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse'}) %>
-		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
+		<%- include(`${partials}/card`, {id: 'users', 	  href: '/users', 	  title: 'Users', 	  image: 'users', 	  permission: 'access_users'}) %>
+		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'access_suppliers'}) %>
+		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt', 	  permission: 'access_items'}) %>
 		<%- include(`${partials}/card`, {id: 'issues', 	  href: '/issues', 	  title: 'Issues', 	  image: 'address-card'}) %>
-		<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list'}) %>
-		<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream'}) %>
+		<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list', 	  permission: 'access_orders'}) %>
+		<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream', 	  permission: 'access_demands'}) %>
 		<%- include(`${partials}/card`, {id: 'loancards', href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
-		<%- include(`${partials}/card`, {id: 'reports',   href: '/reports',   title: 'Reports',   image: 'chart-pie'}) %>
-		<%- include(`${partials}/card`, {id: 'settings',  href: '/settings',  title: 'Settings',  image: 'cog'}) %>
+		<%- include(`${partials}/card`, {id: 'reports',   href: '/reports',   title: 'Reports',   image: 'chart-pie', permission: 'access_reports'}) %>
+		<%- include(`${partials}/card`, {id: 'settings',  href: '/settings',  title: 'Settings',  image: 'cog', 	  permission: 'access_settings'}) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>

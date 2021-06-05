@@ -8,7 +8,7 @@
 	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
 		Filter
 	</button>
-	<div class="collapse" id="col-filter">
+	<div class="collapse mb-2" id="col-filter">
 		<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
 		<h5 class='text-start'>Status:</h5>
 		<div class="row">

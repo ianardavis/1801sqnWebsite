@@ -2,80 +2,82 @@ module.exports = (app, m, inc, fn) => {
     let orders = {}, stock = {};
     app.get('/reports',     fn.li(), fn.permissions.get('access_reports'),   (req, res) => res.render('stores/reports/index'));
 
-    app.get('/reports/:id', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
-        if (Number(req.params.id) === 1) {
-            m.stock.findAll({
-                where: {_qty: {[fn.op.lt]: 0}},
+    app.get('/reports/1', fn.li(), fn.permissions.check('adjustment_add'), (req, res) => res.render('stores/reports/show/1'));
+    app.get('/reports/2', fn.li(), fn.permissions.check('access_reports'), (req, res) => res.render('stores/reports/show/2'));
+    app.get('/reports/3', fn.li(), fn.permissions.check('access_reports'), (req, res) => res.render('stores/reports/show/3'));
+    app.get('/reports/4', fn.li(), fn.permissions.check('access_reports'), (req, res) => res.render('stores/reports/show/4'));
+    app.get('/reports/5', fn.li(), fn.permissions.check('access_reports'), (req, res) => res.render('stores/reports/show/5'));
+    app.get('/reports/*', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
+        req.flash('danger', 'Invalid report');
+        res.redirect('/reports');
+    });
+    
+    app.get('/reports/2', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
+        m.issues.findAll({
+            where: {
+                _date_due: {[fn.op.lte]: Date.now()},
+                _complete: 0
+            },
+            include: [
+                    inc.issue_lines(),
+                    inc.users({as: 'user_to'})
+                ]
+        })
+        .then(issues => res.render('stores/reports/show/2', {issues: issues}))
+        .catch(err => fn.send_error(res, err));
+    });
+    app.get('/reports/3', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
+        m.items.findAll({
+            include: [{
+                model: m.sizes,
+                where: {_orderable: 1},
                 include: [
-                    m.locations,
-                    inc.sizes()
-            ]})
-            .then(stock => res.render('stores/reports/show/1', {stock: stock}))
+                    m.stock,
+                    inc.suppliers({where: {supplier_id: Number(req.query.supplier_id) || 1}}),
+                    inc.order_lines({as: 'orders', where: {demand_line_id: null}}),
+                    inc.request_lines({as: 'requests', where: {_status: 'Pending'}})
+        ]}]})
+        .then(items => {
+            m.suppliers.findAll()
+            .then(suppliers => res.render('stores/reports/show/3', {items: items, suppliers: suppliers, supplier_id: req.query.supplier_id || 1}))
             .catch(err => fn.send_error(res, err));
-        } else if (Number(req.params.id) === 2) {
-            m.issues.findAll({
-                where: {
-                    _date_due: {[fn.op.lte]: Date.now()},
-                    _complete: 0
-                },
-                include: [
-                        inc.issue_lines(),
-                        inc.users({as: 'user_to'})
-                    ]
-            })
-            .then(issues => res.render('stores/reports/show/2', {issues: issues}))
-            .catch(err => fn.send_error(res, err));
-        } else if (Number(req.params.id) === 3) {
-            m.items.findAll({
-                include: [{
-                    model: m.sizes,
-                    where: {_orderable: 1},
-                    include: [
-                        m.stock,
-                        inc.suppliers({where: {supplier_id: Number(req.query.supplier_id) || 1}}),
-                        inc.order_lines({as: 'orders', where: {demand_line_id: null}}),
-                        inc.request_lines({as: 'requests', where: {_status: 'Pending'}})
-            ]}]})
-            .then(items => {
-                m.suppliers.findAll()
-                .then(suppliers => res.render('stores/reports/show/3', {items: items, suppliers: suppliers, supplier_id: req.query.supplier_id || 1}))
-                .catch(err => fn.send_error(res, err));
-            })
-            .catch(err => fn.send_error(res, err));
-        } else if (Number(req.params.id) === 4) {
-            m.items.findAll({
-                include: [{
-                    model: m.sizes,
-                    include: [inc.stock({size: true})]
-                }]
-            })
-            .then(items => res.render('stores/reports/show/4', {items: items}))
-            .catch(err => fn.send_error(res, err));
-        } else if (Number(req.params.id) === 5) {
-            m.locations.findAll({
+        })
+        .catch(err => fn.send_error(res, err));
+    });
+    app.get('/reports/4', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
+        m.items.findAll({
+            include: [{
+                model: m.sizes,
                 include: [inc.stock({size: true})]
-            })
-            .then(locations => {
-                locations.sort(function(a, b) {
-                    var locationA = a._location.toUpperCase(); // ignore upper and lowercase
-                    var locationB = b._location.toUpperCase(); // ignore upper and lowercase
-                    if (locationA < locationB) {
-                      return -1;
-                    }
-                    if (locationA > locationB) {
-                      return 1;
-                    }
-                  
-                    // names must be equal
-                    return 0;
-                  });
-                res.render('stores/reports/show/5', {locations: locations})
-            })
-            .catch(err => fn.send_error(res, err));
-        } else fn.send_error(res, 'Invalid Report');
+            }]
+        })
+        .then(items => res.render('stores/reports/show/4', {items: items}))
+        .catch(err => fn.send_error(res, err));
+    });
+    app.get('/reports/5', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
+        m.locations.findAll({
+            include: [inc.stock({size: true})]
+        })
+        .then(locations => {
+            locations.sort(function(a, b) {
+                var locationA = a._location.toUpperCase(); // ignore upper and lowercase
+                var locationB = b._location.toUpperCase(); // ignore upper and lowercase
+                if (locationA < locationB) {
+                  return -1;
+                }
+                if (locationA > locationB) {
+                  return 1;
+                }
+              
+                // names must be equal
+                return 0;
+              });
+            res.render('stores/reports/show/5', {locations: locations})
+        })
+        .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/reports/3',  fn.li(), fn.permissions.check('access_reports'), (req, res) => {
+    app.post('/reports/3', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
         let selected = []
         for (let [key, line] of Object.entries(req.body.selected)) {
             if (Number(line) > 0) selected.push({size_id: key, _qty: line});
@@ -103,8 +105,7 @@ module.exports = (app, m, inc, fn) => {
             res.redirect('/reports/3');
         };
     });
-
-    app.post('/reports/5',  fn.li(), fn.permissions.check('access_reports'), (req, res) => {
+    app.post('/reports/5', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
         let actions = [];
         for (let [key, value] of Object.entries(req.body.corrections)) {
             if (value) {
