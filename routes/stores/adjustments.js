@@ -24,38 +24,54 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.post('/adjustments',    fn.li(), fn.permissions.check('adjustment_add',     {send: true}), (req, res) => {
-        if (req.body.adjustment.stock_id && req.body.adjustment.qty && req.body.adjustment.type) {
-            m.stocks.findOne({
-                where: {stock_id: req.body.adjustment.stock_id},
-                attributes: ['stock_id', 'size_id', 'qty']
-            })
-            .then(stock => {
-                if (!stock) fn.send_error(res, 'Stock not found')
-                else {
-                    let action = null;
-                    if (req.body.adjustment.type === 'Count') {
-                        req.body.adjustment.variance = Number(req.body.adjustment.qty) - Number(stock.qty);
-                        action = stock.update({qty: req.body.adjustment.qty});
-                    } else if (req.body.adjustment.type === 'Scrap') {
-                        req.body.adjustment.variance = 0 - req.body.adjustment.qty;
-                        action = stock.decrement('qty', {by: req.body.adjustment.qty});
-                    };
-                    if (action) {
-                        return action
-                        .then(result => {
-                            return m.adjustments.create({
-                                ...req.body.adjustment,
-                                user_id: req.user.user_id,
-                                size_id: stock.size_id
+        if (!req.body.adjustments) fn.send_error(res, 'No adjustments')
+        else {
+            let actions = [];
+            req.body.adjustments.forEach(adjustment => {
+                actions.push(
+                    new Promise((resolve, reject) => {
+                        if (adjustment.stock_id && adjustment.qty && adjustment.type) {
+                            m.stocks.findOne({
+                                where: {stock_id:adjustment.stock_id},
+                                attributes: ['stock_id', 'size_id', 'qty']
                             })
-                            .then(adjustment => res.send({success: true, message: 'Adjustment added'}))
-                            .catch(err => fn.send_error(res, err));
-                        })
-                        .catch(err => fn.send_error(res, err));
-                    } else fn.send_error(res, 'Could not set adjustment action');
-                };
-            })
-            .catch(err => fn.send_error(res, err));
-        } else fn.send_error(res, 'Not all required details submitted'); 
+                            .then(stock => {
+                                if (!stock) reject(new Error('Stock not found'))
+                                else {
+                                    let action = null;
+                                    if (adjustment.type === 'Count') {
+                                        adjustment.variance = Number(adjustment.qty) - Number(stock.qty);
+                                        action = stock.update({qty: adjustment.qty});
+                                    } else if (adjustment.type === 'Scrap') {
+                                        adjustment.variance = 0 - adjustment.qty;
+                                        action = stock.decrement('qty', {by: adjustment.qty});
+                                    };
+                                    if (action) {
+                                        return action
+                                        .then(result => {
+                                            return m.adjustments.create({
+                                                ...adjustment,
+                                                user_id: req.user.user_id,
+                                                size_id: stock.size_id
+                                            })
+                                            .then(adjustment => resolve(true))
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    } else reject(new Error('Could not set adjustment action'));
+                                };
+                            })
+                            .catch(err => reject(err));
+                        } else reject(new Error('Not all required details submitted'));
+                    })
+                );
+            });
+        };
+        Promise.allSettled(actions)
+        .then(results => {
+            if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true, message: 'Some adjustments failed'})
+            else res.send({success: true, message: 'Adjustment(s) actioned'});
+        })
+        .catch(err => fn.send_error(res, err));
     });
 };

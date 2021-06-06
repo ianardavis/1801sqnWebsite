@@ -84,11 +84,28 @@ module.exports = (app, m, inc, fn) => {
             include: [
                 inc.size(),
                 inc.user(),
-                inc.loancard({include: [inc.user(), inc.user({as: 'user_loancard'})]}),
-                inc.actions({include: [inc.order()]})
+                inc.loancard({include: [inc.user(), inc.user({as: 'user_loancard'})]})
             ]
         })
         .then(loancard_line => res.send({success: true, result: loancard_line}))
+        .catch(err => fn.send_error(res, err));
+    });
+    app.get('/get/loancard_lines_due', fn.li(), fn.permissions.check('access_loancard_lines'),           (req, res) => {
+        m.loancard_lines.findAll({
+            where: {status: 2},
+            include: [
+                inc.size(),
+                inc.loancard({
+                    required: true,
+                    where: {
+                        date_due: {[fn.op.lte]: Date.now()},
+                        ...(req.allowed ? null : {user_id_issue: req.user.user_id})
+                    },
+                    include: [inc.user({as: 'user_loancard'})]
+                })
+            ]
+        })
+        .then(issues => res.send({success: true, result: issues}))
         .catch(err => fn.send_error(res, err));
     });
 

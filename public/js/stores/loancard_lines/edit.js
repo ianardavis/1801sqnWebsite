@@ -133,7 +133,6 @@ function setActionButton(status) {
     if ([1,2].includes(status)) enable_button('action');
 };
 function select_all() {
-    console.log(this.value)
     if (this.value !== 'Select All') {
         document.querySelectorAll('.line_action').forEach(select => {
             if (select.innerHTML.indexOf(`value="${this.value}"`) !== -1) {
@@ -148,7 +147,7 @@ function select_all() {
 window.addEventListener( "load", function () {
     addListener('sel_all', select_all, 'change');
     addFormListener(
-        'action',
+        'actions',
         'PUT',
         '/loancard_lines',
         {onComplete: getLines}

@@ -1,48 +1,36 @@
 <%- include(`${partials}/head/app`) %>
-<li class="nav-item">
-    <a class="nav-link" href="/stores">Stores</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports">Reports</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports/2">Issues Due Back</a>
-</li>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Reports'}) %>
+<%- include(`${partials}/spinner`,    {id: 'issues_due'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
-<section class="mb-2">
-    <div class="container">
+<section class='container'>
+    <form id="form_actions">
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
-                <th class="w-30" onclick="sortTable(0, 'tableIssues')">To</th>
-                <th class="w-30" onclick="sortTable(1, 'tableIssues')">Date Issued</th>
-                <th class="w-30" onclick="sortTable(2, 'tableIssues')">Date Due</th>
-                <th class="w-10" onclick="sortTable(3, 'tableIssues')">Lines</th>
+                <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Issued To</th>
+                <th class="w-15" onclick="sortTable(1, 'tbl_issues')">Item</th>
+                <th class="w-15" onclick="sortTable(2, 'tbl_issues')">Size</th>
+                <th class="w-5"  onclick="sortTable(3, 'tbl_issues')">Quantity</th>
+                <th class="w-15" onclick="sortTable(4, 'tbl_issues')">Date Issued</th>
+                <th class="w-15" onclick="sortTable(5, 'tbl_issues')">Date Due</th>
+                <th class="w-15">
+                    <% if (permissions.loancard_line_edit) { %>
+                        <select id="sel_all" class='form-select form-select-sm hidden'>
+                            <option>Select All</option>
+                            <option value="3">Return</option>
+                        </select>
+                    <% } %>
+                    Status
+                </th>
                 <th><i class='fas fa-search'></i></th>
             </thead>
-            <tbody id="tableIssues">
-                <% if (issues) { %>
-                    <% issues.forEach(issue => { %>
-                        <tr>
-                            <td>
-                                <a class="btn btn-sm btn-primary float-end" href="/users/<%= issue.user_id_issue %>"><i class="fas fa-search"></i></a>
-                                <%= issue._to.rank._rank %> <%= issue._to.full_name %>
-                            </td>
-                            <td data-sort="<%= issue._date.getTime() %>">
-                                <%= issue._date.toDateString() %>
-                            </td>
-                            <td data-sort="<%= issue._date_due.getTime() %>">
-                                <%= issue._date_due.toDateString() %>
-                            </td>
-                            <td><%= issue.lines.length %></td>
-                            <td>
-                                <a class="btn btn-sm btn-primary" href="/issues/<%= issue.issue_id %>"><i class="fas fa-search"></i></a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                <% } %>
-            </tbody>
+            <tbody id="tbl_issues"></tbody>
         </table>
-    </div>
+    </form>
 </section>
-<% include ../../../partials/foot/app %>
-<% include ../../../partials/foot/elements/htmlClose %>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/addFormListener.js"></script>
+<script src="/js/stores/reports/2/view.js"></script>
+<script src="/js/stores/loancard_lines/edit.js"></script>
+<script>getLines()</script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

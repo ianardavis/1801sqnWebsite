@@ -50,9 +50,11 @@ module.exports = (m, inc) => {
     };
     inc.loancard = (options = {}) => {
         return {
-            model: m.loancards,
-            include: options.include || [],
-            as:    options.as || 'loancard'
+            model:    m.loancards,
+            include:  options.include  || [],
+            as:       options.as       || 'loancard',
+            where:    options.where    || null,
+            required: options.required || false
         };
     };
     inc.demand_line = (options = {}) => {

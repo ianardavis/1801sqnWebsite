@@ -269,7 +269,7 @@ module.exports = function (m, fn) {
                 },
                 defaults: {
                     user_id:  options.user_id,
-                    date_due: options.date_due || Date.now()
+                    date_due: options.date_due || fn.addYears(7)
                 }
             })
             .then(([loancard, created]) => resolve(loancard.loancard_id))

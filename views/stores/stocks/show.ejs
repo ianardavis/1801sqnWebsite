@@ -100,9 +100,9 @@
                                 <h5 class="modal-title">Add Adjustment</h5>
                             </div>
                             <div class="modal-body">
-                                <input type="hidden" class='stock_id' name='adjustment[stock_id]'>
-                                <%- include(`${partials}/inputs/select`, {title: 'Type',     name: 'adjustment[type]', options: [{value: 'Count', text: 'Count'}, {value: 'Scrap', text: 'Scrap'}]}) %>
-                                <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'adjustment[qty]',  id: 'adjustment_qty_add', required: true}) %>
+                                <input type="hidden" class='stock_id' name='adjustments[][0][stock_id]'>
+                                <%- include(`${partials}/inputs/select`, {title: 'Type',     name: 'adjustments[][0][type]', options: [{value: 'Count', text: 'Count'}, {value: 'Scrap', text: 'Scrap'}]}) %>
+                                <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'adjustments[][0][qty]',  id: 'adjustment_qty_add', required: true}) %>
                             </div>
                             <div class="modal-footer">
                                 <input type="submit" class="btn btn-success w-100" value='Save Adjustment'>

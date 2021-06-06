@@ -10,13 +10,9 @@ module.exports = function (m, fn) {
         if (err.message) console.log(err);
         res.send({success: false, message: err.message || err});
     };
-    fn.add_years = function (addYears = 0) {
-        var newDate = new Date();
-        var dd = String(newDate.getDate()).padStart(2, '0');
-        var MM = String(newDate.getMonth() + 1).padStart(2, '0');
-        var yyyy = newDate.getFullYear() + addYears;
-        newDate = yyyy + '-' + MM + '-' + dd;
-        return newDate;
+    fn.add_years = function (years = 0) {
+        let now = new Date();
+        return new Date(now.getFullYear() + years, now.getMonth(), now.getDate());
     };
     fn.allowed = function (user_id, permission, allow = false) {
         return new Promise((resolve, reject) => {
