@@ -66,12 +66,12 @@ module.exports = (app, m, inc, fn) => {
                     })
                 );
             });
+            Promise.allSettled(actions)
+            .then(results => {
+                if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true, message: 'Some adjustments failed'})
+                else res.send({success: true, message: 'Adjustment(s) actioned'});
+            })
+            .catch(err => fn.send_error(res, err));
         };
-        Promise.allSettled(actions)
-        .then(results => {
-            if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true, message: 'Some adjustments failed'})
-            else res.send({success: true, message: 'Adjustment(s) actioned'});
-        })
-        .catch(err => fn.send_error(res, err));
     });
 };

@@ -30,7 +30,7 @@ function getLines() {
                 });
                 add_cell(row, {append: new Link({
                     small: true,
-                    href: `/issues/${line.loancard_id}`
+                    href: `/loancards/${line.loancard_id}`
                 }).e});
                 row_index++
             });
