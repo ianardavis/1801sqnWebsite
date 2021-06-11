@@ -23,7 +23,7 @@ function selectedSizes(sizes) {
                             append: new Input({
                                 attributes: [
                                     {field: 'type',  value: 'hidden'},
-                                    {field: 'name',  value: `lines[][${row_count}][size_id]`},
+                                    {field: 'name',  value: `orders[][${row_count}][size_id]`},
                                     {field: 'value', value: size.size_id}
                                 ]
                             }).e
@@ -33,7 +33,7 @@ function selectedSizes(sizes) {
                             attributes: [
                                 
                                 {field: 'type',  value: 'number'},
-                                {field: 'name',  value: `lines[][${row_count}][qty]`},
+                                {field: 'name',  value: `orders[][${row_count}][qty]`},
                                 {field: 'value', value: qty.value}
                             ]
                         }).e});

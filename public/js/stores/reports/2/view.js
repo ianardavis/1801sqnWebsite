@@ -1,5 +1,6 @@
 let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Returned'};
 function getLines() {
+    disable_button('action');
     clear_table('issues')
     .then(tbl_issues => {
         get({table: 'loancard_lines_due'})
@@ -34,9 +35,12 @@ function getLines() {
                 }).e});
                 row_index++
             });
+            return true;
         })
         .then(result => {
             if (typeof addEditSelect === 'function') addEditSelect();
+            enable_button('action');
         });
     })
 };
+addReloadListener(getLines);

@@ -14,7 +14,19 @@
                 <% if (locals.text) { %><%= text %><% } %>
             </p>
         <% } %>
-        <% if (locals.link) { %>
+        <% if (locals.edit) { %>
+            <button
+                type='button'
+                class='btn btn-warning'
+                id='<%= id %>_edit'
+                <% if (locals.modal) { %>
+                    data-bs-toggle="modal"
+                    data-bs-target="#mdl_<%= modal %>"
+                <% } %>
+            >
+                <i class="fas fa-pencil-alt"></i>
+                </button>
+        <% } else if (locals.link) { %>
             <a
                 class='btn btn-primary'
                 id='<%= id %>_link'

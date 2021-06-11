@@ -8,6 +8,14 @@
 /* B9CBE2 */
 /* 010a1f */
 /* var(--main-color); */
+#col_headers .btn {
+	background-color: #bdffa3;
+	color:#010a1f;
+}
+#col_headers .btn.collapsed {
+	background-color: #ffb7b7 !important;
+	color:#010a1f;
+}
 a {
 	color: var(--main-color);
 }

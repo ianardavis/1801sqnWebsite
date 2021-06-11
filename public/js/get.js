@@ -81,3 +81,42 @@ function count(options) {
         XHR.send();
     });
 };
+function sum(options) {
+    return new Promise((resolve, reject) => {
+        show_spinner(options.spinner || options.table || '');
+        const XHR = new XMLHttpRequest();
+        XHR.addEventListener("load", function (event) {
+            hide_spinner(options.spinner || options.table || '');
+            if      (!event)                                        reject(new Error('No event'))
+            else if (!event.target)                                 reject(new Error('No target'))
+            else if (!event.target.responseText)                    reject(new Error('No response'))
+            else if (typeof event.target.responseText !== 'string') reject(new Error('No valid response'))
+            else {
+                try {
+                    let response = JSON.parse(event.target.responseText);
+                    if (response.success === true) resolve([response.result || 0, options])
+                    else {
+                        console.log(`********* Error summing ${options.table} *********`);
+                        console.log(response.message || response);
+                        console.log('*******************************************');
+                        reject(new Error(response.message));
+                    };
+                } catch (error) {
+                    console.log(`********* Error summing ${options.table} *********`);
+                    console.log(error);
+                    console.log('*******************************************');
+                    reject(error);
+                };
+            };
+        });
+        XHR.addEventListener("error", function (event) {
+            console.log(`********* Error summing ${options.table} *********`);
+            console.log(event);
+            console.log('*******************************************');
+            hide_spinner(options.spinner || options.table || '');
+            reject(event);
+        });
+        XHR.open('GET', `/sum/${options.table}?${options.query.join('&')}`);
+        XHR.send();
+    });
+};

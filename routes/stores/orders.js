@@ -8,6 +8,11 @@ module.exports = (app, m, inc, fn) => {
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/sum/orders',    fn.li(), fn.permissions.check('access_orders'), (req, res) => {
+        m.orders.sum('qty', {where: req.query})
+        .then(sum => res.send({success: true, result: sum}))
+        .catch(err => fn.send_error(res, err));
+    });
 
     app.get('/get/orders',    fn.li(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.findAll({
@@ -33,10 +38,12 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.post('/orders',       fn.li(), fn.permissions.check('order_add'),     (req, res) => {
-        if (!req.body.lines || req.body.lines.length === 0) fn.send_error(res, 'No lines submitted')
+        if (!req.body.orders || req.body.orders.length === 0) fn.send_error(res, 'No orders submitted')
         else {
             let actions = [];
-            req.body.lines.forEach(line => actions.push(fn.orders.create(line, req.user.user_id)));
+            req.body.orders.forEach(order => {
+                if (order.qty && order.qty > 0) actions.push(fn.orders.create(order, req.user.user_id));
+            });
             Promise.all(actions)
             .then(result => res.send({success: true, message: 'Orders placed'}))
             .catch(err => fn.send_error(res, err));

@@ -1,79 +1,14 @@
 <%- include(`${partials}/head/app`) %>
-<li class="nav-item">
-    <a class="nav-link" href="/stores">Stores</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports">Reports</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports/4">Stock - By Item</a>
-</li>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Stock - By Item'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`,    {id: 'sizes'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
-<section class="mb-2">
-    <div class="container">
-        <div class="row">
-            <% items.forEach(item => { %>
-                <div class="col-12 bordered">
-                    <a class="my-3" data-bs-toggle="collapse" href="#collapse<%= item.item_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= item.item_id %>">
-                        <h5 class="text-start">
-                            <%= item._description %>
-                        </h5>
-                    </a>
-                    <div class="collapse mb-3" id="collapse<%= item.item_id %>">
-                        <a class="float-start btn btn-primary mb-2" href="/items/<%= item.item_id %>"><i class="fas fa-search"></i></a>
-                        <table class="table table-sm table-hover">
-                            <thead class="thead-dark">
-                                <th class="w-40" onclick="sortTable(0, 'table<%= item.item_id %>')">Size</th>
-                                <th class="w-10" onclick="sortTable(1, 'table<%= item.item_id %>')">Stock</th>
-                                <th class="w-10" onclick="sortTable(2, 'table<%= item.item_id %>')">Requested</th>
-                                <th class="w-10" onclick="sortTable(3, 'table<%= item.item_id %>')">Ordered</th>
-                            </thead>
-                            <tbody id="table<%= item.item_id %>">
-                                <% if (item.sizes) item.sizes.forEach(size => { %>
-                                    <% let _stock = 0, _requests = 0, _orders = 0 %>
-                                    <% if (size.stocks && size.stocks.length > 0) { %>
-                                        <% size.stocks.forEach(stock => { %>
-                                            <% _stock += Number(stock._qty) %>
-                                        <% }) %>
-                                    <% } %>
-                                    <% if (size.request_lines && size.request_lines.length > 0) { %>
-                                        <% size.request_lines.forEach(request => { %>
-                                            <% _requests += Number(request._qty) %>
-                                        <% }) %>
-                                    <% } %>
-                                    <% if (size.order_lines && size.order_lines.length > 0) { %>
-                                        <% size.order_lines.forEach(order => { %>
-                                            <% _orders += Number(order._qty) %>
-                                        <% }) %>
-                                    <% } %>
-                                    <tr>
-                                        <td>
-                                            <a class="btn btn-sm btn-primary float-end" href="/sizes/<%= size.size_id %>"><i class="fas fa-search"></i></a>
-                                            <%= size._size %>
-                                        </td>
-                                        <td <% if (_stock <= 0) { %> class="cardRed"<% } %>>
-                                            <%= _stock %>
-                                        </td>
-                                        <td>
-                                            <%= _requests %>
-                                        </td>
-                                        <td>
-                                            <%= _orders %>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            <% }) %>
-        </div>
-    </div>
+<section class='container'>
+    <div id="div_sizes"></div>
 </section>
-<% include ../../../partials/foot/app %>
-<script>
-    <% items.forEach(item => { %>
-        sortTable(0, 'table<%= item.item_id %>')
-    <% }) %>  
-</script>
-<% include ../../../partials/foot/elements/htmlClose %>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/stores/reports/4/view.js"></script>
+<script async>getSizes()</script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

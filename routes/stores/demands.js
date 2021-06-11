@@ -30,6 +30,11 @@ module.exports = (app, m, inc, fn) => {
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/sum/demand_lines',     fn.li(), fn.permissions.check('access_demand_lines'), (req, res) => {
+        m.demand_lines.sum('qty', {where: req.query})
+        .then(sum => res.send({success: true, result: sum}))
+        .catch(err => fn.send_error(res, err));
+    });
     
     app.get('/get/demand',           fn.li(), fn.permissions.check('access_demands'),      (req, res) => {
         m.demands.findOne({

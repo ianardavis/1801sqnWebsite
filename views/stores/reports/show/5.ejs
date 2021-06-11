@@ -1,73 +1,16 @@
 <%- include(`${partials}/head/app`) %>
-<li class="nav-item">
-    <a class="nav-link" href="/stores">Stores</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports">Reports</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="/reports/1">Stock - By Location</a>
-</li>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Stock - By Location'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`,    {id: 'stocks'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
-<section class="mb-2">
-    <div class="container">
-        <form action="/reports/5" method="POST">
-            <div class="row">
-                <div class="col-12">
-                    <input class="btn btn-success w-100" type="submit" value="Update Stock">
-                </div>
-                <% locations.forEach(location => { %>
-                    <div class="col-12 bordered">
-                        <a class="my-3" data-bs-toggle="collapse" href="#collapse<%= location.location_id %>" role="button" aria-expanded="false" aria-controls="collapse<%= location.location_id %>">
-                            <h5 class="text-start"><%= location._location %></h5>
-                        </a>
-                        <div class="collapse mb-3" id="collapse<%= location.location_id %>">
-                            <a class="btn btn-primary float-start mb-2" href="/locations/<%= location.location_id %>"><i class="fas fa-search"></i></a>
-                            <table class="table table-sm table-hover">
-                                <thead class="thead-dark">
-                                    <th class="w-40" onclick="sortTable(0, 'table<%= location.location_id %>')">Item</th>
-                                    <th class="w-40" onclick="sortTable(1, 'table<%= location.location_id %>')">Size</th>
-                                    <th class="w-10" onclick="sortTable(2, 'table<%= location.location_id %>')">Stock</th>
-                                    <th class="w-10">Stock if Different</th>
-                                </thead>
-                                <tbody id="table<%= location.location_id %>"> 
-                                    <% if (location.stocks && location.stocks.length > 0) { %>
-                                        <% location.stocks.forEach(_stock => { %>
-                                            <tr>
-                                                <td>
-                                                    <a class="btn btn-sm btn-primary float-end" href="/items/<%= _stock.size.item.item_id %>">
-                                                        <i class="fas fa-search"></i>
-                                                    </a>
-                                                    <%= _stock.size.item._description %>
-                                                </td>
-                                                <td>
-                                                    <a class="btn btn-sm btn-primary float-end" href="/sizes/<%= _stock.size_id %>">
-                                                        <i class="fas fa-search"></i>
-                                                    </a>
-                                                    <%= _stock.size._size %>
-                                                </td>
-                                                <td <% if (_stock._qty < 0) { %> class="cardRed"<% } %>>
-                                                    <%= _stock._qty %>
-                                                </td>
-                                                <td>
-                                                    <input class='form-control' type="number" name='corrections[stock_id_<%- _stock.stock_id %>]'>
-                                                </td>
-                                            </tr>
-                                        <% }) %>
-                                    <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                <% }) %>
-            </div>
-        </form>
-    </div>
+<section class='container'>
+    <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_stocks' disabled>Action Counts</button>
+    <form id="form_stocks"></form>
 </section>
-<% include ../../../partials/foot/app %>
-<script>
-    <% locations.forEach(location => { %>
-        sortTable(1, 'table<%= location.location_id %>')
-    <% }) %>  
-</script>
-<% include ../../../partials/foot/elements/htmlClose %>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/addFormListener.js"></script>
+<script src="/js/stores/reports/5/view.js"></script>
+<script async>getLocations()</script>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

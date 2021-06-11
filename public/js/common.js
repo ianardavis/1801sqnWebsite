@@ -122,7 +122,7 @@ function set_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);
     if (element && options.attribute) {
         if (Array.isArray(options.attribute)) { 
-            options.attribute.forEach(e => element.setAttribute(e.attribute, e.value || ''))
+            options.attribute.forEach(e => element.setAttribute(e.attribute, e.value || ''));
         } else element.setAttribute(options.attribute, options.value || '');
     };
 };
@@ -214,7 +214,7 @@ function modalShow(id) {
 };
 function modalHide(id) {
     let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`), {});
-    if (modal) modal.hide();
+    if (modal) {console.log(modal.hide);modal.hide();}
 };
 function modalOnShow(id, func) {
     let modal = document.querySelector(`#mdl_${id}`);

@@ -1,4 +1,5 @@
 function getSizes() {
+    disable_button('action');
     clear_table('stocks')
     .then(tbl_stocks => {
         get({table: 'negative_stock'})
@@ -39,9 +40,11 @@ function getSizes() {
                 ]});
                 row_index++
             });
+            enable_button('action');
         });
     });
 };
+addReloadListener(getSizes);
 window.addEventListener('load', function () {
     addFormListener(
         'adjustments',

@@ -1,122 +1,12 @@
 module.exports = (app, m, inc, fn) => {
-    let orders = {}, stock = {};
-    app.get('/reports',    fn.li(), fn.permissions.get('access_reports'),   (req, res) => res.render('stores/reports/index'));
-
-    app.get('/reports/1',  fn.li(), fn.permissions.get('adjustment_add'),   (req, res) => res.render('stores/reports/show/1'));
-    app.get('/reports/2',  fn.li(), fn.permissions.get('issue_edit'),       (req, res) => res.render('stores/reports/show/2'));
-    app.get('/reports/3',  fn.li(), fn.permissions.get('access_reports'),   (req, res) => res.render('stores/reports/show/3'));
-    app.get('/reports/4',  fn.li(), fn.permissions.get('access_reports'),   (req, res) => res.render('stores/reports/show/4'));
-    app.get('/reports/5',  fn.li(), fn.permissions.get('access_reports'),   (req, res) => res.render('stores/reports/show/5'));
-    app.get('/reports/*',  fn.li(), fn.permissions.get('access_reports'),   (req, res) => {
+    app.get('/reports',   fn.li(), fn.permissions.get('access_reports'), (req, res) => res.render('stores/reports/index'));
+    app.get('/reports/1', fn.li(), fn.permissions.get('adjustment_add'), (req, res) => res.render('stores/reports/show/1'));
+    app.get('/reports/2', fn.li(), fn.permissions.get('issue_edit'),     (req, res) => res.render('stores/reports/show/2'));
+    app.get('/reports/3', fn.li(), fn.permissions.get('order_add'),      (req, res) => res.render('stores/reports/show/3'));
+    app.get('/reports/4', fn.li(), fn.permissions.get('access_reports'), (req, res) => res.render('stores/reports/show/4'));
+    app.get('/reports/5', fn.li(), fn.permissions.get('adjustment_add'), (req, res) => res.render('stores/reports/show/5'));
+    app.get('/reports/*', fn.li(), fn.permissions.get('access_reports'), (req, res) => {
         req.flash('danger', 'Invalid report');
         res.redirect('/reports');
-    });
-    
-    app.get('/reports/3',  fn.li(), fn.permissions.check('access_reports'), (req, res) => {
-        m.items.findAll({
-            include: [{
-                model: m.sizes,
-                where: {_orderable: 1},
-                include: [
-                    m.stock,
-                    inc.suppliers({where: {supplier_id: Number(req.query.supplier_id) || 1}}),
-                    inc.order_lines({as: 'orders', where: {demand_line_id: null}}),
-                    inc.request_lines({as: 'requests', where: {_status: 'Pending'}})
-        ]}]})
-        .then(items => {
-            m.suppliers.findAll()
-            .then(suppliers => res.render('stores/reports/show/3', {items: items, suppliers: suppliers, supplier_id: req.query.supplier_id || 1}))
-            .catch(err => fn.send_error(res, err));
-        })
-        .catch(err => fn.send_error(res, err));
-    });
-    app.get('/reports/4',  fn.li(), fn.permissions.check('access_reports'), (req, res) => {
-        m.items.findAll({
-            include: [{
-                model: m.sizes,
-                include: [inc.stock({size: true})]
-            }]
-        })
-        .then(items => res.render('stores/reports/show/4', {items: items}))
-        .catch(err => fn.send_error(res, err));
-    });
-    app.get('/reports/5',  fn.li(), fn.permissions.check('access_reports'), (req, res) => {
-        m.locations.findAll({
-            include: [inc.stock({size: true})]
-        })
-        .then(locations => {
-            locations.sort(function(a, b) {
-                var locationA = a._location.toUpperCase(); // ignore upper and lowercase
-                var locationB = b._location.toUpperCase(); // ignore upper and lowercase
-                if (locationA < locationB) {
-                  return -1;
-                }
-                if (locationA > locationB) {
-                  return 1;
-                }
-              
-                // names must be equal
-                return 0;
-              });
-            res.render('stores/reports/show/5', {locations: locations})
-        })
-        .catch(err => fn.send_error(res, err));
-    });
-
-    app.post('/reports/3', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
-        let selected = []
-        for (let [key, line] of Object.entries(req.body.selected)) {
-            if (Number(line) > 0) selected.push({size_id: key, _qty: line});
-        };
-        if (selected.length > 0) {
-            orders.create({
-                order: {
-                    user_id_order: req.body.user_id_order,
-                    user_id: req.user.user_id
-                }
-            })
-            .then(result => {
-                let actions = [];
-                selected.forEach(line => {
-                    line.order_id = result.order_id
-                    actions.push(orders.createLine({line: line}))
-                })
-                Promise.allSettled(actions)
-                .then(results => res.redirect('/reports/3'))
-                .catch(err => fn.send_error(res, err));
-            })
-            .catch(err => fn.send_error(res, err));
-        } else {
-            req.flash('info', 'No items selected');
-            res.redirect('/reports/3');
-        };
-    });
-    app.post('/reports/5', fn.li(), fn.permissions.check('access_reports'), (req, res) => {
-        let actions = [];
-        for (let [key, value] of Object.entries(req.body.corrections)) {
-            if (value) {
-                let stock_id = Number(String(key).replace('stock_id_', ''));
-                actions.push(
-                    stock.adjust({
-                        adjustment: {
-                            stock_id: stock_id,
-                            _type:    'Count',
-                            _qty:     Number(value),
-                            _date:    Date.now(),
-                            user_id:  req.user.user_id
-                        }
-                    })
-                );
-            };
-        };
-        Promise.allSettled(actions)
-        .then(results => {
-            req.flash('success', 'Counts actioned');
-            res.redirect('/reports/5');
-        })
-        .catch(err => {
-            req.flash('danger', 'Error actioning some lines, check and try again');
-            res.redirect('/reports/5');
-        });
     });
 };

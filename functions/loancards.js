@@ -269,7 +269,7 @@ module.exports = function (m, fn) {
                 },
                 defaults: {
                     user_id:  options.user_id,
-                    date_due: options.date_due || fn.addYears(7)
+                    date_due: options.date_due || fn.add_years(7)
                 }
             })
             .then(([loancard, created]) => resolve(loancard.loancard_id))
@@ -462,7 +462,7 @@ module.exports = function (m, fn) {
                                 {table: 'stocks', id: stock.stock_id},
                                 {table: 'loancard_lines', id: loancard_line.loancard_line_id}
                             ]);
-                        }else {
+                        } else {
                             return loancard_line.increment('qty', {by: options.qty})
                             .then(result => {
                                 resolve([

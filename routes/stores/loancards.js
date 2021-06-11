@@ -124,6 +124,21 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.put('/loancards/:id',          fn.li(), fn.permissions.check('loancard_edit'),                   (req, res) => {
+        m.loancards.findOne({where: {loancard_id: req.params.id}})
+        .then(loancard => {
+            if (!loancard) fn.send_error(res, 'Loancard not found')
+            else {
+                return loancard.update(req.body.loancard)
+                .then(result => {
+                    if (!result) fn.send_error(res, 'Loancard not updated')
+                    else res.send({success: true, message: 'Loancard updated'});
+                })
+                .catch(err => fn.send_error(res, err));
+            };
+        })
+        .catch(err => fn.send_error(res, err));
+    });
+    app.put('/loancards/:id/complete', fn.li(), fn.permissions.check('loancard_edit'),                   (req, res) => {
         fn.loancards.complete({
             loancard_id: req.params.id,
             user_id: req.user.user_id

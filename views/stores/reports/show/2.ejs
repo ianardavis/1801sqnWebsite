@@ -1,10 +1,13 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
-<%- include(`${partials}/breadcrumb`, {text: 'Reports'}) %>
-<%- include(`${partials}/spinner`,    {id: 'issues_due'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Issues Overdue'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`,    {id: 'loancard_lines_due'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <form id="form_actions">
+        <button id='btn_action' class="btn btn-success w-100 mb-1" disabled>Action lines</button>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
                 <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Issued To</th>

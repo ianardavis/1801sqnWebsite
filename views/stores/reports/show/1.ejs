@@ -1,11 +1,13 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {text: 'Stores', href: '/stores'}) %>
-<%- include(`${partials}/breadcrumb`, {text: 'Reports'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Stores',  href: '/stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Negative Stock'}) %>
+<%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`,    {id: 'negative_stock'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <form id="form_adjustments">
-        <button class="btn btn-success w-100 mb-1">Action lines</button>
+        <button id='btn_action' class="btn btn-success w-100 mb-1" disabled>Action lines</button>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
                 <th class="w-40" onclick="sortTable(0, 'tbl_stocks')">Item</th>

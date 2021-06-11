@@ -12,6 +12,7 @@ function getLoancard() {
         set_innerText({id: 'loancard_user_loancard', text: print_user(loancard.user_loancard)});
         set_innerText({id: 'loancard_user',          text: print_user(loancard.user)});
         set_innerText({id: 'loancard_createdAt',     text: print_date(loancard.createdAt, true)});
+        set_innerText({id: 'loancard_date_due',     text: print_date(loancard.date_due)});
         set_innerText({id: 'loancard_updatedAt',     text: print_date(loancard.updatedAt, true)});
         set_innerText({id: 'loancard_status',        text: statuses[loancard.status]});
         set_innerText({id: 'loancard_filename',      text: loancard.filename || ''})
