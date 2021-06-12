@@ -15,7 +15,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'receipt_add',
         'POST',
-        '/canteen/receipts',
+        '/receipts',
         {
             onComplete: [
                 getReceipts,

@@ -1,16 +1,14 @@
 function getItemEdit() {
-    get(
-        {
-            table: 'item',
-            query: [`item_id=${path[2]}`]
-        },
-        function(item, options) {
-            set_value({id: '_name_edit',    value: item._name});
-            set_value({id: '_price_edit',   value: item._price});
-            set_value({id: '_cost_edit',    value: item._cost});
-            set_value({id: '_current_edit', value: String(item._current)});
-        }
-    );
+    get({
+        table: 'canteen_item',
+        query: [`item_id=${path[2]}`]
+    })
+    .then(function([item, options]) {
+        set_value({id: 'item_name_edit',    value: item.name});
+        set_value({id: 'item_price_edit',   value: item.price});
+        set_value({id: 'item_cost_edit',    value: item.cost});
+        set_value({id: 'item_current_edit', value: item.current});
+    });
 };
 window.addEventListener('load', function () {
     modalOnShow('item_edit', getItemEdit);
@@ -18,7 +16,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'item_edit',
         'PUT',
-        `/canteen/items/${path[2]}`,
+        `/canteen_items/${path[2]}`,
         {
             onComplete: [
                 getItem,

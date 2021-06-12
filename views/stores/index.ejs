@@ -2,7 +2,7 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Stores'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section>
-	<div class="row container m-auto p-0 menu">
+	<div class="row container menu">
 		<%- include(`${partials}/card`, {id: 'users', 	  href: '/users', 	  title: 'Users', 	  image: 'users', 	  permission: 'access_users'}) %>
 		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'access_suppliers'}) %>
 		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt', 	  permission: 'access_items'}) %>

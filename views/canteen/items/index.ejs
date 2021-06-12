@@ -1,14 +1,16 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Canteen', href: '/canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Items'}) %>
 <% if (permissions.item_add) { %>
-    <%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', href: 'javascript:$("#mdl_add_item").modal("show")'}) %>
+	<li class="nav-item">
+		<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_item_add"><i class="fas fa-plus"></i></a>
+	</li>
 <% } %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/spinner`, {id: 'items'}) %>
+<%- include(`${partials}/spinner`, {id: 'canteen_items'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-    <%- include(`${partials}/inputs/select`, {title: 'Non-Current Items', id: '_current', options: [{value:'', text: 'Include', selected: true},{value:'current=1', text: 'Exclude'},{value:'current=0', text: 'Only'}]}) %>
+    <%- include(`${partials}/inputs/select`, {title: 'Non-Current Items', id: 'current', options: [{value:'', text: 'Include', selected: true}, {value:'current=1', text: 'Exclude'}, {value:'current=0', text: 'Only'}]}) %>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">
             <th class="w-30" onclick="sortTable(0, 'tbl_items')">Name</th>
@@ -19,50 +21,35 @@
         </thead>
         <tbody id="tbl_items"></tbody>
     </table>
-    <% if (permissions.item_add) { %>
-        <div id='mdl_add_item' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_add_item'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Item</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[name]',    required: true}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[price]',   required: true, value: '0.50', step: '0.01', min: '0'}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[cost]',    required: true, value: '0.00', step: '0.01', min: '0'}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Stock',   name: 'item[qty]',     required: true, value: '0',                  min: '0'}) %>
-                        <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[current]', options: [{value: '1', text: 'Yes', selected: true}, {value: '0', text: 'No'}]}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save Item'>
-                    </div>
-                </form>
+    <div id="div_modals">
+        <% if (permissions.canteen_item_add) { %>
+            <div id='mdl_item_add' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_item_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Item</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`,   {title: 'Name',    name: 'item[name]',    required: true}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Price',   name: 'item[price]',   required: true, value: '0.50', step: '0.01', min: '0'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Cost',    name: 'item[cost]',    required: true, value: '0.00', step: '0.01', min: '0'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Stock',   name: 'item[qty]',     required: true, value: '0',                  min: '0'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Current', name: 'item[current]', options: [{value: '1', text: 'Yes', selected: true}, {value: '0', text: 'No'}]}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Save Item'>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-    <% } %>
+        <% } %>
+    </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/canteen/items/index/getItems.js"></script>
+<script src="/js/canteen/items/index/view.js"></script>
 <script src="/js/addFormListener.js"></script>
 <script async>getItems()</script>
 <% if (permissions.item_add) { %>
-    <script>
-        window.addEventListener('load', function () {
-            addFormListener(
-                'add_item',
-                'POST',
-                '/canteen/items',
-                {
-                    onComplete: [
-                        getItems,
-                        function () {$('#mdl_add_item').modal('hide')}
-                    ]
-                }
-            )
-        })
-    </script>
+    <script src="/js/canteen/items/index/add.js"></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

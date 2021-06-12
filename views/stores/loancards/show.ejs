@@ -11,7 +11,7 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete', 	  btn_form: {permission: 'loancard_edit'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete', 	  modal: 'loancard_complete'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download', 	  btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'print', 	text: 'Print', 	  	  btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'action', 	text: 'Action Lines', form: 'action'}) %>
@@ -65,6 +65,23 @@
 	<div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
+		<% if (permissions.loancard_edit) { %>
+			<div id='mdl_loancard_complete' class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<form id='form_complete' class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Complete Loancard</h5>
+						</div>
+						<div class="modal-body">
+							<%- include(`${partials}/inputs/date`, {id: 'date_due_complete', title: 'Due Date', name: 'date_due'}) %>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-success w-100">Complete</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		<% } %>
 		<% if (permissions.loancard_edit) { %>
 			<div id='mdl_due_edit' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">

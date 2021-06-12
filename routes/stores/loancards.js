@@ -141,7 +141,8 @@ module.exports = (app, m, inc, fn) => {
     app.put('/loancards/:id/complete', fn.li(), fn.permissions.check('loancard_edit'),                   (req, res) => {
         fn.loancards.complete({
             loancard_id: req.params.id,
-            user_id: req.user.user_id
+            user_id: req.user.user_id,
+            date_due: req.body.date_due || fn.add_years(7)
         })
         .then(result => {
             return fn.loancards.createPDF(req.params.id)

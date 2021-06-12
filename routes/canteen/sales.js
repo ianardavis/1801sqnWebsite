@@ -6,7 +6,7 @@ module.exports = (app, m, inc, fn) => {
             where: req.query,
             include: [
                 inc.sale_lines({item: true}),
-                inc.users()
+                inc.user()
             ]
         })
         .then(sales => res.send({success: true, result: sales}))

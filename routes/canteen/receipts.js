@@ -6,8 +6,8 @@ module.exports = (app, m, inc, fn) => {
         m.receipts.findAll({
             where: req.query,
             include: [
-                inc.users(),
-                inc.items()
+                inc.user(),
+                inc.item()
             ]
         })
         .then(receipts => res.send({success: true,  result: receipts}))

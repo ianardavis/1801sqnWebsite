@@ -4,7 +4,7 @@ module.exports = (app, m, inc, fn) => {
     
     app.get('/get/writeoffs',         fn.li(), fn.permissions.check('access_writeoffs'),      (req, res) => {
         m.writeoffs.findAll({
-            include: [inc.users()],
+            include: [inc.user()],
             where: req.query
         })
         .then(writeoffs => res.send({success: true, result: writeoffs}))

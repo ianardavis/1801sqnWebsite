@@ -1,17 +1,17 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {href: '/canteen', text: 'Canteen'}) %>
-<%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-redo"></i>', id: 'reload'}) %>
+<%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`,    {id: 'sessions'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-	<div class="row m-auto p-0 menu">
+	<div class="row menu">
         <%- include(`${partials}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos'}) %>
-		<%- include(`${partials}/card`, {title: 'Items',         image: 'candy-cane',    href: '/canteen/items'}) %>
-		<%- include(`${partials}/card`, {title: 'Sessions',      image: 'list',          href: '/canteen/sessions'}) %>
-        <%- include(`${partials}/card`, {title: 'Receipts',      image: 'receipt',       href: '/canteen/receipts'}) %>
-        <%- include(`${partials}/card`, {title: 'Writeoffs',     image: 'receipt',       href: '/canteen/writeoffs'}) %>
-        <%- include(`${partials}/card`, {title: 'Movements',     image: 'wallet',        href: '/canteen/movements'}) %>
-        <%- include(`${partials}/card`, {title: 'Users',         image: 'user',          href: '/canteen/users'}) %>
+		<%- include(`${partials}/card`, {title: 'Items',         image: 'candy-cane',    href: '/canteen_items'}) %>
+		<%- include(`${partials}/card`, {title: 'Sessions',      image: 'list',          href: '/sessions'}) %>
+        <%- include(`${partials}/card`, {title: 'Receipts',      image: 'receipt',       href: '/receipts'}) %>
+        <%- include(`${partials}/card`, {title: 'Writeoffs',     image: 'receipt',       href: '/writeoffs'}) %>
+        <%- include(`${partials}/card`, {title: 'Movements',     image: 'wallet',        href: '/movements'}) %>
+        <%- include(`${partials}/card`, {title: 'Users',         image: 'user',          href: '/users'}) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>

@@ -1,8 +1,28 @@
 module.exports = (inc, m) => {
+    inc.user = (options = {}) => {
+        let include = options.include || [{model: m.ranks, as: 'rank'}];
+        return {
+            model:   m.users,
+            as:      options.as || 'user',
+            include: include
+        };
+    };
+    inc.item = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include;
+        return {
+            model:    m.canteen_items,
+            include:  include,
+            as:       options.as       || 'item',
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
+    
     inc.users = (options = {}) => {
         let include = options.include || [m.users.ranks];
         return {
-            model:   m.users.users,
+            model:   m.users,
             as:      options.as || 'user',
             include: include
         };
@@ -10,7 +30,7 @@ module.exports = (inc, m) => {
     inc.pos_pages = (options = {}) => {
         let include = options.include || [];
         return {
-            model:   m.canteen.pos_pages,
+            model:   m.pos_pages,
             as:      options.as || 'page',
             include: include
         };
@@ -18,7 +38,7 @@ module.exports = (inc, m) => {
     inc.movements = (options = {}) => {
         let include = options.include || [];
         return {
-            model:   m.canteen.movements,
+            model:   m.movements,
             as:      options.as || 'movement',
             include: include
         };
@@ -26,7 +46,7 @@ module.exports = (inc, m) => {
     inc.holdings = (options = {}) => {
         let include = options.include || [];
         return {
-            model:   m.canteen.holdings,
+            model:   m.holdings,
             as:      options.as || 'holding',
             include: include
         };
@@ -34,7 +54,7 @@ module.exports = (inc, m) => {
     inc.pos_layouts = (options = {}) => {
         let include = options.include || [inc.items()];
         return {
-            model:   m.canteen.pos_layouts,
+            model:   m.pos_layouts,
             as:      options.as || 'items',
             include: include
         };
@@ -43,13 +63,29 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include
         else {
-            if (options.sale) include.push(inc.sales({as: 'sale'}));
-            if (options.item) include.push(inc.items());
+            if (options.sale) include.push(inc.sale());
+            if (options.item) include.push(inc.item());
         };
         return {
-            model:    m.canteen.sale_lines,
+            model:    m.sale_lines,
             include:  include,
             as:       options.as       || 'lines',
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
+    inc.sale = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        else {
+            if (options.session) include.push(inc.sessions());
+            if (options.lines)   include.push(inc.sale_lines());
+        };
+        include.push(inc.users());
+        return {
+            model:    m.sales,
+            include:  include,
+            as:       options.as       || 'sale',
             where:    options.where    || null,
             required: options.required || false
         };
@@ -63,7 +99,7 @@ module.exports = (inc, m) => {
         };
         include.push(inc.users());
         return {
-            model:    m.canteen.sales,
+            model:    m.sales,
             include:  include,
             as:       options.as       || 'sales',
             where:    options.where    || null,
@@ -76,7 +112,7 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         include.push(inc.users());
         return {
-            model:    m.canteen.receipts,
+            model:    m.receipts,
             include:  include,
             as:       options.as       || 'receipts',
             where:    options.where    || null,
@@ -89,7 +125,7 @@ module.exports = (inc, m) => {
         if (options.include) include = options.include
         include.push(inc.users());
         return {
-            model:    m.canteen.writeoffs,
+            model:    m.writeoffs,
             include:  include,
             as:       options.as       || 'writeoffs',
             where:    options.where    || null,
@@ -101,7 +137,7 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include;
         return {
-            model:    m.canteen.items,
+            model:    m.canteen_items,
             include:  include,
             as:       options.as       || 'item',
             where:    options.where    || null,
@@ -113,7 +149,7 @@ module.exports = (inc, m) => {
         let include = [];
         if (options.include) include = options.include;
         return {
-            model:    m.canteen.sessions,
+            model:    m.sessions,
             include:  include,
             as:       options.as       || 'session',
             where:    options.where    || null,

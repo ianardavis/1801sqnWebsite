@@ -1,28 +1,26 @@
 function getSales() {
-    get(
-        {
+    clear_table('sales')
+    .then(tbl_sales => {
+        get({
             table: 'sale_lines',
             query: [`item_id=${path[2]}`]
-        },
-        function (lines, options) {
-            try {
-                clearElement('tbl_sales');
-                let table_body     = document.querySelector('#tbl_sales'),
-                    sale_count = document.querySelector('#sale_count');
-                    sale_count.innerText = lines.length || '0';
-                lines.forEach(line => {
-                    let row = table_body.insertRow(-1);
+        })
+        .then(function ([lines, options]) {
+            set_count({id: 'sale', count: lines.length || '0'});
+            lines.forEach(line => {
+                try {
+                    let row = tbl_sales.insertRow(-1);
                     add_cell(row, table_date(line.createdAt));
-                    add_cell(row, {text: line._qty});
+                    add_cell(row, {text: line.qty});
                     add_cell(row, {append: new Link({
                         href: `/canteen/sales/${line.sale_id}`,
                         small: true
                     }).e});
-                });
-            } catch (error) {
-                console.log(error);
-            };
-        }
-    )
+                } catch (error) {
+                    console.log(error);
+                };
+            });
+        });
+    });
 };
-document.querySelector('#reload').addEventListener('click', getSales);
+addReloadListener(getSales);

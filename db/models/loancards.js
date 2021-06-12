@@ -21,7 +21,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'date_due': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'filename': {

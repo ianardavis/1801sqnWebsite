@@ -267,10 +267,7 @@ module.exports = function (m, fn) {
                     user_id_loancard: options.user_id_loancard,
                     status:           1
                 },
-                defaults: {
-                    user_id:  options.user_id,
-                    date_due: options.date_due || fn.add_years(7)
-                }
+                defaults: {user_id: options.user_id}
             })
             .then(([loancard, created]) => resolve(loancard.loancard_id))
             .catch(err => reject(err));
@@ -292,7 +289,10 @@ module.exports = function (m, fn) {
                         if (!lines || lines.length === 0) reject(new Error('No open lines'))
                         else {
                             let actions = [];
-                            actions.push(loancard.update({status: 2}));
+                            actions.push(loancard.update({
+                                status:   2,
+                                date_due: options.date_due
+                            }));
                             lines.forEach(line => {
                                 actions.push(new Promise((resolve, reject) => {
                                     line.update({status: 2})

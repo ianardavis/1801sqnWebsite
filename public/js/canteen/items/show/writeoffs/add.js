@@ -4,7 +4,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'writeoff_add',
         'POST',
-        '/canteen/writeoffs',
+        '/writeoffs',
         {
             onComplete: [
                 getWriteoffs,

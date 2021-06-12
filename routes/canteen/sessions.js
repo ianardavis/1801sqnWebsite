@@ -7,8 +7,8 @@ module.exports = (app, m, inc, fn) => {
         m.sessions.findAll({
             where: req.query,
             include: [
-                inc.users({as: 'user_open'}),
-                inc.users({as: 'user_close'}),
+                inc.user({as: 'user_open'}),
+                inc.user({as: 'user_close'}),
             ]
         })
         .then(sessions => res.send({success: true, result: sessions}))
