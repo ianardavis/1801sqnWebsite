@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/breadcrumb`, {href: '/canteen',	   text: 'Canteen'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen/items', text: 'Items'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/canteen_items', text: 'Items'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/head/navbar/close`) %>
@@ -92,25 +92,6 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.writeoff_add) { %>
-            <div id='mdl_writeoff_add' class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_writeoff_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Writeoff Stock</h5>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" name='writeoff[item_id]' id='item_id_writeoff'>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Reason',   name: 'writeoff[reason]', required: true}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'writeoff[qty]',    required: true, min: '1'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Item'>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        <% } %>
         <% if (permissions.receipt_add) { %>
             <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
@@ -119,10 +100,29 @@
                             <h5 class="modal-title">Receive Stock</h5>
                         </div>
                         <div class="modal-body">
-                            <input type="hidden" name='receipt[item_id]' id='item_id_receipt'>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total', step: '0.01', min: '0.01'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  name: 'receipt[_cost]', id: 'cost_each',   required: true, min: '0.01', step: '0.01'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',     name: 'receipt[_qty]',  id: 'qty_receipt', required: true, min: '1'}) %>
+                            <input type="hidden" class='item_id' name='receipts[][0][item_id]'>
+                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total',  step: '0.01', min: '0.01'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',   name: 'receipts[][0][cost]', required: true, min: '0.01', step: '0.01'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty_receipt', name: 'receipts[][0][qty]',  required: true, min: '1'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Save Item'>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+        <% if (permissions.writeoff_add) { %>
+            <div id='mdl_writeoff_add' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_writeoff_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Writeoff Stock</h5>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" class='item_id' name='writeoff[item_id]'>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Reason',   name: 'writeoff[reason]', required: true}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'writeoff[qty]',    required: true, min: '1'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save Item'>

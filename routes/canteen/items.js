@@ -4,7 +4,7 @@ module.exports = (app, m, inc, fn) => {
     
     app.get('/get/canteen_items',    fn.li(), fn.permissions.check('access_canteen_items'), (req, res) => {
         m.canteen_items.findAll({where: req.query})
-        .then(items => {console.log(items);res.send({success: true, result: items})})
+        .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/canteen_item',     fn.li(), fn.permissions.check('access_canteen_items'), (req, res) => {

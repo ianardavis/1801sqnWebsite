@@ -7,7 +7,6 @@ function calculate_cost() {
 };
 window.addEventListener('load', function () {
     enable_button('receipt_add');
-    set_attribute({id: 'item_id_receipt', attribute: 'value', value: path[2]});
     ['qty_receipt', 'cost_total'].forEach(e => {
         let input = document.querySelector(`#${e}`)
         if (input) input.addEventListener('input', calculate_cost);

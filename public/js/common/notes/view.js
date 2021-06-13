@@ -34,7 +34,7 @@ function viewNote(note_id) {
     })
     .then(function ([note, options]) {
         set_innerText({id: 'note_id_view',   text: note.note_id});
-        set_innerText({id: 'note_createdAt', text: print_date(note.createdAt)});
+        set_innerText({id: 'note_createdAt', text: print_date(note.createdAt, true)});
         set_innerText({id: 'note_user',      text: note.user.full_name});
         set_href(     {id: 'note_user_link', value: `/users/${note.user_id}`});
         set_innerText({id: 'note_system',    text: yesno(note.system)});

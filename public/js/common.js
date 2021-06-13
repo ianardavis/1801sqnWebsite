@@ -218,6 +218,6 @@ function modalHide(id) {
 };
 function modalOnShow(id, func) {
     let modal = document.querySelector(`#mdl_${id}`);
-    modal.addEventListener('show.bs.modal', function (event){func(event)});
+    if (modal) modal.addEventListener('show.bs.modal', function (event){func(event)});
 };
 let path = window.location.pathname.toString().split('/');

@@ -7,7 +7,7 @@ function getItemEdit() {
         set_value({id: 'item_name_edit',    value: item.name});
         set_value({id: 'item_price_edit',   value: item.price});
         set_value({id: 'item_cost_edit',    value: item.cost});
-        set_value({id: 'item_current_edit', value: item.current});
+        set_value({id: 'item_current_edit', value: (item.current ? '1' : '0')});
     });
 };
 window.addEventListener('load', function () {
