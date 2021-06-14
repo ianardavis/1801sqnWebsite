@@ -24,24 +24,24 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'holding_id_from': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
+    'from_table': {
+      type: DataTypes.TEXT,
+      allowNull: false,
       comment: "null"
     },
-    'holding_id_to': {
+    'from_id': {
       type: DataTypes.UUIDV4,
-      allowNull: true,
+      allowNull: false,
       comment: "null"
     },
-    'user_id_from': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
+    'to_table': {
+      type: DataTypes.TEXT,
+      allowNull: false,
       comment: "null"
     },
-    'user_id_to': {
+    'to_id': {
       type: DataTypes.UUIDV4,
-      allowNull: true,
+      allowNull: false,
       comment: "null"
     },
     'user_id_confirm': {
