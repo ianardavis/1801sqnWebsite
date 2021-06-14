@@ -3,7 +3,7 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Reports'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
-    <div class="row menu">
+    <div class="row menu mx-auto">
         <%- include(`${partials}/card`, {id: '1', href: '/reports/1', title: 'Negative Stock',      image: 'search-minus',   permission: 'adjustment_add'}) %>
         <%- include(`${partials}/card`, {id: '2', href: '/reports/2', title: 'Issues Overdue',      image: 'calendar-check', permission: 'issue_edit'}) %>
         <%- include(`${partials}/card`, {id: '3', href: '/reports/3', title: 'Orderable Items',     image: 'tshirt',         permission: 'order_add'}) %>

@@ -14,14 +14,15 @@
 				<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete', 	  modal: 'loancard_complete'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download', 	  btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'print', 	text: 'Print', 	  	  btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'action', 	text: 'Action Lines', form: 'action'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'action', 	text: 'Action Lines', form: 'actions'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', 	  modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   	  btn_form: {permission: 'loancard_delete'}}) %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line', permission: 'access_loancard_lines'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 	   	 count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line', 	 permission: 'access_loancard_lines'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'actions', 		 count_id: 'action', permission: 'access_actions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 	   	 count_id: 'note',	 permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">

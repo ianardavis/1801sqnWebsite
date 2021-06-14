@@ -1,20 +1,20 @@
 module.exports = (app, m, inc, fn) => {
     let receipts = {}, issues = {};
-    app.get('/orders',        fn.li(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/index'));
-    app.get('/orders/:id',    fn.li(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
+    app.get('/orders',        fn.loggedIn(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/index'));
+    app.get('/orders/:id',    fn.loggedIn(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
     
-    app.get('/count/orders',  fn.li(), fn.permissions.check('access_orders'), (req, res) => {
+    app.get('/count/orders',  fn.loggedIn(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/sum/orders',    fn.li(), fn.permissions.check('access_orders'), (req, res) => {
+    app.get('/sum/orders',    fn.loggedIn(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.sum('qty', {where: req.query})
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
 
-    app.get('/get/orders',    fn.li(), fn.permissions.check('access_orders'), (req, res) => {
+    app.get('/get/orders',    fn.loggedIn(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.findAll({
             where:   req.query,
             include: [
@@ -25,7 +25,7 @@ module.exports = (app, m, inc, fn) => {
         .then(orders => res.send({success: true, result: orders}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/order',     fn.li(), fn.permissions.check('access_orders'), (req, res) => {
+    app.get('/get/order',     fn.loggedIn(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.findOne({
             where:   req.query,
             include: [
@@ -37,7 +37,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/orders',       fn.li(), fn.permissions.check('order_add'),     (req, res) => {
+    app.post('/orders',       fn.loggedIn(), fn.permissions.check('order_add'),     (req, res) => {
         if (!req.body.orders || req.body.orders.length === 0) fn.send_error(res, 'No orders submitted')
         else {
             let actions = [];
@@ -50,7 +50,7 @@ module.exports = (app, m, inc, fn) => {
         };
     });
     
-    app.put('/orders',        fn.li(), fn.permissions.check('order_edit'),    (req, res) => {
+    app.put('/orders',        fn.loggedIn(), fn.permissions.check('order_edit'),    (req, res) => {
         let actions  = [],
             cancels  = req.body.orders.filter(e => e.status === '0'),
             demands  = req.body.orders.filter(e => e.status === '2'),
@@ -68,7 +68,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/orders/:id', fn.li(), fn.permissions.check('order_delete'),  (req, res) => {
+    app.delete('/orders/:id', fn.loggedIn(), fn.permissions.check('order_delete'),  (req, res) => {
         m.orders.findOne({
             where:      {order_id: req.params.id},
             attributes: ['order_id', 'status']

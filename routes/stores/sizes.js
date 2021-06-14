@@ -1,13 +1,13 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/sizes/select', fn.li(), fn.permissions.get('access_sizes'),   (req, res) => res.render('stores/sizes/select'));
-    app.get('/sizes/:id',    fn.li(), fn.permissions.get('access_sizes'),   (req, res) => res.render('stores/sizes/show'));
+    app.get('/sizes/select', fn.loggedIn(), fn.permissions.get('access_sizes'),   (req, res) => res.render('stores/sizes/select'));
+    app.get('/sizes/:id',    fn.loggedIn(), fn.permissions.get('access_sizes'),   (req, res) => res.render('stores/sizes/show'));
 
-    app.get('/count/sizes',  fn.li(), fn.permissions.check('access_sizes'), (req, res) => {
+    app.get('/count/sizes',  fn.loggedIn(), fn.permissions.check('access_sizes'), (req, res) => {
         m.sizes.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/sizes',    fn.li(), fn.permissions.check('access_sizes'), (req, res) => {
+    app.get('/get/sizes',    fn.loggedIn(), fn.permissions.check('access_sizes'), (req, res) => {
         m.sizes.findAll({
             where: req.query,
             include: [
@@ -18,7 +18,7 @@ module.exports = (app, m, inc, fn) => {
         .then(sizes => res.send({success: true, result: sizes}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/size',     fn.li(), fn.permissions.check('access_sizes'), (req, res) => {
+    app.get('/get/size',     fn.loggedIn(), fn.permissions.check('access_sizes'), (req, res) => {
         m.sizes.findOne({
             where: req.query,
             include: [
@@ -33,7 +33,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/sizes',       fn.li(), fn.permissions.check('size_add'),     (req, res) => {
+    app.post('/sizes',       fn.loggedIn(), fn.permissions.check('size_add'),     (req, res) => {
         if (req.body.size.supplier_id === '') req.body.size.supplier_id = null;
         m.sizes.findOrCreate({
             where: {
@@ -45,7 +45,7 @@ module.exports = (app, m, inc, fn) => {
         .then(([size, created]) => res.send({success: true, message: (created ? 'Size added' : 'Size already exists')}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/sizes/:id',    fn.li(), fn.permissions.check('size_edit'),    (req, res) => {
+    app.put('/sizes/:id',    fn.loggedIn(), fn.permissions.check('size_edit'),    (req, res) => {
         if (req.body.size.supplier_id === '') req.body.size.supplier_id = null;
         m.sizes.update(
             req.body.size,
@@ -55,7 +55,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/sizes/:id', fn.li(), fn.permissions.check('size_delete'),  (req, res) => {
+    app.delete('/sizes/:id', fn.loggedIn(), fn.permissions.check('size_delete'),  (req, res) => {
         m.sizes.findOne({where: {size_id: req.params.id}})
         .then(size => {
             if (!size) fn.send_error(res, 'Size not found')

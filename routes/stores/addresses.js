@@ -1,5 +1,5 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/get/addresses',    fn.li(), fn.permissions.check('access_supplier_addresses', {send: true}), (req, res) => {
+    app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_supplier_addresses', {send: true}), (req, res) => {
         m.supplier_addresses.findAll({
             where: req.query,
             include: [inc.address()]
@@ -7,7 +7,7 @@ module.exports = (app, m, inc, fn) => {
         .then(addresses => res.send({success: true, result: addresses}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/address',      fn.li(), fn.permissions.check('access_supplier_addresses', {send: true}), (req, res) => {
+    app.get('/get/address',      fn.loggedIn(), fn.permissions.check('access_supplier_addresses', {send: true}), (req, res) => {
         m.supplier_addresses.findOne({
             where: req.query,
             include: [inc.address()]
@@ -16,7 +16,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/addresses',       fn.li(), fn.permissions.check('supplier_address_add',      {send: true}), (req, res) => {
+    app.post('/addresses',       fn.loggedIn(), fn.permissions.check('supplier_address_add',      {send: true}), (req, res) => {
         m.suppliers.findOne({where: {supplier_id: req.body.supplier_id}})
         .then(supplier => {
             if (!supplier) fn.send_error(res, 'Supplier not found')
@@ -38,7 +38,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/addresses',        fn.li(), fn.permissions.check('supplier_address_add',      {send: true}), (req, res) => {
+    app.put('/addresses',        fn.loggedIn(), fn.permissions.check('supplier_address_add',      {send: true}), (req, res) => {
         m.supplier_addresses.findOne({
             where: {supplier_address_id: req.body.supplier_address_id},
             include: [inc.address()]
@@ -57,7 +57,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/addresses/:id', fn.li(), fn.permissions.check('supplier_address_delete',   {send: true}), (req, res) => {
+    app.delete('/addresses/:id', fn.loggedIn(), fn.permissions.check('supplier_address_delete',   {send: true}), (req, res) => {
         m.supplier_addresses.findOne({
             where: {supplier_address_id: req.params.id},
             include: [inc.address()]

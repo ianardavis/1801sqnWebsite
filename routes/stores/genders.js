@@ -1,10 +1,10 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/get/genders',    fn.li(), fn.permissions.check('access_genders'), (req, res) => {
+    app.get('/get/genders',    fn.loggedIn(), fn.permissions.check('access_genders'), (req, res) => {
         m.genders.findAll({where: req.query})
         .then(genders => res.send({success: true, result: genders}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/gender',     fn.li(), fn.permissions.check('access_genders'), (req, res) => {
+    app.get('/get/gender',     fn.loggedIn(), fn.permissions.check('access_genders'), (req, res) => {
         m.genders.findOne({
             where:   req.query,
             include: []
@@ -16,7 +16,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/genders',        fn.li(), fn.permissions.check('gender_edit'),    (req, res) => {
+    app.put('/genders',        fn.loggedIn(), fn.permissions.check('gender_edit'),    (req, res) => {
         m.genders.update(
             {gender: req.body.gender.gender},
             {where: {gender_id: req.body.gender.gender_id}}
@@ -28,13 +28,13 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.post('/genders',       fn.li(), fn.permissions.check('gender_add'),     (req, res) => {
+    app.post('/genders',       fn.loggedIn(), fn.permissions.check('gender_add'),     (req, res) => {
         m.genders.create({...req.body.gender, ...{user_id: req.user.user_id}})
         .then(gender => res.send({success: true, message: 'Gender created'}))
         .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/genders/:id', fn.li(), fn.permissions.check('gender_delete'),  (req, res) => {
+    app.delete('/genders/:id', fn.loggedIn(), fn.permissions.check('gender_delete'),  (req, res) => {
         m.genders.findOne({
             where: {gender_id: req.params.id},
             attributes: ['gender_id']

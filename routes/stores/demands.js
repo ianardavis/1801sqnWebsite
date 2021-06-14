@@ -1,7 +1,7 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/demands',              fn.li(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/index'));
-    app.get('/demands/:id',          fn.li(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/show'));
-    app.get('/demands/:id/download', fn.li(), fn.permissions.check('access_demands'),      (req, res) => {
+    app.get('/demands',              fn.loggedIn(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/index'));
+    app.get('/demands/:id',          fn.loggedIn(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/show'));
+    app.get('/demands/:id/download', fn.loggedIn(), fn.permissions.check('access_demands'),      (req, res) => {
         m.demands.findOne({
             where: {demand_id: req.params.id},
             attributes: ['demand_id', 'filename']
@@ -18,25 +18,25 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/demand_lines/:id',     fn.li(), fn.permissions.get('access_demand_lines'),   (req, res) => res.render('stores/demand_lines/show'));
+    app.get('/demand_lines/:id',     fn.loggedIn(), fn.permissions.get('access_demand_lines'),   (req, res) => res.render('stores/demand_lines/show'));
     
-    app.get('/count/demands',        fn.li(), fn.permissions.check('access_demands'),      (req, res) => {
+    app.get('/count/demands',        fn.loggedIn(), fn.permissions.check('access_demands'),      (req, res) => {
         m.demands.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/count/demand_lines',   fn.li(), fn.permissions.check('access_demand_lines'), (req, res) => {
+    app.get('/count/demand_lines',   fn.loggedIn(), fn.permissions.check('access_demand_lines'), (req, res) => {
         m.demand_lines.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/sum/demand_lines',     fn.li(), fn.permissions.check('access_demand_lines'), (req, res) => {
+    app.get('/sum/demand_lines',     fn.loggedIn(), fn.permissions.check('access_demand_lines'), (req, res) => {
         m.demand_lines.sum('qty', {where: req.query})
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
     
-    app.get('/get/demand',           fn.li(), fn.permissions.check('access_demands'),      (req, res) => {
+    app.get('/get/demand',           fn.loggedIn(), fn.permissions.check('access_demands'),      (req, res) => {
         m.demands.findOne({
             where: req.query,
             include: [
@@ -50,7 +50,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/demands',          fn.li(), fn.permissions.check('access_demands'),      (req, res) => {
+    app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('access_demands'),      (req, res) => {
         m.demands.findAll({
             where:   req.query,
             include: [
@@ -61,7 +61,7 @@ module.exports = (app, m, inc, fn) => {
         .then(demands => res.send({success: true, result: demands}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/demand_lines',     fn.li(), fn.permissions.check('access_demand_lines'), (req, res) => {
+    app.get('/get/demand_lines',     fn.loggedIn(), fn.permissions.check('access_demand_lines'), (req, res) => {
         m.demand_lines.findAll({
             where:   req.query,
             include: [
@@ -73,7 +73,7 @@ module.exports = (app, m, inc, fn) => {
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/demand_line',      fn.li(), fn.permissions.check('access_demand_lines'), (req, res) => {
+    app.get('/get/demand_line',      fn.loggedIn(), fn.permissions.check('access_demand_lines'), (req, res) => {
         m.demand_lines.findOne({
             where:   req.query,
             include: [
@@ -86,7 +86,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/sizes/:id/demand',    fn.li(), fn.permissions.check('issue_add'),           (req, res) => {
+    app.post('/sizes/:id/demand',    fn.loggedIn(), fn.permissions.check('issue_add'),           (req, res) => {
         if (req.body.lines) {
             let actions = [];
             req.body.lines.forEach(line => {
@@ -104,7 +104,7 @@ module.exports = (app, m, inc, fn) => {
             .catch(err => fn.send_error(res, err));
         } else fn.send_error(res, 'No lines');
     });
-    app.post('/demands',             fn.li(), fn.permissions.check('demand_add'),          (req, res) => {
+    app.post('/demands',             fn.loggedIn(), fn.permissions.check('demand_add'),          (req, res) => {
         fn.demands.create({
             supplier_id: req.body.supplier_id,
             user_id:     req.user.user_id
@@ -112,17 +112,17 @@ module.exports = (app, m, inc, fn) => {
         .then(demand => res.send({success: true, message: (demand.created ? 'There is already a demand open for this supplier' : 'Demand raised')}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/demands/:id/complete', fn.li(), fn.permissions.check('demand_edit'),         (req, res) => {
+    app.put('/demands/:id/complete', fn.loggedIn(), fn.permissions.check('demand_edit'),         (req, res) => {
         fn.demands.complete(req.params.id, req.user)
         .then(result => res.send(result))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/demands/:id/close',    fn.li(), fn.permissions.check('demand_edit'),         (req, res) => {
+    app.put('/demands/:id/close',    fn.loggedIn(), fn.permissions.check('demand_edit'),         (req, res) => {
         fn.demands.close(req.params.id, req.user.user_id)
         .then(result => res.send({success: true, message: 'Demand closed'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/demand_lines',         fn.li(), fn.permissions.check('demand_line_edit'),    (req, res) => {
+    app.put('/demand_lines',         fn.loggedIn(), fn.permissions.check('demand_line_edit'),    (req, res) => {
         if (!req.body.actions || req.body.actions.length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
@@ -151,12 +151,12 @@ module.exports = (app, m, inc, fn) => {
         };
     });
     
-    app.delete('/demands/:id',       fn.li(), fn.permissions.check('demand_delete'),       (req, res) => {
+    app.delete('/demands/:id',       fn.loggedIn(), fn.permissions.check('demand_delete'),       (req, res) => {
         fn.demands.cancel(req.params.id, req.user.user_id)
         .then(result => res.send({success: true, message: 'Demand Cancelled'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/demand_lines/:id',  fn.li(), fn.permissions.check('demand_line_delete'),  (req, res) => {
+    app.delete('/demand_lines/:id',  fn.loggedIn(), fn.permissions.check('demand_line_delete'),  (req, res) => {
         fn.demands.lines.cancel(req.params.id, req.user.user_id)
         .then(result => res.send({success: true, message: 'Line cancelled'}))
         .catch(err => fn.send_error(res, err));

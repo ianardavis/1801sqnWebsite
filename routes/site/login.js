@@ -6,7 +6,7 @@ module.exports = (app, fn) => {
             res.redirect(req.query.redirect || '/stores');
         } else res.render('login', {redirect: req.query.redirect});
     });
-    app.get('/logout', fn.li(), (req, res) => {
+    app.get('/logout', fn.loggedIn(), (req, res) => {
         req.logout();
         res.redirect('/');
     });

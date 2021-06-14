@@ -1,7 +1,7 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/movements',     fn.li(), fn.permissions.get('access_movements'),   (req, res) => res.render('canteen/movements/index'));
-    app.get('/movements/:id', fn.li(), fn.permissions.get('access_movements'),   (req, res) => res.render('canteen/movements/show'));
-    app.get('/get/movements', fn.li(), fn.permissions.check('access_movements'), (req, res) => {
+    app.get('/movements',     fn.loggedIn(), fn.permissions.get('access_movements'),   (req, res) => res.render('canteen/movements/index'));
+    app.get('/movements/:id', fn.loggedIn(), fn.permissions.get('access_movements'),   (req, res) => res.render('canteen/movements/show'));
+    app.get('/get/movements', fn.loggedIn(), fn.permissions.check('access_movements'), (req, res) => {
         m.movements.findAll({
             where: req.query,
             include: [

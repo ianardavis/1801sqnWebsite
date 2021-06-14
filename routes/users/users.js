@@ -1,18 +1,18 @@
 const { scryptSync, randomBytes } = require("crypto");
 module.exports = (app, m, inc, fn) => {
-    app.get('/users',        fn.li(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
+    app.get('/users',        fn.loggedIn(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
         if (req.allowed) res.render('users/index')
         else res.redirect(`/users/${req.user.user_id}`);
     });
-    app.get('/users/select', fn.li(), fn.permissions.get('access_users'),                   (req, res) => res.render('users/select'));
+    app.get('/users/select', fn.loggedIn(), fn.permissions.get('access_users'),                   (req, res) => res.render('users/select'));
 
-    app.get('/users/:id',    fn.li(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
+    app.get('/users/:id',    fn.loggedIn(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
         if (req.allowed || String(req.params.id) === String(req.user.user_id)) {
             res.render('users/show')
         } else res.redirect(`/users/${req.user.user_id}`);
     });
 
-    app.get('/get/user',     fn.li(), fn.permissions.check('access_users'),                 (req, res) => {
+    app.get('/get/user',     fn.loggedIn(), fn.permissions.check('access_users'),                 (req, res) => {
         m.users.findOne({
             where:      req.query,
             include:    [inc.rank(), inc.status()],
@@ -24,7 +24,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/current',  fn.li(), fn.permissions.check('access_users',  {allow: true}), (req, res) => {
+    app.get('/get/current',  fn.loggedIn(), fn.permissions.check('access_users',  {allow: true}), (req, res) => {
         let where = {status_id: {[fn.op.or]: [1, 2]}}
         if (!req.allowed) where.user_id = req.user.user_id;
         m.users.findAll({
@@ -35,7 +35,7 @@ module.exports = (app, m, inc, fn) => {
         .then(users => res.send({success: true,  result: users}))
         .catch(err =>  fn.send_error(res, err));
     });
-    app.get('/get/users',    fn.li(), fn.permissions.check('access_users',  {allow: true}), (req, res) => {
+    app.get('/get/users',    fn.loggedIn(), fn.permissions.check('access_users',  {allow: true}), (req, res) => {
         if (!req.allowed) req.query.user_id = req.user.user_id;
         m.users.findAll({
             where:      req.query,
@@ -46,7 +46,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err =>  fn.send_error(res, err));
     });
 
-    app.post('/users',       fn.li(), fn.permissions.check('user_add'),                     (req, res) => {
+    app.post('/users',       fn.loggedIn(), fn.permissions.check('user_add'),                     (req, res) => {
         let _user = req.body.user;
         if (
             (_user.service_number) &&
@@ -79,7 +79,7 @@ module.exports = (app, m, inc, fn) => {
         } else fn.send_error(res, 'Not all required information has been submitted');
     });
     
-    app.put('/password/:id', fn.li(), fn.permissions.check('user_edit',     {allow: true}), (req, res) => {
+    app.put('/password/:id', fn.loggedIn(), fn.permissions.check('user_edit',     {allow: true}), (req, res) => {
         if      (!req.allowed && String(req.user.user_id) !== String(req.params.id)) fn.send_error(res, 'Permission denied')
         else if (!req.body.password)                                         fn.send_error(res, 'No password submitted')
         else {
@@ -102,7 +102,7 @@ module.exports = (app, m, inc, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
-    app.put('/users/:id',    fn.li(), fn.permissions.check('user_edit'),                    (req, res) => {
+    app.put('/users/:id',    fn.loggedIn(), fn.permissions.check('user_edit'),                    (req, res) => {
         if (req.body.user) {
             if (!req.body.user.reset) req.body.user.reset = 0;
             ['user_id','full_name','salt','password','createdAt','updatedAt'].forEach(e => {
@@ -118,7 +118,7 @@ module.exports = (app, m, inc, fn) => {
         } else fn.send_error(res, 'No details submitted');
     });
     
-    app.delete('/users/:id', fn.li(), fn.permissions.check('user_delete'),                  (req, res) => {
+    app.delete('/users/:id', fn.loggedIn(), fn.permissions.check('user_delete'),                  (req, res) => {
         if (Number(req.user.user_id) === Number(req.params.id)) fn.send_error(res, 'You can not delete your own account')
         else {
             m.users.findOne({where: {user_id: req.params.id}})

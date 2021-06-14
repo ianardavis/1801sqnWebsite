@@ -1,8 +1,8 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/loancards',              fn.li(), fn.permissions.get('access_loancards'),                  (req, res) => res.render('stores/loancards/index'));
-    app.get('/loancards/:id',          fn.li(), fn.permissions.get('access_loancards'),                  (req, res) => res.render('stores/loancards/show'));
-    app.get('/loancard_lines/:id',     fn.li(), fn.permissions.get('access_loancard_lines'),             (req, res) => res.render('stores/loancard_lines/show'));
-    app.get('/loancards/:id/download', fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
+    app.get('/loancards',              fn.loggedIn(), fn.permissions.get('access_loancards'),                       (req, res) => res.render('stores/loancards/index'));
+    app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get('access_loancards'),                       (req, res) => res.render('stores/loancards/show'));
+    app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get('access_loancard_lines'),                  (req, res) => res.render('stores/loancard_lines/show'));
+    app.get('/loancards/:id/download', fn.loggedIn(), fn.permissions.check('access_loancards'),                     (req, res) => {
         fn.loancards.get(req.params.id)
         .then(loancard => {
             if (!loancard.filename) {
@@ -19,7 +19,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/loancards/:id/print',    fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
+    app.get('/loancards/:id/print',    fn.loggedIn(), fn.permissions.check('access_loancards'),                     (req, res) => {
         fn.loancards.get(req.params.id)
         .then(loancard => {
             if (!loancard.filename) fn.send_error(res, 'No file')
@@ -33,12 +33,13 @@ module.exports = (app, m, inc, fn) => {
     });
 
 
-    app.get('/count/loancards',        fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
+    app.get('/count/loancards',        fn.loggedIn(), fn.permissions.check('access_loancards'),                     (req, res) => {
         m.loancards.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/loancard',           fn.li(), fn.permissions.check('access_loancards'),                (req, res) => {
+    app.get('/get/loancard',           fn.loggedIn(), fn.permissions.check('access_loancards',      {allow: true}), (req, res) => {
+        if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
         m.loancards.findOne({
             where: req.query,
             include: [
@@ -48,12 +49,12 @@ module.exports = (app, m, inc, fn) => {
             ]
         })
         .then(loancard => {
-            if (loancard) res.send({success: true,  result: loancard})
-            else          fn.send_error(res, 'Loancard not found');
+            if (!loancard) fn.send_error(res, 'Loancard not found')
+            else           res.send({success: true,  result: loancard});
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/loancards',          fn.li(), fn.permissions.check('access_loancards', {allow: true}), (req, res) => {
+    app.get('/get/loancards',          fn.loggedIn(), fn.permissions.check('access_loancards',      {allow: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
         m.loancards.findAll({
             where: req.query,
@@ -66,31 +67,43 @@ module.exports = (app, m, inc, fn) => {
         .then(loancards => res.send({success: true, result: loancards}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/loancard_lines',     fn.li(), fn.permissions.check('access_loancard_lines'),           (req, res) => {
+    app.get('/get/loancard_lines',     fn.loggedIn(), fn.permissions.check('access_loancard_lines', {allow: true}), (req, res) => {
         m.loancard_lines.findAll({
             where:   req.query,
             include: [
                 inc.size(),
                 inc.user(),
-                inc.loancard({include: [inc.user(), inc.user({as: 'user_loancard'})]})
+                inc.loancard({
+                    ...(!req.allowed ? {
+                        where: {user_id_loancard: req.user.user_id},
+                        required: true
+                    } : {}),
+                    include: [inc.user(), inc.user({as: 'user_loancard'})]
+                })
             ]
         })
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/loancard_line',      fn.li(), fn.permissions.check('access_loancard_lines'),           (req, res) => {
+    app.get('/get/loancard_line',      fn.loggedIn(), fn.permissions.check('access_loancard_lines', {allow: true}), (req, res) => {
         m.loancard_lines.findOne({
             where:   req.query,
             include: [
                 inc.size(),
                 inc.user(),
-                inc.loancard({include: [inc.user(), inc.user({as: 'user_loancard'})]})
+                inc.loancard({
+                    ...(!req.allowed ? {
+                        where: {user_id_loancard: req.user.user_id},
+                        required: true
+                    } : {}),
+                    include: [inc.user(), inc.user({as: 'user_loancard'})]
+                })
             ]
         })
         .then(loancard_line => res.send({success: true, result: loancard_line}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/loancard_lines_due', fn.li(), fn.permissions.check('access_loancard_lines'),           (req, res) => {
+    app.get('/get/loancard_lines_due', fn.loggedIn(), fn.permissions.check('access_loancard_lines'),                (req, res) => {
         m.loancard_lines.findAll({
             where: {status: 2},
             include: [
@@ -109,7 +122,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/loancards',             fn.li(), fn.permissions.check('loancard_add'),                    (req, res) => {
+    app.post('/loancards',             fn.loggedIn(), fn.permissions.check('loancard_add'),                         (req, res) => {
         fn.loancards.create({
             loancard: {
                 user_id_loancard: req.body.supplier_id,
@@ -123,7 +136,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/loancards/:id',          fn.li(), fn.permissions.check('loancard_edit'),                   (req, res) => {
+    app.put('/loancards/:id',          fn.loggedIn(), fn.permissions.check('loancard_edit'),                        (req, res) => {
         m.loancards.findOne({where: {loancard_id: req.params.id}})
         .then(loancard => {
             if (!loancard) fn.send_error(res, 'Loancard not found')
@@ -138,7 +151,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/loancards/:id/complete', fn.li(), fn.permissions.check('loancard_edit'),                   (req, res) => {
+    app.put('/loancards/:id/complete', fn.loggedIn(), fn.permissions.check('loancard_edit'),                        (req, res) => {
         fn.loancards.complete({
             loancard_id: req.params.id,
             user_id: req.user.user_id,
@@ -151,18 +164,43 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/loancard_lines',         fn.li(), fn.permissions.check('loancard_line_edit'),              (req, res) => {
+    app.put('/loancard_lines',         fn.loggedIn(), fn.permissions.check('loancard_line_edit'),                   (req, res) => {
         let actions = [];
         req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(fn.loancards.lines.return({...line, user_id: req.user.user_id})));
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.loancards.lines.cancel({...line, user_id: req.user.user_id})));
-        Promise.all(actions)
+        Promise.allSettled(actions)
         .then(results => {
-            res.send({success: true, message: 'Lines actioned'});
+            let loancards = [],
+                loancard_checks = [];
+            results.filter(e => e.status === 'fulfilled').forEach(e => {if (!loancards.includes(e.value)) loancards.push(e.value)});
+            loancards.forEach(loancard => {
+                loancard_checks.push(new Promise((resolve, reject) => {
+                    return m.loancards.findOne({where: {loancard_id: loancard}})
+                    .then(loancard => {
+                        if      (!loancard)             reject(new Error('Loancard not found'))
+                        else if (loancard.status === 0) reject(new Error('Loancard has already been cancelled'))
+                        else if (loancard.status === 3) reject(new Error('Loancard has already been closed'))
+                        else if (loancard.status > 3 || loancard.status < 0) reject(new Error('Unknown loancard status'))
+                        else {
+                            let check_action = null;
+                            if (loancard.status === 1) check_action = fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: req.user.user_id, noforce: true})
+                            else                       check_action = fn.loancards.close( {loancard_id: loancard.loancard_id, user_id: req.user.user_id});
+                            return check_action
+                            .then(result => resolve(result))
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                }));
+            });
+            return Promise.allSettled(loancard_checks)
+            .then(results => res.send({success: true, message: 'Lines actioned'}))
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/loancards/:id',       fn.li(), fn.permissions.check('loancard_delete'),                 (req, res) => {
+    app.delete('/loancards/:id',       fn.loggedIn(), fn.permissions.check('loancard_delete'),                      (req, res) => {
         fn.loancards.cancel({
             loancard_id: req.params.id,
             user_id: req.user.user_id
@@ -173,7 +211,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/loancard_lines/:id',  fn.li(), fn.permissions.check('loancard_line_delete'),            (req, res) => {
+    app.delete('/loancard_lines/:id',  fn.loggedIn(), fn.permissions.check('loancard_line_delete'),                 (req, res) => {
         fn.loancards.lines.cancel({
             loancard_line_id: req.params.id,
             user_id: req.user.user_id

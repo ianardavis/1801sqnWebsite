@@ -1,6 +1,6 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/serials/:id',         fn.li(), fn.permissions.get('access_serials'),   (req, res) => res.render('stores/serials/show'));
-    app.get('/get/serials',         fn.li(), fn.permissions.check('access_serials'), (req, res) => {
+    app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_serials'),   (req, res) => res.render('stores/serials/show'));
+    app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_serials'), (req, res) => {
         m.serials.findAll({
             where:   req.query,
             include: [
@@ -12,7 +12,7 @@ module.exports = (app, m, inc, fn) => {
         .then(serials => res.send({success: true, result: serials}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/current_serials', fn.li(), fn.permissions.check('access_serials'), (req, res) => {
+    app.get('/get/current_serials', fn.loggedIn(), fn.permissions.check('access_serials'), (req, res) => {
         req.query.location_id = {[fn.op.not]: null};
         req.query.issue_id    = null;
         m.serials.findAll({
@@ -26,7 +26,7 @@ module.exports = (app, m, inc, fn) => {
         .then(serials => res.send({success: true, result: serials}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/serial',          fn.li(), fn.permissions.check('access_serials'), (req, res) => {
+    app.get('/get/serial',          fn.loggedIn(), fn.permissions.check('access_serials'), (req, res) => {
         m.serials.findOne({
             where:   req.query,
             include: [
@@ -39,7 +39,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/serials',            fn.li(), fn.permissions.check('serial_add'),     (req, res) => {
+    app.post('/serials',            fn.loggedIn(), fn.permissions.check('serial_add'),     (req, res) => {
         if (!req.body.location) fn.send_error(res, 'No location entered')
         else {
             m.sizes.findOne({
@@ -70,7 +70,7 @@ module.exports = (app, m, inc, fn) => {
         };
     });
     
-    app.put('/serials/:id',         fn.li(), fn.permissions.check('serial_edit'),    (req, res) => {
+    app.put('/serials/:id',         fn.loggedIn(), fn.permissions.check('serial_edit'),    (req, res) => {
         m.serials.findOne({where: {serial_id: req.params.id}})
         .then(serial => {
             if (serial) fn.send_error(res, 'Serial not found')
@@ -90,7 +90,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/serials/:id',      fn.li(), fn.permissions.check('serial_delete'),  (req, res) => {
+    app.delete('/serials/:id',      fn.loggedIn(), fn.permissions.check('serial_delete'),  (req, res) => {
         m.serials.findOne({where: {serial_id: req.params.id}})
         .then(serial => {
             if (!serial) fn.send_error(res, 'Serial not found')

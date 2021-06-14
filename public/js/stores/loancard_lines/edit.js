@@ -150,6 +150,9 @@ window.addEventListener( "load", function () {
         'actions',
         'PUT',
         '/loancard_lines',
-        {onComplete: getLines}
+        {onComplete: [
+            getLines,
+            function () {if (typeof getLoancard === 'function') getLoancard()}
+        ]}
     );
 });

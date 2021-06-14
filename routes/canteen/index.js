@@ -8,5 +8,5 @@ module.exports = (fs, app, m, fn) => {
     })
     .forEach(file => require(`./${file}`)(app, m, inc, fn));
 
-    app.get('/canteen', fn.li(), fn.permissions.get('access_canteen'), (req, res) => res.render('canteen/index'));
+    app.get('/canteen', fn.loggedIn(), fn.permissions.get('access_canteen'), (req, res) => res.render('canteen/index'));
 };

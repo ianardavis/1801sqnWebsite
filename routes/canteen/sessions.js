@@ -1,9 +1,9 @@
 module.exports = (app, m, inc, fn) => {
     let settings = require(`${process.env.ROOT}/fn/settings`);
-    app.get('/sessions',     fn.li(), fn.permissions.get('access_canteen'),    (req, res) => res.render('canteen/sessions/index'));
-    app.get('/sessions/:id', fn.li(), fn.permissions.get('access_canteen'),    (req, res) => res.render('canteen/sessions/show'));
+    app.get('/sessions',     fn.loggedIn(), fn.permissions.get('access_canteen'),    (req, res) => res.render('canteen/sessions/index'));
+    app.get('/sessions/:id', fn.loggedIn(), fn.permissions.get('access_canteen'),    (req, res) => res.render('canteen/sessions/show'));
 
-    app.get('/get/sessions', fn.li(), fn.permissions.check('access_sessions'), (req, res) => {
+    app.get('/get/sessions', fn.loggedIn(), fn.permissions.check('access_sessions'), (req, res) => {
         m.sessions.findAll({
             where: req.query,
             include: [
@@ -14,7 +14,7 @@ module.exports = (app, m, inc, fn) => {
         .then(sessions => res.send({success: true, result: sessions}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/session',  fn.li(), fn.permissions.check('access_sessions'), (req, res) => {
+    app.get('/get/session',  fn.loggedIn(), fn.permissions.check('access_sessions'), (req, res) => {
         m.sessions.findOne({
             where: req.query,
             include: [
@@ -30,7 +30,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/sessions',    fn.li(), fn.permissions.check('session_add'),     (req, res) => {
+    app.post('/sessions',    fn.loggedIn(), fn.permissions.check('session_add'),     (req, res) => {
         let balance = countCash(req.body.balance);
         m.holdings.findOrCreate({
             where: {_description: 'Canteen'},
@@ -84,7 +84,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.put('/sessions/:id', fn.li(), fn.permissions.check('session_edit'),    (req, res) => {
+    app.put('/sessions/:id', fn.loggedIn(), fn.permissions.check('session_edit'),    (req, res) => {
         m.sessions.findOne({
             where: {session_id: req.params.id},
             attributes: ['session_id', '_status']

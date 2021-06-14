@@ -1,6 +1,6 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/stocks/:id',         fn.li(), fn.permissions.get('access_stocks'),   (req, res) => res.render('stores/stocks/show'));
-    app.get('/get/stocks',         fn.li(), fn.permissions.check('access_stocks'), (req, res) => {
+    app.get('/stocks/:id',         fn.loggedIn(), fn.permissions.get('access_stocks'),   (req, res) => res.render('stores/stocks/show'));
+    app.get('/get/stocks',         fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
         m.stocks.findAll({
             where:   req.query,
             include: [
@@ -11,12 +11,12 @@ module.exports = (app, m, inc, fn) => {
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/sum/stocks',         fn.li(), fn.permissions.check('access_stocks'), (req, res) => {
+    app.get('/sum/stocks',         fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
         m.stocks.sum('qty', {where: req.query})
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/negative_stock', fn.li(), fn.permissions.check('access_stocks'), (req, res) => {
+    app.get('/get/negative_stock', fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
         m.stocks.findAll({
             where: {qty: {[fn.op.lt]: 0}},
             include: [
@@ -27,7 +27,7 @@ module.exports = (app, m, inc, fn) => {
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/stock',          fn.li(), fn.permissions.check('access_stocks'), (req, res) => {
+    app.get('/get/stock',          fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
         m.stocks.findOne({
             where:   req.query,
             include: [
@@ -39,7 +39,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/stocks',            fn.li(), fn.permissions.check('stock_add'),     (req, res) => {
+    app.post('/stocks',            fn.loggedIn(), fn.permissions.check('stock_add'),     (req, res) => {
         m.sizes.findOne({
             where: {size_id: req.body.stock.size_id},
             attributes: ['size_id']
@@ -63,7 +63,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/stocks/:id',         fn.li(), fn.permissions.check('stock_edit'),    (req, res) => {
+    app.put('/stocks/:id',         fn.loggedIn(), fn.permissions.check('stock_edit'),    (req, res) => {
         m.stocks.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             if (!stock) fn.send_error(res, 'Stock record not found')
@@ -81,7 +81,7 @@ module.exports = (app, m, inc, fn) => {
         
     });
     
-    app.delete('/stocks/:id',      fn.li(), fn.permissions.check('stock_delete'),  (req, res) => {
+    app.delete('/stocks/:id',      fn.loggedIn(), fn.permissions.check('stock_delete'),  (req, res) => {
         m.stocks.findOne({where: {stock_id: req.params.id}})
         .then(stock => {
             if      (!stock)        fn.send_error(res, 'Stock record not found')

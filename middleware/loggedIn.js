@@ -1,5 +1,5 @@
 module.exports = fn => {
-    fn.li = function () {
+    fn.loggedIn = function () {
         return (req, res, next) => {
             if (req.isAuthenticated()) {
                 if (

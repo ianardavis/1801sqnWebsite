@@ -1,8 +1,8 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/receipts',        fn.li(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/index'));
-    app.get('/receipts/:id',    fn.li(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/show'));
+    app.get('/receipts',        fn.loggedIn(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/index'));
+    app.get('/receipts/:id',    fn.loggedIn(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/show'));
     
-    app.get('/get/receipts',    fn.li(), fn.permissions.check('access_receipts'), (req, res) => {
+    app.get('/get/receipts',    fn.loggedIn(), fn.permissions.check('access_receipts'), (req, res) => {
         m.receipts.findAll({
             where: req.query,
             include: [
@@ -13,7 +13,7 @@ module.exports = (app, m, inc, fn) => {
         .then(receipts => res.send({success: true,  result: receipts}))
         .catch(err =>     fn.send_error(res, err))
     });
-    app.get('/get/receipt',     fn.li(), fn.permissions.check('access_receipts'), (req, res) => {
+    app.get('/get/receipt',     fn.loggedIn(), fn.permissions.check('access_receipts'), (req, res) => {
         m.receipts.findOne({
             where: req.query,
             include: [
@@ -28,7 +28,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/receipts',       fn.li(), fn.permissions.check('receipt_add'),     (req, res) => {
+    app.post('/receipts',       fn.loggedIn(), fn.permissions.check('receipt_add'),     (req, res) => {
         if (!req.body.receipts) fn.send_error(res, 'No items submitted')
         else {
             let actions = [];
@@ -108,7 +108,7 @@ module.exports = (app, m, inc, fn) => {
         };
     });
     
-    app.delete('/receipts/:id', fn.li(), fn.permissions.check('receipt_delete'),  (req, res) => {
+    app.delete('/receipts/:id', fn.loggedIn(), fn.permissions.check('receipt_delete'),  (req, res) => {
         m.receipts.findOne({
             where: {receipt_id: req.params.id},
             attributes: ['receipt_id']

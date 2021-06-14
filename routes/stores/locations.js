@@ -1,17 +1,17 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/locations/:id', fn.li(), fn.permissions.get('access_locations'),   (req, res) => res.render('stores/locations/show'));
-    app.get('/get/location',  fn.li(), fn.permissions.check('access_locations'), (req, res) => {
+    app.get('/locations/:id', fn.loggedIn(), fn.permissions.get('access_locations'),   (req, res) => res.render('stores/locations/show'));
+    app.get('/get/location',  fn.loggedIn(), fn.permissions.check('access_locations'), (req, res) => {
         m.locations.findOne({where: req.query})
         .then(location => res.send({success: true, result: location}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/locations', fn.li(), fn.permissions.check('access_locations'), (req, res) => {
+    app.get('/get/locations', fn.loggedIn(), fn.permissions.check('access_locations'), (req, res) => {
         m.locations.findAll({where: req.query})
         .then(locations => res.send({success: true, result: locations}))
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/locations/:id', fn.li(), fn.permissions.check('location_edit'),    (req, res) => {
+    app.put('/locations/:id', fn.loggedIn(), fn.permissions.check('location_edit'),    (req, res) => {
         m.locations.findOne({where: {location_id: req.params.id}})
         .then(location => {
             if (!location) fn.send_error(res, 'Location not found')

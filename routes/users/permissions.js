@@ -201,12 +201,12 @@ module.exports = (app, m, inc, fn) => {
             ]}
         ]}
     ];
-    app.get('/get/permissions', fn.li(), fn.permissions.check('access_permissions'), (req, res) => {
+    app.get('/get/permissions', fn.loggedIn(), fn.permissions.check('access_permissions'), (req, res) => {
         m.permissions.findAll({where: req.query})
         .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree}}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/permissions/:id', fn.li(), fn.permissions.check('permission_edit'),    (req, res) => {
+    app.put('/permissions/:id', fn.loggedIn(), fn.permissions.check('permission_edit'),    (req, res) => {
         m.users.findOne({
             where:      {user_id: req.params.id},
             attributes: ['user_id']

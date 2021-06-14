@@ -1,5 +1,5 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/get/notes',    fn.li(), fn.permissions.check('access_notes'), (req, res) => {
+    app.get('/get/notes',    fn.loggedIn(), fn.permissions.check('access_notes'), (req, res) => {
         m.notes.findAll({
             where:   req.query,
             include: [inc.users()]
@@ -7,7 +7,7 @@ module.exports = (app, m, inc, fn) => {
         .then(notes => res.send({success: true, result: notes}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/note',     fn.li(), fn.permissions.check('access_notes'), (req, res) => {
+    app.get('/get/note',     fn.loggedIn(), fn.permissions.check('access_notes'), (req, res) => {
         m.notes.findOne({
             where:   req.query,
             include: [inc.users()]
@@ -16,14 +16,14 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/notes',       fn.li(), fn.permissions.check('note_add'),     (req, res) => {
+    app.post('/notes',       fn.loggedIn(), fn.permissions.check('note_add'),     (req, res) => {
         req.body.note.user_id = req.user.user_id;
         m.notes.create(req.body.note)
         .then(note => res.send({success: true, message: 'Note added'}))
         .catch(err => fn.send_error(res, err));
     });
     
-    app.put('/notes',        fn.li(), fn.permissions.check('note_edit'),    (req, res) => {
+    app.put('/notes',        fn.loggedIn(), fn.permissions.check('note_edit'),    (req, res) => {
         m.notes.findOne({
             where:      {note_id: req.body.note_id},
             attributes: ['note_id', 'system']
@@ -40,7 +40,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/notes/:id', fn.li(), fn.permissions.check('note_delete'),  (req, res) => {
+    app.delete('/notes/:id', fn.loggedIn(), fn.permissions.check('note_delete'),  (req, res) => {
         m.notes.findOne({
             where:      {note_id: req.params.id},
             attributes: ['note_id', 'system']

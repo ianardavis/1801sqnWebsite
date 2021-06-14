@@ -1,5 +1,5 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/get/contacts',    fn.li(), fn.permissions.check('access_supplier_contacts', {send: true}), (req, res) => {
+    app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_supplier_contacts', {send: true}), (req, res) => {
         m.supplier_contacts.findAll({
             where: req.query,
             include: [inc.contact()]
@@ -7,7 +7,7 @@ module.exports = (app, m, inc, fn) => {
         .then(contacts => res.send({success: true, result: contacts}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/contact',     fn.li(), fn.permissions.check('access_supplier_contacts', {send: true}), (req, res) => {
+    app.get('/get/contact',     fn.loggedIn(), fn.permissions.check('access_supplier_contacts', {send: true}), (req, res) => {
         m.supplier_contacts.findOne({
             where: req.query,
             include: [inc.contact()]
@@ -15,7 +15,7 @@ module.exports = (app, m, inc, fn) => {
         .then(contact => res.send({success: true, result: contact}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/contacts',       fn.li(), fn.permissions.check('supplier_contact_add',     {send: true}), (req, res) => {
+    app.post('/contacts',       fn.loggedIn(), fn.permissions.check('supplier_contact_add',     {send: true}), (req, res) => {
         m.suppliers.findOne({where: {supplier_id: req.body.supplier_id}})
         .then(supplier => {
             if (!supplier) fn.send_error(res, 'SUpplier not found')
@@ -37,7 +37,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/contacts',        fn.li(), fn.permissions.check('supplier_contact_add',     {send: true}), (req, res) => {
+    app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_contact_add',     {send: true}), (req, res) => {
         m.supplier_contacts.findOne({
             where: {supplier_contact_id: req.body.supplier_contact_id},
             include: [inc.contact()]
@@ -56,7 +56,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/contacts/:id', fn.li(), fn.permissions.check('supplier_contact_delete',   {send: true}), (req, res) => {
+    app.delete('/contacts/:id', fn.loggedIn(), fn.permissions.check('supplier_contact_delete',   {send: true}), (req, res) => {
         m.supplier_contacts.findOne({
             where: {supplier_contact_id: req.params.id},
             include: [inc.contact()]

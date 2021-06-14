@@ -208,14 +208,18 @@ module.exports = function (m, fn) {
                 else if (loancard.status === 2) reject(new Error('This loancard has already been completed'))
                 else if (loancard.status === 3) reject(new Error('This loancard has already been closed'))
                 else if (loancard.status === 1) {
+                    let catch_opts = [2, 3];
+                    if (options.noForce) catch_opts.push(1);
+                    console.log(catch_opts);
                     return m.loancard_lines.count({
                         where: {
                             loancard_id: loancard.loancard_id,
-                            status: {[fn.op.or]: [2, 3]}
+                            status: {[fn.op.or]: catch_opts}
                         }
                     })
                     .then(line_count => {
-                        if (line_count && line_count.length > 0) reject(new Error('Can not cancel a loancard with complete or returned lines'))
+                        console.log(line_count);
+                        if (line_count && line_count > 0) reject(new Error(`Can not cancel a loancard with ${(options.noForce === true ? 'draft, ' : '')}complete or returned lines`))
                         else {
                             let actions = [];
                             actions.push(loancard.update({status: 0}));
@@ -339,8 +343,10 @@ module.exports = function (m, fn) {
             return fn.loancards.get(options.loancard_id)
             .then(loancard => {
                 return m.loancard_lines.count({
-                    loancard: loancard.loancard_id,
-                    status:   {[fn.op.or]: [1, 2]}
+                    where: {
+                        loancard_id: loancard.loancard_id,
+                        status:   {[fn.op.or]: [1, 2]}
+                    }
                 })
                 .then(line_count => {
                     if (line_count > 0) resolve(false)
@@ -632,46 +638,26 @@ module.exports = function (m, fn) {
                                                                                 links: [{table: 'loancard_lines', id: line.loancard_line_id}]
                                                                             })
                                                                             .then(action => resolve(true))
-                                                                            .catch(err => {
-                                                                                console.log(err);
-                                                                                resolve(false);
-                                                                            });
+                                                                            .catch(err => reject(err));
                                                                         };
                                                                     })
-                                                                    .catch(err => {
-                                                                        console.log(err);
-                                                                        resolve(false);
-                                                                    });
+                                                                    .catch(err => reject(err));
                                                                 };
                                                             })
-                                                            .catch(err => {
-                                                                console.log(err);
-                                                                resolve(false);
-                                                            });
+                                                            .catch(err => reject(err));
                                                         };
                                                     })
-                                                    .catch(err => {
-                                                        console.log(err);
-                                                        resolve(false);
-                                                    })
+                                                    .catch(err => reject(err))
                                                 };
                                             })
-                                            .catch(err => {
-                                                console.log(err);
-                                                resolve(false);
-                                            });
+                                            .catch(err => reject(err));
                                         };
                                     })
-                                    .catch(err => {
-                                        console.log(err);
-                                        resolve(false);
-                                    });
+                                    .catch(err => reject(err));
                                 });
                             };
                             return cancel_action
-                            .then(issues => {
-
-                            })
+                            .then(issues => resolve(line.loancard_id))
                             .catch(err => reject(err));
                         };
                     })
@@ -886,7 +872,7 @@ module.exports = function (m, fn) {
                                 update_actions.push(line.update({status: 3}));
                                 return Promise.allSettled(update_actions)
                                 .then(results => {
-                                    if (results.filter(e => e.status !== 'rejected').length > 0) console.log(results);
+                                    if (results.filter(e => e.status === 'rejected').length > 0) console.log(results);
                                     return fn.actions.create({
                                         action:  'Loancard line returned',
                                         user_id: options.user_id,
@@ -895,10 +881,10 @@ module.exports = function (m, fn) {
                                             {table: 'locations',      id: location.location_id}
                                         ].concat(issue_links)
                                     })
-                                    .then(result => resolve(true))
-                                    .catch(err => resolve(false));
+                                    .then(result => resolve(line.loancard_id))
+                                    .catch(err => resolve(line.loancard_id));
                                 })
-                                .catch(err => resolve(false));
+                                .catch(err => resolve(line.loancard_id));
                             })
                             .catch(err => reject(err));
                         })

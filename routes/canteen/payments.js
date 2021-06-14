@@ -1,5 +1,5 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/get/payments', fn.li(), fn.permissions.check('access_payments'), (req, res) => {
+    app.get('/get/payments', fn.loggedIn(), fn.permissions.check('access_payments'), (req, res) => {
         m.payments.findAll({
             where: req.query,
             include: [

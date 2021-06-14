@@ -1,5 +1,5 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/get/adjustment',  fn.li(), fn.permissions.check('access_adjustments', {send: true}), (req, res) => {
+    app.get('/get/adjustment',  fn.loggedIn(), fn.permissions.check('access_adjustments', {send: true}), (req, res) => {
         m.adjustments.findOne({
             where: req.query,
             include: [
@@ -11,7 +11,7 @@ module.exports = (app, m, inc, fn) => {
         .then(adjustment => res.send({success: true, result: adjustment}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/adjustments', fn.li(), fn.permissions.check('access_adjustments', {send: true}), (req, res) => {
+    app.get('/get/adjustments', fn.loggedIn(), fn.permissions.check('access_adjustments', {send: true}), (req, res) => {
         m.adjustments.findAll({
             where: req.query,
             include: [
@@ -23,7 +23,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/adjustments',    fn.li(), fn.permissions.check('adjustment_add',     {send: true}), (req, res) => {
+    app.post('/adjustments',    fn.loggedIn(), fn.permissions.check('adjustment_add',     {send: true}), (req, res) => {
         if (!req.body.adjustments) fn.send_error(res, 'No adjustments')
         else {
             let actions = [];

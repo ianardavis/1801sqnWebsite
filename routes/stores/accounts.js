@@ -1,5 +1,5 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/get/accounts',    fn.li(), fn.permissions.check('access_accounts', {send: true}), (req, res) => {
+    app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_accounts', {send: true}), (req, res) => {
         return m.accounts.findAll({
             where:   req.query,
             include: [inc.user()]
@@ -7,7 +7,7 @@ module.exports = (app, m, inc, fn) => {
         .then(accounts => res.send({success: true, result: accounts}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/account',     fn.li(), fn.permissions.check('access_accounts', {send: true}), (req, res) => {
+    app.get('/get/account',     fn.loggedIn(), fn.permissions.check('access_accounts', {send: true}), (req, res) => {
         return m.accounts.findOne({
             where:   req.query,
             include: [
@@ -21,7 +21,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/accounts/:id',    fn.li(), fn.permissions.check('account_edit',    {send: true}), (req, res) => {
+    app.put('/accounts/:id',    fn.loggedIn(), fn.permissions.check('account_edit',    {send: true}), (req, res) => {
         m.accounts.update(
             req.body.account,
             {where: {account_id: req.params.id}}
@@ -30,7 +30,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.post('/accounts',       fn.li(), fn.permissions.check('account_add',     {send: true}), (req, res) => {
+    app.post('/accounts',       fn.loggedIn(), fn.permissions.check('account_add',     {send: true}), (req, res) => {
         m.accounts.create({
             ...req.body.account,
             ...{user_id: req.user.user_id}
@@ -39,7 +39,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/accounts/:id', fn.li(), fn.permissions.check('account_delete',  {send: true}), (req, res) => {
+    app.delete('/accounts/:id', fn.loggedIn(), fn.permissions.check('account_delete',  {send: true}), (req, res) => {
         m.accounts.findOne({
             where: {account_id: req.params.id},
             attributes: ['account_id']

@@ -1,8 +1,8 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/writeoffs',             fn.li(), fn.permissions.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/index'));
-    app.get('/writeoffs/:id',         fn.li(), fn.permissions.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/show'));
+    app.get('/writeoffs',             fn.loggedIn(), fn.permissions.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/index'));
+    app.get('/writeoffs/:id',         fn.loggedIn(), fn.permissions.get('access_writeoffs'),        (req, res) => res.render('canteen/writeoffs/show'));
     
-    app.get('/get/writeoffs',         fn.li(), fn.permissions.check('access_writeoffs'),      (req, res) => {
+    app.get('/get/writeoffs',         fn.loggedIn(), fn.permissions.check('access_writeoffs'),      (req, res) => {
         m.writeoffs.findAll({
             include: [inc.user()],
             where: req.query
@@ -10,7 +10,7 @@ module.exports = (app, m, inc, fn) => {
         .then(writeoffs => res.send({success: true, result: writeoffs}))
         .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/writeoff',          fn.li(), fn.permissions.check('access_writeoffs'),      (req, res) => {
+    app.get('/get/writeoff',          fn.loggedIn(), fn.permissions.check('access_writeoffs'),      (req, res) => {
         m.writeoffs.findOne({
             where: req.query,
             include: [inc.users()]
@@ -21,7 +21,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/writeoff_lines',    fn.li(), fn.permissions.check('access_writeoff_lines'), (req, res) => {
+    app.get('/get/writeoff_lines',    fn.loggedIn(), fn.permissions.check('access_writeoff_lines'), (req, res) => {
         m.writeoff_lines.findAll({
             include: [
                 inc.items(),
@@ -33,7 +33,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/writeoffs',            fn.li(), fn.permissions.check('writeoff_add'),          (req, res) => {
+    app.post('/writeoffs',            fn.loggedIn(), fn.permissions.check('writeoff_add'),          (req, res) => {
         m.writeoffs.findOrCreate({
             where: {
                 _status: 1,
@@ -47,7 +47,7 @@ module.exports = (app, m, inc, fn) => {
         })
     
     });
-    app.post('/writeoff_lines/:id',   fn.li(), fn.permissions.check('writeoff_line_add'),     (req, res) => {
+    app.post('/writeoff_lines/:id',   fn.loggedIn(), fn.permissions.check('writeoff_line_add'),     (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id']
@@ -88,7 +88,7 @@ module.exports = (app, m, inc, fn) => {
     
     });
 
-    app.put('/writeoffs/:id',         fn.li(), fn.permissions.check('writeoff_edit'),         (req, res) => {
+    app.put('/writeoffs/:id',         fn.loggedIn(), fn.permissions.check('writeoff_edit'),         (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status'],
@@ -148,12 +148,12 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => res.send(err, res));
     });
     
-    app.delete('/writeoff_lines/:id', fn.li(), fn.permissions.check('writeoff_line_delete'),  (req, res) => {
+    app.delete('/writeoff_lines/:id', fn.loggedIn(), fn.permissions.check('writeoff_line_delete'),  (req, res) => {
         m.writeoff_lines.update({_status: 0}, {where: {line_id: req.params.id}})
         .then(result => res.send({success: true, message: 'Line deleted'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/writeoffs/:id',      fn.li(), fn.permissions.check('writeoff_delete'),       (req, res) => {
+    app.delete('/writeoffs/:id',      fn.loggedIn(), fn.permissions.check('writeoff_delete'),       (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
             attributes: ['writeoff_id', '_status']
