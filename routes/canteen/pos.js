@@ -1,7 +1,7 @@
 module.exports = (app, m, inc, fn) => {
     app.get('/pos',             fn.loggedIn(), fn.permissions.get('access_pos'),   (req, res) => {
         m.sessions.findAll({
-            where: {_status: 1},
+            where: {status: 1},
             attributes: ['session_id']
         })
         .then(sessions => {
@@ -21,7 +21,7 @@ module.exports = (app, m, inc, fn) => {
     });
     app.get('/get/pos_layouts', fn.loggedIn(), fn.permissions.check('access_pos'), (req, res) => {
         m.pos_layouts.findAll({
-            include: [inc.items()]
+            include: [inc.canteen_items()]
         })
         .then(pos_layouts => res.send({success: true, result: pos_layouts}))
         .catch(err => fn.send_error(res, err));

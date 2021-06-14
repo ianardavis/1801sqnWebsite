@@ -1,8 +1,10 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen/sessions', text: 'Sessions'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Canteen', href: '/canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Sessions'}) %>
 <% if (permissions.session_add) { %>
-    <%- include(`${partials}/breadcrumb`, {html: '<i class="fas fa-plus"></i>', id: 'btn_add_session'}) %>
+	<li class="nav-item">
+		<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_session_add"><i class="fas fa-plus"></i></a>
+	</li>
 <% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'sessions'}) %>
@@ -18,14 +20,11 @@
         <tbody id="tbl_sessions"></tbody>
     </table>
     <% if (permissions.session_add) { %>
-        <div id='mdl_add_session' class="modal" tabindex="-1" role="dialog">
+        <div id='mdl_session_add' class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_add_session'>
                     <div class="modal-header">
                         <h5 class="modal-title">Open Session</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
                     </div>
                     <div class="modal-body">
                         <% [{text: '1p',  name: 'c0001', step: '0.01'},{text: '2p',  name: 'c0002', step: '0.02'},{text: '5p',  name: 'c0005', step: '0.05'},{text: '10p', name: 'c0010', step: '0.1'},{text: '20p', name: 'c0020', step: '0.2'},{text: '50p', name: 'c0050', step: '0.5'},{text: '£1',  name: 'c0100', step: '1'},{text: '£2',  name: 'c0200', step: '2'},{text: '£5',  name: 'c0500', step: '5'},{text: '£10', name: 'c1000', step: '10'},{text: '£20', name: 'c2000', step: '20'},{text: '£50', name: 'c5000', step: '50'}].forEach(e => { %>
@@ -87,18 +86,9 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/addFormListener.js'></script>
-<script src='/js/canteen/sessions/index/getSessions.js'></script>
+<script src='/js/canteen/sessions/index/view.js'></script>
 <script async>getSessions()</script>
 <% if (permissions.session_add) { %>
-    <script>
-        let btn_add_session = document.querySelector('#btn_add_session');
-        if (btn_add_session) btn_add_session.addEventListener('click', function (){$('#mdl_add_session').modal('show')});
-        addFormListener(
-            'add_session',
-            'POST',
-            `/canteen/sessions`,
-            {onComplete: [getSessions, function () {$('#mdl_add_session').modal('hide')}]}
-        );
-    </script>
+    <script src='/js/canteen/sessions/index/add.js'></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

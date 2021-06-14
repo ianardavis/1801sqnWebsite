@@ -1,9 +1,8 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen',	      text: 'Canteen'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen/sessions', text: 'Sessions'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Canteen', href: '/canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Sessions'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/spinner`, {id: 'sessions'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
@@ -12,28 +11,25 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <button id='btn_close' class="dropdown-item" disabled>
-                    Close
-                </button>
-                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'session_close', modal: 'session_close', text: 'Close'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'note_add',      modal: 'note_add',      text: 'Add Note'}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',   title: 'Sales', count_id: 'sale', permission: 'access_sales'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'items',   title: 'Items', count_id: 'item', permission: 'access_sales'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes', count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'session'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',   title: 'Sales',   spinner: 'sales', count_id: 'sale', permission: 'access_sales'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'items',   title: 'Items',   spinner: 'items', count_id: 'item', permission: 'access_items'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes', count_id: 'note', permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'session_id', title: 'Session ID'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_status',    title: 'Status'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'createdAt',  title: 'Opened'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'user_open',  title: 'Opened By'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_end',       title: 'Closed'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'user_close', title: 'Closed By'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'takings',    title: 'Takings'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'paid_in',    title: 'Paid In'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'paid_out',   title: 'Paid Out'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_status',       title: 'Status'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_createdAt',    title: 'Opened'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_user_open',    title: 'Opened By'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_datetime_end', title: 'Closed'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_user_close',   title: 'Closed By'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_takings',      title: 'Takings'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_paid_in',      title: 'Paid In'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_paid_out',     title: 'Paid Out'}) %>
         </div>
         <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
             <table class="table table-sm table-hover">
@@ -60,28 +56,50 @@
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
-    <% if (permissions.session_edit) { %>
-        <div id='mdl_close_session' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_close'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Open Session</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <% [{text: '1p',  name: 'c0001', step: '0.01'},{text: '2p',  name: 'c0002', step: '0.02'},{text: '5p',  name: 'c0005', step: '0.05'},{text: '10p', name: 'c0010', step: '0.1'},{text: '20p', name: 'c0020', step: '0.2'},{text: '50p', name: 'c0050', step: '0.5'},{text: '£1',  name: 'c0100', step: '1'},{text: '£2',  name: 'c0200', step: '2'},{text: '£5',  name: 'c0500', step: '5'},{text: '£10', name: 'c1000', step: '10'},{text: '£20', name: 'c2000', step: '20'},{text: '£50', name: 'c5000', step: '50'}].forEach(e => { %>
+    <div id="div_modals">
+        <% if (permissions.session_edit) { %>
+            <div id='mdl_session_close' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_close'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Open Session</h5>
+                        </div>
+                        <div class="modal-body">
+                            <% [{text: '1p',  name: 'c0001', step: '0.01'},{text: '2p',  name: 'c0002', step: '0.02'},{text: '5p',  name: 'c0005', step: '0.05'},{text: '10p', name: 'c0010', step: '0.1'},{text: '20p', name: 'c0020', step: '0.2'},{text: '50p', name: 'c0050', step: '0.5'},{text: '£1',  name: 'c0100', step: '1'},{text: '£2',  name: 'c0200', step: '2'},{text: '£5',  name: 'c0500', step: '5'},{text: '£10', name: 'c1000', step: '10'},{text: '£20', name: 'c2000', step: '20'},{text: '£50', name: 'c5000', step: '50'}].forEach(e => { %>
+                                <div class="input-group mb-1">
+                                    <div class="input-group-prepend w-30">
+                                        <span class="input-group-text w-100"><%= e.text %></span>
+                                    </div>
+                                    <input
+                                        class="form-control"
+                                        type="number"
+                                        inputMode='numeric'
+                                        name='balance[<%= e.name %>][b]'
+                                        step='<%= e.step %>'
+                                        min='0'
+                                        placeholder="Bagged"
+                                    >
+                                    <input
+                                        class="form-control"
+                                        type="number"
+                                        inputMode='numeric'
+                                        name='balance[<%= e.name %>][l]'
+                                        step='<%= e.step %>'
+                                        min='0'
+                                        placeholder="Loose"
+                                    >
+                                </div>
+                            <% }) %>
                             <div class="input-group mb-1">
                                 <div class="input-group-prepend w-30">
-                                    <span class="input-group-text w-100"><%= e.text %></span>
+                                    <span class="input-group-text w-100">Cheques</span>
                                 </div>
                                 <input
                                     class="form-control"
                                     type="number"
                                     inputMode='numeric'
-                                    name='balance[<%= e.name %>][b]'
-                                    step='<%= e.step %>'
+                                    name='balance[cheques][b]'
+                                    step='0.01'
                                     min='0'
                                     placeholder="Bagged"
                                 >
@@ -89,74 +107,33 @@
                                     class="form-control"
                                     type="number"
                                     inputMode='numeric'
-                                    name='balance[<%= e.name %>][l]'
-                                    step='<%= e.step %>'
+                                    name='balance[cheques][l]'
+                                    step='0.01'
                                     min='0'
                                     placeholder="Loose"
                                 >
                             </div>
-                        <% }) %>
-                        <div class="input-group mb-1">
-                            <div class="input-group-prepend w-30">
-                                <span class="input-group-text w-100">Cheques</span>
-                            </div>
-                            <input
-                                class="form-control"
-                                type="number"
-                                inputMode='numeric'
-                                name='balance[cheques][b]'
-                                step='0.01'
-                                min='0'
-                                placeholder="Bagged"
-                            >
-                            <input
-                                class="form-control"
-                                type="number"
-                                inputMode='numeric'
-                                name='balance[cheques][l]'
-                                step='0.01'
-                                min='0'
-                                placeholder="Loose"
-                            >
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Close'>
-                    </div>
-                </form>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Close'>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-    <% } %>
-    <div id="div_modals"></div>
+        <% } %>
+    </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/tabs.js'></script>
 <script src='/js/addFormListener.js'></script>
-<script src="/js/canteen/sessions/show/session.js"></script>
+<script src="/js/canteen/sessions/show/view.js"></script>
 <script>showTab('<%= tab %>');</script>
 <script async>getSession()</script>
 <% if (permissions.access_sales) { %>
-    <script src="/js/canteen/sessions/show/sales.js"></script>
+    <script src="/js/canteen/sessions/show/sales/view.js"></script>
     <script async>getSales()</script>
 <% } %>
 <% if (permissions.session_edit) { %>
-    <script>
-        window.addEventListener('load', function () {
-            addFormListener(
-                'close',
-                'PUT',
-                `/canteen/sessions/${path[3]}`,
-                {
-                    onComplete: [
-                        function(){$("#mdl_close_session").modal("hide")},
-                        getSession<% if (permissions.access_sales) { %>,
-                        getSales<% } %>
-                    ]
-                }
-            )
-        });
-        let btn_close = document.querySelector('#btn_close');
-        if (btn_close) btn_close.setAttribute('href', 'javascript:$("#mdl_close_session").modal("show")');
-    </script>
+    <script src="/js/canteen/sessions/show/edit.js"></script>
 <% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>
