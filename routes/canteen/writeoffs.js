@@ -36,7 +36,7 @@ module.exports = (app, m, inc, fn) => {
     app.post('/writeoffs',            fn.loggedIn(), fn.permissions.check('writeoff_add'),          (req, res) => {
         m.writeoffs.findOrCreate({
             where: {
-                _status: 1,
+                status: 1,
                 _reason: req.body.writeoff._reason
             },
             defaults: {user_id: req.user.user_id}
@@ -91,12 +91,12 @@ module.exports = (app, m, inc, fn) => {
     app.put('/writeoffs/:id',         fn.loggedIn(), fn.permissions.check('writeoff_edit'),         (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
-            attributes: ['writeoff_id', '_status'],
+            attributes: ['writeoff_id', 'status'],
             include: [inc.writeoff_lines({as: 'lines'})]
         })
         .then(writeoff => {
             if      (!writeoff)              fn.send_error(res, 'Writeoff not found')
-            else if (writeoff._status !== 1) fn.send_error(res, 'Writeoff is not open')
+            else if (writeoff.status !== 1) fn.send_error(res, 'Writeoff is not open')
             else {
                 let actions = [];
                 actions.push(
@@ -115,7 +115,7 @@ module.exports = (app, m, inc, fn) => {
                                             {by: line._qty}
                                         )
                                         .then(result => {
-                                            line.update({_status: 2})
+                                            line.update({status: 2})
                                             .then(result => resolve(true))
                                             .catch(err => reject(err));
                                         })
@@ -130,7 +130,7 @@ module.exports = (app, m, inc, fn) => {
                         .catch(err => reject(err));
                     })
                 );
-                actions.push(writeoff.update({_status: 2}));
+                actions.push(writeoff.update({status: 2}));
                 actions.push(
                     m.notes.create({
                         _id: writeoff.writeoff_id,
@@ -149,22 +149,22 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.delete('/writeoff_lines/:id', fn.loggedIn(), fn.permissions.check('writeoff_line_delete'),  (req, res) => {
-        m.writeoff_lines.update({_status: 0}, {where: {line_id: req.params.id}})
+        m.writeoff_lines.update({status: 0}, {where: {line_id: req.params.id}})
         .then(result => res.send({success: true, message: 'Line deleted'}))
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/writeoffs/:id',      fn.loggedIn(), fn.permissions.check('writeoff_delete'),       (req, res) => {
         m.writeoffs.findOne({
             where: {writeoff_id: req.params.id},
-            attributes: ['writeoff_id', '_status']
+            attributes: ['writeoff_id', 'status']
         })
         .then(writeoff => {
             if      (!writeoff)              fn.send_error(res, 'Writeoff not found')
-            else if (writeoff._status !== 1) fn.send_error(res, 'Writeoff is not open')
+            else if (writeoff.status !== 1) fn.send_error(res, 'Writeoff is not open')
             else {
                 let actions = [];
-                actions.push(writeoff.update({_status: 0}));
-                actions.push(m.writeoff_lines.update({_status: 0}, {where: {writeoff_id: writeoff.writeoff_id}}));
+                actions.push(writeoff.update({status: 0}));
+                actions.push(m.writeoff_lines.update({status: 0}, {where: {writeoff_id: writeoff.writeoff_id}}));
                 actions.push(
                     m.notes.create({
                         _id: writeoff.writeoff_id,

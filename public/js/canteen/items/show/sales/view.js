@@ -13,7 +13,7 @@ function getSales() {
                     add_cell(row, table_date(line.createdAt));
                     add_cell(row, {text: line.qty});
                     add_cell(row, {append: new Link({
-                        href: `/canteen/sales/${line.sale_id}`,
+                        href: `/sales/${line.sale_id}`,
                         small: true
                     }).e});
                 } catch (error) {

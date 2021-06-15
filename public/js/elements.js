@@ -168,8 +168,9 @@ function Input(options = {}) {
 function Tab_Header(options = {}) { 
     this.e = document.createElement('li');
     let a  = document.createElement('a');
-    this.e.classList.add('nav_item');
-    a.classList.add('nav-link', 'btn', 'btn-lg', 'btn-info', 'm-2', 'w-100-px');
+    this.e.classList.add('nav_item', 'pos_header');
+    // a.classList.add('nav-link', 'btn', 'btn-lg', 'btn-info', 'm-2', 'w-100-px');
+    a.classList.add('nav-link');
     a.setAttribute('id', `${options.id}-tab`);
     a.setAttribute('data-bs-toggle', 'tab');
     a.setAttribute('href', `#${options.id}`);
@@ -181,7 +182,7 @@ function Tab_Header(options = {}) {
 };
 function Tab_Body(options = {}) {
     this.e = document.createElement('div');
-    this.e.classList.add('tab-pane', 'fade');
+    this.e.classList.add('tab-pane', 'fade', 'pos_page');
     this.e.setAttribute('id', `${options.id}`);
     this.e.setAttribute('role', 'tabpanel');
     this.e.setAttribute('aria-labelledby', `${options.id}-tab`);
@@ -259,9 +260,12 @@ function Card(options = {}) {
         title    = document.createElement('h3'),
         body     = document.createElement('div'),
         subtitle = document.createElement('p');
-    if (options.id) this.e.setAttribute('id', options.id);
+    if (options.id) {
+        this.e.setAttribute('id', `crd_${options.id}`);
+        a.setAttribute('id', `a_${options.id}`)
+    };
     this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
-    a.setAttribute('href', options.href);
+    if (options.href) a.setAttribute('href', options.href);
     a.classList.add('card', 'm-3', 'text-start');
     header.classList.add('card-header');
     title.classList.add('card-title');

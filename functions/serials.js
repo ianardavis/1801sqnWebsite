@@ -1,5 +1,16 @@
-module.exports = function (m, serials) {
-    serials.create = function (options = {}) {
+module.exports = function (m, fn) {
+    fn.serials = {};
+    fn.serials.get = function (serial_id) {
+        return new Promise((resolve, reject) => {
+            return m.serials.findOne({where: {serial_id: serial_id}})
+            .then(serial => {
+                if (!serial) reject(new Error('Serial not found'))
+                else resolve(serial);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.serials.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.serial && options.size_id) {
                 return m.sizes.findOne({
@@ -29,6 +40,27 @@ module.exports = function (m, serials) {
                 })
                 .catch(err => reject(err));
             } else resolve({success: false, message: 'Not all required fields have been submitted'});
+        });
+    };
+    fn.serials.return_to_stock = function (serial_id, location_id) {
+        return new Promise((resolve, reject) => {
+            return fn.serials.get(serial_id)
+            .then(serial => {
+                if      (!serial.issue_id)   reject(new Error('Serial # not issued'))
+                else if (serial.location_id) reject(new Error('Serial # already in stock'))
+                else {
+                    return serial.update({
+                        location_id: location_id,
+                        issue_id:    null
+                    })
+                    .then(result => {
+                        if (!result) reject(new Error('Serial # not updated'))
+                        else resolve([serial]);
+                    })
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
         });
     };
 };

@@ -15,7 +15,7 @@ function getWriteoffs() {
                     add_cell(row, table_date(writeoff.createdAt));
                     add_cell(row, {text: print_user(writeoff.user)});
                     add_cell(row, {text: writeoff._reason});
-                    add_cell(row, {text: statuses[writeoff._status]});
+                    add_cell(row, {text: statuses[writeoff.status]});
                     add_cell(row, {append: new Link({
                         href: `/canteen/writeoffs/${writeoff.writeoff_id}`,
                         small: true

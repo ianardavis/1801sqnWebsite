@@ -1,7 +1,7 @@
 <% if (!locals.permission || permissions[permission]) { %>
     <div class="col-12 col-md-6 col-lg-4 col-xl-3"<% if (locals.id) { %>id='crd_<%= id %>'<% } %>>
         <div class="card m-3">
-            <a href="<%= locals.href || '' %>">
+            <a href="<%= locals.href || '' %>"<% if (locals.id) { %> id='a_<%= id %>'<% } %>>
                 <div class="card-header">
                     <h3><%= title %></h3>
                 </div>

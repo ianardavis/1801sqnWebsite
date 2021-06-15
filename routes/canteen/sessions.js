@@ -18,66 +18,44 @@ module.exports = (app, m, inc, fn) => {
         m.sessions.findOne({
             where: req.query,
             include: [
-                inc.users({as: 'user_open'}),
-                inc.users({as: 'user_close'}),
+                inc.user({as: 'user_open'}),
+                inc.user({as: 'user_close'}),
             ]
         })
-        .then(session => {
-            return getSessionSales(session.session_id)
-            .then(sales => res.send({success: true, result: {...session.dataValues, ...sales}}))
-            .catch(err => fn.send_error(res, err))
-        })
+        .then(session => res.send({success: true, result: session}))
         .catch(err => fn.send_error(res, err));
     });
 
     app.post('/sessions',    fn.loggedIn(), fn.permissions.check('session_add'),     (req, res) => {
         let balance = countCash(req.body.balance);
-        m.holdings.findOrCreate({
-            where: {_description: 'Canteen'},
-            defaults: {
-                _cash:    balance.cash,
-                _cheques: balance.cheques
-            }
-        })
+        m.holdings.findOrCreate({where: {description: 'Canteen float'}})
         .then(([holding, created]) => {
-            let actions = [];
-            actions.push(
-                m.holdings.update(
-                    {_cash: Number(balance.cash) || 0, _cheques: Number(balance.cheques) || 0},
-                    {where: {holding_id: holding.holding_id}}
-                )
-            );
-            actions.push(
-                m.movements.create({
-                    _description:  'Count',
-                    _amount:       Number(balance.cash - holding._cash),
-                    _type:         'Cash',
-                    holding_id_to: holding.holding_id,
-                    _status:       2,
-                    user_id:       req.user.user_id
-                })
-            );
-            actions.push(
-                m.movements.create({
-                    _description:  'Count',
-                    _amount:       Number(balance.cheques - holding._cheques),
-                    _type:         'Cheque',
-                    holding_id_to: holding.holding_id,
-                    _status:       2,
-                    user_id:       req.user.user_id
-                })
-            );
-            return Promise.all(actions)
-            .then(results => {
-                return m.sessions.findOrCreate({
-                    where:    {_status: 1},
-                    defaults: {user_id_open: req.user.user_id}
-                })
-                .then(([session, created]) => {
-                    if (created) res.send({success: true, message: `Session opened\nSession ID: ${session.session_id}`})
-                    else         res.send({success: true, message: `Session already open\nSession ID: ${session.session_id}`})
-                })
-                .catch(err => fn.send_error(res, err));
+            holding.update({cash: balance.cash, cheques: balance.cheques})
+            .then(result => {
+                if (!result) fn.send_error(res, 'Holding not updated')
+                else {
+                    return m.sessions.findOrCreate({
+                        where:    {status: 1},
+                        defaults: {user_id_open: req.user.user_id}
+                    })
+                    .then(([session, created]) => {
+                        fn.actions.create({
+                            action: `Count on session opening. Cash: £${balance.cash}. Cheques: £${balance.cheques}`,
+                            user_id: req.user.user_id,
+                            links: [{table: 'holdings', id: holding.holding_id}]
+                        })
+                        .then(result => {
+                            if (created) res.send({success: true, message: 'Session opened'})
+                            else         res.send({success: true, message: 'Session already open'});
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            if (created) res.send({success: true, message: 'Session opened'})
+                            else         res.send({success: true, message: 'Session already open'});
+                        })
+                    })
+                    .catch(err => fn.send_error(res, err));
+                };
             })
             .catch(err => fn.send_error(res, err));
         })
@@ -87,15 +65,15 @@ module.exports = (app, m, inc, fn) => {
     app.put('/sessions/:id', fn.loggedIn(), fn.permissions.check('session_edit'),    (req, res) => {
         m.sessions.findOne({
             where: {session_id: req.params.id},
-            attributes: ['session_id', '_status']
+            attributes: ['session_id', 'status']
         })
         .then(session => {
-            if (session._status !== 1) fn.send_error(res, 'This session is not open')
+            if (session.status !== 1) fn.send_error(res, 'This session is not open')
             else {
                 return m.sales.findAll({
                     where: {
                         session_id: session.session_id,
-                        _status: 1
+                        status: 1
                     },
                     attributes: ['sale_id']
                 })
@@ -149,7 +127,7 @@ module.exports = (app, m, inc, fn) => {
                                     .then(results => {
                                         return session.update(
                                             {
-                                                _status: 2,
+                                                status: 2,
                                                 _end: Date.now(),
                                                 user_id_close: req.user.user_id
                                             }
@@ -202,7 +180,7 @@ module.exports = (app, m, inc, fn) => {
         let cash = 0.0, cheques = 0.0;
         for (let [key, denomination] of Object.entries(obj)) {
             for (let [key, value] of Object.entries(denomination)) {
-                if (key === 'cheques') cheques = value
+                if (key === 'cheques') cheques = Number(value)
                 else cash += Number(value);
             };
         };

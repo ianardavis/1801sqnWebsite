@@ -16,7 +16,7 @@ function getStatuses () {
                     sel_status.appendChild(
                         new Option({
                             value: `status_id=${status.status_id}`,
-                            text: status._status
+                            text: status.status
                         }).e
                     );
                 });

@@ -1,202 +1,210 @@
 module.exports = (app, m, inc, fn) => {
     let permission_tree = [
-        {_permission: 'core_functions', children: [
-            {_permission: 'access_actions',   children: []},
-            {_permission: 'access_locations', children: [
-                {_permission: 'location_add'},
-                {_permission: 'location_edit'},
-                {_permission: 'location_delete'}
+        {permission: 'core_functions', children: [
+            {permission: 'access_actions',   children: []},
+            {permission: 'access_locations', children: [
+                {permission: 'location_add'},
+                {permission: 'location_edit'},
+                {permission: 'location_delete'}
             ]},
-            {_permission: 'access_notes',     children: [
-                {_permission: 'note_add'},
-                {_permission: 'note_edit'},
-                {_permission: 'note_delete'}
+            {permission: 'access_notes',     children: [
+                {permission: 'note_add'},
+                {permission: 'note_edit'},
+                {permission: 'note_delete'}
             ]},
-            {_permission: 'access_settings',  children: [
-                {_permission: 'setting_add'},
-                {_permission: 'setting_edit'},
-                {_permission: 'setting_delete'}
+            {permission: 'access_settings',  children: [
+                {permission: 'setting_add'},
+                {permission: 'setting_edit'},
+                {permission: 'setting_delete'}
             ]}
         ]},
-        {_permission: 'access_users',   children: [
-            {_permission: 'user_add'},
-            {_permission: 'user_edit'},
-            {_permission: 'user_delete'},
-            {_permission: 'access_permissions', children: [
-                {_permission: 'permission_edit'}
+        {permission: 'access_users',   children: [
+            {permission: 'user_add'},
+            {permission: 'user_edit'},
+            {permission: 'user_delete'},
+            {permission: 'accesspermissions', children: [
+                {permission: 'permission_edit'}
             ]}
         ]},
-        {_permission: 'access_stores',  children: [
-            {_permission: 'access_issues',    children: [
-                {_permission: 'issue_add'},
-                {_permission: 'issue_edit'},
-                {_permission: 'issue_delete'},
-                {_permission: 'access_loancards', children: [
-                    {_permission: 'loancard_add'},
-                    {_permission: 'loancard_edit'},
-                    {_permission: 'loancard_delete'},
-                    {_permission: 'access_loancard_lines', children: [
-                        {_permission: 'loancard_line_add'},
-                        {_permission: 'loancard_line_edit'},
-                        {_permission: 'loancard_line_delete'}
+        {permission: 'access_stores',  children: [
+            {permission: 'access_issues',    children: [
+                {permission: 'issue_add'},
+                {permission: 'issue_edit'},
+                {permission: 'issue_delete'},
+                {permission: 'access_loancards', children: [
+                    {permission: 'loancard_add'},
+                    {permission: 'loancard_edit'},
+                    {permission: 'loancard_delete'},
+                    {permission: 'access_loancard_lines', children: [
+                        {permission: 'loancard_line_add'},
+                        {permission: 'loancard_line_edit'},
+                        {permission: 'loancard_line_delete'}
                     ]}
                 ]}
             ]},
-            {_permission: 'access_items',     children: [
-                {_permission: 'item_add'},
-                {_permission: 'item_edit'},
-                {_permission: 'item_delete'},
-                {_permission: 'access_sizes',      children: [
-                    {_permission: 'size_add'},
-                    {_permission: 'size_edit'},
-                    {_permission: 'size_delete'},
-                    {_permission: 'access_stock',       children: [
-                        {_permission: 'stock_add'},
-                        {_permission: 'stock_edit'},
-                        {_permission: 'stock_delete'},
-                        {_permission: 'access_adjustments',    children: [
-                            {_permission: 'adjustment_add'},
-                            {_permission: 'adjustment_edit'},
-                            {_permission: 'adjustment_delete'}
+            {permission: 'access_items',     children: [
+                {permission: 'item_add'},
+                {permission: 'item_edit'},
+                {permission: 'item_delete'},
+                {permission: 'access_sizes',      children: [
+                    {permission: 'size_add'},
+                    {permission: 'size_edit'},
+                    {permission: 'size_delete'},
+                    {permission: 'access_stock',       children: [
+                        {permission: 'stock_add'},
+                        {permission: 'stock_edit'},
+                        {permission: 'stock_delete'},
+                        {permission: 'access_adjustments',    children: [
+                            {permission: 'adjustment_add'},
+                            {permission: 'adjustment_edit'},
+                            {permission: 'adjustment_delete'}
                         ]}
                     ]},
-                    {_permission: 'access_serials',     children: [
-                        {_permission: 'serial_add'},
-                        {_permission: 'serial_edit'},
-                        {_permission: 'serial_delete'}
+                    {permission: 'access_serials',     children: [
+                        {permission: 'serial_add'},
+                        {permission: 'serial_edit'},
+                        {permission: 'serial_delete'}
                     ]},
-                    {_permission: 'access_nsns',        children: [
-                        {_permission: 'nsn_add'},
-                        {_permission: 'nsn_edit'},
-                        {_permission: 'nsn_delete'},
-                        {_permission: 'access_nsn_classes', children: [
-                            {_permission: 'nsn_class_add'},
-                            {_permission: 'nsn_class_edit'},
-                            {_permission: 'nsn_class_delete'}
+                    {permission: 'access_nsns',        children: [
+                        {permission: 'nsn_add'},
+                        {permission: 'nsn_edit'},
+                        {permission: 'nsn_delete'},
+                        {permission: 'access_nsn_classes', children: [
+                            {permission: 'nsn_class_add'},
+                            {permission: 'nsn_class_edit'},
+                            {permission: 'nsn_class_delete'}
                         ]},
-                        {_permission: 'access_nsn_countries', children: [
-                            {_permission: 'nsn_country_add'},
-                            {_permission: 'nsn_country_edit'},
-                            {_permission: 'nsn_country_delete'}
+                        {permission: 'access_nsn_countries', children: [
+                            {permission: 'nsn_country_add'},
+                            {permission: 'nsn_country_edit'},
+                            {permission: 'nsn_country_delete'}
                         ]},
-                        {_permission: 'access_nsn_groups', children: [
-                            {_permission: 'nsn_group_add'},
-                            {_permission: 'nsn_group_edit'},
-                            {_permission: 'nsn_group_delete'}
+                        {permission: 'access_nsn_groups', children: [
+                            {permission: 'nsn_group_add'},
+                            {permission: 'nsn_group_edit'},
+                            {permission: 'nsn_group_delete'}
                         ]}
                     ]},
-                    {_permission: 'access_embodiments', children: [
-                        {_permission: 'embodiment_add'},
-                        {_permission: 'embodiment_edit'},
-                        {_permission: 'embodiment_delete'}
+                    {permission: 'access_embodiments', children: [
+                        {permission: 'embodiment_add'},
+                        {permission: 'embodiment_edit'},
+                        {permission: 'embodiment_delete'}
                     ]},
                 ]},
-                {_permission: 'access_categories', children: [
-                    {_permission: 'category_add'},
-                    {_permission: 'category_edit'},
-                    {_permission: 'category_delete'}
+                {permission: 'access_categories', children: [
+                    {permission: 'category_add'},
+                    {permission: 'category_edit'},
+                    {permission: 'category_delete'}
                 ]},
-                {_permission: 'access_genders',    children: [
-                    {_permission: 'gender_add'},
-                    {_permission: 'gender_edit'},
-                    {_permission: 'gender_delete'}
+                {permission: 'access_genders',    children: [
+                    {permission: 'gender_add'},
+                    {permission: 'gender_edit'},
+                    {permission: 'gender_delete'}
                 ]}
             ]},
-            {_permission: 'access_orders',    children: [
-                {_permission: 'order_add'},
-                {_permission: 'order_edit'},
-                {_permission: 'order_delete'}
+            {permission: 'access_orders',    children: [
+                {permission: 'order_add'},
+                {permission: 'order_edit'},
+                {permission: 'order_delete'}
             ]},
-            {_permission: 'access_suppliers', children: [
-                {_permission: 'supplier_add'},
-                {_permission: 'supplier_edit'},
-                {_permission: 'supplier_delete'},
-                {_permission: 'access_files',    children: [
-                    {_permission: 'file_add'},
-                    {_permission: 'file_edit'},
-                    {_permission: 'file_delete'},
-                    {_permission: 'access_file_details', children: [
-                        {_permission: 'file_detail_add'},
-                        {_permission: 'file_detail_edit'},
-                        {_permission: 'file_detail_delete'}
+            {permission: 'access_suppliers', children: [
+                {permission: 'supplier_add'},
+                {permission: 'supplier_edit'},
+                {permission: 'supplier_delete'},
+                {permission: 'access_files',    children: [
+                    {permission: 'file_add'},
+                    {permission: 'file_edit'},
+                    {permission: 'file_delete'},
+                    {permission: 'access_file_details', children: [
+                        {permission: 'file_detail_add'},
+                        {permission: 'file_detail_edit'},
+                        {permission: 'file_detail_delete'}
                     ]}
                 ]},
-                {_permission: 'access_accounts', children: [
-                    {_permission: 'account_add'},
-                    {_permission: 'account_edit'},
-                    {_permission: 'account_delete'}
+                {permission: 'access_accounts', children: [
+                    {permission: 'account_add'},
+                    {permission: 'account_edit'},
+                    {permission: 'account_delete'}
                 ]},
-                {_permission: 'access_demands',  children: [
-                    {_permission: 'demand_add'},
-                    {_permission: 'demand_edit'},
-                    {_permission: 'demand_delete'},
-                    {_permission: 'access_demand_lines', children: [
-                        {_permission: 'demand_line_add'},
-                        {_permission: 'demand_line_edit'},
-                        {_permission: 'demand_line_delete'}
+                {permission: 'access_demands',  children: [
+                    {permission: 'demand_add'},
+                    {permission: 'demand_edit'},
+                    {permission: 'demand_delete'},
+                    {permission: 'access_demand_lines', children: [
+                        {permission: 'demand_line_add'},
+                        {permission: 'demand_line_edit'},
+                        {permission: 'demand_line_delete'}
                     ]}
                 ]},
             ]}
         ]},
-        {_permission: 'access_canteen', children: [
-            {_permission: 'access_pos'},
-            {_permission: 'access_credits',       children: [
-                {_permission: 'credit_add'},
-                {_permission: 'credit_edit'},
-                {_permission: 'credit_delete'}
+        {permission: 'access_canteen', children: [
+            {permission: 'access_pos'},
+            {permission: 'access_credits',       children: [
+                {permission: 'credit_add'},
+                {permission: 'credit_edit'},
+                {permission: 'credit_delete'}
             ]},
-            {_permission: 'access_holdings',      children: [
-                {_permission: 'holding_add'},
-                {_permission: 'holding_edit'},
-                {_permission: 'holding_delete'}
+            {permission: 'access_holdings',      children: [
+                {permission: 'holding_add'},
+                {permission: 'holding_edit'},
+                {permission: 'holding_delete'}
             ]},
-            {_permission: 'access_canteen_items', children: [
-                {_permission: 'canteen_item_add'},
-                {_permission: 'canteen_item_edit'},
-                {_permission: 'canteen_item_delete'}
+            {permission: 'access_canteen_items', children: [
+                {permission: 'canteen_item_add'},
+                {permission: 'canteen_item_edit'},
+                {permission: 'canteen_item_delete'}
             ]},
-            {_permission: 'access_movements',     children: [
-                {_permission: 'movement_add'},
-                {_permission: 'movement_edit'},
-                {_permission: 'movement_delete'},
-                {_permission: 'pay_out'},
-                {_permission: 'pay_in'}
+            {permission: 'access_paid_in',     children: [
+                {permission: 'paid_in_add'},
+                {permission: 'paid_in_edit'},
+                {permission: 'paid_in_delete'}
             ]},
-            {_permission: 'access_payments'},
-            {_permission: 'access_pos_layouts',   children: [
-                {_permission: 'pos_layout_add'},
-                {_permission: 'pos_layout_edit'},
-                {_permission: 'pos_layout_delete'}
+            {permission: 'access_paid_out',     children: [
+                {permission: 'paid_out_add'},
+                {permission: 'paid_out_edit'},
+                {permission: 'paid_out_delete'}
             ]},
-            {_permission: 'access_pos_pages',     children: [
-                {_permission: 'pos_page_add'},
-                {_permission: 'pos_page_edit'},
-                {_permission: 'pos_page_delete'}
+            {permission: 'access_movements',     children: [
+                {permission: 'movement_add'},
+                {permission: 'movement_edit'},
+                {permission: 'movement_delete'}
             ]},
-            {_permission: 'access_receipts',      children: [
-                {_permission: 'receipt_add'},
-                {_permission: 'receipt_edit'},
-                {_permission: 'receipt_delete'},
-                {_permission: 'access_receipt_lines', children: [
-                    {_permission: 'receipt_line_add'},
-                    {_permission: 'receipt_line_delete'}
+            {permission: 'access_payments'},
+            {permission: 'access_pos_layouts',   children: [
+                {permission: 'pos_layout_add'},
+                {permission: 'pos_layout_edit'},
+                {permission: 'pos_layout_delete'}
+            ]},
+            {permission: 'access_pos_pages',     children: [
+                {permission: 'pos_page_add'},
+                {permission: 'pos_page_edit'},
+                {permission: 'pos_page_delete'}
+            ]},
+            {permission: 'access_receipts',      children: [
+                {permission: 'receipt_add'},
+                {permission: 'receipt_edit'},
+                {permission: 'receipt_delete'},
+                {permission: 'access_receipt_lines', children: [
+                    {permission: 'receipt_line_add'},
+                    {permission: 'receipt_line_delete'}
                 ]}
             ]},
-            {_permission: 'access_sales',         children: [
-                {_permission: 'access_sale_lines'}
+            {permission: 'access_sales',         children: [
+                {permission: 'access_sale_lines'}
             ]},
-            {_permission: 'access_sessions',      children: [
-                {_permission: 'session_add'},
-                {_permission: 'session_edit'},
-                {_permission: 'session_delete'}
+            {permission: 'access_sessions',      children: [
+                {permission: 'session_add'},
+                {permission: 'session_edit'},
+                {permission: 'session_delete'}
             ]},
-            {_permission: 'access_writeoffs',     children: [
-                {_permission: 'writeoff_add'},
-                {_permission: 'writeoff_edit'},
-                {_permission: 'writeoff_delete'},
-                {_permission: 'access_writeoff_lines', children: [
-                    {_permission: 'writeoff_line_add'},
-                    {_permission: 'writeoff_line_delete'}
+            {permission: 'access_writeoffs',     children: [
+                {permission: 'writeoff_add'},
+                {permission: 'writeoff_edit'},
+                {permission: 'writeoff_delete'},
+                {permission: 'access_writeoff_lines', children: [
+                    {permission: 'writeoff_line_add'},
+                    {permission: 'writeoff_line_delete'}
                 ]}
             ]}
         ]}

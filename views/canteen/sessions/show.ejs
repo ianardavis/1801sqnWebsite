@@ -23,13 +23,13 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/inputs/display`, {id: 'session_status',       title: 'Status'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_createdAt',    title: 'Opened'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_createdAt',    title: 'Date/Time Opened'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'session_user_open',    title: 'Opened By'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_datetime_end', title: 'Closed'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_datetime_end', title: 'Date/Time Closed'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'session_user_close',   title: 'Closed By'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_takings',      title: 'Takings'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_paid_in',      title: 'Paid In'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_paid_out',     title: 'Paid Out'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_takings',      title: 'Takings',  permission: 'access_sales'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_paid_in',      title: 'Paid In',  permission: 'access_paid_in'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_paid_out',     title: 'Paid Out', permission: 'access_paid_out'}) %>
         </div>
         <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
             <table class="table table-sm table-hover">

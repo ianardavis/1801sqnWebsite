@@ -10,7 +10,7 @@ function getSale() {
                     let element = document.querySelector(`#${id}`);
                     if (id === 'user') {
                         if (element) element.innerText = print_user(value);
-                    } else if (id === '_status') {
+                    } else if (id === 'status') {
                         if      (value === 0) element.innerText = 'Cancelled'
                         else if (value === 1) element.innerText = 'Open'
                         else if (value === 2) element.innerText = 'Complete';

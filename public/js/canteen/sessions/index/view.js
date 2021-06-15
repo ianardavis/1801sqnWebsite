@@ -15,7 +15,7 @@ function getSessions() {
                 });
                 if (session.status === 1) current_sessions.push(session.session_id);
                 add_cell(row, {append: new Link({
-                    href: `/canteen/sessions/${session.session_id}`,
+                    href: `/sessions/${session.session_id}`,
                     small: true
                 }).e});
             });

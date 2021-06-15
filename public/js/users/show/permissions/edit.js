@@ -11,13 +11,13 @@ function getPermissionsEdit () {
             permissions.tree.forEach(e => {
                 ul_tree.appendChild(
                     new List_Item({
-                        text:  e._permission,
+                        text:  e.permission,
                         caret: (e.children && e.children.length > 0)
                     }).e
                 );
                 if (e.children && e.children.length > 0) {
                     e.children.forEach(f => {
-                        add_permission(document.querySelector(`#ul_${e._permission}`), f)
+                        add_permission(document.querySelector(`#ul_${e.permission}`), f)
                     });
                 };
             });
@@ -33,13 +33,13 @@ function add_permission(parent, e) {
     if (parent) {
         parent.appendChild(
             new List_Item({
-                text:  e._permission,
+                text:  e.permission,
                 caret: (e.children && e.children.length > 0)
             }).e
         );
         if (e.children && e.children.length > 0) {
             e.children.forEach(f => {
-                add_permission(document.querySelector(`#ul_${e._permission}`), f)
+                add_permission(document.querySelector(`#ul_${e.permission}`), f)
             })
         };
     };

@@ -1,5 +1,15 @@
 module.exports = function (m, fn) {
     fn.locations = {};
+    fn.locations.get = function (location_id) {
+        return new Promise((resolve, reject) => {
+            return m.locations.findOne({where: {location_id: location_id}})
+            .then(location => {
+                if (!location) reject(new Error('Serial not found'))
+                else resolve(location);
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.locations.create = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.location) {

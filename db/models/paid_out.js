@@ -1,16 +1,26 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('holdings', {
-    'holding_id': {
+  return sequelize.define('paid_out', {
+    'paid_out_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
       comment: "null",
       primaryKey: true
     },
-    'description': {
+    'reason': {
       type: DataTypes.TEXT,
+      allowNull: false,
+      comment: "null"
+    },
+    'user_id_paid_out': {
+      type: DataTypes.UUIDV4,
+      allowNull: false,
+      comment: "null"
+    },
+    'user_id': {
+      type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"
     },
@@ -26,6 +36,11 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0.00',
       comment: "null"
     },
+    'holding_id': {
+      type: DataTypes.UUIDV4,
+      allowNull: false,
+      comment: "null"
+    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: true,
@@ -35,9 +50,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "null"
+    },
+    'status': {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: '1',
+      comment: "null"
     }
   }, {
-    tableName: 'holdings',
+    tableName: 'paid_out',
     schema: 'canteen'
   });
 };

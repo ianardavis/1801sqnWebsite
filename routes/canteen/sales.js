@@ -24,10 +24,7 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/user_sale',  fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
-        m.sessions.findAll({
-            where: {_status: 1},
-            attributes: ['session_id']
-        })
+        m.sessions.findAll({where: {status: 1}})
         .then(sessions => {
             if (sessions.length !== 1) fn.send_error(res, `${sessions.length} session(s) open`)
             else {
@@ -35,7 +32,7 @@ module.exports = (app, m, inc, fn) => {
                     where: {
                         session_id: sessions[0].session_id,
                         user_id:    req.user.user_id,
-                        _status:    1
+                        status:    1
                     }
                 })
                 .then(([sale, created]) => res.send({success: true, result: sale.sale_id}))
@@ -47,7 +44,7 @@ module.exports = (app, m, inc, fn) => {
     app.get('/get/sale_lines', fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
-            include: [inc.items()]
+            include: [inc.item()]
         })
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => fn.send_error(res, err))
@@ -58,12 +55,12 @@ module.exports = (app, m, inc, fn) => {
         else {
             m.sales.findOne({
                 where: {sale_id: req.body.line.sale_id},
-                include: [inc.sessions({attributes: ['_status']})],
+                include: [inc.sessions({attributes: ['status']})],
                 attributes: ['sale_id']
             })
             .then(sale => {
                 if      (!sale)                      fn.send_error(res, 'Sale not found')
-                else if (sale.session._status !== 1) fn.send_error(res, 'Session for this sale is not open')
+                else if (sale.session.status !== 1) fn.send_error(res, 'Session for this sale is not open')
                 else {
                     return m.canteen_items.findOne({
                         where: {item_id: req.body.line.item_id},
@@ -110,7 +107,7 @@ module.exports = (app, m, inc, fn) => {
                 include: [
                     inc.sales({
                         as:         'sale',
-                        include:    [inc.sessions({attributes: ['_status']})],
+                        include:    [inc.sessions({attributes: ['status']})],
                         attributes: ['sale_id']
                     })
                 ],
@@ -118,7 +115,7 @@ module.exports = (app, m, inc, fn) => {
             })
             .then(line => {
                 if      (!line)                           fn.send_error(res, 'Line not found')
-                else if (line.sale.session._status !== 1) fn.send_error(res, 'Session for this line is not open')
+                else if (line.sale.session.status !== 1) fn.send_error(res, 'Session for this line is not open')
                 else {
                     return line.increment('_qty', {by: req.body.line._qty})
                     .then(result => {
@@ -147,15 +144,15 @@ module.exports = (app, m, inc, fn) => {
     app.put('/sales',          fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
         m.sales.findOne({
             where:      {sale_id: req.body.sale_id},
-            attributes: ['sale_id', '_status']
+            attributes: ['sale_id', 'status']
         })
         .then(sale => {
-            if (sale._status !== 1) fn.send_error(res, 'Sale is not open')
+            if (sale.status !== 1) fn.send_error(res, 'Sale is not open')
             else {
                 return m.sale_lines.findAll({
                     where: {
                         sale_id: sale.sale_id,
-                        _status: 1
+                        status: 1
                     },
                     attributes: ['line_id', 'item_id', '_qty', '_price']
                 })
@@ -198,11 +195,11 @@ module.exports = (app, m, inc, fn) => {
                                                     };
                                                     actions.push(
                                                         m.sale_lines.update(
-                                                            {_status: 2},
+                                                            {status: 2},
                                                             {where: {sale_id: sale.sale_id}}
                                                         )
                                                     );
-                                                    actions.push(sale.update({_status: 2}));
+                                                    actions.push(sale.update({status: 2}));
                                                     lines.forEach(line => {
                                                         actions.push(
                                                             m.canteen_items.findOne({
@@ -231,11 +228,11 @@ module.exports = (app, m, inc, fn) => {
                                 change  = Number(req.body.sale.tendered - total);
                             actions.push(
                                 m.sale_lines.update(
-                                    {_status: 2},
+                                    {status: 2},
                                     {where: {sale_id: sale.sale_id}}
                                 )
                             );
-                            actions.push(sale.update({_status: 2}));
+                            actions.push(sale.update({status: 2}));
                             actions.push(
                                 m.payments.create({
                                     sale_id: sale.sale_id,

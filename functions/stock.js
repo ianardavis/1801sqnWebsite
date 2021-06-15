@@ -1,13 +1,24 @@
-module.exports = function (m, stock) {
-    stock.increment = function (options = {}) {
+module.exports = function (m, fn) {
+    fn.stocks = {};
+    fn.stocks.get = function (stock_id) {
+        return new Promise((resolve, reject) => {
+            return m.stocks.findOne({where: {stock_id: stock_id}})
+            .then(stock => {
+                if (!stock) reject(new Error('Stock record not found'))
+                else resolve(stock);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.stocks.increment = function (options = {}) {
         return new Promise((resolve, reject) => {
             options.table.findByPk(options.id)
-            .then(stock => stock.increment(options.column || '_qty', {by: options.by}))
+            .then(stock => stock.increment(options.column || 'qty', {by: options.by}))
             .then(stock => resolve(stock.qty - options.by))
             .catch(err => reject(err));
         });
     };
-    stock.decrement = (options = {}) => {
+    fn.stocks.decrement = (options = {}) => {
         return new Promise((resolve, reject) => {
             options.table.findByPk(options.id)
             .then(stock => stock.decrement(options.column || '_qty', {by: options.by}))
@@ -15,7 +26,7 @@ module.exports = function (m, stock) {
             .catch(err => reject(err));
         });
     };
-    stock.adjust = function (options = {}) {
+    fn.stocks.adjust = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (String(options.adjustment._type).toLowerCase() === 'count') {
                 m.stock.findOne({where: {stock_id: options.adjustment.stock_id}})

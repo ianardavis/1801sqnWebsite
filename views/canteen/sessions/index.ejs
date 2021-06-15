@@ -29,9 +29,7 @@
                     <div class="modal-body">
                         <% [{text: '1p',  name: 'c0001', step: '0.01'},{text: '2p',  name: 'c0002', step: '0.02'},{text: '5p',  name: 'c0005', step: '0.05'},{text: '10p', name: 'c0010', step: '0.1'},{text: '20p', name: 'c0020', step: '0.2'},{text: '50p', name: 'c0050', step: '0.5'},{text: '£1',  name: 'c0100', step: '1'},{text: '£2',  name: 'c0200', step: '2'},{text: '£5',  name: 'c0500', step: '5'},{text: '£10', name: 'c1000', step: '10'},{text: '£20', name: 'c2000', step: '20'},{text: '£50', name: 'c5000', step: '50'}].forEach(e => { %>
                             <div class="input-group mb-1">
-                                <div class="input-group-prepend w-30">
-                                    <span class="input-group-text w-100"><%= e.text %></span>
-                                </div>
+                                <span class="input-group-text w-30"><%= e.text %></span>
                                 <input
                                     class="form-control"
                                     type="number"
@@ -53,18 +51,7 @@
                             </div>
                         <% }) %>
                         <div class="input-group mb-1">
-                            <div class="input-group-prepend w-30">
-                                <span class="input-group-text w-100">Cheques</span>
-                            </div>
-                            <input
-                                class="form-control"
-                                type="number"
-                                inputMode='numeric'
-                                name='balance[cheques][b]'
-                                step='0.01'
-                                min='0'
-                                placeholder="Bagged"
-                            >
+                            <span class="input-group-text w-30">Cheques</span>
                             <input
                                 class="form-control"
                                 type="number"
@@ -72,7 +59,6 @@
                                 name='balance[cheques][l]'
                                 step='0.01'
                                 min='0'
-                                placeholder="Loose"
                             >
                         </div>
                     </div>

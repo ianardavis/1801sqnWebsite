@@ -9,10 +9,10 @@
 	<div class='row'>
 		<div class="order-last order-lg-first col-12 col-lg-7 col-xl-8">
             <ul class="nav nav-tabs" id="tab_headers" role="tablist">
+                <%- include(`${partials}/tab_head`, {id: 'all-items', title: 'All Items', active: true}) %>
             </ul>
             <div class="tab-content pt-3" id="tab_pages">
-            </div>
-            <div class="row" id='div_items' style='height: 100px'>
+                <div class="tab-pane fade" id="all-items" role="tabpanel" aria-labelledby="all-items-tab"></div>
             </div>
         </div>
         <div class="order-first order-lg-last col-12 col-lg-5 col-xl-4">
@@ -59,17 +59,17 @@
                                 <a class='btn btn-lg btn-warning w-100' href="javascript:backspace()"><i class='fas fa-backspace'></i></a>
                             </div>
                         </div>
-                        <form id='form_complete_sale'>
+                        <form id='form_sale_complete'>
                             <input type="hidden" class='sale_id' name='sale_id'>
                             <%- include(`${partials}/inputs/select`,  {title: 'Debit from',    id: 'sel_credits', name: 'sale[user_id_debit]',  spinner_id: 'users_debit',  reload_id: 'reload_debit',  permission: 'access_credits'}) %>
                             <%- include(`${partials}/inputs/select`,  {title: 'Credit change', id: 'sel_users',   name: 'sale[user_id_credit]', spinner_id: 'users_credit', reload_id: 'reload_credit', permission: 'access_users'}) %>
-                            <%- include(`${partials}/inputs/number`,  {title: 'Tendered (£)',  id: '_tendered',   name: 'sale[tendered]', step: '0.01', value: '0.00', required: true}) %>
+                            <%- include(`${partials}/inputs/number`,  {title: 'Tendered (£)',  id: 'tendered',    name: 'sale[tendered]', step: '0.01', value: '0.00', required: true}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Change (£)',    id: 'change'}) %>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button id='btn_complete_sale'       class='btn btn-lg btn-success w-100 mb-2'       form='form_complete_sale'>Pay</button>
-                        <button id='btn_close_complete_sale' class='btn btn-lg btn-danger w-100 mb-2 hidden' data-bs-dismiss="modal"     >Close</button>
+                        <button id='btn_sale_complete'       class='btn btn-lg btn-success w-100 mb-2'       form='form_sale_complete'>Pay</button>
+                        <button id='btn_close_sale_complete' class='btn btn-lg btn-danger w-100 mb-2 hidden' data-bs-dismiss="modal"     >Close</button>
                     </div>
                 </div>
             </div>

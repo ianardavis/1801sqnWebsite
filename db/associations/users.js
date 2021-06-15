@@ -27,7 +27,5 @@ module.exports = function (m) {
     m.credits  .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',         constraints: false});
     m.payments .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',         constraints: false});
     m.movements.hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',         constraints: false, as: 'user'});
-    m.movements.hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id_to',      constraints: false, as: 'user_to'});
-    m.movements.hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id_from',    constraints: false, as: 'user_from'});
     m.movements.hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id_confirm', constraints: false, as: 'user_confirm'});
 };

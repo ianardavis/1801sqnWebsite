@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'datetime_end': {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'user_id_open': {

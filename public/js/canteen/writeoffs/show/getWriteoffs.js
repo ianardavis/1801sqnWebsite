@@ -13,7 +13,7 @@ function getWriteoff() {
                         element.innerText = print_user(value);
                         let writeoff_user = document.querySelector('#writeoff_user');
                         if (writeoff_user) writeoff_user.setAttribute('href', `/canteen/users/${value.user_id}`);
-                    } else if (id === '_status') {
+                    } else if (id === 'status') {
                         element.innerText = statuses[value];
                         ['complete', 'cancel', 'add_item'].forEach(e => {
                             let btn = document.querySelector(`#btn_${e}`);

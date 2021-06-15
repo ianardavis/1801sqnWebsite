@@ -11,7 +11,7 @@ function getUsers () {
             users.forEach(user => {
                 let row = tbl_users.insertRow(-1);
                 add_cell(row, {text: print_user(user)});
-                add_cell(row, {text: user.status._status});
+                add_cell(row, {text: user.status.status});
                 add_cell(row, {append: new Link({
                     href: `/canteen/users/${user.user_id}`,
                     small: true

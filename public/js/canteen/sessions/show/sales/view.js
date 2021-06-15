@@ -10,7 +10,7 @@ function getSales() {
             })
             .then(function ([sales, options]) {
                 set_count({id: 'sale', count: sales.length || '0'})
-                let items = [];
+                let items = [], takings = 0.00;
                 sales.forEach(sale => {
                     let row = tbl_sales.insertRow(-1);
                     add_cell(row, {text: print_date(sale.createdAt ,true)});
@@ -24,6 +24,7 @@ function getSales() {
                         }).e
                     });
                     sale.lines.forEach(line => {
+                        takings += (line.qty * line.item.price);
                         let current = items.find(e => e.item_id === line.item_id);
                         if (current) {
                             current.qty += line.qty;
@@ -38,6 +39,7 @@ function getSales() {
                         };
                     });
                 });
+                set_innerText({id: 'session_takings', value: `£${takings}`});
                 set_count({id: 'item', count: items.length || '0'});
                 items.forEach(item => {
                     let row = tbl_items.insertRow(-1);
