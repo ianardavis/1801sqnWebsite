@@ -1,6 +1,6 @@
 window.addEventListener('load', function () {
     addFormListener(
-        'add_session',
+        'session_add',
         'POST',
         `/sessions`,
         {onComplete: [

@@ -25,7 +25,7 @@ module.exports = function (m, fn) {
                                         .then(result => {
                                             resolve({
                                                 payments: [
-                                                    (sale.tendered > 0 ? {type: 'cash', amount: sale.tendered} : {}),
+                                                    (sale.tendered > 0 ? {type: 'Cash', amount: sale.tendered} : {}),
                                                     {type: 'account', amount: debit_amount}
                                                 ],
                                                 change: 0.00
@@ -35,8 +35,8 @@ module.exports = function (m, fn) {
                                             console.log(err);
                                             resolve({
                                                 payments: [
-                                                    (sale.tendered > 0 ? {type: 'cash', amount: sale.tendered} : {}),
-                                                    {type: 'account', amount: debit_amount}
+                                                    (sale.tendered > 0 ? {type: 'Cash', amount: sale.tendered} : {}),
+                                                    {type: 'Account', amount: debit_amount}
                                                 ],
                                                 change: 0.00
                                             });
@@ -46,8 +46,8 @@ module.exports = function (m, fn) {
                                         console.log(err);
                                         resolve({
                                             payments: [
-                                                (sale.tendered > 0 ? {type: 'cash', amount: sale.tendered} : {}),
-                                                {type: 'account', amount: debit_amount}
+                                                (sale.tendered > 0 ? {type: 'Cash', amount: sale.tendered} : {}),
+                                                {type: 'Account', amount: debit_amount}
                                             ],
                                             change: 0.00
                                         });
@@ -71,8 +71,8 @@ module.exports = function (m, fn) {
                             .then(result => {
                                 resolve({
                                     payments: [{
-                                        type: 'cash',
-                                        amount: total
+                                        type: 'Cash',
+                                        amount: Number(sale.tendered)
                                     }],
                                     change: 0
                                 });
@@ -81,7 +81,7 @@ module.exports = function (m, fn) {
                                 console.log(err)
                                 resolve({
                                     payments: [{
-                                        type: 'cash',
+                                        type: 'Cash',
                                         amount: total
                                     }],
                                     change: change
@@ -92,7 +92,7 @@ module.exports = function (m, fn) {
                             console.log(err)
                             resolve({
                                 payments: [{
-                                    type: 'cash',
+                                    type: 'Cash',
                                     amount: total
                                 }],
                                 change: change
@@ -102,7 +102,7 @@ module.exports = function (m, fn) {
                 } else payment_action = new Promise(resolve => {
                     resolve({
                         payments: [{
-                            type: 'cash',
+                            type: 'Cash',
                             amount: total
                         }],
                         change: change

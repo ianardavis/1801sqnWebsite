@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'holding_id_from': {
       type: DataTypes.UUIDV4,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'holding_id_to': {
@@ -57,6 +57,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     'updatedAt': {
       type: DataTypes.DATE,
+      allowNull: true,
+      comment: "null"
+    },
+    'session_id': {
+      type: DataTypes.UUIDV4,
       allowNull: true,
       comment: "null"
     }

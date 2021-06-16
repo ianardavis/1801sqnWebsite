@@ -136,7 +136,8 @@ module.exports = (app, m, inc, fn) => {
                         {permission: 'demand_line_delete'}
                     ]}
                 ]},
-            ]}
+            ]},
+            {permission: 'access_reports'}
         ]},
         {permission: 'access_canteen', children: [
             {permission: 'access_pos'},

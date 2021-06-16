@@ -1,7 +1,7 @@
 window.addEventListener('load', function () {
     enable_button('session_close');
     addFormListener(
-        'close',
+        'session_close',
         'PUT',
         `/sessions/${path[2]}`,
         {

@@ -75,8 +75,7 @@ module.exports = (app, m, inc, fn) => {
                     where: {
                         session_id: session.session_id,
                         status: 1
-                    },
-                    attributes: ['sale_id']
+                    }
                 })
                 .then(sales => {
                     let sale_actions = [];
@@ -87,55 +86,72 @@ module.exports = (app, m, inc, fn) => {
                     return Promise.allSettled(sale_actions)
                     .then(results => {
                         return getSessionSales(session.session_id)
-                        .then(sales => {
+                        .then(takings => {
                             return m.holdings.findOrCreate({
-                                where: {description: 'Petty Cash'},
+                                where:    {description: 'Canteen float'},
                                 defaults: {cash: 0, cheques: 0}
                             })
-                            .then(([petty_holding, created]) => {
-                                return m.holdings.findOrCreate({
-                                    where: {description: 'Canteen'},
-                                    defaults: {cash: 0, cheques: 0}
-                                })
-                                .then(([canteen_holding, created]) => {
-                                    let balance = countCash(req.body.balance),
-                                        movement_actions = [];
-                                    if (balance.cash > 0) {
-                                        movement_actions.push(
-                                            m.movements.create({
-                                                holding_id_from: canteen_holding.holding_id,
-                                                holding_id_to:   petty_holding.holding_id,
-                                                description:    'Canteen cash',
-                                                amount:         balance.cash,
-                                                type:           'Transfer',
-                                                user_id:         req.user.user_id
-                                            })
-                                        );
-                                    };
-                                    if (balance.cheques > 0) {
-                                        movement_actions.push(
-                                            m.movements.create({
-                                                holding_id_from: canteen_holding.holding_id,
-                                                holding_id_to:   petty_holding.holding_id,
-                                                description:    'Canteen cheques',
-                                                amount:          balance.cheques,
-                                                type:           'Transfer',
-                                                user_id:         req.user.user_id
-                                            })
-                                        );
-                                    };
-                                    return Promise.all(movement_actions)
-                                    .then(results => {
-                                        return session.update(
-                                            {
-                                                status: 2,
-                                                datetime_end: Date.now(),
-                                                user_id_close: req.user.user_id
-                                            }
-                                        )
-                                        .then(result => res.send({success: true, message: `Session closed.\nTakings: £${sales.takings.toFixed(2)}.\nPaid Out: £${sales.paid_out.toFixed(2)}.\nPaid In: £${sales.paid_in.toFixed(2)}.\nCash Returned: £${Number(balance.cash).toFixed(2)}.\nCheques Returned: £${Number(balance.cheques).toFixed(2)}`}))
-                                        .catch(err => fn.send_error(res, err));
+                            .then(([holding, created]) => {
+                                let balance = countCash(req.body.balance),
+                                    actions = [];
+                                actions.push(
+                                    holding.update({
+                                        cash:    balance.cash,
+                                        cheques: balance.cheques
                                     })
+                                )
+                                if (balance.cheques > 0) {
+                                    actions.push(
+                                        m.movements.create({
+                                            session_id:    session.session_id,
+                                            holding_id_to: holding.holding_id,
+                                            description:    'Canteen takings',
+                                            amount:         balance.cheques,
+                                            type:           'Cheques',
+                                            user_id:         req.user.user_id
+                                        })
+                                    );
+                                };
+                                if (balance.cash > 0) {
+                                    actions.push(
+                                        m.movements.create({
+                                            session_id:    session.session_id,
+                                            holding_id_to: holding.holding_id,
+                                            description:   'Canteen takings',
+                                            amount:        balance.cash,
+                                            type:          'Cash',
+                                            user_id:       req.user.user_id
+                                        })
+                                    )
+                                };
+                                if ((balance.cash - holding.cash) !== takings.cash) {
+                                    actions.push(m.notes.create({
+                                        note: `Takings discrepency: Cash ${((balance.cash - holding.cash) > takings.cash ? 'over' : 'under')} by ${(balance.cash - holding.cash) - takings.cash}`,
+                                        _table: 'holdings',
+                                        id: holding.holding_id,
+                                        system: 1,
+                                        user_id: req.user.user_id
+                                    }))
+                                };
+                                if ((balance.cheques - holding.cheques) !== takings.cheques) {
+                                    actions.push(m.notes.create({
+                                        note: `Takings discrepency: Cheques ${((balance.cheques - holding.cheques) > takings.cheques ? 'over' : 'under')} by ${(balance.cheques - holding.cheques) - takings.cheques}`,
+                                        _table: 'holdings',
+                                        id: holding.holding_id,
+                                        system: 1,
+                                        user_id: req.user.user_id
+                                    }))
+                                };
+                                return Promise.all(actions)
+                                .then(results => {
+                                    return session.update(
+                                        {
+                                            status:        2,
+                                            datetime_end:  Date.now(),
+                                            user_id_close: req.user.user_id
+                                        }
+                                    )
+                                    .then(result => res.send({success: true, message: `Session closed.\nCash Balance: £${takings.cash.toFixed(2)}.\nCheque Balance: £${Number(takings.cheques).toFixed(2)}`}))
                                     .catch(err => fn.send_error(res, err));
                                 })
                                 .catch(err => fn.send_error(res, err));
@@ -153,25 +169,22 @@ module.exports = (app, m, inc, fn) => {
     });
     function getSessionSales(session_id) {
         return new Promise((resolve, reject) => {
-            return m.sale_lines.findAll({
+            return m.payments.findAll({
+                where: {type: {[fn.op.or]: ['Cash', 'Cheque']}},
                 include: [
-                    inc.sales({
-                        as:       'sale',
+                    inc.sale({
                         where:    {session_id: session_id},
                         required: true
                     })
                 ]
             })
-            .then(lines => {
-                let result = {takings: 0, paid_out: 0, paid_in: 0};
-                lines.forEach(line => {
-                    if (line.item_id === 0) {
-                        result.paid_out += Number(line.price);
-                    } else if (line.item_id === 1) {
-                        result.paid_in += Number(line.price);
-                    } else result.takings += (Number(line.price) * Number(line.qty))
+            .then(payments => {
+                let takings = {cash: 0.0, cheques: 0.0};
+                payments.forEach(e => {
+                    if (e.type === 'Cash') takings.cash += e.amount
+                    else takings.cash += e.amount;
                 });
-                resolve(result);
+                resolve(takings);
             })
             .catch(err => reject(err));
         });
