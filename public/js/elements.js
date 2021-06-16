@@ -186,16 +186,26 @@ function Tab_Body(options = {}) {
     this.e.setAttribute('id', `${options.id}`);
     this.e.setAttribute('role', 'tabpanel');
     this.e.setAttribute('aria-labelledby', `${options.id}-tab`);
+    let div = document.createElement('div');
+    div.setAttribute('id', `div_${options.id}`)
+    div.classList.add('row', 'h-150-px')
+    this.e.appendChild(div);
 };
 function Button(options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
-    this.e.setAttribute('type', 'button');
+    if (!options.noType) this.e.setAttribute('type', 'button');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
     if (options.small) this.e.classList.add('btn-sm');
     if (options.float) this.e.classList.add('float-end');
 
-    if (options.type === 'edit') {
+    if (options.text) {
+        this.e.innerText = options.text
+        this.e.classList.add('btn-primary');
+    } else if (options.html) {
+        this.e.innerHTML = options.html
+        this.e.classList.add('btn-primary');
+    } else if (options.type === 'edit') {
         this.e.classList.add('btn-success');
         this.e.innerHTML = _edit();
     } else if (options.type === 'move') {

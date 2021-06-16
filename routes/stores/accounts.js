@@ -8,16 +8,12 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/account',     fn.loggedIn(), fn.permissions.check('access_accounts', {send: true}), (req, res) => {
-        return m.accounts.findOne({
-            where:   req.query,
-            include: [
-                inc.user()
-            ]
-        })
-        .then(account => {
-            if (account) res.send({success: true,  result: account})
-            else         fn.send_error(res, 'Account not found');
-        })
+        fn.get(
+            'accounts',
+            req.query,
+            [inc.user()]
+        )
+        .then(account => res.send({success: true,  result: account}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -40,27 +36,24 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.delete('/accounts/:id', fn.loggedIn(), fn.permissions.check('account_delete',  {send: true}), (req, res) => {
-        m.accounts.findOne({
-            where: {account_id: req.params.id},
-            attributes: ['account_id']
-        })
+        fn.get(
+            'accounts',
+            {account_id: req.params.id}
+        )
         .then(account => {
-            if (!account) fn.send_error(res, 'Account not found')
-            else {
-                return account.destroy()
-                .then(result => {
-                    if (!result) fn.send_error(res, 'Account not deleted')
-                    else {
-                        return m.suppliers.update(
-                            {account_id: null},
-                            {where: {account_id: account.account_id}}
-                        )
-                        .then(result => res.send({success: true, message: 'Account deleted'}))
-                        .catch(err => fn.send_error(res, `Error updating suppliers: ${err.message}`));
-                    };
-                })
-                .catch(err => fn.send_error(res, `Error deleting account: ${err.message}`));
-            };
+            return account.destroy()
+            .then(result => {
+                if (!result) fn.send_error(res, 'Account not deleted')
+                else {
+                    return m.suppliers.update(
+                        {account_id: null},
+                        {where: {account_id: account.account_id}}
+                    )
+                    .then(result => res.send({success: true, message: 'Account deleted'}))
+                    .catch(err => fn.send_error(res, `Error updating suppliers: ${err.message}`));
+                };
+            })
+            .catch(err => fn.send_error(res, `Error deleting account: ${err.message}`));
         })
         .catch(err => fn.send_error(res, `Error getting account: ${err.message}`));
     });

@@ -5,14 +5,11 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/gender',     fn.loggedIn(), fn.permissions.check('access_genders'), (req, res) => {
-        m.genders.findOne({
-            where:   req.query,
-            include: []
-        })
-        .then(gender => {
-            if (!gender) fn.send_error(res, 'Gender not found')
-            else         res.send({success: true, result: gender});
-        })
+        fn.get(
+            'genders',
+            req.query
+        )
+        .then(gender => res.send({success: true, result: gender}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -35,27 +32,24 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.delete('/genders/:id', fn.loggedIn(), fn.permissions.check('gender_delete'),  (req, res) => {
-        m.genders.findOne({
-            where: {gender_id: req.params.id},
-            attributes: ['gender_id']
-        })
+        fn.get(
+            'genders',
+            {gender_id: req.params.id}
+        )
         .then(gender => {
-            if (!gender) fn.send_error(res, 'Gender not found')
-            else {
-                return m.items.update(
-                    {gender_id: null},
-                    {where: {gender_id: gender.gender_id}}
-                )
+            return m.items.update(
+                {gender_id: null},
+                {where: {gender_id: gender.gender_id}}
+            )
+            .then(result => {
+                return gender.destroy()
                 .then(result => {
-                    return gender.destroy()
-                    .then(result => {
-                        if (!result) fn.send_error(res, 'Gender not deleted')
-                        else         res.send({success: true,  message: 'Gender deleted'})
-                    })
-                    .catch(err => fn.send_error(res, err))
+                    if (!result) fn.send_error(res, 'Gender not deleted')
+                    else         res.send({success: true,  message: 'Gender deleted'})
                 })
                 .catch(err => fn.send_error(res, err))
-            };
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });

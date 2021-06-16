@@ -8,10 +8,11 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/note',     fn.loggedIn(), fn.permissions.check('access_notes'), (req, res) => {
-        m.notes.findOne({
-            where:   req.query,
-            include: [inc.users()]
-        })
+        fn.get(
+            'notes',
+            req.query,
+            [inc.user()]
+        )
         .then(note => res.send({success: true, result: note}))
         .catch(err => fn.send_error(res, err));
     });
@@ -24,13 +25,12 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.put('/notes',        fn.loggedIn(), fn.permissions.check('note_edit'),    (req, res) => {
-        m.notes.findOne({
-            where:      {note_id: req.body.note_id},
-            attributes: ['note_id', 'system']
-        })
+        fn.get(
+            'notes',
+            {note_id: req.body.note_id}
+        )
         .then(note => {
-            if     (!note)        fn.send_error(res, 'Note not found')
-            else if (note.system) fn.send_error(res, 'System generated notes can not be edited')
+            if (note.system) fn.send_error(res, 'System generated notes can not be edited')
             else {
                 return note.update(req.body.note)
                 .then(note => res.send({success: true, message: 'Note saved'}))
@@ -41,13 +41,12 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.delete('/notes/:id', fn.loggedIn(), fn.permissions.check('note_delete'),  (req, res) => {
-        m.notes.findOne({
-            where:      {note_id: req.params.id},
-            attributes: ['note_id', 'system']
-        })
+        fn.get(
+            'notes',
+            {note_id: req.params.id}
+        )
         .then(note => {
-            if      (!note)       fn.send_error(res, 'Note not found')
-            else if (note.system) fn.send_error(res, 'System generated notes can not be deleted')
+            if (note.system) fn.send_error(res, 'System generated notes can not be deleted')
             else {
                 return note.destroy()
                 .then(result => res.send({success: true, message: 'Note deleted'}))

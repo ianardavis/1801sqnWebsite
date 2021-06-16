@@ -2,17 +2,19 @@
 <%- include(`${partials}/breadcrumb`, {text: 'Canteen', href: '/canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'POS'}) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/breadcrumb`, {id: 'alert_main', classes: ['alert_pos']}) %>
+<%- include(`${partials}/breadcrumb`, {id: 'alert_main', classes: ['alert']}) %>
 <%- include(`${partials}/spinner`, {id: 'current_sale'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
-<section class='container mx-5'>
+<section class='container mx-auto'>
 	<div class='row'>
 		<div class="order-last order-lg-first col-12 col-lg-7 col-xl-8">
             <ul class="nav nav-tabs" id="tab_headers" role="tablist">
-                <%- include(`${partials}/tab_head`, {id: 'all-items', title: 'All Items', active: true}) %>
+                <%- include(`${partials}/tab_head`, {id: 'all_items', title: 'All Items', active: true}) %>
             </ul>
             <div class="tab-content pt-3" id="tab_pages">
-                <div class="tab-pane fade" id="all-items" role="tabpanel" aria-labelledby="all-items-tab"></div>
+                <div class="tab-pane fade active show" id="all_items" role="tabpanel" aria-labelledby="all-items-tab">
+                    <div class="row h-150-px" id="div_all_items"></div>
+                </div>
             </div>
         </div>
         <div class="order-first order-lg-last col-12 col-lg-5 col-xl-4">
@@ -28,6 +30,7 @@
                 </thead>
                 <tbody id="tbl_sale_lines"></tbody>
             </table>
+            <p class='text-start'>Sale ID: <span id='sale_id'></span></p>
         </div>
     </div>
     <div id="div_modals">
@@ -36,24 +39,22 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Finish Sale <span class='alert_pos'></span></h5>
-                        <button type="button" class="btn btn-lg btn-danger" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Print Receipt?', id: 'receipt', name: 'sale[receipt]', value: '1'}) %>
+                        <%- include(`${partials}/inputs/display`,  {title: 'Total (£)',      id: 'total',   classes: ['total']}) %>
                         <% [['7','8','9'],['4','5','6'],['1','2','3']].forEach(r => { %>
                             <div class="row mb-2">
                                 <% r.forEach(e => { %>
                                     <div class="col-4">
-                                        <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(<%= e %>)"><%= e %></a>
+                                        <button class='btn btn-lg btn-primary number w-100' data-number='<%= e %>' type='button'><%= e %></button>
                                     </div>
                                 <% }) %>
                             </div>
                         <% }) %>
                         <div class="row mb-2">
                             <div class="col-4">
-                                <a class='btn btn-lg btn-primary w-100' href="javascript:numberBtn(0)">0</a>
+                                <a class='btn btn-lg btn-primary number w-100' data-number='0'>0</a>
                             </div>
                             <div class="col-8">
                                 <a class='btn btn-lg btn-warning w-100' href="javascript:backspace()"><i class='fas fa-backspace'></i></a>
@@ -63,7 +64,7 @@
                             <input type="hidden" class='sale_id' name='sale_id'>
                             <%- include(`${partials}/inputs/select`,  {title: 'Debit from',    id: 'sel_credits', name: 'sale[user_id_debit]',  spinner_id: 'users_debit',  reload_id: 'reload_debit',  permission: 'access_credits'}) %>
                             <%- include(`${partials}/inputs/select`,  {title: 'Credit change', id: 'sel_users',   name: 'sale[user_id_credit]', spinner_id: 'users_credit', reload_id: 'reload_credit', permission: 'access_users'}) %>
-                            <%- include(`${partials}/inputs/number`,  {title: 'Tendered (£)',  id: 'tendered',    name: 'sale[tendered]', step: '0.01', value: '0.00', required: true}) %>
+                            <%- include(`${partials}/inputs/number`,  {title: 'Tendered (£)',  id: 'tendered',    name: 'sale[tendered]', step: '0.01', value: '0.00', required: true, classes: ['text-end']}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Change (£)',    id: 'change'}) %>
                         </form>
                     </div>
@@ -77,6 +78,7 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
+<script src="/js/common/alert.js"></script>
 <script src="/js/addFormListener.js"></script>
 <script src='/js/tabs.js'></script>
 <script src="/js/canteen/pos/view.js"></script>
@@ -88,5 +90,4 @@
     <script src="/js/canteen/pos/debit.js"></script>
 <% } %>
 <script async>getPages()</script>
-<script async>getSale()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>    

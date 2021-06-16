@@ -57,6 +57,7 @@
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
     <div id="div_modals">
+        <%- include(`${partials}/common/notes/modals`) %>
         <% if (permissions.session_edit) { %>
             <div id='mdl_session_close' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
@@ -127,6 +128,7 @@
 <script src='/js/tabs.js'></script>
 <script src='/js/addFormListener.js'></script>
 <script src="/js/canteen/sessions/show/view.js"></script>
+<%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
 <script async>getSession()</script>
 <% if (permissions.access_sales) { %>

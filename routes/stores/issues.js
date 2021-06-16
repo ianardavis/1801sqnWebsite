@@ -1,7 +1,10 @@
 module.exports = (app, m, inc, fn) => {
     app.get('/issues',           fn.loggedIn(), fn.permissions.get('access_issues',   {allow: true}), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',       fn.loggedIn(), fn.permissions.get('access_issues',   {allow: true}), (req, res) => {
-        fn.issues.get({issue_id: req.params.id})
+        fn.get(
+            'issues',
+            {issue_id: req.params.id}
+        )
         .then(issue => {
             if (
                 !req.allowed &&
@@ -35,7 +38,8 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/issue',        fn.loggedIn(), fn.permissions.check('access_issues', {allow: true}), (req, res) => {
-        fn.issues.get(
+        fn.get(
+            'issues',
             req.query,
             [
                 inc.size(),

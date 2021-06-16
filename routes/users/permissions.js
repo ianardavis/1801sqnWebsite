@@ -215,13 +215,12 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/permissions/:id', fn.loggedIn(), fn.permissions.check('permission_edit'),    (req, res) => {
-        m.users.findOne({
-            where:      {user_id: req.params.id},
-            attributes: ['user_id']
-        })
+        fn.get(
+            'users',
+            {user_id: req.params.id}
+        )
         .then(user => {
-            if      (!user)                             fn.send_error(res, 'User not found')
-            else if (user.user_id === req.user.user_id) fn.send_error(res, 'You can not edit your own permissions')
+            if (user.user_id === req.user.user_id) fn.send_error(res, 'You can not edit your own permissions')
             else {
                 return m.permissions.findAll({
                     where: {user_id: user.user_id},

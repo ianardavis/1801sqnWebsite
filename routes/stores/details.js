@@ -5,7 +5,10 @@ module.exports = (app, m, inc, fn) => {
         .catch(err =>    fn.send_error(res, err));
     });
     app.get('/get/detail',     fn.loggedIn(), fn.permissions.check('access_details', {send: true}), (req, res) => {
-        m.details.findOne({where: req.query})
+        fn.get(
+            'details',
+            req.query
+        )
         .then(detail => res.send({success: true, result: detail}))
         .catch(err => fn.send_error(res, err));
     });

@@ -1,18 +1,19 @@
 const { scryptSync, randomBytes } = require("crypto");
 module.exports = (app, m, inc, fn) => {
-    app.get('/users',        fn.loggedIn(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
+    let user_attributes = ['user_id', 'full_name', 'surname', 'first_name', 'service_number'];
+    app.get('/users',             fn.loggedIn(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
         if (req.allowed) res.render('users/index')
         else res.redirect(`/users/${req.user.user_id}`);
     });
-    app.get('/users/select', fn.loggedIn(), fn.permissions.get('access_users'),                   (req, res) => res.render('users/select'));
+    app.get('/users/select',      fn.loggedIn(), fn.permissions.get('access_users'),                   (req, res) => res.render('users/select'));
 
-    app.get('/users/:id',    fn.loggedIn(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
+    app.get('/users/:id',         fn.loggedIn(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
         if (req.allowed || String(req.params.id) === String(req.user.user_id)) {
             res.render('users/show')
         } else res.redirect(`/users/${req.user.user_id}`);
     });
 
-    app.get('/get/user',     fn.loggedIn(), fn.permissions.check('access_users'),                 (req, res) => {
+    app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users'),                 (req, res) => {
         m.users.findOne({
             where:      req.query,
             include:    [inc.rank(), inc.status()],
@@ -24,29 +25,35 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/current',  fn.loggedIn(), fn.permissions.check('access_users',  {allow: true}), (req, res) => {
-        let where = {status_id: {[fn.op.or]: [1, 2]}}
-        if (!req.allowed) where.user_id = req.user.user_id;
-        m.users.findAll({
-            where:      where,
-            include:    [inc.rank(), inc.status()],
-            attributes: ['user_id', 'full_name', 'surname', 'first_name']
-        })
-        .then(users => res.send({success: true,  result: users}))
-        .catch(err =>  fn.send_error(res, err));
-    });
-    app.get('/get/users',    fn.loggedIn(), fn.permissions.check('access_users',  {allow: true}), (req, res) => {
+    app.get('/get/users',         fn.loggedIn(), fn.permissions.check('access_users',  {allow: true}), (req, res) => {
         if (!req.allowed) req.query.user_id = req.user.user_id;
         m.users.findAll({
             where:      req.query,
             include:    [inc.rank(), inc.status()],
-            attributes: ['user_id', 'full_name', 'surname', 'first_name', 'service_number']
+            attributes: user_attributes
+        })
+        .then(users => res.send({success: true,  result: users}))
+        .catch(err =>  fn.send_error(res, err));
+    });
+    app.get('/get/users_current', fn.loggedIn(), fn.permissions.check('access_users',  {allow: true}), (req, res) => {
+        let where = null
+        if (!req.allowed) where = {user_id: req.user.user_id};
+        m.users.findAll({
+            where: where,
+            include:    [
+                inc.rank(),
+                inc.status({
+                    where: {status: {[fn.op.substring]: 'Current'}},
+                    required: true
+                })
+            ],
+            attributes: user_attributes
         })
         .then(users => res.send({success: true,  result: users}))
         .catch(err =>  fn.send_error(res, err));
     });
 
-    app.post('/users',       fn.loggedIn(), fn.permissions.check('user_add'),                     (req, res) => {
+    app.post('/users',            fn.loggedIn(), fn.permissions.check('user_add'),                     (req, res) => {
         let _user = req.body.user;
         if (
             (_user.service_number) &&
@@ -79,17 +86,16 @@ module.exports = (app, m, inc, fn) => {
         } else fn.send_error(res, 'Not all required information has been submitted');
     });
     
-    app.put('/password/:id', fn.loggedIn(), fn.permissions.check('user_edit',     {allow: true}), (req, res) => {
+    app.put('/password/:id',      fn.loggedIn(), fn.permissions.check('user_edit',     {allow: true}), (req, res) => {
         if      (!req.allowed && String(req.user.user_id) !== String(req.params.id)) fn.send_error(res, 'Permission denied')
         else if (!req.body.password)                                         fn.send_error(res, 'No password submitted')
         else {
-            m.users.findOne({
-                where:      {user_id: req.params.id},
-                attributes: ['user_id', 'password', 'salt']
-            })
+            fn.get(
+                'users',
+                {user_id: req.params.id}
+            )
             .then(user => {
-                if      (!user)                                                                    fn.send_error(res, 'User not found')
-                else if (user.password === encryptPassword(req.body.password, user.salt).password) fn.send_error(res, 'That is the current password!')
+                if (user.password === encryptPassword(req.body.password, user.salt).password) fn.send_error(res, 'That is the current password!')
                 else {
                     return user.update(encryptPassword(req.body.password))
                     .then(result => {
@@ -102,13 +108,16 @@ module.exports = (app, m, inc, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
-    app.put('/users/:id',    fn.loggedIn(), fn.permissions.check('user_edit'),                    (req, res) => {
+    app.put('/users/:id',         fn.loggedIn(), fn.permissions.check('user_edit'),                    (req, res) => {
         if (req.body.user) {
             if (!req.body.user.reset) req.body.user.reset = 0;
             ['user_id','full_name','salt','password','createdAt','updatedAt'].forEach(e => {
                 if (req.body.user[e]) delete req.body.user[e];
             });
-            m.users.findOne({where: {user_id: req.params.id}})
+            fn.get(
+                'users',
+                {user_id: req.params.id}
+            )
             .then(user => {
                 return user.update(req.body.user)
                 .then(user => res.send({success: true,  message: 'User saved'}))
@@ -118,22 +127,22 @@ module.exports = (app, m, inc, fn) => {
         } else fn.send_error(res, 'No details submitted');
     });
     
-    app.delete('/users/:id', fn.loggedIn(), fn.permissions.check('user_delete'),                  (req, res) => {
+    app.delete('/users/:id',      fn.loggedIn(), fn.permissions.check('user_delete'),                  (req, res) => {
         if (Number(req.user.user_id) === Number(req.params.id)) fn.send_error(res, 'You can not delete your own account')
         else {
-            m.users.findOne({where: {user_id: req.params.id}})
+            fn.get(
+                'users',
+                {user_id: req.params.id}
+            )
             .then(user => {
-                if (!user) fn.send_error(res, 'User not found')
+                if (user.user_id === req.user.user_id) fn.send_error(res, 'You can not delete your own account')
                 else {
-                    if (user.user_id === req.user.user_id) fn.send_error(res, 'You can not delete your own account')
-                    else {
-                        let actions = [];
-                        actions.push(m.permissions.destroy({where: {user_id: user.user_id}}));
-                        actions.push(user.destroy());
-                        return Promise.all(actions)
-                        .then(result => res.send({success: true, message: 'User deleted'}))
-                        .catch(err => fn.send_error(res, err));
-                    };
+                    let actions = [];
+                    actions.push(m.permissions.destroy({where: {user_id: user.user_id}}));
+                    actions.push(user.destroy());
+                    return Promise.all(actions)
+                    .then(result => res.send({success: true, message: 'User deleted'}))
+                    .catch(err => fn.send_error(res, err));
                 };
             })
         };

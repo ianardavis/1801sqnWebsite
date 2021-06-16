@@ -7,10 +7,11 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/action',  fn.loggedIn(), fn.permissions.check('access_actions', {send: true}), (req, res) => {
-        m.actions.findOne({
-            where: req.query,
-            include: [inc.user()]
-        })
+        fn.get(
+            'actions',
+            req.query,
+            [inc.user()]
+        )
         .then(action => res.send({success: true, result: action}))
         .catch(err => fn.send_error(res, err));
     });
@@ -20,7 +21,10 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/action_link',  fn.loggedIn(), fn.permissions.check('access_actions', {send: true}), (req, res) => {
-        m.action_links.findOne({where: req.query})
+        fn.get(
+            'action_links',
+            req.query
+        )
         .then(link => res.send({success: true, result: link}))
         .catch(err => fn.send_error(res, err));
     });

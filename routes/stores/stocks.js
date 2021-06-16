@@ -28,64 +28,64 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/stock',          fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
-        m.stocks.findOne({
-            where:   req.query,
-            include: [
+        fn.get(
+            'stocks',
+            req.query,
+            [
                 inc.size(),
                 inc.location()
-            ],
-        })
+            ]
+        )
         .then(stock => res.send({success: true, result: stock}))
         .catch(err => fn.send_error(res, err));
     });
 
     app.post('/stocks',            fn.loggedIn(), fn.permissions.check('stock_add'),     (req, res) => {
-        m.sizes.findOne({
-            where: {size_id: req.body.stock.size_id},
-            attributes: ['size_id']
-        })
+        fn.get(
+            'sizes',
+            {size_id: req.body.stock.size_id}
+        )
         .then(size => {
-            if (!size) fn.send_error(res, 'Size not found')
-            else {
-                return m.locations.findOrCreate({where: {location: req.body.location}})
-                .then(([location, created]) => {
-                    return m.stocks.findOrCreate({
-                        where: {
-                            size_id:     size.size_id,
-                            location_id: location.location_id
-                        }
-                    })
-                    .then(([stock, created]) => res.send({success: true, message: 'Stock location added'}))
-                    .catch(err => fn.send_error(res, err));
+            return m.locations.findOrCreate({where: {location: req.body.location}})
+            .then(([location, created]) => {
+                return m.stocks.findOrCreate({
+                    where: {
+                        size_id:     size.size_id,
+                        location_id: location.location_id
+                    }
                 })
+                .then(([stock, created]) => res.send({success: true, message: 'Stock location added'}))
                 .catch(err => fn.send_error(res, err));
-            };
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
     app.put('/stocks/:id',         fn.loggedIn(), fn.permissions.check('stock_edit'),    (req, res) => {
-        m.stocks.findOne({where: {stock_id: req.params.id}})
+        fn.get(
+            'stocks',
+            {stock_id: req.params.id}
+        )
         .then(stock => {
-            if (!stock) fn.send_error(res, 'Stock record not found')
-            else {
-                return m.locations.findOrCreate({where: {location: req.body.location}})
-                .then(([location, created]) => {
-                    return stock.update({location_id: location.location_id})
-                    .then(result => res.send({success: true, message: 'Stock saved'}))
-                    .catch(err => fn.send_error(res, err));
-                })
+            return m.locations.findOrCreate({where: {location: req.body.location}})
+            .then(([location, created]) => {
+                return stock.update({location_id: location.location_id})
+                .then(result => res.send({success: true, message: 'Stock saved'}))
                 .catch(err => fn.send_error(res, err));
-            };
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
         
     });
     
     app.delete('/stocks/:id',      fn.loggedIn(), fn.permissions.check('stock_delete'),  (req, res) => {
-        m.stocks.findOne({where: {stock_id: req.params.id}})
+        fn.get(
+            'stocks',
+            {stock_id: req.params.id}
+        )
         .then(stock => {
-            if      (!stock)        fn.send_error(res, 'Stock record not found')
-            else if (stock.qty > 0) fn.send_error(res, 'Cannot delete whilst stock is not 0')
+            if (stock.qty > 0) fn.send_error(res, 'Cannot delete whilst stock is not 0')
             else {
                 return m.actions.findOne({where: {stock_id: stock.stock_id}})
                 .then(action => {

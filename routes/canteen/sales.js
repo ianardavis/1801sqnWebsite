@@ -1,7 +1,7 @@
 module.exports = (app, m, inc, fn) => {
-    app.get('/sales/:id',      fn.loggedIn(), fn.permissions.get('access_sales'),   (req, res) => res.render('canteen/sales/show'));
+    app.get('/sales/:id',        fn.loggedIn(), fn.permissions.get('access_sales'),   (req, res) => res.render('canteen/sales/show'));
 
-    app.get('/get/sales',      fn.loggedIn(), fn.permissions.check('access_sales'), (req, res) => {
+    app.get('/get/sales',        fn.loggedIn(), fn.permissions.check('access_sales'), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
@@ -12,18 +12,16 @@ module.exports = (app, m, inc, fn) => {
         .then(sales => res.send({success: true, result: sales}))
         .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/sale',       fn.loggedIn(), fn.permissions.check('access_sales'), (req, res) => {
-        m.sales.findOne({
-            where: req.query,
-            include: [inc.users()]
-        })
-        .then(sale => {
-            if (sale) res.send({success: true,  result: sale})
-            else      fn.send_error(res, 'Sale not found')
-        })
+    app.get('/get/sale',         fn.loggedIn(), fn.permissions.check('access_sales'), (req, res) => {
+        fn.get(
+            'sales',
+            req.query,
+            [inc.user()]
+        )
+        .then(sale => res.send({success: true,  result: sale}))
         .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/user_sale',  fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.get('/get/sale_current', fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
         m.sessions.findAll({where: {status: 1}})
         .then(sessions => {
             if (sessions.length !== 1) fn.send_error(res, `${sessions.length} session(s) open`)
@@ -41,7 +39,7 @@ module.exports = (app, m, inc, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/sale_lines', fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.get('/get/sale_lines',   fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
             include: [inc.item()]
@@ -50,48 +48,44 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/sale_lines',    fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.post('/sale_lines',      fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
         if (!req.body.line) fn.send_error(res, 'No line specified')
         else {
-            m.sales.findOne({
-                where: {sale_id: req.body.line.sale_id},
-                include: [inc.sessions({attributes: ['status']})],
-                attributes: ['sale_id']
-            })
+            fn.get(
+                'sales',
+                {sale_id: req.body.line.sale_id},
+                [inc.session()]
+            )
             .then(sale => {
-                if      (!sale)                      fn.send_error(res, 'Sale not found')
-                else if (sale.session.status !== 1) fn.send_error(res, 'Session for this sale is not open')
+                if (sale.session.status !== 1) fn.send_error(res, 'Session for this sale is not open')
                 else {
-                    return m.canteen_items.findOne({
-                        where: {item_id: req.body.line.item_id},
-                        attributes: ['item_id', 'price']
-                    })
+                    return fn.get(
+                        'canteen_items',
+                        {item_id: req.body.line.item_id}
+                    )
                     .then(item => {
-                        if (!item) fn.send_error(res, 'Item not found')
-                        else {
-                            return m.sale_lines.findOrCreate({
-                                where: {
-                                    sale_id: sale.sale_id,
-                                    item_id: item.item_id
-                                },
-                                defaults: {
-                                    _qty:   req.body.line._qty || 1,
-                                    _price: item._price
-                                }
-                            })
-                            .then(([line, created]) => {
-                                if (created) res.send({success: true, message: 'Line added'})
-                                else {
-                                    return line.increment('_qty', {by: req.body.line._qty})
-                                    .then(result => {
-                                        if (result) res.send({success: true,  message: 'Line updated'})
-                                        else        fn.send_error(res, 'Line not updated');
-                                    })
-                                    .catch(err => fn.send_error(res, err));
-                                };
-                            })
-                            .catch(err =>fn.send_error(res, err));
-                        };
+                        return m.sale_lines.findOrCreate({
+                            where: {
+                                sale_id: sale.sale_id,
+                                item_id: item.item_id
+                            },
+                            defaults: {
+                                qty:   req.body.line.qty || 1,
+                                price: item.price
+                            }
+                        })
+                        .then(([line, created]) => {
+                            if (created) res.send({success: true, message: 'Line created'})
+                            else {
+                                return line.increment('qty', {by: req.body.line.qty})
+                                .then(result => {
+                                    if (result) res.send({success: true,  message: 'Line updated'})
+                                    else        fn.send_error(res, 'Line not updated');
+                                })
+                                .catch(err => fn.send_error(res, err));
+                            };
+                        })
+                        .catch(err =>fn.send_error(res, err));
                     })
                     .catch(err => fn.send_error(res, err));
                 };
@@ -100,32 +94,23 @@ module.exports = (app, m, inc, fn) => {
         };
     });
     
-    app.put('/sale_lines',     fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.put('/sale_lines',       fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
         if (req.body.line) {
-            m.sale_lines.findOne({
-                where: {line_id: req.body.line.line_id},
-                include: [
-                    inc.sales({
-                        as:         'sale',
-                        include:    [inc.sessions({attributes: ['status']})],
-                        attributes: ['sale_id']
-                    })
-                ],
-                attributes: ['line_id', '_qty']
-            })
+            fn.get(
+                'sale_lines',
+                {sale_line_id: req.body.line.sale_line_id},
+                [inc.sale({session: true})]
+            )
             .then(line => {
-                if      (!line)                           fn.send_error(res, 'Line not found')
-                else if (line.sale.session.status !== 1) fn.send_error(res, 'Session for this line is not open')
+                if (line.sale.session.status !== 1) fn.send_error(res, 'Session for this line is not open')
                 else {
-                    return line.increment('_qty', {by: req.body.line._qty})
+                    return line.increment('qty', {by: req.body.line.qty})
                     .then(result => {
                         return line.reload()
                         .then(result => {
                             if (result) {
-                                if (line._qty === 0) {
-                                    let actions = [];
-                                    actions.push(line.destroy());
-                                    return Promise.all(actions)
+                                if (line.qty === 0) {
+                                    return line.destroy()
                                     .then(result => { 
                                         if (result) res.send({success: true,  message: 'Line updated'})
                                         else fn.send_error(res, 'Line not updated');
@@ -141,139 +126,49 @@ module.exports = (app, m, inc, fn) => {
             .catch(err => fn.send_error(res, err));
         } else fn.send_error(res, 'No line specified');
     });
-    app.put('/sales',          fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
-        m.sales.findOne({
-            where:      {sale_id: req.body.sale_id},
-            attributes: ['sale_id', 'status']
-        })
+    app.put('/sales',            fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+        fn.get(
+            'sales',
+            {sale_id: req.body.sale_id}
+        )
         .then(sale => {
             if (sale.status !== 1) fn.send_error(res, 'Sale is not open')
             else {
                 return m.sale_lines.findAll({
-                    where: {
-                        sale_id: sale.sale_id,
-                        status: 1
-                    },
-                    attributes: ['line_id', 'item_id', '_qty', '_price']
+                    where: {sale_id: sale.sale_id}
                 })
                 .then(lines => {
                     if (lines.length === 0) fn.send_error(res, 'No open lines on this sale');
                     else {
                         let total = 0.00;
-                        lines.forEach(line => {
-                            total += line._qty * line._price;
-                        });
-                        if (req.body.sale.tendered < total) {
-                            if (req.body.sale.user_id_debit && String(req.body.sale.user_id_debit) !== '') {
-                                return m.credits.findOne({where: {user_id: req.body.sale.user_id_debit}})
-                                .then(account => {
-                                    if (account) {
-                                        if (account._credit < (total - req.body.sale.tendered)) fn.send_error(res, 'Not enough on account')
-                                        else {
-                                            let debit_amount = Number(total - req.body.sale.tendered)
-                                            return account.decrement('_credit', {by: debit_amount})
-                                            .then(result => {
-                                                return account.reload()
-                                                .then(updated_account => {
-                                                    let actions = [];
-                                                    if (updated_account._credit === '0.00') actions.push(updated_account.destroy());
-                                                    actions.push(
-                                                        m.payments.create({
-                                                            sale_id: sale.sale_id,
-                                                            _amount: debit_amount,
-                                                            _type: 'Debit',
-                                                            user_id: req.body.sale.user_id_debit
-                                                        })
-                                                    );
-                                                    if (Number(req.body.sale.tendered) > 0) {
-                                                        actions.push(
-                                                            m.payments.create({
-                                                                sale_id: sale.sale_id,
-                                                                _amount: Number(req.body.sale.tendered),
-                                                            })
-                                                        );
-                                                    };
-                                                    actions.push(
-                                                        m.sale_lines.update(
-                                                            {status: 2},
-                                                            {where: {sale_id: sale.sale_id}}
-                                                        )
-                                                    );
-                                                    actions.push(sale.update({status: 2}));
-                                                    lines.forEach(line => {
-                                                        actions.push(
-                                                            m.canteen_items.findOne({
-                                                                where: {item_id: line.item_id},
-                                                                attributes: ['item_id', '_qty']
-                                                            })
-                                                            .then(item => {
-                                                                return item.decrement('_qty', {by: line._qty})
-                                                            })
-                                                        );
-                                                    })
-                                                    return Promise.all(actions)
-                                                    .then(result => res.send({success: true, message: 'Sale completed', change: 0.00}))
-                                                    .catch(err => fn.send_error(res, err));
-                                                })
-                                                .catch(err => fn.send_error(res, err));
-                                            })
-                                            .catch(err => fn.send_error(res, err));
-                                        };
-                                    } else fn.send_error(res, err);
-                                })
-                                .catch(err => fn.send_error(res, err));
-                            } else fn.send_error(res, 'Not enough tendered');
-                        } else {
-                            let actions = [],
-                                change  = Number(req.body.sale.tendered - total);
-                            actions.push(
-                                m.sale_lines.update(
-                                    {status: 2},
-                                    {where: {sale_id: sale.sale_id}}
-                                )
-                            );
+                        lines.forEach(line => {total += line.qty * line.price});
+                        return fn.sales.payment(sale.sale_id, total, req.body.sale, req.user.user_id)
+                        .then(change => {
+                            let actions = [];
                             actions.push(sale.update({status: 2}));
-                            actions.push(
-                                m.payments.create({
-                                    sale_id: sale.sale_id,
-                                    _amount: Number(total),
-                                })
-                            );
                             lines.forEach(line => {
                                 actions.push(
-                                    m.canteen_items.findOne({
-                                        where: {item_id: line.item_id},
-                                        attributes: ['item_id', '_qty']
-                                    })
-                                    .then(item => {return item.decrement('_qty', {by: line._qty})})
-                                );
-                            });
-                            if (req.body.sale.user_id_credit && String(req.body.sale.user_id_credit) !== '' && change > 0) {
-                                actions.push(
-                                    m.credits.findOrCreate({
-                                        where:    {user_id: req.body.sale.user_id_credit},
-                                        defaults: {_credit: change}
-                                    })
-                                    .then(([credit, created]) => {
-                                        if (!created) {
-                                            return credit.increment('_credit', {by: change})
+                                    new Promise((resolve, reject) => {
+                                        fn.get(
+                                            'canteen_items',
+                                            {item_id: line.item_id}
+                                        )
+                                        .then(item => {
+                                            return item.decrement('qty', {by: line.qty})
                                             .then(result => {
-                                                return m.payments.create({
-                                                    sale_id: sale.sale_id,
-                                                    _amount: change,
-                                                    _type: 'Credit',
-                                                    user_id: credit.user_id
-                                                })
-                                                .then(result => change = 0);
-                                            });
-                                        };
+                                                if (!result) reject(new Error('Quantity not updated'))
+                                                else resolve(true)
+                                            })
+                                            .catch(err => reject(err));
+                                        })
                                     })
                                 );
-                            };
+                            })
                             return Promise.all(actions)
                             .then(result => res.send({success: true, message: 'Sale completed', change: change}))
                             .catch(err => fn.send_error(res, err));
-                        };
+                        })
+                        .catch(err => fn.send_error(res, err));
                     };
                 })
                 .catch(err => fn.send_error(res, err));

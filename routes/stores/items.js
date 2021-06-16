@@ -11,14 +11,11 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item',               fn.loggedIn(), fn.permissions.check('access_items'), (req, res) => {
-        m.items.findOne({
-            where:   req.query,
-            include: [inc.genders()]
-        })
-        .then(item => {
-            if (item) res.send({success: true, result: item})
-            else fn.send_error(res, 'Item not found');
-        })
+        fn.get(
+            'items',
+            req.query
+        )
+        .then(item => res.send({success: true, result: item}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_items'), (req, res) => {
@@ -30,10 +27,10 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/item_category',      fn.loggedIn(), fn.permissions.check('access_items'), (req, res) => {
-        m.item_categories.findOne({
-            where:   req.query,
-            include: [inc.categories()]
-        })
+        fn.get(
+            'item_categories',
+            req.query
+        )
         .then(category => res.send({success: true, result: category}))
         .catch(err => fn.send_error(res, err));
     });

@@ -2,7 +2,10 @@ module.exports = function (m, fn) {
     fn.demands = {lines: {}};
     fn.demands.create = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return getSupplier({supplier_id: options.supplier_id})
+            return fn.get(
+                'suppliers',
+                {supplier_id: options.supplier_id}
+            )
             .then(supplier => {
                 return m.demands.findOrCreate({
                     where: {
@@ -19,7 +22,10 @@ module.exports = function (m, fn) {
     };
     fn.demands.complete = function (demand_id, user) {
         return new Promise((resolve, reject) => {
-            return getDemand({demand_id: demand_id})
+            return fn.get(
+                'demands',
+                {demand_id: demand_id}
+            )
             .then(demand => {
                 if  (demand.status !== 1) reject(new Error('This demand is not in draft'))
                 else {
@@ -64,13 +70,12 @@ module.exports = function (m, fn) {
     };
     fn.demands.cancel = function (demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return m.demands.findOne({
-                where: {demand_id: demand_id},
-                attributes: ['demand_id', 'status']
-            })
+            return fn.get(
+                'demands',
+                {demand_id: demand_id}
+            )
             .then(demand => {
-                if      (!demand)             reject(new Error('Demand not found'))
-                else if (demand.status === 0) reject(new Error('This demand has already been cancelled'))
+                if      (demand.status === 0) reject(new Error('This demand has already been cancelled'))
                 else if (demand.status === 3) reject(new Error('This demand has already been closed'))
                 else {
                     return m.demand_lines.findOne({
@@ -136,7 +141,10 @@ module.exports = function (m, fn) {
     };
     fn.demands.raise = function (demand_id, user) {
         return new Promise((resolve, reject) => {
-            getDemand({demand_id: demand_id})
+            return fn.get(
+                'demands',
+                {demand_id: demand_id}
+            )
             .then(demand => {
                 if      (demand.status !== 2)                       reject(new Error('This demand is not complete'))
                 else if (demand.filename && demand.filename !== '') resolve(demand.filename)
@@ -193,7 +201,10 @@ module.exports = function (m, fn) {
     };
     fn.demands.close = function (demand_id, user_id) {
         return new Promise((resolve, reject) => {
-            return getDemand({demand_id: demand_id})
+            return fn.get(
+                'demands',
+                {demand_id: demand_id}
+            )
             .then(demand => {
                 if (demand.status !== 2) reject(new Error('This demand is not complete'))
                 else {
@@ -236,7 +247,8 @@ module.exports = function (m, fn) {
 
     fn.demands.lines.create = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return getSize(
+            return fn.get(
+                'sizes',
                 {size_id: options.size_id},
                 [{
                     model: m.details,
@@ -248,7 +260,10 @@ module.exports = function (m, fn) {
                 else if (!size.details.filter(e => e.name === 'Demand Page')) reject(new Error('No demand page for this size'))
                 else if (!size.details.filter(e => e.name === 'Demand Cell')) reject(new Error('No demand cell for this size'))
                 else {
-                    return getDemand({demand_id: options.demand_id})
+                    return fn.get(
+                        'demands',
+                        {demand_id: options.demand_id}
+                    )
                     .then(demand => {
                         if      (demand.status    !== 1)                  reject(new Error('Lines can only be added to draft demands'))
                         else if (size.supplier_id !== demand.supplier_id) reject(new Error('Size is not from this supplier'))
@@ -295,12 +310,18 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (!line.receipt) reject(new Error('No receipt details'))
             else {
-                return getDemandLine(line.demand_line_id)
+                return fn.get(
+                    'demand_lines',
+                    {demand_line_id: line.demand_line_id}
+                )
                 .then(demand_line => {
                     if      (demand_line.status === 3) reject(new Error('This line has already been received'))
                     else if (demand_line.status === 1) reject(new Error('This line is still in draft'))
                     else {
-                        return getSize({size_id: demand_line.size_id})
+                        return fn.get(
+                            'sizes',
+                            {size_id: demand_line.size_id}
+                        )
                         .then(size => {
                             let actions = [];
                             if (size.has_serials) {
@@ -346,10 +367,12 @@ module.exports = function (m, fn) {
     };
     function cancel_line(demand_line_id, user_id) {
         return new Promise ((resolve, reject) => {
-            return m.demand_lines.findOne({where: {demand_line_id: demand_line_id}})
+            return fn.get(
+                'demand_lines',
+                {demand_line_id: demand_line_id}
+            )
             .then(line => {
-                if      (!line)             reject(new Error('Demand line not found'))
-                else if (line.status === 0) reject(new Error('This line has already been cancelled'))
+                if      (line.status === 0) reject(new Error('This line has already been cancelled'))
                 else if (line.status === 3) reject(new Error('This line has already been received'))
                 else {
                     let actions = [];
@@ -401,16 +424,6 @@ module.exports = function (m, fn) {
         });
     };
 
-    function getDemand(where = {}) {
-        return new Promise((resolve, reject) => {
-            return m.demands.findOne({where: where})
-            .then(demand => {
-                if (!demand) reject(new Error('Demand not found'))
-                else         resolve(demand);
-            })
-            .catch(err => reject(err));
-        });
-    };
     function getDemandLines(where = {}, include = [], options = {}) {
         return new Promise((resolve, reject) => {
             return m.demand_lines.findAll({
@@ -427,73 +440,33 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    function getDemandLine(demand_line_id) {
-        return new Promise((resolve, reject) => {
-            return m.demand_lines.findOne({where: {demand_line_id: demand_line_id}})
-            .then(line => {
-                if (!line) reject(new Error('Demand line not found'))
-                else resolve(line);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function getSupplier(where = {}, include = []) {
-        return new Promise((resolve, reject) => {
-            return m.suppliers.findOne({
-                where:   where,
-                include: include
-            })
-            .then(supplier => {
-                if (!supplier) reject(new Error('Supplier not found'))
-                else           resolve(supplier);
-            })
-            .catch(err => reject(err));
-        });
-    };
-    function getSize(where = {}, include = []) {
-        return new Promise((resolve, reject) => {
-            return m.sizes.findOne({
-                where:   where,
-                include: include
-            })
-            .then(size => {
-                if (!size) reject(new Error('Size not found'))
-                else resolve(size)
-            })
-            .catch(err => reject(err))
-        });
-    };
 
     function get_template(supplier_id) {
         return new Promise((resolve, reject) => {
-            return getSupplier(
+            return fn.get(
+                'suppliers',
                 {supplier_id: supplier_id},
-                [
-                    {
-                        model:    m.files,
-                        where:    {description: 'Demand'},
-                        required: false,
-                        include: [
-                            {model: m.file_details, as: 'details'}
-                        ]
-                    },
-                    {
-                        model: m.accounts,
-                        as: 'account',
+                [{
+                    model:    m.files,
+                    where:    {description: 'Demand'},
+                    required: false,
+                    include: [
+                        {model: m.file_details, as: 'details'}
+                    ]
+                },{
+                    model: m.accounts,
+                    as: 'account',
+                    include: [{
+                        model: m.users,
+                        as: 'user',
                         include: [
                             {
-                                model: m.users,
-                                as: 'user',
-                                include: [
-                                    {
-                                        model: m.ranks,
-                                        as: 'rank'
-                                    }
-                                ]
+                                model: m.ranks,
+                                as: 'rank'
                             }
                         ]
-                    }
-                ]
+                    }]
+                }]
             )
             .then(supplier => {
                 if      (!supplier.files)             reject(new Error('No template for this supplier'))
@@ -611,13 +584,13 @@ module.exports = function (m, fn) {
                                 links.forEach(link => {
                                     get_issues.push(
                                         new Promise((resolve, reject) => {
-                                            return m.issues.findOne({
-                                                where: {issue_id: link.id},
-                                                include: [{model: m.users, as: 'user_issue', include: [{model: m.ranks, as: 'rank'}]}]
-                                            })
+                                            return fn.get(
+                                                'issues',
+                                                {issue_id: link.id},
+                                                [{model: m.users, as: 'user_issue', include: [{model: m.ranks, as: 'rank'}]}]
+                                            )
                                             .then(issue => {
-                                                if      (!issue)            reject(new Error('Issue not found'))
-                                                else if (!issue.user_issue) reject(new Error('User not found'))
+                                                if (!issue.user_issue) reject(new Error('User not found'))
                                                 else {
                                                     issues.push(issue.user_issue);
                                                     resolve(true)

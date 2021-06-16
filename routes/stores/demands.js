@@ -2,13 +2,12 @@ module.exports = (app, m, inc, fn) => {
     app.get('/demands',              fn.loggedIn(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/index'));
     app.get('/demands/:id',          fn.loggedIn(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/show'));
     app.get('/demands/:id/download', fn.loggedIn(), fn.permissions.check('access_demands'),      (req, res) => {
-        m.demands.findOne({
-            where: {demand_id: req.params.id},
-            attributes: ['demand_id', 'filename']
-        })
+        fn.get(
+            'demands',
+            {demand_id: req.params.id}
+        )
         .then(demand => {
-            if      (!demand)          fn.send_error(res, 'Demand not found')
-            else if (!demand.filename) {
+            if (!demand.filename) {
                 return fn.demands.raise(demand.demand_id, req.user)
                 .then(file => {
                     fn.download('demands', file, res);
@@ -37,17 +36,15 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.get('/get/demand',           fn.loggedIn(), fn.permissions.check('access_demands'),      (req, res) => {
-        m.demands.findOne({
-            where: req.query,
-            include: [
+        fn.get(
+            'demands',
+            req.query,
+            [
                 inc.user(),
                 inc.supplier()
             ]
-        })
-        .then(demand => {
-            if (!demand) fn.send_error(res, 'Demand not found')
-            else res.send({success: true, result: demand});
-        })
+        )
+        .then(demand => res.send({success: true, result: demand}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('access_demands'),      (req, res) => {
@@ -74,14 +71,15 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demand_line',      fn.loggedIn(), fn.permissions.check('access_demand_lines'), (req, res) => {
-        m.demand_lines.findOne({
-            where:   req.query,
-            include: [
+        fn.get(
+            'demand_lines',
+            req.query,
+            [
                 inc.size(),
                 inc.user(),
                 inc.demand()
             ]
-        })
+        )
         .then(line => res.send({success: true, result: line}))
         .catch(err => fn.send_error(res, err));
     });

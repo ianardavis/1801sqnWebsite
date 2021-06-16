@@ -1,6 +1,7 @@
 <input
     class="btn-check"
     type="checkbox"
+    <% if (locals.name) { %>name='<%= name %>'<% } %>
     <% if (locals.value) { %>value='<%= value %>'<% } %>
     <% if (locals.id)    { %>id='<%= id %>'<% } %>
     <% if (locals.checked) { %>checked<% } %>

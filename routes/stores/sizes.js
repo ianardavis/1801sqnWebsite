@@ -19,17 +19,15 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/size',     fn.loggedIn(), fn.permissions.check('access_sizes'), (req, res) => {
-        m.sizes.findOne({
-            where: req.query,
-            include: [
+        fn.get(
+            'sizes',
+            req.query,
+            [
                 inc.items(),
                 inc.suppliers({as: 'supplier'})
             ]
-        })
-        .then(size => {
-            if (size) res.send({success: true, result: size})
-            else fn.send_error(res, 'Size not found');
-        })
+        )
+        .then(size => res.send({success: true, result: size}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -56,28 +54,28 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.delete('/sizes/:id', fn.loggedIn(), fn.permissions.check('size_delete'),  (req, res) => {
-        m.sizes.findOne({where: {size_id: req.params.id}})
+        fn.get(
+            'sizes',
+            {size_id: req.params.id}
+        )
         .then(size => {
-            if (!size) fn.send_error(res, 'Size not found')
-            else {
-                return m.stocks.findOne({where: {size_id: req.params.id}})
-                .then(stock => {
-                    if (stock) fn.send_error(res, 'Cannot delete a size whilst it has stock')
-                    else {
-                        return m.nsns.findOne({where: {size_id: req.params.id}})
-                        .then(nsn => {
-                            if (nsn) fn.send_error(res, 'Cannot delete a size whilst it has NSNs assigned')
-                            else {
-                                return size.destroy()
-                                .then(result => res.send({success: true, message: 'Size deleted'}))
-                                .catch(err => fn.send_error(res, err));
-                            };
-                        })
-                        .catch(err => fn.send_error(res, err));
-                    };
-                })
-                .catch(err => fn.send_error(res, err));
-            };
+            return m.stocks.findOne({where: {size_id: req.params.id}})
+            .then(stock => {
+                if (stock) fn.send_error(res, 'Cannot delete a size whilst it has stock')
+                else {
+                    return m.nsns.findOne({where: {size_id: req.params.id}})
+                    .then(nsn => {
+                        if (nsn) fn.send_error(res, 'Cannot delete a size whilst it has NSNs assigned')
+                        else {
+                            return size.destroy()
+                            .then(result => res.send({success: true, message: 'Size deleted'}))
+                            .catch(err => fn.send_error(res, err));
+                        };
+                    })
+                    .catch(err => fn.send_error(res, err));
+                };
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });

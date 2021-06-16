@@ -14,17 +14,15 @@ module.exports = (app, m, inc, fn) => {
         .catch(err =>     fn.send_error(res, err))
     });
     app.get('/get/receipt',     fn.loggedIn(), fn.permissions.check('access_receipts'), (req, res) => {
-        m.receipts.findOne({
-            where: req.query,
-            include: [
+        fn.get(
+            'receipts',
+            req.query,
+            [
                 inc.users(),
                 inc.items()
             ]
-        })
-        .then(receipt => {
-            if (receipt) res.send({success: true,  result: receipt})
-            else         fn.send_error(res, 'Receipt not found');
-        })
+        )
+        .then(receipt => res.send({success: true,  result: receipt}))
         .catch(err => fn.send_error(res, err))
     });
 
@@ -37,61 +35,58 @@ module.exports = (app, m, inc, fn) => {
                     if      (!receipt.qty)  reject(new Error('No quantity submitted'))
                     else if (!receipt.cost) reject(new Error('No cost submitted'))
                     else {
-                        return m.canteen_items.findOne({
-                            where:      {item_id: receipt.item_id},
-                            attributes: ['item_id', 'cost', 'qty']
-                        })
+                        return fn.get(
+                            'canteen_items',
+                            {item_id: receipt.item_id}
+                        )
                         .then(item => {
-                            if (!item) reject(new Error('Item not found'))
-                            else {
-                                return m.receipts.create({
-                                    item_id: item.item_id,
-                                    qty:     receipt.qty,
-                                    cost:    receipt.cost,
-                                    user_id: req.user.user_id
-                                })
-                                .then(receipt => {
-                                    let receipt_qty = Number(receipt.qty);
-                                    if (item.qty < 0) {
-                                        receipt_qty += Math.abs(item.qty);
-                                        m.notes.create({
-                                            _table:  'canteen_items',
-                                            id:      item.item_id,
-                                            note:    `Current quantity below 0. Increased by ${Math.abs(item.qty)} on receipt`,
-                                            system:  1,
-                                            user_id: req.user.user_id
-                                        });
+                            return m.receipts.create({
+                                item_id: item.item_id,
+                                qty:     receipt.qty,
+                                cost:    receipt.cost,
+                                user_id: req.user.user_id
+                            })
+                            .then(receipt => {
+                                let receipt_qty = Number(receipt.qty);
+                                if (item.qty < 0) {
+                                    receipt_qty += Math.abs(item.qty);
+                                    m.notes.create({
+                                        _table:  'canteen_items',
+                                        id:      item.item_id,
+                                        note:    `Current quantity below 0. Increased by ${Math.abs(item.qty)} on receipt`,
+                                        system:  1,
+                                        user_id: req.user.user_id
+                                    });
+                                };
+                                return item.increment('qty', {by: receipt_qty})
+                                .then(result => {
+                                    if (!result) reject(new Error('Item quantity not updated'))
+                                    else {
+                                        if (item.cost !== receipt.cost) {
+                                            let qty_current = Math.max(0, item.qty),
+                                                cost_new    = Number(((qty_current * item.cost) + (receipt.qty * receipt.cost)) / (qty_current + receipt.qty));
+                                            return item.update({cost: cost_new})
+                                            .then(result => {
+                                                if (!result) resolve(true);
+                                                else {
+                                                    m.notes.create({
+                                                        _table:  'canteen_items', 
+                                                        id:      item.item_id,
+                                                        note:    `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`,
+                                                        system:  1,
+                                                        user_id: req.user.user_id
+                                                    })
+                                                    .then(note => resolve(true))
+                                                    .catch(err => resolve(true))
+                                                };
+                                            })
+                                            .catch(err => resolve(true))
+                                        } else resolve(true);
                                     };
-                                    return item.increment('qty', {by: receipt_qty})
-                                    .then(result => {
-                                        if (!result) reject(new Error('Item quantity not updated'))
-                                        else {
-                                            if (item.cost !== receipt.cost) {
-                                                let qty_current = Math.max(0, item.qty),
-                                                    cost_new    = Number(((qty_current * item.cost) + (receipt.qty * receipt.cost)) / (qty_current + receipt.qty));
-                                                return item.update({cost: cost_new})
-                                                .then(result => {
-                                                    if (!result) resolve(true);
-                                                    else {
-                                                        m.notes.create({
-                                                            _table:  'canteen_items', 
-                                                            id:      item.item_id,
-                                                            note:    `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`,
-                                                            system:  1,
-                                                            user_id: req.user.user_id
-                                                        })
-                                                        .then(note => resolve(true))
-                                                        .catch(err => resolve(true))
-                                                    };
-                                                })
-                                                .catch(err => resolve(true))
-                                            } else resolve(true);
-                                        };
-                                    })
-                                    .catch(err => reject(err));
                                 })
                                 .catch(err => reject(err));
-                            };
+                            })
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     };
@@ -109,20 +104,17 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.delete('/receipts/:id', fn.loggedIn(), fn.permissions.check('receipt_delete'),  (req, res) => {
-        m.receipts.findOne({
-            where: {receipt_id: req.params.id},
-            attributes: ['receipt_id']
-        })
+        fn.get(
+            'receipts', 
+            {receipt_id: req.params.id}
+        )
         .then(receipt => {
-            if (!receipt) fn.send_error(res, 'Receipt not found')
-            else {
-                return receipt.destroy()
-                .then(result => {
-                    if (!result) fn.send_error(res, 'Receipt not deleted')
-                    else         res.send({success: true,  message: 'Receipt deleted'});
-                })
-                .catch(err => fn.send_error(res, err));
-            }
+            return receipt.destroy()
+            .then(result => {
+                if (!result) fn.send_error(res, 'Receipt not deleted')
+                else         res.send({success: true,  message: 'Receipt deleted'});
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });

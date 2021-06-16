@@ -146,6 +146,11 @@ function remove_class(options) {
     let e = document.querySelector(`#${options.id}`);
     if (e && options.class) e.classList.remove(options.class);
 };
+function isShown(id) {
+    let e = document.querySelector(`#${id}`);
+    if (e && !e.classList.contains('hidden')) return true
+    else return false;
+};
 function print_user(user) {
     if (user) return `${user.rank.rank} ${user.full_name}`
     else return '';
@@ -219,5 +224,10 @@ function modalHide(id) {
 function modalOnShow(id, func) {
     let modal = document.querySelector(`#mdl_${id}`);
     if (modal) modal.addEventListener('show.bs.modal', function (event){func(event)});
+};
+function modalIsShown(id) {
+    let modal = document.querySelector(`#mdl_${id}`);
+    if (modal && modal.classList.contains('show')) return true
+    else return false;
 };
 let path = window.location.pathname.toString().split('/');

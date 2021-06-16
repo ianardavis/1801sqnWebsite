@@ -1,7 +1,10 @@
 module.exports = (app, m, inc, fn) => {
     app.get('/locations/:id', fn.loggedIn(), fn.permissions.get('access_locations'),   (req, res) => res.render('stores/locations/show'));
     app.get('/get/location',  fn.loggedIn(), fn.permissions.check('access_locations'), (req, res) => {
-        m.locations.findOne({where: req.query})
+        fn.get(
+            'locations',
+            req.query
+        )
         .then(location => res.send({success: true, result: location}))
         .catch(err => fn.send_error(res, err));
     });

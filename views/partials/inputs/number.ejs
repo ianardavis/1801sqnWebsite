@@ -1,7 +1,7 @@
 <div class="input-group mb-1">
     <span class="input-group-text w-30"><%= title %></span>
     <input
-        class="form-control"
+        class="form-control<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
         type="number"
         inputMode='numeric'
         <% if (locals.id) { %>   id="<%= id %>"<% } %>

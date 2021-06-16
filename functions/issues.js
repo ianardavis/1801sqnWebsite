@@ -1,64 +1,53 @@
 module.exports = function (m, fn) {
     fn.issues = {};
-    fn.issues.get = function (query, include = []) {
-        return new Promise((resolve, reject) => {
-            return m.issues.findOne({
-                where: query,
-                include: include
-            })
-            .then(issue => {
-                if (!issue) reject(new Error('Issue not found'))
-                else resolve(issue);
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.issues.create = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return m.users.findOne({where: {user_id: options.user_id_issue}})
+            return fn.get(
+                'users',
+                {user_id: options.user_id_issue}
+            )
             .then(user => {
-                if (!user) reject(new Error('User not found'))
-                else {
-                    return m.sizes.findOne({where: {size_id: options.size_id}})
-                    .then(size => {
-                        if      (!size)           reject(new Error('Size not found'))
-                        else if (!size.issueable) reject(new Error('Size can not be issued'))
-                        else {
-                            return m.issues.findOrCreate({
-                                where: {
-                                    user_id_issue: user.user_id,
-                                    size_id:       size.size_id,
-                                    status:        options.status
-                                },
-                                defaults: {
-                                    user_id: options.user_id,
-                                    qty:     options.qty
-                                }
-                            })
-                            .then(([issue, created]) => {
-                                if (created) resolve(issue.issue_id)
-                                else {
-                                    return issue.increment('qty', {by: options.qty})
-                                    .then(result => {
-                                        if (!result) reject(new Error('Existing issue not incremented'))
-                                        else {
-                                            return fn.actions.create({
-                                                action:  `Issue incremented by ${options.qty}`,
-                                                user_id: options.user_id,
-                                                links: [{table: 'issues', id: issue.issue_id}]
-                                            })
-                                            .then(action => resolve(issue.issue_id))
-                                            .catch(err => resolve(issue.issue_id));
-                                        };
-                                    })
-                                    .catch(err => reject(err));
-                                };
-                            })
-                            .catch(err => reject(err));
-                        };
-                    })
-                    .catch(err => reject(err));
-                };
+                return fn.get(
+                    'sizes',
+                    {size_id: options.size_id}
+                )
+                .then(size => {
+                    if (!size.issueable) reject(new Error('Size can not be issued'))
+                    else {
+                        return m.issues.findOrCreate({
+                            where: {
+                                user_id_issue: user.user_id,
+                                size_id:       size.size_id,
+                                status:        options.status
+                            },
+                            defaults: {
+                                user_id: options.user_id,
+                                qty:     options.qty
+                            }
+                        })
+                        .then(([issue, created]) => {
+                            if (created) resolve(issue.issue_id)
+                            else {
+                                return issue.increment('qty', {by: options.qty})
+                                .then(result => {
+                                    if (!result) reject(new Error('Existing issue not incremented'))
+                                    else {
+                                        return fn.actions.create({
+                                            action:  `Issue incremented by ${options.qty}`,
+                                            user_id: options.user_id,
+                                            links: [{table: 'issues', id: issue.issue_id}]
+                                        })
+                                        .then(action => resolve(issue.issue_id))
+                                        .catch(err => resolve(issue.issue_id));
+                                    };
+                                })
+                                .catch(err => reject(err));
+                            };
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });
@@ -84,7 +73,10 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             return fn.allowed(options.user_id, 'issue_add')
             .then(result => {
-                return fn.issues.get({issue_id: options.issue_id})
+                return fn.get(
+                    'issues',
+                    {issue_id: options.issue_id}
+                )
                 .then(issue => {
                     if (issue.status !== 1) reject(new Error('Issue is not pending approval'))
                     else {
@@ -102,7 +94,10 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             return fn.allowed(options.user_id, 'issue_delete', true)
             .then(allowed => {
-                return fn.issues.get({issue_id: options.issue_id})
+                return fn.get(
+                    'issues',
+                    {issue_id: options.issue_id}
+                )
                 .then(issue => {
                     if (!allowed && issue.user_id_issue !== options.user_id) reject(new Error('Permission denied'))
                     else {
@@ -125,7 +120,10 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             return fn.allowed(options.user_id, 'issue_add')
             .then(result => {
-                return fn.issues.get({issue_id: options.issue_id})
+                return fn.get(
+                    'issues',
+                    {issue_id: options.issue_id}
+                )
                 .then(issue => {
                     if (issue.status !== 1) reject(new Error('Issue is not pending approval'))
                     else {
@@ -143,7 +141,8 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             return fn.allowed(options.user_id, 'order_add')
             .then(result => {
-                return fn.issues.get(
+                return fn.get(
+                    'issues',
                     {issue_id: options.issue_id},
                     [
                         {model: m.sizes, as: 'size'}
@@ -205,7 +204,8 @@ module.exports = function (m, fn) {
             issues.forEach(issue => {
                 actions.push(
                     new Promise((resolve, reject) => {
-                        fn.issues.get(
+                        return fn.get(
+                            'issues',
                             {issue_id: issue.issue_id},
                             [{model: m.sizes, as: 'size'}]
                         )

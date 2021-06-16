@@ -1,13 +1,14 @@
 module.exports = (app, m, inc, fn) => {
     app.get('/get/adjustment',  fn.loggedIn(), fn.permissions.check('access_adjustments', {send: true}), (req, res) => {
-        m.adjustments.findOne({
-            where: req.query,
-            include: [
+        fn.get(
+            'adjustments',
+            req.query,
+            [
                 inc.user(), 
                 inc.stock(),
                 inc.size()
             ]
-        })
+        )
         .then(adjustment => res.send({success: true, result: adjustment}))
         .catch(err => fn.send_error(res, err));
     });
@@ -32,35 +33,32 @@ module.exports = (app, m, inc, fn) => {
                     actions.push(
                         new Promise((resolve, reject) => {
                             if (adjustment.stock_id && adjustment.qty && adjustment.type) {
-                                m.stocks.findOne({
-                                    where: {stock_id:adjustment.stock_id},
-                                    attributes: ['stock_id', 'size_id', 'qty']
-                                })
+                                return fn.get(
+                                    'stocks',
+                                    {stock_id:adjustment.stock_id}
+                                )
                                 .then(stock => {
-                                    if (!stock) reject(new Error('Stock not found'))
-                                    else {
-                                        let action = null;
-                                        if (adjustment.type === 'Count') {
-                                            adjustment.variance = Number(adjustment.qty) - Number(stock.qty);
-                                            action = stock.update({qty: adjustment.qty});
-                                        } else if (adjustment.type === 'Scrap') {
-                                            adjustment.variance = 0 - adjustment.qty;
-                                            action = stock.decrement('qty', {by: adjustment.qty});
-                                        };
-                                        if (action) {
-                                            return action
-                                            .then(result => {
-                                                return m.adjustments.create({
-                                                    ...adjustment,
-                                                    user_id: req.user.user_id,
-                                                    size_id: stock.size_id
-                                                })
-                                                .then(adjustment => resolve(true))
-                                                .catch(err => reject(err));
-                                            })
-                                            .catch(err => reject(err));
-                                        } else reject(new Error('Could not set adjustment action'));
+                                    let action = null;
+                                    if (adjustment.type === 'Count') {
+                                        adjustment.variance = Number(adjustment.qty) - Number(stock.qty);
+                                        action = stock.update({qty: adjustment.qty});
+                                    } else if (adjustment.type === 'Scrap') {
+                                        adjustment.variance = 0 - adjustment.qty;
+                                        action = stock.decrement('qty', {by: adjustment.qty});
                                     };
+                                    if (action) {
+                                        return action
+                                        .then(result => {
+                                            return m.adjustments.create({
+                                                ...adjustment,
+                                                user_id: req.user.user_id,
+                                                size_id: stock.size_id
+                                            })
+                                            .then(adjustment => resolve(true))
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    } else reject(new Error('Could not set adjustment action'));
                                 })
                                 .catch(err => reject(err));
                             } else reject(new Error('Not all required details submitted'));

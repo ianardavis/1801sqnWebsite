@@ -1,10 +1,9 @@
 module.exports = (inc, m) => {
     inc.user = (options = {}) => {
-        let include = options.include || [{model: m.ranks, as: 'rank'}];
         return {
             model:   m.users,
             as:      options.as || 'user',
-            include: include
+            include: [{model: m.ranks, as: 'rank'}]
         };
     };
     inc.item = (options = {}) => {
@@ -14,6 +13,33 @@ module.exports = (inc, m) => {
             model:    m.canteen_items,
             include:  include,
             as:       options.as       || 'item',
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
+    inc.session = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include;
+        return {
+            model:    m.sessions,
+            include:  include,
+            as:       options.as       || 'session',
+            where:    options.where    || null,
+            required: options.required || false
+        };
+    };
+    inc.sale = (options = {}) => {
+        let include = [];
+        if (options.include) include = options.include
+        else {
+            if (options.session) include.push(inc.session());
+            if (options.lines)   include.push(inc.sale_lines());
+        };
+        include.push(inc.user());
+        return {
+            model:    m.sales,
+            include:  include,
+            as:       options.as       || 'sale',
             where:    options.where    || null,
             required: options.required || false
         };
@@ -70,22 +96,6 @@ module.exports = (inc, m) => {
             model:    m.sale_lines,
             include:  include,
             as:       options.as       || 'lines',
-            where:    options.where    || null,
-            required: options.required || false
-        };
-    };
-    inc.sale = (options = {}) => {
-        let include = [];
-        if (options.include) include = options.include
-        else {
-            if (options.session) include.push(inc.sessions());
-            if (options.lines)   include.push(inc.sale_lines());
-        };
-        include.push(inc.users());
-        return {
-            model:    m.sales,
-            include:  include,
-            as:       options.as       || 'sale',
             where:    options.where    || null,
             required: options.required || false
         };

@@ -2,10 +2,9 @@ module.exports = function (m, fn) {
     fn.orders = {};
     fn.orders.create = function (line, user_id, issue_id = null) {
         return new Promise((resolve, reject) => {
-            return m.sizes.findOne({where: {size_id: line.size_id}})
+            return fn.get('sizes', {size_id: line.size_id})
             .then(size => {
-                if      (!size)           reject(new Error('Size not found'))
-                else if (!size.orderable) reject(new Error('This size can not ordered'))
+                if (!size.orderable) reject(new Error('This size can not ordered'))
                 else {
                     return m.orders.findOrCreate({
                         where: {
@@ -51,27 +50,6 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-
-    function get_order(order_id) {
-        return new Promise((resolve, reject) => {
-            return m.orders.findOne({
-                where: {order_id: order_id},
-                include: [{
-                    model: m.sizes,
-                    as: 'size',
-                    include: [{
-                        model: m.suppliers,
-                        as: 'supplier'
-                    }]
-                }]
-            })
-            .then(order => {
-                if (!order) reject(new Error('Order not found'))
-                else resolve(order);
-            })
-            .catch(err => reject(err));
-        });
-    };
     fn.orders.demand = function (orders, user_id) {
         return new Promise((resolve, reject) => {
             return fn.allowed(user_id, 'demand_line_add')
@@ -79,7 +57,18 @@ module.exports = function (m, fn) {
                 let order_actions = [], suppliers = [];
                 orders.forEach(order => {
                     order_actions.push(new Promise((resolve, reject) => {
-                        return get_order(order.order_id)
+                        return fn.get(
+                            'orders',
+                            {order_id: order.order_id},
+                            [{
+                                model: m.sizes,
+                                as: 'size',
+                                include: [{
+                                    model: m.suppliers,
+                                    as: 'supplier'
+                                }]
+                            }]
+                        )
                         .then(order => {
                             if      (order.status !== 1)    reject(new Error('Only placed orders can be demanded'))
                             else if (!order.size)           reject(new Error('Size not found'))
@@ -159,7 +148,18 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             fn.allowed(user_id, 'order_edit')
             .then(allowed => {
-                return get_order(_order.order_id)
+                return fn.get(
+                    'orders',
+                    {order_id: _order.order_id},
+                    [{
+                        model: m.sizes,
+                        as: 'size',
+                        include: [{
+                            model: m.suppliers,
+                            as: 'supplier'
+                        }]
+                    }]
+                )
                 .then(order => {
                     if      (!order.size)        reject(new Error('Size not found'))
                     else if (order.status !== 1) reject(new Error('Only placed orders can be received'))

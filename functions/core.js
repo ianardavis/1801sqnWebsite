@@ -98,7 +98,7 @@ module.exports = function (m, fn) {
     };
     fn.print_pdf = function (file) {
         return new Promise((resolve, reject) => {
-            fn.settings.get('printer')
+            return fn.settings.get('printer')
             .then(printers => {
                 if (printers.length > 1) reject(new Error('Multiple printers found'))
                 else {
@@ -120,38 +120,35 @@ module.exports = function (m, fn) {
     };
     fn.upload_file = function (options = {}) {
         return new Promise((resolve, reject) => {
-            m.suppliers.findOne({
-                where:      {supplier_id: options.supplier_id},
-                attributes: ['supplier_id']
-            })
+            return fn.get(
+                'suppliers',
+                {supplier_id: options.supplier_id}
+            )
             .then(supplier => {
-                if (!supplier) reject(new Error('Supplier not found'))
-                else {
-                    fs.copyFile(
-                        options.file,
-                        `${process.env.ROOT}/public/res/files/${options.filename}`,
-                        function (err) {
-                            if (err) {
-                                if (err.code === 'EEXIST') reject(new Error('Error copying file: This file already exists'))
-                                else reject(err);
-                            } else {
-                                return m.files.findOrCreate({
-                                    where: {filename: options.filename},
-                                    defaults: {
-                                        user_id: options.user_id,
-                                        supplier_id: options.supplier_id,
-                                        description: options.description
-                                    }
-                                })
-                                .then(([file, created]) => {
-                                    if (!created) reject(new Error('File already exists'))
-                                    else          resolve(true);
-                                })
-                                .catch(err => reject(err));
-                            };
-                        }
-                    );
-                };
+                fs.copyFile(
+                    options.file,
+                    `${process.env.ROOT}/public/res/files/${options.filename}`,
+                    function (err) {
+                        if (err) {
+                            if (err.code === 'EEXIST') reject(new Error('Error copying file: This file already exists'))
+                            else reject(err);
+                        } else {
+                            return m.files.findOrCreate({
+                                where: {filename: options.filename},
+                                defaults: {
+                                    user_id: options.user_id,
+                                    supplier_id: options.supplier_id,
+                                    description: options.description
+                                }
+                            })
+                            .then(([file, created]) => {
+                                if (!created) reject(new Error('File already exists'))
+                                else          resolve(true);
+                            })
+                            .catch(err => reject(err));
+                        };
+                    }
+                );
             })
             .catch(err => reject(err));
         });
@@ -170,6 +167,19 @@ module.exports = function (m, fn) {
                         } else resolve(true);
                     }
                 );
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.get = function (table, where, include = []) {
+        return new Promise((resolve, reject) => {
+            m[table].findOne({
+                where:   where,
+                include: include
+            })
+            .then(result => {
+                if (!result) reject(new Error(`No ${table.replace('_', ' ')} found`))
+                else resolve(result);
             })
             .catch(err => reject(err));
         });

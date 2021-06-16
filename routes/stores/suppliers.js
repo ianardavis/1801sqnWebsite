@@ -11,13 +11,12 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/supplier',     fn.loggedIn(), fn.permissions.check('access_suppliers'), (req, res) => {
-        m.suppliers.findOne({
-            where:      req.query,
-            include:    [inc.accounts()]
-        })
-        .then(supplier => {
-            if (!supplier) fn.send_error(res, 'Supplier not found')
-            else           res.send({success: true,  result: supplier})})
+        fn.get(
+            'suppliers',
+            req.query,
+            [inc.accounts()]
+        )
+        .then(supplier => res.send({success: true,  result: supplier}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -38,36 +37,30 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.delete('/suppliers/:id', fn.loggedIn(), fn.permissions.check('supplier_delete'),  (req, res) => {
-        m.suppliers.findOne({
-            where: {supplier_id: req.params.id},
-            attributes: ['supplier_id']
-        })
+        fn.get(
+            'suppliers',
+            {supplier_id: req.params.id}
+        )
         .then(supplier => {
-            if (!supplier) fn.send_error(res, 'Supplier not found')
-            else {
-                return supplier.destroy({where: {supplier_id: req.params.id}})
-                .then(result => {
-                    return m.settings.findOne({
-                        where: {name: 'default_supplier'},
-                        attributes: ['setting_id', 'value']
-                    })
-                    .then(setting => {
-                        if (!setting)           res.send({success: true, message: 'Supplier deleted'})
-                        else {
-                            if (Number(setting._value) === Number(req.params.id)) {
-                                return setting.destroy()
-                                .then(result => {
-                                    if (result) res.send({success: true, message: 'Default supplier deleted, settings updated'})
-                                    else        res.send({success: true, message: 'Default supplier deleted, settings NOT updated'});
-                                })
-                                .catch(err =>   res.send({success: true, message: `Error deleting setting: ${err.message}`}));
-                            } else              res.send({success: true, message: 'Supplier deleted'});
-                        };
-                    })
-                    .catch(err => res.send({success: true, message: `Error getting settings: ${err.message}`}));
+            return supplier.destroy({where: {supplier_id: req.params.id}})
+            .then(result => {
+                return m.settings.findOne({where: {name: 'default_supplier'}})
+                .then(setting => {
+                    if (!setting)           res.send({success: true, message: 'Supplier deleted'})
+                    else {
+                        if (Number(setting.value) === Number(req.params.id)) {
+                            return setting.destroy()
+                            .then(result => {
+                                if (result) res.send({success: true, message: 'Default supplier deleted, settings updated'})
+                                else        res.send({success: true, message: 'Default supplier deleted, settings NOT updated'});
+                            })
+                            .catch(err =>   res.send({success: true, message: `Error deleting setting: ${err.message}`}));
+                        } else              res.send({success: true, message: 'Supplier deleted'});
+                    };
                 })
-                .catch(err => fn.send_error(res, err));
-            };
+                .catch(err => res.send({success: true, message: `Error getting settings: ${err.message}`}));
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });

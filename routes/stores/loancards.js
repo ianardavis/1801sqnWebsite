@@ -3,7 +3,10 @@ module.exports = (app, m, inc, fn) => {
     app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get('access_loancards'),                       (req, res) => res.render('stores/loancards/show'));
     app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get('access_loancard_lines'),                  (req, res) => res.render('stores/loancard_lines/show'));
     app.get('/loancards/:id/download', fn.loggedIn(), fn.permissions.check('access_loancards'),                     (req, res) => {
-        fn.loancards.get(req.params.id)
+        fn.get(
+            'loancards',
+            {loancard_id: req.params.id}
+        )
         .then(loancard => {
             if (!loancard.filename) {
                 return fn.loancards.createPDF(loancard.loancard_id)
@@ -20,7 +23,10 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/loancards/:id/print',    fn.loggedIn(), fn.permissions.check('access_loancards'),                     (req, res) => {
-        fn.loancards.get(req.params.id)
+        fn.get(
+            'loancards',
+            {loancard_id: req.params.id}
+        )
         .then(loancard => {
             if (!loancard.filename) fn.send_error(res, 'No file')
             else {
@@ -40,18 +46,16 @@ module.exports = (app, m, inc, fn) => {
     });
     app.get('/get/loancard',           fn.loggedIn(), fn.permissions.check('access_loancards',      {allow: true}), (req, res) => {
         if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
-        m.loancards.findOne({
-            where: req.query,
-            include: [
+        fn.get(
+            'loancards',
+            req.query,
+            [
                 inc.loancard_lines(),
                 inc.user(),
                 inc.user({as: 'user_loancard'})
             ]
-        })
-        .then(loancard => {
-            if (!loancard) fn.send_error(res, 'Loancard not found')
-            else           res.send({success: true,  result: loancard});
-        })
+        )
+        .then(loancard => res.send({success: true,  result: loancard}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/loancards',          fn.loggedIn(), fn.permissions.check('access_loancards',      {allow: true}), (req, res) => {
@@ -86,9 +90,10 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/loancard_line',      fn.loggedIn(), fn.permissions.check('access_loancard_lines', {allow: true}), (req, res) => {
-        m.loancard_lines.findOne({
-            where:   req.query,
-            include: [
+        fn.get(
+            'loancard_lines',
+            req.query,
+            [
                 inc.size(),
                 inc.user(),
                 inc.loancard({
@@ -99,7 +104,7 @@ module.exports = (app, m, inc, fn) => {
                     include: [inc.user(), inc.user({as: 'user_loancard'})]
                 })
             ]
-        })
+        )
         .then(loancard_line => res.send({success: true, result: loancard_line}))
         .catch(err => fn.send_error(res, err));
     });
@@ -137,17 +142,17 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.put('/loancards/:id',          fn.loggedIn(), fn.permissions.check('loancard_edit'),                        (req, res) => {
-        m.loancards.findOne({where: {loancard_id: req.params.id}})
+        fn.get(
+            'loancards',
+            {loancard_id: req.params.id}
+        )
         .then(loancard => {
-            if (!loancard) fn.send_error(res, 'Loancard not found')
-            else {
-                return loancard.update(req.body.loancard)
-                .then(result => {
-                    if (!result) fn.send_error(res, 'Loancard not updated')
-                    else res.send({success: true, message: 'Loancard updated'});
-                })
-                .catch(err => fn.send_error(res, err));
-            };
+            return loancard.update(req.body.loancard)
+            .then(result => {
+                if (!result) fn.send_error(res, 'Loancard not updated')
+                else res.send({success: true, message: 'Loancard updated'});
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -175,10 +180,12 @@ module.exports = (app, m, inc, fn) => {
             results.filter(e => e.status === 'fulfilled').forEach(e => {if (!loancards.includes(e.value)) loancards.push(e.value)});
             loancards.forEach(loancard => {
                 loancard_checks.push(new Promise((resolve, reject) => {
-                    return m.loancards.findOne({where: {loancard_id: loancard}})
+                    return fn.get(
+                        'loancards',
+                        {loancard_id: loancard}
+                    )
                     .then(loancard => {
-                        if      (!loancard)             reject(new Error('Loancard not found'))
-                        else if (loancard.status === 0) reject(new Error('Loancard has already been cancelled'))
+                        if      (loancard.status === 0) reject(new Error('Loancard has already been cancelled'))
                         else if (loancard.status === 3) reject(new Error('Loancard has already been closed'))
                         else if (loancard.status > 3 || loancard.status < 0) reject(new Error('Unknown loancard status'))
                         else {

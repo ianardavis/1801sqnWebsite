@@ -1,4 +1,5 @@
 window.addEventListener('load', function () {
+    enable_button('session_close');
     addFormListener(
         'close',
         'PUT',

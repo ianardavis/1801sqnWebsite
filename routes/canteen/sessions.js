@@ -15,13 +15,14 @@ module.exports = (app, m, inc, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/session',  fn.loggedIn(), fn.permissions.check('access_sessions'), (req, res) => {
-        m.sessions.findOne({
-            where: req.query,
-            include: [
+        fn.get(
+            'sessions',
+            req.query,
+            [
                 inc.user({as: 'user_open'}),
                 inc.user({as: 'user_close'}),
             ]
-        })
+        )
         .then(session => res.send({success: true, result: session}))
         .catch(err => fn.send_error(res, err));
     });
@@ -63,10 +64,10 @@ module.exports = (app, m, inc, fn) => {
     });
     
     app.put('/sessions/:id', fn.loggedIn(), fn.permissions.check('session_edit'),    (req, res) => {
-        m.sessions.findOne({
-            where: {session_id: req.params.id},
-            attributes: ['session_id', 'status']
-        })
+        fn.get(
+            'sessions',
+            {session_id: req.params.id}
+        )
         .then(session => {
             if (session.status !== 1) fn.send_error(res, 'This session is not open')
             else {
@@ -88,13 +89,13 @@ module.exports = (app, m, inc, fn) => {
                         return getSessionSales(session.session_id)
                         .then(sales => {
                             return m.holdings.findOrCreate({
-                                where: {_description: 'Petty Cash'},
-                                defaults: {_cash: 0, _cheques: 0}
+                                where: {description: 'Petty Cash'},
+                                defaults: {cash: 0, cheques: 0}
                             })
                             .then(([petty_holding, created]) => {
                                 return m.holdings.findOrCreate({
-                                    where: {_description: 'Canteen'},
-                                    defaults: {_cash: 0, _cheques: 0}
+                                    where: {description: 'Canteen'},
+                                    defaults: {cash: 0, cheques: 0}
                                 })
                                 .then(([canteen_holding, created]) => {
                                     let balance = countCash(req.body.balance),
@@ -104,9 +105,9 @@ module.exports = (app, m, inc, fn) => {
                                             m.movements.create({
                                                 holding_id_from: canteen_holding.holding_id,
                                                 holding_id_to:   petty_holding.holding_id,
-                                                _description:    'Canteen cash',
-                                                _amount:         balance.cash,
-                                                _type:           'Transfer',
+                                                description:    'Canteen cash',
+                                                amount:         balance.cash,
+                                                type:           'Transfer',
                                                 user_id:         req.user.user_id
                                             })
                                         );
@@ -116,9 +117,9 @@ module.exports = (app, m, inc, fn) => {
                                             m.movements.create({
                                                 holding_id_from: canteen_holding.holding_id,
                                                 holding_id_to:   petty_holding.holding_id,
-                                                _description:    'Canteen cheques',
-                                                _amount:         balance.cheques,
-                                                _type:           'Transfer',
+                                                description:    'Canteen cheques',
+                                                amount:          balance.cheques,
+                                                type:           'Transfer',
                                                 user_id:         req.user.user_id
                                             })
                                         );
@@ -128,7 +129,7 @@ module.exports = (app, m, inc, fn) => {
                                         return session.update(
                                             {
                                                 status: 2,
-                                                _end: Date.now(),
+                                                datetime_end: Date.now(),
                                                 user_id_close: req.user.user_id
                                             }
                                         )
@@ -159,17 +160,16 @@ module.exports = (app, m, inc, fn) => {
                         where:    {session_id: session_id},
                         required: true
                     })
-                ],
-                attributes: ['item_id', '_price', '_qty']
+                ]
             })
             .then(lines => {
                 let result = {takings: 0, paid_out: 0, paid_in: 0};
                 lines.forEach(line => {
                     if (line.item_id === 0) {
-                        result.paid_out += Number(line._price);
+                        result.paid_out += Number(line.price);
                     } else if (line.item_id === 1) {
-                        result.paid_in += Number(line._price);
-                    } else result.takings += (Number(line._price) * Number(line._qty))
+                        result.paid_in += Number(line.price);
+                    } else result.takings += (Number(line.price) * Number(line.qty))
                 });
                 resolve(result);
             })

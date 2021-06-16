@@ -14,14 +14,12 @@ module.exports = (app, m, inc, fn) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
-        m.categories.findOne({
-            where: req.query,
-            include: [inc.categories({as: 'parent'})]
-        })
-        .then(category => {
-            if (!category) fn.send_error(res, 'Category not found')
-            else           res.send({success: true, result: category})
-        })
+        fn.get(
+            'categories',
+            req.query,
+            [inc.categories({as: 'parent'})]
+        )
+        .then(category => res.send({success: true, result: category}))
         .catch(err => fn.send_error(res, err));
     });
 
@@ -46,26 +44,24 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.delete('/categories/:id', fn.loggedIn(), fn.permissions.check('category_delete',   {send: true}), (req, res) => {
-        m.categories.findOne({
-            where:      {category_id: req.params.id},
-            attributes: ['category_id']
-        })
+        fn.get(
+            'categories',
+            {category_id: req.params.id},
+            ['category_id']
+        )
         .then(category => {
-            if (!category) fn.send_error(res, 'Category not found')
-            else {
-                return m.item_categories.destroy(
-                    {where: {category_id: category.category_id}}
-                )
+            return m.item_categories.destroy(
+                {where: {category_id: category.category_id}}
+            )
+            .then(result => {
+                return category.destroy()
                 .then(result => {
-                    return category.destroy()
-                    .then(result => {
-                        if (!result) fn.send_error(res, 'Category not deleted')
-                        else         res.send({success: true,  message: 'Category deleted'})
-                    })
-                    .catch(err => fn.send_error(res, err));
+                    if (!result) fn.send_error(res, 'Category not deleted')
+                    else         res.send({success: true,  message: 'Category deleted'})
                 })
                 .catch(err => fn.send_error(res, err));
-            };
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
