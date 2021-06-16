@@ -17,11 +17,13 @@ module.exports = function(sequelize, DataTypes) {
     'cash': {
       type: DataTypes.DOUBLE,
       allowNull: false,
+      defaultValue: '0.00',
       comment: "null"
     },
     'cheques': {
       type: DataTypes.DOUBLE,
       allowNull: false,
+      defaultValue: '0.00',
       comment: "null"
     },
     'holding_id_from': {
