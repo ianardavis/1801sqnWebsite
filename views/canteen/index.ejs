@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen', text: 'Canteen'}) %>
+<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`,    {id: 'sessions'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
@@ -11,7 +11,7 @@
         <%- include(`${partials}/card`, {title: 'Receipts',      image: 'receipt',       href: '/receipts'}) %>
         <%- include(`${partials}/card`, {title: 'Writeoffs',     image: 'receipt',       href: '/writeoffs'}) %>
         <%- include(`${partials}/card`, {title: 'Movements',     image: 'wallet',        href: '/movements'}) %>
-        <%- include(`${partials}/card`, {title: 'Users',         image: 'user',          href: '/users'}) %>
+        <%- include(`${partials}/card`, {title: 'Holdings',      image: 'wallet',        href: '/holdings'}) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>

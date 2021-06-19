@@ -44,6 +44,14 @@ module.exports = (inc, m) => {
             required: options.required || false
         };
     };
+    inc.holding = (options = {}) => {
+        let include = options.include || [];
+        return {
+            model:   m.holdings,
+            as:      options.as || 'holding',
+            include: include
+        };
+    };
     
     inc.users = (options = {}) => {
         let include = options.include || [m.users.ranks];

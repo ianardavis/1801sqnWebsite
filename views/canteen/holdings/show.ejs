@@ -1,0 +1,86 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Holdings', href: '/holdings'}) %>
+<%- include(`${partials}/breadcrumb`) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Menu
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%- include(`${partials}/menu/button`, {id: 'note_add',     modal: 'note_add',     text: 'Add Note'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'movement_add', modal: 'movement_add', text: 'Transfer'}) %>
+            </div>
+        </li>
+        <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'holding'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'movements', title: 'Movements', spinner: 'movements', count_id: 'movement', permission: 'access_movements'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',     spinner: 'notes',     count_id: 'note',     permission: 'access_notes'}) %>
+    </ul>
+    <div class="tab-content pt-3" id="myTabContent">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/inputs/display`, {id: 'holding_description', title: 'Description'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'holding_cash',        title: 'Cash'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'holding_createdAt',   title: 'Created'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'holding_updatedAt',   title: 'Updated'}) %>
+        </div>
+        <div class="tab-pane fade" id="movements" role="tabpanel" aria-labelledby="movements-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-25" onclick="sortTable(0, 'tbl_movements')">Date</th>
+                    <th class="w-10" onclick="sortTable(1, 'tbl_movements')">To/From?</th>
+                    <th class="w-20" onclick="sortTable(2, 'tbl_movements')">Type</th>
+                    <th class="w-15" onclick="sortTable(3, 'tbl_movements')">Amount</th>
+                    <th class="w-30" onclick="sortTable(4, 'tbl_movements')">Description</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_movements"></tbody>
+            </table>
+        </div>
+        <%- include(`${partials}/common/notes/tab_body`) %>
+    </div>
+    <div id="div_modals">
+        <%- include(`${partials}/common/movements/modals`) %>
+        <%- include(`${partials}/common/notes/modals`) %>
+        <% if (permissions.movement_add) { %>
+            <div id='mdl_movement_add' class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_movement_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Transfer Cash</h5>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" class='holding_id' name='movement[holding_id_from]'>
+                            <%- include(`${partials}/inputs/select`, {title: 'To Holding',  name: 'movement[holding_id_to]', required: true, id: 'sel_holdings', spinner_id: 'holdings'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Description', name: 'movement[description]',   required: true, id: 'movement_add_description'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'movement[amount]',        required: true, id: 'movement_add_amount', value: '0.00', step: '0.01', min: '0'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Save Transfer'>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src='/js/tabs.js'></script>
+<script src='/js/addFormListener.js'></script>
+<script src="/js/canteen/holdings/show/view.js"></script>
+<%- include(`${partials}/common/notes/scripts`) %>
+<script>showTab('<%= tab %>');</script>
+<script async>getHolding()</script>
+<% if (permissions.access_movements) { %>
+    <script src="/js/canteen/holdings/show/movements/view.js"></script>
+    <script async>getMovements()</script>
+    <% if (permissions.movement_add) { %>
+        <script src="/js/canteen/holdings/show/movements/add.js"></script>
+    <% } %>
+<% } %>
+<% if (permissions.holding_edit) { %>
+    <!-- <script src="/js/canteen/holdings/show/edit.js"></script> -->
+<% } %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

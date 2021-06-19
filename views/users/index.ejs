@@ -1,6 +1,5 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {href: '/stores', text: 'Stores'}) %>
-<%- include(`${partials}/breadcrumb`, {text: 'Users'}) %>
+<%- include(`${partials}/head/navbar/switcher`, {text: 'Users'}) %>
 <%- include(`${partials}/menu/breadcrumb_add`, {modal: 'user_add', permission: 'user_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'users'}) %>

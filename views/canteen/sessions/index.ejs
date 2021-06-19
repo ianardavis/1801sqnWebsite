@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/breadcrumb`, {text: 'Canteen', href: '/canteen'}) %>
+<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Sessions'}) %>
 <% if (permissions.session_add) { %>
 	<li class="nav-item">

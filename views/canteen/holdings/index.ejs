@@ -1,0 +1,51 @@
+<%- include(`${partials}/head/app`) %>
+<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Holdings'}) %>
+<% if (permissions.holding_add) { %>
+	<li class="nav-item">
+		<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_holding_add"><i class="fas fa-plus"></i></a>
+	</li>
+<% } %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`, {id: 'holdings'}) %>
+<%- include(`${partials}/head/navbar/close`) %>
+<section class='container'>
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <th class="w-50" onclick="sortTable(0, 'tbl_holdings')">Description</th>
+            <th class="w-25" onclick="sortTable(1, 'tbl_holdings')">Cash</th>
+            <th class="w-25" onclick="sortTable(2, 'tbl_holdings')">Cheques</th>
+            <th><i class='fas fa-search'></i></th>
+        </thead>
+        <tbody id="tbl_holdings"></tbody>
+    </table>
+    <div id="div_modals">
+        <% if (permissions.holding_add) { %>
+            <div id='mdl_holding_add' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_holding_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Create Holding</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`,   {title: 'Description', name: 'holding[description]', required: true}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Cash',        name: 'holding[cash]',        value: '0.00', step: '0.01', min: '0'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Cheques',     name: 'holding[cheques]',     value: '0.00', step: '0.01', min: '0'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Save'>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src='/js/addFormListener.js'></script>
+<script src='/js/canteen/holdings/index/view.js'></script>
+<script async>getHoldings()</script>
+<% if (permissions.holding_add) { %>
+    <script src='/js/canteen/holdings/index/add.js'></script>
+<% } %>
+<%- include(`${partials}/foot/elements/htmlClose`) %>

@@ -169,7 +169,6 @@ function Tab_Header(options = {}) {
     this.e = document.createElement('li');
     let a  = document.createElement('a');
     this.e.classList.add('nav_item', 'pos_header');
-    // a.classList.add('nav-link', 'btn', 'btn-lg', 'btn-info', 'm-2', 'w-100-px');
     a.classList.add('nav-link');
     a.setAttribute('id', `${options.id}-tab`);
     a.setAttribute('data-bs-toggle', 'tab');

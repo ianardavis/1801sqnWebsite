@@ -20,12 +20,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0.00',
       comment: "null"
     },
-    'cheques': {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
-      defaultValue: '0.00',
-      comment: "null"
-    },
     'createdAt': {
       type: DataTypes.DATE,
       allowNull: true,

@@ -14,13 +14,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'cash': {
-      type: DataTypes.DOUBLE,
+    'type': {
+      type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: '0.00',
       comment: "null"
     },
-    'cheques': {
+    'amount': {
       type: DataTypes.DOUBLE,
       allowNull: false,
       defaultValue: '0.00',
@@ -34,17 +33,6 @@ module.exports = function(sequelize, DataTypes) {
     'holding_id_to': {
       type: DataTypes.UUIDV4,
       allowNull: false,
-      comment: "null"
-    },
-    'user_id_confirm': {
-      type: DataTypes.UUIDV4,
-      allowNull: true,
-      comment: "null"
-    },
-    'status': {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: '1',
       comment: "null"
     },
     'user_id': {

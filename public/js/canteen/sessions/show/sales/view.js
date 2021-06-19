@@ -13,13 +13,13 @@ function getSales() {
                 let items = [], takings = 0.00;
                 sales.forEach(sale => {
                     let row = tbl_sales.insertRow(-1);
-                    add_cell(row, {text: print_date(sale.createdAt ,true)});
+                    add_cell(row, {text: print_date(sale.createdAt)});
                     add_cell(row, {text: print_user(sale.user)});
                     add_cell(row, {text: sale.lines.length});
                     add_cell(row, {text: sale_statuses[sale.status] || 'Unknown'});
                     add_cell(row,{
                         append: new Link({
-                            href: `/canteen/sales/${sale.sale_id}`,
+                            href: `/sales/${sale.sale_id}`,
                             small: true
                         }).e
                     });
@@ -48,7 +48,7 @@ function getSales() {
                     add_cell(row, {text: item.qty});
                     add_cell(row,{
                         append: new Link({
-                            href: `/canteen/items/${item.item_id}`,
+                            href: `/items/${item.item_id}`,
                             small: true
                         }).e
                     });

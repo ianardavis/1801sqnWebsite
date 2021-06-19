@@ -1,7 +1,6 @@
 module.exports = (app, m, inc, fn) => {
-    let settings = require(`${process.env.ROOT}/fn/settings`);
-    app.get('/sessions',     fn.loggedIn(), fn.permissions.get('access_canteen'),    (req, res) => res.render('canteen/sessions/index'));
-    app.get('/sessions/:id', fn.loggedIn(), fn.permissions.get('access_canteen'),    (req, res) => res.render('canteen/sessions/show'));
+    app.get('/sessions',     fn.loggedIn(), fn.permissions.get('access_sessions'),   (req, res) => res.render('canteen/sessions/index'));
+    app.get('/sessions/:id', fn.loggedIn(), fn.permissions.get('access_sessions'),   (req, res) => res.render('canteen/sessions/show'));
 
     app.get('/get/sessions', fn.loggedIn(), fn.permissions.check('access_sessions'), (req, res) => {
         m.sessions.findAll({
@@ -87,55 +86,26 @@ module.exports = (app, m, inc, fn) => {
                     .then(results => {
                         return getSessionSales(session.session_id)
                         .then(takings => {
-                            return m.holdings.findOrCreate({
-                                where:    {description: 'Canteen float'},
-                                defaults: {cash: 0, cheques: 0}
-                            })
+                            return m.holdings.findOrCreate({where: {description: 'Canteen float'}})
                             .then(([holding, created]) => {
-                                let balance = countCash(req.body.balance),
+                                let cash_in = countCash(req.body.balance) - holding.cash,
                                     actions = [];
-                                actions.push(
-                                    holding.update({
-                                        cash:    balance.cash,
-                                        cheques: balance.cheques
-                                    })
-                                )
-                                if (balance.cheques > 0) {
-                                    actions.push(
-                                        m.movements.create({
-                                            session_id:    session.session_id,
-                                            holding_id_to: holding.holding_id,
-                                            description:    'Canteen takings',
-                                            amount:         balance.cheques,
-                                            type:           'Cheques',
-                                            user_id:         req.user.user_id
-                                        })
-                                    );
-                                };
-                                if (balance.cash > 0) {
+                                actions.push(holding.update({cash: balance}));
+                                if (cash_in !== 0) {
                                     actions.push(
                                         m.movements.create({
                                             session_id:    session.session_id,
                                             holding_id_to: holding.holding_id,
                                             description:   'Canteen takings',
-                                            amount:        balance.cash,
+                                            amount:        cash_in,
                                             type:          'Cash',
                                             user_id:       req.user.user_id
                                         })
                                     )
                                 };
-                                if ((balance.cash - holding.cash) !== takings.cash) {
+                                if (cash_in !== takings) {
                                     actions.push(m.notes.create({
-                                        note: `Takings discrepency: Cash ${((balance.cash - holding.cash) > takings.cash ? 'over' : 'under')} by ${(balance.cash - holding.cash) - takings.cash}`,
-                                        _table: 'holdings',
-                                        id: holding.holding_id,
-                                        system: 1,
-                                        user_id: req.user.user_id
-                                    }))
-                                };
-                                if ((balance.cheques - holding.cheques) !== takings.cheques) {
-                                    actions.push(m.notes.create({
-                                        note: `Takings discrepency: Cheques ${((balance.cheques - holding.cheques) > takings.cheques ? 'over' : 'under')} by ${(balance.cheques - holding.cheques) - takings.cheques}`,
+                                        note: `Takings discrepency: Cash ${(cash_in > takings ? 'over' : 'under')} by £${cash_in - takings}`,
                                         _table: 'holdings',
                                         id: holding.holding_id,
                                         system: 1,
@@ -144,14 +114,12 @@ module.exports = (app, m, inc, fn) => {
                                 };
                                 return Promise.all(actions)
                                 .then(results => {
-                                    return session.update(
-                                        {
-                                            status:        2,
-                                            datetime_end:  Date.now(),
-                                            user_id_close: req.user.user_id
-                                        }
-                                    )
-                                    .then(result => res.send({success: true, message: `Session closed.\nCash Balance: £${takings.cash.toFixed(2)}.\nCheque Balance: £${Number(takings.cheques).toFixed(2)}`}))
+                                    return session.update({
+                                        status:        2,
+                                        datetime_end:  Date.now(),
+                                        user_id_close: req.user.user_id
+                                    })
+                                    .then(result => res.send({success: true, message: `Session closed.\nTakings: £${takings.toFixed(2)}.\nCash In: £${cash_in.toFixed(2)}.`}))
                                     .catch(err => fn.send_error(res, err));
                                 })
                                 .catch(err => fn.send_error(res, err));
@@ -170,7 +138,7 @@ module.exports = (app, m, inc, fn) => {
     function getSessionSales(session_id) {
         return new Promise((resolve, reject) => {
             return m.payments.findAll({
-                where: {type: {[fn.op.or]: ['Cash', 'Cheque']}},
+                where: {type: 'Cash'},
                 include: [
                     inc.sale({
                         where:    {session_id: session_id},
@@ -179,24 +147,20 @@ module.exports = (app, m, inc, fn) => {
                 ]
             })
             .then(payments => {
-                let takings = {cash: 0.0, cheques: 0.0};
-                payments.forEach(e => {
-                    if (e.type === 'Cash') takings.cash += e.amount
-                    else takings.cash += e.amount;
-                });
+                let takings = 0.0;
+                payments.forEach(e => takings.cash += e.amount);
                 resolve(takings);
             })
             .catch(err => reject(err));
         });
     };
     function countCash(obj) {
-        let cash = 0.0, cheques = 0.0;
+        let cash = 0.0;
         for (let [key, denomination] of Object.entries(obj)) {
             for (let [key, value] of Object.entries(denomination)) {
-                if (key === 'cheques') cheques = Number(value)
-                else cash += Number(value);
+                cash += Number(value);
             };
         };
-        return {cash: cash, cheques: cheques};
+        return cash;
     };
 };
