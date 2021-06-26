@@ -21,4 +21,12 @@ module.exports = (app, m, inc, fn) => {
         .then(pos_layouts => res.send({success: true, result: pos_layouts}))
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/get/pos_layout',  fn.loggedIn(), fn.permissions.check('access_pos'), (req, res) => {
+        m.pos_layouts.findOne({
+            where: req.query,
+            include: [inc.item()]
+        })
+        .then(pos_layout => res.send({success: true, result: pos_layout}))
+        .catch(err => fn.send_error(res, err));
+    });
 };

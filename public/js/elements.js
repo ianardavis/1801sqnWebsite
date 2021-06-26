@@ -70,9 +70,13 @@ function Div(options = {}) {
 };
 function Form(options = {}) {
     this.e = document.createElement('form');
-    if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
-    if (options.submit)  this.e.addEventListener('submit', options.submit);
-    if (options.append)  options.append.forEach(a => this.e.appendChild(a));
+    if (options.submit)     this.e.addEventListener('submit', options.submit);
+    if (options.classes)    options.classes   .forEach(c => this.e.classList.add(c));
+    if (options.append)     options.append    .forEach(a => this.e.appendChild(a));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.data) {
+        options.data.forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
+    };
 };
 function Link(options = {}) {
     this.e = document.createElement('a');
@@ -185,37 +189,40 @@ function Tab_Body(options = {}) {
     this.e.setAttribute('id', `${options.id}`);
     this.e.setAttribute('role', 'tabpanel');
     this.e.setAttribute('aria-labelledby', `${options.id}-tab`);
-    let div = document.createElement('div');
-    div.setAttribute('id', `div_${options.id}`)
-    div.classList.add('row', 'h-150-px')
-    this.e.appendChild(div);
+    // let div = document.createElement('div');
+    // div.setAttribute('id', `div_${options.id}`)
+    // div.classList.add('row', 'h-150-px')
+    // this.e.appendChild(div);
 };
 function Button(options = {}) {
     this.e = document.createElement('button');
     this.e.classList.add('btn');
     if (!options.noType) this.e.setAttribute('type', 'button');
+    if (options.small)   this.e.classList.add('btn-sm');
+    if (options.float)   this.e.classList.add('float-end');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
-    if (options.small) this.e.classList.add('btn-sm');
-    if (options.float) this.e.classList.add('float-end');
 
     if (options.text) {
-        this.e.innerText = options.text
-        this.e.classList.add('btn-primary');
+        this.e.innerText = options.text;
     } else if (options.html) {
-        this.e.innerHTML = options.html
-        this.e.classList.add('btn-primary');
+        this.e.innerHTML = options.html;
     } else if (options.type === 'edit') {
-        this.e.classList.add('btn-success');
         this.e.innerHTML = _edit();
     } else if (options.type === 'move') {
-        this.e.classList.add('btn-success');
         this.e.innerHTML = _move(options.type_attribute || '');
     } else if (options.type === 'delete') {
-        this.e.classList.add('btn-danger');
         this.e.innerHTML = _delete();
     } else {
-        this.e.classList.add('btn-primary');
         this.e.innerHTML = _search();
+    };
+    if (options.colour) {
+        this.e.classList.add(`btn-${options.colour}`);
+    } else if (options.type === 'edit' || options.type === 'move') {
+        this.e.classList.add('btn-success');
+    } else if (options.type === 'delete') {
+        this.e.classList.add('btn-danger');
+    } else {
+        this.e.classList.add('btn-primary');
     };
 
     if (options.modal) {
@@ -226,9 +233,7 @@ function Button(options = {}) {
         this.e.setAttribute('data-source', options.source);
     };
     if (options.data) {
-        options.data.forEach(e => {
-            this.e.setAttribute(`data-${e.field}`, e.value);
-        });
+        options.data.forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
     };
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
 };

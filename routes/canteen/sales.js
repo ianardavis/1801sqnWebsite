@@ -49,7 +49,8 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.post('/sale_lines',      fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
-        if (!req.body.line) fn.send_error(res, 'No line specified')
+        if      (!req.body.line)         fn.send_error(res, 'No line specified')
+        else if (!req.body.line.item_id) fn.send_error(res, 'No Item')
         else {
             fn.get(
                 'sales',

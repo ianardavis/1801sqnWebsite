@@ -99,60 +99,125 @@ function getPages() {
         let tab_headers = document.querySelector('#tab_headers'),
             tab_pages   = document.querySelector('#tab_pages');
         pages.forEach(page => {
+            let tab_page = new Tab_Body(  {id: `page_${page.pos_page_id}`}).e;
+            for (let r = 0; r <= 3; r++) {
+                let row = document.createElement('div');
+                row.classList.add('row', 'h-150-px');
+                for (let c = 0; c <= 3; c++) {
+                    let div = document.createElement('div');
+                    div.setAttribute('id', `div_${page.pos_page_id}_${r}${c}`);
+                    div.classList.add('col-6', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2', 'item_btn')
+                    div.appendChild(
+                        new Form({
+                            classes: ['h-100', 'form_view'],
+                            append: [
+                                new Hidden({attributes:[
+                                    {field: 'name', value: 'line[item_id]'},
+                                    {field: 'id',   value: `item_id_${page.pos_page_id}_${r}${c}`}
+                                ]}).e,
+                                new Hidden({
+                                    attributes: [{field: 'name', value: 'line[sale_id]'}],
+                                    classes:    ['sale_id']
+                                }).e,
+                                new Button({
+                                    colour:     'light',
+                                    text:       ' ',
+                                    classes:    ['w-100', 'h-100', 'btn', 'btn-primary'],
+                                    attributes: [{field: 'id', value: `btn_${page.pos_page_id}_${r}${c}`}],
+                                    noType:     true
+                                }).e
+                            ],
+                            data: [
+                                {field: 'page',     value: page.pos_page_id},
+                                {field: 'position', value: `${r}${c}`}
+                            ],
+                            attributes: [{field: 'id', value: `form_${page.pos_page_id}_${r}${c}`}],
+                            submit: function (event) {
+                                event.preventDefault();
+                                sendData(this, 'POST', "/sale_lines", {onComplete: getSaleLines, noConfirm: true});
+                            }
+                        }).e
+                    );
+                    row.appendChild(div);
+                };
+                tab_page.appendChild(row);
+            };
             tab_headers.appendChild(new Tab_Header({id: `page_${page.pos_page_id}`, text: page.title}).e);
-            tab_pages  .appendChild(new Tab_Body(  {id: `page_${page.pos_page_id}`}).e);
+            tab_pages  .appendChild(tab_page);
         });
         return true;
     })
     .then(result => {
-        get({
-            table: 'canteen_items',
-            query: ['current=1']
-        })
-        .then(function ([items, options]) {
-            get({table: 'pos_layouts'})
-            .then(function ([layouts, options]) {
-                let all_items = document.querySelector('#div_all_items');
+        let all_items = document.querySelector('#div_all_items');
+        if (all_items) {
+            get({
+                table: 'canteen_items',
+                query: ['current=1']
+            })
+            .then(function ([items, options]) {
                 items.forEach(item => {
-                    let btn_item = new Form({
-                        classes: ['col-6', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2', 'h-100'],
-                        append: [
-                            new Hidden({
-                                attributes:[{field: 'name', value: 'line[sale_id]'}],
-                                classes: ['sale_id']
-                            }).e,
-                            new Hidden({attributes:[
-                                {field: 'name', value: 'line[item_id]'},
-                                {field: 'value', value: String(item.item_id)}
-                            ]}).e,
-                            new Button({
-                                text: `${item.name}\n£${Number(item.price).toFixed(2)}`,
-                                classes: ['w-100', 'h-100', 'btn', 'btn-primary'],
-                                noType: true
-                            }).e
-                        ],
-                        submit: function (event) {
-                            event.preventDefault();
-                            sendData(this, 'POST', "/sale_lines", {onComplete: getSaleLines, noConfirm: true});
-                        }
-                    }).e;
-                    if (all_items) all_items.appendChild(btn_item);
-                    let page_layouts = layouts.filter(e => e.dataValues.item_id === item.item_id);
-                    page_layouts.forEach(layout => {
-                        let page = document.querySelector(`#div_page_${layout.page_id}`);
-                        if (page) page.appendChild(btn_item);
-                    });
+                    all_items.appendChild(
+                        new Form({
+                            classes: ['col-6', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2'],
+                            append:  [
+                                new Hidden({
+                                    attributes:[{field: 'name', value: 'line[sale_id]'}],
+                                    classes: ['sale_id']
+                                }).e,
+                                new Hidden({attributes:[
+                                    {field: 'name',  value: 'line[item_id]'},
+                                    {field: 'value', value: String(item.item_id)}
+                                ]}).e,
+                                new Button({
+                                    text: `${item.name}\n£${Number(item.price).toFixed(2)}`,
+                                    classes: ['w-100', 'h-100', 'btn', 'btn-primary'],
+                                    noType: true
+                                }).e
+                            ],
+                            submit: function (event) {
+                                event.preventDefault();
+                                sendData(this, 'POST', "/sale_lines", {onComplete: getSaleLines, noConfirm: true});
+                            }
+                        }).e
+                    );
                 });
-                getSale();
-                get({
-                    table: 'settings',
-                    query: ['name=default_pos_page']
-                })
-                .then(function ([settings, options]) {
-                    showTab(`page_${settings.value}`)
-                });
+                return true;
+            })
+            .catch(err => {
+                console.log(err);
+                return false;
             });
+        } else return false;
+    })
+    .then(result => {
+        get({table: 'pos_layouts'})
+        .then(function ([layouts, options]) {
+            layouts.forEach(layout => {
+                set_value({id: `item_id_${layout.page_id}_${layout.button}`, value: layout.item_id});
+                set_attribute({id: `div_${layout.page_id}_${layout.button}`, attribute: 'data-id', value: layout.item_id});
+                let btn_form = document.querySelector(`#btn_${layout.page_id}_${layout.button}`)
+                if (btn_form) {
+                    if (layout.colour) btn_form.style.backgroundColor = `#${layout.colour}`;
+                    btn_form.innerHTML = `${layout.item.name}<br>£${Number(layout.item.price).toFixed(2)}`;
+                };
+            });
+            return true;
+        })
+        .catch(err => {
+            console.log(err);
+            return false;
         });
+    })
+    .then(result => {
+        getSale();
+        get({
+            table: 'settings',
+            query: ['name=default_pos_page']
+        })
+        .then(function ([settings, options]) {
+            showTab(`page_${settings.value}`)
+        });
+        if (typeof addEditButtons === 'function') addEditButtons();
     });
 };
 function reset_sale_complete() {

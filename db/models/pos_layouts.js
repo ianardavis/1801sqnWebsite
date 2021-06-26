@@ -19,14 +19,9 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    '_column': {
+    'button': {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      comment: "null"
-    },
-    '_row': {
-      type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       comment: "null"
     },
     'colour': {

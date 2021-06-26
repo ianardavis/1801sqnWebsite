@@ -75,6 +75,24 @@
                 </div>
             </div>
         </div>
+        <% if (permissions.pos_layout_edit) { %>
+            <div id='mdl_layout_edit' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_layout_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Button</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/select`, {title: 'Item',   id: 'sel_items',   name: 'layout[item_id]', spinner_id: 'layout_items'}) %>
+                            <%- include(`${partials}/inputs/colour`, {title: 'Colour', id: 'colour_edit', name: 'layout[colour]'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Save Button'>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -88,6 +106,9 @@
 <% } %>
 <% if (permissions.access_credits) { %>
     <script src="/js/canteen/pos/debit.js"></script>
+<% } %>
+<% if (permissions.pos_layout_edit) { %>
+    <script src="/js/canteen/pos/layouts/edit.js"></script>
 <% } %>
 <script async>getPages()</script>
 <%- include(`${partials}/foot/elements/htmlClose`) %>    

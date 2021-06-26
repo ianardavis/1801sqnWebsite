@@ -173,9 +173,7 @@ module.exports = (app, m, inc, fn) => {
             ]},
             {permission: 'access_payments'},
             {permission: 'access_pos_layouts',   children: [
-                {permission: 'pos_layout_add'},
-                {permission: 'pos_layout_edit'},
-                {permission: 'pos_layout_delete'}
+                {permission: 'pos_layout_edit'}
             ]},
             {permission: 'access_pos_pages',     children: [
                 {permission: 'pos_page_add'},
