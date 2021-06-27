@@ -3,7 +3,7 @@ function _search() {return '<i class="fas fa-search"></i>'}
 function _globe()  {return '<i class="fas fa-globe-europe"></i>'}
 function _edit()   {return '<i class="fas fa-pencil-alt"></i>'}//
 function _save()   {return '<i class="fas fa-save"></i>'}
-function _move(attribute = '')   {return `<i class="fas fa-align-justify"${attribute}></i>`}
+function _move(attribute = '') {return `<i class="fas fa-align-justify"${attribute}></i>`}
 function _copy()   {return '<i class="fas fa-clipboard"></i>'}
 function _delete() {return '<i class="fas fa-trash-alt"></i>'}
 function random_id() {return Math.floor(Math.random()*10000)};
@@ -81,26 +81,29 @@ function Form(options = {}) {
 function Link(options = {}) {
     this.e = document.createElement('a');
     this.e.classList.add('btn');
+    if (options.small) this.e.classList.add('btn-sm');
+    if (options.float) this.e.classList.add('float-end');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
-    if        (options.type === 'edit') {
-        this.e.classList.add('btn-success');
-        this.e.innerHTML = _edit();
-    } else if (options.type === 'move') {
-        this.e.classList.add('btn-success');
-        this.e.innerHTML = _move(options.type_attribute || '');
-    } else {
-        this.e.classList.add('btn-primary');
-        this.e.innerHTML = _search();
-    };
-    if      (options.href)  this.e.setAttribute('href', options.href)
+
+    if      (options.html)            this.e.innerHTML = options.html
+    else if (options.text)            this.e.innerText = options.text
+    else if (options.type === 'edit') this.e.innerHTML = _edit()
+    else if (options.type === 'move') this.e.innerHTML = _move(options.type_attribute || '')
+    else                              this.e.innerHTML = _search();
+
+    if      (options.colour)                                     this.e.classList.add(`btn-${options.colour}`)
+    else if (options.type === 'edit' || options.type === 'move') this.e.classList.add('btn-success');
+    else                                                         this.e.classList.add('btn-primary');
+
+    if      (options.href) this.e.setAttribute('href', options.href)
     else if (options.modal) {
         this.e.setAttribute('data-bs-toggle', 'modal');
         this.e.setAttribute('data-bs-target', `#mdl_${options.modal}`);
         if (options.source) this.e.setAttribute(`data-source`, options.source);
     };
-    if (options.data)  this.e.setAttribute(`data-${options.data.field}`, options.data.value);
-    if (options.small) this.e.classList.add('btn-sm');
-    if (options.float) this.e.classList.add('float-end');
+    if (options.data) {
+        options.data.forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
+    };
 };
 function Delete_Button(options = {}) {
     this.e = document.createElement('form');
@@ -202,28 +205,17 @@ function Button(options = {}) {
     if (options.float)   this.e.classList.add('float-end');
     if (options.classes) options.classes.forEach(c => this.e.classList.add(c));
 
-    if (options.text) {
-        this.e.innerText = options.text;
-    } else if (options.html) {
-        this.e.innerHTML = options.html;
-    } else if (options.type === 'edit') {
-        this.e.innerHTML = _edit();
-    } else if (options.type === 'move') {
-        this.e.innerHTML = _move(options.type_attribute || '');
-    } else if (options.type === 'delete') {
-        this.e.innerHTML = _delete();
-    } else {
-        this.e.innerHTML = _search();
-    };
-    if (options.colour) {
-        this.e.classList.add(`btn-${options.colour}`);
-    } else if (options.type === 'edit' || options.type === 'move') {
-        this.e.classList.add('btn-success');
-    } else if (options.type === 'delete') {
-        this.e.classList.add('btn-danger');
-    } else {
-        this.e.classList.add('btn-primary');
-    };
+    if      (options.text)              this.e.innerText = options.text
+    else if (options.html)              this.e.innerHTML = options.html
+    else if (options.type === 'edit')   this.e.innerHTML = _edit()
+    else if (options.type === 'move')   this.e.innerHTML = _move(options.type_attribute || '')
+    else if (options.type === 'delete') this.e.innerHTML = _delete()
+    else                                this.e.innerHTML = _search();
+
+    if      (options.colour)                                     this.e.classList.add(`btn-${options.colour}`)
+    else if (options.type === 'edit' || options.type === 'move') this.e.classList.add('btn-success')
+    else if (options.type === 'delete')                          this.e.classList.add('btn-danger')
+    else                                                         this.e.classList.add('btn-primary');
 
     if (options.modal) {
         this.e.setAttribute('data-bs-toggle', 'modal');
@@ -306,4 +298,42 @@ function Badge(options = {}) {
     this.e.setAttribute('data-placement', 'top');
     this.e.setAttribute('title', `${options.text} ${options.table}`);
     this.e.innerText = options.count;
+};
+function Dropdown(options = {}) {
+    this.e = document.createElement('div');
+    this.e.classList.add('dropdown');
+    let dd_btn = document.createElement('a'),
+        id = options.id || random_id();
+    dd_btn.classList.add('btn', 'btn-primary', 'dropdown-toggle');
+    if (options.small) dd_btn.classList.add('btn-sm');
+    if (options.float) dd_btn.classList.add('float-end');
+    dd_btn.setAttribute('href', '#');
+    dd_btn.setAttribute('role', 'button');
+    dd_btn.setAttribute('id',   id);
+    dd_btn.setAttribute('data-bs-toggle', 'dropdown');
+    dd_btn.setAttribute('aria-expanded',   'false');
+    if      (options.text) dd_btn.innerText = options.text
+    else if (options.html) dd_btn.innerHTML = options.html;
+    this.e.appendChild(dd_btn);
+    let ul = document.createElement('ul');
+    ul.classList.add('dropdown-menu');
+    ul.setAttribute('aria-labelledby', id);
+    options.items.forEach(e => {
+        let li = document.createElement('li'),
+            a  = document.createElement('a');
+        a.classList.add('dropdown-item');
+        a.setAttribute('href', '#');
+        if      (e.text) a.innerText = e.text
+        else if (e.html) a.innerHTML = e.html;
+        if (e.modal) {
+            a.setAttribute('data-bs-toggle', 'modal');
+            a.setAttribute('data-bs-target', `#mdl_${e.modal}`);
+        };
+        if (e.data) {
+            e.data.forEach(d => a.setAttribute(`data-${d.field}`, d.value))
+        };
+        li.appendChild(a);
+        ul.appendChild(li);
+    });
+    this.e.appendChild(ul);
 };

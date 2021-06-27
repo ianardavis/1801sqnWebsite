@@ -122,14 +122,14 @@ function getPages() {
                                 new Button({
                                     colour:     'light',
                                     text:       ' ',
-                                    classes:    ['w-100', 'h-100', 'btn', 'btn-primary'],
+                                    classes:    ['w-100', 'h-100', 'btn', 'btn-primary', 'form_btn'],
                                     attributes: [{field: 'id', value: `btn_${page.pos_page_id}_${r}${c}`}],
-                                    noType:     true
+                                    noType:     true,
+                                    data: [
+                                        {field: 'page',     value: page.pos_page_id},
+                                        {field: 'position', value: `${r}${c}`}
+                                    ]
                                 }).e
-                            ],
-                            data: [
-                                {field: 'page',     value: page.pos_page_id},
-                                {field: 'position', value: `${r}${c}`}
                             ],
                             attributes: [{field: 'id', value: `form_${page.pos_page_id}_${r}${c}`}],
                             submit: function (event) {

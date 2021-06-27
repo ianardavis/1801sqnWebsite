@@ -1,15 +1,21 @@
 function addEditButtons() {
-    document.querySelectorAll('.form_view').forEach(form => {
-        form.appendChild(new Button({
-            html: '<i class="fas fa-pencil-alt"></i>',
-            classes: ['float-end'],
+    document.querySelectorAll('.form_btn').forEach(btn => {
+        btn.appendChild(new Dropdown({
+            // html: '<i class="fas fa-caret-down"></i>',
             small: true,
-            modal: 'layout_edit',
-            data: [
-                {field: 'page',     value: form.dataset.page},
-                {field: 'position', value: form.dataset.position},
+            float: true,
+            items: [
+                {
+                    modal: 'layout_edit',
+                    html: '<i class="fas fa-pencil-alt"></i>',
+                    data: [
+                        {field: 'page',     value: btn.dataset.page},
+                        {field: 'position', value: btn.dataset.position},
+                    ]
+                },
+                {html: '<i class="fas fa-trash-alt"></i>'}
             ]
-        }).e)
+        }).e);
     })
 };
 function getButton(page_id, position) {
@@ -17,10 +23,8 @@ function getButton(page_id, position) {
         table: 'pos_layout',
         query: [`page_id=${page_id}`, `button=${position}`]
     })
-    .then(function ([layout, options]) {
-        viewButton(layout)
-    })
-    .catch(err => {console.log('not found');viewButton()})
+    .then(([layout, options]) => viewButton(layout))
+    .catch(err => viewButton())
 };
 function viewButton(layout = null) {
     clear_select('items')
