@@ -1,5 +1,8 @@
+function enable_close_button(status) {
+    if (status === 1) enable_button('session_close')
+    else disable_button('session_close')
+};
 window.addEventListener('load', function () {
-    enable_button('session_close');
     addFormListener(
         'session_close',
         'PUT',

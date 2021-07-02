@@ -1,7 +1,6 @@
 function addEditButtons() {
     document.querySelectorAll('.form_btn').forEach(btn => {
         btn.appendChild(new Dropdown({
-            // html: '<i class="fas fa-caret-down"></i>',
             small: true,
             float: true,
             items: [

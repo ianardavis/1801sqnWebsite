@@ -1,63 +1,23 @@
 <%- include(`${partials}/head/app`) %>
 <%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/canteen/writeoffs', text: 'Writeoffs'}) %>
-<% if (permissions.writeoff_add) { %>
-    <li class="nav-item">
-        <a class="nav-link" id='btn_add_writeoff'>
-            <i class="fas fa-plus"></i>
-        </a>
-    </li>
-<% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'writeoffs'}) %>
 <%- include(`${partials}/head/navbar/close`) %>
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-45" onclick="sortTable(0, 'tbl_receipts')">Date</th>
-            <th class="w-45" onclick="sortTable(1, 'tbl_receipts')">Item</th>
-            <th class="w-10" onclick="sortTable(1, 'tbl_receipts')">Quantity</th>
+            <th class="w-30" onclick="sortTable(0, 'tbl_receipts')">Date</th>
+            <th class="w-30" onclick="sortTable(1, 'tbl_receipts')">Item</th>
+            <th class="w-30" onclick="sortTable(2, 'tbl_receipts')">Reason</th>
+            <th class="w-10" onclick="sortTable(3, 'tbl_receipts')">Quantity</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_writeoffs"></tbody>
     </table>
-    <% if (permissions.writeoff_add) { %>
-        <div id='mdl_add_writeoff' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_add_writeoff'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Writeoff</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`, {title: 'Reason', name: 'writeoff[reason]', required: true}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Add Writeoff'>
-                    </div>
-                </form>
-            </div>
-        </div>
-    <% } %>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/writeoffs/index/getWriteoffs.js"></script>
 <script src="/js/addFormListener.js"></script>
 <script async>getWriteoffs()</script>
-<% if (permissions.writeoff_add) { %>
-<script>
-    window.addEventListener('load', function () {
-        let btn_add_writeoff = document.querySelector('#btn_add_writeoff');
-        if (btn_add_writeoff) btn_add_writeoff.addEventListener('click', function () {$("#mdl_add_writeoff").modal("show")});
-        addFormListener(
-            'add_writeoff',
-            'POST',
-            '/canteen/writeoffs',
-            {onComplete: getWriteoffs}
-        )
-    });
-</script>
-<% } %>
 <%- include(`${partials}/foot/elements/htmlClose`) %>

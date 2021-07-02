@@ -88,9 +88,10 @@ module.exports = (app, m, inc, fn) => {
                         .then(takings => {
                             return m.holdings.findOrCreate({where: {description: 'Canteen float'}})
                             .then(([holding, created]) => {
-                                let cash_in = countCash(req.body.balance) - holding.cash,
+                                let counted = countCash(req.body.balance),
+                                    cash_in = counted - holding.cash,
                                     actions = [];
-                                actions.push(holding.update({cash: balance}));
+                                actions.push(holding.update({cash: counted}));
                                 if (cash_in !== 0) {
                                     actions.push(
                                         m.movements.create({
@@ -138,7 +139,7 @@ module.exports = (app, m, inc, fn) => {
     function getSessionSales(session_id) {
         return new Promise((resolve, reject) => {
             return m.payments.findAll({
-                where: {type: 'Cash'},
+                where: {type: {[fn.op.or]: ['Cash', 'cash']}},
                 include: [
                     inc.sale({
                         where:    {session_id: session_id},

@@ -10,7 +10,7 @@ module.exports = (app, m, inc, fn) => {
                 inc.holding({as: 'holding_from'})
             ]
         })
-        .then(movements => res.send({success: true, movements: movements}))
+        .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/movements_holding', fn.loggedIn(), fn.permissions.check('access_movements'), (req, res) => {

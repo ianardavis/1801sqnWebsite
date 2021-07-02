@@ -15,10 +15,11 @@
                 <%- include(`${partials}/menu/button`, {id: 'note_add',      modal: 'note_add',      text: 'Add Note'}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'session'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',   title: 'Sales',   spinner: 'sales', count_id: 'sale', permission: 'access_sales'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'items',   title: 'Items',   spinner: 'items', count_id: 'item', permission: 'access_items'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes', count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',  spinner: 'session'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',    title: 'Sales',    spinner: 'sales',            count_id: 'sale',    permission: 'access_sales'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', spinner: 'payments_session', count_id: 'payment', permission: 'access_payments'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',    spinner: 'items',            count_id: 'item',    permission: 'access_items'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    spinner: 'notes',            count_id: 'note',    permission: 'access_notes'}) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -41,6 +42,16 @@
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id="tbl_sales"></tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-50" onclick="sortTable(0, 'tbl_payments')">Type</th>
+                    <th class="w-50" onclick="sortTable(1, 'tbl_payments')">Amount</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_payments"></tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
@@ -102,7 +113,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Close'>
+                            <input type="submit" class="btn btn-success w-100" value='Close Session'>
                         </div>
                     </form>
                 </div>
@@ -120,6 +131,10 @@
 <% if (permissions.access_sales) { %>
     <script src="/js/canteen/sessions/show/sales/view.js"></script>
     <script async>getSales()</script>
+<% } %>
+<% if (permissions.access_payments) { %>
+    <script src="/js/canteen/sessions/show/payments/view.js"></script>
+    <script async>getPayments()</script>
 <% } %>
 <% if (permissions.session_edit) { %>
     <script src="/js/canteen/sessions/show/edit.js"></script>

@@ -12,9 +12,8 @@
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-50" onclick="sortTable(0, 'tbl_holdings')">Description</th>
-            <th class="w-25" onclick="sortTable(1, 'tbl_holdings')">Cash</th>
-            <th class="w-25" onclick="sortTable(2, 'tbl_holdings')">Cheques</th>
+            <th class="w-60" onclick="sortTable(0, 'tbl_holdings')">Description</th>
+            <th class="w-40" onclick="sortTable(1, 'tbl_holdings')">Cash</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_holdings"></tbody>
@@ -29,8 +28,7 @@
                         </div>
                         <div class="modal-body">
                             <%- include(`${partials}/inputs/text`,   {title: 'Description', name: 'holding[description]', required: true}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cash',        name: 'holding[cash]',        value: '0.00', step: '0.01', min: '0'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cheques',     name: 'holding[cheques]',     value: '0.00', step: '0.01', min: '0'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Balance',     name: 'holding[cash]',        value: '0.00', step: '0.01', min: '0'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save'>

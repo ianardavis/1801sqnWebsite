@@ -11,6 +11,7 @@ function getWriteoffs() {
                 try {
                     let row = tbl_writeoffs.insertRow(-1);
                     add_cell(row, table_date(writeoff.createdAt));
+                    add_cell(row, {text: writeoff.reason});
                     add_cell(row, {text: writeoff.qty});
                     add_cell(row, {append: new Link({
                         href: `/writeoffs/${writeoff.writeoff_id}`,

@@ -162,6 +162,11 @@ function print_date(date, time = false) {
         return str
     } else return '';
 };
+function print_time(date) {
+    if (date) {
+        return new Date(date).toLocaleTimeString()
+    } else return '';
+};
 function table_date(date, time = false) {
     let _date = {
         sort: new Date(date).getTime(),

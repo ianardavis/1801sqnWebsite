@@ -4,6 +4,6 @@ window.addEventListener('load', function () {
         'delete',
         'DELETE',
         `/canteen_items/${path[2]}`,
-        {redirect:'/cant_en/items'}
+        {redirect:'/canteen_items'}
     )
 });

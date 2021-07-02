@@ -33,7 +33,7 @@
             <%- include(`${partials}/inputs/display`, {id: 'item_current', title: 'Current Item'}) %>
         </div>
         <% if (permissions.access_receipts) { %>
-            <div class="tab-pane fade" id="receipts" role="tabpanel" aria-labelledby="receipts-tab">
+            <div class="tab-pane fade" id="receipts"  role="tabpanel" aria-labelledby="receipts-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-80" onclick="sortTable(0, 'tbl_receipts')">Date</th>
@@ -48,8 +48,9 @@
             <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-80" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
-                        <th class="w-20" onclick="sortTable(1, 'tbl_writeoffs')">Qty</th>
+                        <th class="w-30" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
+                        <th class="w-40" onclick="sortTable(1, 'tbl_writeoffs')">Qty</th>
+                        <th class="w-30" onclick="sortTable(2, 'tbl_writeoffs')">Qty</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id="tbl_writeoffs"></tbody>
@@ -57,7 +58,7 @@
             </div>
         <% } %>
         <% if (permissions.access_sales) { %>
-            <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+            <div class="tab-pane fade" id="sales"     role="tabpanel" aria-labelledby="sales-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class="w-80" onclick="sortTable(0, 'tbl_sales')">Date</th>
@@ -73,7 +74,7 @@
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <% if (permissions.item_edit) { %>
-            <div id='mdl_item_edit' class="modal" tabindex="-1" role="dialog">
+            <div id='mdl_item_edit'    class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_item_edit'>
                         <div class="modal-header">
@@ -93,7 +94,7 @@
             </div>
         <% } %>
         <% if (permissions.receipt_add) { %>
-            <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
+            <div id='mdl_receipt_add'  class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_receipt_add'>
                         <div class="modal-header">

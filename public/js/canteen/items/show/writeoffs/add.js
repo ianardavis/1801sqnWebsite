@@ -7,6 +7,7 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getWriteoffs,
+                getItem,
                 function () {modalHide('writeoff_add')}
             ]
         }

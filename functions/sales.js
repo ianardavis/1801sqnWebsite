@@ -26,7 +26,7 @@ module.exports = function (m, fn) {
                                             resolve({
                                                 payments: [
                                                     (sale.tendered > 0 ? {type: 'Cash', amount: sale.tendered} : {}),
-                                                    {type: 'account', amount: debit_amount}
+                                                    {type: 'Account', amount: debit_amount}
                                                 ],
                                                 change: 0.00
                                             });

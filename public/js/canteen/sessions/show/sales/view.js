@@ -9,11 +9,11 @@ function getSales() {
                 query: [`session_id=${path[2]}`]
             })
             .then(function ([sales, options]) {
-                set_count({id: 'sale', count: sales.length || '0'})
+                set_count({id: 'sale', count: sales.length || '0'});
                 let items = [], takings = 0.00;
                 sales.forEach(sale => {
                     let row = tbl_sales.insertRow(-1);
-                    add_cell(row, {text: print_date(sale.createdAt)});
+                    add_cell(row, {text: print_time(sale.createdAt)});
                     add_cell(row, {text: print_user(sale.user)});
                     add_cell(row, {text: sale.lines.length});
                     add_cell(row, {text: sale_statuses[sale.status] || 'Unknown'});
@@ -39,7 +39,7 @@ function getSales() {
                         };
                     });
                 });
-                set_innerText({id: 'session_takings', value: `£${takings}`});
+                set_innerText({id: 'session_takings', value: `£${Number(takings).toFixed(2)}`});
                 set_count({id: 'item', count: items.length || '0'});
                 items.forEach(item => {
                     let row = tbl_items.insertRow(-1);
@@ -48,7 +48,7 @@ function getSales() {
                     add_cell(row, {text: item.qty});
                     add_cell(row,{
                         append: new Link({
-                            href: `/items/${item.item_id}`,
+                            href: `/canteen_items/${item.item_id}`,
                             small: true
                         }).e
                     });
