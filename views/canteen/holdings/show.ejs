@@ -29,7 +29,7 @@
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                     <th class="w-25" onclick="sortTable(0, 'tbl_movements')">Date</th>
-                    <th class="w-10" onclick="sortTable(1, 'tbl_movements')">To/From?</th>
+                    <th class="w-10" onclick="sortTable(1, 'tbl_movements')">In/Out</th>
                     <th class="w-20" onclick="sortTable(2, 'tbl_movements')">Type</th>
                     <th class="w-15" onclick="sortTable(3, 'tbl_movements')">Amount</th>
                     <th class="w-30" onclick="sortTable(4, 'tbl_movements')">Description</th>
@@ -66,7 +66,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/tabs.js'></script>
 <script src='/js/addFormListener.js'></script>
 <script src="/js/canteen/holdings/show/view.js"></script>
 <%- include(`${partials}/common/notes/scripts`) %>

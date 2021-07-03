@@ -156,15 +156,8 @@ module.exports = (app, m, inc, fn) => {
                 {permission: 'canteen_item_edit'},
                 {permission: 'canteen_item_delete'}
             ]},
-            {permission: 'access_paid_in',     children: [
-                {permission: 'paid_in_add'},
-                {permission: 'paid_in_edit'},
-                {permission: 'paid_in_delete'}
-            ]},
-            {permission: 'access_paid_out',     children: [
-                {permission: 'paid_out_add'},
-                {permission: 'paid_out_edit'},
-                {permission: 'paid_out_delete'}
+            {permission: 'access_paid_in_out',   children: [
+                {permission: 'paid_in_out_add'}
             ]},
             {permission: 'access_movements',     children: [
                 {permission: 'movement_add'},

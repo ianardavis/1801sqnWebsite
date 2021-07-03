@@ -218,13 +218,9 @@ function addListener(btn, func, event = 'click') {
     let e = document.querySelector(`#${btn}`)
     if (e) e.addEventListener(event, func);
 };
-function modalShow(id) {
-    let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`), {});
-    if (modal) modal.show();
-};
 function modalHide(id) {
-    let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`), {});
-    if (modal) {console.log(modal.hide);modal.hide();}
+    let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`));
+    if (modal) modal.hide();
 };
 function modalOnShow(id, func) {
     let modal = document.querySelector(`#mdl_${id}`);
@@ -234,5 +230,11 @@ function modalIsShown(id) {
     let modal = document.querySelector(`#mdl_${id}`);
     if (modal && modal.classList.contains('show')) return true
     else return false;
+};
+function showTab(tab) {
+    let tabHead = document.querySelector(`#${tab}-tab`),
+        tabBody = document.querySelector(`#${tab}`);
+    if (tabHead) tabHead.classList.add('active');
+    if (tabBody) tabBody.classList.add('active', 'show');
 };
 let path = window.location.pathname.toString().split('/');

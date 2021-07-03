@@ -16,7 +16,8 @@ module.exports = function (m) {
     m.pos_pages.hasMany( m.pos_layouts,   {foreignKey: 'page_id', targetKey: 'page_id', as: 'items'});
     m.pos_layouts.hasOne(m.canteen_items, {foreignKey: 'item_id', sourceKey: 'item_id', as: 'item', constraints: false});
 
-    m.movements.hasOne(m.holdings, {foreignKey: 'holding_id', sourceKey: 'holding_id_from', as: 'holding_from', constraints: false});
-    m.movements.hasOne(m.holdings, {foreignKey: 'holding_id', sourceKey: 'holding_id_to',   as: 'holding_to',   constraints: false});
-    m.movements.hasOne(m.sessions, {foreignKey: 'session_id', sourceKey: 'session_id',                          constraints: false});
+    m.paid_in_outs.hasOne(m.holdings, {foreignKey: 'holding_id', sourceKey: 'holding_id',                          constraints: false});
+    m.movements   .hasOne(m.holdings, {foreignKey: 'holding_id', sourceKey: 'holding_id_from', as: 'holding_from', constraints: false});
+    m.movements   .hasOne(m.holdings, {foreignKey: 'holding_id', sourceKey: 'holding_id_to',   as: 'holding_to',   constraints: false});
+    m.movements   .hasOne(m.sessions, {foreignKey: 'session_id', sourceKey: 'session_id',                          constraints: false});
 };

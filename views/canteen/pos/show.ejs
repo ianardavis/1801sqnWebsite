@@ -83,6 +83,8 @@
                             <h5 class="modal-title">Edit Button</h5>
                         </div>
                         <div class="modal-body">
+                            <input type="hidden" name='layout[button]'  id='layout_button_edit'>
+                            <input type="hidden" name='layout[page_id]' id='layout_page_edit'>
                             <%- include(`${partials}/inputs/select`, {title: 'Item',   id: 'sel_items',   name: 'layout[item_id]', spinner_id: 'layout_items'}) %>
                             <%- include(`${partials}/inputs/colour`, {title: 'Colour', id: 'colour_edit', name: 'layout[colour]'}) %>
                         </div>
@@ -98,7 +100,6 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/common/alert.js"></script>
 <script src="/js/addFormListener.js"></script>
-<script src='/js/tabs.js'></script>
 <script src="/js/canteen/pos/view.js"></script>
 <% if (permissions.access_users) { %>
     <script src="/js/utils/list/users.js"></script>

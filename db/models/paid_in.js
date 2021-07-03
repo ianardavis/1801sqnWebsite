@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('paid_out', {
-    'paid_out_id': {
+  return sequelize.define('paid_in_outs', {
+    'paid_in_out_id': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       defaultValue: sequelize.fn('stores.uuid_generate_v1'),
@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'user_id_paid_out': {
+    'user_id_paid_in_out': {
       type: DataTypes.UUIDV4,
       allowNull: false,
       comment: "null"
@@ -24,13 +24,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'cash': {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
-      defaultValue: '0.00',
-      comment: "null"
-    },
-    'cheques': {
+    'amount': {
       type: DataTypes.DOUBLE,
       allowNull: false,
       defaultValue: '0.00',
@@ -38,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'holding_id': {
       type: DataTypes.UUIDV4,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'createdAt': {
@@ -56,9 +50,15 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: '1',
       comment: "null"
+    },
+    'paid_in': {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: "null"
     }
   }, {
-    tableName: 'paid_out',
+    tableName: 'paid_in_outs',
     schema: 'canteen'
   });
 };

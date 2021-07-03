@@ -91,6 +91,17 @@ function getSaleLines() {
         });
     };
 };
+function setPage() {
+    get({
+        table: 'settings',
+        query: ['name=default_pos_page']
+    })
+    .then(function ([settings, options]) {
+        if (!settings || settings.length === 0) showTab('all_items')
+        else showTab(`page_${settings[0].value}`);
+    })
+    .catch(err => showTab('all_items'));
+}
 function getPages() {
     get({table: 'pos_pages'})
     .then(function ([pages, options]) {
@@ -106,7 +117,7 @@ function getPages() {
                 for (let c = 0; c <= 3; c++) {
                     let div = document.createElement('div');
                     div.setAttribute('id', `div_${page.pos_page_id}_${r}${c}`);
-                    div.classList.add('col-6', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2', 'item_btn')
+                    div.classList.add('col-3', 'mb-2', 'item_btn')
                     div.appendChild(
                         new Form({
                             classes: ['h-100', 'form_view'],
@@ -158,7 +169,7 @@ function getPages() {
                 items.forEach(item => {
                     all_items.appendChild(
                         new Form({
-                            classes: ['col-6', 'col-sm-6', 'col-md-4', 'col-lg-4', 'col-xl-3', 'mb-2'],
+                            classes: ['col-3', 'mb-2', 'h-100'],
                             append:  [
                                 new Hidden({
                                     attributes:[{field: 'name', value: 'line[sale_id]'}],
@@ -197,7 +208,7 @@ function getPages() {
                 set_attribute({id: `div_${layout.page_id}_${layout.button}`, attribute: 'data-id', value: layout.item_id});
                 let btn_form = document.querySelector(`#btn_${layout.page_id}_${layout.button}`)
                 if (btn_form) {
-                    if (layout.colour) btn_form.style.backgroundColor = `#${layout.colour}`;
+                    if (layout.colour) btn_form.style.backgroundColor = `${layout.colour}`;
                     btn_form.innerHTML = `${layout.item.name}<br>£${Number(layout.item.price).toFixed(2)}`;
                 };
             });
@@ -210,13 +221,7 @@ function getPages() {
     })
     .then(result => {
         getSale();
-        get({
-            table: 'settings',
-            query: ['name=default_pos_page']
-        })
-        .then(function ([settings, options]) {
-            showTab(`page_${settings.value}`)
-        });
+        setPage();
         if (typeof addEditButtons === 'function') addEditButtons();
     });
 };
@@ -240,7 +245,6 @@ window.addEventListener('load', function () {
             onComplete: [
                 getSale,
                 function (response) {
-                    console.log(response);
                     if (typeof getCredits === 'function') getCredits;
                     set_innerText({id: 'change', text: `£${Number(response.change).toFixed(2)}`})
                     show('btn_close_sale_complete');

@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     'colour': {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       comment: "null"
     },
     'createdAt': {

@@ -1,13 +1,12 @@
 function getItems() {
     clear_table('items')
     .then(tbl_items => {
-        let current = document.querySelector('#current').value || {value: ''};
+        let current = document.querySelector('#current') || {value: ''};
         get({
             table: 'canteen_items',
             query: [current.value]
         })
         .then(function ([items, options]) {
-            console.log(items, options)
             items.forEach(item => {
                 let row = tbl_items.insertRow(-1);
                 add_cell(row, {text: item.name});

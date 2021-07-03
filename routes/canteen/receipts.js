@@ -58,13 +58,13 @@ module.exports = (app, m, inc, fn) => {
                                         user_id: req.user.user_id
                                     });
                                 };
+                                let qty_current = (item.qty < 0 ? 0 : item.qty)
                                 return item.increment('qty', {by: receipt_qty})
                                 .then(result => {
                                     if (!result) reject(new Error('Item quantity not updated'))
                                     else {
                                         if (item.cost !== receipt.cost) {
-                                            let qty_current = Math.max(0, item.qty),
-                                                cost_new    = Number(((qty_current * item.cost) + (receipt.qty * receipt.cost)) / (qty_current + receipt.qty));
+                                            let cost_new    = Number(((qty_current * item.cost) + (receipt.qty * receipt.cost)) / (qty_current + receipt.qty));
                                             return item.update({cost: cost_new})
                                             .then(result => {
                                                 if (!result) resolve(true);

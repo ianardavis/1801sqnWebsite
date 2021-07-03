@@ -22,10 +22,10 @@ function getButton(page_id, position) {
         table: 'pos_layout',
         query: [`page_id=${page_id}`, `button=${position}`]
     })
-    .then(([layout, options]) => viewButton(layout))
-    .catch(err => viewButton())
+    .then(([layout, options]) => viewButton(page_id, position, layout))
+    .catch(err => viewButton(page_id, position))
 };
-function viewButton(layout = null) {
+function viewButton(page_id, position, layout = null) {
     clear_select('items')
     .then(sel_items => {
         get({
@@ -33,14 +33,20 @@ function viewButton(layout = null) {
             query: ['current=1']
         })
         .then(function ([items, options]) {
-            sel_items.appendChild(new Option({text: 'Select Item...', selected: (!layout)}).e)
-            items.forEach(item => {
-                sel_items.appendChild(new Option({value: item.item_id, text: item.name, selected: (layout && layout.item_id === item.item_id ? true : false)}).e)
-            });
-            set_value({id: 'colour_edit', value: (layout ? `#${layout.colour}` : '#31639e')})
+            sel_items.appendChild(new Option({text: 'Select Item...', selected: (!layout)}).e);
+            items.forEach(e => sel_items.appendChild(new Option({value: e.item_id, text: e.name, selected: (layout && layout.item_id === e.item_id ? true : false)}).e));
+            set_value({id: 'layout_button_edit', value: position});
+            set_value({id: 'layout_page_edit',   value: page_id});
+            set_value({id: 'colour_edit',        value: (layout ? `#${layout.colour}` : '#31639e')})
         });
     })
 }
 window.addEventListener('load', function () {
     modalOnShow('layout_edit', function (event) {getButton(event.relatedTarget.dataset.page, event.relatedTarget.dataset.position)})
+    addFormListener(
+        'layout_edit',
+        'PUT',
+        '/pos_layouts',
+        {onComplete: getPages}
+    )
 });

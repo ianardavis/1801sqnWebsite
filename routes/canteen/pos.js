@@ -29,4 +29,31 @@ module.exports = (app, m, inc, fn) => {
         .then(pos_layout => res.send({success: true, result: pos_layout}))
         .catch(err => fn.send_error(res, err));
     });
+    app.put('/pos_layouts', fn.loggedIn(), fn.permissions.check('pos_layout_edit'), (req, res) => {
+        m.pos_layouts.findOrCreate({
+            where: {
+                page_id: req.body.layout.page_id,
+                button:  req.body.layout.button
+            },
+            defaults: {
+                item_id: req.body.layout.item_id,
+                colour:  req.body.layout.colour
+            }
+        })
+        .then(([layout, created]) => {
+            if (created) res.send({success: true, message: 'Button added'});
+            else {
+                return layout.update({
+                    item_id: req.body.layout.item_id,
+                    colour:  req.body.layout.colour
+                })
+                .then(result => {
+                    if (!result) fn.send_error(res, 'Button not saved')
+                    else res.send({success: true, message: 'Button saved'});
+                })
+                .catch(err => fn.send_error(res, err));
+            };
+        })
+        .catch(err => fn.send_error(res, err));
+    });
 };
