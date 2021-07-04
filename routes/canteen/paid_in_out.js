@@ -26,41 +26,10 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.post('/paid_in_outs',    fn.loggedIn(), fn.permissions.check('paid_in_out_add'),     (req, res) => {
-        if      (!req.body.paid_in_out.reason)              fn.send_error(res, 'No reason')
-        else if (!req.body.paid_in_out.amount)              fn.send_error(res, 'No amount')
-        else if (!req.body.paid_in_out.holding_id)          fn.send_error(res, 'No holding')
-        else if (!req.body.paid_in_out.user_id_paid_in_out) fn.send_error(res, 'No user')
-        else if (!req.body.paid_in_out.paid_in)             fn.send_error(res, 'No type')
+        if (!req.body.paid_in_out) fn.send_error(res, 'No details')
         else {
-            fn.get(
-                'holdings',
-                {holding_id: req.body.paid_in_out.holding_id}
-            )
-            .then(holding => {
-                fn.get(
-                    'users',
-                    {user_id: req.body.paid_in_out.user_id_paid_in_out}
-                )
-                .then(user_id_paid_in_out => {
-                    return m.paid_in_outs.create({
-                        ...req.body.paid_in_out,
-                        user_id: req.user.user_id,
-                        ...(req.body.paid_in_out.paid_in === '1' ?  {status: 2} : {})
-                    })
-                    .then(paid_in_out => {
-                        if (req.body.paid_in_out.paid_in === '1') {
-                            return holding.increment('cash', {by: req.body.paid_in_out.amount})
-                            .then(result => {
-                                if (!result) fn.send_error(res, 'Holding not updated')
-                                else res.send({success: true, message: 'Paid In Completed'})
-                            })
-                            .catch(err => fn.send_error(res, err));
-                        } else res.send({success: true, message: 'Paid Out Entered'})
-                    })
-                    .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
-            })
+            fn.paid_in_out.create(req.body.paid_in_out, req.user.user_id)
+            .then(result => res.send({success: true, message: 'Paid In Added'}))
             .catch(err => fn.send_error(res, err));
         };
     });

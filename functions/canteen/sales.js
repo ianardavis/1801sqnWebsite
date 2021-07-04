@@ -1,5 +1,6 @@
 module.exports = function (m, fn) {
     fn.sales = {};
+    fn.sales.lines = {};
     fn.sales.payment = function (sale_id, total, sale, user_id) {
         return new Promise((resolve, reject) => {
             let payment_action = null;
@@ -126,6 +127,141 @@ module.exports = function (m, fn) {
                 return Promise.all(payments)
                 .then(result => resolve(payment_result.change))
                 .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.sales.complete = function (sale_id, _sale, user_id) {
+        return new Promise((resolve, reject) => {
+            fn.get(
+                'sales',
+                {sale_id: sale_id}
+            )
+            .then(sale => {
+                if (sale.status !== 1) reject(new Error('Sale is not open'))
+                else {
+                    return m.sale_lines.findAll({
+                        where: {sale_id: sale.sale_id}
+                    })
+                    .then(lines => {
+                        if (lines.length === 0) reject(new Error('No open lines on this sale'));
+                        else {
+                            let total = 0.00;
+                            lines.forEach(line => {total += line.qty * line.price});
+                            return fn.sales.payment(sale.sale_id, total, _sale, user_id)
+                            .then(change => {
+                                let actions = [];
+                                actions.push(sale.update({status: 2}));
+                                lines.forEach(line => {
+                                    actions.push(
+                                        new Promise((resolve, reject) => {
+                                            fn.get(
+                                                'canteen_items',
+                                                {item_id: line.item_id}
+                                            )
+                                            .then(item => {
+                                                return item.decrement('qty', {by: line.qty})
+                                                .then(result => {
+                                                    if (!result) reject(new Error('Quantity not updated'))
+                                                    else resolve(true)
+                                                })
+                                                .catch(err => reject(err));
+                                            })
+                                        })
+                                    );
+                                })
+                                return Promise.all(actions)
+                                .then(result => resolve(change))
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        };
+                    })
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.sales.lines.create = function (line) {
+        return new Promise((resolve, reject) => {
+            if (!line.item_id) reject(new Error('No Item'))
+            else {
+                fn.get(
+                    'sales',
+                    {sale_id: line.sale_id},
+                    [{model: m.sessions, as: 'session'}]
+                )
+                .then(sale => {
+                    if (sale.session.status !== 1) reject(new Error('Session for this sale is not open'))
+                    else {
+                        return fn.get(
+                            'canteen_items',
+                            {item_id: line.item_id}
+                        )
+                        .then(item => {
+                            return m.sale_lines.findOrCreate({
+                                where: {
+                                    sale_id: sale.sale_id,
+                                    item_id: item.item_id
+                                },
+                                defaults: {
+                                    qty:   line.qty || 1,
+                                    price: item.price
+                                }
+                            })
+                            .then(([line, created]) => {
+                                if (created) resolve(true)
+                                else {
+                                    return line.increment('qty', {by: line.qty})
+                                    .then(result => {
+                                        if (result) resolve(true)
+                                        else        reject(new Error('Line not updated'));
+                                    })
+                                    .catch(err => reject(err));
+                                };
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
+    fn.sales.lines.edit = function (_line) {
+        return new Promise((resolve, reject) => {
+            fn.get(
+                'sale_lines',
+                {sale_line_id: _line.sale_line_id},
+                [{
+                    model:   m.sales,
+                    as:      'sale',
+                    include: [{model: m.sessions, as: 'session'}]
+                }]
+            )
+            .then(line => {
+                if (line.sale.session.status !== 1) reject(new Error('Session for this line is not open'))
+                else {
+                    return line.increment('qty', {by: _line.qty})
+                    .then(result => {
+                        return line.reload()
+                        .then(result => {
+                            if (result) {
+                                if (line.qty === 0) {
+                                    return line.destroy()
+                                    .then(result => { 
+                                        if (result) resolve(true)
+                                        else reject(new Error('Line not updated'));
+                                    })
+                                } else resolve(true);
+                            } else reject(new Error('Line not updated'));
+                        })
+                        .catch(err => reject(err))
+                    })
+                    .catch(err => reject(err));
+                };
             })
             .catch(err => reject(err));
         });

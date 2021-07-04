@@ -9,8 +9,8 @@ module.exports = function (app, m) {
         .filter(e => e.indexOf(".") === -1)
         .forEach(folder => require(`./${folder}`)(fs, app, m, fn));
 
-    app.get("*",                (req, res) => res.render("404"));
     app.get("/get/*",   fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
     app.get("/count/*", fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
     app.get("/sum/*",   fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
+    app.get("*",                       (req, res) => res.render("404"));
 };
