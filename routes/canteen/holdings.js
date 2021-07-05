@@ -24,7 +24,7 @@ module.exports = (app, m, fn) => {
     app.post('/holdings',           fn.loggedIn(), fn.permissions.check('holding_add'),      (req, res) => {
         if (!req.body.holding) fn.send_error(res, 'No details')
         else {
-            fn.holdingd.create(req.body.holding)
+            fn.holdings.create(req.body.holding)
             .then(result => res.send({success: true, message: 'Holding created'}))
             .catch(err => fn.send_error(res, err));
         };
