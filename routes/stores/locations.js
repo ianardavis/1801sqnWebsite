@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/locations/:id', fn.loggedIn(), fn.permissions.get('access_locations'),   (req, res) => res.render('stores/locations/show'));
     app.get('/get/location',  fn.loggedIn(), fn.permissions.check('access_locations'), (req, res) => {
         fn.get(

@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     let receipts = {}, issues = {};
     app.get('/orders',        fn.loggedIn(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/index'));
     app.get('/orders/:id',    fn.loggedIn(), fn.permissions.get('access_orders'),   (req, res) => res.render('stores/orders/show'));
@@ -16,10 +16,10 @@ module.exports = (app, m, inc, fn) => {
 
     app.get('/get/orders',    fn.loggedIn(), fn.permissions.check('access_orders'), (req, res) => {
         m.orders.findAll({
-            where:   req.query,
+            where: req.query,
             include: [
-                inc.size(),
-                inc.user()
+                fn.inc.stores.size(),
+                fn.inc.users.user()
             ]
         })
         .then(orders => res.send({success: true, result: orders}))
@@ -30,8 +30,8 @@ module.exports = (app, m, inc, fn) => {
             'orders',
             req.query,
             [
-                inc.size(),
-                inc.user()
+                fn.inc.stores.size(),
+                fn.inc.users.user()
             ]
         )
         .then(order => res.send({success: true, result: order}))
@@ -84,7 +84,7 @@ module.exports = (app, m, inc, fn) => {
                         return m.actions.findAll({
                             where:      {order_id: order_id},
                             attributes: ['action_id'],
-                            include: [inc.issue({attributes: ['issue_id', 'status']})]
+                            include: [fn.inc.stores.issue()]
                         })
                         .then(issues => {
                             let issue_actions = [];
@@ -124,7 +124,7 @@ module.exports = (app, m, inc, fn) => {
                 fn.get(
                     'orders',
                     {order_id: line.order_id},
-                    [inc.size()]
+                    [fn.inc.stores.size()]
                 )
                 .then(order => {
                     if (order.status !== 1) reject(new Error('Only placed orders can be received'))
@@ -184,7 +184,7 @@ module.exports = (app, m, inc, fn) => {
                 return fn.get(
                     'stocks',
                     {stock_id: options.stock_id},
-                    [inc.location()]
+                    [fn.inc.stores.location()]
                 )
                 .then(stock => resolve(stock))
                 .catch(err => reject(err));
@@ -335,7 +335,7 @@ module.exports = (app, m, inc, fn) => {
             return fn.get(
                 'order_lines',
                 {line_id: line.line_id},
-                [inc.size({attributes: ['supplier_id']})]
+                [fn.inc.stores.size()]
             )
             .then(order_line => {
                 if      (!order_line.size)                                                   resolve({success: false, message: 'Size not found'});

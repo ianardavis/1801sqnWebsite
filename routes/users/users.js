@@ -1,5 +1,5 @@
 const { scryptSync, randomBytes } = require("crypto");
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     let user_attributes = ['user_id', 'full_name', 'surname', 'first_name', 'service_number'];
     app.get('/users',             fn.loggedIn(), fn.permissions.get('access_users',    {allow: true}), (req, res) => {
         if (req.allowed) res.render('users/index')
@@ -16,7 +16,7 @@ module.exports = (app, m, inc, fn) => {
     app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users'),                 (req, res) => {
         m.users.findOne({
             where:      req.query,
-            include:    [inc.rank(), inc.status()],
+            include:    [fn.inc.users.rank(), fn.inc.users.status()],
             attributes: ['user_id', 'full_name', 'service_number', 'first_name', 'surname', 'status_id', 'rank_id', 'login_id', 'reset', 'last_login']
         })
         .then(user => {
@@ -29,7 +29,7 @@ module.exports = (app, m, inc, fn) => {
         if (!req.allowed) req.query.user_id = req.user.user_id;
         m.users.findAll({
             where:      req.query,
-            include:    [inc.rank(), inc.status()],
+            include:    [fn.inc.users.rank(), fn.inc.users.status()],
             attributes: user_attributes
         })
         .then(users => res.send({success: true,  result: users}))
@@ -41,8 +41,8 @@ module.exports = (app, m, inc, fn) => {
         m.users.findAll({
             where: where,
             include:    [
-                inc.rank(),
-                inc.status({
+                fn.inc.users.rank(),
+                fn.inc.users.status({
                     where: {status: {[fn.op.substring]: 'Current'}},
                     required: true
                 })

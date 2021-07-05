@@ -60,14 +60,7 @@ module.exports = function (m, fn) {
                         return fn.get(
                             'orders',
                             {order_id: order.order_id},
-                            [{
-                                model: m.sizes,
-                                as: 'size',
-                                include: [{
-                                    model: m.suppliers,
-                                    as: 'supplier'
-                                }]
-                            }]
+                            [fn.inc.stores.size({supplier: true})]
                         )
                         .then(order => {
                             if      (order.status !== 1)    reject(new Error('Only placed orders can be demanded'))
@@ -151,14 +144,7 @@ module.exports = function (m, fn) {
                 return fn.get(
                     'orders',
                     {order_id: _order.order_id},
-                    [{
-                        model: m.sizes,
-                        as: 'size',
-                        include: [{
-                            model: m.suppliers,
-                            as: 'supplier'
-                        }]
-                    }]
+                    [fn.inc.stores.size({supplier: true})]
                 )
                 .then(order => {
                     if      (!order.size)        reject(new Error('Size not found'))

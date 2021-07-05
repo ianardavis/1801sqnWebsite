@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/sessions',     fn.loggedIn(), fn.permissions.get('access_sessions'),   (req, res) => res.render('canteen/sessions/index'));
     app.get('/sessions/:id', fn.loggedIn(), fn.permissions.get('access_sessions'),   (req, res) => res.render('canteen/sessions/show'));
 
@@ -6,8 +6,8 @@ module.exports = (app, m, inc, fn) => {
         m.sessions.findAll({
             where: req.query,
             include: [
-                inc.user({as: 'user_open'}),
-                inc.user({as: 'user_close'}),
+                fn.inc.users.user({as: 'user_open'}),
+                fn.inc.users.user({as: 'user_close'}),
             ]
         })
         .then(sessions => res.send({success: true, result: sessions}))
@@ -18,8 +18,8 @@ module.exports = (app, m, inc, fn) => {
             'sessions',
             req.query,
             [
-                inc.user({as: 'user_open'}),
-                inc.user({as: 'user_close'}),
+                fn.inc.users.user({as: 'user_open'}),
+                fn.inc.users.user({as: 'user_close'}),
             ]
         )
         .then(session => res.send({success: true, result: session}))

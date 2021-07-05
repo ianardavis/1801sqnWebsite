@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/canteen_items',        fn.loggedIn(), fn.permissions.get('access_canteen_items'),   (req, res) => res.render('canteen/items/index'));
     app.get('/canteen_items/:id',    fn.loggedIn(), fn.permissions.get('access_canteen_items'),   (req, res) => res.render('canteen/items/show'));
     
@@ -17,42 +17,26 @@ module.exports = (app, m, inc, fn) => {
     });
 
     app.put('/canteen_items/:id',    fn.loggedIn(), fn.permissions.check('canteen_item_edit'),    (req, res) => {
-        fn.get(
-            'canteen_items',
-            {item_id: req.params.id}
-        )
-        .then(item => {
-            return item.update(req.body.item)
-            .then(result => {
-                if (result) res.send({success: true,  message: 'Item updated'})
-                else        fn.send_error(res, 'Item not updated')
-            })
+        if (!req.body.item) fn.send_error(res, 'No item')
+        else {
+            fn.canteen_items.edit(req.params.id, req.body.item)
+            .then(result => res.send({success: true,  message: 'Item updated'}))
             .catch(err => fn.send_error(res, err));
-        })
-        .catch(err => fn.send_error(res, err));
+        };
     });
     
     app.post('/canteen_items',       fn.loggedIn(), fn.permissions.check('canteen_item_add'),     (req, res) => {
-        m.canteen_items.create(req.body.item)
-        .then(item => res.send({success: true, message: 'Item added'}))
-        .catch(err => fn.send_error(res, err));
+        if (!req.body.item) fn.send_error(res, 'No item')
+        else {
+            fn.canteen_items.create(req.body.item)
+            .then(item => res.send({success: true, message: 'Item added'}))
+            .catch(err => fn.send_error(res, err));
+        };
     });
 
     app.delete('/canteen_items/:id', fn.loggedIn(), fn.permissions.check('canteen_item_delete'),  (req, res) => {
-        fn.get(
-            'canteen_items',
-            {item_id: req.params.id}
-        )
-        .then(item => {
-            if (item.item_id > 0) {
-                item.destroy()
-                .then(result => {
-                    if (result) res.send({success: true,  message: 'Item deleted'})
-                    else        fn.send_error(res, 'Item not deleted');
-                })
-                .catch(err => fn.send_error(res, err));
-            } else fn.send_error(res, 'This item can not be deleted');
-        })
+        fn.canteen_items.delete(req.params.id)
+        .then(result => res.send({success: true,  message: 'Item deleted'}))
         .catch(err => fn.send_error(res, err));
     });
 };

@@ -50,12 +50,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             return m.payments.findAll({
                 where: {type: {[fn.op.or]: ['Cash', 'cash']}},
-                include: [{
-                    model: m.sales,
-                    as:    'sale',
-                    where: {session_id: session_id},
-                    required: true
-                }]
+                include: [fn.inc.canteen.sale({where: {session_id: session_id}, required: true})]
             })
             .then(payments => {
                 let takings = 0.0;

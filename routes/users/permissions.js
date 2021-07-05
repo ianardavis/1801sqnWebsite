@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     let permission_tree = [
         {permission: 'core_functions', children: [
             {permission: 'access_actions',   children: []},
@@ -22,7 +22,7 @@ module.exports = (app, m, inc, fn) => {
             {permission: 'user_add'},
             {permission: 'user_edit'},
             {permission: 'user_delete'},
-            {permission: 'accesspermissions', children: [
+            {permission: 'access_permissions', children: [
                 {permission: 'permission_edit'}
             ]}
         ]},

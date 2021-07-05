@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/genders',    fn.loggedIn(), fn.permissions.check('access_genders'), (req, res) => {
         m.genders.findAll({where: req.query})
         .then(genders => res.send({success: true, result: genders}))

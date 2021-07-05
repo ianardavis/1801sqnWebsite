@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/receipts',        fn.loggedIn(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/index'));
     app.get('/receipts/:id',    fn.loggedIn(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/show'));
     
@@ -6,8 +6,8 @@ module.exports = (app, m, inc, fn) => {
         m.receipts.findAll({
             where: req.query,
             include: [
-                inc.user(),
-                inc.item()
+                fn.inc.users.user(),
+                fn.inc.canteen.item()
             ]
         })
         .then(receipts => res.send({success: true,  result: receipts}))
@@ -18,8 +18,8 @@ module.exports = (app, m, inc, fn) => {
             'receipts',
             req.query,
             [
-                inc.users(),
-                inc.items()
+                fn.inc.users.user(),
+                fn.inc.canteen.item()
             ]
         )
         .then(receipt => res.send({success: true,  result: receipt}))
@@ -47,21 +47,5 @@ module.exports = (app, m, inc, fn) => {
             })
             .catch(err => fn.send_error(res, err));
         };
-    });
-    
-    app.delete('/receipts/:id', fn.loggedIn(), fn.permissions.check('receipt_delete'),  (req, res) => {
-        fn.get(
-            'receipts', 
-            {receipt_id: req.params.id}
-        )
-        .then(receipt => {
-            return receipt.destroy()
-            .then(result => {
-                if (!result) fn.send_error(res, 'Receipt not deleted')
-                else         res.send({success: true,  message: 'Receipt deleted'});
-            })
-            .catch(err => fn.send_error(res, err));
-        })
-        .catch(err => fn.send_error(res, err));
     });
 };

@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/sizes/select', fn.loggedIn(), fn.permissions.get('access_sizes'),   (req, res) => res.render('stores/sizes/select'));
     app.get('/sizes/:id',    fn.loggedIn(), fn.permissions.get('access_sizes'),   (req, res) => res.render('stores/sizes/show'));
 
@@ -11,8 +11,8 @@ module.exports = (app, m, inc, fn) => {
         m.sizes.findAll({
             where: req.query,
             include: [
-                inc.items(),
-                inc.suppliers({as: 'supplier'})
+                fn.inc.stores.item(),
+                fn.inc.stores.supplier()
             ]
         })
         .then(sizes => res.send({success: true, result: sizes}))
@@ -23,8 +23,8 @@ module.exports = (app, m, inc, fn) => {
             'sizes',
             req.query,
             [
-                inc.items(),
-                inc.suppliers({as: 'supplier'})
+                fn.inc.stores.item(),
+                fn.inc.stores.supplier()
             ]
         )
         .then(size => res.send({success: true, result: size}))

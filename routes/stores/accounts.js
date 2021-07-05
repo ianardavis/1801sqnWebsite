@@ -1,8 +1,8 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_accounts', {send: true}), (req, res) => {
         return m.accounts.findAll({
             where:   req.query,
-            include: [inc.user()]
+            include: [fn.inc.users.user()]
         })
         .then(accounts => res.send({success: true, result: accounts}))
         .catch(err => fn.send_error(res, err));
@@ -11,7 +11,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'accounts',
             req.query,
-            [inc.user()]
+            [fn.inc.users.user()]
         )
         .then(account => res.send({success: true,  result: account}))
         .catch(err => fn.send_error(res, err));

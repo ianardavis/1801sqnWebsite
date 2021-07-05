@@ -1,8 +1,6 @@
 module.exports = (fs, app, m, fn) => {
     fs
     .readdirSync(__dirname)
-    .filter(file => {
-        return (file.indexOf(".js") !== -1 && file !== "index.js");
-    })
+    .filter(e => e !== "index.js")
     .forEach(file => require(`./${file}`)(app, fn));
 };

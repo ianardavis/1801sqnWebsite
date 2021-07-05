@@ -1,12 +1,12 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/sales/:id',        fn.loggedIn(), fn.permissions.get('access_sales'),   (req, res) => res.render('canteen/sales/show'));
 
     app.get('/get/sales',        fn.loggedIn(), fn.permissions.check('access_sales'), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
-                inc.sale_lines({item: true}),
-                inc.user()
+                fn.inc.canteen.sale_lines({item: true}),
+                fn.inc.users.user()
             ]
         })
         .then(sales => res.send({success: true, result: sales}))
@@ -16,7 +16,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'sales',
             req.query,
-            [inc.user()]
+            [fn.inc.users.user()]
         )
         .then(sale => res.send({success: true,  result: sale}))
         .catch(err => fn.send_error(res, err))
@@ -42,7 +42,7 @@ module.exports = (app, m, inc, fn) => {
     app.get('/get/sale_lines',   fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
-            include: [inc.item()]
+            include: [fn.inc.canteen.item()]
         })
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => fn.send_error(res, err))

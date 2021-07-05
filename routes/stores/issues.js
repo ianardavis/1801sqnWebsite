@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/issues',           fn.loggedIn(), fn.permissions.get('access_issues',   {allow: true}), (req, res) => res.render('stores/issues/index'));
     app.get('/issues/:id',       fn.loggedIn(), fn.permissions.get('access_issues',   {allow: true}), (req, res) => {
         fn.get(
@@ -29,9 +29,9 @@ module.exports = (app, m, inc, fn) => {
         m.issues.findAll({
             where: req.query,
             include: [
-                inc.size(),
-                inc.user({as: 'user_issue'}),
-                inc.user({as: 'user'})
+                fn.inc.stores.size(),
+                fn.inc.users.user({as: 'user_issue'}),
+                fn.inc.users.user()
             ]
         })
         .then(issues => res.send({success: true, result: issues}))
@@ -42,9 +42,9 @@ module.exports = (app, m, inc, fn) => {
             'issues',
             req.query,
             [
-                inc.size(),
-                inc.user({as: 'user_issue'}),
-                inc.user()
+                fn.inc.stores.size(),
+                fn.inc.users.user({as: 'user_issue'}),
+                fn.inc.users.user()
             ]
         )
         .then(issue => {

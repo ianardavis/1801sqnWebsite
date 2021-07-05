@@ -1,11 +1,10 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/suppliers',        fn.loggedIn(), fn.permissions.get('access_suppliers'),   (req, res) => res.render('stores/suppliers/index'));
     app.get('/suppliers/:id',    fn.loggedIn(), fn.permissions.get('access_suppliers'),   (req, res) => res.render('stores/suppliers/show'));
 
     app.get('/get/suppliers',    fn.loggedIn(), fn.permissions.check('access_suppliers'), (req, res) => {
         m.suppliers.findAll({
             where: req.query
-            // include: [inc.accounts()]
         })
         .then(suppliers => res.send({success: true, result: suppliers}))
         .catch(err => fn.send_error(res, err));
@@ -14,7 +13,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'suppliers',
             req.query,
-            [inc.accounts()]
+            [fn.inc.stores.account()]
         )
         .then(supplier => res.send({success: true,  result: supplier}))
         .catch(err => fn.send_error(res, err));

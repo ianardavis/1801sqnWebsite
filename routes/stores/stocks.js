@@ -1,11 +1,11 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/stocks/:id',         fn.loggedIn(), fn.permissions.get('access_stocks'),   (req, res) => res.render('stores/stocks/show'));
     app.get('/get/stocks',         fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
         m.stocks.findAll({
             where:   req.query,
             include: [
-                inc.size(),
-                inc.location()
+                fn.inc.stores.size(),
+                fn.inc.stores.location()
             ],
         })
         .then(stocks => res.send({success: true, result: stocks}))
@@ -20,8 +20,8 @@ module.exports = (app, m, inc, fn) => {
         m.stocks.findAll({
             where: {qty: {[fn.op.lt]: 0}},
             include: [
-                inc.size(),
-                inc.location()
+                fn.inc.stores.size(),
+                fn.inc.stores.location()
             ],
         })
         .then(stocks => res.send({success: true, result: stocks}))
@@ -32,8 +32,8 @@ module.exports = (app, m, inc, fn) => {
             'stocks',
             req.query,
             [
-                inc.size(),
-                inc.location()
+                fn.inc.stores.size(),
+                fn.inc.stores.location()
             ]
         )
         .then(stock => res.send({success: true, result: stock}))

@@ -144,9 +144,7 @@ module.exports = function (m, fn) {
                 return fn.get(
                     'issues',
                     {issue_id: options.issue_id},
-                    [
-                        {model: m.sizes, as: 'size'}
-                    ]
+                    [fn.inc.stores.size()]
                 )
                 .then(issue => {
                     if      (issue.status !== 2)    reject(new Error('Only approved issues can be ordered'))
@@ -207,7 +205,7 @@ module.exports = function (m, fn) {
                         return fn.get(
                             'issues',
                             {issue_id: issue.issue_id},
-                            [{model: m.sizes, as: 'size'}]
+                            [fn.inc.stores.size()]
                         )
                         .then(_issue => {
                             if      (!_issue.size)                               reject(new Error('Size not found'))

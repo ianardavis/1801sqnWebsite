@@ -1,11 +1,11 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_categories', {send: true}), (req, res) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
         m.categories.findAll({
             where: req.query,
-            include: [inc.categories({as: 'parent'})]
+            include: [fn.inc.stores.categories({as: 'parent'})]
         })
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => fn.send_error(res, err));
@@ -17,7 +17,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'categories',
             req.query,
-            [inc.categories({as: 'parent'})]
+            [fn.inc.stores.categories({as: 'parent'})]
         )
         .then(category => res.send({success: true, result: category}))
         .catch(err => fn.send_error(res, err));

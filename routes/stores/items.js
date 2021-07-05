@@ -1,11 +1,11 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/items',                  fn.loggedIn(), fn.permissions.get('access_items'),   (req, res) => res.render('stores/items/index'));
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_items'),   (req, res) => res.render('stores/items/show'));
     
     app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_items'), (req, res) => {
         m.items.findAll({
             where:   req.query,
-            include: [inc.genders()]
+            include: [fn.inc.stores.gender()]
         })
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
@@ -21,7 +21,7 @@ module.exports = (app, m, inc, fn) => {
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_items'), (req, res) => {
         m.item_categories.findAll({
             where:   req.query,
-            include: [inc.categories()]
+            include: [fn.inc.stores.category()]
         })
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => fn.send_error(res, err));

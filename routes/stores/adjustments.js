@@ -1,12 +1,12 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/adjustment',  fn.loggedIn(), fn.permissions.check('access_adjustments', {send: true}), (req, res) => {
         fn.get(
             'adjustments',
             req.query,
             [
-                inc.user(), 
-                inc.stock(),
-                inc.size()
+                fn.inc.users.user(), 
+                fn.inc.stores.stock(),
+                fn.inc.stores.size()
             ]
         )
         .then(adjustment => res.send({success: true, result: adjustment}))
@@ -16,8 +16,8 @@ module.exports = (app, m, inc, fn) => {
         m.adjustments.findAll({
             where: req.query,
             include: [
-                inc.user(), 
-                inc.stock()
+                fn.inc.users.user(), 
+                fn.inc.stores.stock()
             ]
         })
         .then(adjustments => res.send({success: true, result: adjustments}))

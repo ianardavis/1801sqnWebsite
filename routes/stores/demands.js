@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/demands',              fn.loggedIn(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/index'));
     app.get('/demands/:id',          fn.loggedIn(), fn.permissions.get('access_demands'),        (req, res) => res.render('stores/demands/show'));
     app.get('/demands/:id/download', fn.loggedIn(), fn.permissions.check('access_demands'),      (req, res) => {
@@ -40,8 +40,8 @@ module.exports = (app, m, inc, fn) => {
             'demands',
             req.query,
             [
-                inc.user(),
-                inc.supplier()
+                fn.inc.users.user(),
+                fn.inc.stores.supplier()
             ]
         )
         .then(demand => res.send({success: true, result: demand}))
@@ -51,8 +51,8 @@ module.exports = (app, m, inc, fn) => {
         m.demands.findAll({
             where:   req.query,
             include: [
-                inc.user(),
-                inc.supplier()
+                fn.inc.users.user(),
+                fn.inc.stores.supplier()
             ]
         })
         .then(demands => res.send({success: true, result: demands}))
@@ -62,9 +62,9 @@ module.exports = (app, m, inc, fn) => {
         m.demand_lines.findAll({
             where:   req.query,
             include: [
-                inc.size(),
-                inc.user(),
-                inc.demand()
+                fn.inc.stores.size(),
+                fn.inc.users.user(),
+                fn.inc.stores.demand()
             ]
         })
         .then(lines => res.send({success: true, result: lines}))
@@ -75,9 +75,9 @@ module.exports = (app, m, inc, fn) => {
             'demand_lines',
             req.query,
             [
-                inc.size(),
-                inc.user(),
-                inc.demand()
+                fn.inc.stores.size(),
+                fn.inc.users.user(),
+                fn.inc.stores.demand()
             ]
         )
         .then(line => res.send({success: true, result: line}))

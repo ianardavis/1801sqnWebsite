@@ -1,10 +1,10 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/payments',         fn.loggedIn(), fn.permissions.check('access_payments'), (req, res) => {
         m.payments.findAll({
             where: req.query,
             include: [
-                inc.sales({as: 'sale'}),
-                inc.user()
+                fn.inc.canteen.sale(),
+                fn.inc.users.user()
             ]
         })
         .then(payments => res.send({success: true, result: payments}))
@@ -13,11 +13,11 @@ module.exports = (app, m, inc, fn) => {
     app.get('/get/payments_session', fn.loggedIn(), fn.permissions.check('access_payments'), (req, res) => {
         m.payments.findAll({
             include: [
-                inc.sale({
+                fn.inc.canteen.sale({
                     where:    req.query,
                     required: true
                 }),
-                inc.user()
+                fn.inc.users.user()
             ]
         })
         .then(payments => res.send({success: true, result: payments}))

@@ -1,13 +1,13 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/paid_in_out',      fn.loggedIn(), fn.permissions.get('access_paid_in_outs'),   (req, res) => res.render('canteen/paid_in_outs/index'));
     
     app.get('/get/paid_in_out',  fn.loggedIn(), fn.permissions.check('access_paid_in_outs'), (req, res) => {
         m.paid_in_outs.findOne({
             where: req.query,
             include: [
-                inc.user({as: 'user_paid_in_out'}),
-                inc.user(),
-                inc.holding()
+                fn.inc.users.user({as: 'user_paid_in_out'}),
+                fn.inc.users.user(),
+                fn.inc.canteen.holding()
             ]
         })
         .then(paid_in => res.send({success: true, result: paid_in}))
@@ -17,8 +17,8 @@ module.exports = (app, m, inc, fn) => {
         m.paid_in_outs.findAll({
             where: req.query,
             include: [
-                inc.user({as: 'user_paid_in_out'}),
-                inc.holding()
+                fn.inc.users.user({as: 'user_paid_in_out'}),
+                fn.inc.canteen.holding()
             ]
         })
         .then(paid_ins => res.send({success: true, result: paid_ins}))

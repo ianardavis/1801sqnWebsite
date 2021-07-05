@@ -156,11 +156,7 @@ module.exports = function (m, fn) {
                                 demand_id: demand.demand_id,
                                 status: 2
                             },
-                            [{
-                                model:   m.sizes,
-                                as:      'size',
-                                include: [m.details]
-                            }]
+                            [fn.inc.stores.size({details: true})]
                         )
                         .then(demand_lines => {
                             return get_orders(demand_lines)
@@ -250,10 +246,9 @@ module.exports = function (m, fn) {
             return fn.get(
                 'sizes',
                 {size_id: options.size_id},
-                [{
-                    model: m.details,
+                [fn.inc.stores.details({
                     where: {name: {[fn.op.or]:['Demand Page', 'Demand Cell']}}
-                }]
+                })]
             )
             .then(size => {
                 if      (!size.details)                                       reject(new Error('No demand page/cell for this size'))
@@ -338,7 +333,7 @@ module.exports = function (m, fn) {
                                         demand_line_id: demand_line.demand_line_id,
                                         order_id: {[fn.op.not]: null}
                                     },
-                                    include: [{model: m.orders, as: 'order'}]
+                                    include: [fn.inc.stores.order()]
                                 })
                                 .then(actions => {
                                     let order_actions = [];
@@ -391,7 +386,7 @@ module.exports = function (m, fn) {
                                     demand_line_id: line.demand_line_id,
                                     order_id:       {[fn.op.not]: null}
                                 },
-                                include: [{model: m.orders, as: 'order'}]
+                                include: [fn.inc.stores.order()]
                             })
                             .then(actions => {
                                 let order_actions = [];
@@ -446,27 +441,11 @@ module.exports = function (m, fn) {
             return fn.get(
                 'suppliers',
                 {supplier_id: supplier_id},
-                [{
-                    model:    m.files,
-                    where:    {description: 'Demand'},
-                    required: false,
-                    include: [
-                        {model: m.file_details, as: 'details'}
-                    ]
-                },{
-                    model: m.accounts,
-                    as: 'account',
-                    include: [{
-                        model: m.users,
-                        as: 'user',
-                        include: [
-                            {
-                                model: m.ranks,
-                                as: 'rank'
-                            }
-                        ]
-                    }]
-                }]
+                [fn.inc.stores.files({
+                    where: {description: 'Demand'},
+                    details: true
+                }),
+                fn.inc.stores.account()]
             )
             .then(supplier => {
                 if      (!supplier.files)             reject(new Error('No template for this supplier'))
@@ -487,20 +466,15 @@ module.exports = function (m, fn) {
                         m.action_links.findAll({
                             where: {_table: 'orders'},
                             include: [
-                                {
-                                    model: m.actions,
-                                    as: 'action',
+                                fn.inc.stores.actions({
                                     where: {action: 'Order added to demand'},
                                     include: [
-                                        {
-                                            model: m.action_links,
-                                            as: 'links',
-                                            where: {_table: 'demand_lines', id: line.demand_line_id},
-                                            required: true
-                                        }
-                                    ],
-                                    required: true
-                                }
+                                        fn.inc.stores.action_links({where: {
+                                            _table: 'demand_lines',
+                                            id: line.demand_line_id
+                                        }})
+                                    ]
+                                })
                             ]
                         })
                         .then(_actions => {
@@ -560,22 +534,17 @@ module.exports = function (m, fn) {
                     new Promise((resolve, reject) => {
                         m.action_links.findAll({
                             where: {_table: 'issues'},
-                            include: [{
-                                model: m.actions,
-                                as: 'action',
-                                where: {
-                                    action: {[fn.op.or]: ['Order created from issue', 'Order incremented from issue']}
-                                },
-                                required: true,
-                                include: [
-                                    {
-                                        model: m.action_links,
-                                        as: 'links',
-                                        where: {_table: 'orders', id: order_id},
-                                        required: true
-                                    }
-                                ]
-                            }]
+                            include: [
+                                fn.inc.stores.actions({
+                                    where: {action: {[fn.op.or]: ['Order created from issue', 'Order incremented from issue']}},
+                                    include: [
+                                        fn.inc.stores.action_links({where: {
+                                            _table: 'orders',
+                                            id: order_id
+                                        }})
+                                    ]
+                                })
+                            ]
                         })
                         .then(links => {
                             if (!links || links.length === 0) resolve([]) //reject(new Error('No issues for this order'))
@@ -587,7 +556,7 @@ module.exports = function (m, fn) {
                                             return fn.get(
                                                 'issues',
                                                 {issue_id: link.id},
-                                                [{model: m.users, as: 'user_issue', include: [{model: m.ranks, as: 'rank'}]}]
+                                                [fn.inc.users.users({as: 'user_issue'})]
                                             )
                                             .then(issue => {
                                                 if (!issue.user_issue) reject(new Error('User not found'))

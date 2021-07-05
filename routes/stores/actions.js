@@ -1,7 +1,7 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/actions', fn.loggedIn(), fn.permissions.check('access_actions', {send: true}), (req, res) => {
         m.actions.findAll({
-            include: [inc.action_links({where: req.query})]
+            include: [fn.inc.stores.action_links({where: req.query})]
         })
         .then(actions => res.send({success: true, result: actions}))
         .catch(err => fn.send_error(res, err));
@@ -10,7 +10,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'actions',
             req.query,
-            [inc.user()]
+            [fn.inc.users.user()]
         )
         .then(action => res.send({success: true, result: action}))
         .catch(err => fn.send_error(res, err));

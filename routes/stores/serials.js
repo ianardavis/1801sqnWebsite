@@ -1,12 +1,12 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_serials'),   (req, res) => res.render('stores/serials/show'));
     app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_serials'), (req, res) => {
         m.serials.findAll({
             where:   req.query,
             include: [
-                inc.location(),
-                inc.issue(),
-                inc.size()
+                fn.inc.stores.location(),
+                fn.inc.stores.issue(),
+                fn.inc.stores.size()
             ]
         })
         .then(serials => res.send({success: true, result: serials}))
@@ -18,9 +18,9 @@ module.exports = (app, m, inc, fn) => {
         m.serials.findAll({
             where:   req.query,
             include: [
-                inc.location(),
-                inc.issue(),
-                inc.size()
+                fn.inc.stores.location(),
+                fn.inc.stores.issue(),
+                fn.inc.stores.size()
             ]
         })
         .then(serials => res.send({success: true, result: serials}))
@@ -31,9 +31,9 @@ module.exports = (app, m, inc, fn) => {
             'serials',
             req.query,
             [
-                inc.location(),
-                inc.issue(),
-                inc.size()
+                fn.inc.stores.location(),
+                fn.inc.stores.issue(),
+                fn.inc.stores.size()
             ]
         )
         .then(serial => res.send({success: true, result: serial}))

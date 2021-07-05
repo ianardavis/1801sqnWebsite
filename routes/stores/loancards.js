@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/loancards',              fn.loggedIn(), fn.permissions.get('access_loancards'),                       (req, res) => res.render('stores/loancards/index'));
     app.get('/loancards/:id',          fn.loggedIn(), fn.permissions.get('access_loancards'),                       (req, res) => res.render('stores/loancards/show'));
     app.get('/loancard_lines/:id',     fn.loggedIn(), fn.permissions.get('access_loancard_lines'),                  (req, res) => res.render('stores/loancard_lines/show'));
@@ -50,9 +50,9 @@ module.exports = (app, m, inc, fn) => {
             'loancards',
             req.query,
             [
-                inc.loancard_lines(),
-                inc.user(),
-                inc.user({as: 'user_loancard'})
+                fn.inc.stores.loancard_lines(),
+                fn.inc.users.user(),
+                fn.inc.users.user({as: 'user_loancard'})
             ]
         )
         .then(loancard => res.send({success: true,  result: loancard}))
@@ -63,9 +63,9 @@ module.exports = (app, m, inc, fn) => {
         m.loancards.findAll({
             where: req.query,
             include: [
-                inc.loancard_lines(),
-                inc.user({as: 'user'}),
-                inc.user({as: 'user_loancard'})
+                fn.inc.stores.loancard_lines(),
+                fn.inc.users.user(),
+                fn.inc.users.user({as: 'user_loancard'})
             ]
         })
         .then(loancards => res.send({success: true, result: loancards}))
@@ -75,14 +75,17 @@ module.exports = (app, m, inc, fn) => {
         m.loancard_lines.findAll({
             where:   req.query,
             include: [
-                inc.size(),
-                inc.user(),
-                inc.loancard({
+                fn.inc.stores.size(),
+                fn.inc.users.user(),
+                fn.inc.stores.loancard({
                     ...(!req.allowed ? {
                         where: {user_id_loancard: req.user.user_id},
                         required: true
                     } : {}),
-                    include: [inc.user(), inc.user({as: 'user_loancard'})]
+                    include: [
+                        fn.inc.users.user(),
+                        fn.inc.users.user({as: 'user_loancard'})
+                    ]
                 })
             ]
         })
@@ -94,14 +97,17 @@ module.exports = (app, m, inc, fn) => {
             'loancard_lines',
             req.query,
             [
-                inc.size(),
-                inc.user(),
-                inc.loancard({
+                fn.inc.stores.size(),
+                fn.inc.users.user(),
+                fn.inc.stores.loancard({
                     ...(!req.allowed ? {
                         where: {user_id_loancard: req.user.user_id},
                         required: true
                     } : {}),
-                    include: [inc.user(), inc.user({as: 'user_loancard'})]
+                    include: [
+                        fn.inc.users.user(),
+                        fn.inc.users.user({as: 'user_loancard'})
+                    ]
                 })
             ]
         )
@@ -112,14 +118,14 @@ module.exports = (app, m, inc, fn) => {
         m.loancard_lines.findAll({
             where: {status: 2},
             include: [
-                inc.size(),
-                inc.loancard({
+                fn.inc.stores.size(),
+                fn.inc.stores.loancard({
                     required: true,
                     where: {
                         date_due: {[fn.op.lte]: Date.now()},
                         ...(req.allowed ? null : {user_id_issue: req.user.user_id})
                     },
-                    include: [inc.user({as: 'user_loancard'})]
+                    include: [fn.inc.users.user({as: 'user_loancard'})]
                 })
             ]
         })

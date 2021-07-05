@@ -1,12 +1,12 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/writeoffs',     fn.loggedIn(), fn.permissions.get('access_writeoffs'),   (req, res) => res.render('canteen/writeoffs/index'));
     app.get('/writeoffs/:id', fn.loggedIn(), fn.permissions.get('access_writeoffs'),   (req, res) => res.render('canteen/writeoffs/show'));
     
     app.get('/get/writeoffs', fn.loggedIn(), fn.permissions.check('access_writeoffs'), (req, res) => {
         m.writeoffs.findAll({
             include: [
-                inc.user(),
-                inc.item()
+                fn.inc.users.user(),
+                fn.inc.canteen.item()
             ],
             where: req.query
         })
@@ -17,7 +17,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'writeoffs',
             req.query,
-            [inc.user()]
+            [fn.inc.users.user()]
         )
         .then(writeoff => res.send({success: true, result: writeoff}))
         .catch(err => fn.send_error(res, err))

@@ -1,4 +1,4 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/details',    fn.loggedIn(), fn.permissions.check('access_details', {send: true}), (req, res) => {
         m.details.findAll({where: req.query})
         .then(details => res.send({success: true, result: details}))

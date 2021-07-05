@@ -1,8 +1,8 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_supplier_contacts', {send: true}), (req, res) => {
         m.supplier_contacts.findAll({
             where: req.query,
-            include: [inc.contact()]
+            include: [fn.inc.stores.contact()]
         })
         .then(contacts => res.send({success: true, result: contacts}))
         .catch(err => fn.send_error(res, err));
@@ -11,7 +11,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'supplier_contacts',
             req.query,
-            [inc.contact()]
+            [fn.inc.stores.contact()]
         )
         .then(contact => res.send({success: true, result: contact}))
         .catch(err => fn.send_error(res, err));
@@ -42,7 +42,7 @@ module.exports = (app, m, inc, fn) => {
        fn.get(
            'supplier_contacts',
            {supplier_contact_id: req.body.supplier_contact_id},
-            [inc.contact()]
+            [fn.inc.stores.contact()]
         )
         .then(contact => {
             if (!contact.contact) fn.send_error(res, 'No contact for this record')
@@ -61,7 +61,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'supplier_contacts',
             {supplier_contact_id: req.params.id},
-            [inc.contact()]
+            [fn.inc.stores.contact()]
         )
         .then(contact => {
             let actions = [];

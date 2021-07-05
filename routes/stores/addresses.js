@@ -1,8 +1,8 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_supplier_addresses', {send: true}), (req, res) => {
         m.supplier_addresses.findAll({
             where: req.query,
-            include: [inc.address()]
+            include: [fn.inc.stores.address()]
         })
         .then(addresses => res.send({success: true, result: addresses}))
         .catch(err => fn.send_error(res, err));
@@ -11,7 +11,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'supplier_addresses',
             req.query,
-           [inc.address()]
+           [fn.inc.stores.address()]
         )
         .then(address => res.send({success: true, result: address}))
         .catch(err => fn.send_error(res, err));
@@ -43,7 +43,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'supplier_addresses',
             {supplier_address_id: req.body.supplier_address_id},
-            [inc.address()]
+            [fn.inc.stores.address()]
         )
         .then(address => {
             if (!address.address) fn.send_error(res, 'No address for this record')
@@ -62,7 +62,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'supplier_addresses',
             {supplier_address_id: req.params.id},
-            [inc.address()]
+            [fn.inc.stores.address()]
         )
         .then(address => {
             let actions = [];

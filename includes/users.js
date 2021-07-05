@@ -1,25 +1,21 @@
-module.exports = (inc, m) => {
-    inc.users = (options = {}) => {
-        let include = [];
-        if (options.include) options.include;
-        include.push(inc.rank());
+module.exports = (m, fn) => {
+    fn.inc.users = {};
+    fn.inc.users.user = (options = {}) => {
         return {
             model:      m.users,
-            include:    include,
+            include:    [fn.inc.users.rank()],
             attributes: options.attributes || {exclude: ['password', 'salt']},
-            as:         options.as         || 'user',
-            where:      options.where      || null,
-            required:   options.required   || false
+            as:         options.as || 'user'
         };
     };
-    inc.rank = () => {
+    fn.inc.users.rank = () => {
         return {
             model:      m.ranks,
             attributes: ['rank'],
             as:         'rank'
         };
     };
-    inc.status = () => {
+    fn.inc.users.status = () => {
         return {
             model:      m.statuses,
             attributes: ['status'],

@@ -86,8 +86,8 @@ module.exports = function (m, fn) {
                 'loancards',
                 {loancard_id: loancard_id},
                 [
-                    {model: m.users, as: 'user',          include: [{model: m.ranks, as: 'rank'}]},
-                    {model: m.users, as: 'user_loancard', include: [{model: m.ranks, as: 'rank'}]}
+                    fn.inc.users.users(),
+                    fn.inc.users.users({as: 'user_loancard'})
                 ]
             )
             .then(loancard => {
@@ -100,15 +100,9 @@ module.exports = function (m, fn) {
                             status:      2
                         },
                         include: [
-                            {model: m.serials, as: 'serial'},
-                            {model: m.nsns,    as: 'nsn',  include: [
-                                {model: m.nsn_classes,   as: 'nsn_class'},
-                                {model: m.nsn_groups,    as: 'nsn_group'},
-                                {model: m.nsn_countries, as: 'nsn_country'}
-                            ]},
-                            {model: m.sizes,   as: 'size', include: [
-                                {model: m.items, as: 'item'}
-                            ]}
+                            fn.inc.stores.serial(),
+                            fn.inc.stores.nsn(),
+                            fn.inc.stores.size()
                         ]
                     })
                     .then(lines => {
@@ -495,21 +489,17 @@ module.exports = function (m, fn) {
             return fn.get(
                 'action_links',
                 {_table: table},
-                [{
-                    model: m.actions,
-                    required: true,
-                    where: {action: 'Issue added to loancard'},
-                    as: 'action',
-                    include: [{
-                        model: m.action_links,
-                        required: true,
-                        as: 'links',
-                        where: {
-                            _table: 'loancard_lines',
-                            id:     loancard_line_id
-                        }
-                    }]
-                }]
+                [
+                    fn.inc.stores.actions({
+                        where: {action: 'Issue added to loancard'},
+                        include: [
+                            fn.inc.stores.action_links({where: {
+                                _table: 'loancard_lines',
+                                id:     loancard_line_id
+                            }})
+                        ]
+                    })
+                ]
             )
             .then(link => resolve(link))
             .catch(err => reject(err));
@@ -519,21 +509,17 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             return m.action_links.findAll({
                 where: {_table: table},
-                include: [{
-                    model: m.actions,
-                    required: true,
-                    where: {action: 'Issue added to loancard'},
-                    as: 'action',
-                    include: [{
-                        model: m.action_links,
-                        required: true,
-                        as: 'links',
-                        where: {
-                            _table: 'loancard_lines',
-                            id:     loancard_line_id
-                        }
-                    }]
-                }]
+                include: [
+                    fn.inc.stores.actions({
+                        where: {action: 'Issue added to loancard'},
+                        include: [
+                            fn.inc.stores.action_links({where: {
+                                _table: 'loancard_lines',
+                                id:     loancard_line_id
+                            }})
+                        ]
+                    })
+                ]
             })
             .then(link => {
                 if (!link) reject(new Error(`No link found for ${table}`))

@@ -1,5 +1,5 @@
 const fs = require('fs');
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/files/:id',           fn.loggedIn(), fn.permissions.get('access_files'),          (req, res) => res.render('stores/files/show'));
     app.get('/get/fs_files',        fn.loggedIn(), fn.permissions.check('access_files'),        (req, res) => {
         fs.readdir(
@@ -18,7 +18,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'files',
             req.query,
-            [inc.user()]
+            [fn.inc.users.user()]
         )
         .then(file => res.send({success: true,  result: file}))
         .catch(err => fn.send_error(res, err));

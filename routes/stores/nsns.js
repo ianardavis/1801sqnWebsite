@@ -1,13 +1,13 @@
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/nsns/:id',          fn.loggedIn(), fn.permissions.get('access_nsns'),   (req, res) => res.render('stores/nsns/show'));
     app.get('/get/nsns',          fn.loggedIn(), fn.permissions.check('access_nsns'), (req, res) => {
         m.nsns.findAll({
             where: req.query,
             include: [
-                inc.nsn_group(),
-                inc.nsn_class(),
-                inc.nsn_country(),
-                inc.size({attributes: ['nsn_id']})
+                fn.inc.stores.nsn_group(),
+                fn.inc.stores.nsn_class(),
+                fn.inc.stores.nsn_country(),
+                fn.inc.stores.size()
             ]
         })
         .then(nsns => res.send({success: true, result: nsns}))
@@ -18,10 +18,10 @@ module.exports = (app, m, inc, fn) => {
             'nsns',
             req.query,
             [
-                inc.nsn_group(),
-                inc.nsn_class(),
-                inc.nsn_country(),
-                inc.size({attributes: ['nsn_id']})
+                fn.inc.stores.nsn_group(),
+                fn.inc.stores.nsn_class(),
+                fn.inc.stores.nsn_country(),
+                fn.inc.stores.size()
             ]
         )
         .then(nsn => res.send({success: true, result: nsn}))
@@ -103,7 +103,7 @@ module.exports = (app, m, inc, fn) => {
         fn.get(
             'nsns',
             {nsn_id: req.params.id},
-            [inc.size()]
+            [fn.inc.stores.size()]
         )
         .then(nsn => {
             return fn.get(

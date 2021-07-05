@@ -190,7 +190,7 @@ module.exports = function (m, fn) {
                 fn.get(
                     'sales',
                     {sale_id: line.sale_id},
-                    [{model: m.sessions, as: 'session'}]
+                    [fn.inc.canteen.session()]
                 )
                 .then(sale => {
                     if (sale.session.status !== 1) reject(new Error('Session for this sale is not open'))
@@ -235,11 +235,7 @@ module.exports = function (m, fn) {
             fn.get(
                 'sale_lines',
                 {sale_line_id: _line.sale_line_id},
-                [{
-                    model:   m.sales,
-                    as:      'sale',
-                    include: [{model: m.sessions, as: 'session'}]
-                }]
+                [fn.inc.canteen.sale({session: true})]
             )
             .then(line => {
                 if (line.sale.session.status !== 1) reject(new Error('Session for this line is not open'))

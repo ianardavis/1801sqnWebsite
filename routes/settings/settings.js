@@ -1,6 +1,6 @@
 const ptp = require('pdf-to-printer'),
       fs  = require("fs");
-module.exports = (app, m, inc, fn) => {
+module.exports = (app, m, fn) => {
     app.get('/settings',        fn.loggedIn(), fn.permissions.get('access_settings'),   (req, res) => res.render('settings/show'));
 
     app.get('/get/settings',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
