@@ -1,5 +1,5 @@
 function getWriteoffs() {
-    clear_table('writeoffs')
+    clear('tbl_writeoffs')
     .then(tbl_writeoffs => {
         get({
             table: 'writeoffs',

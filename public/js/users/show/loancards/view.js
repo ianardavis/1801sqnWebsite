@@ -1,6 +1,6 @@
 let loancard_statuses = {'0': 'Cancelled', '1':'Draft', '2': 'Open', '3': 'Closed'};
 function getLoancards () {
-    clear_table('loancards')
+    clear('tbl_loancards')
     .then(tbl_loancards => {
         let sel_status = document.querySelector('#sel_status_loancards') || {value: ''};
         get({

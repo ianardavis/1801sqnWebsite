@@ -26,7 +26,7 @@ function getButton(page_id, position) {
     .catch(err => viewButton(page_id, position))
 };
 function viewButton(page_id, position, layout = null) {
-    clear_select('items')
+    clear('sel_items')
     .then(sel_items => {
         get({
             table: 'canteen_items',

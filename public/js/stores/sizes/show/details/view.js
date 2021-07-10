@@ -1,5 +1,5 @@
 function getDetails() {
-    clear_table('details')
+    clear('tbl_details')
     .then(tbl_details => {
         get({
             table: 'details',

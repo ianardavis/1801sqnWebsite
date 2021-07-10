@@ -184,27 +184,15 @@ function print_account(account) {
         return `${account.name} | ${account.number}`
     } else return '';
 };
-function clear_select(id) {
+function clear(id) {
     return new Promise((resolve, reject) => {
-        let select = document.querySelector(`#sel_${id}`);
-        if (!select) {
-            console.log('Select not found');
-            reject(new Error('Select not found'));
+        let e = document.querySelector(`#${id}`);
+        if (!e) {
+            console.log('Element not found');
+            reject(new Error('Element not found'));
         } else {
-            select.innerHTML = '';
-            resolve(select);
-        };
-    })
-};
-function clear_table(id) {
-    return new Promise((resolve, reject) => {
-        let table = document.querySelector(`#tbl_${id}`);
-        if (!table) {
-            console.log('Table not found');
-            reject(new Error('Table not found'));
-        } else {
-            table.innerHTML = '';
-            resolve(table);
+            e.innerHTML = '';
+            resolve(e);
         };
     })
 };

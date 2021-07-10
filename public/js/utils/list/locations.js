@@ -1,5 +1,5 @@
 function listLocations(options = {}) {
-    clear_select(options.select)
+    clear(options.select)
     .then(sel_location => {
         get({
             table: 'locations',

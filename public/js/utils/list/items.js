@@ -1,6 +1,6 @@
 function listItems(options = {}) {
     return new Promise((resolve, reject) => {
-        clear_select(options.select)
+        clear(options.select)
         .then(tbl_items => {
             if (options.blank) tbl_items.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
             get({

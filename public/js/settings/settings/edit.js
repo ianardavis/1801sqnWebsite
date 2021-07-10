@@ -24,7 +24,7 @@ function viewSettingEdit(setting_id) {
     });
 };
 function getPrinters() {
-    clear_table('printers')
+    clear('tbl_printers')
     .then(tbl_printers => {
         get({table: 'printers'})
         .then(function ([printers, options]) {

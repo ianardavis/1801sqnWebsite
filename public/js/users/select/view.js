@@ -1,19 +1,19 @@
 function getRanks() {
     listRanks({
-        select: 'ranks',
+        select: 'sel_ranks',
         blank: true,
         blank_text: 'All'
     })
 };
 function getStatuses() {
     listStatuses({
-        select: 'statuses',
+        select: 'sel_statuses',
         blank: true,
         blank_text: 'All'
     })
 };
 function getUsers() {
-    clear_table('users')
+    clear('tbl_users')
     .then(tbl_users => {
         let ranks    = document.querySelector('#sel_ranks')    || {value: ''},
             statuses = document.querySelector('#sel_statuses') || {value: ''};

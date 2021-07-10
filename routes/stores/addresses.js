@@ -1,5 +1,5 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_supplier_addresses', {send: true}), (req, res) => {
+    app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_supplier_addresses'), (req, res) => {
         m.supplier_addresses.findAll({
             where: req.query,
             include: [fn.inc.stores.address()]
@@ -7,7 +7,7 @@ module.exports = (app, m, fn) => {
         .then(addresses => res.send({success: true, result: addresses}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/address',      fn.loggedIn(), fn.permissions.check('access_supplier_addresses', {send: true}), (req, res) => {
+    app.get('/get/address',      fn.loggedIn(), fn.permissions.check('access_supplier_addresses'), (req, res) => {
         fn.get(
             'supplier_addresses',
             req.query,
@@ -17,7 +17,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/addresses',       fn.loggedIn(), fn.permissions.check('supplier_address_add',      {send: true}), (req, res) => {
+    app.post('/addresses',       fn.loggedIn(), fn.permissions.check('supplier_address_add'),      (req, res) => {
         fn.get(
             'suppliers',
             {supplier_id: req.body.supplier_id}
@@ -39,7 +39,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/addresses',        fn.loggedIn(), fn.permissions.check('supplier_address_add',      {send: true}), (req, res) => {
+    app.put('/addresses',        fn.loggedIn(), fn.permissions.check('supplier_address_add'),      (req, res) => {
         fn.get(
             'supplier_addresses',
             {supplier_address_id: req.body.supplier_address_id},
@@ -58,7 +58,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/addresses/:id', fn.loggedIn(), fn.permissions.check('supplier_address_delete',   {send: true}), (req, res) => {
+    app.delete('/addresses/:id', fn.loggedIn(), fn.permissions.check('supplier_address_delete'),   (req, res) => {
         fn.get(
             'supplier_addresses',
             {supplier_address_id: req.params.id},

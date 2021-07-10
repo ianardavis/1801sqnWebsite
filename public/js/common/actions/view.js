@@ -1,5 +1,5 @@
 function getActions() {
-    clear_table('actions')
+    clear('tbl_actions')
     .then(tbl_actions => {
         get({
             table: 'actions',
@@ -32,7 +32,7 @@ function viewLine(action_id) {
         set_innerText({id: 'action_user',      text: print_user(action.user)});
         set_innerText({id: 'action_createdAt', text: print_date(action.createdAt, true)});
         set_href({id: 'action_user_link', value: `/users/${action.user_id}`});
-        clear_table('links')
+        clear('tbl_links')
         .then(tbl_links => {
             get({
                 table: 'action_links',

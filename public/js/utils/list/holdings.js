@@ -1,6 +1,6 @@
 function listHoldings(options = {}) {
     return new Promise((resolve, reject) => {
-        clear_select(options.select || 'holdings')
+        clear(options.select || 'sel_holdings')
         .then(sel_holdings => {
             get({
                 table: 'holdings',

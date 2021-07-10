@@ -1,5 +1,5 @@
 function getPermissions () {
-    clear_table('permissions')
+    clear('tbl_permissions')
     .then(tbl_permissions => {
         get({
             table: 'permissions',

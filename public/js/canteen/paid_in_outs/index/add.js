@@ -7,7 +7,7 @@ function reset_add_paid_in_out() {
 };
 function getHoldings() {
     listHoldings({
-        select:     'holdings',
+        select:     'sel_holdings',
         blank:      true,
         blank_text: 'Select Holding...',
         table:      'holdings',
@@ -16,7 +16,6 @@ function getHoldings() {
 };
 function getUsers() {
     listUsers({
-        select:     'users',
         blank:      true,
         blank_text: 'Select User...',
         table:      'users_current',

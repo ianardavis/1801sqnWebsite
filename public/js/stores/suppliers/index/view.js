@@ -1,5 +1,5 @@
 function getSuppliers() {
-    clear_table('suppliers')
+    clear('tbl_suppliers')
     .then(tbl_suppliers => {
         get({table: 'suppliers'})
         .then(function ([suppliers, options]) {

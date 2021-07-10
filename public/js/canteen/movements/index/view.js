@@ -1,5 +1,5 @@
 function getMovements() {
-    clear_table('movements')
+    clear('tbl_movements')
     .then(tbl_movements => {
         get({table: 'movements'})
         .then(function ([movements, options]) {

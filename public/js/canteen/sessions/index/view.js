@@ -1,5 +1,5 @@
 function getSessions() {
-    clear_table('sessions')
+    clear('tbl_sessions')
     .then(tbl_sessions => {
         get({table: 'sessions'})
         .then(function ([sessions, options]) {

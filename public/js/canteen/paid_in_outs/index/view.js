@@ -1,6 +1,6 @@
 let statuses = {'0': 'Cancelled', '1': 'Entered', '2': 'Complete'};
 function getPaidInOuts() {
-    clear_table('paid_in_outs')
+    clear('tbl_paid_in_outs')
     .then(tbl_paid_in_outs => {
         get({table: 'paid_in_outs'})
         .then(function ([paid_in_outs, options]) {

@@ -6,6 +6,4 @@
     <ul class="dropdown-menu" aria-labelledby="dd_notification" id='ul_notifications'></ul>
 </li>
 <script src="/js/common/notifications/show.js"></script>
-<script src="/js/get.js"></script>
-<script src="/js/spinner.js"></script>
-<script async>getNotifications()</script>
+<script async>window.addEventListener('load', getNotifications)</script>

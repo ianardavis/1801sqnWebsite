@@ -1,5 +1,5 @@
 function viewDetails(file_id) {
-    clear_table('file_details')
+    clear('tbl_file_details')
     .then(tbl_file_details => {
         get({
             table: 'file_details',

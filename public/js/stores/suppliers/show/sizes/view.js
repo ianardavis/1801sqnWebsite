@@ -1,5 +1,5 @@
 function getSizes() {
-    clear_table('sizes')
+    clear('tbl_sizes')
     .then(tbl_sizes => {
         get({
             table: 'sizes',

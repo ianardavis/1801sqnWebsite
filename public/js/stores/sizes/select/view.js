@@ -1,12 +1,12 @@
 function getItems() {
     listItems({
-        select: 'items',
+        select: 'sel_items',
         id_only: true
     })
     .catch(err => console.log(err));
 };
 function getSizes(item_id) {
-    clear_table('sizes')
+    clear('tbl_sizes')
     .then(tbl_sizes => {
         get({
             table: 'sizes',

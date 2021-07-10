@@ -1,5 +1,5 @@
 function getNSNs() {
-    clear_table('nsns')
+    clear('tbl_nsns')
     .then(tbl_nsns => {
         get({
             table: 'nsns',

@@ -3,14 +3,14 @@ function addUserReset() {
 };
 function getStatusesAdd() {
     listStatuses({
-        select:  'statuses_add',
+        select:  'sel_statuses_add',
         spinner: 'statuses_add',
         id_only: true
     });
 };
 function getRanksAdd() {
     listRanks({
-        select:  'ranks_add',
+        select:  'sel_ranks_add',
         spinner: 'ranks_add',
         id_only: true
     });

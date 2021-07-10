@@ -4,7 +4,7 @@ function getCredits() {
         spinner: 'users_debit'
     })
     .then(function ([credits, options]) {
-        clear_select('credits')
+        clear('sel_credits')
         .then(sel_credits => {
             sel_credits.appendChild(new Option({value: '', text: 'Select Account'}).e)
             credits.forEach(credit => {

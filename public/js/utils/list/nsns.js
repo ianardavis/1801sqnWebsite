@@ -1,5 +1,5 @@
 function getNSNGroups(options = {}) {
-    clear_select('nsn_groups')
+    clear('sel_nsn_groups')
     .then(sel_nsn_groups => {
         get({
             table:                   'nsn_groups',
@@ -24,7 +24,7 @@ function getNSNGroups(options = {}) {
     });
 };
 function getNSNClassifications(options = {}) {
-    clear_select('nsn_classes')
+    clear('sel_nsn_classes')
     .then(sel_nsn_classes => {
         let group = document.querySelector('#sel_nsn_groups');
         if (group) {
@@ -54,7 +54,7 @@ function getNSNClassifications(options = {}) {
     });
 };
 function getNSNCountries(options = {}) {
-    clear_select('nsn_countries')
+    clear('sel_nsn_countries')
     .then(sel_nsn_countries => {
         get({
             table:    'nsn_countries',

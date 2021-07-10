@@ -1,5 +1,5 @@
 function getAccounts() {
-    clear_table('accounts')
+    clear('tbl_accounts')
     .then(tbl_accounts => {
         get({table: 'accounts'})
         .then(function ([accounts, options]) {

@@ -1,5 +1,5 @@
 function getPayments() {
-    clear_table('payments')
+    clear('tbl_payments')
     .then(tbl_payments => {
         get({
             table: 'payments_session',

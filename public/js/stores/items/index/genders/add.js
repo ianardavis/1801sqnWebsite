@@ -1,7 +1,7 @@
 function getGendersAdd() {
     listGenders({
         blank_text: 'All',
-        select: 	'genders_add',
+        select: 	'sel_genders_add',
         spinner:    'genders_add',
         blank: 		true,
         blank_text: 'None',

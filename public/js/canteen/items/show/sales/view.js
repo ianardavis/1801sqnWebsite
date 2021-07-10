@@ -1,5 +1,5 @@
 function getSales() {
-    clear_table('sales')
+    clear('tbl_sales')
     .then(tbl_sales => {
         get({
             table: 'sale_lines',

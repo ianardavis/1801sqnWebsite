@@ -1,0 +1,37 @@
+<%- include(`${partials}/head/site`) %>
+<div class="container mt-1">
+    <h1>
+        Galleries
+        <% if (permissions.gallery_add) { %>
+            <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_gallery_add'><i class='fas fa-plus'></i></button>
+        <% } %>
+    </h1>
+    <div class="row menu" id='div_galleries'></div>
+</div>
+<div id="div_models">
+    <% if (permissions.gallery_add) { %>
+        <div id='mdl_gallery_add' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_gallery_add'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Gallery</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'gallery[name]', required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100" value='Save Gallery'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+</div>
+<script src="/js/site/galleries/index/view.js"></script>
+<script async>getGalleries()</script>
+<% if (permissions.gallery_add) { %>
+    <script src="/js/addFormListener.js"></script>
+    <script src="/js/site/galleries/index/add.js"></script>
+<% } %>
+<%- include(`${partials}/foot/site`) %>

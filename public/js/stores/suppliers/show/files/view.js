@@ -1,5 +1,5 @@
 function getFiles() {
-    clear_table('files')
+    clear('tbl_files')
     .then(tbl_files => {
         get({
             table: 'files',

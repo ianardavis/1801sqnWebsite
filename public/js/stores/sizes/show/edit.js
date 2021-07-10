@@ -16,7 +16,6 @@ function getSuppliers(selected = null) {
     listSuppliers({
         blank:    true,
         id_only:  true,
-        select:   'suppliers',
         selected: selected
     });
 };

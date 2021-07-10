@@ -1,5 +1,5 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_supplier_contacts', {send: true}), (req, res) => {
+    app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_supplier_contacts'), (req, res) => {
         m.supplier_contacts.findAll({
             where: req.query,
             include: [fn.inc.stores.contact()]
@@ -7,7 +7,7 @@ module.exports = (app, m, fn) => {
         .then(contacts => res.send({success: true, result: contacts}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/contact',     fn.loggedIn(), fn.permissions.check('access_supplier_contacts', {send: true}), (req, res) => {
+    app.get('/get/contact',     fn.loggedIn(), fn.permissions.check('access_supplier_contacts'), (req, res) => {
         fn.get(
             'supplier_contacts',
             req.query,
@@ -16,7 +16,7 @@ module.exports = (app, m, fn) => {
         .then(contact => res.send({success: true, result: contact}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/contacts',       fn.loggedIn(), fn.permissions.check('supplier_contact_add',     {send: true}), (req, res) => {
+    app.post('/contacts',       fn.loggedIn(), fn.permissions.check('supplier_contact_add'),     (req, res) => {
         fn.get(
             'suppliers',
             {supplier_id: req.body.supplier_id}
@@ -38,7 +38,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_contact_add',     {send: true}), (req, res) => {
+    app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_contact_add'),     (req, res) => {
        fn.get(
            'supplier_contacts',
            {supplier_contact_id: req.body.supplier_contact_id},
@@ -57,7 +57,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/contacts/:id', fn.loggedIn(), fn.permissions.check('supplier_contact_delete',   {send: true}), (req, res) => {
+    app.delete('/contacts/:id', fn.loggedIn(), fn.permissions.check('supplier_contact_delete'),  (req, res) => {
         fn.get(
             'supplier_contacts',
             {supplier_contact_id: req.params.id},

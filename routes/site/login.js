@@ -1,10 +1,10 @@
 const passport = require('passport');
-module.exports = (app, fn) => {
-    app.get('/login',           (req, res) => {
+module.exports = (app, m, fn) => {
+    app.get('/login',                 (req, res) => {
         if (req.isAuthenticated()) {
             req.flash('info', 'You are already logged in');
             res.redirect(req.query.redirect || '/stores');
-        } else res.render('login', {redirect: req.query.redirect});
+        } else res.render('site/login', {redirect: req.query.redirect});
     });
     app.get('/logout', fn.loggedIn(), (req, res) => {
         req.logout();

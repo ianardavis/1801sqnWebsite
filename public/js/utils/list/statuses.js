@@ -1,6 +1,6 @@
 function listStatuses(options = {}) {
     return new Promise((resolve, reject) => {
-        clear_select(options.select)
+        clear(options.select)
         .then(sel_statuses => {
             if (options.blank === true) sel_statuses.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
             get({

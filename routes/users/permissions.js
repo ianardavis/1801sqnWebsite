@@ -23,7 +23,8 @@ module.exports = (app, m, fn) => {
             {permission: 'user_edit'},
             {permission: 'user_delete'},
             {permission: 'access_permissions', children: [
-                {permission: 'permission_edit'}
+                {permission: 'permission_edit'},
+                {permission: 'permission_edit_own'}
             ]}
         ]},
         {permission: 'access_stores',  children: [
@@ -199,7 +200,19 @@ module.exports = (app, m, fn) => {
                     {permission: 'writeoff_line_delete'}
                 ]}
             ]}
-        ]}
+        ]},
+        {permission: 'site_functions', children: [
+            {permission: 'access_galleries', children: [
+                {permission: 'gallery_add'},
+                {permission: 'gallery_edit'},
+                {permission: 'gallery_delete'}
+            ]},
+            {permission: 'access_gallery_images', children: [
+                {permission: 'gallery_image_add'},
+                {permission: 'gallery_image_edit'},
+                {permission: 'gallery_image_delete'}
+            ]}
+        ]},
     ];
     app.get('/get/permissions', fn.loggedIn(), fn.permissions.check('access_permissions'), (req, res) => {
         m.permissions.findAll({where: req.query})
@@ -207,42 +220,46 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/permissions/:id', fn.loggedIn(), fn.permissions.check('permission_edit'),    (req, res) => {
-        fn.get(
-            'users',
-            {user_id: req.params.id}
-        )
-        .then(user => {
-            if (user.user_id === req.user.user_id) fn.send_error(res, 'You can not edit your own permissions')
-            else {
-                return m.permissions.findAll({
-                    where: {user_id: user.user_id},
-                    attributes: ['permission_id', 'permission']
-                })
-                .then(permissions => {
-                    let actions = [];
-                    permissions.forEach(permission => {
-                        if (!req.body.permissions.includes(permission.permission)) {
+        fn.allowed(req.user.user_id, 'permission_edit_own', true)
+        .then(edit_own => {
+            fn.get(
+                'users',
+                {user_id: req.params.id}
+            )
+            .then(user => {
+                if (user.user_id === req.user.user_id && !edit_own) fn.send_error(res, 'You can not edit your own permissions')
+                else {
+                    return m.permissions.findAll({
+                        where: {user_id: user.user_id},
+                        attributes: ['permission_id', 'permission']
+                    })
+                    .then(permissions => {
+                        let actions = [];
+                        permissions.forEach(permission => {
+                            if (!req.body.permissions.includes(permission.permission)) {
+                                actions.push(
+                                    m.permissions.destroy({where: {permission_id: permission.permission_id}})
+                                );
+                            };
+                        });
+                        req.body.permissions.forEach(permission => {
                             actions.push(
-                                m.permissions.destroy({where: {permission_id: permission.permission_id}})
+                                m.permissions.findOrCreate({
+                                    where: {
+                                        user_id: user.user_id,
+                                        permission: permission
+                                    }
+                                })
                             );
-                        };
-                    });
-                    req.body.permissions.forEach(permission => {
-                        actions.push(
-                            m.permissions.findOrCreate({
-                                where: {
-                                    user_id: user.user_id,
-                                    permission: permission
-                                }
-                            })
-                        );
-                    });
-                    return Promise.allSettled(actions)
-                    .then(results => res.send({success: true, message: 'Permissions edited'}))
+                        });
+                        return Promise.allSettled(actions)
+                        .then(results => res.send({success: true, message: 'Permissions edited'}))
+                        .catch(err => fn.send_error(res, err));
+                    })
                     .catch(err => fn.send_error(res, err));
-                })
-                .catch(err => fn.send_error(res, err));
-            };
+                };
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });

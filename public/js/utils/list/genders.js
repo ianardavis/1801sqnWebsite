@@ -1,6 +1,6 @@
 function listGenders(options = {}) {
 	return new Promise((resolve, reject) => {
-		clear_select(options.select || 'genders')
+		clear(options.select || 'sel_genders')
 		.then(sel_genders => {
 			get({
 				table: 'genders',

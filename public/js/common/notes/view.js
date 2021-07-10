@@ -1,5 +1,5 @@
 function getNotes() {
-    clear_table('notes')
+    clear('tbl_notes')
     .then(tbl_notes => {
         let sel_system = document.querySelector('#sel_system') || {value: ''}
         get({

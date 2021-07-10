@@ -1,6 +1,6 @@
 let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function getIssues () {
-    clear_table('issues')
+    clear('tbl_issues')
     .then(tbl_issues => {
         let statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
             query     = [];

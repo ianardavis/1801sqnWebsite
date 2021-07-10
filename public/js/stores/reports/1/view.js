@@ -1,6 +1,6 @@
 function getSizes() {
     disable_button('action');
-    clear_table('stocks')
+    clear('tbl_stocks')
     .then(tbl_stocks => {
         get({table: 'negative_stock'})
         .then(function([stocks, options]) {

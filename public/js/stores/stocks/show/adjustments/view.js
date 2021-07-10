@@ -1,5 +1,5 @@
 function getAdjustments() {
-    clear_table('adjustments')
+    clear('tbl_adjustments')
     .then(tbl_adjustments => {
         get({
             table: 'adjustments',

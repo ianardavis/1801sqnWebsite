@@ -46,7 +46,7 @@ function getSaleLines() {
             query: [`sale_id=${sale_id.innerText}`]
         })
         .then(function ([lines, options]) {
-            clear_table('sale_lines')
+            clear('tbl_sale_lines')
             .then(tbl_sale_lines => {
                 let total  = 0;
                 if (lines.length === 0) {

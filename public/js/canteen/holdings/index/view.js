@@ -1,5 +1,5 @@
 function getHoldings() {
-    clear_table('holdings')
+    clear('tbl_holdings')
     .then(tbl_holdings => {
         get({table: 'holdings'})
         .then(function ([holdings, options]) {

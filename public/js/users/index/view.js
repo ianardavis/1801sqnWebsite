@@ -1,5 +1,5 @@
 function getUsers() {
-    clear_table('users')
+    clear('tbl_users')
     .then(tbl => {
         let status = document.querySelector('#sel_statuses') || {value: ''},
             rank   = document.querySelector('#sel_ranks')    || {value: ''};
@@ -25,14 +25,14 @@ function getUsers() {
 };
 function getStatuses() {
     listStatuses({
-        select: 'statuses',
+        select: 'sel_statuses',
         blank: true,
         blank_text: 'All'
     });
 };
 function getRanks() {
     listRanks({
-        select: 'ranks',
+        select: 'sel_ranks',
         blank: true,
         blank_text: 'All'
     });

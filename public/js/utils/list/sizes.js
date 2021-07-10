@@ -1,6 +1,6 @@
 function listSizes(options = {}) {
     return new Promise((resolve, reject) => {
-        clear_select(options.select)
+        clear(options.select)
         .then(sel_sizes => {
             if (options.blank) sel_sizes.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
             get({

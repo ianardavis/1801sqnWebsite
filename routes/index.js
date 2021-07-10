@@ -13,5 +13,5 @@ module.exports = function (app, m) {
     app.get("/get/*",   fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
     app.get("/count/*", fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
     app.get("/sum/*",   fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
-    app.get("*",                       (req, res) => res.render("404"));
+    app.get("*",                       (req, res) => res.render("site/404"));
 };

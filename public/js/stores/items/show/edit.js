@@ -9,7 +9,7 @@ function viewItemEdit() {
         set_value({id: 'size_text_edit',   value: item.size_text});
         if (typeof listGenders === 'function') {
             listGenders({
-                select:   'genders',
+                select:   'sel_genders',
                 selected: item.gender_id,
                 blank:    true,
                 id_only:  true

@@ -1,6 +1,6 @@
 let loancard_statuses   = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"};
 function getLoancards() {
-    clear_table('loancards')
+    clear('tbl_loancards')
     .then(tbl_loancards => {
         let sel_users  = document.querySelector('#sel_users')  || {value: ''},
             statuses   = document.querySelectorAll("input[type='checkbox']:checked") || [],
@@ -38,7 +38,6 @@ function filter(tbl_loancards) {
 };
 function getUsers() {
     listUsers({
-        select: 'users',
         blank: true,
         blank_text: 'All',
         append: '_loancard'

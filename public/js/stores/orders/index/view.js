@@ -1,6 +1,6 @@
 let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Received'};
 function getOrders() {
-    clear_table('orders')
+    clear('tbl_orders')
     .then(tbl_orders => {
         let statuses = document.querySelectorAll("input[type='checkbox']:checked") || [],
             query = [];

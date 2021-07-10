@@ -1,5 +1,5 @@
 function getReceipts() {
-    clear_table('receipts')
+    clear('tbl_receipts')
     .then(tbl_receipts => {
         get({
             table: 'receipts',

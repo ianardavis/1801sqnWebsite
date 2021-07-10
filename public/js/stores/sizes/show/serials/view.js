@@ -1,5 +1,5 @@
 function getSerials() {
-    clear_table('serials')
+    clear('tbl_serials')
     .then(tbl_serials => {
         get({
             table: 'serials',

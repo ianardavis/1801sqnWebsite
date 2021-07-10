@@ -1,0 +1,98 @@
+<%- include(`${partials}/head/site`) %>
+<div class="container mt-1">
+    <h1>
+        <div class="d-flex justify-content-between">
+            <div>
+                <% if (permissions.gallery_image_add) { %>
+                    <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_image_add'><i class='fas fa-file-upload'></i></button>
+                <% } %>
+                <% if (permissions.gallery_image_edit) { %>
+                    <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#mdl_image_edit'><i class='fas fa-pencil-alt'></i></button>
+                <% } %>
+            </div>
+            <span id="gallery_name"></span>
+            <div>
+                <% if (permissions.gallery_image_delete) { %>
+                    <form id="form_image_delete">
+                        <button class='btn btn-danger' id='image_delete'><i class='fas fa-trash-alt'></i></button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </h1>
+    <div id="car_images" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-indicators" id='div_indicators'></div>
+        <div class="carousel-inner"      id='div_images'></div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#car_images" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#car_images" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    <div class="d-flex">
+        <span class='me-auto'>Created: <span id="gallery_createdAt"></span></span>
+        <span class='ms-auto'>Created By: <span id="gallery_user"></span></span>
+    </div>
+</div>
+<div id="div_models">
+    <% if (permissions.gallery_image_add) { %>
+        <div id='mdl_image_add' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_image_add'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Image(s)</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" class='gallery_id' name='image[gallery_id]'>
+                        <%- include(`${partials}/inputs/text`, {title: 'Title',       name: 'image[title]'}) %>
+                        <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'image[description]'}) %>
+                        <div class="mb-3">
+                            <input class="form-control" type="file" accept="image/*" id="files" name='images' multiple>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input  type="submit" class="btn btn-success w-100" value='Upload Image(s)'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+    <% if (permissions.gallery_image_edit) { %>
+        <div id='mdl_image_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_image_edit'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Image</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name='image_id', id='image_id_edit'>
+                        <%- include(`${partials}/inputs/text`, {title: 'Title',       id: 'image_title_edit',       name: 'image[title]'}) %>
+                        <%- include(`${partials}/inputs/text`, {title: 'Description', id: 'image_description_edit', name: 'image[description]'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100" value='Save'>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+</div>
+<script src="/js/site/galleries/show/images/view.js"></script>
+<script src="/js/site/galleries/show/view.js"></script>
+<script src="/js/addFormListener.js"></script>
+<script async>getGallery()</script>
+<script async>getImages()</script>
+<% if (permissions.gallery_image_add) { %>
+    <script src="/js/site/galleries/show/add.js"></script>
+<% } %>
+<% if (permissions.gallery_image_edit) { %>
+    <script src="/js/site/galleries/show/images/edit.js"></script>
+<% } %>
+<% if (permissions.gallery_image_delete) { %>
+    <script src="/js/site/galleries/show/images/delete.js"></script>
+<% } %>
+<%- include(`${partials}/foot/site`) %>

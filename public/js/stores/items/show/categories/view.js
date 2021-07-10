@@ -1,5 +1,5 @@
 function getCategories() {
-    clear_table('categories')
+    clear('tbl_categories')
     .then(tbl_categories => {
         get({
             table: 'item_categories',

@@ -1,7 +1,7 @@
 function getGenders() {
     listGenders({
         blank_text: 'All',
-        select: 	'genders',
+        select: 	'sel_genders',
         blank: 		true
     })
     .then(getItems);

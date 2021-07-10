@@ -1,5 +1,5 @@
 function getSettings() {
-    clear_table('settings')
+    clear('tbl_settings')
     .then(tbl_settings => {
         get({table: 'settings'})
         .then(function ([settings, options]) {

@@ -1,6 +1,6 @@
 let demand_statuses = {'0': 'Cancelled', '1': 'Draft', '2': 'Complete', '3': 'Closed'}
 function getDemands() {
-    clear_table('demands')
+    clear('tbl_demands')
     .then(tbl_demands => {
         let sel_status = document.querySelector('#sel_demand_status') || {value: ''};
         get({

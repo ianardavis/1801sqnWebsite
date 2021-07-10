@@ -1,6 +1,6 @@
 let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed'};
 function getLines() {
-    clear_table('lines')
+    clear('tbl_lines')
     .then(tbl_lines => {
         let sel_status = document.querySelector('#sel_status') || {value: ''};
         get({

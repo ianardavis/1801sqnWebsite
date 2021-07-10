@@ -1,5 +1,5 @@
 function listStocks(issue_id, size, blank = false) {
-    clear_select(`stock_${issue_id}`)
+    clear(`sel_stock_${issue_id}`)
     .then(sel_stocks => {
         get({
             table: 'stocks',

@@ -2,7 +2,7 @@ let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Retu
 function getLines() {
     disable_button('action');
     let sel_status = document.querySelector('#sel_status') || {value: ''};
-    clear_table('lines')
+    clear('tbl_lines')
     .then(tbl_lines => {
         get({
             table: 'loancard_lines',

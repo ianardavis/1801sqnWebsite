@@ -2,7 +2,7 @@
 function listSuppliers(options = {}) {
     return new Promise((resolve, reject) => {
         // suppliers_loaded = false;
-        clear_select(options.select || 'suppliers')
+        clear(options.select || 'sel_suppliers')
         .then(sel_suppliers => {
             get({
                 table: 'suppliers',

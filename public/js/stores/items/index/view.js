@@ -1,5 +1,5 @@
 function getItems() {
-    clear_table('items')
+    clear('tbl_items')
     .then(tbl_items => {
         let sel_genders = document.querySelector('#sel_genders') || {value: ''};
         get({

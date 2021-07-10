@@ -1,5 +1,5 @@
 function listSerials(line_id, size) {
-    clear_select(`serial_${line_id}`)
+    clear(`sel_serial_${line_id}`)
     .then(sel_serials => {
         get({
             table: 'serials',

@@ -118,6 +118,24 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.copy_file = function (src, dest) {
+        return new Promise((resolve, reject) => {
+            fn.file_exists(src)
+            .then(src => {
+                fs.copyFile(
+                    src,
+                    dest,
+                    function (err) {
+                        if (err) {
+                            if (err.code === 'EEXIST') reject(new Error('Error copying file: This file already exists'))
+                            else reject(err);
+                        } else resolve(true);
+                    }
+                );
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.upload_file = function (options = {}) {
         return new Promise((resolve, reject) => {
             return fn.get(
@@ -125,30 +143,26 @@ module.exports = function (m, fn) {
                 {supplier_id: options.supplier_id}
             )
             .then(supplier => {
-                fs.copyFile(
+                fn.copy_file(
                     options.file,
-                    `${process.env.ROOT}/public/res/files/${options.filename}`,
-                    function (err) {
-                        if (err) {
-                            if (err.code === 'EEXIST') reject(new Error('Error copying file: This file already exists'))
-                            else reject(err);
-                        } else {
-                            return m.files.findOrCreate({
-                                where: {filename: options.filename},
-                                defaults: {
-                                    user_id: options.user_id,
-                                    supplier_id: options.supplier_id,
-                                    description: options.description
-                                }
-                            })
-                            .then(([file, created]) => {
-                                if (!created) reject(new Error('File already exists'))
-                                else          resolve(true);
-                            })
-                            .catch(err => reject(err));
-                        };
-                    }
-                );
+                    `${process.env.ROOT}/public/res/files/${options.filename}`
+                )
+                .then(result => {
+                    return m.files.findOrCreate({
+                        where: {filename: options.filename},
+                        defaults: {
+                            user_id: options.user_id,
+                            supplier_id: options.supplier_id,
+                            description: options.description
+                        }
+                    })
+                    .then(([file, created]) => {
+                        if (!created) reject(new Error('File already exists'))
+                        else          resolve(true);
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

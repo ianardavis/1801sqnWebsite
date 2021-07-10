@@ -1,5 +1,5 @@
 function getStocks() {
-    clear_table('stocks')
+    clear('tbl_stocks')
     .then(tbl_stocks => {
         get({
             table: 'stocks',

@@ -1,5 +1,5 @@
 function listUsers(options = {}) {
-    clear_select(options.select)
+    clear(options.select || 'sel_users')
     .then(sel_users => {
         get({
             table:   options.table || 'users',

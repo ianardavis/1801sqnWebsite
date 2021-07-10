@@ -4,7 +4,7 @@ function reset_categories_add() {
     listCategories('1');
 };
 function listCategories(select, parent_id = '') {
-    clear_select(`category_${select}`)
+    clear(`sel_category_${select}`)
     .then(sel_category => {
         get({
             table: 'categories',

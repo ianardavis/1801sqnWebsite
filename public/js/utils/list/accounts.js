@@ -1,5 +1,5 @@
 function listAccounts(options = {}) {
-    clear_select('accounts')
+    clear('sel_accounts')
     .then(sel_accounts => {
         get({
             table: 'accounts',

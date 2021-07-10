@@ -1,6 +1,6 @@
 function listCategories(options = {}) {
     return new Promise((resolve, reject) => {
-        clear_select(options.select || 'category')
+        clear(options.select || 'sel_category')
         .then(sel_category => {
             get({
                 table: 'categories',

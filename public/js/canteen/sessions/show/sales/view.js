@@ -1,8 +1,8 @@
 let sale_statuses = {'0': 'Cancelled', '1': 'Open', '2': 'Complete'}
 function getSales() {
-    clear_table('items')
+    clear('tbl_items')
     .then(tbl_items => {
-        clear_table('sales')
+        clear('tbl_sales')
         .then(tbl_sales => {
             get({
                 table: 'sales',

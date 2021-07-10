@@ -1,16 +1,16 @@
 module.exports = (m, fn) => {
     fn.permissions = {};
-    fn.permissions.get = function (permission, options = {}) {
+    fn.permissions.get = function (permission = '', allow = false) {
         return function (req, res, next) {
+            res.locals.permissions = {};
             if (req.user) {
                 return m.findAll({
                     where:      {user_id: req.user.user_id},
                     attributes: ['permission']
                 })
                 .then(permissions => {
-                    res.locals.permissions = {};
                     permissions.forEach(e => res.locals.permissions[e.permission] = true);
-                    if (res.locals.permissions[permission] || options.allow) {
+                    if (allow === true || res.locals.permissions[permission]) {
                         req.allowed = (res.locals.permissions[permission] ? true : false);
                         next();
                     } else {
@@ -23,7 +23,8 @@ module.exports = (m, fn) => {
                     req.flash('danger', `Error getting permissions: ${err.message}`);
                     res.redirect('/resources');
                 });
-            } else {
+            } else if (allow === true) next()
+            else {
                 console.log('No user');
                 req.flash('danger', 'No user!');
                 res.redirect('/resources');

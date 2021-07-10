@@ -1,6 +1,5 @@
 function getUsers() {
     listUsers({
-        select:     'users',
         table:      'users_current',
         spinner:    'users_credit',
         blank:      true,

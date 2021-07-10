@@ -8,14 +8,14 @@ module.exports = function (m) {
     m.adjustments   .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.accounts      .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.issues        .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id_issue',    constraints: false, as: 'user_issue'});
-    m.issues        .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false, as: 'user'});
+    m.issues        .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.notes         .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.orders        .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.actions       .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.demands       .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.demand_lines  .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.loancards     .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id_loancard', constraints: false, as: 'user_loancard'});
-    m.loancards     .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false, as: 'user'});
+    m.loancards     .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.loancard_lines.hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     m.files         .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',          constraints: false});
     
@@ -27,5 +27,8 @@ module.exports = function (m) {
     m.writeoffs   .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',             constraints: false});
     m.credits     .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',             constraints: false});
     m.payments    .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',             constraints: false});
-    m.movements   .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',             constraints: false, as: 'user'});
+    m.movements   .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id',             constraints: false});
+    
+    m.galleries     .hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id', constraints: false});
+    m.gallery_images.hasOne(m.users, {foreignKey: 'user_id', sourceKey: 'user_id', constraints: false});
 };

@@ -1,5 +1,5 @@
 function getAddresses() {
-    clear_table('addresses')
+    clear('tbl_addresses')
     .then(tbl_addresses => {
         get({
             table: 'addresses',

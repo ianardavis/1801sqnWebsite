@@ -1,5 +1,5 @@
 function getLoancards() {
-    clear_table('loancards')
+    clear('tbl_loancards')
     .then(tbl_loancards => {
         get({
             table: 'loancard_lines',

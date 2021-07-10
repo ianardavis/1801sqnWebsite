@@ -1,5 +1,5 @@
 function getContacts() {
-    clear_table('contacts')
+    clear('tbl_contacts')
     .then(tbl_contacts => {
         get({
             table: 'contacts',

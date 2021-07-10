@@ -1,6 +1,6 @@
 function listRanks(options = {}) {
     return new Promise((resolve, reject) => {
-        clear_select(options.select)
+        clear(options.select)
         .then(sel_ranks => {
             if (options.blank) sel_ranks.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
             get({
