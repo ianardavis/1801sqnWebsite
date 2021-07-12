@@ -44,7 +44,7 @@ function Category_LI(options = {}) {
     this.e.appendChild(new Link({
         type: 'move',
         type_attribute: `data-id="${options.li_id || ''}"`,
-        data: {field: 'id', value: options.li_id || ''},
+        data: [{field: 'id', value: options.li_id || ''}],
         small: true,
         classes: ['me-1']
     }).e);

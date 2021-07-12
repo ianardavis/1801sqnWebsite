@@ -43,6 +43,9 @@ function getPrinters() {
     });
 };
 window.addEventListener('load', function () {
+    enable_button('logs_flush');
+    enable_button('git_pull');
+    enable_button('pm2_reload');
     addFormListener(
         'setting_edit',
         'PUT',
@@ -59,6 +62,25 @@ window.addEventListener('load', function () {
         'POST',
         '/printers',
         {onComplete: getPrinter}
+    );
+    addFormListener(
+        'logs_flush',
+        'POST',
+        '/logs_flush',
+        {onComplete: [
+            getErrorLog,
+            getOutLog
+        ]}
+    );
+    addFormListener(
+        'git_pull',
+        'POST',
+        '/git_pull'
+    );
+    addFormListener(
+        'pm2_reload',
+        'POST',
+        '/pm2_reload'
     );
     addListener('btn_printers', getPrinters);
     modalOnShow('setting_edit', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});

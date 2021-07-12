@@ -1,25 +1,6 @@
 <%- include(`${partials}/head/site`) %>
 <div class="container mt-1">
-    <h1>
-        <div class="d-flex justify-content-between">
-            <div>
-                <% if (permissions.gallery_image_add) { %>
-                    <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_image_add'><i class='fas fa-file-upload'></i></button>
-                <% } %>
-                <% if (permissions.gallery_image_edit) { %>
-                    <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#mdl_image_edit'><i class='fas fa-pencil-alt'></i></button>
-                <% } %>
-            </div>
-            <span id="gallery_name"></span>
-            <div>
-                <% if (permissions.gallery_image_delete) { %>
-                    <form id="form_image_delete">
-                        <button class='btn btn-danger' id='image_delete'><i class='fas fa-trash-alt'></i></button>
-                    </form>
-                <% } %>
-            </div>
-        </div>
-    </h1>
+    <h1><span id="gallery_name"></span></h1>
     <div id="car_images" class="carousel slide carousel-fade" data-bs-ride="carousel">
         <div class="carousel-indicators" id='div_indicators'></div>
         <div class="carousel-inner"      id='div_images'></div>
@@ -35,6 +16,22 @@
     <div class="d-flex">
         <span class='me-auto'>Created: <span id="gallery_createdAt"></span></span>
         <span class='ms-auto'>Created By: <span id="gallery_user"></span></span>
+    </div>
+    <div class="d-flex">
+        <div class='ms-auto'>
+            <% if (permissions.gallery_image_add) { %>
+                <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_image_add'><i class='fas fa-file-upload'></i></button>
+            <% } %>
+            <% if (permissions.gallery_image_edit) { %>
+                <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#mdl_image_edit'><i class='fas fa-pencil-alt'></i></button>
+            <% } %>
+            <% if (permissions.gallery_image_delete) { %>
+                <form id="form_image_delete" class='form_inline'>
+                    <input type="hidden" name='image_id' id='image_id_delete'>
+                    <button class='btn btn-danger' id='btn_image_delete'><i class='fas fa-trash-alt'></i></button>
+                </form>
+            <% } %>
+        </div>
     </div>
 </div>
 <div id="div_models">

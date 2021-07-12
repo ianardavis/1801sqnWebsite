@@ -65,6 +65,24 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Printer saved'}))
         .catch(err => fn.send_error(res, err));
     });
+    app.post('/logs_flush',     fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
+        const execSync = require('child_process').execSync;
+        const output = execSync('pm2 flush app', { encoding: 'utf-8' });
+        console.log(output);
+        res.send({success: true, message: 'Logs flushed'});
+    });
+    app.post('/git_pull',       fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
+        const execSync = require('child_process').execSync;
+        const output = execSync(`git  -C ${process.env.ROOT} pull`, { encoding: 'utf-8' });
+        console.log(output);
+        res.send({success: true, message: 'Git pulled'});
+    });
+    app.post('/pm2_reload',     fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
+        const execSync = require('child_process').execSync;
+        const output = execSync('pm2 reload app', { encoding: 'utf-8' });
+        console.log(output);
+        res.send({success: true, message: 'App reloaded'});
+    });
     
     app.delete('/settings/:id', fn.loggedIn(), fn.permissions.check('setting_delete'),  (req, res) => {
         fn.get(

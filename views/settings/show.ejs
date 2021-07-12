@@ -9,10 +9,13 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'setting_add',  text: 'Add Setting',  modal: 'setting_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'gender_add',   text: 'Add Gender',   modal: 'gender_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'account_add',  text: 'Add Account',  modal: 'account_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category', modal: 'category_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'setting_add',  text: 'Add Setting',    modal: 'setting_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'logs_flush',   text: 'Flush Logs',     btn_form: {permission: 'setting_edit', id: 'logs_flush'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'git_pull',     text: 'Update',         btn_form: {permission: 'setting_edit', id: 'git_pull'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'pm2_reload',   text: 'Restart Server', btn_form: {permission: 'setting_edit', id: 'pm2_reload'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'gender_add',   text: 'Add Gender',     modal: 'gender_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'account_add',  text: 'Add Account',    modal: 'account_add'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category',   modal: 'category_add'}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'printers',   title: 'Printers',     spinner: 'printers'}) %>

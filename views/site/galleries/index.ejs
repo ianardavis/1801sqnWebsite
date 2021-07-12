@@ -1,10 +1,15 @@
 <%- include(`${partials}/head/site`) %>
 <div class="container mt-1">
     <h1>
-        Galleries
-        <% if (permissions.gallery_add) { %>
-            <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_gallery_add'><i class='fas fa-plus'></i></button>
-        <% } %>
+        <div class="d-flex justify-content-between">
+            <div></div>
+            <span>Galleries</span>
+            <div>
+                <% if (permissions.gallery_add) { %>
+                    <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_gallery_add'><i class='fas fa-plus'></i></button>
+                <% } %>
+            </div>
+        </div>
     </h1>
     <div class="row menu" id='div_galleries'></div>
 </div>

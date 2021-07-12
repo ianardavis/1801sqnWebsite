@@ -7,7 +7,7 @@ var express  = require('express'),
     memStore = require('memorystore')(session);
 require('dotenv').config();
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
-let port_check = require(`${process.env.ROOT}/fn/port_check`);
+let port_check = require(`${process.env.ROOT}/functions/core/port_check.js`);
 port_check()
 .then(port => {
     let m = {};

@@ -207,7 +207,10 @@ function addListener(btn, func, event = 'click') {
     if (e) e.addEventListener(event, func);
 };
 function modalHide(id) {
-    let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`));
+    let e = document.querySelector(`#mdl_${id}`);
+    console.log(e)
+    let modal = new bootstrap.Modal(e);
+    console.log(modal)
     if (modal) modal.hide();
 };
 function modalOnShow(id, func) {

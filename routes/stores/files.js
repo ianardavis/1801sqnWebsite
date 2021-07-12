@@ -164,7 +164,7 @@ module.exports = (app, m, fn) => {
         .then(file => {
             file.destroy()
             .then(result => {
-                return delete_fs_file(`${process.env.ROOT}/public/res/files/${file.filename}`)
+                return fn.rm(`${process.env.ROOT}/public/res/files/${file.filename}`)
                 .then(result => res.send({success: true, message: 'File deleted'}))
                 .catch(err =>   res.send({success: true, message: `Error deleting file: ${err.message}`}));
             })
@@ -173,7 +173,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.delete('/fs_files/:id',     fn.loggedIn(), fn.permissions.check('file_delete'),         (req, res) => {
-        delete_fs_file(`${process.env.ROOT}/public/res/files/${req.params.id}`)
+        fn.rm(`${process.env.ROOT}/public/res/files/${req.params.id}`)
         .then(result => res.send({success: true,  message: 'File deleted'}))
         .catch(err =>   fn.send_error(res, err));
     });
@@ -187,17 +187,4 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    function delete_fs_file(file) {
-        return new Promise((resolve, reject) => {
-            fs.access(file, fs.constants.R_OK, function (err) {
-                if (err) reject(err)
-                else {
-                    fs.unlink(file, function (err) {
-                        if (err) reject(new Error(err))
-                        else     resolve(true);
-                    });
-                };
-            });
-        });
-    };
 };

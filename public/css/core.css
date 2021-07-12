@@ -79,6 +79,9 @@ select {
 button.dropdown-item {
 	font-size: 25px;
 }
+.form_inline {
+	display: inline;
+}
 input.dropdown-item {
 	font-size: 25px;
 }

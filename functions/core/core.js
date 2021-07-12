@@ -1,4 +1,6 @@
-const bwipjs = require('bwip-js'), fs = require("fs"), ptp = require('pdf-to-printer');
+const bwipjs = require('bwip-js'),
+      fs     = require("fs"),
+      ptp    = require('pdf-to-printer');
 module.exports = function (m, fn) {
     fn.file_exists = function (path) {
         return new Promise((resolve, reject) => {
@@ -196,6 +198,19 @@ module.exports = function (m, fn) {
                 else resolve(result);
             })
             .catch(err => reject(err));
+        });
+    };
+    fn.rm = function (file) {
+        return new Promise((resolve, reject) => {
+            fs.access(file, fs.constants.R_OK, function (err) {
+                if (err) reject(err)
+                else {
+                    fs.unlink(file, function (err) {
+                        if (err) reject(err)
+                        else     resolve(true);
+                    });
+                };
+            });
         });
     };
 };
