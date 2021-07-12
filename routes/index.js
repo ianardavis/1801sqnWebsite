@@ -14,4 +14,6 @@ module.exports = function (app, m) {
     app.get("/count/*", fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
     app.get("/sum/*",   fn.loggedIn(), (req, res) => fn.send_error(res, 'Invalid request'));
     app.get("*",                       (req, res) => res.render("site/404"));
+    app.put("*",                       (req, res) => res.send({success: false, message: 'Unknown request'}));
+    app.post("*",                      (req, res) => res.send({success: false, message: 'Unknown request'}));
 };

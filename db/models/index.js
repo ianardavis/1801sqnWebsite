@@ -4,8 +4,8 @@ var fs   = require("fs"),
     { Sequelize, DataTypes } = require("sequelize"),
     seq  = new Sequelize(
         'squadron',
-        process.env.DB_STORES_USERNAME,
-        process.env.DB_STORES_PASSWORD,
+        process.env.DB_USERNAME,
+        process.env.DB_PASSWORD,
         {
             host: process.env.DB_HOST,
             dialect: process.env.DB_DIALECT,

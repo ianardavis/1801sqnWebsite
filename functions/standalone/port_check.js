@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = function () {
     return new Promise((resolve, reject) => {
         let port = process.env.PORT
         const execSync = require('child_process').execSync;
@@ -7,7 +7,7 @@ module.exports = function() {
             let pid = output.substring(output.indexOf('pid=') + 4, output.indexOf(',', output.search('pid=')));
             console.log(`Port ${port} in use by PID ${pid}`);
             try {
-                const kill_output = execSync('kill -9 ' + pid, { encoding: 'utf-8' });
+                const kill_output = execSync(`kill -9 ${pid}`, { encoding: 'utf-8' });
                 console.log('   PID killed');
                 resolve(port);
             } catch (error) {reject(error);};

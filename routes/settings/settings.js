@@ -1,6 +1,7 @@
 const ptp = require('pdf-to-printer'),
       fs  = require("fs");
 module.exports = (app, m, fn) => {
+    const execSync = require('child_process').execSync;
     app.get('/settings',        fn.loggedIn(), fn.permissions.get('access_settings'),   (req, res) => res.render('settings/show'));
 
     app.get('/get/settings',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
@@ -66,22 +67,31 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.post('/logs_flush',     fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
-        const execSync = require('child_process').execSync;
-        const output = execSync('pm2 flush app', { encoding: 'utf-8' });
-        console.log(output);
-        res.send({success: true, message: 'Logs flushed'});
+        try {
+            const output = execSync('pm2 flush app', { encoding: 'utf-8' });
+            console.log(output);
+            res.send({success: true, message: 'Logs flushed'});
+        } catch (err) {
+            fn.send_error(res, err);
+        };
     });
     app.post('/git_pull',       fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
-        const execSync = require('child_process').execSync;
-        const output = execSync(`git  -C ${process.env.ROOT} pull`, { encoding: 'utf-8' });
-        console.log(output);
-        res.send({success: true, message: 'Git pulled'});
+        try {
+            const output = execSync(`git  -C ${process.env.ROOT} pull`, { encoding: 'utf-8' });
+            console.log(output);
+            res.send({success: true, message: 'Git pulled'});
+        } catch (err) {
+            fn.send_error(res, err);
+        };
     });
     app.post('/pm2_reload',     fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
-        const execSync = require('child_process').execSync;
-        const output = execSync('pm2 reload app', { encoding: 'utf-8' });
-        console.log(output);
-        res.send({success: true, message: 'App reloaded'});
+        try {
+            const output = execSync('pm2 reload app', { encoding: 'utf-8' });
+            console.log(output);
+            res.send({success: true, message: 'App reloaded'});
+        } catch (err) {
+            fn.send_error(res, err);
+        };
     });
     
     app.delete('/settings/:id', fn.loggedIn(), fn.permissions.check('setting_delete'),  (req, res) => {
