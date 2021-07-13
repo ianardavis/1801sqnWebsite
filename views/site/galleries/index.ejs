@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/site`) %>
 <div class="container mt-1">
-    <h1>
+    <h2>
         <div class="d-flex justify-content-between">
             <div></div>
             <span>Galleries</span>
@@ -10,7 +10,7 @@
                 <% } %>
             </div>
         </div>
-    </h1>
+    </h2>
     <div class="row menu" id='div_galleries'></div>
 </div>
 <div id="div_models">
@@ -19,7 +19,7 @@
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_gallery_add'>
                     <div class="modal-header">
-                        <h5 class="modal-title">Add Gallery</h5>
+                        <h3 class="modal-title">Add Gallery</h3>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'gallery[name]', required: true}) %>
@@ -36,7 +36,6 @@
 <script src="/js/site/galleries/index/view.js"></script>
 <script async>getGalleries()</script>
 <% if (permissions.gallery_add) { %>
-    <script src="/js/addFormListener.js"></script>
     <script src="/js/site/galleries/index/add.js"></script>
 <% } %>
 <%- include(`${partials}/foot/site`) %>

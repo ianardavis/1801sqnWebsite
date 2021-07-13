@@ -1,7 +1,6 @@
 function getRanks() {
-    let tbl_ranks = document.querySelector('#tbl_ranks');
-    if (tbl_ranks) {
-        tbl_ranks.innerHTML = '';
+    clear('tbl_ranks')
+    .then(tbl_ranks => {
         get({table: 'ranks'})
         .then(function ([ranks, options]) {
             ranks.forEach(rank => {
@@ -10,5 +9,5 @@ function getRanks() {
                 add_cell(row, {classes: ['ranks'], data: [{field: 'id', value: rank.rank_id}]})
             });
         });
-    };
+    });
 };

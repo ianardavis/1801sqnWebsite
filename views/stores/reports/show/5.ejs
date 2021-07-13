@@ -1,16 +1,14 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Stock - By Location'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`,    {id: 'stocks'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_stocks' disabled>Action Counts</button>
     <form id="form_stocks"></form>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
 <script src="/js/stores/reports/5/view.js"></script>
 <script async>getLocations()</script>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

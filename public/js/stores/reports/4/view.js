@@ -1,7 +1,6 @@
 function getSizes() {
-    let div = document.querySelector('#div_sizes');
-    if (div) {
-        div.innerHTML = '';
+    clear('div_sizes')
+    .then(div => {
         let p = document.createElement('p');
         p.setAttribute('id', 'col_headers');
         div.appendChild(p);
@@ -31,7 +30,7 @@ function getSizes() {
                 });
             });
         });
-    };
+    });
 };
 function addItem(div, p, item_id, description) {
     let new_div = document.createElement('div'),

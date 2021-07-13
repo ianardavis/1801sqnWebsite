@@ -56,9 +56,8 @@ function addEditSelect() {
     .then(result => show('sel_all'));
 };
 function addReceiptOptions() {
-    let div_details = document.querySelector(`#order_${this.dataset.id}_details`);
-    if (div_details) {
-        div_details.innerHTML = '';
+    clear(`order_${this.dataset.id}_details`)
+    .then(div_details => {
         if (this.value === '3') {
             get({
                 table: 'order',
@@ -134,7 +133,7 @@ function addReceiptOptions() {
                 };
             });
         };
-    };
+    });
 };
 function select_all() {
     if (this.value !== 'Select All') {

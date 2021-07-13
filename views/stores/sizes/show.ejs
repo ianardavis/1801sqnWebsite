@@ -1,10 +1,9 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/items',  text: 'Items'}) %>
 <%- include(`${partials}/breadcrumb`, {id: 'item'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -15,12 +14,12 @@
 				<%- include(`${partials}/menu/button`, {id: 'size_edit',  text: 'Edit',               modal: 'size_edit'}) %>
                 <div class="dropdown-divider"></div>
                 <%- include(`${partials}/menu/button`, {id: 'detail_add', text: 'Add Detail',         modal: 'detail_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'note_add',   text: 'Add Note',           modal: 'note_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'nsn_add',    text: 'Add NSN',            modal: 'nsn_add',    classes: ['has_nsns_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'serial_add', text: 'Add Serial #',       modal: 'serial_add', classes: ['serial_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'stock_add',  text: 'Add Stock Location', modal: 'stock_add',  classes: ['stock_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'order_add',  text: 'Add Order',          modal: 'order_add',  classes: ['orderable_element']}) %>
                 <%- include(`${partials}/menu/button`, {id: 'issue_add',  text: 'Add Issue',          modal: 'issue_add',  classes: ['issueable_element']}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
                 <div class="dropdown-divider"></div>
 				<%- include(`${partials}/menu/button`, {id: 'delete',     text: 'Delete',             btn_form: {permission: 'size_delete'}}) %>
             </div>
@@ -31,7 +30,7 @@
         <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stocks',  spinner: 'stocks',  count_id: 'stock',  permission: 'access_stocks',  _class: 'stock_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'orders',  title: 'Orders',  spinner: 'orders',  count_id: 'order',  permission: 'access_orders',  _class: 'orderable_element'}) %>
         <%- include(`${partials}/tab_head`, {id: 'issues',  title: 'Issues',  spinner: 'issues',  count_id: 'issue',  permission: 'access_issues',  _class: 'issueable_element'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes',   count_id: 'note',   permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div     id="details" role="tabpanel" aria-labelledby="details-tab" class="tab-pane fade">
@@ -409,7 +408,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>');</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script src="/js/stores/sizes/show/view.js"></script>
@@ -490,4 +488,4 @@
         <script src="/js/stores/sizes/show/issues/add.js"></script>
     <% } %>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

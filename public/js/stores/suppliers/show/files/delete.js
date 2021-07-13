@@ -1,7 +1,6 @@
 function fileDeleteBtn(file_id) {
-    let span_file_delete_btn = document.querySelector('#span_file_delete_btn');
-    if (span_file_delete_btn) {
-        span_file_delete_btn.innerHTML = '';
+    clear('span_file_delete_btn')
+    .then(span_file_delete_btn => {
         span_file_delete_btn.appendChild(
             new Delete_Button({
                 descriptor: 'file',
@@ -12,7 +11,7 @@ function fileDeleteBtn(file_id) {
                 ]}
             }).e
         );
-    };
+    });
 }
 window.addEventListener("load", function () {
     modalOnShow('file_view', function (event) {fileDeleteBtn(event.relatedTarget.dataset.id)});

@@ -5,9 +5,8 @@ function getPermissionsEdit () {
         spinner: 'permission_edit'
     })
     .then(function ([permissions, options]) {
-        let ul_tree = document.querySelector('#ul_tree');
-        if (ul_tree) {
-            ul_tree.innerHTML = '';
+        clear('ul_tree')
+        .then(ul_tree => {
             permissions.tree.forEach(e => {
                 ul_tree.appendChild(
                     new List_Item({
@@ -21,7 +20,7 @@ function getPermissionsEdit () {
                     });
                 };
             });
-        };
+        });
         configure_tree();
         permissions.permissions.forEach(e => {
             let checkbox = document.querySelector(`#chk_${e.permission}`);

@@ -1,7 +1,6 @@
 function settingDeleteBtn(setting_id) {
-    let span_delete = document.querySelector('#setting_delete');
-    if (span_delete) {
-        span_delete.innerHTML = '';
+    clear('setting_delete')
+    .then(span_delete => {
         span_delete.appendChild(
             new Delete_Button({
                 descriptor: 'setting',
@@ -14,7 +13,7 @@ function settingDeleteBtn(setting_id) {
                 }
             }).e
         );
-    };
+    });
 };
 window.addEventListener('load', function () {
     modalOnShow('setting_view', function (event) {settingDeleteBtn(event.relatedTarget.dataset.id)});

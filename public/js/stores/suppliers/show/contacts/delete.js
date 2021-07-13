@@ -1,7 +1,6 @@
 function addContactDeleteBtn(supplier_contact_id) {
-    let contact_delete_btn = document.querySelector('#contact_delete_btn');
-    if (contact_delete_btn) {
-        contact_delete_btn.innerHTML = '';
+    clear('contact_delete_btn')
+    .then(contact_delete_btn => {
         get({
             table: 'contact',
             query: [`supplier_contact_id=${supplier_contact_id}`]
@@ -20,7 +19,7 @@ function addContactDeleteBtn(supplier_contact_id) {
                 }).e
             );
         });
-    };
+    });
 };
 window.addEventListener('load', function () {
     modalOnShow('contact_view', function (event) {addContactDeleteBtn(event.relatedTarget.dataset.id)});

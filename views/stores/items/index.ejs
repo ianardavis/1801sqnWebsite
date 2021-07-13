@@ -1,5 +1,4 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Items'}) %>
 <% if (permissions.item_add) { %>
 	<li class="nav-item">
@@ -8,7 +7,7 @@
 <% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'items'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<% if (permissions.access_genders) { %>
 		<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
@@ -46,7 +45,6 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/search/table.js"></script>
-<script src="/js/addFormListener.js"></script>
 <script src="/js/stores/items/index/view.js"></script>
 <script async>getItems()</script>
 <% if (permissions.access_genders) { %>
@@ -60,4 +58,4 @@
 		<script src="/js/stores/items/index/genders/add.js"></script>
 	<% } %>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

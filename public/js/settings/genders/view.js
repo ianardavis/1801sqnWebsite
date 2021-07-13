@@ -1,7 +1,6 @@
 function getGenders() {
-    let tbl_genders = document.querySelector('#tbl_genders');
-    if (tbl_genders) {
-        tbl_genders.innerHTML = '';
+    clear('tbl_genders')
+    .then(tbl_genders => {
         get({table: 'genders'})
         .then(function ([genders, options]) {
             genders.forEach(gender => {
@@ -20,7 +19,7 @@ function getGenders() {
             });
             if (typeof gendersEditBtns === 'function') gendersEditBtns();
         });
-    };
+    });
 };
 function viewGender(gender_id) {
     get({

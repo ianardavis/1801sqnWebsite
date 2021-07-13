@@ -1,7 +1,6 @@
 function genderDeleteBtn(gender_id) {
-    let span_delete = document.querySelector('#gender_delete');
-    if (span_delete) {
-        span_delete.innerHTML = '';
+    clear('gender_delete')
+    .then(span_delete => {
         span_delete.appendChild(
             new Delete_Button({
                 descriptor: 'gender',
@@ -14,7 +13,7 @@ function genderDeleteBtn(gender_id) {
                 }
             }).e
         );
-    };
+    });
 };
 window.addEventListener('load', function () {
     modalOnShow('gender_view', function (event) {genderDeleteBtn(event.relatedTarget.dataset.id)});

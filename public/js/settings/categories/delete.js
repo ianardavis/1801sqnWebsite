@@ -1,7 +1,6 @@
 function categoryDeleteBtn(category_id) {
-    let span_delete = document.querySelector('#category_delete');
-    if (span_delete) {
-        span_delete.innerHTML = '';
+    clear('category_delete')
+    .then(span_delete => {
         span_delete.appendChild(
             new Delete_Button({
                 descriptor: 'category',
@@ -17,7 +16,7 @@ function categoryDeleteBtn(category_id) {
                 }
             }).e
         );
-    };
+    })
 };
 window.addEventListener('load', function () {
     modalOnShow('category_view', function (event) {categoryDeleteBtn(event.relatedTarget.dataset.id)});

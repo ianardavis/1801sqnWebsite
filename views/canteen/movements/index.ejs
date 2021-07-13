@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Movements'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'movements'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
@@ -20,4 +19,4 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/movements/index/view.js"></script>
 <script async>getMovements()</script>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

@@ -36,9 +36,6 @@ select {
 	margin: 5px 0 5px 0;
 	padding: 0;
 }
-#body {
-	margin-bottom: 60px;
-}
 #ul_tree {
 	margin: 0;
 	padding: 0;
@@ -78,6 +75,9 @@ select {
 }
 button.dropdown-item {
 	font-size: 25px;
+}
+.mb-60px {
+	margin-bottom: 60px;
 }
 .form_inline {
 	display: inline;

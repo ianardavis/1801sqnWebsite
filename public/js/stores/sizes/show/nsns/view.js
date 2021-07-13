@@ -41,7 +41,7 @@ function viewNSN(event) {
         set_attribute({id: 'btn_nsn_link',   attribute: 'href', value: `/nsns/${nsn.nsn_id}`});
     });
 };
+addReloadListener(getNSNs);
 window.addEventListener('load', function() {
     modalOnShow('nsn_view', viewNSN);
-    document.querySelector('#reload').addEventListener('click', getNSNs);
 });

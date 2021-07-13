@@ -3,9 +3,8 @@ function addIssueOption(issue_id) {
     if (select) select.appendChild(new Option({text: 'Issue', value: '4'}).e)
 };
 function issueOptions() {
-    let div_details = document.querySelector(`#issue_${this.dataset.id}_details`);
-    if (div_details) {
-        div_details.innerHTML = '';
+    clear(`issue_${this.dataset.id}_details`)
+    .then(div_details => {
         if (this.value === '4') {
             get({
                 table: 'issue',
@@ -88,5 +87,5 @@ function issueOptions() {
                 };
             });
         };
-    };
+    });
 };

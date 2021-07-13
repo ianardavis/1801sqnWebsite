@@ -1,42 +1,21 @@
-<% if (permissions[permission]) { %>
+<% if (!locals.permission || permissions[permission]) { %>
     <div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><%= table %> Line <span id="line_id_view"></span></h5>
-                    <span id="span_view_buttons" class="float-end"></span>
+                    <h5 class="modal-title"><%= table %>> Line</h5>
+                    <a id="btn_line_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
                 </div>
                 <div class="modal-body">
-                    <ul class="nav nav-tabs" role="tablist">
-                        <%- include(`${partials}/tab_head`, {id: `${table.toLowerCase()}_line`, 	   title: 'Details', 	   spinner: `${table.toLowerCase()}_line_view`,  active: true}) %>
-                        <%- include(`${partials}/tab_head`, {id: 'dates',  		 	                   title: 'Dates/Actions', spinner: `${table}_line_actions`,             count_id: 'line_actions'}) %>
-                        <%- include(`${partials}/tab_head`, {id: `${table.toLowerCase()}_lines-notes`, title: 'Notes',   	   spinner: `${table.toLowerCase()}_line_notes`, count_id: `${table.toLowerCase()}_lines_note`, permission: 'access_notes'}) %>
-                    </ul>
-                    <div class="tab-content pt-3" id="myTabContent">
-                        <div class="tab-pane fade active show" id="<%= table.toLowerCase() %>_line" role="tabpanel" aria-labelledby="<%= table.toLowerCase() %>_line-tab">
-                            <%- include(`${partials}/inputs/display`, {title: 'Item', 	  	  id: 'line_item_view', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Size', 	  	  id: 'line_size_view', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Quantity', 	  id: 'line_qty_view'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Raised by',	  id: 'line_user_view', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Raised',	  	  id: 'line_createdAt_view'}) %>
-                            <%- include(`${partials}/inputs/display`, {title: 'Last Updated', id: 'line_updatedAt_view'}) %>
-                        </div>
-                        <div class="tab-pane fade" id="dates" role="tabpanel" aria-labelledby="dates-tab">
-                            <table class="table table-sm table-hover mx-auto w-100">
-                                <thead id='table_header_lines' class="thead-dark">
-                                    <th class='w-30' onclick="sortTable(0,'tbl_line_dates')">Date</th>
-                                    <th class='w-40' onclick="sortTable(1,'tbl_line_dates')">Action</th>
-                                    <th class='w-30' onclick="sortTable(2,'tbl_line_dates')">User</th>
-                                    <th><i class='fas fa-search'></i></th>
-                                </thead>
-                                <tbody id="tbl_line_dates"></tbody>
-                            </table>
-                        </div>
-                        <%- include(`${partials}/common/notes/line_note_table`, {line: `${table.toLowerCase()}_lines`}) %>
-                    </div>
+                    <%- include(`${partials}/inputs/display`, {title: 'Item', 	   id: 'line_item', link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {title: 'Size', 	   id: 'line_size', link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {title: 'Quantity',  id: 'line_qty'}) %>
+                    <%- include(`${partials}/inputs/display`, {title: 'Raised by', id: 'line_user', link: true}) %>
+                    <%- include(`${partials}/inputs/display`, {title: 'Created',   id: 'line_createdAt'}) %>
+                    <%- include(`${partials}/inputs/display`, {title: 'Updated',   id: 'line_updatedAt'}) %>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <p class='me-auto'>ID: <span id='<%= table.toLowerCase() %>_line_id'></span></p>
                 </div>
             </div>
         </div>

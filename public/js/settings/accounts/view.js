@@ -39,7 +39,7 @@ function viewAccount(account_id) {
         set_attribute({id: 'account_user_link', attribute: 'href', value: `/users/${account.user_id}`});
     });
 };
+addReloadListener(getAccounts);
 window.addEventListener('load', function () {
     modalOnShow('account_view', function (event) {viewAccount(event.relatedTarget.dataset.id)});
-    document.querySelector('#reload').addEventListener('click', getAccounts);
 });

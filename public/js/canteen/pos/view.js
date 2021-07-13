@@ -41,13 +41,13 @@ function getSale() {
 function getSaleLines() {
     let sale_id = document.querySelector('#sale_id');
     if (sale_id) {
-        get({
-            table: 'sale_lines',
-            query: [`sale_id=${sale_id.innerText}`]
-        })
-        .then(function ([lines, options]) {
-            clear('tbl_sale_lines')
-            .then(tbl_sale_lines => {
+        clear('tbl_sale_lines')
+        .then(tbl_sale_lines => {
+            get({
+                table: 'sale_lines',
+                query: [`sale_id=${sale_id.innerText}`]
+            })
+            .then(function ([lines, options]) {
                 let total  = 0;
                 if (lines.length === 0) {
                     disable_button('complete_sale')

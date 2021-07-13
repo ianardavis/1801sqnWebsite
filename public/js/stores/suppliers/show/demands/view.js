@@ -27,5 +27,5 @@ function getDemands() {
 };
 addReloadListener(getDemands);
 window.addEventListener('load', function () {
-    document.querySelector('#sel_demand_status').addEventListener('change', getDemands);
+    addListener('sel_demand_status', getDemands, 'change');
 });

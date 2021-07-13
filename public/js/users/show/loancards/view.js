@@ -16,7 +16,7 @@ function getLoancards () {
                 add_cell(row, {text: loancard_statuses[loancard.status]})
                 add_cell(row, {
                     append: new Link({
-                        href: `/stores/loancards/${loancard.loancard_id}`,
+                        href: `/loancards/${loancard.loancard_id}`,
                         small: true
                     }).e
                 });
@@ -25,5 +25,7 @@ function getLoancards () {
     })
     .catch(err => console.log(err));
 };
-document.querySelector('#reload')              .addEventListener('click',  getLoancards);
-document.querySelector('#sel_status_loancards').addEventListener('change', getLoancards);
+addReloadListener(getLoancards)
+window.addEventListener('load', function () {
+    addListener('sel_status_loancards', getLoancards, 'change');
+})

@@ -1,14 +1,13 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Stock - By Item'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`,    {id: 'sizes'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <div id="div_sizes"></div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/reports/4/view.js"></script>
 <script async>getSizes()</script>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

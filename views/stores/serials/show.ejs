@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Serials'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -12,14 +11,14 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'serial_edit', text: 'Edit',     modal: 'serial_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'note_add',    text: 'Add Note', modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete',   btn_form: {permission: 'serial_delete'}}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'serial'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard', permission: 'access_loancard_lines'}) %>
         <%- include(`${partials}/tab_head`, {id: 'actions',   title: 'Actions',   spinner: 'actions',   count_id: 'action',   permission: 'access_actions'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',     spinner: 'notes',     count_id: 'note',     permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -135,7 +134,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
@@ -152,4 +150,4 @@
     <script src='/js/stores/serials/show/loancards/view.js'></script>
     <script async>getLoancards()</script>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

@@ -1,7 +1,6 @@
 function getFileDescriptions() {
-    let list = document.querySelector('#file_descriptions');
-    if (list) {
-        list.innerHTML = '';
+    clear('file_descriptions')
+    .then(list => {
         get({
             table: 'settings',
             query: ['name=file_description']
@@ -11,7 +10,7 @@ function getFileDescriptions() {
                 list.appendChild(new Option({value: description.value}).e);
             });
         });
-    };
+    });
 };
 window.addEventListener("load", function () {
     modalOnShow('file_add', getFileDescriptions);

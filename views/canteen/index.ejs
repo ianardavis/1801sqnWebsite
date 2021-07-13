@@ -1,8 +1,7 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`,    {id: 'sessions'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<div class="row menu">
         <%- include(`${partials}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos', permission: 'access_pos'}) %>
@@ -18,4 +17,4 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/index/view.js"></script>
 <script async>checkSession()</script>
-<%- include(`${partials}/foot/elements/htmlClose`) %>    
+<%- include(`${partials}/foot/components/htmlClose`) %>    

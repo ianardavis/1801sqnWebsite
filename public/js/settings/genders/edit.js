@@ -1,7 +1,6 @@
 function genderEditBtn(gender_id) {
-    let span_edit = document.querySelector('#gender_edit');
-    if (span_edit) {
-        span_edit.innerHTML = '';
+    clear('gender_edit')
+    .then(span_edit => {
         span_edit.appendChild(
             new Link({
                 modal: 'gender_edit',
@@ -9,7 +8,8 @@ function genderEditBtn(gender_id) {
                 data:  {field: 'id', value: gender_id}
             }).e
         );
-    };
+
+    });
 };
 function viewGenderEdit(gender_id) {
     modalHide('gender_view');

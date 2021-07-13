@@ -1,7 +1,6 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Reports'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <div class="row menu mx-auto">
         <%- include(`${partials}/card`, {id: '1', href: '/reports/1', title: 'Negative Stock',      image: 'search-minus',   permission: 'adjustment_add'}) %>
@@ -12,4 +11,4 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

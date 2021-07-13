@@ -14,9 +14,8 @@ function viewDetailEdit(detail_id) {
     });
 };
 function addDetailEditBtn(detail_id) {
-    let detail_edit_btn = document.querySelector('#detail_edit_btn');
-    if (detail_edit_btn) {
-        detail_edit_btn.innerHTML = '';
+    clear('detail_edit_btn')
+    .then(detail_edit_btn => {
         get({
             table: 'detail',
             query: [`detail_id=${detail_id}`]
@@ -29,10 +28,10 @@ function addDetailEditBtn(detail_id) {
                     {field: 'id', value: detail.detail_id},
                     {field: 'bs-dismiss', value: 'modal'}
                 ],
-                type:    'edit',
+                type: 'edit',
             }).e);
         });
-    };
+    });
 };
 window.addEventListener('load', function() {
     addFormListener(

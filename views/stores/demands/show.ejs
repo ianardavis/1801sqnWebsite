@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/demands', text: 'Demands'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
 		<li class="nav-item dropdown">
@@ -11,19 +10,19 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', 	  modal: 'note_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'line_add', text: 'Add Item(s)',  modal: 'line_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'complete',	text: 'Complete',	  btn_form: {permission: 'demand_edit'}}) %>
 				<%- include(`${partials}/menu/button`, {id: 'action',	text: 'Action Lines', form:  'action'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'close',	text: 'Close',	 	  btn_form: {permission: 'demand_edit'}}) %>
 				<%- include(`${partials}/menu/button`, {id: 'download',	text: 'Download', 	  btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Cancel',	  	  btn_form: {permission: 'demand_delete'}}) %>
+				<%- include(`${partials}/common/notes/btn_add`) %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line', 	permission: 'access_demand_lines'}) %>
         <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'order_actions', count_id: 'action', permission: 'access_actions'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes', 	    count_id: 'note', 	permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -57,30 +56,7 @@
 	<div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
-		<% if (permissions.access_demand_lines) { %>
-			<div id='mdl_line_view' class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog modal-lg" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title">Demand Line</h5>
-                            <a id="btn_demand_line_link" class='btn btn-primary float-end'><i class="fas fa-search"></i></a>
-						</div>
-						<div class="modal-body">
-							<%- include(`${partials}/inputs/display`, {title: 'Item', 	   id: 'line_item', link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Size', 	   id: 'line_size', link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Quantity',  id: 'line_qty'}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Raised by', id: 'line_user', link: true}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Created',   id: 'line_createdAt'}) %>
-							<%- include(`${partials}/inputs/display`, {title: 'Updated',   id: 'line_updatedAt'}) %>
-						</div>
-						<div class="modal-footer">
-							<p class='me-auto'>ID: <span id='demand_line_id'></span></p>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		<% } %>
+		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_demand_lines', table: 'Demand'}) %>
 		<% if (permissions.demand_line_add) { %>
 			<div id='mdl_line_add' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">
@@ -116,7 +92,6 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/search/select.js"></script>
-<script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
@@ -143,4 +118,4 @@
 		<script src="/js/stores/demands/show/lines/edit.js"></script>
 	<% } %>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

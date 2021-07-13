@@ -1,7 +1,6 @@
 function accountEditBtn(account_id) {
-    let span_edit = document.querySelector('#account_edit');
-    if (span_edit) {
-        span_edit.innerHTML = '';
+    clear('account_edit')
+    .then(span_edit => {
         span_edit.appendChild(
             new Link({
                 modal: 'account_edit',
@@ -9,7 +8,7 @@ function accountEditBtn(account_id) {
                 data:  {field: 'id', value: account_id}
             }).e
         );
-    };
+    })
 };
 function viewAccountEdit(account_id) {
     modalHide('account_view');
@@ -18,7 +17,7 @@ function viewAccountEdit(account_id) {
         query: [`account_id=${account_id}`]
     })
     .then(function([account, options]) {
-        set_attribute({id: 'account_id_edit', attribute: 'value', value: account.account_id});
+        set_value({id: 'account_id_edit',     value: account.account_id});
         set_value({id: 'account_name_edit',   value: account.name});
         set_value({id: 'account_number_edit', value: account.number});
         listUsers({

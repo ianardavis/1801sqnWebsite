@@ -1,7 +1,6 @@
 function addDetailDeleteBtn(detail_id) {
-    let detail_delete_btn = document.querySelector('#detail_delete_btn');
-    if (detail_delete_btn) {
-        detail_delete_btn.innerHTML = '';
+    clear('detail_delete_btn')
+    .then(detail_delete_btn => {
         get({
             table: 'detail',
             query: [`detail_id=${detail_id}`]
@@ -20,7 +19,7 @@ function addDetailDeleteBtn(detail_id) {
                 }).e
             );
         });
-    };
+    })
 };
 window.addEventListener('load', function () {
     modalOnShow('detail_view', function (event) {addDetailDeleteBtn(event.relatedTarget.dataset.id)});

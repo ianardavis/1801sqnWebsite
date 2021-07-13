@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/canteen/receipts', text: 'Receipts'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -11,26 +10,29 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'receipt'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes',         count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/inputs/display`, {id: 'item',      title: 'Item', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_qty',      title: 'Qty'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_cost',     title: 'Cost Each'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'qty',       title: 'Qty'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'cost',      title: 'Cost Each'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Received'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'user',      title: 'Received By', link: true}) %>
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
+    <div id="div_modals">
+        <%- include(`${partials}/common/notes/modals`) %>
+    </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
-<script src="/js/canteen/receipts/show/getReceipt.js"></script>
+<script src="/js/canteen/receipts/show/view.js"></script>
 <script>showTab('<%= tab %>')</script>
+<%- include(`${partials}/common/notes/scripts`) %>
 <script async>getReceipt()</script>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

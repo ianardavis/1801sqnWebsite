@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Sessions', href: '/sessions'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -12,14 +11,14 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				<%- include(`${partials}/menu/button`, {id: 'session_close', modal: 'session_close', text: 'Close'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'note_add',      modal: 'note_add',      text: 'Add Note'}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',  spinner: 'session'}) %>
         <%- include(`${partials}/tab_head`, {id: 'sales',    title: 'Sales',    spinner: 'sales',            count_id: 'sale',    permission: 'access_sales'}) %>
         <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', spinner: 'payments_session', count_id: 'payment', permission: 'access_payments'}) %>
         <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',    spinner: 'items',            count_id: 'item',    permission: 'access_items'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',    title: 'Notes',    spinner: 'notes',            count_id: 'note',    permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -111,7 +110,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/addFormListener.js'></script>
 <script src="/js/canteen/sessions/show/view.js"></script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
@@ -127,4 +125,4 @@
 <% if (permissions.session_edit) { %>
     <script src="/js/canteen/sessions/show/edit.js"></script>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

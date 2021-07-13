@@ -1,19 +1,17 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Orderable Items'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`,    {id: 'sizes'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_sizes' disabled>Create Orders</button>
     <%- include(`${partials}/inputs/select`, {id: 'sel_suppliers', title: 'Supplier'}) %>
     <form id="form_sizes"></form>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
 <script src="/js/utils/list/suppliers.js"></script>
 <script src="/js/stores/reports/3/view.js"></script>
 <script async>getSuppliers()</script>
 <script async>getSizes()</script>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

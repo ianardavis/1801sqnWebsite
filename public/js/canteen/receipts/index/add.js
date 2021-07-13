@@ -11,38 +11,32 @@ function reset_add_item() {
     set_value({id: 'cost_total', value: ''});
 };
 function getItems() {
-    get(
-        {table: 'items'},
-        function (items, options) {
-            let sel_items = document.querySelector('#sel_items');
-            if (sel_items) {
-                sel_items.innerHTML = '';
+    clear('sel_items')
+    .then(sel_items => {
+        get({table: 'canteen_items'})
+        .then(function ([items, options]) {
+            sel_items.appendChild(
+                new Option({
+                    text: 'Select item ...',
+                    selected: true
+                }).e
+            )
+            items.forEach(item => {
                 sel_items.appendChild(
                     new Option({
-                        text: 'Select item ...',
-                        selected: true
+                        value: item.item_id,
+                        text:  item.name
                     }).e
                 )
-                items.forEach(item => {
-                    sel_items.appendChild(
-                        new Option({
-                            value: item.item_id,
-                            text: item._name
-                        }).e
-                    )
-                });
-            }
-        }
-    )
+            });
+        })
+    })
 }
 window.addEventListener('load', function () {
     modalOnShow('receipt_add', getItems);
-    ['qty', 'cost_total'].forEach(e => {
-        let input = document.querySelector(`#${e}`)
-        if (input) input.addEventListener('input', calculate_cost);
-    });
-    let sel_items = document.querySelector('#sel_items');
-    if (sel_items) sel_items.addEventListener('change', reset_add_item);
+    addListener('qty',        calculate_cost, 'input');
+    addListener('cost_total', calculate_cost, 'input');
+    addListener('sel_items',  reset_add_item, 'change');
     addFormListener(
         'receipt_add',
         'POST',

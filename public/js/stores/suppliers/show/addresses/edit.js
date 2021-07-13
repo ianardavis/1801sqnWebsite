@@ -20,9 +20,8 @@ function viewAddressEdit(address_id) {
     });
 };
 function addAddressEditBtn(address_id) {
-    let address_edit_btn = document.querySelector('#address_edit_btn');
-    if (address_edit_btn) {
-        address_edit_btn.innerHTML = '';
+    clear('address_edit_btn')
+    .then(address_edit_btn => {
         get({
             table: 'address',
             query: [`supplier_address_id=${address_id}`]
@@ -34,7 +33,7 @@ function addAddressEditBtn(address_id) {
                 type:    'edit',
             }).e);
         });
-    };
+    });
 };
 window.addEventListener('load', function() {
     addFormListener(

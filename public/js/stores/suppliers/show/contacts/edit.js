@@ -16,9 +16,8 @@ function viewContactEdit(contact_id) {
     });
 };
 function addContactEditBtn(contact_id) {
-    let contact_edit_btn = document.querySelector('#contact_edit_btn');
-    if (contact_edit_btn) {
-        contact_edit_btn.innerHTML = '';
+    clear('contact_edit_btn')
+    .then(contact_edit_btn => {
         get({
             table: 'contact',
             query: [`supplier_contact_id=${contact_id}`]
@@ -30,7 +29,7 @@ function addContactEditBtn(contact_id) {
                 type:    'edit',
             }).e);
         });
-    };
+    });
 };
 window.addEventListener('load', function() {
     addFormListener(

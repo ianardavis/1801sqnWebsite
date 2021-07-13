@@ -1,19 +1,18 @@
 function getNotifications() {
-    get({table: 'notifications'})
-    .then(function ([notifications, options]) {
-        let ul_notifications = document.querySelector('#ul_notifications');
-        if (ul_notifications) {
-            ul_notifications.innerHTML = '';
+    clear('ul_notifications')
+    .then(ul_notifications => {
+        get({table: 'notifications'})
+        .then(function ([notifications, options]) {
             notifications.forEach(notification => {
                 ul_notifications.appendChild(
                     new Notification({
-                        urgency: notification._urgency,
-                        title:   notification._title,
-                        text:    notification._notification,
+                        urgency: notification.urgency,
+                        title:   notification.title,
+                        text:    notification.notification,
                         date:    print_date(notification.createdAt, true)
                     }).e
                 );
             });
-        };
+        });
     });
 };

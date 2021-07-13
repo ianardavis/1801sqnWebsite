@@ -1,7 +1,6 @@
 function getFileDetailNames() {
-    let list = document.querySelector('#file_detail_names');
-    if (list) {
-        list.innerHTML = '';
+    clear('file_detail_names')
+    .then(list => {
         get({
             table: 'settings',
             query: ['name=file_detail']
@@ -11,7 +10,7 @@ function getFileDetailNames() {
                 list.appendChild(new Option({value: detail.value}).e);
             });
         });
-    };
+    });
 };
 window.addEventListener('load', function () {
     enable_button('file_add');

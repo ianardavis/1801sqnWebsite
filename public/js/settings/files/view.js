@@ -1,7 +1,6 @@
 function getFiles() {
-    let tbl_files = document.querySelector('#tbl_files');
-    if (tbl_files) {
-        tbl_files.innerHTML = '';
+    clear('tbl_files')
+    .then(tbl_files => {
         get({table: 'files'})
         .then(function ([files, options]) {
             get({table: 'fs_files'})
@@ -28,6 +27,6 @@ function getFiles() {
                 if (typeof addFileDeleteBtns === 'function') addFileDeleteBtns();
             });
         });
-    };
+    });
 };
 addReloadListener(getFiles);

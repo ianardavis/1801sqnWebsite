@@ -1,5 +1,4 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Sessions'}) %>
 <% if (permissions.session_add) { %>
 	<li class="nav-item">
@@ -8,7 +7,7 @@
 <% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'sessions'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
@@ -62,10 +61,9 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/addFormListener.js'></script>
 <script src='/js/canteen/sessions/index/view.js'></script>
 <script async>getSessions()</script>
 <% if (permissions.session_add) { %>
     <script src='/js/canteen/sessions/index/add.js'></script>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

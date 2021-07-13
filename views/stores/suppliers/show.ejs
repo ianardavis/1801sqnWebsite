@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app, {text: 'Stores'}`) %>
 <%- include(`${partials}/breadcrumb`, {href: '/suppliers', text: 'Suppliers'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -13,7 +12,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'supplier_edit', text: 'Edit',        modal: 'supplier_edit'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'file_add',      text: 'Add File',    modal: 'file_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'note_add',      text: 'Add Note',    modal: 'note_add'}) %>
+                <%- include(`${partials}/common/notes/tab_head`) %>
 				<%- include(`${partials}/menu/button`, {id: 'address_add',   text: 'Add Address', modal: 'address_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'contact_add',   text: 'Add Contact', modal: 'contact_add'}) %>
                 <% if (permissions.setting_edit) { %>
@@ -32,7 +31,7 @@
         <%- include(`${partials}/tab_head`, {id: 'contacts',  title: 'Contacts',  spinner: 'contacts',  count_id: 'contact', permission: 'access_supplier_contacts'}) %>
         <%- include(`${partials}/tab_head`, {id: 'items',     title: 'Items',     spinner: 'sizes',     count_id: 'size',    permission: 'access_sizes'}) %>
         <%- include(`${partials}/tab_head`, {id: 'demands',   title: 'Demands',   spinner: 'demands',   count_id: 'demand',  permission: 'access_demands'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',     spinner: 'notes',     count_id: 'note',    permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -442,7 +441,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/addFormListener.js'></script>
 <script>showTab('<%= tab %>');</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 
@@ -531,4 +529,4 @@
 <% if (permissions.access_accounts) { %>
     <script src="/js/stores/suppliers/show/accounts/view.js"></script>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

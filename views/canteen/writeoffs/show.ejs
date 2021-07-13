@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/canteen/writeoffs', text: 'Writeoffs'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -11,129 +10,30 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <% if (permissions.writeoff_line_add) { %>
-                    <button class="dropdown-item" id='btn_add_item' disabled>Add Item</button>
-                <% } %>
-                <% if (permissions.writeoff_edit) { %>
-                    <form id='form_cancel'>
-                        <button class="dropdown-item" id='btn_cancel' disabled>Cancel</button>
-                    </form>
-                    <form id='form_complete'>
-                        <button class="dropdown-item" id='btn_complete' disabled>Complete</button>
-                    </form>
-                <% } %>
-                <%- include(`${partials}/menu/button`, {id: 'note_add', modal: 'note_add', text: 'Add Note'}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'writeoff'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',   spinner: 'writeoff_lines', count_id: 'line', permission: 'access_writeoff_lines'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes',          count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <%- include(`${partials}/inputs/display`, {id: 'createdAt', title: 'Date'}) %>
-            <%- include(`${partials}/inputs/display`, {id: '_status',   title: 'Status'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'user',      title: 'Raised By', link: true}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'writeoff_item',      title: 'Item'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'writeoff_qty',       title: 'Quantity'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'writeoff_cost',      title: 'Cost (Each)'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'writeoff_reason',    title: 'Reason'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'writeoff_createdAt', title: 'Date'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'writeoff_user',      title: 'Writeen Off By', link: true}) %>
         </div>
-        <% if (permissions.access_writeoff_lines) { %>
-            <div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-50" onclick="sortTable(0, 'tbl_writeoff_lines')">Item</th>
-                        <th class="w-25" onclick="sortTable(1, 'tbl_writeoff_lines')">Qty</th>
-                        <th class="w-25" onclick="sortTable(2, 'tbl_writeoff_lines')">Cost</th>
-                        <th><i class="fas fa-search"></i></th>
-                    </thead>
-                    <tbody id="tbl_writeoff_lines"></tbody>
-                </table>
-            </div>
-            <div id="div_line_modals"></div>
-        <% } %>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
-    <% if (permissions.writeoff_line_add) { %>
-        <div id='mdl_add_item' class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <form class="modal-content" id='form_add_item'>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Item</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <%- include(`${partials}/inputs/select`, {title: 'Item',     id: 'sel_items', name: 'line[item_id]', required: true}) %>
-                        <%- include(`${partials}/inputs/number`, {title: 'Quantity', id: 'qty',       name: 'line[qty]',     required: true, min: '1'}) %>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Add Item'>
-                    </div>
-                </form>
-            </div>
-        </div>
-    <% } %>
+    <div id="div_modals">
+        <%- include(`${partials}/common/notes/modals`) %>
+    </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/canteen/writeoffs/show/getWriteoff.js"></script>
-<script src="/js/addFormListener.js"></script>
+<script src="/js/canteen/writeoffs/show/view.js"></script>
 <script>showTab('<%= tab %>')</script>
+<%- include(`${partials}/common/notes/scripts`) %>
 <script async>getWriteoff()</script>
-<% if (permissions.access_writeoff_lines) { %>
-    <script src="/js/canteen/writeoffs/show/getLines.js"></script>
-    <script async>getLines()</script>
-<% } %>
-<% if (permissions.writeoff_line_add) { %>
-    <script src="/js/canteen/writeoffs/show/getItems.js"></script>
-    <script async>getItems()</script>
-    <script>
-        function reset_add_item() {
-            let qty = document.querySelector('#qty');
-            if (qty) qty.value = '';
-        };
-        window.addEventListener('load', function () {
-            let btn_add_item = document.querySelector('#btn_add_item');
-            if (btn_add_item) btn_add_item.addEventListener('click', function () {$("#mdl_add_item").modal("show")});
-            ['qty', 'cost_total'].forEach(e => {
-                let input = document.querySelector(`#${e}`)
-                if (input) input.addEventListener('input', calculate_cost);
-            })
-            addFormListener(
-                'add_item',
-                'POST',
-                `/canteen/writeoff_lines/${path[3]}`,
-                {onComplete: [getLines, reset_add_item]}
-            );
-            let sel_items = document.querySelector('#sel_items');
-            if (sel_items) sel_items.addEventListener('change', reset_add_item);
-        });
-    </script>
-<% } %>
-<% if (permissions.writeoff_edit) { %>
-    <script>
-        window.addEventListener('load', function () {
-            addFormListener(
-                'cancel',
-                'DELETE',
-                `/canteen/writeoffs/${path[3]}`,
-                {
-                    onComplete: [
-                        getWriteoff,
-                        function () {if (typeof getLines === 'function') getLines}
-                    ]
-                }
-            );
-            addFormListener(
-                'complete',
-                'PUT',
-                `/canteen/writeoffs/${path[3]}`,
-                {
-                    onComplete: [
-                        getWriteoff,
-                        function () {if (typeof getLines === 'function') getLines}
-                    ]
-                }
-            );
-        });
-    </script>
-<% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

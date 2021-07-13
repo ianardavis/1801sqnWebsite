@@ -13,9 +13,8 @@ function viewNoteEdit(note_id) {
     });
 };
 function addNoteEditBtn(note_id) {
-    let note_edit_btn = document.querySelector('#note_edit_btn');
-    if (note_edit_btn) {
-        note_edit_btn.innerHTML = '';
+    clear('note_edit_btn')
+    .then(note_edit_btn => {
         get({
             table: 'note',
             query: [`note_id=${note_id}`]
@@ -33,7 +32,7 @@ function addNoteEditBtn(note_id) {
                 }).e);
             };
         });
-    };
+    });
 };
 window.addEventListener('load', function() {
     addFormListener(

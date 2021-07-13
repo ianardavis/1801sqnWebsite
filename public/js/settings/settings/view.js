@@ -33,9 +33,8 @@ function getPrinter() {
     })
 };
 function getErrorLog() {
-    let log_error = document.querySelector('#log_error');
-    if (log_error) {
-        log_error.innerText = '';
+    clear('log_error')
+    .then(log_error => {
         get({
             table: 'logs',
             query: ['type=error'],
@@ -44,12 +43,11 @@ function getErrorLog() {
                 log_error.innerText += char;
             }
         });
-    };
+    });
 };
 function getOutLog() {
-    let log_out = document.querySelector('#log_out');
-    if (log_out) {
-        log_out.innerText = '';
+    clear('log_out')
+    .then(log_out => {
         get({
             table: 'logs',
             query: ['type=out'],
@@ -58,7 +56,7 @@ function getOutLog() {
                 log_out.innerText += char;
             }
         });
-    };
+    });
 };
 function viewSetting(setting_id) {
     get({
@@ -73,6 +71,8 @@ function viewSetting(setting_id) {
         set_innerText({id: 'setting_updatedAt', text: print_date(setting.updatedAt, true)});
     });
 };
+addReloadListener(getErrorLog);
+addReloadListener(getOutLog);
 addReloadListener(getPrinter);
 addReloadListener(getSettings);
 window.addEventListener('load', function () {

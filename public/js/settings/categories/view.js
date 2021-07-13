@@ -1,9 +1,8 @@
 let categories_loaded = [];
 function getCategories(parent_id = '') {
     categories_loaded.push({id: parent_id, status: false});
-    let ul_category = document.querySelector(`#ul_category_${parent_id}`);
-    if (ul_category) {
-        ul_category.innerHTML = '';
+    clear(`ul_category_${parent_id}`)
+    .then(ul_category => {
         get({
             table: 'categories',
             query: [`category_id_parent=${parent_id}`]
@@ -35,7 +34,7 @@ function getCategories(parent_id = '') {
             };
             categories_loaded[categories_loaded.findIndex(e => e.id === parent_id)].status = true;
         });
-    };
+    })
 };
 function viewCategory(category_id) {
     get({

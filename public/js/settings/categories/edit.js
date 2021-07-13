@@ -1,7 +1,6 @@
 function categoryEditBtn(category_id) {
-    let span_edit = document.querySelector('#category_edit');
-    if (span_edit) {
-        span_edit.innerHTML = '';
+    clear('category_edit')
+    .then(span_edit => {
         span_edit.appendChild(
             new Link({
                 modal: 'category_edit',
@@ -9,7 +8,7 @@ function categoryEditBtn(category_id) {
                 data:  {field: 'id', value: category_id}
             }).e
         );
-    };
+    });
 };
 function loadCategoriesEdit() {
     let get_interval = window.setInterval(
@@ -29,8 +28,8 @@ function viewCategoryEdit(category_id) {
         query: [`category_id=${category_id}`]
     })
     .then(function([category, options]) {
-        set_attribute({id: 'category_id_edit', attribute: 'value', value: category.category_id});
-        set_value(    {id: '_category_edit',   value: category._category});
+        set_value({id: 'category_id_edit', value: category.category_id});
+        set_value({id: '_category_edit',   value: category.category});
         listCategories({select: 'sel_category_edit', selected: category.parent_category_id || ''});
     });
 };
@@ -38,7 +37,6 @@ addReloadListener(loadCategoriesEdit)
 window.addEventListener('load', function () {
     modalOnShow('category_view', function (event) {categoryEditBtn(event.relatedTarget.dataset.id)});
     modalOnShow('category_edit', function (event) {viewCategoryEdit(event.relatedTarget.dataset.id)});
-
     addFormListener(
         'category_edit',
         'PUT',
@@ -51,7 +49,6 @@ window.addEventListener('load', function () {
             ]
         }
     );
-
     let ul_category_ = document.querySelector('#ul_category_');
     if (ul_category_) {
         addFormListener(

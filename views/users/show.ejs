@@ -1,8 +1,7 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Users'}) %>
+<%- include(`${partials}/head/app`, {text: 'Users'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -14,7 +13,7 @@
                 <%- include(`${partials}/menu/button`, {id: 'password_reset',   text: 'Toggle Reset Password', btn_form: {permission: 'user_edit'}}) %>
                 <%- include(`${partials}/menu/button`, {id: 'user_password',    text: 'Change Password',       modal: 'user_password'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'permissions_edit', text: 'Edit Permissions',      modal: 'permissions_edit'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'note_add',         text: 'Add Note',              modal: 'note_add'}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
                 <div class="dropdown-divider"></div>
                 <%- include(`${partials}/menu/button`, {id: 'issue_add',        text: 'New Issue',             modal: 'issue_add'}) %>
                 <div class="dropdown-divider"></div>
@@ -25,7 +24,7 @@
         <%- include(`${partials}/tab_head`, {id: 'permissions', spinner: 'permissions', title: 'Permissions', count_id: 'permission', permission: 'access_permissions'}) %>
         <%- include(`${partials}/tab_head`, {id: 'issues',      spinner: 'issues',      title: 'Issues',      count_id: 'issue'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards',   spinner: 'loancards',   title: 'Loancards',   count_id: 'loancards'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',       spinner: 'notes',       title: 'Notes',       count_id: 'note',       permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -274,7 +273,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
 <script src='/js/users/show/view.js'></script>
@@ -317,4 +315,4 @@
 <script src='/js/users/show/loancards/view.js'></script>
 <script async>getLoancards()</script>
 
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

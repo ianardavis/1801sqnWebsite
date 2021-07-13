@@ -11,17 +11,16 @@ function viewFileEdit(file_id) {
     });
 };
 function fileEditBtn(file_id) {
-    let span_file_edit_btn = document.querySelector('#span_file_edit_btn');
-    if (span_file_edit_btn) {
-        span_file_edit_btn.innerHTML = '';
+    clear('span_file_edit_btn')
+    .then(span_file_edit_btn => {
         span_file_edit_btn.appendChild(
             new Link({
                 modal: 'file_edit',
                 data: {field: 'id', value: file_id},
                 type: 'edit'
             }).e
-        )
-    };
+        );
+    });
 };
 window.addEventListener("load", function () {
     modalOnShow('file_view', function (event) {viewFileEdit(event.relatedTarget.dataset.id)});

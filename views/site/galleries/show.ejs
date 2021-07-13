@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/site`) %>
 <div class="container mt-1">
-    <h1><span id="gallery_name"></span></h1>
+    <h2><span id="gallery_name"></span></h2>
     <div id="car_images" class="carousel slide carousel-fade" data-bs-ride="carousel">
         <div class="carousel-indicators" id='div_indicators'></div>
         <div class="carousel-inner"      id='div_images'></div>
@@ -40,7 +40,7 @@
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_image_add'>
                     <div class="modal-header">
-                        <h5 class="modal-title">Add Image(s)</h5>
+                        <h3 class="modal-title">Add Image(s)</h3>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" class='gallery_id' name='image[gallery_id]'>
@@ -63,7 +63,7 @@
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_image_edit'>
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Image</h5>
+                        <h3 class="modal-title">Edit Image</h3>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name='image_id', id='image_id_edit'>
@@ -80,7 +80,6 @@
 </div>
 <script src="/js/site/galleries/show/images/view.js"></script>
 <script src="/js/site/galleries/show/view.js"></script>
-<script src="/js/addFormListener.js"></script>
 <script async>getGallery()</script>
 <script async>getImages()</script>
 <% if (permissions.gallery_image_add) { %>

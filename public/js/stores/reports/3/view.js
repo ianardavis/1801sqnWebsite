@@ -1,8 +1,7 @@
 function getSizes() {
     disable_button('action');
-    let form = document.querySelector('#form_sizes');
-    if (form) {
-        form.innerHTML = '';
+    clear('form_sizes')
+    .then(form => {
         let p = document.createElement('p'),
             supplier_id = document.querySelector('#sel_suppliers') || {value: ''};
         p.setAttribute('id', 'col_headers');
@@ -69,7 +68,7 @@ function getSizes() {
             });
             enable_button('action');
         });
-    };
+    })
 };
 function getSuppliers() {
     listSuppliers({

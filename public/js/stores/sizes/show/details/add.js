@@ -1,19 +1,18 @@
 function getDetailOptions() {
-    get({
-        table: 'settings',
-        query: ['name=detail_option'],
-        spinner: 'detail_options'
-    })
-    .then(function ([settings, options]) {
-        let list = document.querySelector('#list_detail_options');
-        if (list) {
-            list.innerHTML = '';
+    clear('list_detail_options')
+    .then(list => {
+        get({
+            table: 'settings',
+            query: ['name=detail_option'],
+            spinner: 'detail_options'
+        })
+        .then(function ([settings, options]) {
             settings.forEach(setting => {
                 list.appendChild(
                     new Option({value: setting.value}).e
                 );
             });
-        };
+        });
     });
 };
 function reset_add_detail() {

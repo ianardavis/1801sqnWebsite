@@ -1,5 +1,4 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Items'}) %>
 <% if (permissions.item_add) { %>
 	<li class="nav-item">
@@ -8,7 +7,7 @@
 <% } %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'canteen_items'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <%- include(`${partials}/inputs/select`, {title: 'Non-Current Items', id: 'current', options: [{value:'', text: 'Include', selected: true}, {value:'current=1', text: 'Exclude'}, {value:'current=0', text: 'Only'}]}) %>
 	<table class="table table-sm table-hover">
@@ -47,9 +46,8 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/items/index/view.js"></script>
-<script src="/js/addFormListener.js"></script>
 <script async>getItems()</script>
 <% if (permissions.item_add) { %>
     <script src="/js/canteen/items/index/add.js"></script>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

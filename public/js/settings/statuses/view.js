@@ -1,7 +1,6 @@
 function getStatuses() {
-    let tbl_statuses = document.querySelector('#tbl_statuses');
-    if (tbl_statuses) {
-        tbl_statuses.innerHTML = '';
+    clear('tbl_statuses')
+    .then(tbl_statuses => {
         get({table: 'statuses'})
         .then(function ([statuses, options]) {
             statuses.forEach(status => {
@@ -10,5 +9,5 @@ function getStatuses() {
                 add_cell(row, {classes: ['statuses'], data: [{field: 'id', value: status.status_id}]})
             });
         });
-    };
+    });
 };

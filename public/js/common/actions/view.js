@@ -20,7 +20,25 @@ function getActions() {
         });
     });
 };
-
+function getLinks(action_id) {
+    clear('tbl_links')
+    .then(tbl_links => {
+        get({
+            table: 'action_links',
+            query: [`action_id=${action_id}`]
+        })
+        .then(function ([links, options]) {
+            links.forEach(link => {
+                let row = tbl_links.insertRow(-1);
+                add_cell(row, {text: link._table});
+                add_cell(row, {append: new Link({
+                    href: `/${link._table}/${link.id}`,
+                    small: true
+                }).e})
+            });
+        });
+    });
+};
 function viewLine(action_id) {
     get({
         table: 'action',
@@ -32,26 +50,10 @@ function viewLine(action_id) {
         set_innerText({id: 'action_user',      text: print_user(action.user)});
         set_innerText({id: 'action_createdAt', text: print_date(action.createdAt, true)});
         set_href({id: 'action_user_link', value: `/users/${action.user_id}`});
-        clear('tbl_links')
-        .then(tbl_links => {
-            get({
-                table: 'action_links',
-                query: [`action_id=${action.action_id}`]
-            })
-            .then(function ([links, options]) {
-                links.forEach(link => {
-                    let row = tbl_links.insertRow(-1);
-                    add_cell(row, {text: link._table});
-                    add_cell(row, {append: new Link({
-                        href: `/${link._table}/${link.id}`,
-                        small: true
-                    }).e})
-                });
-            });
-        });
     });
 };
 addReloadListener(getActions);
 window.addEventListener('load', function () {
     modalOnShow('action_view', function (event) {viewLine(event.relatedTarget.dataset.id)});
+    modalOnShow('action_view', function (event) {getLinks(event.relatedTarget.dataset.id)});
 });

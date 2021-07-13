@@ -1,10 +1,9 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Issues'}) %>
 <%- include(`${partials}/menu/breadcrumb_add`, {permission: 'issue_add', modal: 'issue_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'issues'}) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class="container">
 	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
 		Filter
@@ -123,7 +122,6 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/addFormListener.js'></script>
 <script src='/js/utils/list/users.js'></script>
 <script src='/js/search/select.js'></script>
 <script src='/js/stores/issues/index/view.js'></script>
@@ -146,4 +144,4 @@
 <% } %>
 <script async>getIssues()</script>
 <script async>getUsers()</script>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

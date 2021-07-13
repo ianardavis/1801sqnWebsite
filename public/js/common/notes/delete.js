@@ -1,7 +1,6 @@
 function addNoteDeleteBtn(note_id) {
-    let note_delete_btn = document.querySelector('#note_delete_btn');
-    if (note_delete_btn) {
-        note_delete_btn.innerHTML = '';
+    clear('note_delete_btn')
+    .then(note_delete_btn => {
         get({
             table: 'note',
             query: [`note_id=${note_id}`]
@@ -22,7 +21,7 @@ function addNoteDeleteBtn(note_id) {
                 );
             };
         });
-    };
+    })
 };
 window.addEventListener('load', function () {
     modalOnShow('note_view', function(event) {addNoteDeleteBtn(event.relatedTarget.dataset.id)});

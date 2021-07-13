@@ -1,8 +1,7 @@
 function getLocations() {
     disable_button('action');
-    let div = document.querySelector('#form_stocks');
-    if (div) {
-        div.innerHTML = '';
+    clear('form_stocks')
+    .then(div => {
         let p = document.createElement('p');
         p.setAttribute('id', 'col_headers');
         div.appendChild(p);
@@ -50,7 +49,7 @@ function getLocations() {
             });
             enable_button('action');
         });
-    };
+    });
 };
 function addItem(div, p, location_id, location) {
     let new_div = document.createElement('div'),

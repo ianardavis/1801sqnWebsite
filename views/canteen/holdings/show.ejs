@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Holdings', href: '/holdings'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -11,13 +10,13 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'note_add',     modal: 'note_add',     text: 'Add Note'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'movement_add', modal: 'movement_add', text: 'Transfer'}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'holding'}) %>
         <%- include(`${partials}/tab_head`, {id: 'movements', title: 'Movements', spinner: 'movements', count_id: 'movement', permission: 'access_movements'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',     spinner: 'notes',     count_id: 'note',     permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -66,7 +65,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src='/js/addFormListener.js'></script>
 <script src="/js/canteen/holdings/show/view.js"></script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
@@ -81,4 +79,4 @@
 <% if (permissions.holding_edit) { %>
     <!-- <script src="/js/canteen/holdings/show/edit.js"></script> -->
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

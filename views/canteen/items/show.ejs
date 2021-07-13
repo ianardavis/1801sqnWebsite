@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/canteen_items', text: 'Items'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -14,15 +13,15 @@
                 <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',           modal: 'item_edit'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'writeoff_add', text: 'Writeoff Stock', modal: 'writeoff_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'receipt_add',  text: 'Receive Stock',  modal: 'receipt_add'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'note_add',     text: 'Add Note',       modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',         btn_form: {permission: 'item_delete'}}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',  spinner: 'canteen_item'}) %>
         <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipts',   count_id: 'receipt',  permission: 'access_receipts'}) %>
         <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoffs',  count_id: 'writeoff', permission: 'access_writeoffs'}) %>
         <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines', count_id: 'sale',     permission: 'access_sales'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',     title: 'Notes',    spinner: 'notes',      count_id: 'note',     permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -135,7 +134,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>');</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script src='/js/canteen/items/show/view.js'></script>
@@ -164,4 +162,4 @@
 <% if (permissions.item_delete) { %>
     <script src='/js/canteen/items/show/delete.js'></script>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

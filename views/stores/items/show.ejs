@@ -1,9 +1,8 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/items',  text: 'Items'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item dropdown">
@@ -12,15 +11,15 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',         modal: 'item_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'note_add',     text: 'Add Note',     modal: 'note_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category', modal: 'category_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'size_add',     text: 'Add Size',     modal: 'size_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',	  	  btn_form: {permission: 'item_delete'}}) %>
+                <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'item'}) %>
         <%- include(`${partials}/tab_head`, {id: 'sizes',   title: 'Sizes',   spinner: 'sizes', count_id: 'size', permission: 'access_sizes'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',   spinner: 'notes', count_id: 'note', permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -152,7 +151,6 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script src='/js/stores/items/show/view.js'></script>
@@ -188,4 +186,4 @@
         <script src='/js/stores/items/show/sizes/add.js'></script>
     <% } %>
 <% } %>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

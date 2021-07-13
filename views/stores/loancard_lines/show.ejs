@@ -1,10 +1,9 @@
-<%- include(`${partials}/head/app`) %>
-<%- include(`${partials}/head/navbar/switcher`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/loancards', text: 'Loancards'}) %>
 <%- include(`${partials}/breadcrumb`, {id: 'bcr_loancard'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
-<%- include(`${partials}/head/navbar/close`) %>
+<%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
 		<li class="nav-item dropdown">
@@ -12,12 +11,12 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'note_add', text: 'Add Note', modal: 'note_add'}) %>
+				<%- include(`${partials}/common/notes/btn_add`) %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard_line'}) %>
         <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'actions', count_id: 'action', permission: 'access_actions'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'notes',   title: 'Notes',	  spinner: 'notes',   count_id: 'note',   permission: 'access_notes'}) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
@@ -39,7 +38,6 @@
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/addFormListener.js"></script>
 <script>showTab('<%= tab %>')</script>
 <%- include(`${partials}/common/notes/scripts`) %>
 <%- include(`${partials}/common/actions/scripts`) %>
@@ -47,4 +45,4 @@
 <script src="/js/stores/loancard_lines/show/view.js"></script>
 <script async>getLoancardLine()</script>
 
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

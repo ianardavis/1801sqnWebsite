@@ -1,7 +1,6 @@
 function addCategoryDeleteBtn(category_id) {
-    let category_delete_btn = document.querySelector('#category_delete_btn');
-    if (category_delete_btn) {
-        category_delete_btn.innerHTML = '';
+    clear('category_delete_btn')
+    .then(category_delete_btn => {
         get({
             table: 'item_category',
             query: [`item_category_id=${category_id}`]
@@ -20,7 +19,7 @@ function addCategoryDeleteBtn(category_id) {
                 }).e
             );
         });
-    };
+    });
 };
 window.addEventListener('load', function () {
     modalOnShow('category_view', function (event) {addCategoryDeleteBtn(event.relatedTarget.dataset.id)});

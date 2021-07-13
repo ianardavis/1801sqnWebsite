@@ -51,9 +51,8 @@ function addEditSelect() {
     .then(result => show('sel_all'));
 };
 function returnOptions() {
-    let div_details = document.querySelector(`#line_${this.dataset.id}_details`);
-    if (div_details) {
-        div_details.innerHTML = '';
+    clear(`line_${this.dataset.id}_details`)
+    .then(div_details => {
         if (this.value === '3') {
             get({
                 table: 'loancard_line',
@@ -127,7 +126,7 @@ function returnOptions() {
                 };
             });
         };
-    };
+    })
 };
 function setActionButton(status) {
     if ([1,2].includes(status)) enable_button('action');

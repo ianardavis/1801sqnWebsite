@@ -1,4 +1,4 @@
-<%- include(`${partials}/head/noTitle`) %>
+<%- include(`${partials}/head/app_noNav`) %>
 <section class='container'>
     <h1>Select Size...</h1>
     <div id="div_items">
@@ -17,11 +17,9 @@
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
-<script src="/js/get.js"></script>
-<script src="/js/spinner.js"></script>
 <script src="/js/search/select.js"></script>
 <script src="/js/stores/sizes/select/view.js"></script>
 <script src="/js/utils/list/items.js"></script>
 <script src="/js/utils/list/sizes.js"></script>
 <script async>getItems()</script>
-<%- include(`${partials}/foot/elements/htmlClose`) %>
+<%- include(`${partials}/foot/components/htmlClose`) %>

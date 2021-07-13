@@ -1,7 +1,6 @@
 function settingEditBtn(setting_id) {
-    let span_edit = document.querySelector('#setting_edit');
-    if (span_edit) {
-        span_edit.innerHTML = '';
+    clear('setting_edit')
+    .then(span_edit => {
         span_edit.appendChild(
             new Link({
                 modal: 'setting_edit',
@@ -9,7 +8,7 @@ function settingEditBtn(setting_id) {
                 data:  {field: 'id', value: setting_id}
             }).e
         );
-    };
+    });
 };
 function viewSettingEdit(setting_id) {
     modalHide('setting_view');

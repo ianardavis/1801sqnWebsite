@@ -48,5 +48,5 @@ window.addEventListener('load', function () {
             viewNote(event.relatedTarget.dataset.id)
         } else modalHide('note_view');
     });
-    document.querySelector('#sel_system').addEventListener('change', getNotes);
+    addListener('sel_system', getNotes, 'change');
 });
