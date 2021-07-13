@@ -13,6 +13,7 @@ function getSize() {
         set_attribute({id: 'supplier_link', attribute: 'href', value: (size.supplier ? `/suppliers/${size.supplier_id}` : '')});
         let stock_elements  = document.querySelectorAll('.stock_element'),
             serial_elements = document.querySelectorAll('.serial_element');
+        console.log(size);
         if (size.has_serials) {
             stock_elements .forEach(e => e.classList.add('hidden'));
             serial_elements.forEach(e => e.classList.remove('hidden'));

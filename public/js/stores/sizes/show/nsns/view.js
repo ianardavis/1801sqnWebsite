@@ -14,7 +14,7 @@ function getNSNs() {
                     add_cell(row, {html: (nsn.size.nsn_id === nsn.nsn_id ? '<i class="fas fa-check"></i>' : '')});
                     add_cell(row, {
                         append: new Link({
-                            data:  {field: 'nsn_id', value: nsn.nsn_id},
+                            data:  [{field: 'nsn_id', value: nsn.nsn_id}],
                             modal: 'nsn_view',
                             small: true
                         }).e}

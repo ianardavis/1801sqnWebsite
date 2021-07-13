@@ -51,7 +51,7 @@ module.exports = (app, m, fn) => {
                     {permission: 'size_add'},
                     {permission: 'size_edit'},
                     {permission: 'size_delete'},
-                    {permission: 'access_stock',       children: [
+                    {permission: 'access_stocks',       children: [
                         {permission: 'stock_add'},
                         {permission: 'stock_edit'},
                         {permission: 'stock_delete'},

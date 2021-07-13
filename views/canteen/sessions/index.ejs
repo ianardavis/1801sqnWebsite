@@ -33,7 +33,6 @@
                                     <input
                                         class="form-control"
                                         type="number"
-                                        inputMode='numeric'
                                         name='balance[<%= e.name %>][b]'
                                         step='<%= e.step %>'
                                         min='0'
@@ -42,7 +41,6 @@
                                     <input
                                         class="form-control"
                                         type="number"
-                                        inputMode='numeric'
                                         name='balance[<%= e.name %>][l]'
                                         step='<%= e.step %>'
                                         min='0'
@@ -52,7 +50,8 @@
                             <% }) %>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Open'>
+                            <input  type="submit" class="btn btn-success w-100" value='Open'>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
                 </div>

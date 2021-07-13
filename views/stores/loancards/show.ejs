@@ -1,4 +1,4 @@
-<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
+<%- include(`${partials}/head/app`,   {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/loancards', text: 'Loancards'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
@@ -21,7 +21,7 @@
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
         <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line', 	 permission: 'access_loancard_lines'}) %>
         <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'actions', 		 count_id: 'action', permission: 'access_actions'}) %>
-        <%- include(`${partials}/common/notes/tab_head) %>
+        <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">

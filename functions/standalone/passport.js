@@ -23,7 +23,7 @@ module.exports = (passport, m) => {
             },
             (req, login_id, password, done) => {
                 m.users.findOne({
-                    where:      {login_id: login_id},
+                    where:      {login_id: login_id.toLowerCase()},
                     attributes: ['user_id', 'password', 'salt']
                 })
                 .then(user => {

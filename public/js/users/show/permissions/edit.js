@@ -1,12 +1,12 @@
 function getPermissionsEdit () {
-    get({
-        table: 'permissions',
-        query: [`user_id=${path[2]}`],
-        spinner: 'permission_edit'
-    })
-    .then(function ([permissions, options]) {
-        clear('ul_tree')
-        .then(ul_tree => {
+    clear('ul_tree')
+    .then(ul_tree => {
+        get({
+            table: 'permissions',
+            query: [`user_id=${path[2]}`],
+            spinner: 'permission_edit'
+        })
+        .then(function ([permissions, options]) {
             permissions.tree.forEach(e => {
                 ul_tree.appendChild(
                     new List_Item({
@@ -20,11 +20,11 @@ function getPermissionsEdit () {
                     });
                 };
             });
-        });
-        configure_tree();
-        permissions.permissions.forEach(e => {
-            let checkbox = document.querySelector(`#chk_${e.permission}`);
-            if (checkbox) checkbox.setAttribute('checked', true);
+            configure_tree();
+            permissions.permissions.forEach(e => {
+                let checkbox = document.querySelector(`#chk_${e.permission}`);
+                if (checkbox) checkbox.setAttribute('checked', true);
+            });
         });
     });
 };

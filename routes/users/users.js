@@ -70,7 +70,7 @@ module.exports = (app, m, fn) => {
                     surname:    req.body.user.surname,
                     rank_id:    req.body.user.rank_id,
                     status_id:  req.body.user.status_id,
-                    login_id:   req.body.user.login_id,
+                    login_id:   req.body.user.login_id.toLowerCase(),
                     reset:      true
                 }
             })

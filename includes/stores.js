@@ -3,7 +3,7 @@ module.exports = (m, fn) => {
     fn.inc.stores.actions = (options = {}) => {
         return {
             where:    options.where || null,
-            model:    m.action_links,
+            model:    m.actions,
             as:       'action',
             required: true,
             include:  options.include || []
@@ -47,7 +47,7 @@ module.exports = (m, fn) => {
     };
     fn.inc.stores.files = (options = {}) => {
         return {
-            model: m.details,
+            model: m.files,
             where: options.where || null,
             required: false,
             include: (options.details ? [fn.inc.stores.file_details()] : [])
