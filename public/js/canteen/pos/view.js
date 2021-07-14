@@ -237,8 +237,8 @@ function getSession() {
         table: 'sessions',
         query: ['status=1']
     })
-    .then(function ([session, options]) {
-        set_href({id: 'btn_session', value: `/sessions/${session.session_id}`})
+    .then(function ([sessions, options]) {
+        set_href({id: 'btn_session', value: `/sessions/${sessions[0].session_id}`})
     });
 };
 addReloadListener(getSale);
