@@ -5,8 +5,8 @@ function getLoancardLine() {
         query: [`loancard_line_id=${path[2]}`]
     })
     .then(function ([line, options]) {
-        set_breadcrumb({text: line.loancard_line_id});
-        set_innerText({id: 'bcr_loancard',   text: line.loancard_id});
+        set_breadcrumb({text: `${line.size.item.description} | ${line.size.item.size_text || 'Size'}: ${line.size.size}`});
+        set_innerText({id: 'bcr_loancard',   text: `${print_user(line.loancard.user_loancard)} | ${print_date(line.loancard.createdAt)}`});
         set_href({id: 'bcr_loancard', value: `/loancards/${line.loancard_id}`});
         set_innerText({id: 'line_item',      text: line.size.item.description});
         set_innerText({id: 'line_size',      text: line.size.size});

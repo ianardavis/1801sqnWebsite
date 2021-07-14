@@ -5,7 +5,7 @@ function getDemand() {
         query: [`demand_id=${path[2]}`]
     })
     .then(function ([demand, options]) {
-        set_breadcrumb({text: demand.demand_id});
+        set_breadcrumb({text: `${demand.supplier.name} - ${print_date(demand.createdAt)}`});
         set_innerText({id: 'demand_supplier',  text: demand.supplier.name});
         set_innerText({id: 'demand_user',      text: print_user(demand.user)});
         set_innerText({id: 'demand_createdAt', text: print_date(demand.createdAt, true)});

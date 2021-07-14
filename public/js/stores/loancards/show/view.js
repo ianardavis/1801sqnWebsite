@@ -8,7 +8,7 @@ function getLoancard() {
         query: [`loancard_id=${path[2]}`]
     })
     .then(function ([loancard, options]) {
-        set_breadcrumb({text: loancard.loancard_id});
+        set_breadcrumb({text: `${print_user(loancard.user_loancard)} | ${print_date(loancard.createdAt)}`});
         set_innerText({id: 'loancard_user_loancard', text: print_user(loancard.user_loancard)});
         set_innerText({id: 'loancard_user',          text: print_user(loancard.user)});
         set_innerText({id: 'loancard_createdAt',     text: print_date(loancard.createdAt, true)});

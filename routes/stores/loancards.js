@@ -170,7 +170,10 @@ module.exports = (app, m, fn) => {
         .then(result => {
             return fn.loancards.createPDF(req.params.id)
             .then(filename => res.send({success: true, message: `Loancard completed. Filename: ${filename}`}))
-            .catch(err =>     res.send({success: true, message: `Loancard completed. Error creating PDF: ${err.message}`}));
+            .catch(err => {
+                console.log(err);
+                res.send({success: true, message: `Loancard completed. Error creating PDF: ${err.message}`});
+            });
         })
         .catch(err => fn.send_error(res, err));
     });

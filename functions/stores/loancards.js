@@ -86,8 +86,11 @@ module.exports = function (m, fn) {
                 'loancards',
                 {loancard_id: loancard_id},
                 [
-                    fn.inc.users.users(),
-                    fn.inc.users.users({as: 'user_loancard'})
+                    fn.inc.users.user(),
+                    fn.inc.users.user({
+                        as: 'user_loancard',
+                        attributes: ['user_id', 'surname', 'first_name', 'service_number']
+                    })
                 ]
             )
             .then(loancard => {

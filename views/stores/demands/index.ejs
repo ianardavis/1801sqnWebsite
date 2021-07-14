@@ -7,7 +7,7 @@
 	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
 		Filter
 	</button>
-	<div class="collapse" id="col-filter">
+	<div class="collapse mb-3" id="col-filter">
 		<%- include(`${partials}/inputs/select`, {title: 'Supplier', id: 'sel_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers'}) %>
 		<h5 class='text-start'>Status:</h5>
 		<div class="row">
@@ -34,6 +34,7 @@
 				<input type="date" class='form-control' id='createdAt_to'>
 			</div>
 		</div>
+		<hr>
 	</div>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">

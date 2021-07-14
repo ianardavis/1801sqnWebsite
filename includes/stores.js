@@ -83,7 +83,10 @@ module.exports = (m, fn) => {
     fn.inc.stores.demand = () => {
         return {
             model:   m.demands,
-            include: [fn.inc.users.user()],
+            include: [
+                fn.inc.users.user(),
+                fn.inc.stores.supplier()
+            ],
             as:      'demand',
         };
     };
@@ -112,7 +115,7 @@ module.exports = (m, fn) => {
     };
     fn.inc.stores.nsn = () => {
         return {
-            model: m.nsn,
+            model: m.nsns,
             as:    'nsn',
             include: [
                 fn.inc.stores.nsn_class(),
