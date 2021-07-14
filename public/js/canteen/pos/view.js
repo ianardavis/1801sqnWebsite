@@ -232,6 +232,15 @@ function reset_sale_complete() {
     show('btn_sale_complete');
     set_value({id: 'tendered', value: '0.00'})
 };
+function getSession() {
+    get({
+        table: 'sessions',
+        query: ['status=1']
+    })
+    .then(function ([session, options]) {
+        set_href({id: 'btn_session', value: `/sessions/${session.session_id}`})
+    });
+};
 addReloadListener(getSale);
 window.addEventListener('load', function () {
     numberEvents();
