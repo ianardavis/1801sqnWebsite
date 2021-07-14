@@ -44,6 +44,7 @@ function add_permission(parent, e) {
     };
 };
 function select_all() {
+    console.log('selecting all');
     document.querySelectorAll('#ul_tree input[type="checkbox"]').forEach(e => e.setAttribute('checked', true));
 };
 window.addEventListener('load', function () {
