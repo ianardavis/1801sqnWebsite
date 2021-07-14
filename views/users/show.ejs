@@ -234,9 +234,12 @@
                                 Edit Permissions
                                 <%- include(`${partials}/spinner`, {id: 'permission_edit'}) %>
                             </h5>
-                            <a class="float-end btn btn-primary" id='reload_permission_edit'>
-                                <i class='fas fa-redo'></i>
-                            </a>
+                            <div class="float-end">
+                                <button class="btn btn-success" id='btn_select_all'>Select All</button>
+                                <a class="btn-primary" id='reload_permission_edit'>
+                                    <i class='fas fa-redo'></i>
+                                </a>
+                            </div>
                         </div>
                         <div class="modal-body">
                             <ul id="ul_tree" class='list-group'></ul>
