@@ -2,7 +2,7 @@
     <a
         class='nav-link'
         <% if (locals.href) { %> href='<%= href %>'<% } %>
-        <% if (!locals.text) { %>id='<%= locals.id || 'breadcrumb' %>'<% } %>
+        id='<%= locals.id || 'breadcrumb' %>'
     >
         <%- locals.text || '' %>
     </a>
