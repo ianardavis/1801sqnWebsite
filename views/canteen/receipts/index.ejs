@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen/receipts', text: 'Receipts'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/receipts', text: 'Receipts'}) %>
 <% if (permissions.receipt_add) { %>
     <li class="nav-item">
         <a class="nav-link" data-bs-toggle="modal" data-bs-target="#mdl_receipt_add">

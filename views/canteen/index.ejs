@@ -5,7 +5,7 @@
 <section class='container'>
 	<div class="row menu">
         <%- include(`${partials}/card`, {title: 'Point of Sale', image: 'cash-register', hidden: true, id: 'card_pos', permission: 'access_pos'}) %>
-        <%- include(`${partials}/card`, {title: 'Paid In/Out',   image: 'money-bill',    href: '/paid_in_out',         permission: 'access_paid_in_outs'}) %>
+        <%- include(`${partials}/card`, {title: 'Paid In/Out',   image: 'money-bill',    href: '/paid_in_outs',        permission: 'access_paid_in_outs'}) %>
 		<%- include(`${partials}/card`, {title: 'Items',         image: 'candy-cane',    href: '/canteen_items',       permission: 'access_canteen_items'}) %>
 		<%- include(`${partials}/card`, {title: 'Sessions',      image: 'list',          href: '/sessions',            permission: 'access_sessions'}) %>
         <%- include(`${partials}/card`, {title: 'Receipts',      image: 'receipt',       href: '/receipts',            permission: 'access_receipts'}) %>

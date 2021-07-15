@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
-<%- include(`${partials}/breadcrumb`, {href: '/canteen/movements', text: 'Movements'}) %>
+<%- include(`${partials}/breadcrumb`, {href: '/paid_in_outs', text: 'Paid In/Outs'}) %>
 <%- include(`${partials}/breadcrumb`) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'movements'}) %>
@@ -11,19 +11,45 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%- include(`${partials}/menu/button`, {id: 'paid_in_out_complete', text: 'Complete', btn_form: {permission: 'paid_in_out_edit'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'paid_in_out_cancel',   text: 'Cancel',   btn_form: {permission: 'paid_in_out_delete'}}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details'}) %>
+        <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-
+            <%- include(`${partials}/inputs/display`, {title: 'In/Out',     id: 'paid_in_out_paid_in'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Holding',    id: 'paid_in_out_holding',          link: true}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'To/From',    id: 'paid_in_out_user_paid_in_out', link: true}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Amount',     id: 'paid_in_out_amount'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Reason',     id: 'paid_in_out_reason'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Status',     id: 'paid_in_out_status'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Entered By', id: 'paid_in_out_user',             link: true}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Entered',    id: 'paid_in_out_createdAt'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Updated',    id: 'paid_in_out_updatedAt'}) %>
         </div>
+        <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
+    </div>
+    <div id="div_modals">
+        <%- include(`${partials}/common/notes/modals`) %>
+        <%- include(`${partials}/common/actions/modals`) %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script>showTab('<%= tab %>');</script>
+<script src="/js/canteen/paid_in_outs/show/view.js"></script>
+<%- include(`${partials}/common/actions/scripts`) %>
+<%- include(`${partials}/common/notes/scripts`) %>
+<script async>getPaidInOut()</script>
+<% if (permissions.paid_in_out_edit) { %>
+    <script src="/js/canteen/paid_in_outs/show/edit.js"></script>
+<% } %>
+<% if (permissions.paid_in_out_delete) { %>
+    <script src="/js/canteen/paid_in_outs/show/delete.js"></script>
+<% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>
