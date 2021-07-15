@@ -1,8 +1,9 @@
-<%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
+<%- include(`${partials}/head/app`,   {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'POS'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Go To Session', id: 'btn_session'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/breadcrumb`, {id: 'alert_main', classes: ['alert']}) %>
-<%- include(`${partials}/spinner`, {id: 'current_sale'}) %>
+<%- include(`${partials}/spinner`,    {id: 'current_sale'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container mx-auto'>
 	<div class='row'>
@@ -110,4 +111,5 @@
     <script src="/js/canteen/pos/debit.js"></script>
 <% } %>
 <script async>getPages()</script>
+<script async>getSession()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>    

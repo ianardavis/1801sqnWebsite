@@ -3,9 +3,6 @@ window.addEventListener('load', function () {
         'session_add',
         'POST',
         `/sessions`,
-        {onComplete: [
-            getSessions,
-            function () {modalHide('session_add')}
-        ]}
+        {onComplete: function () {window.location.replace('/pos')}}
     );
 });

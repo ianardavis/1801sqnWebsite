@@ -43,6 +43,10 @@ function add_permission(parent, e) {
         };
     };
 };
+function select_all_permissions() {
+    console.log('selecting all');
+    document.querySelectorAll('#ul_tree input[type="checkbox"]').forEach(e => e.setAttribute('checked', true));
+};
 window.addEventListener('load', function () {
     enable_button('permissions_edit')
     addListener('reload_permission_edit', getPermissionsEdit);
@@ -58,4 +62,5 @@ window.addEventListener('load', function () {
         }
     );
     modalOnShow('permissions_edit', getPermissionsEdit);
+    addListener('btn_select_all', select_all_permissions);
 });
