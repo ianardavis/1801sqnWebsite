@@ -37,6 +37,10 @@
             >
                 <i class="fas fa-search"></i>
             </a>
+        <% } else if (locals.reload_id) { %>
+            <a class='btn btn-primary' id='<%= reload_id %>'>
+                <i class="fas fa-redo"></i>
+            </a>
         <% } %>
     </div>
 <% } %>

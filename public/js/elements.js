@@ -65,8 +65,16 @@ function Category_LI(options = {}) {
 };
 function Div(options = {}) {
     this.e = document.createElement('div');
-    if (options.classes)    options.classes.forEach(c => this.e.classList.add(c));
+    if (options.classes)    options.classes   .forEach(c => this.e.classList.add(c));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.data)       options.data      .forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
+};
+function Span(options = {}) {
+    this.e = document.createElement('span');
+    if (options.classes)    options.classes   .forEach(c => this.e.classList.add(c));
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.data)       options.data      .forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
+    if (options.float)                                      this.e.classList.add('float-end');
 };
 function Form(options = {}) {
     this.e = document.createElement('form');
@@ -221,13 +229,10 @@ function Button(options = {}) {
         this.e.setAttribute('data-bs-toggle', 'modal');
         this.e.setAttribute('data-bs-target', `#mdl_${options.modal}`);
     };
-    if (options.source) {
-        this.e.setAttribute('data-source', options.source);
-    };
-    if (options.data) {
-        options.data.forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
-    };
+    if (options.source)                                     this.e.setAttribute('data-source', options.source);
+    if (options.data)       options.data      .forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+    if (options.append)     options.append    .forEach(e => this.e.appendChild(e));
 };
 function Select(options = {}) {
     this.e = document.createElement('select');

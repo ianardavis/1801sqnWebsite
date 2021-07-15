@@ -71,7 +71,7 @@ module.exports = (app, m, fn) => {
             req.body.sale,
             req.user.user_id
         )
-        .then(result => res.send({success: true, message: 'Sale Completed'}))
+        .then(change => res.send({success: true, change: change}))
         .catch(err => fn.send_error(res, err));
     });
 };

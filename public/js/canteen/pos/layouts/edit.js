@@ -1,15 +1,14 @@
 function addEditButtons() {
-    document.querySelectorAll('.form_btn').forEach(btn => {
-        btn.appendChild(new Dropdown({
+    document.querySelectorAll('.edit_dd').forEach(span => {
+        span.appendChild(new Dropdown({
             small: true,
-            float: true,
             items: [
                 {
                     modal: 'layout_edit',
                     html: '<i class="fas fa-pencil-alt"></i>',
                     data: [
-                        {field: 'page',     value: btn.dataset.page},
-                        {field: 'position', value: btn.dataset.position},
+                        {field: 'page',     value: span.dataset.page},
+                        {field: 'position', value: span.dataset.position},
                     ]
                 },
                 {html: '<i class="fas fa-trash-alt"></i>'}
@@ -37,7 +36,7 @@ function viewButton(page_id, position, layout = null) {
             items.forEach(e => sel_items.appendChild(new Option({value: e.item_id, text: e.name, selected: (layout && layout.item_id === e.item_id ? true : false)}).e));
             set_value({id: 'layout_button_edit', value: position});
             set_value({id: 'layout_page_edit',   value: page_id});
-            set_value({id: 'colour_edit',        value: (layout ? `#${layout.colour}` : '#31639e')})
+            set_value({id: 'colour_edit',        value: (layout ? `${layout.colour}` : '#31639e')})
         });
     })
 }

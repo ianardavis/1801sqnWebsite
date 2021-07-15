@@ -29,4 +29,40 @@ module.exports = (app, m, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
+    app.put('/holdings_count/:id',  fn.loggedIn(), fn.permissions.check('holding_edit'),     (req, res) => {
+        fn.get(
+            'holdings',
+            {holding_id: req.params.id}
+        )
+        .then(holding => {
+            let actions = [],
+                cash    = fn.sessions.countCash(req.body.balance);
+            actions.push(holding.update({cash: cash}));
+            actions.push(
+                fn.actions.create({
+                    action: `Cash counted: £${Number(cash).toFixed(2)}. Holding ${(cash === holding.cash ? ' correct' : `${(holding.cash < cash ? 'under by' : 'over by')} £${Math.abs(holding.cash - cash)}`)}`,
+                    user_id: req.user.user_id,
+                    links: [
+                        {table: 'holdings', id: holding.holding_id}
+                    ]
+                })
+            );
+            return Promise.all(actions)
+            .then(result => res.send({success: true, message: 'Holding counted'}))
+            .catch(err => fn.send_error(res, err));
+        })
+        .catch(err => fn.send_error(res, err));
+    });
+    app.put('/holdings/:id',        fn.loggedIn(), fn.permissions.check('holding_edit'),     (req, res) => {
+        fn.get(
+            'holdings',
+            {holding_id: req.params.id}
+        )
+        .then(holding => {
+            return holding.update(req.body.holding)
+            .then(result => res.send({success: true, message: 'Holding saved'}))
+            .catch(err => fn.send_error(res, err));
+        })
+        .catch(err => fn.send_error(res, err));
+    });
 };

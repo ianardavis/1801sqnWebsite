@@ -210,10 +210,10 @@ module.exports = function (m, fn) {
                                     price: item.price
                                 }
                             })
-                            .then(([line, created]) => {
+                            .then(([sale_line, created]) => {
                                 if (created) resolve(true)
                                 else {
-                                    return line.increment('qty', {by: line.qty})
+                                    return sale_line.increment('qty', {by: line.qty || 1})
                                     .then(result => {
                                         if (result) resolve(true)
                                         else        reject(new Error('Line not updated'));

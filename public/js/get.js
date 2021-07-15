@@ -120,7 +120,7 @@ function sum(options) {
         XHR.send();
     });
 };
-function addFormListener(form_id, method, location, options = {reload: false, _close: true}, log = false) {
+function addFormListener(form_id, method, location, options = {reload: false}) {
     try {
         let form = document.querySelector(`#form_${form_id}`);
         if (form) {
@@ -133,13 +133,12 @@ function addFormListener(form_id, method, location, options = {reload: false, _c
                 ) sendData(form, method, location, options);
             };
             form.addEventListener("submit", submit_func);
-            if (log) event_listeners.push({id: form_id, function: submit_func});
         } else console.log(`${form_id} not found`);
     } catch (error) {
         console.log(`Error on form: ${form_id}`, error, )
     };
 };
-function sendData(form, method, _location, options = {reload: false, _close: true}) {
+function sendData(form, method, _location, options = {reload: false}) {
     const XHR = new XMLHttpRequest(),
           FD  = new FormData(form);
     XHR.addEventListener("load", function (event) {
@@ -151,7 +150,6 @@ function sendData(form, method, _location, options = {reload: false, _close: tru
                     if (Array.isArray(options.onComplete)) {
                         options.onComplete.forEach(func => {
                             try {
-                                // func(response)
                                 if (typeof func === 'function') func(response)
                             } catch (error) {
                                 console.log(error);
@@ -165,7 +163,6 @@ function sendData(form, method, _location, options = {reload: false, _close: tru
                         };
                     };
                 };
-
                 if      (options.reload)   window.location.reload();
                 else if (options.redirect) window.location.replace(options.redirect);
             } else {

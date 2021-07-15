@@ -1,6 +1,7 @@
 function numberEvents() {
     document.querySelectorAll('.number').forEach(e => e.addEventListener('click', function (event) {numberBtn(event.target.dataset.number)}))
     window.addEventListener('keydown', function (e) {
+        e.preventDefault();
         if      (['0','1','2','3','4','5','6','7','8','9'].includes(e.key)) numberBtn(e.key)
         else if (e.key === 'Backspace')                                     backspace();
     });
@@ -102,6 +103,17 @@ function setPage() {
     })
     .catch(err => showTab('all_items'));
 }
+function addSaleLine() {
+    sendData(
+        this,
+        'POST',
+        "/sale_lines",
+        {
+            onComplete: getSaleLines,
+            noConfirm: true
+        }
+    );
+};
 function getPages() {
     get({table: 'pos_pages'})
     .then(function ([pages, options]) {
@@ -136,16 +148,26 @@ function getPages() {
                                     classes:    ['w-100', 'h-100', 'btn', 'btn-primary', 'form_btn'],
                                     attributes: [{field: 'id', value: `btn_${page.pos_page_id}_${r}${c}`}],
                                     noType:     true,
-                                    data: [
-                                        {field: 'page',     value: page.pos_page_id},
-                                        {field: 'position', value: `${r}${c}`}
+                                    append: [
+                                        new Span({
+                                            attributes: [{field: 'id', value: `span_${page.pos_page_id}_${r}${c}`}]
+                                        }).e,
+                                        new Span({
+                                            float: true,
+                                            classes: ['edit_dd'],
+                                            attributes: [{field: 'id', value: `dd_${page.pos_page_id}_${r}${c}`}],
+                                            data: [
+                                                {field: 'page',     value: page.pos_page_id},
+                                                {field: 'position', value: `${r}${c}`}
+                                            ]
+                                        }).e
                                     ]
                                 }).e
                             ],
                             attributes: [{field: 'id', value: `form_${page.pos_page_id}_${r}${c}`}],
                             submit: function (event) {
                                 event.preventDefault();
-                                sendData(this, 'POST', "/sale_lines", {onComplete: getSaleLines, noConfirm: true});
+                                addSaleLine.call(this);
                             }
                         }).e
                     );
@@ -187,7 +209,7 @@ function getPages() {
                             ],
                             submit: function (event) {
                                 event.preventDefault();
-                                sendData(this, 'POST', "/sale_lines", {onComplete: getSaleLines, noConfirm: true});
+                                addSaleLine.call(this);
                             }
                         }).e
                     );
@@ -206,10 +228,11 @@ function getPages() {
             layouts.forEach(layout => {
                 set_value({id: `item_id_${layout.page_id}_${layout.button}`, value: layout.item_id});
                 set_attribute({id: `div_${layout.page_id}_${layout.button}`, attribute: 'data-id', value: layout.item_id});
-                let btn_form = document.querySelector(`#btn_${layout.page_id}_${layout.button}`)
-                if (btn_form) {
+                let btn_form  = document.querySelector(`#btn_${layout.page_id}_${layout.button}`),
+                    span_form = document.querySelector(`#span_${layout.page_id}_${layout.button}`)
+                if (btn_form && span_form) {
                     if (layout.colour) btn_form.style.backgroundColor = `${layout.colour}`;
-                    btn_form.innerHTML = `${layout.item.name}<br>£${Number(layout.item.price).toFixed(2)}`;
+                    span_form.innerHTML = `${layout.item.name}<br>£${Number(layout.item.price).toFixed(2)}`;
                 };
             });
             return true;
@@ -246,7 +269,7 @@ window.addEventListener('load', function () {
                 getSale,
                 function (response) {
                     if (typeof getCredits === 'function') getCredits;
-                    set_innerText({id: 'change', text: `£${Number(response.change).toFixed(2)}`})
+                    set_innerText({id: 'change', text: `${Number(response.change).toFixed(2)}`})
                     show('btn_close_sale_complete');
                     hide('btn_sale_complete');
                 }

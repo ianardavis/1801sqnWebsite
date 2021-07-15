@@ -10,12 +10,15 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'movement_add', modal: 'movement_add', text: 'Transfer'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'movement_add',  modal: 'movement_add',  text: 'Transfer'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'holding_edit',  modal: 'holding_edit',  text: 'Edit'}) %>
+                <%- include(`${partials}/menu/button`, {id: 'holding_count', modal: 'holding_count', text: 'Count'}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'holding'}) %>
         <%- include(`${partials}/tab_head`, {id: 'movements', title: 'Movements', spinner: 'movements', count_id: 'movement', permission: 'access_movements'}) %>
+        <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -37,10 +40,12 @@
                 <tbody id="tbl_movements"></tbody>
             </table>
         </div>
+        <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/movements/modals`) %>
+        <%- include(`${partials}/common/actions/modals`) %>
         <%- include(`${partials}/common/notes/modals`) %>
         <% if (permissions.movement_add) { %>
             <div id='mdl_movement_add' class="modal fade" tabindex="-1" role="dialog">
@@ -62,10 +67,47 @@
                 </div>
             </div>
         <% } %>
+        <% if (permissions.holding_edit) { %>
+            <div id='mdl_holding_count' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_holding_count'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Count Holding</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/canteen/count_form`) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input  type="submit" class="btn btn-success w-100" value='Count'>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+        <% if (permissions.holding_edit) { %>
+            <div id='mdl_holding_edit' class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_holding_edit'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Holding</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'holding[description]', id: 'holding_description_edit'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input  type="submit" class="btn btn-success w-100" value='Count'>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/holdings/show/view.js"></script>
+<%- include(`${partials}/common/actions/scripts`) %>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
 <script async>getHolding()</script>
@@ -77,6 +119,6 @@
     <% } %>
 <% } %>
 <% if (permissions.holding_edit) { %>
-    <!-- <script src="/js/canteen/holdings/show/edit.js"></script> -->
+    <script src="/js/canteen/holdings/show/edit.js"></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

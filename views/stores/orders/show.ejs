@@ -15,7 +15,7 @@
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'order'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'actions', title: 'Actions', spinner: 'order_actions', count_id: 'action', permission: 'access_actions'}) %>
+        <%- include(`${partials}/common/actions/tab_head`) %>
 		<%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
