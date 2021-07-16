@@ -23,7 +23,7 @@
 							<%- include(`${partials}/inputs/text`,   {title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
 							<%- include(`${partials}/inputs/select`, {title: 'Account',   	  name: 'supplier[account_id]', id: 'sel_accounts', spinner_id: 'accounts', reload_id: 'reload_accounts', permission: 'access_accounts'}) %>
 							<%- include(`${partials}/inputs/select`, {title: 'RAF Stores?',   name: 'supplier[is_stores]',  options: [{value: '0', text: 'No', selected: true}, {value: '1', text: 'Yes'}]}) %>
-							</div>
+						</div>
 						<div class="modal-footer">
 							<input type="submit" class="btn btn-success w-100" value='Save Item'>
 							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>

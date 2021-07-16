@@ -14,14 +14,12 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/genders',        fn.loggedIn(), fn.permissions.check('gender_edit'),    (req, res) => {
-        m.genders.update(
+        fn.put(
+            'genders',
             {gender: req.body.gender.gender},
-            {where: {gender_id: req.body.gender.gender_id}}
+            {gender_id: req.body.gender.gender_id}
         )
-        .then(result => {
-            if (!result) fn.send_error(res, 'Gender not updated')
-            else         res.send({success: true, message: 'Gender updated'});
-        })
+        .then(result => res.send({success: true, message: 'Gender updated'}))
         .catch(err => fn.send_error(res, err));
     });
     

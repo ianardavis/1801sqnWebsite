@@ -17,12 +17,9 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/canteen_items/:id',    fn.loggedIn(), fn.permissions.check('canteen_item_edit'),    (req, res) => {
-        if (!req.body.item) fn.send_error(res, 'No item')
-        else {
-            fn.canteen_items.edit(req.params.id, req.body.item)
-            .then(result => res.send({success: true,  message: 'Item updated'}))
-            .catch(err => fn.send_error(res, err));
-        };
+        fn.put('canteen_items', {item_id: req.params.id}, req.body.item)
+        .then(result => res.send({success: true, message: 'Item updated'}))
+        .catch(err => fn.send_error(res, err));
     });
     
     app.post('/canteen_items',       fn.loggedIn(), fn.permissions.check('canteen_item_add'),     (req, res) => {

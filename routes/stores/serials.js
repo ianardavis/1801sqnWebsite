@@ -74,9 +74,9 @@ module.exports = (app, m, fn) => {
             {serial_id: req.params.id}
         )
         .then(serial => {
-            m.locations.findOrCreate({where: {location: req.body.location}})
+            return m.locations.findOrCreate({where: {location: req.body.location}})
             .then(([location, created]) => {
-                m.serials.update({
+                return serial.update({
                     serial:      req.body.serial.serial,
                     location_id: location.location_id
                 })

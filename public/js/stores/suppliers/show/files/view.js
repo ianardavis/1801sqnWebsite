@@ -14,7 +14,7 @@ function getFiles() {
                 add_cell(row, {
                     append: new Link({
                         modal: 'file_view',
-                        data: {field: 'id', value: file.file_id},
+                        data: [{field: 'id', value: file.file_id}],
                         small: true
                     }).e
                 });

@@ -44,10 +44,10 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/sizes/:id',    fn.loggedIn(), fn.permissions.check('size_edit'),    (req, res) => {
-        if (req.body.size.supplier_id === '') req.body.size.supplier_id = null;
-        m.sizes.update(
-            req.body.size,
-            {where: {size_id: req.params.id}}
+        fn.put(
+            'sizes',
+            {size_id: req.params.id},
+            req.body.size
         )
         .then(result => res.send({success: true, message: 'Size saved'}))
         .catch(err => fn.send_error(res, err));

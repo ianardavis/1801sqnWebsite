@@ -62,34 +62,23 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
+
     app.put('/files',               fn.loggedIn(), fn.permissions.check('file_edit'),           (req, res) => {
-        fn.get(
+        fn.put(
             'files',
-            {file_id: req.body.file_id}
+            {file_id: req.body.file_id},
+            req.body.file
         )
-        .then(file => {
-            return file.update(req.body.file)
-            .then(result => {
-                if (!result) fn.send_error(res, 'File not updated')
-                else         res.send({success: true,  message: 'File updated'});
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        .then(file => res.send({success: true,  message: 'File updated'}))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/file_details',        fn.loggedIn(), fn.permissions.check('file_detail_add'),     (req, res) => {
-        fn.get(
+        fn.put(
             'file_details',
-            {file_detail_id: req.body.file_detail_id}
+            {file_detail_id: req.body.file_detail_id},
+            req.body.detail
         )
-        .then(detail => {
-            return detail.update(req.body.detail)
-            .then(result => {
-                if (!result) fn.send_error(res, 'Detail not updated')
-                else         res.send({success: true,  message: 'Details updated'});
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        .then(detail => res.send({success: true,  message: 'Details updated'}))
         .catch(err => fn.send_error(res, err));
     });
 

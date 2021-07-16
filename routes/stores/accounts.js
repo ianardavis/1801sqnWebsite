@@ -13,14 +13,15 @@ module.exports = (app, m, fn) => {
             req.query,
             [fn.inc.users.user()]
         )
-        .then(account => res.send({success: true,  result: account}))
+        .then(account => res.send({success: true, result: account}))
         .catch(err => fn.send_error(res, err));
     });
 
     app.put('/accounts/:id',    fn.loggedIn(), fn.permissions.check('account_edit'),    (req, res) => {
-        m.accounts.update(
-            req.body.account,
-            {where: {account_id: req.params.id}}
+        fn.put(
+            'accounts',
+            {account_id: req.params.id},
+            req.body.account
         )
         .then(result => res.send({success: true, message: 'Account saved'}))
         .catch(err => fn.send_error(res, err));

@@ -22,47 +22,26 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/holdings',           fn.loggedIn(), fn.permissions.check('holding_add'),      (req, res) => {
-        if (!req.body.holding) fn.send_error(res, 'No details')
-        else {
-            fn.holdings.create(req.body.holding)
-            .then(result => res.send({success: true, message: 'Holding created'}))
-            .catch(err => fn.send_error(res, err));
-        };
+        fn.holdings.create(req.body.holding)
+        .then(result => res.send({success: true, message: 'Holding created'}))
+        .catch(err => fn.send_error(res, err));
     });
     app.put('/holdings_count/:id',  fn.loggedIn(), fn.permissions.check('holding_edit'),     (req, res) => {
-        fn.get(
-            'holdings',
-            {holding_id: req.params.id}
+        fn.holdings.count(
+            req.params.id,
+            req.body.balance,
+            req.user.user_id
         )
-        .then(holding => {
-            let actions = [],
-                cash    = fn.sessions.countCash(req.body.balance);
-            actions.push(holding.update({cash: cash}));
-            actions.push(
-                fn.actions.create({
-                    action: `Cash counted: £${Number(cash).toFixed(2)}. Holding ${(cash === holding.cash ? ' correct' : `${(holding.cash < cash ? 'under by' : 'over by')} £${Math.abs(holding.cash - cash)}`)}`,
-                    user_id: req.user.user_id,
-                    links: [
-                        {table: 'holdings', id: holding.holding_id}
-                    ]
-                })
-            );
-            return Promise.all(actions)
-            .then(result => res.send({success: true, message: 'Holding counted'}))
-            .catch(err => fn.send_error(res, err));
-        })
+        .then(result => res.send({success: true, message: 'Holding Counted'}))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/holdings/:id',        fn.loggedIn(), fn.permissions.check('holding_edit'),     (req, res) => {
-        fn.get(
+        fn.put(
             'holdings',
-            {holding_id: req.params.id}
+            {holding_id: req.params.id},
+            req.body.holding
         )
-        .then(holding => {
-            return holding.update(req.body.holding)
-            .then(result => res.send({success: true, message: 'Holding saved'}))
-            .catch(err => fn.send_error(res, err));
-        })
+        .then(result => res.send({success: true, message: 'Holding saved'}))
         .catch(err => fn.send_error(res, err));
     });
 };

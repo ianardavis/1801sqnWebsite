@@ -200,6 +200,24 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.put = function (table, where, record) {
+        return new Promise((resolve, reject) => {
+            if (!record) reject(new Error('No record'))
+            else {
+                record = nullify(record);
+                fn.get(table, where)
+                .then(result => {
+                    return result.update(record)
+                    .then(result => {
+                        if (!result) reject(new Error('Record not saved'))
+                        else resolve(true);
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
     fn.rm = function (file) {
         return new Promise((resolve, reject) => {
             fs.access(file, fs.constants.R_OK, function (err) {

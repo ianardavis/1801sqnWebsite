@@ -60,10 +60,10 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.put('/items/:id',              fn.loggedIn(), fn.permissions.check('item_edit'),    (req, res) => {
-        req.body.item = nullify(req.body.item);
-        m.items.update(
-            req.body.item,
-            {where: {item_id: req.params.id}}
+        fn.put(
+            'items',
+            {item_id: req.params.id},
+            req.body.item
         )
         .then(result => res.send({success: true, message: 'Item saved'}))
         .catch(err => fn.send_error(res, err));

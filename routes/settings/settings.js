@@ -41,18 +41,12 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/settings',        fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
-        fn.get(
+        fn.put(
             'settings',
-            {setting_id: req.body.setting_id}
+            {setting_id: req.body.setting_id},
+            req.body.setting
         )
-        .then(setting => {
-            return setting.update(req.body.setting)
-            .then(result => {
-                if (!result) res.send({success: true, message: 'Setting not updated'})
-                else         res.send({success: true, message: 'Setting updated'});
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        .then(setting => res.send({success: true, message: 'Setting updated'}))
         .catch(err => fn.send_error(res, err));
     });
 

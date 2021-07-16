@@ -62,16 +62,10 @@ module.exports = (app, m, fn) => {
     app.put('/gallery_images',    fn.loggedIn(), fn.permissions.check('gallery_image_edit'),   (req, res) => {
         fn.get(
             'gallery_images',
-            {image_id: req.body.image_id}
+            {image_id: req.body.image_id},
+            req.body.image
         )
-        .then(image => {
-            return image.update(req.body.image)
-            .then(result => {
-                if (!result) fn.send_error(res, 'Image not updated')
-                else res.send({success: true, message: 'Image saved'})
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        .then(image => res.send({success: true, message: 'Image saved'}))
         .catch(err => fn.send_error(res, err));
     });
 

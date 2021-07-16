@@ -114,15 +114,12 @@ module.exports = (app, m, fn) => {
             ['user_id','full_name','salt','password','createdAt','updatedAt'].forEach(e => {
                 if (req.body.user[e]) delete req.body.user[e];
             });
-            fn.get(
+            fn.put(
                 'users',
-                {user_id: req.params.id}
+                {user_id: req.params.id},
+                req.body.user
             )
-            .then(user => {
-                return user.update(req.body.user)
-                .then(user => res.send({success: true,  message: 'User saved'}))
-                .catch(err => fn.send_error(res, err));
-            })
+            .then(user => res.send({success: true,  message: 'User saved'}))
             .catch(err => fn.send_error(res, err));
         } else fn.send_error(res, 'No details submitted');
     });

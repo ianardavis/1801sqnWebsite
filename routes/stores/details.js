@@ -32,9 +32,10 @@ module.exports = (app, m, fn) => {
         };
     });
     app.put('/detail',         fn.loggedIn(), fn.permissions.check('detail_edit'),    (req, res) => {
-        m.details.update(
-            req.body.detail,
-            {where: {detail_id: req.body.detail_id}}
+        fn.put(
+            'details',
+            {detail_id: req.body.detail_id},
+            req.body.detail
         )
         .then(result => res.send({success: true, message: 'Detail saved'}))
         .catch(err => fn.send_error(res, err));

@@ -25,14 +25,12 @@ module.exports = (app, m, fn) => {
 
     app.put('/categories',        fn.loggedIn(), fn.permissions.check('category_edit'),     (req, res) => {
         if (req.body.category.parent_category_id === '') req.body.category.parent_category_id = null;
-        m.categories.update(
-            req.body.category,
-            {where: {category_id: req.body.category_id}}
+        fn.put(
+            'categories',
+            {category_id: req.body.category_id},
+            req.body.category
         )
-        .then(result => {
-            if (!result) res.send({success: true, message: 'Category not updated'})
-            else         res.send({success: true, message: 'Category updated'});
-        })
+        .then(result => res.send({success: true, message: 'Category updated'}))
         .catch(err => fn.send_error(res, err));
     });
 

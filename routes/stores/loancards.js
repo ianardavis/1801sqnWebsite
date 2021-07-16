@@ -147,18 +147,12 @@ module.exports = (app, m, fn) => {
     });
 
     app.put('/loancards/:id',          fn.loggedIn(), fn.permissions.check('loancard_edit'),               (req, res) => {
-        fn.get(
+        fn.put(
             'loancards',
-            {loancard_id: req.params.id}
+            {loancard_id: req.params.id},
+            req.body.loancard
         )
-        .then(loancard => {
-            return loancard.update(req.body.loancard)
-            .then(result => {
-                if (!result) fn.send_error(res, 'Loancard not updated')
-                else res.send({success: true, message: 'Loancard updated'});
-            })
-            .catch(err => fn.send_error(res, err));
-        })
+        .then(loancard => res.send({success: true, message: 'Loancard updated'}))
         .catch(err => fn.send_error(res, err));
     });
     app.put('/loancards/:id/complete', fn.loggedIn(), fn.permissions.check('loancard_edit'),               (req, res) => {
@@ -183,6 +177,7 @@ module.exports = (app, m, fn) => {
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.loancards.lines.cancel({...line, user_id: req.user.user_id})));
         Promise.allSettled(actions)
         .then(results => {
+            console.log(results);
             let loancards = [],
                 loancard_checks = [];
             results.filter(e => e.status === 'fulfilled').forEach(e => {if (!loancards.includes(e.value)) loancards.push(e.value)});
@@ -209,7 +204,7 @@ module.exports = (app, m, fn) => {
                 }));
             });
             return Promise.allSettled(loancard_checks)
-            .then(results => res.send({success: true, message: 'Lines actioned'}))
+            .then(results => {console.log(results);res.send({success: true, message: 'Lines actioned'})})
             .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));

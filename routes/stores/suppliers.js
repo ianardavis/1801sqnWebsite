@@ -26,10 +26,10 @@ module.exports = (app, m, fn) => {
         .catch(err => res.send({success: true, message: `Error creating supplier: ${err.message}`}));
     });
     app.put('/suppliers/:id',    fn.loggedIn(), fn.permissions.check('supplier_edit'),    (req, res) => {
-        if (req.body.supplier.account_id === '') {req.body.supplier.account_id = null};
-        m.suppliers.update(
-            req.body.supplier,
-            {where: {supplier_id: req.params.id}}
+        fn.put(
+            'suppliers',
+            {supplier_id: req.params.id},
+            req.body.supplier
         )
         .then(result => res.send({success: true, message: 'Supplier saved'}))
         .catch(err => res.send({success: true, message: `Error updating supplier: ${err.message}`}));
