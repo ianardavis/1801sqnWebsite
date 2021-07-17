@@ -14,7 +14,7 @@ function sortTable(n, tableName, obj) {
             rows = table.rows;
             for (i = 0; i < (rows.length - 1); i++) {
                 shouldSwitch = false;
-                x = rows[i].querySelectorAll("td")[n].dataset.sort || rows[i].querySelectorAll("td")[n].innerText.toLowerCase();
+                x = rows[i]    .querySelectorAll("td")[n].dataset.sort || rows[i]    .querySelectorAll("td")[n].innerText.toLowerCase();
                 y = rows[i + 1].querySelectorAll("td")[n].dataset.sort || rows[i + 1].querySelectorAll("td")[n].innerText.toLowerCase();
                 if (dir == "asc") {
                     if (x > y) {

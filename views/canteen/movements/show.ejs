@@ -19,11 +19,23 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-
+            <%- include(`${partials}/inputs/display`, {title: 'Description', id: 'movement_description'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Type',        id: 'movement_type'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Amount',      id: 'movement_amount'}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'From',        id: 'movement_from', link: true}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'To',          id: 'movement_to',   link: true}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'By',          id: 'movement_user', link: true}) %>
+            <%- include(`${partials}/inputs/display`, {title: 'Date',        id: 'movement_createdAt'}) %>
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
+    <div id="div_modals">
+        <%- include(`${partials}/common/notes/modals`) %>
+    </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
+<script src="/js/canteen/movements/show/view.js"></script>
+<%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
+<script async>getMovement()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

@@ -10,7 +10,7 @@ function getWriteoffs() {
                 add_cell(row, {text: writeoff.reason});
                 add_cell(row, {text: writeoff.qty});
                 add_cell(row, {append: new Link({
-                    href: `/canteen/writeoffs/${writeoff.writeoff_id}`,
+                    href: `/writeoffs/${writeoff.writeoff_id}`,
                     small: true
                 }).e});
             });

@@ -17,7 +17,10 @@ module.exports = (app, m, fn) => {
         fn.get(
             'writeoffs',
             req.query,
-            [fn.inc.users.user()]
+            [
+                fn.inc.users.user(),
+                fn.inc.canteen.item()
+            ]
         )
         .then(writeoff => res.send({success: true, result: writeoff}))
         .catch(err => fn.send_error(res, err))

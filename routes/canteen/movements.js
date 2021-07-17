@@ -13,6 +13,19 @@ module.exports = (app, m, fn) => {
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/get/movement',          fn.loggedIn(), fn.permissions.check('access_movements'), (req, res) => {
+        m.movements.findOne({
+            where: req.query,
+            include: [
+                fn.inc.canteen.session(),
+                fn.inc.canteen.holding({as: 'holding_to'}),
+                fn.inc.canteen.holding({as: 'holding_from'}),
+                fn.inc.users.user()
+            ]
+        })
+        .then(movements => res.send({success: true, result: movements}))
+        .catch(err => fn.send_error(res, err));
+    });
     app.get('/get/movements_holding', fn.loggedIn(), fn.permissions.check('access_movements'), (req, res) => {
         m.movements.findAll({
             where: {

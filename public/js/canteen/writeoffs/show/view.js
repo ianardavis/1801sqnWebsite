@@ -4,7 +4,7 @@ function getWriteoff() {
         query: [`writeoff_id=${path[2]}`]
     })
     .then(function ([writeoff, options]) {
-        set_breadcrumb({text: writeoff.writeoff_id});
+        set_breadcrumb({text: `${writeoff.item.name} | ${print_date(writeoff.createdAt, true)}`});
         set_innerText({id: 'writeoff_item', value: writeoff.item.name});
         set_innerText({id: 'writeoff_qty',  value: writeoff.qty});
         set_innerText({id: 'writeoff_cost', value: `£${Number(writeoff.cost).toFixed(2)}`});

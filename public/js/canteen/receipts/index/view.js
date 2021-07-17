@@ -11,7 +11,7 @@ function getReceipts() {
                     add_cell(row, {text: receipt.qty});
                     add_cell(row, {text: `£${receipt.cost}`});
                     add_cell(row, {append: new Link({
-                        href: `/canteen/receipts/${receipt.receipt_id}`,
+                        href: `/receipts/${receipt.receipt_id}`,
                         small: true
                     }).e});
                 } catch (error) {
