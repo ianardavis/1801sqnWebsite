@@ -21,7 +21,7 @@ function addNoteDeleteBtn(note_id) {
                 );
             };
         });
-    })
+    });
 };
 window.addEventListener('load', function () {
     modalOnShow('note_view', function(event) {addNoteDeleteBtn(event.relatedTarget.dataset.id)});
