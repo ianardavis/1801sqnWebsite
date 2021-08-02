@@ -36,7 +36,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/items',                 fn.loggedIn(), fn.permissions.check('item_add'),     (req, res) => {
-        req.body.item = nullify(req.body.item);
+        req.body.item = fn.nullify(req.body.item);
         m.items.create(req.body.item)
         .then(item => res.send({success: true, message: 'Item added'}))
         .catch(err => fn.send_error(res, err));
