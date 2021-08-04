@@ -63,6 +63,7 @@ module.exports = (app, m, fn) => {
             (_user.status_id)      &&
             (_user.login_id)
         ) {
+            let password = generatePassword();
             m.users.findOrCreate({
                 where: {service_number: req.body.user.service_number},
                 defaults: {
@@ -71,17 +72,13 @@ module.exports = (app, m, fn) => {
                     rank_id:    req.body.user.rank_id,
                     status_id:  req.body.user.status_id,
                     login_id:   req.body.user.login_id.toLowerCase(),
-                    reset:      true
+                    reset:      true,
+                    ...encryptPassword(password.plain)
                 }
             })
             .then(([user, created]) => {
                 if (!created) fn.send_error(res, 'There is already a user with this service #')
-                else {
-                    let password = generatePassword();
-                    return user.update(encryptPassword(password.plain))
-                    .then(user => res.send({success: true,  message: `User added. Password: ${password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
-                    .catch(err => fn.send_error(res, err));
-                };
+                else res.send({success: true,  message: `User added. Password: ${password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`});
             })
         } else fn.send_error(res, 'Not all required information has been submitted');
     });
