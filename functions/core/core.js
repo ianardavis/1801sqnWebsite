@@ -204,7 +204,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (!record) reject(new Error('No record'))
             else {
-                record = nullify(record);
+                record = fn.nullify(record);
                 fn.get(table, where)
                 .then(result => {
                     return result.update(record)
