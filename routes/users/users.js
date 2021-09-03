@@ -1,4 +1,3 @@
-const { scryptSync, randomBytes } = require("crypto");
 module.exports = (app, m, fn) => {
     let user_attributes = ['user_id', 'full_name', 'surname', 'first_name', 'service_number'];
     app.get('/users',             fn.loggedIn(), fn.permissions.get('access_users',   true), (req, res) => {
@@ -54,115 +53,32 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/users',            fn.loggedIn(), fn.permissions.check('user_add'),           (req, res) => {
-        let _user = req.body.user;
-        if (
-            (_user.service_number) &&
-            (_user.first_name)     &&
-            (_user.surname)        &&
-            (_user.rank_id)        &&
-            (_user.status_id)      &&
-            (_user.login_id)
-        ) {
-            let password = generatePassword();
-            m.users.findOrCreate({
-                where: {service_number: req.body.user.service_number},
-                defaults: {
-                    first_name: req.body.user.first_name,
-                    surname:    req.body.user.surname,
-                    rank_id:    req.body.user.rank_id,
-                    status_id:  req.body.user.status_id,
-                    login_id:   req.body.user.login_id.toLowerCase(),
-                    reset:      true,
-                    ...encryptPassword(password.plain)
-                }
-            })
-            .then(([user, created]) => {
-                if (!created) fn.send_error(res, 'There is already a user with this service #')
-                else res.send({success: true,  message: `User added. Password: ${password.readable}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`});
-            })
-        } else fn.send_error(res, 'Not all required information has been submitted');
+        fn.users.create(req.body.user)
+        .then(password => res.send({success: true, message: `User added. Password: ${password}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
+        .catch(err => fn.send_error(res, err));
     });
     
     app.put('/password/:id',      fn.loggedIn(), fn.permissions.check('user_edit',    true), (req, res) => {
         if      (!req.allowed && String(req.user.user_id) !== String(req.params.id)) fn.send_error(res, 'Permission denied')
-        else if (!req.body.password)                                         fn.send_error(res, 'No password submitted')
+        else if (!req.body.password)                                                 fn.send_error(res, 'No password submitted')
         else {
-            fn.get(
-                'users',
-                {user_id: req.params.id}
-            )
-            .then(user => {
-                if (user.password === encryptPassword(req.body.password, user.salt).password) fn.send_error(res, 'That is the current password!')
-                else {
-                    return user.update(encryptPassword(req.body.password))
-                    .then(result => {
-                        if (!result) fn.send_error(res, 'Password not changed')
-                        else         res.send({success: true, message: 'Password changed'});
-                    })
-                    .catch(err => fn.send_error(res, err));
-                };
-            })
+            fn.users.password.edit(req.params.id, req.body.password)
+            .then(result => res.send({success: true, message: 'Password changed'}))
             .catch(err => fn.send_error(res, err));
         };
     });
     app.put('/users/:id',         fn.loggedIn(), fn.permissions.check('user_edit'),          (req, res) => {
-        if (req.body.user) {
-            if (!req.body.user.reset) req.body.user.reset = 0;
-            ['user_id','full_name','salt','password','createdAt','updatedAt'].forEach(e => {
-                if (req.body.user[e]) delete req.body.user[e];
-            });
-            fn.put(
-                'users',
-                {user_id: req.params.id},
-                req.body.user
-            )
-            .then(user => res.send({success: true,  message: 'User saved'}))
-            .catch(err => fn.send_error(res, err));
-        } else fn.send_error(res, 'No details submitted');
+        fn.users.edit(req.params.id, req.body.user)
+        .then(result => res.send({success: true,  message: 'User saved'}))
+        .catch(err => fn.send_error(res, err));
     });
     
     app.delete('/users/:id',      fn.loggedIn(), fn.permissions.check('user_delete'),        (req, res) => {
         if (Number(req.user.user_id) === Number(req.params.id)) fn.send_error(res, 'You can not delete your own account')
         else {
-            fn.get(
-                'users',
-                {user_id: req.params.id}
-            )
-            .then(user => {
-                if (user.user_id === req.user.user_id) fn.send_error(res, 'You can not delete your own account')
-                else {
-                    let actions = [];
-                    actions.push(m.permissions.destroy({where: {user_id: user.user_id}}));
-                    actions.push(user.destroy());
-                    return Promise.all(actions)
-                    .then(result => res.send({success: true, message: 'User deleted'}))
-                    .catch(err => fn.send_error(res, err));
-                };
-            })
+            fn.users.delete(req.params.id)
+            .then(result => res.send({success: true, message: 'User deleted'}))
+            .catch(err => fn.send_error(res, err));
         };
     });
-
-    function generatePassword () {
-        let consenants = ['b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','z'],
-            vowels     = ['a','e','i','o','u','y'],
-            plain      = '',
-            readable   = '';
-        ['C','V','C','-','C','V','C','-','C','V','C'].forEach(l => {
-            let rand = Math.random(), letter = '-';
-            if (l === 'C') {
-                letter = consenants[Math.floor(rand*consenants.length)];
-                plain += letter;
-            } else if (l === 'V'){
-                letter = vowels[Math.floor(rand*vowels.length)];
-                plain += letter;
-            };
-            readable += letter.toUpperCase();
-        });
-        return {plain: plain, readable: readable};
-    };
-    function encryptPassword (plainText, salt = null) {
-        if (!salt) salt = randomBytes(16).toString("hex")
-        let password = scryptSync(plainText, salt, 128).toString("hex");
-        return {salt: salt, password: password};
-    };
 };
