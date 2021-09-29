@@ -66,6 +66,11 @@ module.exports = (app, m, fn) => {
                         {permission: 'serial_edit'},
                         {permission: 'serial_delete'}
                     ]},
+                    {permission: 'access_details',     children: [
+                        {permission: 'detail_add'},
+                        {permission: 'detail_edit'},
+                        {permission: 'detail_delete'}
+                    ]},
                     {permission: 'access_nsns',        children: [
                         {permission: 'nsn_add'},
                         {permission: 'nsn_edit'},
