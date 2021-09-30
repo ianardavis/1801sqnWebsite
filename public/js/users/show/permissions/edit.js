@@ -44,8 +44,37 @@ function add_permission(parent, e) {
     };
 };
 function select_all_permissions() {
-    console.log('selecting all');
-    document.querySelectorAll('#ul_tree input[type="checkbox"]').forEach(e => e.setAttribute('checked', true));
+    document.querySelectorAll('#ul_tree input[type="checkbox"]').forEach(e => check_permission(e));
+};
+function set_storeman() {
+    [
+
+    ].forEach(permission => {
+        let e = document.querySelector(`#check_${permission}`);
+        if (e) check_permission(e);
+    });
+};
+function set_canteen() {
+    [
+        'access_canteen',
+        'access_users',
+        'access_pos',
+        'access_credits',
+        'access_canteen_items',
+        'access_pos_layouts',
+        'access_pos_pages',
+        'access_sales',
+        'access_sale_lines',
+        'access_sessions',
+        'session_add',
+        'session_edit'
+    ].forEach(permission => {
+        let e = document.querySelector(`#check_${permission}`);
+        if (e) check_permission(e);
+    });
+};
+function check_permission(permission) {
+    permission.setAttribute('checked', true)
 };
 window.addEventListener('load', function () {
     enable_button('permissions_edit')
@@ -63,4 +92,6 @@ window.addEventListener('load', function () {
     );
     modalOnShow('permissions_edit', getPermissionsEdit);
     addListener('btn_select_all', select_all_permissions);
+    addListener('btn_permissions_storeman', set_storeman);
+    addListener('btn_permissions_canteen', set_canteen);
 });
