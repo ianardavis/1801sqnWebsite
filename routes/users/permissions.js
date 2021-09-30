@@ -117,6 +117,16 @@ module.exports = (app, m, fn) => {
                 {permission: 'supplier_add'},
                 {permission: 'supplier_edit'},
                 {permission: 'supplier_delete'},
+                {permission: 'access_supplier_contacts', children: [
+                    {permission: 'supplier_contact_add'},
+                    {permission: 'supplier_contact_edit'},
+                    {permission: 'supplier_contact_delete'}
+                ]},
+                {permission: 'access_supplier_addresses', children: [
+                    {permission: 'supplier_address_add'},
+                    {permission: 'supplier_address_edit'},
+                    {permission: 'supplier_address_delete'}
+                ]},
                 {permission: 'access_files',    children: [
                     {permission: 'file_add'},
                     {permission: 'file_edit'},
