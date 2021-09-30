@@ -149,12 +149,12 @@
                             <h5 class="modal-title">Edit User</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {title: 'Service #', name: 'user[service_number]', required: true, id: 'inp_service_number'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Rank',      name: 'user[rank_id]',        required: true, id: 'sel_ranks',    spinner_id: 'ranks'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Surname',   name: 'user[surname]', 	    required: true, id: 'inp_surname'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Initials',  name: 'user[first_name]',     required: true, id: 'inp_first_name'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Status',    name: 'user[status_id]',      required: true, id: 'sel_statuses', spinner_id: 'statuses'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Login ID',  name: 'user[login_id]',       required: true, id: 'inp_login_id'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Service #',  name: 'user[service_number]', required: true, id: 'inp_service_number'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Rank',       name: 'user[rank_id]',        required: true, id: 'sel_ranks',    spinner_id: 'ranks'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Surname',    name: 'user[surname]', 	    required: true, id: 'inp_surname'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'First Name', name: 'user[first_name]',     required: true, id: 'inp_first_name'}) %>
+                            <%- include(`${partials}/inputs/select`, {title: 'Status',     name: 'user[status_id]',      required: true, id: 'sel_statuses', spinner_id: 'statuses'}) %>
+                            <%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',       required: true, id: 'inp_login_id'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" id='save_user' class="btn btn-success w-100" value='Save User'>
@@ -266,10 +266,9 @@
                             <input type="hidden" name='issue[size_id]'>
                             <%- include(`${partials}/inputs/display`, {title: 'Item', id: 'selectedItem'}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Size', id: 'selectedSize', link: true}) %>
-                        
-                        </div>
-                        <div class="modal-footer"></div>
+                        </form>
                     </div>
+                    <div class="modal-footer"></div>
                 </div>
             </div>
         <% } %>
