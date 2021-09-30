@@ -235,7 +235,7 @@
                                 <%- include(`${partials}/spinner`, {id: 'permission_edit'}) %>
                             </h5>
                             <div class="float-end">
-                                <div class="dropdown">
+                                <span class="dropdown">
                                     <button class="btn btn-primary dropdown-toggle" type="button" id="btn_grant_permissions" data-bs-toggle="dropdown" aria-expanded="false">
                                         Grant ...
                                     </button>
@@ -243,7 +243,7 @@
                                         <li><button type='button' class="dropdown-item" id='btn_permissions_storeman'>Storeman</button></li>
                                         <li><button type='button' class="dropdown-item" id='btn_permissions_canteen'>Canteen</button></li>
                                     </ul>
-                                </div>
+                                </span>
                                 <button type='button' class="btn btn-success" id='btn_select_all'>Select All</button>
                                 <a class="btn btn-primary" id='reload_permission_edit'>
                                     <i class='fas fa-redo'></i>
