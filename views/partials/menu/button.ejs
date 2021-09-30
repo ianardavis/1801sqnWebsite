@@ -4,8 +4,8 @@
     <% } %>
     <button
         class='dropdown-item<% if (locals.classes) classes.forEach(e => { %> <%= e %><% }) %>'
-        <% if (locals.id)   { %>id='btn_<%= id %>'<% } %>
-        <% if (locals.form) { %>form='form_<%= form %>'<% } %>
+        <% if (locals.id)    { %>id='btn_<%= id %>'<% } %>
+        <% if (locals.form)  { %>form='form_<%= form %>'<% } %>
         <% if (locals.modal) { %>
             data-bs-toggle="modal"
             data-bs-target="#mdl_<%= modal %>"
@@ -13,7 +13,7 @@
         disabled
     >
         <%- text %>
-    </button> 
+    </button>
     <% if (locals.btn_form && (!btn_form.permission || permissions[btn_form.permission])) { %>
         </form>
     <% } %>
