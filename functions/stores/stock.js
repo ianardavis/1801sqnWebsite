@@ -57,4 +57,61 @@ module.exports = function (m, fn) {
             } else reject(new Error('Invalid adjustment type'));
         });
     };
+
+    fn.stocks.get = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            if (options.stock_id) {
+                return fn.get('stocks', {stock_id: options.stock_id})
+                .then(stock => resolve(stock))
+                .catch(err => reject(err));
+            } else if (options.size_id) {
+                if (options.location_id) {
+                    return m.stocks.findOrCreate({
+                        where: {
+                            size_id:     options.size_id,
+                            location_id: options.location_id
+                        }
+                    })
+                    .then(([stock, created]) => resolve(stock))
+                    .catch(err => reject(err));
+                } else if (options.location) {
+                    return m.locations.get({location: options.location})
+                    .then(location_id => {
+                        return m.stocks.findOrCreate({
+                            where: {
+                                size_id:     options.size_id,
+                                location_id: location_id
+                            }
+                        })
+                        .then(([stock, created]) => resolve(stock))
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                } else reject(new Error('No location details submitted'));
+            } else reject(new Error('No size or stock ID submitted'));
+        });
+    };
+    fn.stocks.receive = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            return fn.stocks.get(options.stock)
+            .then(stock => {
+                return stock.increment('qty', {by: options.qty})
+                .then(result => {
+                    if (!result) reject(new Error('Stock not incremented'))
+                    else {
+                        fn.actions.create({
+                            action:  `Received | Qty: ${qty}`,
+                            user_id: options.user_id,
+                            links:   [{table: 'stocks', id: stock.stock_id}]
+                                     .concat(options.action_links || [])
+                        })
+                        .then(result => resolve(true))
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
 };

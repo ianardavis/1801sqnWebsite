@@ -5,7 +5,7 @@ module.exports = (app, m, fn) => {
             {permission: 'access_locations', children: [
                 {permission: 'location_add'},
                 {permission: 'location_edit'},
-                {permission: 'location_delete'}
+                {permission: 'location_delete'}//
             ]},
             {permission: 'access_notes',     children: [
                 {permission: 'note_add'},
@@ -23,8 +23,9 @@ module.exports = (app, m, fn) => {
             {permission: 'user_edit'},
             {permission: 'user_delete'},
             {permission: 'access_permissions', children: [
-                {permission: 'permission_edit'},
-                {permission: 'permission_edit_own'}
+                {permission: 'permission_edit', children: [
+                    {permission: 'permission_edit_own'}
+                ]}
             ]}
         ]},
         {permission: 'access_stores',  children: [
@@ -57,8 +58,8 @@ module.exports = (app, m, fn) => {
                         {permission: 'stock_delete'},
                         {permission: 'access_adjustments',    children: [
                             {permission: 'adjustment_add'},
-                            {permission: 'adjustment_edit'},
-                            {permission: 'adjustment_delete'}
+                            {permission: 'adjustment_edit'},//
+                            {permission: 'adjustment_delete'}//
                         ]}
                     ]},
                     {permission: 'access_serials',     children: [
@@ -75,26 +76,26 @@ module.exports = (app, m, fn) => {
                         {permission: 'nsn_add'},
                         {permission: 'nsn_edit'},
                         {permission: 'nsn_delete'},
-                        {permission: 'access_nsn_classes', children: [
-                            {permission: 'nsn_class_add'},
-                            {permission: 'nsn_class_edit'},
-                            {permission: 'nsn_class_delete'}
+                        {permission: 'access_nsn_classes', children: [//
+                            {permission: 'nsn_class_add'},//
+                            {permission: 'nsn_class_edit'},//
+                            {permission: 'nsn_class_delete'}//
                         ]},
-                        {permission: 'access_nsn_countries', children: [
-                            {permission: 'nsn_country_add'},
-                            {permission: 'nsn_country_edit'},
-                            {permission: 'nsn_country_delete'}
+                        {permission: 'access_nsn_countries', children: [//
+                            {permission: 'nsn_country_add'},//
+                            {permission: 'nsn_country_edit'},//
+                            {permission: 'nsn_country_delete'}//
                         ]},
-                        {permission: 'access_nsn_groups', children: [
-                            {permission: 'nsn_group_add'},
-                            {permission: 'nsn_group_edit'},
-                            {permission: 'nsn_group_delete'}
+                        {permission: 'access_nsn_groups', children: [//
+                            {permission: 'nsn_group_add'},//
+                            {permission: 'nsn_group_edit'},//
+                            {permission: 'nsn_group_delete'}//
                         ]}
                     ]},
-                    {permission: 'access_embodiments', children: [
-                        {permission: 'embodiment_add'},
-                        {permission: 'embodiment_edit'},
-                        {permission: 'embodiment_delete'}
+                    {permission: 'access_embodiments', children: [//
+                        {permission: 'embodiment_add'},//
+                        {permission: 'embodiment_edit'},//
+                        {permission: 'embodiment_delete'}//
                     ]},
                 ]},
                 {permission: 'access_categories', children: [
@@ -158,14 +159,14 @@ module.exports = (app, m, fn) => {
         {permission: 'access_canteen', children: [
             {permission: 'access_pos'},
             {permission: 'access_credits',       children: [
-                {permission: 'credit_add'},
-                {permission: 'credit_edit'},
-                {permission: 'credit_delete'}
+                {permission: 'credit_add'},//
+                {permission: 'credit_edit'},//
+                {permission: 'credit_delete'}//
             ]},
             {permission: 'access_holdings',      children: [
                 {permission: 'holding_add'},
                 {permission: 'holding_edit'},
-                {permission: 'holding_delete'}
+                {permission: 'holding_delete'}//
             ]},
             {permission: 'access_canteen_items', children: [
                 {permission: 'canteen_item_add'},
@@ -179,52 +180,52 @@ module.exports = (app, m, fn) => {
             ]},
             {permission: 'access_movements',     children: [
                 {permission: 'movement_add'},
-                {permission: 'movement_edit'},
-                {permission: 'movement_delete'}
+                {permission: 'movement_edit'},//
+                {permission: 'movement_delete'}//
             ]},
             {permission: 'access_payments'},
-            {permission: 'access_pos_layouts',   children: [
+            {permission: 'access_pos_layouts',   children: [//
                 {permission: 'pos_layout_edit'}
             ]},
-            {permission: 'access_pos_pages',     children: [
-                {permission: 'pos_page_add'},
-                {permission: 'pos_page_edit'},
-                {permission: 'pos_page_delete'}
+            {permission: 'access_pos_pages',     children: [//
+                {permission: 'pos_page_add'},//
+                {permission: 'pos_page_edit'},//
+                {permission: 'pos_page_delete'}//
             ]},
             {permission: 'access_receipts',      children: [
                 {permission: 'receipt_add'},
-                {permission: 'receipt_edit'},
-                {permission: 'receipt_delete'},
-                {permission: 'access_receipt_lines', children: [
-                    {permission: 'receipt_line_add'},
-                    {permission: 'receipt_line_delete'}
+                {permission: 'receipt_edit'},//
+                {permission: 'receipt_delete'},//
+                {permission: 'access_receipt_lines', children: [//
+                    {permission: 'receipt_line_add'},//
+                    {permission: 'receipt_line_delete'}//
                 ]}
             ]},
             {permission: 'access_sales',         children: [
-                {permission: 'access_sale_lines'}
+                {permission: 'access_sale_lines'}//
             ]},
             {permission: 'access_sessions',      children: [
                 {permission: 'session_add'},
                 {permission: 'session_edit'},
-                {permission: 'session_delete'}
+                {permission: 'session_delete'}//
             ]},
             {permission: 'access_writeoffs',     children: [
                 {permission: 'writeoff_add'},
-                {permission: 'writeoff_edit'},
-                {permission: 'writeoff_delete'},
-                {permission: 'access_writeoff_lines', children: [
-                    {permission: 'writeoff_line_add'},
-                    {permission: 'writeoff_line_delete'}
+                {permission: 'writeoff_edit'},//
+                {permission: 'writeoff_delete'},//
+                {permission: 'access_writeoff_lines', children: [//
+                    {permission: 'writeoff_line_add'},//
+                    {permission: 'writeoff_line_delete'}//
                 ]}
             ]}
         ]},
-        {permission: 'site_functions', children: [
-            {permission: 'access_galleries', children: [
+        {permission: 'site_functions', children: [//
+            {permission: 'access_galleries', children: [//
                 {permission: 'gallery_add'},
-                {permission: 'gallery_edit'},
-                {permission: 'gallery_delete'}
+                {permission: 'gallery_edit'},//
+                {permission: 'gallery_delete'}//
             ]},
-            {permission: 'access_gallery_images', children: [
+            {permission: 'access_gallery_images', children: [//
                 {permission: 'gallery_image_add'},
                 {permission: 'gallery_image_edit'},
                 {permission: 'gallery_image_delete'}

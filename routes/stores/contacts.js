@@ -38,7 +38,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_contact_add'),     (req, res) => {
+    app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_contact_edit'),    (req, res) => {
        fn.get(
            'supplier_contacts',
            {supplier_contact_id: req.body.supplier_contact_id},

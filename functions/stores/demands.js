@@ -693,66 +693,63 @@ module.exports = function (m, fn) {
             serials.forEach(serial => {
                 serial_actions.push(
                     new Promise((resolve, reject) => {
-                        if (!serial.location) reject(new Error('No location submitted'))
-                        else {
-                            return m.locations.findOrCreate({where: {location: serial.location}})
-                            .then(([location, created]) => {
-                                return m.serials.findOrCreate({
-                                    where: {
-                                        size_id: line.size_id,
-                                        serial:  serial.serial
-                                    },
-                                    defaults: {
-                                        location_id: location.location_id
-                                    }
-                                })
-                                .then(([serial, created]) => {
-                                    if (!created) {
-                                        if (serial.location_id || serial.issue_id) reject(new Error('This serial number already exists and is already in stock or currently issued'))
-                                        else {
-                                            return serial.update({location_id: location.location_id})
-                                            .then(result => {
-                                                if (!result) reject(new Error('Existing serial not updated'))
-                                                else {
-                                                    return fn.actions.create({
-                                                        action:  'Received',
-                                                        user_id: user_id,
-                                                        links: [
-                                                            {table: 'demand_lines', id: line.demand_line_id},
-                                                            {table: 'locations', id: location.location_id},
-                                                            {table: 'serials', id: serial.serial_id}
-                                                        ]
-                                                    })
-                                                    .then(action => resolve(true))
-                                                    .catch(err => {
-                                                        console.log(err);
-                                                        resolve(false);
-                                                    });
-                                                };
-                                            })
-                                            .catch(err => reject(err));
-                                        }
-                                    } else {
-                                        return fn.actions.create({
-                                            action:  'Received',
-                                            user_id: user_id,
-                                            links: [
-                                                {table: 'demand_lines', id: line.demand_line_id},
-                                                {table: 'locations', id: location.location_id},
-                                                {table: 'serials', id: serial.serial_id}
-                                            ]
+                        return fn.locations.get({location: serial.location})
+                        .then(location_id => {
+                            return m.serials.findOrCreate({
+                                where: {
+                                    size_id: line.size_id,
+                                    serial:  serial.serial
+                                },
+                                defaults: {
+                                    location_id: location_id
+                                }
+                            })
+                            .then(([serial, created]) => {
+                                if (!created) {
+                                    if (serial.location_id || serial.issue_id) reject(new Error('This serial number already exists and is already in stock or currently issued'))
+                                    else {
+                                        return serial.update({location_id: location_id})
+                                        .then(result => {
+                                            if (!result) reject(new Error('Existing serial not updated'))
+                                            else {
+                                                return fn.actions.create({
+                                                    action:  'Received',
+                                                    user_id: user_id,
+                                                    links: [
+                                                        {table: 'demand_lines', id: line.demand_line_id},
+                                                        {table: 'locations', id: location_id},
+                                                        {table: 'serials', id: serial.serial_id}
+                                                    ]
+                                                })
+                                                .then(action => resolve(true))
+                                                .catch(err => {
+                                                    console.log(err);
+                                                    resolve(false);
+                                                });
+                                            };
                                         })
-                                        .then(action => resolve(true))
-                                        .catch(err => {
-                                            console.log(err);
-                                            resolve(false);
-                                        });
-                                    };
-                                })
-                                .catch(err => reject(err));
+                                        .catch(err => reject(err));
+                                    }
+                                } else {
+                                    return fn.actions.create({
+                                        action:  'Received',
+                                        user_id: user_id,
+                                        links: [
+                                            {table: 'demand_lines', id: line.demand_line_id},
+                                            {table: 'locations',    id: location_id},
+                                            {table: 'serials',      id: serial.serial_id}
+                                        ]
+                                    })
+                                    .then(action => resolve(true))
+                                    .catch(err => {
+                                        console.log(err);
+                                        resolve(false);
+                                    });
+                                };
                             })
                             .catch(err => reject(err));
-                        };
+                        })
+                        .catch(err => reject(err));
                     })
                 );
             });
@@ -822,66 +819,72 @@ module.exports = function (m, fn) {
     };
     function receive_stocks(receipt, line, user_id) {
         return new Promise((resolve, reject) => {
-            return m.locations.findOrCreate({where: {location: receipt.location}})
-            .then(([location, created]) => {
-                return m.stocks.findOrCreate({
-                    where: {
-                        size_id:     line.size_id,
-                        location_id: location.location_id
-                    }
-                })
-                .then(([stock, created]) => {
-                    let actions = [];
-                    actions.push(stock.increment('qty', {by: receipt.qty}));
-                    actions.push(line.update({status: 3}));
-                    actions.push(fn.actions.create({
-                        action:  'Received',
-                        user_id: user_id,
-                        links: [{table: 'demand_lines', id: line.demand_line_id}]
-                    }));
-                    Promise.all(actions)
-                    .then(result => {
-                        let line_actions = [];
-                        if (receipt.qty !== line.qty) line_actions.push(line.update({qty: receipt.qty}));
-                        if (receipt.qty < line.qty) {
-                            line_actions.push(
-                                new Promise((resolve, reject) => {
-                                    return m.demand_lines.create({
-                                        demand_id: line.demand_id,
-                                        size_id:   line.size_id,
-                                        qty:       line.qty - receipt.qty,
-                                        status:    2,
-                                        user_id:   user_id
-                                    })
-                                    .then(new_line => {
-                                        return fn.actions.create({
+            return fn.stocks.receive({
+                stock: {
+                    size_id:  line.size_id,
+                    location: receipt.location,
+                },
+                qty:          receipt.qty,
+                user_id:      user_id,
+                action_links: [{table: 'demand_lines', id: line.demand_line_id}]
+            })
+            .then(result => {
+                return line.update({status: 3})
+                .then(result => {
+                    let line_actions = [];
+                    if (receipt.qty !== line.qty) line_actions.push(line.update({qty: receipt.qty}));
+                    if (receipt.qty < line.qty) {
+                        line_actions.push(
+                            new Promise((resolve, reject) => {
+                                return m.demand_lines.create({
+                                    demand_id: line.demand_id,
+                                    size_id:   line.size_id,
+                                    qty:       line.qty - receipt.qty,
+                                    status:    2,
+                                    user_id:   user_id
+                                })
+                                .then(new_line => {
+                                    return Promise.allSettled([
+                                        fn.actions.create({
                                             action:  'Created from under receipt',
                                             user_id: user_id,
                                             links: [{table: 'demand_lines', id: new_line.demand_line_id}]
+                                        }),
+                                        fn.actions.create({
+                                            action:  `Quantity decreased by ${line.qty - receipt.qty} due to under receipt`,
+                                            user_id: user_id,
+                                            links: [{table: 'demand_lines', id: line.demand_line_id}]
+                                        }),
+                                        fn.actions.create({
+                                            action:  'Under receipt',
+                                            user_id: user_id,
+                                            links: [
+                                                {table: 'demand_lines', id: line.demand_line_id},
+                                                {table: 'demand_lines', id: new_line.demand_line_id}
+                                            ]
                                         })
-                                        .then(action => resolve(true))
-                                        .catch(err => resolve(false));
-                                    })
-                                    .catch(err => reject(err));
-                                })
-                            );
-                        } else if (receipt.qty > line.qty) {
-                            line_actions.push(
-                                new Promise(resolve => {
-                                    return fn.actions.create({
-                                        action:  `Quantity increased by ${receipt.qty - line.qty} due to over receipt`,
-                                        user_id: user_id,
-                                        links: [{table: 'demand_lines', id: line.demand_line_id}]
-                                    })
+                                    ])
                                     .then(action => resolve(true))
                                     .catch(err => resolve(false));
                                 })
-                            );
-                        };
-                        Promise.all(line_actions)
-                        .then(result => resolve(true))
-                        .catch(err => reject(err));
-                    })
+                                .catch(err => reject(err));
+                            })
+                        );
+                    } else if (receipt.qty > line.qty) {
+                        line_actions.push(
+                            new Promise(resolve => {
+                                return fn.actions.create({
+                                    action:  `Quantity increased by ${receipt.qty - line.qty} due to over receipt`,
+                                    user_id: user_id,
+                                    links: [{table: 'demand_lines', id: line.demand_line_id}]
+                                })
+                                .then(action => resolve(true))
+                                .catch(err => resolve(false));
+                            })
+                        );
+                    };
+                    Promise.all(line_actions)
+                    .then(result => resolve(true))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));

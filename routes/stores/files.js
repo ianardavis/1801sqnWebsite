@@ -72,7 +72,7 @@ module.exports = (app, m, fn) => {
         .then(file => res.send({success: true,  message: 'File updated'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/file_details',        fn.loggedIn(), fn.permissions.check('file_detail_add'),     (req, res) => {
+    app.put('/file_details',        fn.loggedIn(), fn.permissions.check('file_detail_edit'),    (req, res) => {
         fn.put(
             'file_details',
             {file_detail_id: req.body.file_detail_id},

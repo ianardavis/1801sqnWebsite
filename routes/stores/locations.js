@@ -35,4 +35,9 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
+    app.post('/locations',    fn.loggedIn(), fn.permissions.check('location_add'),     (req, res) => {
+        fn.locations.create({location: req.body.location})
+        .then(location => res.send({success: true, message: 'Location created'}))
+        .catch(err => fn.send_error(res, err));
+    });
 };
