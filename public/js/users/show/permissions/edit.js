@@ -69,7 +69,9 @@ function set_canteen() {
         'session_add',
         'session_edit'
     ].forEach(permission => {
+        console.log(permission);
         let e = document.querySelector(`#check_${permission}`);
+        console.log(e);
         if (e) check_permission(e);
     });
 };

@@ -79,7 +79,7 @@ function issueOptions() {
                             index: options.index
                         })
                         .then(function ([stocks, options]) {
-                            stocks.forEach(e => stock_select.appendChild(new Option({text: e.location.location, value: e.stock_id}).e));
+                            stocks.forEach(e => stock_select.appendChild(new Option({text: `${e.location.location} | Qty: ${e.qty}`, value: e.stock_id}).e));
                             stock_qty.setAttribute('max',   issue.qty);
                             stock_qty.setAttribute('value', issue.qty);
                         });
