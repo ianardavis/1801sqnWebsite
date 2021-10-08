@@ -150,7 +150,7 @@ module.exports = function (m, fn) {
                                     doc.end();
                                     writeStream.on('error', err => reject(err));
                                     writeStream.on('finish', function () {
-                                        fn.update(loancard, {filename: file}
+                                        fn.update(loancard, {filename: file})
                                         .then(result => {
                                             return fn.settings.get('Print loancard')
                                             .then(settings => {
