@@ -17,7 +17,7 @@ module.exports = function (m) {
     m.items.hasOne (            m.genders,         {foreignKey: 'gender_id',          sourceKey: 'gender_id',      constraints: false});
     m.sizes.hasMany(            m.details,         {foreignKey: 'size_id',            sourceKey: 'size_id'});
     m.items.hasMany(            m.sizes,           {foreignKey: 'item_id',            targetKey: 'item_id'});
-    m.items.hasMany(            m.item_categories, {foreignKey: 'item_id',           targetKey: 'item_id'});
+    m.items.hasMany(            m.item_categories, {foreignKey: 'item_id',            targetKey: 'item_id'});
     m.item_categories.hasOne(   m.categories,      {foreignKey: 'category_id',        sourceKey: 'category_id',    constraints: false});
     m.item_categories.belongsTo(m.items,           {foreignKey: 'item_id',            targetKey: 'item_id'});
     m.loancard_lines.hasOne(    m.sizes,           {foreignKey: 'size_id',            sourceKey: 'size_id',        constraints: false});

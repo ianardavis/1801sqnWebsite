@@ -249,25 +249,23 @@
                         </div>
                         <form class="modal-body" id='form_issue_measurement'>
                             <input type="hidden" class='user_id' name='issues[users][][0][user_id_issue]'>
-                            <h5>Enter Measurements</h5>
-                            <%- include(`${partials}/inputs/text`, {title: 'Head',         class='measurement', data: {field: 'measurement', value: 'Head'}}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Collar',       class='measurement', data: {field: 'measurement', value: 'Collar'}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Chest',        class='measurement', data: {field: 'measurement', value: 'Chest'}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Waist',        class='measurement', data: {field: 'measurement', value: 'Waist'}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Inside Leg',   class='measurement', data: {field: 'measurement', value: 'Inside Leg'}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Skirt Length', class='measurement', data: {field: 'measurement', value: 'Skirt Length'}) %>
-                            <%- include(`${partials}/inputs/text`, {title: 'Height',       class='measurement', data: {field: 'measurement', value: 'Height'}) %>
+                            <h5>Enter Measurements (in cm)</h5>
+                            <%- include(`${partials}/inputs/number`, {title: 'Head',         classes:['measurement'], data: {field: 'measurement', value: 'Head'}}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Collar',       classes:['measurement'], data: {field: 'measurement', value: 'Collar'}}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Chest',        classes:['measurement'], data: {field: 'measurement', value: 'Chest'}}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Waist',        classes:['measurement'], data: {field: 'measurement', value: 'Waist'}}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Inside Leg',   classes:['measurement'], data: {field: 'measurement', value: 'Inside Leg'}}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Skirt Length', classes:['measurement'], data: {field: 'measurement', value: 'Skirt Length'}}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Height',       classes:['measurement'], data: {field: 'measurement', value: 'Height'}}) %>
                             <button type='button' class='btn btn-success w-100' id='btn_measurement_search'>Search Sizes</button>
                             <div id="div_select_items">
                                 <h5>Select Items</h5>
                                 <table class='table table-sm table-hover'>
                                     <thead class="thead-dark">
-                                        <th class="w-100" onclick="sortTable(0, 'tbl_items')">Item</th>
                                         <th><i class="fas fa-check"></i></th>
+                                        <th class="w-100" onclick="sortTable(1, 'tbl_items')">Item</th>
                                     </thead>
-                                    <tbody id="tbl_items">
-
-                                    </tbody>
+                                    <tbody id="tbl_items"></tbody>
                                 </table>
                             </div>
                             <div id="div_select_sizes">

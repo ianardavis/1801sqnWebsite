@@ -4,11 +4,12 @@
         class="form-control<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
         type="number"
         inputMode='numeric'
-        <% if (locals.id) { %>   id="<%= id %>"<% } %>
-        <% if (locals.name) { %> name='<%= name %>'<% } %>
-        <% if (locals.step) { %> step='<%= step %>'<% } %>
-        <% if (locals.min) { %>  min='<%= min %>'<% } %>
-        <% if (locals.value) { %>value="<%= value || null %>"<% } %>
+        <% if (locals.data)  { %> data-<%= data.field %>='<%= data.value %>'<% } %>
+        <% if (locals.id)    { %> id="<%= id %>"<% } %>
+        <% if (locals.name)  { %> name='<%= name %>'<% } %>
+        <% if (locals.step)  { %> step='<%= step %>'<% } %>
+        <% if (locals.min)   { %> min='<%= min %>'<% } %>
+        <% if (locals.value) { %> value="<%= value || null %>"<% } %>
         <% if (locals.required) { %>
             placeholder='Required'
             required

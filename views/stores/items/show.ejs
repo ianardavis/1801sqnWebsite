@@ -116,8 +116,11 @@
                             </h5>
                         </div>
                         <div class="modal-body">
+                            <datalist id="list_descriptions"></datalist>
                             <%- include(`${partials}/inputs/text`,   {id: 'description_edit', title: 'Description', name: 'item[description]', required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {id: 'size_text_edit',   title: 'Size Text',   name: 'item[size_text]',   required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'size_text1_edit',  title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions',  required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'size_text2_edit',  title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
+                            <%- include(`${partials}/inputs/text`,   {id: 'size_text3_edit',  title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
                             <%- include(`${partials}/inputs/select`, {id: 'sel_genders',      title: 'Gender',      spinner_id: 'genders',     permission: 'access_genders'}) %>
                         </div>
                         <div class="modal-footer">
@@ -137,10 +140,9 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" class='item_id' name='size[item_id]'>
-                            <datalist id="list_descriptions"></datalist>
-                            <%- include(`${partials}/inputs/text`,   {name: 'size[size1]',       title: 'Size 1',       id: 'size_size1',       list: 'list_descriptions', required: true}) %>
-                            <%- include(`${partials}/inputs/text`,   {name: 'size[size2]',       title: 'Size 2',       id: 'size_size2',       list: 'list_descriptions'}) %>
-                            <%- include(`${partials}/inputs/text`,   {name: 'size[size3]',       title: 'Size 3',       id: 'size_size3',       list: 'list_descriptions'}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size1]',       title: 'Size 1',       id: 'size_size1',       required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size2]',       title: 'Size 2',       id: 'size_size2'}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size3]',       title: 'Size 3',       id: 'size_size3'}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[issueable]',   title: 'Issueable',    id: 'size_issueable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[orderable]',   title: 'Orderable',    id: 'size_orderable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'size_has_serials', options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
@@ -163,6 +165,7 @@
 <script src='/js/stores/items/show/view.js'></script>
 <script async>getItem()</script>
 <% if (permissions.item_edit) { %>
+	<script src="/js/stores/items/size_descriptions.js"></script>
     <% if (permissions.access_genders) { %>
         <script src='/js/utils/list/genders.js'></script>
     <% } %>

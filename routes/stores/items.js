@@ -12,11 +12,15 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/items_uniform',      fn.loggedIn(), fn.permissions.check('access_items'), (req, res) => {
         m.items.findAll({
-            where:   req.query,
-            include: [
-                fn.inc.stores.gender(),
-                fn.inc.stores.categories({where: {category: 'Uniform'}, required: true})
-            ]
+            include: [{
+                model: m.item_categories,
+                required: true,
+                include: [{
+                    model: m.categories,
+                    where: {category: 'Uniform'},
+                    required: true
+                }]
+            }]
         })
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));

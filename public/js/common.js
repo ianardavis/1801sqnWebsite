@@ -211,6 +211,10 @@ function addListener(btn, func, event = 'click') {
     let e = document.querySelector(`#${btn}`)
     if (e) e.addEventListener(event, func);
 };
+function toggle_checkbox_on_row_click(event) {
+    let checkbox = event.target.parentNode.childNodes[0].querySelector('input');
+    if (checkbox) checkbox.click();
+};
 function modalHide(id) {
     let e = document.querySelector(`#mdl_${id}`);
     console.log(e)

@@ -11,7 +11,7 @@ function listCategories(options = {}) {
                 categories.forEach(category => {
                     sel_category.appendChild(
                         new Option({
-                            text:     `${category._category} (${category.category_id})`,
+                            text:     `${category.category} (${category.category_id})`,
                             value:    category.category_id,
                             selected: (options.selected === category.category_id)
                         }).e

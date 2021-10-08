@@ -138,6 +138,7 @@ function Checkbox(options = {}) {
     checkbox.setAttribute('autocomplete', 'off');
     checkbox.setAttribute('id', `chk_${options.id}`);
     checkbox.classList.add('btn-check');
+    if (options.input_classes) options.input_classes.forEach(c => checkbox.classList.add(c));
     if (options.attributes) options.attributes.forEach(a => checkbox.setAttribute(a.field, a.value));
     label.classList.add('btn', 'btn-outline-success');
     label.setAttribute('for', `chk_${options.id}`);

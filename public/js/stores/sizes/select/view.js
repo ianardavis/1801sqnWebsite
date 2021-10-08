@@ -49,12 +49,8 @@ function selectSizes() {
         window.opener.selectedSizes(sizes);
     } else alert('Source window not found');
 };
-function selectRowCheckBox(event) {
-    let checkbox = event.target.parentNode.childNodes[0].querySelector('input');
-    if (checkbox) checkbox.click();
-};
 window.addEventListener('load', function () {
-    addListener('tbl_sizes', selectRowCheckBox)
+    addListener('tbl_sizes', toggle_checkbox_on_row_click)
     addListener('btn_select', selectSizes);
     addListener('sel_items',  function (event) {getSizes(this.value)}, 'change');
     addListener('filter_items', function () {filter_select('filter_items', 'sel_items')}, 'input');

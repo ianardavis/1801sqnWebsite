@@ -6,7 +6,7 @@
         <% } %>
     </span>
     <input
-        class="form-control mb-0"
+        class="form-control mb-0<% if (locals.classes) {classes.forEach(c => { %> <%= c %><% })} %>"
         type="text"
         autocomplete='<%= locals.autocomplete || 'off' %>'
         <% if (locals.data) { %>data-<%= data.field %>='<%= data.value %>'<% } %>

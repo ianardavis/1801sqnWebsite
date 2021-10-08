@@ -44,6 +44,11 @@ module.exports = (app, m, fn) => {
                     ]}
                 ]}
             ]},
+            {permission: 'access_categories', children: [
+                {permission: 'category_add'},
+                {permission: 'category_edit'},
+                {permission: 'category_delete'}
+            ]},
             {permission: 'access_items',     children: [
                 {permission: 'item_add'},
                 {permission: 'item_edit'},
@@ -98,10 +103,10 @@ module.exports = (app, m, fn) => {
                         {permission: 'embodiment_delete'}//
                     ]},
                 ]},
-                {permission: 'access_categories', children: [
-                    {permission: 'category_add'},
-                    {permission: 'category_edit'},
-                    {permission: 'category_delete'}
+                {permission: 'access_item_categories', children: [
+                    {permission: 'item_category_add'},
+                    {permission: 'item_category_edit'},
+                    {permission: 'item_category_delete'}
                 ]},
                 {permission: 'access_genders',    children: [
                     {permission: 'gender_add'},
