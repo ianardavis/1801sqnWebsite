@@ -77,11 +77,8 @@ module.exports = (app, m, fn) => {
                         .then(([nsn, created]) => {
                             if (!created) fn.send_error(res, 'NSN already exists')
                             else if (req.body.default === '1') {
-                                return size.update({nsn_id: nsn.nsn_id})
-                                .then(result => {
-                                    if (!result) res.send({success: true,  message: `NSN added. Default not set`})
-                                    else res.send({success: true,  message: `NSN added and set to default`});
-                                })
+                                return fn.update(size, {nsn_id: nsn.nsn_id})
+                                .then(result => res.send({success: true,  message: `NSN added and set to default`}))
                                 .catch(err => {
                                     console.log(err);
                                     res.send({success: true,  message: `NSN added, error setting as default: ${err.message}`});
@@ -121,16 +118,13 @@ module.exports = (app, m, fn) => {
                         {nsn_country_id: req.body.nsn.nsn_country_id}
                     )
                     .then(nsn_country => {
-                        return nsn.update({
+                        return fn.update(nsn, {
                             nsn_group_id:   nsn_group  .nsn_group_id,
                             nsn_class_id:   nsn_class  .nsn_class_id,
                             nsn_country_id: nsn_country.nsn_country_id,
                             item_number:    req.body.nsn.item_number
                         })
-                        .then(result => {
-                            if (!result) fn.send_error(res, 'NSN not updated')
-                            else res.send({success: true, message: 'NSN saved'});
-                        })
+                        .then(result => res.send({success: true, message: 'NSN saved'}))
                         .catch(err => fn.send_error(res, err));
                     })
                     .catch(err => fn.send_error(res, err));

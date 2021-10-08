@@ -26,11 +26,8 @@ module.exports = function (m, fn) {
                         })
                         .then(paid_in_out => {
                             if (paid_in_out.paid_in === '1') {
-                                return holding.increment('cash', {by: paid_in_out.amount})
-                                .then(result => {
-                                    if (!result) reject(new Error('Holding not updated'))
-                                    else resolve(true);
-                                })
+                                return fn.increment(holding, paid_in_out.amount, 'cash')
+                                .then(result => resolve(true))
                                 .catch(err => reject(err));
                             } else resolve(true);
                         })
@@ -57,29 +54,24 @@ module.exports = function (m, fn) {
                     if     (!paid_in_out.holding)                                           reject(new Error('Invalid holding'))
                     else if (Number(paid_in_out.holding.cash) < Number(paid_in_out.amount)) reject(new Error('Not enough in holding'))
                     else {
-                        return paid_in_out.holding.decrement('cash', {by: paid_in_out.amount})
+                        return fn.decrement(paid_in_out.holding, paid_in_out.amount, 'cash')
                         .then(result => {
-                            if (!result) reject(new Error('Holding not updated'))
-                            else {
-                                return paid_in_out.update({status: 2})
-                                .then(result => {
-                                    if (!result) reject(new Error('Holding decremented. Pay out not updated'))
-                                    else {
-                                        return fn.actions.create({
-                                            action: 'Pay out completed',
-                                            user_id: user_id,
-                                            links: [
-                                                {table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}
-                                            ]
-                                        })
-                                        .then(action => resolve(true))
-                                        .catch(err => {
-                                            console.log(err);
-                                            resolve(false);
-                                        });
-                                    };
+                            return fn.update(paid_in_out, {status: 2})
+                            .then(result => {
+                                return fn.actions.create({
+                                    action: 'COMPLETED',
+                                    user_id: user_id,
+                                    links: [
+                                        {table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}
+                                    ]
                                 })
-                            };
+                                .then(action => resolve(true))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(false);
+                                });
+                            })
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     };
@@ -99,23 +91,18 @@ module.exports = function (m, fn) {
                 else if (paid_in_out.status === 0) reject(new Error('This pay out has been cancelled'))
                 else if (paid_in_out.status === 2) reject(new Error('This pay out is already complete'))
                 else if (paid_in_out.status === 1) {
-                    return paid_in_out.update({status: 0})
+                    return fn.update(paid_in_out, {status: 0})
                     .then(result => {
-                        if (!result) reject(new Error('Pay out not updated'))
-                        else {
-                            return fn.actions.create({
-                                action: 'Pay out cancelled',
-                                user_id: user_id,
-                                links: [
-                                    {table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}
-                                ]
-                            })
-                            .then(action => resolve(true))
-                            .catch(err => {
-                                console.log(err);
-                                resolve(false);
-                            });
-                        };
+                        return fn.actions.create({
+                            action: 'CANCELLED',
+                            user_id: user_id,
+                            links: [{table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}]
+                        })
+                        .then(action => resolve(true))
+                        .catch(err => {
+                            console.log(err);
+                            resolve(false);
+                        });
                     })
                     .catch(err => reject(err));
                 } else reject(new Error('Unknown status'));

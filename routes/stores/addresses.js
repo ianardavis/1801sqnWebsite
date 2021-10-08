@@ -48,11 +48,8 @@ module.exports = (app, m, fn) => {
         .then(address => {
             if (!address.address) fn.send_error(res, 'No address for this record')
             else {
-                return address.address.update(req.body.address)
-                .then(result => {
-                    if (!result) fn.send_error(res, 'Address not updated')
-                    else res.send({success: true, message: 'Address updated'});
-                })
+                return fn.update(address.address, req.body.address)
+                .then(result => res.send({success: true, message: 'Address updated'}))
                 .catch(err => fn.send_error(res, err));
             };
         })

@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
     fn.holdings = {};
-    fn.holdings.create = function (holding) {
+    fn.holdings.create = function (holding, user_id) {
         return new Promise((resolve, reject) => {
             if      (!holding)             reject(new Error('No holding details'))
             else if (!holding.description) reject(new Error('No description submitted'))
@@ -11,7 +11,18 @@ module.exports = function (m, fn) {
                 })
                 .then(([holding, created]) => {
                     if (!created) reject(new Error('This holding already exists'))
-                    else resolve(true);
+                    else {
+                        return fn.actions.create({
+                            action: `CREATED: Opening balance: £${Number(holding.cash).toFixed(2)}`,
+                            user_id: user_id,
+                            links: [{table: 'holdings', id: holding.holding_id}]
+                        })
+                        .then(result => resolve(true))
+                        .catch(err => {
+                            console.log(err);
+                            resolve(false);
+                        });
+                    };
                 })
                 .catch(err => reject(err));
             };
@@ -24,20 +35,20 @@ module.exports = function (m, fn) {
                 {holding_id: holding_id}
             )
             .then(holding => {
-                let actions = [],
-                    cash    = fn.sessions.countCash(balance);
-                actions.push(holding.update({cash: cash}));
-                actions.push(
-                    fn.actions.create({
-                        action: `Cash counted: £${Number(cash).toFixed(2)}. Holding ${(cash === holding.cash ? ' correct' : `${(holding.cash < cash ? 'under by' : 'over by')} £${Math.abs(holding.cash - cash)}`)}`,
+                let cash = fn.sessions.countCash(balance);
+                return fn.update(holding, {cash: cash})
+                .then(result => {
+                    return fn.actions.create({
+                        action: `COUNT: £${Number(cash).toFixed(2)}. Holding ${(cash === holding.cash ? ' correct' : `${(holding.cash < cash ? 'under by' : 'over by')} £${Math.abs(holding.cash - cash)}`)}`,
                         user_id: user_id,
-                        links: [
-                            {table: 'holdings', id: holding.holding_id}
-                        ]
+                        links: [{table: 'holdings', id: holding.holding_id}]
                     })
-                );
-                return Promise.all(actions)
-                .then(result => resolve(true))
+                    .then(result => resolve(true))
+                    .catch(err => {
+                        console.log(err);
+                        resolve(false);
+                    });
+                })
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));

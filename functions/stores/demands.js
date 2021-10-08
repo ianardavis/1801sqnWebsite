@@ -34,31 +34,28 @@ module.exports = function (m, fn) {
                         status: 1
                     })
                     .then(lines => {
-                        return demand.update({status: 2})
+                        return fn.update(demand, { status: 2})
                         .then(result => {
-                            if (!result) reject(new Error('demand not updated'))
-                            else {
-                                let actions = [];
-                                lines.forEach(line => actions.push(line.update({status: 2})))
-                                return Promise.all(actions)
-                                .then(result => {
-                                    return fn.actions.create({
-                                        action:  'Demand completed',
-                                        user_id: user.user_id,
-                                        links: [{table: 'demands', id: demand.demand_id}]
-                                    })
-                                    .then(action => {
-                                        return fn.demands.raise(demand.demand_id, user)
-                                        .then(filename => resolve({success: true, message: `Demand completed. Filename: ${filename}`}))
-                                        .catch(err => {
-                                            console.log(err);
-                                            resolve({success: true, message: `Demand completed. Could not raise file: ${err.message}`})
-                                        });
-                                    })
-                                    .catch(err => reject(err));
+                            let actions = [];
+                            lines.forEach(line => actions.push(fn.update(line, {status: 2})))
+                            return Promise.all(actions)
+                            .then(result => {
+                                return fn.actions.create({
+                                    action:  'COMPLETED',
+                                    user_id: user.user_id,
+                                    links: [{table: 'demands', id: demand.demand_id}]
+                                })
+                                .then(action => {
+                                    return fn.demands.raise(demand.demand_id, user)
+                                    .then(filename => resolve({success: true, message: `Demand completed. Filename: ${filename}`}))
+                                    .catch(err => {
+                                        console.log(err);
+                                        resolve({success: true, message: `Demand completed. Could not raise file: ${err.message}`})
+                                    });
                                 })
                                 .catch(err => reject(err));
-                            }
+                            })
+                            .catch(err => reject(err));
                         })
                         .catch(err => reject(err));
                     })
@@ -67,6 +64,31 @@ module.exports = function (m, fn) {
             })
             .catch(err => reject(err));
         });
+    };
+    function cancel_open_demand_lines(demand_id) {
+        return new Promise((resolve, reject) => {
+            return m.demand_lines.findAll({
+                where: {
+                    demand_id: demand_id,
+                    status: {[fn.op.or]: [1, 2]}
+                }
+            })
+            .then(lines => {
+                let line_actions = [];
+                lines.forEach(line => {
+                    line_actions.push(
+                        fn.demands.lines.cancel(
+                            line.demand_line_id,
+                            user_id
+                        )
+                    );
+                });
+                Promise.all(line_actions)
+                .then(results => resolve(true))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        })
     };
     fn.demands.cancel   = function (demand_id, user_id) {
         return new Promise((resolve, reject) => {
@@ -87,39 +109,15 @@ module.exports = function (m, fn) {
                     .then(line => {
                         if (line) reject(new Error('You can not cancel a demand with received lines'))
                         else {
-                            let actions = [];
-                            actions.push(demand.update({status: 0}));
-                            actions.push(
-                                new Promise((resolve, reject) => {
-                                    return m.demand_lines.findAll({
-                                        where: {
-                                            demand_id: demand.demand_id,
-                                            status: {[fn.op.or]: [1, 2]}
-                                        }
-                                    })
-                                    .then(lines => {
-                                        let line_actions = [];
-                                        lines.forEach(line => {
-                                            line_actions.push(
-                                                fn.demands.lines.cancel(
-                                                    line.demand_line_id,
-                                                    user_id
-                                                )
-                                            );
-                                        });
-                                        Promise.all(line_actions)
-                                        .then(results => resolve(true))
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                })
-                            );
-                            return Promise.all(actions)
+                            return Promise.all([
+                                fn.update(demand, {status: 0}),
+                                cancel_open_demand_lines(demand.demand_id)
+                            ])
                             .then(result => {
                                 if (!result) reject(new Error('Demand not updated'))
                                 else {
                                     return fn.actions.create({
-                                        action:  'Demand cancelled',
+                                        action:  'CANCELLED',
                                         user_id: user_id,
                                         links: [{table: 'demands', id: demand.demand_id}]
                                     })
@@ -171,7 +169,7 @@ module.exports = function (m, fn) {
                                             .then(result => {
                                                 return write_items(file, sizes)
                                                 .then(fails => {
-                                                    return demand.update({filename: file})
+                                                    return fn.update(demand, {filename: file})
                                                     .then(result => resolve(file))
                                                     .catch(err => resolve(file));
                                                 })
@@ -215,21 +213,18 @@ module.exports = function (m, fn) {
                     .then(lines => {
                         if (lines && lines.length > 0) reject(new Error('This demand has pending or open lines'))
                         else {
-                            return demand.update({status: 3})
+                            return fn.update(demand, {status: 3})
                             .then(result => {
-                                if (!result) reject(new Error('Demand not updated'))
-                                else {
-                                    return fn.actions.create({
-                                        action:  'Closed',
-                                        user_id: user_id,
-                                        links:   [{table: 'demands', id: demand.demand_id}]
-                                    })
-                                    .then(action => resolve(true))
-                                    .catch(err => {
-                                        console.log(err);
-                                        resolve({success: true, message: `Demand closed. Error creating action: ${err.message}`});
-                                    });
-                                };
+                                return fn.actions.create({
+                                    action:  'CLOSED',
+                                    user_id: user_id,
+                                    links:   [{table: 'demands', id: demand.demand_id}]
+                                })
+                                .then(action => resolve(true))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve({success: true, message: `Demand closed. Error creating action: ${err.message}`});
+                                });
                             })
                             .catch(err => reject(err));
                         };
@@ -276,7 +271,7 @@ module.exports = function (m, fn) {
                             .then(([line, created]) => {
                                 if (created) resolve(line.demand_line_id)
                                 else {
-                                    return line.increment('qty', {by: options.qty})
+                                    return fn.increment(line, options.qty)
                                     .then(result => {
                                         return fn.actions.create({
                                             action:  `Demand line incremented by ${options.qty}${(options.order_id ? ' by order' : '')}`,
@@ -371,10 +366,10 @@ module.exports = function (m, fn) {
                 else if (line.status === 3) reject(new Error('This line has already been received'))
                 else {
                     let actions = [];
-                    actions.push(line.update({status: 0}));
+                    actions.push(fn.update(line, {status: 0}));
                     actions.push(
                         fn.actions.create({
-                            action:  'Demand line cancelled',
+                            action:  'CANCELLED',
                             user_id: user_id,
                             links: [{table: 'demand_lines', id: line.demand_line_id}]
                         })
@@ -392,7 +387,7 @@ module.exports = function (m, fn) {
                                 let order_actions = [];
                                 actions.forEach(action => {
                                     if (action.order && action.order.status === 3) {
-                                        order_actions.push(action.order.update({status: 2}));
+                                        order_actions.push(fn.update(action.order, {status: 2}));
                                         order_actions.push(
                                             fn.actions.create({
                                                 action:  'Demand line cancelled',
@@ -692,64 +687,12 @@ module.exports = function (m, fn) {
             let serial_actions = [];
             serials.forEach(serial => {
                 serial_actions.push(
-                    new Promise((resolve, reject) => {
-                        return fn.locations.get({location: serial.location})
-                        .then(location_id => {
-                            return m.serials.findOrCreate({
-                                where: {
-                                    size_id: line.size_id,
-                                    serial:  serial.serial
-                                },
-                                defaults: {
-                                    location_id: location_id
-                                }
-                            })
-                            .then(([serial, created]) => {
-                                if (!created) {
-                                    if (serial.location_id || serial.issue_id) reject(new Error('This serial number already exists and is already in stock or currently issued'))
-                                    else {
-                                        return serial.update({location_id: location_id})
-                                        .then(result => {
-                                            if (!result) reject(new Error('Existing serial not updated'))
-                                            else {
-                                                return fn.actions.create({
-                                                    action:  'Received',
-                                                    user_id: user_id,
-                                                    links: [
-                                                        {table: 'demand_lines', id: line.demand_line_id},
-                                                        {table: 'locations', id: location_id},
-                                                        {table: 'serials', id: serial.serial_id}
-                                                    ]
-                                                })
-                                                .then(action => resolve(true))
-                                                .catch(err => {
-                                                    console.log(err);
-                                                    resolve(false);
-                                                });
-                                            };
-                                        })
-                                        .catch(err => reject(err));
-                                    }
-                                } else {
-                                    return fn.actions.create({
-                                        action:  'Received',
-                                        user_id: user_id,
-                                        links: [
-                                            {table: 'demand_lines', id: line.demand_line_id},
-                                            {table: 'locations',    id: location_id},
-                                            {table: 'serials',      id: serial.serial_id}
-                                        ]
-                                    })
-                                    .then(action => resolve(true))
-                                    .catch(err => {
-                                        console.log(err);
-                                        resolve(false);
-                                    });
-                                };
-                            })
-                            .catch(err => reject(err));
-                        })
-                        .catch(err => reject(err));
+                    fn.serials.receive({
+                        serial:   serial.serial,
+                        size_id:  line.size_id,
+                        location: serial.location,
+                        user_id:  user_id,
+                        links:    [{table: 'demand_lines', id: line.demand_line_id}]
                     })
                 );
             });
@@ -758,58 +701,15 @@ module.exports = function (m, fn) {
                 let success_count = results.filter(e => e.status === 'fulfilled').length;
                 if (success_count === 0) reject(new Error('No successful lines'))
                 else {
-                    let actions = [];
-                    actions.push(line.update({status: 3}));
-                    actions.push(fn.actions.create({
-                        action:  'Received',
-                        user_id: user_id,
-                        links: [{table: 'demand_lines', id: line.demand_line_id}]
-                    }));
-                    return Promise.all(actions)
+                    return fn.update(line, {status: 3})
                     .then(result => {
-                        if (success_count === line.qty) resolve(true)
-                        else {
-                            return line.update({qty: success_count})
-                            .then(result => {
-                                if (!result) reject(new Error('Line quantity not updated'))
-                                else {
-                                    if (success_count > line.qty) {
-                                        return fn.actions.create({
-                                            action:  'Quantity increased by over receipt',
-                                            user_id: user_id,
-                                            links: [{table: 'demand_lines', id: line.demand_line_id}]
-                                        })
-                                        .then(result => resolve(true))
-                                        .catch(err => {
-                                            console.log(err);
-                                            resolve(false);
-                                        });
-                                    } else {
-                                        return m.demand_lines.create({
-                                            demand_id: line.demand_id,
-                                            size:      line.size_id,
-                                            qty:       line.qty - success_count,
-                                            status:    2,
-                                            user_id:   user_id
-                                        })
-                                        .then(new_line => {
-                                            return fn.actions.create({
-                                                action:  'Line created by partial receipt',
-                                                user_id: user_id,
-                                                links: [{table: 'demand_lines', id: new_line.demand_line_id}]
-                                            })
-                                            .then(result => resolve(true))
-                                            .catch(err => {
-                                                console.log(err);
-                                                resolve(false);
-                                            });
-                                        })
-                                        .catch(err => reject(err));
-                                    };
-                                };
-                            })
-                            .catch(err => reject(err));
-                        };
+                        return check_for_over_under_receipt({
+                            line:        line,
+                            receipt_qty: success_count,
+                            user_id:     user_id
+                        })
+                        .then(result => resolve(true))
+                        .catch(err => reject(err));
                     })
                     .catch(err => reject(err))
                 };
@@ -831,65 +731,70 @@ module.exports = function (m, fn) {
             .then(result => {
                 return line.update({status: 3})
                 .then(result => {
-                    let line_actions = [];
-                    if (receipt.qty !== line.qty) line_actions.push(line.update({qty: receipt.qty}));
-                    if (receipt.qty < line.qty) {
-                        line_actions.push(
-                            new Promise((resolve, reject) => {
-                                return m.demand_lines.create({
-                                    demand_id: line.demand_id,
-                                    size_id:   line.size_id,
-                                    qty:       line.qty - receipt.qty,
-                                    status:    2,
-                                    user_id:   user_id
-                                })
-                                .then(new_line => {
-                                    return Promise.allSettled([
-                                        fn.actions.create({
-                                            action:  'Created from under receipt',
-                                            user_id: user_id,
-                                            links: [{table: 'demand_lines', id: new_line.demand_line_id}]
-                                        }),
-                                        fn.actions.create({
-                                            action:  `Quantity decreased by ${line.qty - receipt.qty} due to under receipt`,
-                                            user_id: user_id,
-                                            links: [{table: 'demand_lines', id: line.demand_line_id}]
-                                        }),
-                                        fn.actions.create({
-                                            action:  'Under receipt',
-                                            user_id: user_id,
-                                            links: [
-                                                {table: 'demand_lines', id: line.demand_line_id},
-                                                {table: 'demand_lines', id: new_line.demand_line_id}
-                                            ]
-                                        })
-                                    ])
-                                    .then(action => resolve(true))
-                                    .catch(err => resolve(false));
-                                })
-                                .catch(err => reject(err));
-                            })
-                        );
-                    } else if (receipt.qty > line.qty) {
-                        line_actions.push(
-                            new Promise(resolve => {
-                                return fn.actions.create({
-                                    action:  `Quantity increased by ${receipt.qty - line.qty} due to over receipt`,
-                                    user_id: user_id,
-                                    links: [{table: 'demand_lines', id: line.demand_line_id}]
-                                })
-                                .then(action => resolve(true))
-                                .catch(err => resolve(false));
-                            })
-                        );
-                    };
-                    Promise.all(line_actions)
+                    return check_for_over_under_receipt({
+                        line:        line,
+                        receipt_qty: receipt.qty,
+                        user_id:     user_id
+                    })
                     .then(result => resolve(true))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
+        });
+    };
+    function check_for_over_under_receipt (options = {}) {
+        return new Promise((resolve, reject) => {
+            if (options.receipt_qty !== options.line.qty) {
+                let variance = options.receipt_qty - options.line.qty;
+                return fn.update(options.line, {qty: options.receipt_qty})
+                .then(result => {
+                    let actions = [fn.actions.create({
+                        action:  `Quantity ${(variance < 0 ? 'decreased' : 'increased')} by ${Math.abs(variance)} due to ${(variance < 0 ? 'under' : 'over')} receipt`,
+                        user_id: options.user_id,
+                        links: [{table: 'demand_lines', id: options.line.demand_line_id}]
+                    })];
+                    if (options.receipt_qty < options.line.qty) {
+                        actions.push(new Promise((resolve, reject) => {
+                            return m.demand_lines.create({
+                                demand_id: options.line.demand_id,
+                                size_id:   options.line.size_id,
+                                qty:       Math.abs(variance),
+                                status:    2,
+                                user_id:   options.user_id
+                            })
+                            .then(new_line => {
+                                return Promise.allSettled([
+                                    fn.actions.create({
+                                        action:  'Created from under receipt',
+                                        user_id: options.user_id,
+                                        links: [{table: 'demand_lines', id: new_line.demand_line_id}]
+                                    }),
+                                    fn.actions.create({
+                                        action:  'Under receipt',
+                                        user_id: options.user_id,
+                                        links: [
+                                            {table: 'demand_lines', id: options.line.demand_line_id},
+                                            {table: 'demand_lines', id: new_line.demand_line_id}
+                                        ]
+                                    })
+                                ])
+                                .then(action => resolve(true))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(false);
+                                });
+                            })
+                            .catch(err => reject(err));
+                        }));
+                    };
+                    return Promise.all(actions)
+                    .then(result => resolve(true))
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            } else resolve(true);
         });
     };
 };

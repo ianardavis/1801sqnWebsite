@@ -9,7 +9,8 @@
         class="form-control mb-0"
         type="text"
         autocomplete='<%= locals.autocomplete || 'off' %>'
-        <% if (locals.id) { %>  id='<%= id %>'<% } %>
+        <% if (locals.data) { %>data-<%= data.field %>='<%= data.value %>'<% } %>
+        <% if (locals.id)   { %>id='<%= id %>'<% } %>
         <% if (locals.name) { %>name='<%= name %>'<% } %>
         <% if (locals.required) { %>
             placeholder='Required'

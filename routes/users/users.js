@@ -2,14 +2,13 @@ module.exports = (app, m, fn) => {
     let user_attributes = ['user_id', 'full_name', 'surname', 'first_name', 'service_number'];
     app.get('/users',             fn.loggedIn(), fn.permissions.get('access_users',   true), (req, res) => {
         if (req.allowed) res.render('users/index')
-        else res.redirect(`/users/${req.user.user_id}`);
+        else             res.redirect(`/users/${req.user.user_id}`);
     });
     app.get('/users/select',      fn.loggedIn(), fn.permissions.get('access_users'),         (req, res) => res.render('users/select'));
-
+    app.get('/password/:id',      fn.loggedIn(),                                             (req, res) => res.render('users/password'));
     app.get('/users/:id',         fn.loggedIn(), fn.permissions.get('access_users',   true), (req, res) => {
-        if (req.allowed || String(req.params.id) === String(req.user.user_id)) {
-            res.render('users/show')
-        } else res.redirect(`/users/${req.user.user_id}`);
+        if (req.allowed || req.params.id == req.user.user_id) res.render('users/show')
+        else                                                  res.redirect(`/users/${req.user.user_id}`);
     });
 
     app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users'),       (req, res) => {
@@ -74,7 +73,7 @@ module.exports = (app, m, fn) => {
     });
     
     app.delete('/users/:id',      fn.loggedIn(), fn.permissions.check('user_delete'),        (req, res) => {
-        if (Number(req.user.user_id) === Number(req.params.id)) fn.send_error(res, 'You can not delete your own account')
+        if (req.user.user_id == req.params.id) fn.send_error(res, 'You can not delete your own account')
         else {
             fn.users.delete(req.params.id)
             .then(result => res.send({success: true, message: 'User deleted'}))

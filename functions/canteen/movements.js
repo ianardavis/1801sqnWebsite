@@ -21,8 +21,8 @@ module.exports = function (m, fn) {
                         )
                         .then(holding_to => {
                             return Promise.all([
-                                holding_from.decrement('cash', {by: movement.amount}),
-                                holding_to  .increment('cash', {by: movement.amount})
+                                fn.decrement(holding_from, movement.amount, 'cash'),
+                                fn.increment(holding_to,   movement.amount, 'cash')
                             ])
                             .then(result => {
                                 return m.movements.create({

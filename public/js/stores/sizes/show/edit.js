@@ -9,7 +9,9 @@ function viewSizeEdit() {
         set_value({id: 'sel_orderable', value: (size.orderable   ? '1' : '0')});
         set_value({id: 'sel_serials',   value: (size.has_serials ? '1' : '0')});
         set_value({id: 'sel_nsns',      value: (size.has_nsns    ? '1' : '0')});
-        set_value({id: 'size_edit',     value: size.size});
+        set_value({id: 'size1_edit',    value: size.size1});
+        set_value({id: 'size2_edit',    value: size.size2});
+        set_value({id: 'size3_edit',    value: size.size3});
     });
 };
 function getSuppliers(selected = null) {

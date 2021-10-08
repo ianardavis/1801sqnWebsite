@@ -69,7 +69,7 @@ module.exports = (app, m, fn) => {
         .then(stock => {
             return m.locations.findOrCreate({where: {location: req.body.location}})
             .then(([location, created]) => {
-                return stock.update({location_id: location.location_id})
+                return fn.update(stock, {location_id: location.location_id})
                 .then(result => res.send({success: true, message: 'Stock saved'}))
                 .catch(err => fn.send_error(res, err));
             })

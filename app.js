@@ -7,12 +7,12 @@ var express  = require('express'),
     memStore = require('memorystore')(session);
 require('dotenv').config();
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
-let port_check = require(`${process.env.ROOT}/functions/standalone/port_check.js`);
+let port_check = require(`${process.env.ROOT}/functions/port_check.js`);
 port_check()
 .then(port => {
     let m = {};
-    m = require(`${process.env.ROOT}/db/models`);
-    require(`${process.env.ROOT}/db/associations`)(m);
+    m = require(`${process.env.ROOT}/database/models`);
+    require(`${process.env.ROOT}/database/associations`)(m);
     bb.extend(app, {
         arrayLimit:  200,
         upload:      true,
@@ -29,7 +29,7 @@ port_check()
     );
     app.use(passport.initialize());
     app.use(passport.session());
-    require(`${process.env.ROOT}/functions/standalone/passport.js`)(passport, m);
+    require(`${process.env.ROOT}/functions/passport.js`)(passport, m);
     app.use(flash());
     app.use(require(`${process.env.ROOT}/middleware/variables.js`)());
     app.set('view engine', 'ejs');

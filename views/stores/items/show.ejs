@@ -25,7 +25,9 @@
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/inputs/display`, {id: 'item_description', title: 'Description'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender', permission: 'access_genders'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_size_text',   title: 'Size Text'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_size_text1',  title: 'Size Text 1'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_size_text2',  title: 'Size Text 2'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_size_text3',  title: 'Size Text 3'}) %>
             <% if (permissions.access_item_categories) { %>
                 <div id="div_categories">
                     <table class='table table-sm table-hover w-100'>
@@ -42,7 +44,9 @@
             <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
-                        <th class='w-100' onclick='sortTable(0, "tbl_sizes")' id='size_text_sizes_table'></th>
+                        <th class='w-35' onclick='sortTable(0, "tbl_sizes")' id='size_text1_sizes_table'></th>
+                        <th class='w-35' onclick='sortTable(1, "tbl_sizes")' id='size_text2_sizes_table'></th>
+                        <th class='w-30' onclick='sortTable(2, "tbl_sizes")' id='size_text3_sizes_table'></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_sizes'></tbody>
@@ -133,12 +137,15 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" class='item_id' name='size[item_id]'>
-                            <%- include(`${partials}/inputs/text`,   {name: 'size[size]',        title: 'Size',         id: 'size',        required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {name: 'size[issueable]',   title: 'Issueable',    id: 'issueable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
-                            <%- include(`${partials}/inputs/select`, {name: 'size[orderable]',   title: 'Orderable',    id: 'orderable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
-                            <%- include(`${partials}/inputs/select`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'has_serials', options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
-                            <%- include(`${partials}/inputs/select`, {name: 'size[has_nsns]',    title: 'Has NSNs',     id: 'has_nsns',    options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
-                            <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'sel_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers', permission: 'access_suppliers'}) %>
+                            <datalist id="list_descriptions"></datalist>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size1]',       title: 'Size 1',       id: 'size_size1',       list: 'list_descriptions', required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size2]',       title: 'Size 2',       id: 'size_size2',       list: 'list_descriptions'}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size3]',       title: 'Size 3',       id: 'size_size3',       list: 'list_descriptions'}) %>
+                            <%- include(`${partials}/inputs/select`, {name: 'size[issueable]',   title: 'Issueable',    id: 'size_issueable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
+                            <%- include(`${partials}/inputs/select`, {name: 'size[orderable]',   title: 'Orderable',    id: 'size_orderable',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
+                            <%- include(`${partials}/inputs/select`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'size_has_serials', options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
+                            <%- include(`${partials}/inputs/select`, {name: 'size[has_nsns]',    title: 'Has NSNs',     id: 'size_has_nsns',    options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
+                            <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'size_supplier',    spinner_id: 'suppliers', reload_id: 'reload_suppliers', permission: 'access_suppliers'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save Size'>

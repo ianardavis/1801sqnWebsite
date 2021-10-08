@@ -41,10 +41,10 @@ module.exports = (app, m, fn) => {
                                     let action = null;
                                     if (adjustment.type === 'Count') {
                                         adjustment.variance = Number(adjustment.qty) - Number(stock.qty);
-                                        action = stock.update({qty: adjustment.qty});
+                                        action = fn.update(stock, {qty: adjustment.qty});
                                     } else if (adjustment.type === 'Scrap') {
                                         adjustment.variance = 0 - adjustment.qty;
-                                        action = stock.decrement('qty', {by: adjustment.qty});
+                                        action = fn.decrement(stock, adjustment.qty);
                                     };
                                     if (action) {
                                         return action

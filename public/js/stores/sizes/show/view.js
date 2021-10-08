@@ -4,7 +4,7 @@ function getSize() {
         query: [`size_id=${path[2]}`]
     })
     .then(function ([size, options]) {
-        set_breadcrumb({text: `${size.item.size_text || 'Size'}: ${size.size}`});
+        set_breadcrumb({text: `${size.item.size_text || 'Size'}: ${print_size(size)}`});
         set_innerText({id: 'issueable',     text: yesno(size.issueable)});
         set_innerText({id: 'orderable',     text: yesno(size.orderable)});
         set_innerText({id: 'has_serials',   text: yesno(size.has_serials)});
@@ -13,7 +13,6 @@ function getSize() {
         set_attribute({id: 'supplier_link', attribute: 'href', value: (size.supplier ? `/suppliers/${size.supplier_id}` : '')});
         let stock_elements  = document.querySelectorAll('.stock_element'),
             serial_elements = document.querySelectorAll('.serial_element');
-        console.log(size);
         if (size.has_serials) {
             stock_elements .forEach(e => e.classList.add('hidden'));
             serial_elements.forEach(e => e.classList.remove('hidden'));

@@ -73,7 +73,14 @@ module.exports = function (m, fn) {
     };
     fn.timestamp = function () {
         let current = new Date();
-        return `${String(current.getFullYear())}${String(current.getMonth() + 1).padStart(2, '0')}${String(current.getDate()).padStart(2, '0')} ${ String(current.getHours()).padStart(2, '0')}${String(current.getMinutes()).padStart(2, '0')}${String(current.getSeconds()).padStart(2, '0')}`;
+        return `
+            ${String(current.getFullYear())}
+            ${String(current.getMonth() + 1).padStart(2, '0')}
+            ${String(current.getDate()).padStart(2, '0')} 
+            ${String(current.getHours()).padStart(2, '0')}
+            ${String(current.getMinutes()).padStart(2, '0')}
+            ${String(current.getSeconds()).padStart(2, '0')}
+        `;
     };
     fn.create_barcode = function (uuid) {
         return new Promise((resolve, reject) => {
@@ -159,7 +166,7 @@ module.exports = function (m, fn) {
                         }
                     })
                     .then(([file, created]) => {
-                        if (!created) reject(new Error('File already exists'))
+                        if (!created) reject(new Error('A file with this name already exists'))
                         else          resolve(true);
                     })
                     .catch(err => reject(err));
@@ -207,15 +214,42 @@ module.exports = function (m, fn) {
                 record = fn.nullify(record);
                 fn.get(table, where)
                 .then(result => {
-                    return result.update(record)
-                    .then(result => {
-                        if (!result) reject(new Error('Record not saved'))
-                        else resolve(true);
-                    })
+                    return fn.update(result, record)
+                    .then(result => resolve(true))
                     .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
             };
+        });
+    };
+    fn.update = function (model, fields) {
+        return new Promise((resolve, reject) => {
+            return model.update(fields)
+            .then(result => {
+                if (!result) reject(new Error('Record not updated'))
+                else resolve(true);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.increment = function (model, by, column = 'qty') {
+        return new Promise((resolve, reject) => {
+            return model.increment(column, {by: by})
+            .then(result => {
+                if (!result) reject(new Error('Record not incremented'))
+                else resolve(true);
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.decrement = function (model, by, column = 'qty') {
+        return new Promise((resolve, reject) => {
+            return model.decrement(column, {by: by})
+            .then(result => {
+                if (!result) reject(new Error('Record not decremented'))
+                else resolve(true);
+            })
+            .catch(err => reject(err));
         });
     };
     fn.rm = function (file) {

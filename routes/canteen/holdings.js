@@ -22,7 +22,7 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/holdings',           fn.loggedIn(), fn.permissions.check('holding_add'),      (req, res) => {
-        fn.holdings.create(req.body.holding)
+        fn.holdings.create(req.body.holding, req.user.user_id)
         .then(result => res.send({success: true, message: 'Holding created'}))
         .catch(err => fn.send_error(res, err));
     });

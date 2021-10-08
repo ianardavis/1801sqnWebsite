@@ -1,62 +1,5 @@
 module.exports = function (m, fn) {
     fn.stocks = {};
-    fn.stocks.increment = function (options = {}) {
-        return new Promise((resolve, reject) => {
-            options.table.findByPk(options.id)
-            .then(stock => stock.increment(options.column || 'qty', {by: options.by}))
-            .then(stock => resolve(stock.qty - options.by))
-            .catch(err => reject(err));
-        });
-    };
-    fn.stocks.decrement = (options = {}) => {
-        return new Promise((resolve, reject) => {
-            options.table.findByPk(options.id)
-            .then(stock => stock.decrement(options.column || '_qty', {by: options.by}))
-            .then(stock => resolve(stock.qty - options.by))
-            .catch(err => reject(err));
-        });
-    };
-    fn.stocks.adjust = function (options = {}) {
-        return new Promise((resolve, reject) => {
-            if (String(options.adjustment._type).toLowerCase() === 'count') {
-                return fn.get(
-                    'stocks',
-                    {stock_id: options.adjustment.stock_id}
-                )
-                .then(stock => {
-                    options.adjustment.variance = options.adjustment._qty - stock.qty
-                    m.stock.update(
-                        {qty: options.adjustment.qty},
-                        {where: {stock_id: options.adjustment.stock_id}}
-                    )
-                    .then(results => {
-                        m.adjusts.create(options.adjustment)
-                        .then(results => resolve(results))
-                        .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-            } else if (String(options.adjustment._type).toLowerCase() === 'scrap') {
-                return fn.get(
-                    'stocks',
-                    {stock_id: options.adjustment.stock_id}
-                )
-                .then(stock => {
-                    options.adjustment._variance = options.adjustment._qty - stock._qty
-                    m.stock.findByPk(options.adjustment.stock_id)
-                    .then(stock => stock.decrement('_qty', {by: options.adjustment._qty}))
-                    .then(results => {
-                        m.adjusts.create(options.adjustment)
-                        .then(results => resolve(results))
-                        .catch(err => reject(err));
-                    })
-                    .catch(err => reject(err));
-                })
-                .catch(err => reject(err));
-            } else reject(new Error('Invalid adjustment type'));
-        });
-    };
 
     fn.stocks.get = function (options = {}) {
         return new Promise((resolve, reject) => {
@@ -65,42 +8,86 @@ module.exports = function (m, fn) {
                 .then(stock => resolve(stock))
                 .catch(err => reject(err));
             } else if (options.size_id) {
-                if (options.location_id) {
-                    return m.stocks.findOrCreate({
-                        where: {
-                            size_id:     options.size_id,
-                            location_id: options.location_id
-                        }
-                    })
-                    .then(([stock, created]) => resolve(stock))
-                    .catch(err => reject(err));
-                } else if (options.location) {
-                    return m.locations.get({location: options.location})
-                    .then(location_id => {
+                return fn.get('sizes', {size_id: options.size_id})
+                .then(size => {
+                    if (options.location_id) {
                         return m.stocks.findOrCreate({
                             where: {
-                                size_id:     options.size_id,
-                                location_id: location_id
+                                size_id:     size.size_id,
+                                location_id: options.location_id
                             }
                         })
                         .then(([stock, created]) => resolve(stock))
                         .catch(err => reject(err));
+                    } else if (options.location) {
+                        return m.locations.get({location: options.location})
+                        .then(location_id => {
+                            return m.stocks.findOrCreate({
+                                where: {
+                                    size_id:     size.size_id,
+                                    location_id: location_id
+                                }
+                            })
+                            .then(([stock, created]) => resolve(stock))
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    } else reject(new Error('No location details submitted'));
+                })
+                .catch(err => reject(err));
+            } else reject(new Error('No size or stock ID submitted'));
+        });
+    };
+    fn.stocks.adjust = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            return fn.stocks.get({stock_id: options.adjustment.stock_id})
+            .then(stock => {
+                let action = null, action_text = '';
+                switch (String(options.adjustment.type).toLowerCase()) {
+                    case 'count':
+                        action = fn.update(stock, {qty: options.adjustment.qty});
+                        action_text = `COUNT | ${(variance < 0 ? 
+                            `Decreased by ${variance}. New qty: ${options.adjustment.qty}` : (variance > 0 ? 
+                            `Increased by ${variance}. New qty: ${options.adjustment.qty}` : 
+                            `No variance. Qty: ${options.adjustment.qty}`
+                            )
+                        )}`;
+                        break
+                    case 'scrap':
+                        action = fn.decrement(stock, options.adjustment.qty);
+                        action_text = `SCRAP | Decreased by ${options.adjustment.qty}. New qty: ${Number(stock.qty - options.adjustment.qty)}`
+                        break
+                    default:
+                        break
+                };
+                if (!action) reject(new Error('Invalid adjustment type'))
+                else {
+                    return action
+                    .then(result => {
+                        return fn.actions.create({
+                            action: action_text,
+                            user_id: options.user_id,
+                            links: [{table: 'stocks', id: stock.stock_id}]
+                        })
+                        .then(results => resolve(results))
+                        .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
-                } else reject(new Error('No location details submitted'));
-            } else reject(new Error('No size or stock ID submitted'));
+                };
+            })
+            .catch(err => reject(err));
         });
     };
     fn.stocks.receive = function (options = {}) {
         return new Promise((resolve, reject) => {
             return fn.stocks.get(options.stock)
             .then(stock => {
-                return stock.increment('qty', {by: options.qty})
+                return fn.increment(stock, options.qty)
                 .then(result => {
                     if (!result) reject(new Error('Stock not incremented'))
                     else {
                         fn.actions.create({
-                            action:  `Received | Qty: ${qty}`,
+                            action:  `RECEIPT | Qty: ${qty}`,
                             user_id: options.user_id,
                             links:   [{table: 'stocks', id: stock.stock_id}]
                                      .concat(options.action_links || [])

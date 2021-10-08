@@ -4,12 +4,12 @@ module.exports = fn => {
             if (req.isAuthenticated()) {
                 if (
                     !req.user.reset ||
-                    req._parsedUrl.pathname === `/users/${req.user.user_id}/password`
+                    req._parsedUrl.pathname === `/password/${req.user.user_id}`
                 ) {
                     next();
                 } else {
                     if (req.user.reset) req.flash('info', 'You must change your password before you can continue')
-                    res.redirect(`/users/${req.user.user_id}/password`);
+                    res.redirect(`/password/${req.user.user_id}`);
                 };
             } else {
                 req.flash('danger', 'You need to be signed in to do that!');

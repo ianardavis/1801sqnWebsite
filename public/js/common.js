@@ -76,17 +76,19 @@ function set_count(options = {}) {
 };
 function add_cell(row, options = {}) {
     let cell = row.insertCell();
-    if (options.sort)      cell.setAttribute('data-sort', options.sort);
+
     if      (options.text) cell.innerText = options.text || '';
     else if (options.html) cell.innerHTML = options.html || '';
-    if (options.classes)   options.classes.forEach(e => cell.classList.add(e));
-    if (options.append)    {
+    if      (options.append) {
         if (Array.isArray(options.append)) options.append.forEach(e => cell.appendChild(e))
         else cell.appendChild(options.append);
     };
-    if (options.id)        cell.setAttribute('id', options.id);
-    if (options.data)      options.data.forEach(e => cell.setAttribute(`data-${e.field}`, e.value));
-    if (options.ellipsis)  cell.classList.add('ellipsis1');
+
+    if (options.id)       cell.setAttribute('id', options.id);
+    if (options.sort)     cell.setAttribute('data-sort', options.sort);
+    if (options.classes)  options.classes.forEach(e => cell.classList.add(e));
+    if (options.data)     options.data.forEach(e => cell.setAttribute(`data-${e.field}`, e.value));
+    if (options.ellipsis) cell.classList.add('ellipsis1');
 };
 function show(id) {
     let element = document.querySelector(`#${id}`);
@@ -183,6 +185,9 @@ function print_account(account) {
     if (account) {
         return `${account.name} | ${account.number}`
     } else return '';
+};
+function print_size(size) {
+    return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`
 };
 function clear(id) {
     return new Promise((resolve, reject) => {

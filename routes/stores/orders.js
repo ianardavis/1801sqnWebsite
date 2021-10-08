@@ -77,39 +77,36 @@ module.exports = (app, m, fn) => {
         .then(order => {
             if (order.status !== 1) fn.send_error(res, 'Only placed orders can be cancelled');
             else {
-                return order.update({status: 0})
+                return fn.update(order, {status: 0})
                 .then(results => {
-                    if (!result) fn.send_error(res, 'Order not cancelled')
-                    else {
-                        return m.actions.findAll({
-                            where:      {order_id: order_id},
-                            attributes: ['action_id'],
-                            include: [fn.inc.stores.issue()]
-                        })
-                        .then(issues => {
-                            let issue_actions = [];
-                            issues.forEach(issue => {
-                                if (issue.issue.status === 3) {
-                                    issue_actions.push(issue.issue.update({status: 2}));
-                                    issue_actions.push(fn.actions.create({
-                                        action:  'Order cancelled',
-                                        user_id: req.user.user_id,
-                                        links: [
-                                            {table: 'issues', id: issue.issue_id},
-                                            {table: 'orders', id: order.order_id}
-                                        ]
-                                    }));
-                                };
-                            });
-                            return Promise.allSettled(issue_actions)
-                            .then(results => {
-                                if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true,  message: 'Order cancelled, some issue actions have failed'})
-                                else                                                         res.send({success: true,  message: 'Order cancelled'});
-                            })
-                            .catch(err => fn.send_error(res, err));
+                    return m.actions.findAll({
+                        where:      {order_id: order_id},
+                        attributes: ['action_id'],
+                        include: [fn.inc.stores.issue()]
+                    })
+                    .then(issues => {
+                        let issue_actions = [];
+                        issues.forEach(issue => {
+                            if (issue.issue.status === 3) {
+                                issue_actions.push(fn.update(issue.issue, {status: 2}));
+                                issue_actions.push(fn.actions.create({
+                                    action:  'Order cancelled',
+                                    user_id: req.user.user_id,
+                                    links: [
+                                        {table: 'issues', id: issue.issue_id},
+                                        {table: 'orders', id: order.order_id}
+                                    ]
+                                }));
+                            };
+                        });
+                        return Promise.allSettled(issue_actions)
+                        .then(results => {
+                            if (results.filter(e => e.status === 'rejected').length > 0) res.send({success: true,  message: 'Order cancelled, some issue actions have failed'})
+                            else                                                         res.send({success: true,  message: 'Order cancelled'});
                         })
                         .catch(err => fn.send_error(res, err));
-                    };
+                    })
+                    .catch(err => fn.send_error(res, err));
                 })
                 .catch(err => fn.send_error(res, err));
             };
@@ -134,7 +131,7 @@ module.exports = (app, m, fn) => {
                         else                        receive_action = receive_line_stock( {...line, ...{size_id: order.size_id, _qty: order._qty, user_id: user_id}});
                         receive_action
                         .then(result => {
-                            order.update({status: 3})
+                            fn.update(order, {status: 3})
                             .then(update_result => {
                                 if (!result) resolve({success: true, message: 'Order received, line not updated'})
                                 else {
@@ -225,11 +222,8 @@ module.exports = (app, m, fn) => {
                         else if (serial.issue_id)    reject(new Error('This serial # is already issued'))
                         else if (serial.location_id) reject(new Error('This serial # is already in stock'))
                         else {
-                            serial.update({location_id: location_id})
-                            .then(result => {
-                                if (!result) reject(new Error('Serial not received'))
-                                else         resolve([{table: 'serials', id: serial.serial_id}, {table: 'locations', id: location_id}])
-                            })
+                            return fn.update(serial, {location_id: location_id})
+                            .then(result => resolve([{table: 'serials', id: serial.serial_id}, {table: 'locations', id: location_id}]))
                             .catch(err => reject(err));
                         };
                     })
@@ -243,11 +237,8 @@ module.exports = (app, m, fn) => {
         return new Promise((resolve, reject) => {
             stock_check(options)
             .then(stock => {
-                stock.increment('qty', {by: options.qty})
-                .then(result => {
-                    if (!result) reject(new Error('Stock not received'))
-                    else         resolve([{table: 'stocks', id: stock.stock_id}, {table: 'locations', id: stock.location_id}])
-                })
+                fn.increment(stock, options.qty)
+                .then(result => resolve([{table: 'stocks', id: stock.stock_id}, {table: 'locations', id: stock.location_id}]))
                 .catch(err => reject(err));
             })
             .catch(err => reject(err));
@@ -279,7 +270,7 @@ module.exports = (app, m, fn) => {
                                         if (demand_line._status === 1) {
                                             let demand_actions = [];
                                             if (line._qty < demand_line._qty) {
-                                                demand_actions.push(demand_line.decrement('_qty', {by: line._qty}));
+                                                demand_actions.push(fn.decrement(demand_line, line._qty));
                                                 demand_actions.push(
                                                     m.demand_line_actions.create({
                                                         demand_line_id: demand_line.line_id,
@@ -289,7 +280,7 @@ module.exports = (app, m, fn) => {
                                                     })
                                                 );
                                             } else if (line._qty === demand_line._qty) {
-                                                demand_actions.push(demand_line.update({_status: 0}));
+                                                demand_actions.push(fn.update(demand_line, {_status: 0}));
                                                 demand_actions.push(
                                                     m.demand_line_actions.create({
                                                         demand_line_id: demand_line.line_id,
@@ -359,7 +350,7 @@ module.exports = (app, m, fn) => {
                             .then(line_result => {
                                 if (line_result.success) {
                                     let actions = [];
-                                    actions.push(order_line.update({_status: 4}))
+                                    actions.push(fn.update(order_line, {_status: 4}))
                                     actions.push(m.order_line_actions.create({
                                         _action:        'Receipt',
                                         order_line_id:  order_line.line_id,
@@ -417,7 +408,7 @@ module.exports = (app, m, fn) => {
                         _action:        'Issue'
                     })
                     .then(action_result => {
-                        return order_line.update({_status: 6})
+                        return fn.update(order_line, {_status: 6})
                         .then(order_line_result => resolve({success: true, message: 'Order line created'}))
                         .catch(err => reject(err));
                     })
