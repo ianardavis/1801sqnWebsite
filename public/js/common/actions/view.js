@@ -31,10 +31,14 @@ function getLinks(action_id) {
             links.forEach(link => {
                 let row = tbl_links.insertRow(-1);
                 add_cell(row, {text: link._table});
-                add_cell(row, {append: new Link({
-                    href: `/${link._table}/${link.id}`,
-                    small: true
-                }).e})
+                add_cell(row, (
+                    link._table === path[1] && link.id === path[2] ?
+                    {text: 'This record'} : 
+                    {append: new Link({
+                        href: `/${link._table}/${link.id}`,
+                        small: true
+                    }).e}
+                ));
             });
         });
     });

@@ -28,18 +28,15 @@ module.exports = function (m, fn) {
                         .then(([issue, created]) => {
                             if (created) resolve(issue.issue_id)
                             else {
-                                return issue.increment('qty', {by: options.qty})
+                                return fn.increment(issue, options.qty)
                                 .then(result => {
-                                    if (!result) reject(new Error('Existing issue not incremented'))
-                                    else {
-                                        return fn.actions.create({
-                                            action:  `Issue incremented by ${options.qty}`,
-                                            user_id: options.user_id,
-                                            links: [{table: 'issues', id: issue.issue_id}]
-                                        })
-                                        .then(action => resolve(issue.issue_id))
-                                        .catch(err => resolve(issue.issue_id));
-                                    };
+                                    return fn.actions.create({
+                                        action:  `Incremented by ${options.qty}`,
+                                        user_id: options.user_id,
+                                        links:   [{table: 'issues', id: issue.issue_id}]
+                                    })
+                                    .then(action => resolve(issue.issue_id))
+                                    .catch(err => resolve(issue.issue_id));
                                 })
                                 .catch(err => reject(err));
                             };
@@ -54,19 +51,17 @@ module.exports = function (m, fn) {
     };
     function update_issue(issue, status, user_id, action) {
         return new Promise((resolve, reject) => {
-            return issue.update({status: status})
+            return fn.update(issue, {status: status})
             .then(result => {
-                if (!result) reject(new Error('Issue not updated'))
-                else {
-                    return fn.actions.create({
-                        action:  `Issue ${action}`,
-                        user_id: user_id,
-                        links: [{table: 'issues', id: issue.issue_id}]
-                    })
-                    .then(action => resolve(true))
-                    .catch(err => reject(err));
-                };
-            });
+                return fn.actions.create({
+                    action:  action.toUpperCase(),
+                    user_id: user_id,
+                    links: [{table: 'issues', id: issue.issue_id}]
+                })
+                .then(action => resolve(true))
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
         });
     };
     fn.issues.decline = function (options = {}) {
@@ -161,10 +156,7 @@ module.exports = function (m, fn) {
                         )
                         .then(order => {
                             return update_issue(issue, 3, options.user_id, 'ordered')
-                            .then(result => {
-                                if (!result) reject(new Error('Issue not updated'))
-                                else resolve({success: true, message: 'Issue ordered'});
-                            })
+                            .then(result => resolve({success: true, message: 'Issue ordered'}))
                             .catch(err => {
                                 console.log(err);
                                 resolve({success: true, message: `Issue ordered. Error updating issue: ${err.message}`});

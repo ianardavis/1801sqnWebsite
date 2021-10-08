@@ -9,14 +9,32 @@ function getSizes(item_id) {
     clear('tbl_sizes')
     .then(tbl_sizes => {
         get({
-            table: 'sizes',
+            table: 'item',
             query: [`item_id=${item_id}`]
         })
-        .then(function ([sizes, options]) {
-            sizes.forEach(size => {
-                let row = tbl_sizes.insertRow(-1);
-                add_cell(row, {append: new Checkbox({small: true, attributes: [{field: 'data-id', value: size.size_id}]}).e});
-                add_cell(row, {text: size.size});
+        .then(function ([item, options]) {
+            set_innerText({id: 'size_text1', value: item.size_text1});
+            set_innerText({id: 'size_text2', value: item.size_text2});
+            set_innerText({id: 'size_text3', value: item.size_text3});
+            get({
+                table: 'sizes',
+                query: [`item_id=${item_id}`]
+            })
+            .then(function ([sizes, options]) {
+                sizes.forEach(size => {
+                    sum({
+                        table: 'stocks',
+                        query: [`size_id=${size.size_id}`]
+                    })
+                    .then(function ([stock, options]) {
+                        let row = tbl_sizes.insertRow(-1);
+                        add_cell(row, {append: new Checkbox({small: true, attributes: [{field: 'data-id', value: size.size_id}]}).e});
+                        add_cell(row, {text: size.size1});
+                        add_cell(row, (size.size2 ? {text: size.size2} : {}));
+                        add_cell(row, (size.size3 ? {text: size.size3} : {}));
+                        add_cell(row, {text: stock || '0'});
+                    });
+                });
             });
         });
     });

@@ -181,8 +181,10 @@ module.exports = (m, fn) => {
     };
     fn.inc.stores.categories = (options = {}) => {
         return {
-            model: m.categories,
-            as:    options.as || 'categories'
+            model:    m.categories,
+            required: options.required || false,
+            where:    options.where    || null,
+            as:       options.as       || 'categories'
         };
     };
     fn.inc.stores.serial = () => {

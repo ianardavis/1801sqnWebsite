@@ -44,7 +44,7 @@ module.exports = (app, m, fn) => {
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/movements',            fn.loggedIn(), fn.permissions.check('holding_add'),      (req, res) => {   
+    app.post('/movements',            fn.loggedIn(), fn.permissions.check('movement_add'),      (req, res) => {   
         if (!req.body.movement) fn.send_error(res, 'No details')
         else {
             fn.movements.create(req.body.movement, req.user.user_id)

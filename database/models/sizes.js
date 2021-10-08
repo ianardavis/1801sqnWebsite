@@ -14,7 +14,17 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       comment: "null"
     },
-    'size': {
+    'size1': {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      comment: "null"
+    },
+    'size2': {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      comment: "null"
+    },
+    'size3': {
       type: DataTypes.TEXT,
       allowNull: false,
       comment: "null"

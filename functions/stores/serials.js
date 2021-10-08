@@ -41,16 +41,63 @@ module.exports = function (m, fn) {
                 if      (!serial.issue_id)   reject(new Error('Serial # not issued'))
                 else if (serial.location_id) reject(new Error('Serial # already in stock'))
                 else {
-                    return serial.update({
+                    return fn.update(serial, {
                         location_id: location_id,
                         issue_id:    null
                     })
-                    .then(result => {
-                        if (!result) reject(new Error('Serial # not updated'))
-                        else resolve([serial]);
-                    })
+                    .then(result => resolve([serial]))
                     .catch(err => reject(err));
                 };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.serials.receive = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            return fn.locations.get({location: options.location})
+            .then(location_id => {
+                return m.serials.findOrCreate({
+                    where: {
+                        size_id: options.size_id,
+                        serial:  options.serial
+                    },
+                    defaults: {
+                        location_id: location_id
+                    }
+                })
+                .then(([serial, created]) => {
+                    let actions = [];
+                    if (!created) {
+                        actions.push(
+                            new Promise((resolve, reject) => {
+                                if (serial.location_id || serial.issue_id) reject(new Error('This serial number already exists and is already in stock or currently issued'))
+                                else {
+                                    return fn.update(serial, {location_id: location_id})
+                                    .then(result => resolve(true))
+                                    .catch(err => reject(err));
+                                };
+                            })
+                        );
+                    };
+                    return Promise.all(actions)
+                    .then(result => {
+                        return fn.actions.create({
+                            action:  'RECEIVED',
+                            user_id: options.user_id,
+                            links: [
+                                {table: 'locations', id: location_id},
+                                {table: 'serials',   id: serial.serial_id}
+                            ].concat(options.links || [])
+                        })
+                        .then(action => resolve(true))
+                        .catch(err => {
+                            console.log(err);
+                            resolve(false);
+                        });
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

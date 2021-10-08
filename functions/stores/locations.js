@@ -7,23 +7,14 @@ module.exports = function (m, fn) {
                     where: {_location: options.location}
                 })
                 .then(([location, created]) => {
-                    resolve({
-                        success: true,
-                        message: 'Location found/created',
-                        location_id: location.location_id,
-                        created: created
-                    });
+                    if (created) resolve({location_id: location.location_id})
+                    else reject(new Error('Location already exists'));
                 })
                 .catch(err => reject(err));
-            } else {
-                resolve({
-                    success: false,
-                    message: 'Not all required fields have been submitted'
-                });
-            };
+            } else reject(new Error('No location specified'));
         });
     };
-    fn.locations.check = function (options = {}) {
+    fn.locations.get = function (options = {}) {
         return new Promise((resolve, reject) => {
             if (options.location_id) {
                 fn.get(
@@ -32,8 +23,8 @@ module.exports = function (m, fn) {
                 )
                 .then(location => resolve(location.location_id))
                 .catch(err => reject(err));
-            } else if (options._location) {
-                m.locations.findOrCreate({where: {_location: options._location}})
+            } else if (options.location) {
+                m.locations.findOrCreate({where: {_location: options.location}})
                 .then(([location, created]) => resolve(location.location_id))
                 .catch(err => reject(err));
             } else reject(new Error('No location specified'))

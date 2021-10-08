@@ -94,8 +94,7 @@ module.exports = function (m, fn) {
                 ]
             )
             .then(loancard => {
-                if      (!loancard)             reject(new Error('Loancard not found'))
-                else if (loancard.status !== 2) reject(new Error('This loancard is not complete'))
+                if (loancard.status !== 2) reject(new Error('This loancard is not complete'))
                 else {
                     return m.loancard_lines.findAll({
                         where: {
@@ -151,10 +150,7 @@ module.exports = function (m, fn) {
                                     doc.end();
                                     writeStream.on('error', err => reject(err));
                                     writeStream.on('finish', function () {
-                                        m.loancards.update(
-                                            {filename: file},
-                                            {where: {loancard_id: loancard.loancard_id}}
-                                        )
+                                        fn.update(loancard, {filename: file}
                                         .then(result => {
                                             return fn.settings.get('Print loancard')
                                             .then(settings => {
@@ -211,7 +207,7 @@ module.exports = function (m, fn) {
                         if (line_count && line_count > 0) reject(new Error(`Can not cancel a loancard with ${(options.noForce === true ? 'draft, ' : '')}complete or returned lines`))
                         else {
                             let actions = [];
-                            actions.push(loancard.update({status: 0}));
+                            actions.push(fn.update(loancard, {status: 0}));
                             actions.push(
                                 new Promise((resolve, reject) => {
                                     return m.loancard_lines.findAll({
@@ -236,7 +232,7 @@ module.exports = function (m, fn) {
                                 if (!result) reject(new Error('Loancard not updated'))
                                 else {
                                     return fn.actions.create({
-                                        action: 'Loancard cancelled',
+                                        action: 'CANCELLED',
                                         user_id: options.user_id,
                                         links: [{table: 'loancards', id: loancard.loancard_id}]
                                     })
@@ -285,16 +281,16 @@ module.exports = function (m, fn) {
                         if (!lines || lines.length === 0) reject(new Error('No open lines'))
                         else {
                             let actions = [];
-                            actions.push(loancard.update({
+                            actions.push(fn.update(loancard, {
                                 status:   2,
                                 date_due: options.date_due
                             }));
                             lines.forEach(line => {
                                 actions.push(new Promise((resolve, reject) => {
-                                    line.update({status: 2})
+                                    fn.update(line, {status: 2})
                                     .then(result => {
                                         return fn.actions.create({
-                                            action:  'Loancard completed',
+                                            action:  'COMPLETED',
                                             user_id: options.user_id,
                                             links: [{table: 'loancard_lines', id: line.loancard_line_id}]
                                         })
@@ -314,7 +310,7 @@ module.exports = function (m, fn) {
                             return Promise.all(actions)
                             .then(result => {
                                 return fn.actions.create({
-                                    action:  'Loancard completed',
+                                    action:  'COMPLETED',
                                     user_id: options.user_id,
                                     links: [{table: 'loancards', id: loancard.loancard_id}]
                                 })
@@ -346,18 +342,15 @@ module.exports = function (m, fn) {
                 .then(line_count => {
                     if (line_count > 0) resolve(false)
                     else {
-                        return loancard.update({status: 3})
+                        return fn.update(loancard, {status: 3})
                         .then(result => {
-                            if (!result) reject(new Error('Loancard not updated'))
-                            else {
-                                return fn.actions.create({
-                                    action:  'Loancard closed',
-                                    user_id: options.user_id,
-                                    links: [{table: 'loancards', id: loancard.loancard_id}]
-                                })
-                                .then(action => resolve(true))
-                                .catch(err => resolve(true))
-                            };
+                            return fn.actions.create({
+                                action:  'CLOSED',
+                                user_id: options.user_id,
+                                links: [{table: 'loancards', id: loancard.loancard_id}]
+                            })
+                            .then(action => resolve(true))
+                            .catch(err => resolve(true));
                         })
                         .catch(err => reject(err));
                     };
@@ -430,7 +423,7 @@ module.exports = function (m, fn) {
                     user_id:     options.user_id
                 })
                 .then(loancard_line => {
-                    return serial.update({
+                    return fn.update(serial, {
                         issue_id: options.issue_id,
                         location_id: null
                     })
@@ -462,7 +455,7 @@ module.exports = function (m, fn) {
                     }
                 })
                 .then(([loancard_line, created]) => {
-                    return stock.decrement('qty', {by: options.qty})
+                    return fn.decrement(stock, options.qty)
                     .then(result => {
                         if (created) {
                             resolve([
@@ -470,7 +463,7 @@ module.exports = function (m, fn) {
                                 {table: 'loancard_lines', id: loancard_line.loancard_line_id}
                             ]);
                         } else {
-                            return loancard_line.increment('qty', {by: options.qty})
+                            return fn.increment(loancard_line, options.qty)
                             .then(result => {
                                 resolve([
                                     {table: 'stocks', id: stock.stock_id},
@@ -542,98 +535,88 @@ module.exports = function (m, fn) {
                 else if (line.status === 2) reject(new Error('This line has already been completed'))
                 else if (line.status === 3) reject(new Error('This line has already been returned'))
                 else if (line.status === 1) {
-                    return line.update({status: 0})
+                    return fn.update(line, {status: 0})
                     .then(result => {
-                        if (!result) reject(new Error('Line not updated'))
-                        else {
-                            let cancel_action = null;
-                            if (line.serial_id) {
-                                cancel_action = new Promise((resolve, reject) => {
-                                    return get_loancard_link('locations', line.loancard_line_id)
-                                    .then(link => {
-                                        return fn.get(
-                                            'locations',
-                                            {location_id: link.id}
-                                        )
-                                        .then(location => {
-                                            return fn.serials.return_to_stock(line.serial_id, location.location_id)
-                                            .then(serial => resolve({issue_ids: [serial.issue_id], links: [{table: 'serials', id: serial.serial_id}]}))
-                                            .catch(err => reject(err));
-                                        })
+                        let cancel_action = null;
+                        if (line.serial_id) {
+                            cancel_action = new Promise((resolve, reject) => {
+                                return get_loancard_link('locations', line.loancard_line_id)
+                                .then(link => {
+                                    return fn.get(
+                                        'locations',
+                                        {location_id: link.id}
+                                    )
+                                    .then(location => {
+                                        return fn.serials.return_to_stock(line.serial_id, location.location_id)
+                                        .then(serial => resolve({issue_ids: [serial.issue_id], links: [{table: 'serials', id: serial.serial_id}]}))
                                         .catch(err => reject(err));
                                     })
                                     .catch(err => reject(err));
-                                });
-                            } else {
-                                cancel_action = new Promise((resolve, reject) => {
-                                    return get_loancard_link('stocks', line.loancard_line_id)
-                                    .then(link => {
-                                        return fn.get(
-                                            'stocks',
-                                            {stock_id: link.id}
-                                        )
-                                        .then(stock => {
-                                            return stock.increment('qty', {by: line.qty})
-                                            .then(result => {
-                                                if (!result) reject(new Error('Stock not updated'))
-                                                else {
-                                                    return get_loancard_links('issues', line.loancard_line_id)
-                                                    .then(issue_links => {
-                                                        let issues = [];
-                                                        issue_links.forEach(link => issues.push(link.id));
-                                                        resolve({issue_ids: issues, links: [{table: 'stocks', id: stock.stock_id}]});
-                                                    })
-                                                    .catch(err => reject(err));
-
-                                                };
-                                            })
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    })
-                                    .catch(err => reject(err));
-                                });
-                            };
-                            return cancel_action
-                            .then(result => {
-                                let issue_actions = [];
-                                result.issue_ids.forEach(issue_id => {
-                                    issue_actions.push(new Promise((resolve, reject) => {
-                                        return fn.get(
-                                            'issues',
-                                            {issue_id: issue_id}
-                                        )
-                                        .then(issue => {
-                                            return issue.update({status: 2})
-                                            .then(result => {
-                                                if (!result) reject(new Error('Issue not updated'))
-                                                else resolve({table: 'issues', id: issue.issue_id});
-                                            })
-                                            .catch(err => reject(err));
-                                        })
-                                        .catch(err => reject(err));
-                                    }));
-                                });
-                                return Promise.allSettled(issue_actions)
-                                .then(results => {
-                                    let issue_links = [];
-                                    results.filter(e => e.status === 'fulfilled').forEach(e => issue_links.push(e.value));
-                                    return fn.actions.create({
-                                        action: 'Loancard line cancelled',
-                                        user_id: options.user_id,
-                                        links: [{table: 'loancard_lines', id: line.loancard_line_id}].concat(result.links).concat(issue_links)
-                                    })
-                                    .then(result => resolve(line.loancard_id))
-                                    .catch(err => {
-                                        console.log(err);
-                                        resolve(line.loancard_id)
-                                    });
                                 })
                                 .catch(err => reject(err));
-
+                            });
+                        } else {
+                            cancel_action = new Promise((resolve, reject) => {
+                                return get_loancard_link('stocks', line.loancard_line_id)
+                                .then(link => {
+                                    return fn.get(
+                                        'stocks',
+                                        {stock_id: link.id}
+                                    )
+                                    .then(stock => {
+                                        return fn.increment(stock, line.qty)
+                                        .then(result => {
+                                            return get_loancard_links('issues', line.loancard_line_id)
+                                            .then(issue_links => {
+                                                let issues = [];
+                                                issue_links.forEach(link => issues.push(link.id));
+                                                resolve({issue_ids: issues, links: [{table: 'stocks', id: stock.stock_id}]});
+                                            })
+                                            .catch(err => reject(err));
+                                        })
+                                        .catch(err => reject(err));
+                                    })
+                                    .catch(err => reject(err));
+                                })
+                                .catch(err => reject(err));
+                            });
+                        };
+                        return cancel_action
+                        .then(result => {
+                            let issue_actions = [];
+                            result.issue_ids.forEach(issue_id => {
+                                issue_actions.push(new Promise((resolve, reject) => {
+                                    return fn.get(
+                                        'issues',
+                                        {issue_id: issue_id}
+                                    )
+                                    .then(issue => {
+                                        return fn.update(issue, {status: 2})
+                                        .then(result => resolve({table: 'issues', id: issue.issue_id}))
+                                        .catch(err => reject(err));
+                                    })
+                                    .catch(err => reject(err));
+                                }));
+                            });
+                            return Promise.allSettled(issue_actions)
+                            .then(results => {
+                                let issue_links = [];
+                                results.filter(e => e.status === 'fulfilled').forEach(e => issue_links.push(e.value));
+                                return fn.actions.create({
+                                    action: 'CANCELLED',
+                                    user_id: options.user_id,
+                                    links: [{table: 'loancard_lines', id: line.loancard_line_id}].concat(result.links).concat(issue_links)
+                                })
+                                .then(result => resolve(line.loancard_id))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(line.loancard_id)
+                                });
                             })
                             .catch(err => reject(err));
-                        };
+
+                        })
+                        .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
                 } else reject(new Error('Unknown line status'));
@@ -666,7 +649,7 @@ module.exports = function (m, fn) {
                             else                  action = add_stock( size, nsn_id, loancard.loancard_id, options);
                             return action
                             .then(action_links => {
-                                return issue.update({status: 4})
+                                return fn.update(issue, {status: 4})
                                 .then(result => {
                                     return fn.actions.create({
                                         action:  'Issue added to loancard',
@@ -728,18 +711,15 @@ module.exports = function (m, fn) {
                                         }
                                     })
                                     .then(([stock, created]) => {
-                                        return stock.increment('qty', {by: line.qty})
+                                        return fn.increment(stock, line.qty)
                                         .then(result => {
-                                            if (!result) reject(new Error('Stock not returned'))
-                                            else {
-                                                return get_loancard_links('issues', line.loancard_line_id)
-                                                .then(links => {
-                                                    let issues = [];
-                                                    links.forEach(link => issues.push(link.id));
-                                                    resolve({issue_ids: issues, links: [{table: 'stocks', id: stock.stock_id}]})
-                                                })
-                                                .catch(err => reject(err));
-                                            };
+                                            return get_loancard_links('issues', line.loancard_line_id)
+                                            .then(links => {
+                                                let issues = [];
+                                                links.forEach(link => issues.push(link.id));
+                                                resolve({issue_ids: issues, links: [{table: 'stocks', id: stock.stock_id}]})
+                                            })
+                                            .catch(err => reject(err));
                                         })
                                         .catch(err => reject(err));
                                     })
@@ -761,24 +741,21 @@ module.exports = function (m, fn) {
                                             user_id:     line.user_id
                                         })
                                         .then(new_line => {
-                                            return line.update({qty: options.qty})
+                                            return fn.update(line, {qty: options.qty})
                                             .then(result => {
-                                                if (!result) reject(new Error('Line not updated'))
-                                                else {
-                                                    return fn.actions.create({
-                                                        action: 'Line created from partial return',
-                                                        user_id: options.user_id,
-                                                        links: [
-                                                            {table: 'loancard_lines', id: line.loancard_line},
-                                                            {table: 'loancard_lines', id: new_line.loancard_line}
-                                                        ]
-                                                    })
-                                                    .then(result => resolve(true))
-                                                    .catch(err => {
-                                                        console.log(err);
-                                                        resolve(false);
-                                                    })
-                                                }
+                                                return fn.actions.create({
+                                                    action: 'Line created from partial return',
+                                                    user_id: options.user_id,
+                                                    links: [
+                                                        {table: 'loancard_lines', id: line.loancard_line},
+                                                        {table: 'loancard_lines', id: new_line.loancard_line}
+                                                    ]
+                                                })
+                                                .then(result => resolve(true))
+                                                .catch(err => {
+                                                    console.log(err);
+                                                    resolve(false);
+                                                });
                                             })
                                             .catch(err => reject(err));
                                         })
@@ -797,25 +774,22 @@ module.exports = function (m, fn) {
                                             else if (issue.status === 2) reject(new Error('Issue is not issued'))
                                             else if (issue.status === 3) reject(new Error('Issue is ordered but not issued'))
                                             else if (issue.status === 4) {
-                                                return issue.update({status: 5})
+                                                return fn.update(issue, {status: 5})
                                                 .then(result => {
-                                                    if (!result) reject(new Error('Issue not updated'))
-                                                    else {
-                                                        issue_links.push({table: 'issues', id: issue.issue_id})
-                                                        resolve(true);
-                                                    };
+                                                    issue_links.push({table: 'issues', id: issue.issue_id})
+                                                    resolve(true);
                                                 })
                                                 .catch(err => reject(err));
                                             } else reject(new Error('Unknown issue status'));
                                         })
                                     }));
                                 })
-                                update_actions.push(line.update({status: 3}));
+                                update_actions.push(fn.update(line, {status: 3}));
                                 return Promise.allSettled(update_actions)
                                 .then(results => {
                                     if (results.filter(e => e.status === 'rejected').length > 0) console.log(results);
                                     return fn.actions.create({
-                                        action:  'Loancard line returned',
+                                        action:  'RETURNED',
                                         user_id: options.user_id,
                                         links: [
                                             {table: 'loancard_lines', id: line.loancard_line_id},

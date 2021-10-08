@@ -4,7 +4,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if      (!options.action)  reject(new Error('No action specified'))
             else if (!options.user_id) reject(new Error('No user specified'))
-            else if (!options.links)   reject(new Error('No links specified'))
+            else if (!options.links || options.links.length === 0) reject(new Error('No links specified'))
             else {
                 return m.actions.create({
                     action:  options.action,

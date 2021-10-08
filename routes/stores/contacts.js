@@ -38,7 +38,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_contact_add'),     (req, res) => {
+    app.put('/contacts',        fn.loggedIn(), fn.permissions.check('supplier_contact_edit'),    (req, res) => {
        fn.get(
            'supplier_contacts',
            {supplier_contact_id: req.body.supplier_contact_id},
@@ -47,11 +47,8 @@ module.exports = (app, m, fn) => {
         .then(contact => {
             if (!contact.contact) fn.send_error(res, 'No contact for this record')
             else {
-                return contact.contact.update(req.body.contact)
-                .then(result => {
-                    if (!result) fn.send_error(res, 'Contact not updated')
-                    else res.send({success: true, message: 'Contact updated'});
-                })
+                return fn.update(contact.contact, req.body.contact)
+                .then(result => res.send({success: true, message: 'Contact updated'}))
                 .catch(err => fn.send_error(res, err));
             };
         })

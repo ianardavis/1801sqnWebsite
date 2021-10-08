@@ -13,8 +13,7 @@ function getUser() {
         set_innerText({id: 'last_login',     text: print_date(user.last_login, true)});
         set_innerText({id: 'reset',          text: yesno(user.reset)});
         set_breadcrumb({text: print_user(user)});
-        let user_ids  = document.querySelectorAll('.user_id');
-        user_ids.forEach(e => e.value = user.user_id);
+        document.querySelectorAll('.user_id').forEach(e => e.value = user.user_id);
     });
 };
 addReloadListener(getUser);

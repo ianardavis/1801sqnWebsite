@@ -11,18 +11,15 @@ module.exports = function (m, fn) {
                     {item_id: writeoff.item_id}
                 )
                 .then(item => {
-                    return item.decrement('qty', {by: writeoff.qty})
+                    return fn.decrement(item, writeoff.qty)
                     .then(result => {
-                        if (!result) reject(new Error('Stock not decremented'))
-                        else {
-                            return m.writeoffs.create({
-                                ...writeoff,
-                                cost:    item.cost,
-                                user_id: user_id
-                            })
-                            .then(writeoff => resolve(true))
-                            .catch(err => reject(err));
-                        };
+                        return m.writeoffs.create({
+                            ...writeoff,
+                            cost:    item.cost,
+                            user_id: user_id
+                        })
+                        .then(writeoff => resolve(true))
+                        .catch(err => reject(err));
                     })
                     .catch(err => reject(err));
                 })

@@ -14,32 +14,29 @@ module.exports = function (m, fn) {
             let cash = fn.sessions.countCash(balance);
             return m.holdings.findOrCreate({where: {description: 'Canteen float'}})
             .then(([holding, created]) => {
-                return holding.update({cash: cash})
+                return fn.update(holding, {cash: cash})
                 .then(result => {
-                    if (!result) reject(new Error('Holding not updated'))
-                    else {
-                        return m.sessions.findOrCreate({
-                            where:    {status: 1},
-                            defaults: {user_id_open: user_id}
+                    return m.sessions.findOrCreate({
+                        where:    {status: 1},
+                        defaults: {user_id_open: user_id}
+                    })
+                    .then(([session, created]) => {
+                        return fn.actions.create({
+                            action: `Count on session opening. Cash: £${cash}`,
+                            user_id: user_id,
+                            links: [{table: 'holdings', id: holding.holding_id}]
                         })
-                        .then(([session, created]) => {
-                            return fn.actions.create({
-                                action: `Count on session opening. Cash: £${cash}`,
-                                user_id: user_id,
-                                links: [{table: 'holdings', id: holding.holding_id}]
-                            })
-                            .then(result => {
-                                if (created) resolve('Session opened')
-                                else         resolve('Session already open');
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                if (created) resolve('Session opened')
-                                else         resolve('Session already open');
-                            })
+                        .then(result => {
+                            if (created) resolve('Session opened')
+                            else         resolve('Session already open');
                         })
-                        .catch(err => reject(err));
-                    };
+                        .catch(err => {
+                            console.log(err);
+                            if (created) resolve('Session opened')
+                            else         resolve('Session already open');
+                        })
+                    })
+                    .catch(err => reject(err));
                 })
                 .catch(err => reject(err));
             })
@@ -49,7 +46,7 @@ module.exports = function (m, fn) {
     fn.sessions.getSales = function (session_id) {
         return new Promise((resolve, reject) => {
             return m.payments.findAll({
-                where: {type: {[fn.op.or]: ['Cash', 'cash']}},
+                where:   {type: {[fn.op.or]: ['Cash', 'cash']}},
                 include: [fn.inc.canteen.sale({where: {session_id: session_id}, required: true})]
             })
             .then(payments => {
@@ -90,7 +87,7 @@ module.exports = function (m, fn) {
                                     let counted = fn.sessions.countCash(balance),
                                         cash_in = counted - holding.cash,
                                         actions = [];
-                                    actions.push(holding.update({cash: counted}));
+                                    actions.push(fn.update(holding, {cash: counted}));
                                     if (cash_in !== 0) {
                                         actions.push(
                                             m.movements.create({
@@ -114,11 +111,14 @@ module.exports = function (m, fn) {
                                     };
                                     return Promise.all(actions)
                                     .then(results => {
-                                        return session.update({
-                                            status:        2,
-                                            datetime_end:  Date.now(),
-                                            user_id_close: user_id
-                                        })
+                                        return fn.update(
+                                            session,
+                                            {
+                                                status:        2,
+                                                datetime_end:  Date.now(),
+                                                user_id_close: user_id
+                                            }
+                                        )
                                         .then(result => resolve({takings: takings, cash_in: cash_in}))
                                         .catch(err => reject(err));
                                     })

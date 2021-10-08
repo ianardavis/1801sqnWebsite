@@ -10,6 +10,17 @@ module.exports = (app, m, fn) => {
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
     });
+    app.get('/get/items_uniform',      fn.loggedIn(), fn.permissions.check('access_items'), (req, res) => {
+        m.items.findAll({
+            where:   req.query,
+            include: [
+                fn.inc.stores.gender(),
+                fn.inc.stores.categories({where: {category: 'Uniform'}, required: true})
+            ]
+        })
+        .then(items => res.send({success: true, result: items}))
+        .catch(err => fn.send_error(res, err));
+    });
     app.get('/get/item',               fn.loggedIn(), fn.permissions.check('access_items'), (req, res) => {
         fn.get(
             'items',

@@ -29,30 +29,26 @@ module.exports = function (m, fn) {
                             });
                         };
                         let qty_current = (item.qty < 0 ? 0 : item.qty)
-                        return item.increment('qty', {by: receipt_qty})
+                        return fn.increment(item, receipt_qty)
                         .then(result => {
-                            if (!result) reject(new Error('Item quantity not updated'))
-                            else {
-                                if (item.cost !== receipt.cost) {
-                                    let cost_new    = Number(((qty_current * item.cost) + (receipt.qty * receipt.cost)) / (qty_current + receipt.qty));
-                                    return item.update({cost: cost_new})
-                                    .then(result => {
-                                        if (!result) resolve(true);
-                                        else {
-                                            m.notes.create({
-                                                _table:  'canteen_items', 
-                                                id:      item.item_id,
-                                                note:    `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`,
-                                                system:  1,
-                                                user_id: user_id
-                                            })
-                                            .then(note => resolve(true))
-                                            .catch(err => resolve(true))
-                                        };
-                                    })
-                                    .catch(err => resolve(true))
-                                } else resolve(true);
-                            };
+                            if (item.cost !== receipt.cost) {
+                                let cost_new    = Number(((qty_current * item.cost) + (receipt.qty * receipt.cost)) / (qty_current + receipt.qty));
+                                return item.update({cost: cost_new})
+                                .then(result => {
+                                    if (!result) resolve(true);
+                                    else {
+                                        fn.notes.create({
+                                            table:   'canteen_items', 
+                                            id:      item.item_id,
+                                            note:    `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`,
+                                            user_id: user_id
+                                        })
+                                        .then(note => resolve(true))
+                                        .catch(err => resolve(true))
+                                    };
+                                })
+                                .catch(err => resolve(true))
+                            } else resolve(true);
                         })
                         .catch(err => reject(err));
                     })

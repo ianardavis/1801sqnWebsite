@@ -72,7 +72,7 @@ module.exports = (app, m, fn) => {
         .then(file => res.send({success: true,  message: 'File updated'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/file_details',        fn.loggedIn(), fn.permissions.check('file_detail_add'),     (req, res) => {
+    app.put('/file_details',        fn.loggedIn(), fn.permissions.check('file_detail_edit'),    (req, res) => {
         fn.put(
             'file_details',
             {file_detail_id: req.body.file_detail_id},
@@ -129,14 +129,11 @@ module.exports = (app, m, fn) => {
             .then(([detail, created]) => {
                 if (created) res.send({success: true, message: 'Detail added'})
                 else {
-                    return detail.update({
+                    return fn.update(detail, {
                         value:   req.body.detail.value,
                         user_id: req.user.user_id
                     })
-                    .then(result => {
-                        if (!result) fn.send_error(res, 'Existing detail not updated')
-                        else res.send({success: true, message: 'Existing detail updated'});
-                    })
+                    .then(result => res.send({success: true, message: 'Existing detail updated'}))
                     .catch(err => fn.send_error(res, err));
                 };
             })

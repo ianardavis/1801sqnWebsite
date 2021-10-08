@@ -233,6 +233,7 @@ function Button(options = {}) {
     if (options.data)       options.data      .forEach(e => this.e.setAttribute(`data-${e.field}`, e.value));
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
     if (options.append)     options.append    .forEach(e => this.e.appendChild(e));
+    if (options.onClick)    this.e.addEventListener('click', options.onClick);
 };
 function Select(options = {}) {
     this.e = document.createElement('select');

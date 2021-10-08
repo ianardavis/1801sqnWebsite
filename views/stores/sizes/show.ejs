@@ -123,7 +123,6 @@
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
-
         <% if (permissions.access_details) { %>
             <div     id='mdl_detail_view' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
@@ -208,7 +207,9 @@
                             <%- include(`${partials}/inputs/select`, {name: 'size[has_serials]', title: 'Has Serial #', id: 'sel_serials',   options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[has_nsns]',    title: 'Has NSNs',     id: 'sel_nsns',      options: [{value: '0', text: 'No'}, {value: '1', text: 'Yes'}]}) %>
                             <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'sel_suppliers', spinner_id: 'suppliers', reload_id: 'reload_suppliers', permission: 'access_suppliers'}) %>
-                            <%- include(`${partials}/inputs/text`,   {name: 'size[size]',        title: 'Size',         id: 'size_edit',     required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size1]',       title: 'Size 1',       id: 'size1_edit',    required: true}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size2]',       title: 'Size 2',       id: 'size2_edit'}) %>
+                            <%- include(`${partials}/inputs/text`,   {name: 'size[size3]',       title: 'Size 3',       id: 'size3_edit'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Save Size'>

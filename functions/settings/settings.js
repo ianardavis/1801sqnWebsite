@@ -19,11 +19,8 @@ module.exports = function (m, fn) {
             .then(([setting, created]) => {
                 if (created) resolve(true)
                 else {
-                    return setting.update({value: value})
-                    .then(result => {
-                        if (!result) reject(new Error('Setting not updated'))
-                        else resolve(true);
-                    })
+                    return fn.update(setting, {value: value})
+                    .then(result => resolve(true))
                     .catch(err => reject(err));
                 };
             })

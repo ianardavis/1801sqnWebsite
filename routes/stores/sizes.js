@@ -36,7 +36,9 @@ module.exports = (app, m, fn) => {
         m.sizes.findOrCreate({
             where: {
                 item_id: req.body.size.item_id,
-                size: req.body.size.size
+                size1:   req.body.size.size1,
+                size2:   req.body.size.size2,
+                size3:   req.body.size.size3
             },
             defaults: req.body.size
         })

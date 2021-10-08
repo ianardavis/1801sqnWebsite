@@ -15,14 +15,14 @@ module.exports = function (m, fn) {
             .then(([layout, created]) => {
                 if (created) resolve(true);
                 else {
-                    return layout.update({
-                        item_id: layout.item_id,
-                        colour:  layout.colour
-                    })
-                    .then(result => {
-                        if (!result) reject(new Error('Button not saved'))
-                        else resolve(true);
-                    })
+                    return fn.update(
+                        layout,
+                        {
+                            item_id: layout.item_id,
+                            colour:  layout.colour
+                        }
+                    )
+                    .then(result => resolve(true))
                     .catch(err => reject(err));
                 };
             })
