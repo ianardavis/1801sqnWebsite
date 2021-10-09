@@ -10,7 +10,7 @@ function getStocks() {
             stocks.forEach(stock => {
                 let row = tbl_stocks.insertRow(-1);
                 add_cell(row, {text: stock.size.item.description});
-                add_cell(row, {text: stock.size.size});
+                add_cell(row, {text: print_size(stock.size)});
                 add_cell(row, {text: stock.qty || '0'});
                 add_cell(row, {append: new Button({
                     modal: 'stock_view',
@@ -29,7 +29,7 @@ function viewStock(stock_id) {
     .then(function ([stock, options]) {
         set_innerText({id: 'stock_id',        text: stock.stock_id});
         set_innerText({id: 'stock_item',      text: stock.size.item.description});
-        set_innerText({id: 'stock_size',      text: stock.size.size});
+        set_innerText({id: 'stock_size',      text: print_size(stock.size)});
         set_innerText({id: 'stock_qty',       text: stock.qty});
         set_innerText({id: 'stock_createdAt', text: print_date(stock.createdAt, true)});
         set_innerText({id: 'stock_updatedAt', text: print_date(stock.updatedAt, true)});

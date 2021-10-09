@@ -6,7 +6,7 @@ function showOrder() {
     })
     .then(function ([order, options]) {
         set_breadcrumb({text: order.order_id});
-        set_innerText({id: 'size_desc', text: order.size.size});
+        set_innerText({id: 'size_desc', text: print_size(order.size)});
         set_innerText({id: 'item_name', text: order.size.item.description});
         set_innerText({id: 'qty',       text: order.qty});
         set_innerText({id: 'createdAt', text: print_date(order.createdAt, true)});

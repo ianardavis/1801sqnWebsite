@@ -13,7 +13,7 @@ function getLocations() {
                 if (!tbl) tbl = addItem(div, p, stock.location_id, stock.location.location);
                 let row = tbl.insertRow(-1);
                 add_cell(row, {text: stock.size.item.description});
-                add_cell(row, {text: stock.size.size});
+                add_cell(row, {text: print_size(stock.size)});
                 add_cell(row, {text: stock.qty || '0'});
                 add_cell(row, {append: [
                     new Input({

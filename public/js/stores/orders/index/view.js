@@ -15,7 +15,7 @@ function getOrders() {
                 let row = tbl_orders.insertRow(-1);
                 add_cell(row, table_date(order.createdAt));
                 add_cell(row, {text: order.size.item.description});
-                add_cell(row, {text: order.size.size});
+                add_cell(row, {text: print_size(order.size)});
                 add_cell(row, {text: order.qty});
                 add_cell(row, {
                     text: order_statuses[order.status] || 'Unknown',

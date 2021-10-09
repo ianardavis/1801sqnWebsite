@@ -30,7 +30,7 @@ function viewAdjustment(adjustment_id) {
     .then(function ([adjustment, options]) {
         set_innerText({id: 'adjustment_id',        text: adjustment.adjustment_id});
         set_innerText({id: 'adjustment_item',      text: adjustment.size.item.description});
-        set_innerText({id: 'adjustment_size',      text: adjustment.size.size});
+        set_innerText({id: 'adjustment_size',      text: print_size(adjustment.size)});
         set_innerText({id: 'adjustment_type',      text: adjustment.type});
         set_innerText({id: 'adjustment_qty',       text: adjustment.qty});
         set_innerText({id: 'adjustment_variance',  text: adjustment.variance || '0'});

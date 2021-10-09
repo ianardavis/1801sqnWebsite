@@ -35,7 +35,7 @@ function viewLoancard(loancard_line_id) {
         set_innerText({id: 'loancard_createdAt',      text: print_date(line.loancard.createdAt, true)});
         set_innerText({id: 'loancard_updatedAt',      text: print_date(line.loancard.updatedAt, true)});
         set_innerText({id: 'loancard_line_item',      text: (line.size   ? (line.size.item ? line.size.item.description : 'Unknown Item') : 'Unknown Size')});
-        set_innerText({id: 'loancard_line_size',      text: (line.size   ? line.size.size     : 'Unknown Size')});
+        set_innerText({id: 'loancard_line_size',      text: (line.size   ? print_size(line.size) : 'Unknown Size')});
         set_innerText({id: 'loancard_line_nsn',       text: (line.nsn ? print_nsn(line.nsn) : '')});
         set_innerText({id: 'loancard_line_status',    text: line.status});
         set_innerText({id: 'loancard_line_createdAt', text: print_date(line.createdAt, true)});

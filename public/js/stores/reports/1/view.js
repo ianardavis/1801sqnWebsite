@@ -8,7 +8,7 @@ function getSizes() {
             stocks.forEach(stock => {
                 let row = tbl_stocks.insertRow(-1);
                 add_cell(row, {text: (stock.size ? (stock.size.item ? stock.size.item.description : '') : '')});
-                add_cell(row, {text: (stock.size ? stock.size.size : '')});
+                add_cell(row, {text: (stock.size ? print_size(stock.size) : '')});
                 add_cell(row, {text: (stock.location ? stock.location.location : '')});
                 add_cell(row, {text: stock.qty});
                 add_cell(row, {append: [

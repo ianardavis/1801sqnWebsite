@@ -16,7 +16,7 @@ function getIssues () {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, table_date(issue.createdAt));
                 add_cell(row, {text: (issue.size ? (issue.size.item ? issue.size.item.description : '') : '')});
-                add_cell(row, {text: (issue.size ? issue.size.size : '')});
+                add_cell(row, {text: (issue.size ? print_size(issue.size) : '')});
                 add_cell(row, {text: issue.qty});
                 add_cell(row, {
                     text: issue_statuses[issue.status] || 'Unknown',

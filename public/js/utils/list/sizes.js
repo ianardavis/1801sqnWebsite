@@ -12,7 +12,7 @@ function listSizes(options = {}) {
                 sizes.forEach(size => {
                     sel_sizes.appendChild(new Option({
                         value:    (options.id_only ? size.size_id : `size_id=${size.size_id}`),
-                        text:     size.size,
+                        text:     print_size(size),
                         selected: (options.selected === size.size_id)
                     }).e);
                 });

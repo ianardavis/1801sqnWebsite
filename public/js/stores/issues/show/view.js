@@ -7,7 +7,7 @@ function getIssue() {
     .then(function ([issue, options]) {
         set_innerText({id: `issue_user_issue`,      text: print_user(issue.user_issue)});
         set_attribute({id: `issue_user_issue_link`, attribute: 'href', value: `/users/${issue.user_id_issue}`});
-        set_innerText({id: 'issue_size',            text: issue.size.size});
+        set_innerText({id: 'issue_size',            text: print_size(issue.size)});
         set_attribute({id: 'issue_size_link',       attribute: 'href', value: `/sizes/${issue.size_id}`});
         set_innerText({id: 'issue_item',            text: issue.size.item.description});
         set_attribute({id: 'issue_item_link',       attribute: 'href', value: `/items/${issue.size.item_id}`});

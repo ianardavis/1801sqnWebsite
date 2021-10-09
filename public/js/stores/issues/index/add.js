@@ -20,7 +20,7 @@ function selectedSizes(sizes) {
                         row.setAttribute('id', `size-${size.size_id}`);
                         add_cell(row, {text: size.item.description});
                         add_cell(row, {
-                            text: size.size,
+                            text: print_size(size),
                             append: new Input({
                                 attributes: [
                                     {field: 'type',  value: 'hidden'},

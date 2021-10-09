@@ -15,7 +15,7 @@ function getLines() {
                 try {
                     let row = tbl_lines.insertRow(-1);
                     add_cell(row, {text: line.size.item.description});
-                    add_cell(row, {text: line.size.size});
+                    add_cell(row, {text: print_size(line.size)});
                     add_cell(row, {text: line.qty});
                     add_cell(row, {
                         text: line_statuses[line.status],
@@ -63,7 +63,7 @@ function viewLine(loancard_line_id) {
     .then(function ([line, options]) {
         set_innerText({id: 'loancard_line_id', text: line.loancard_line_id});
         set_innerText({id: 'line_item',        text: line.size.item.description});
-        set_innerText({id: 'line_size',        text: line.size.size});
+        set_innerText({id: 'line_size',        text: print_size(line.size)});
         set_innerText({id: 'line_qty',         text: line.qty});
         set_innerText({id: 'line_user',        text: print_user(line.user)});
         set_innerText({id: 'line_createdAt',   text: print_date(line.createdAt, true)});

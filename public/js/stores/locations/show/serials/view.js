@@ -10,7 +10,7 @@ function getSerials() {
             serials.forEach(serial => {
                 let row = tbl_serials.insertRow(-1);
                 add_cell(row, {text: serial.size.item.description});
-                add_cell(row, {text: serial.size.size});
+                add_cell(row, {text: print_size(serial.size)});
                 add_cell(row, {text: serial.serial});
                 add_cell(row, {append: new Button({
                     modal: 'serial_view',
@@ -29,7 +29,7 @@ function viewSerial(serial_id) {
     .then(function ([serial, options]) {
         set_innerText({id: 'serial_id',        text: serial.serial_id});
         set_innerText({id: 'serial_item',      text: serial.size.item.description});
-        set_innerText({id: 'serial_size',      text: serial.size.size});
+        set_innerText({id: 'serial_size',      text: print_size(serial.size)});
         set_innerText({id: 'serial_serial',    text: serial.serial});
         set_innerText({id: 'serial_createdAt', text: print_date(serial.createdAt, true)});
         set_innerText({id: 'serial_updatedAt', text: print_date(serial.updatedAt, true)});

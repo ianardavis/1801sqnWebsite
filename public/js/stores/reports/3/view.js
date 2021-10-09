@@ -16,7 +16,7 @@ function getSizes() {
                 let tbl = document.querySelector(`#tbl_${size.item_id}`);
                 if (!tbl) tbl = addItem(form, p, size.item_id, size.item.description);
                 let row = tbl.insertRow(-1);
-                add_cell(row, {text: size.size});
+                add_cell(row, {text: print_size(size)});
                 add_cell(row, {id: `stock-${size.size_id}`});
                 add_cell(row, {id: `order-${size.size_id}`});
                 add_cell(row, {id: `demanded-${size.size_id}`});

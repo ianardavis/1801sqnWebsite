@@ -10,7 +10,7 @@ function getLines() {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, {text: print_user(line.loancard.user_loancard)});
                 add_cell(row, {text: (line.size ? (line.size.item ? line.size.item.description : '') : '')});
-                add_cell(row, {text: (line.size ? line.size.size : '')});
+                add_cell(row, {text: (line.size ? print_size(line.size) : '')});
                 add_cell(row, {text: line.qty})
                 add_cell(row, table_date(line.createdAt));
                 add_cell(row, table_date(line.loancard.date_due));

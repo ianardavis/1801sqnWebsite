@@ -6,10 +6,10 @@ function getDemandLine() {
     })
     .then(function ([line, options]) {
         console.log(line);
-        set_breadcrumb({text: `${line.size.item.description} | ${line.size.item.size_text || 'Size'}: ${line.size.size}`});
+        set_breadcrumb({text: `${line.size.item.description} | ${line.size.item.size_text1 || 'Size'}: ${print_size(line.size)}`});
         set_innerText({id: 'bcr_demand',     text: `${line.demand.supplier.name} - ${print_date(line.demand.createdAt)}`});
         set_innerText({id: 'line_item',      text: line.size.item.description});
-        set_innerText({id: 'line_size',      text: line.size.size});
+        set_innerText({id: 'line_size',      text: print_size(line.size)});
         set_innerText({id: 'line_qty',       text: line.qty});
         set_innerText({id: 'line_user',      text: print_user(line.user)});
         set_innerText({id: 'line_createdAt', text: print_date(line.createdAt, true)});

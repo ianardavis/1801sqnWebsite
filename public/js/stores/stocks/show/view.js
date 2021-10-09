@@ -4,9 +4,9 @@ function getStock() {
         query: [`stock_id=${path[2]}`]
     })
     .then(function ([stock, options]) {
-        set_breadcrumb({text: `${stock.size.item.description} | ${stock.size.item.size_text}: ${stock.size.size} | Location: ${stock.location.location}`})
+        set_breadcrumb({text: `${stock.size.item.description} | ${stock.size.item.size_text}: ${print_size(stock.size)} | Location: ${stock.location.location}`})
         set_innerText({id: 'stock_item',     text: stock.size.item.description});
-        set_innerText({id: 'stock_size',     text: stock.size.size});
+        set_innerText({id: 'stock_size',     text: print_size(stock.size)});
         set_innerText({id: 'stock_location', text: stock.location.location});
         set_innerText({id: 'stock_qty',      text: stock.qty || '0'});
         set_href({id: 'stock_location_link', value: `/locations/${stock.location_id}`});
