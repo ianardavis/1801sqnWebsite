@@ -26,7 +26,7 @@ function get_measurements() {
     return r;
 };
 function recommended_size(item_description, size, measurements) {
-    console.log(measurements);
+    console.log(Number(size.size1));
     console.log(size);
     if (!Number(size.size1) === NaN) size.size1 = Number(size.size1);
     if (!Number(size.size2) === NaN) size.size2 = Number(size.size2);
