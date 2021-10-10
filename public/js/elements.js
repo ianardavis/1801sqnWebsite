@@ -278,6 +278,7 @@ function Card(options = {}) {
         a.setAttribute('id', `a_${options.id}`)
     };
     this.e.classList.add('col-12', 'col-sm-6', 'col-lg-4', 'col-xl-3');
+    this.e.style.height = '240px';
     if (options.href) a.setAttribute('href', options.href);
     a.classList.add('card', 'm-3', 'text-start');
     header.classList.add('card-header');
