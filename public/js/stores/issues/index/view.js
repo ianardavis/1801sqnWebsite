@@ -22,7 +22,7 @@ function getIssues() {
                 add_cell(row, {
                     text: issue_statuses[issue.status] || 'Unknown',
                     ...(
-                        [1, 2, 3].includes(issue.status) ?
+                        [1, 2, 3, 4].includes(issue.status) ?
                         {
                             classes: ['actions'],
                             data:    [

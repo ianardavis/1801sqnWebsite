@@ -63,23 +63,23 @@ function recommended_size(item_description, size, measurements) {
             break;
         case 'shirt, light blue, long sleeve, male':
             if (measurements.collar && 
-                    measurements.collar === size.size1 - 1
+                    measurements.collar === size1 - 1
             ) return true;
             break;
         case 'shirt, working blue, long sleeve, male':
         case 'shirt, working blue, extra long sleeve, male':
             if (measurements.collar && (
-                    measurements.collar <= 31                              && size.size1 === '31' ||
-                    measurements.collar >= 32 && measurements.collar <= 34 && size.size1 === '32' ||
-                    measurements.collar >= 35 && measurements.collar <= 37 && size.size1 === '35' ||
-                    measurements.collar >= 38 && measurements.collar <= 40 && size.size1 === '38' ||
-                    measurements.collar >= 41 && measurements.collar <= 43 && size.size1 === '41' ||
-                    measurements.collar >= 44 && measurements.collar <= 46 && size.size1 === '44' ||
-                    measurements.collar >= 47                              && size.size1 === '47')
+                    measurements.collar <= 31                              && size1 === '31' ||
+                    measurements.collar >= 32 && measurements.collar <= 34 && size1 === '32' ||
+                    measurements.collar >= 35 && measurements.collar <= 37 && size1 === '35' ||
+                    measurements.collar >= 38 && measurements.collar <= 40 && size1 === '38' ||
+                    measurements.collar >= 41 && measurements.collar <= 43 && size1 === '41' ||
+                    measurements.collar >= 44 && measurements.collar <= 46 && size1 === '44' ||
+                    measurements.collar >= 47                              && size1 === '47')
             ) return true;
             break;
         case 'belt, waist':
-            if (size.size1 === '64/114') return true;
+            if (size1 === '64/114') return true;
             break;
         };
     return false;
