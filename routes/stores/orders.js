@@ -89,14 +89,14 @@ module.exports = (app, m, fn) => {
                         issues.forEach(issue => {
                             if (issue.issue.status === 3) {
                                 issue_actions.push(fn.update(issue.issue, {status: 2}));
-                                issue_actions.push(fn.actions.create({
-                                    action:  'Order cancelled',
-                                    user_id: req.user.user_id,
-                                    links: [
+                                issue_actions.push(fn.actions.create(
+                                    'Order cancelled',
+                                    req.user.user_id,
+                                    [
                                         {table: 'issues', id: issue.issue_id},
                                         {table: 'orders', id: order.order_id}
                                     ]
-                                }));
+                                ));
                             };
                         });
                         return Promise.allSettled(issue_actions)
@@ -135,11 +135,11 @@ module.exports = (app, m, fn) => {
                             .then(update_result => {
                                 if (!result) resolve({success: true, message: 'Order received, line not updated'})
                                 else {
-                                    fn.actions.create({
-                                        action:  'Order received',
-                                        user_id: user_id,
-                                        links: [{table: 'orders', id: order.order_id}].concat(result)
-                                    })
+                                    fn.actions.create(
+                                        'Order received',
+                                        user_id,
+                                        [{table: 'orders', id: order.order_id}].concat(result)
+                                    )
                                     .then(action => resolve({success: true, message: 'Order received'}))
                                     .catch(err => {
                                         console.log(err);

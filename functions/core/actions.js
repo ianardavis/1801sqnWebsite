@@ -1,36 +1,29 @@
 module.exports = function (m, fn) {
     fn.actions = {};
-    fn.actions.create = function (options = {}) {
+    fn.actions.create = function (action, user_id, links) {
         return new Promise((resolve, reject) => {
-            if      (!options.action)  reject(new Error('No action specified'))
-            else if (!options.user_id) reject(new Error('No user specified'))
-            else if (!options.links || options.links.length === 0) reject(new Error('No links specified'))
-            else {
-                return m.actions.create({
-                    action:  options.action,
-                    user_id: options.user_id
-                })
-                .then(action => {
-                    let links = [];
-                    options.links.forEach(link => {
-                        if (link.table && link.id) {
-                            links.push(new Promise((resolve, reject) => {
-                                return m.action_links.create({
-                                    action_id: action.action_id,
-                                    _table:    link.table,
-                                    id:        link.id
-                                })
-                                .then(link => resolve(link.action_link_id))
-                                .catch(err => reject(err));
-                            }));
-                        };
-                    });
-                    Promise.all(links)
-                    .then(result => resolve(true))
-                    .catch(err => reject(err));
-                })
+            return m.actions.create({
+                action:  action,
+                user_id: user_id
+            })
+            .then(action => {
+                let link_actions = [];
+                links.forEach(link => {
+                    link_actions.push(new Promise((resolve, reject) => {
+                        return m.action_links.create({
+                            action_id: action.action_id,
+                            _table:    link.table,
+                            id:        link.id
+                        })
+                        .then(link => resolve(link.action_link_id))
+                        .catch(err => reject(err));
+                    }));
+                });
+                Promise.all(link_actions)
+                .then(result => resolve(true))
                 .catch(err => reject(err));
-            };
+            })
+            .catch(err => reject(err));
         });
     };
 };

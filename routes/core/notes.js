@@ -18,8 +18,13 @@ module.exports = (app, m, fn) => {
     });
 
     app.post('/notes',       fn.loggedIn(), fn.permissions.check('note_add'),     (req, res) => {
-        req.body.note.user_id = req.user.user_id;
-        m.notes.create(req.body.note)
+        fn.notes.create(
+            req.body.note.note,
+            req.user.user_id,
+            req.body.note.id,
+            req.body.note._table,
+            false
+        )
         .then(note => res.send({success: true, message: 'Note added'}))
         .catch(err => fn.send_error(res, err));
     });

@@ -21,24 +21,24 @@ module.exports = function (m, fn) {
                         if (!created) {
                             actions.push(fn.increment(order, line.qty));
                             actions.push(
-                                fn.actions.create({
-                                    action:  `Order incremented${(issue_id ? ' from issue' : '')}`,
-                                    user_id: user_id,
-                                    links: [
+                                fn.actions.create(
+                                    `Order incremented${(issue_id ? ' from issue' : '')}`,
+                                    user_id,
+                                    [
                                         {table: 'issues', id: issue_id},
                                         {table: 'orders', id: order.order_id}
                                     ]
-                                })
+                                )
                             )
                         } else if (issue_id) actions.push(
-                            fn.actions.create({
-                                action:  'Order created from issue',
-                                user_id: user_id,
-                                links: [
+                            fn.actions.create(
+                                'Order created from issue',
+                                user_id,
+                                [
                                     {table: 'issues', id: issue_id},
                                     {table: 'orders', id: order.order_id}
                                 ]
-                            })
+                            )
                         );
                         return Promise.all(actions)
                         .then(result => resolve(true))
@@ -101,14 +101,14 @@ module.exports = function (m, fn) {
                                         .then(demand_line_id => {
                                             return fn.update(order, {status: 2})
                                             .then(result => {
-                                                return fn.actions.create({
-                                                    action: 'Order added to demand',
-                                                    user_id: user_id,
-                                                    links: [
+                                                return fn.actions.create(
+                                                    'Order added to demand',
+                                                    user_id,
+                                                    [
                                                         {table: 'orders',       id: order.order_id},
                                                         {table: 'demand_lines', id: demand_line_id}
                                                     ]
-                                                })
+                                                )
                                                 .then(action => resolve(demand_line_id))
                                                 .catch(err => resolve(demand_line_id));
                                             })

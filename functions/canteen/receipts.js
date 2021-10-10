@@ -37,12 +37,12 @@ module.exports = function (m, fn) {
                                 .then(result => {
                                     if (!result) resolve(true);
                                     else {
-                                        fn.notes.create({
-                                            table:   'canteen_items', 
-                                            id:      item.item_id,
-                                            note:    `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`,
-                                            user_id: user_id
-                                        })
+                                        fn.notes.create(
+                                            'canteen_items',
+                                            user_id,
+                                            item.item_id,
+                                            `Item cost updated from £${item.cost.toFixed(2)} to £${cost_new.toFixed(2)} by receipt`
+                                        )
                                         .then(note => resolve(true))
                                         .catch(err => resolve(true))
                                     };

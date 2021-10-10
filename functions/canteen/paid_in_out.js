@@ -58,13 +58,11 @@ module.exports = function (m, fn) {
                         .then(result => {
                             return fn.update(paid_in_out, {status: 2})
                             .then(result => {
-                                return fn.actions.create({
-                                    action: 'COMPLETED',
-                                    user_id: user_id,
-                                    links: [
-                                        {table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}
-                                    ]
-                                })
+                                return fn.actions.create(
+                                    'COMPLETED',
+                                    user_id,
+                                    [{table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}]
+                                )
                                 .then(action => resolve(true))
                                 .catch(err => {
                                     console.log(err);
@@ -93,11 +91,11 @@ module.exports = function (m, fn) {
                 else if (paid_in_out.status === 1) {
                     return fn.update(paid_in_out, {status: 0})
                     .then(result => {
-                        return fn.actions.create({
-                            action: 'CANCELLED',
-                            user_id: user_id,
-                            links: [{table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}]
-                        })
+                        return fn.actions.create(
+                            'CANCELLED',
+                            user_id,
+                            [{table: 'paid_in_outs', id: paid_in_out.paid_in_out_id}]
+                        )
                         .then(action => resolve(true))
                         .catch(err => {
                             console.log(err);

@@ -64,11 +64,11 @@ module.exports = function (m, fn) {
                 else {
                     return action
                     .then(result => {
-                        return fn.actions.create({
-                            action: action_text,
-                            user_id: options.user_id,
-                            links: [{table: 'stocks', id: stock.stock_id}]
-                        })
+                        return fn.actions.create(
+                            action_text,
+                            options.user_id,
+                            [{table: 'stocks', id: stock.stock_id}]
+                        )
                         .then(results => resolve(results))
                         .catch(err => reject(err));
                     })
@@ -86,12 +86,13 @@ module.exports = function (m, fn) {
                 .then(result => {
                     if (!result) reject(new Error('Stock not incremented'))
                     else {
-                        fn.actions.create({
-                            action:  `RECEIPT | Qty: ${qty}`,
-                            user_id: options.user_id,
-                            links:   [{table: 'stocks', id: stock.stock_id}]
-                                     .concat(options.action_links || [])
-                        })
+                        fn.actions.create(
+                            `RECEIPT | Qty: ${qty}`,
+                            options.user_id,
+                            [
+                                {table: 'stocks', id: stock.stock_id}
+                            ].concat(options.action_links || [])
+                        )
                         .then(result => resolve(true))
                         .catch(err => reject(err));
                     };

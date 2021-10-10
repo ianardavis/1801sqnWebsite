@@ -81,14 +81,14 @@ module.exports = function (m, fn) {
                     };
                     return Promise.all(actions)
                     .then(result => {
-                        return fn.actions.create({
-                            action:  'RECEIVED',
-                            user_id: options.user_id,
-                            links: [
+                        return fn.actions.create(
+                            'RECEIVED',
+                            options.user_id,
+                            [
                                 {table: 'locations', id: location_id},
                                 {table: 'serials',   id: serial.serial_id}
                             ].concat(options.links || [])
-                        })
+                        )
                         .then(action => resolve(true))
                         .catch(err => {
                             console.log(err);

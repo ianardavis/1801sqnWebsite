@@ -231,11 +231,11 @@ module.exports = function (m, fn) {
                             .then(result => {
                                 if (!result) reject(new Error('Loancard not updated'))
                                 else {
-                                    return fn.actions.create({
-                                        action: 'CANCELLED',
-                                        user_id: options.user_id,
-                                        links: [{table: 'loancards', id: loancard.loancard_id}]
-                                    })
+                                    return fn.actions.create(
+                                        'CANCELLED',
+                                        options.user_id,
+                                        [{table: 'loancards', id: loancard.loancard_id}]
+                                    )
                                     .then(action => resolve(true))
                                     .catch(err => resolve(false));
                                 };
@@ -289,11 +289,11 @@ module.exports = function (m, fn) {
                                 actions.push(new Promise((resolve, reject) => {
                                     fn.update(line, {status: 2})
                                     .then(result => {
-                                        return fn.actions.create({
-                                            action:  'COMPLETED',
-                                            user_id: options.user_id,
-                                            links: [{table: 'loancard_lines', id: line.loancard_line_id}]
-                                        })
+                                        return fn.actions.create(
+                                            'COMPLETED',
+                                            options.user_id,
+                                            [{table: 'loancard_lines', id: line.loancard_line_id}]
+                                        )
                                         .then(action => resolve(true))
                                         .catch(err => resolve(false));
                                     })
@@ -309,11 +309,11 @@ module.exports = function (m, fn) {
                             ));
                             return Promise.all(actions)
                             .then(result => {
-                                return fn.actions.create({
-                                    action:  'COMPLETED',
-                                    user_id: options.user_id,
-                                    links: [{table: 'loancards', id: loancard.loancard_id}]
-                                })
+                                return fn.actions.create(
+                                    'COMPLETED',
+                                    options.user_id,
+                                    [{table: 'loancards', id: loancard.loancard_id}]
+                                )
                                 .then(action => resolve(true))
                                 .catch(err => resolve(false));
                             })
@@ -344,11 +344,11 @@ module.exports = function (m, fn) {
                     else {
                         return fn.update(loancard, {status: 3})
                         .then(result => {
-                            return fn.actions.create({
-                                action:  'CLOSED',
-                                user_id: options.user_id,
-                                links: [{table: 'loancards', id: loancard.loancard_id}]
-                            })
+                            return fn.actions.create(
+                                'CLOSED',
+                                options.user_id,
+                                [{table: 'loancards', id: loancard.loancard_id}]
+                            )
                             .then(action => resolve(true))
                             .catch(err => resolve(true));
                         })
@@ -602,11 +602,11 @@ module.exports = function (m, fn) {
                             .then(results => {
                                 let issue_links = [];
                                 results.filter(e => e.status === 'fulfilled').forEach(e => issue_links.push(e.value));
-                                return fn.actions.create({
-                                    action: 'CANCELLED',
-                                    user_id: options.user_id,
-                                    links: [{table: 'loancard_lines', id: line.loancard_line_id}].concat(result.links).concat(issue_links)
-                                })
+                                return fn.actions.create(
+                                    'CANCELLED',
+                                    options.user_id,
+                                    [{table: 'loancard_lines', id: line.loancard_line_id}].concat(result.links).concat(issue_links)
+                                )
                                 .then(result => resolve(line.loancard_id))
                                 .catch(err => {
                                     console.log(err);
@@ -651,14 +651,14 @@ module.exports = function (m, fn) {
                             .then(action_links => {
                                 return fn.update(issue, {status: 4})
                                 .then(result => {
-                                    return fn.actions.create({
-                                        action:  'Issue added to loancard',
-                                        user_id: options.user_id,
-                                        links: [
+                                    return fn.actions.create(
+                                        'Issue added to loancard',
+                                        options.user_id,
+                                        [
                                             {table: 'issues', id: issue.issue_id},
                                             (nsn_id ? {table: 'nsns', id: nsn_id} : {})
                                         ].concat(action_links)
-                                    })
+                                    )
                                     .then(action => resolve(true))
                                     .catch(err =>   resolve(false));
                                 })
@@ -743,14 +743,14 @@ module.exports = function (m, fn) {
                                         .then(new_line => {
                                             return fn.update(line, {qty: options.qty})
                                             .then(result => {
-                                                return fn.actions.create({
-                                                    action: 'Line created from partial return',
-                                                    user_id: options.user_id,
-                                                    links: [
+                                                return fn.actions.create(
+                                                    'Line created from partial return',
+                                                    options.user_id,
+                                                    [
                                                         {table: 'loancard_lines', id: line.loancard_line},
                                                         {table: 'loancard_lines', id: new_line.loancard_line}
                                                     ]
-                                                })
+                                                )
                                                 .then(result => resolve(true))
                                                 .catch(err => {
                                                     console.log(err);
@@ -788,14 +788,14 @@ module.exports = function (m, fn) {
                                 return Promise.allSettled(update_actions)
                                 .then(results => {
                                     if (results.filter(e => e.status === 'rejected').length > 0) console.log(results);
-                                    return fn.actions.create({
-                                        action:  'RETURNED',
-                                        user_id: options.user_id,
-                                        links: [
+                                    return fn.actions.create(
+                                        'RETURNED',
+                                        options.user_id,
+                                        [
                                             {table: 'loancard_lines', id: line.loancard_line_id},
                                             {table: 'locations',      id: location.location_id}
                                         ].concat(issue_links).concat(result.links)
-                                    })
+                                    )
                                     .then(result => resolve(line.loancard_id))
                                     .catch(err => resolve(line.loancard_id));
                                 })

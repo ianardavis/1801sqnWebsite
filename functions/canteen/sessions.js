@@ -21,11 +21,11 @@ module.exports = function (m, fn) {
                         defaults: {user_id_open: user_id}
                     })
                     .then(([session, created]) => {
-                        return fn.actions.create({
-                            action: `Count on session opening. Cash: £${cash}`,
-                            user_id: user_id,
-                            links: [{table: 'holdings', id: holding.holding_id}]
-                        })
+                        return fn.actions.create(
+                            `Count on session opening. Cash: £${cash}`,
+                            user_id,
+                            [{table: 'holdings', id: holding.holding_id}]
+                        )
                         .then(result => {
                             if (created) resolve('Session opened')
                             else         resolve('Session already open');
