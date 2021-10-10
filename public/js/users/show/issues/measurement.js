@@ -21,7 +21,7 @@ function get_items() {
 function get_measurements() {
     let r = {};
     document.querySelectorAll('.measurement').forEach(e => {
-        if (e.value) r[e.dataset.measurement] = e.value;
+        if (e.value) r[e.dataset.measurement] = Number(e.value);
     });
     return r;
 };
