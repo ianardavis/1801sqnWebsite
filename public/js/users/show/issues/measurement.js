@@ -26,6 +26,8 @@ function get_measurements() {
     return r;
 };
 function recommended_size(item_description, size, measurements) {
+    console.log(measurements);
+    console.log(size);
     switch (item_description.toLowerCase()) {
         case 'beret':
             if (measurements.head && 
