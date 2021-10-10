@@ -49,12 +49,12 @@
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/search/table.js"></script>
 <script src="/js/stores/items/index/view.js"></script>
-<script async>getItems()</script>
 <% if (permissions.access_genders) { %>
 	<script src="/js/utils/list/genders.js"></script>
 	<script src="/js/stores/items/index/genders/view.js"></script>
 	<script async>getGenders()</script>
 <% } %>
+<script async>getItems()</script>
 <% if (permissions.item_add) { %>
 	<script src="/js/stores/items/size_descriptions.js"></script>
 	<script src="/js/stores/items/index/add.js"></script>

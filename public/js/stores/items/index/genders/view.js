@@ -4,7 +4,7 @@ function getGenders() {
         select: 	'sel_genders',
         blank: 		true
     })
-    .then(getItems);
+    // .then(getItems);
 };
 window.addEventListener('load', function () {
     addListener('sel_genders',    getItems, 'change');

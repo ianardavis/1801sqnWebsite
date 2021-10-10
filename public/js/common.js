@@ -16,6 +16,8 @@ function sortTable(n, tableName, obj) {
                 shouldSwitch = false;
                 x = rows[i]    .querySelectorAll("td")[n].dataset.sort || rows[i]    .querySelectorAll("td")[n].innerText.toLowerCase();
                 y = rows[i + 1].querySelectorAll("td")[n].dataset.sort || rows[i + 1].querySelectorAll("td")[n].innerText.toLowerCase();
+                if (!isNaN(x)) x = Number(x);
+                if (!isNaN(y)) y = Number(y);
                 if (dir == "asc") {
                     if (x > y) {
                         shouldSwitch = true;
@@ -251,5 +253,19 @@ function add_spinner(obj, options = {}) {
 function remove_spinner(id) {
     let spinner = document.querySelector(`#spn_${id}`);
     if (spinner) spinner.remove();
+};
+function get_stock(size_id) {
+    return new Promise(resolve => {
+        sum({
+            table: 'stocks',
+            query: [`size_id=${size_id}`]
+        })
+        .then(([stock, options]) => resolve(stock))
+        .catch(err => {
+            console.log('Error getting stock:');
+            console.log(err);
+            resolve('?');
+        });
+    });
 };
 let path = window.location.pathname.toString().split('/');

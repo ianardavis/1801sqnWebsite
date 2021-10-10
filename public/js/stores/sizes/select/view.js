@@ -22,11 +22,8 @@ function getSizes(item_id) {
             })
             .then(function ([sizes, options]) {
                 sizes.forEach(size => {
-                    sum({
-                        table: 'stocks',
-                        query: [`size_id=${size.size_id}`]
-                    })
-                    .then(function ([stock, options]) {
+                    get_stock(size.size_id)
+                    .then(stock => {
                         let row = tbl_sizes.insertRow(-1);
                         add_cell(row, {append: new Checkbox({small: true, attributes: [{field: 'data-id', value: size.size_id}]}).e});
                         add_cell(row, {text: size.size1});

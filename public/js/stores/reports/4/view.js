@@ -21,13 +21,8 @@ function getSizes() {
                         href: `/sizes/${size.size_id}`
                     }).e
                 });
-                sum({
-                    table: 'stocks',
-                    query: [`size_id=${size.size_id}`]
-                })
-                .then(function([stock, options]) {
-                    set_innerText({id: `stock-${size.size_id}`, value: stock || '0'});
-                });
+                get_stock(size.size_id)
+                .then(stock => set_innerText({id: `stock-${size.size_id}`, value: stock || '0'}));
             });
         });
     });
