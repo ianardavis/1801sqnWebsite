@@ -17,8 +17,7 @@
 				<%- include(`${partials}/menu/button`, {id: 'contact_add',   text: 'Add Contact', modal: 'contact_add'}) %>
                 <% if (permissions.setting_edit) { %>
                     <form id='form_set_default'>
-                        <input type="hidden" name='setting[name]' value='default_supplier'>
-                        <input class='supplier_id' type="hidden" name='setting[value]'>
+                        <input class='supplier_id' type="hidden" name='supplier_id'>
                         <%- include(`${partials}/menu/button`, {id: 'default', text: 'Make Default'}) %>
                     </form>
                 <% } %>

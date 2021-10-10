@@ -12,7 +12,7 @@ window.addEventListener("load", function () {
     addFormListener(
         'set_default',
         'PUT',
-        '/settings',
+        '/suppliers/default',
         {
             onComplete: [
                 getDefault,
