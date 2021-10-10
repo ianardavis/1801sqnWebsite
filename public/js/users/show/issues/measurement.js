@@ -26,37 +26,38 @@ function get_measurements() {
     return r;
 };
 function recommended_size(item_description, size, measurements) {
-    console.log(Number(size.size1));
-    console.log(size);
-    if (!Number(size.size1) === NaN) size.size1 = Number(size.size1);
-    if (!Number(size.size2) === NaN) size.size2 = Number(size.size2);
-    if (!Number(size.size3) === NaN) size.size3 = Number(size.size3);
+    let size1 = size.size1 || null,
+        size2 = size.size2 || null,
+        size3 = size.size3 || null;
+    if (!Number(size1) === NaN) size1 = Number(size1);
+    if (!Number(size2) === NaN) size2 = Number(size2);
+    if (!Number(size3) === NaN) size3 = Number(size3);
     switch (item_description.toLowerCase()) {
         case 'beret':
             if (measurements.head && 
-                    measurements.head === size.size1 - 1
+                    measurements.head === size1 - 1
                 ) return true;
             break;
         case 'tie':
             if (measurements.collar && (
-                    (measurements.collar >  35 && size.size1 === 'long') ||
-                    (measurements.collar <= 35 && size.size1 === 'short')
+                    (measurements.collar >  35 && size1 === 'long') ||
+                    (measurements.collar <= 35 && size1 === 'short')
                 )
             ) return true;
             break;
         case 'jumper, utility':
             if (measurements.chest && (
-                    (measurements.chest < 74                              && size.size1 === '74')  ||
-                    (measurements.chest > 74  && measurements.chest < 82  && size.size1 === '82')  ||
-                    (measurements.chest > 82  && measurements.chest < 88  && size.size1 === '88')  ||
-                    (measurements.chest > 88  && measurements.chest < 94  && size.size1 === '94')  ||
-                    (measurements.chest > 94  && measurements.chest < 100 && size.size1 === '100') ||
-                    (measurements.chest > 100 && measurements.chest < 106 && size.size1 === '106') ||
-                    (measurements.chest > 106 && measurements.chest < 112 && size.size1 === '112') ||
-                    (measurements.chest > 112 && measurements.chest < 118 && size.size1 === '118') ||
-                    (measurements.chest > 118 && measurements.chest < 124 && size.size1 === '124') ||
-                    (measurements.chest > 124 && measurements.chest < 130 && size.size1 === '130') ||
-                    (measurements.chest > 130                             && size.size1 === '136')
+                    (measurements.chest < 74                              && size1 === '74')  ||
+                    (measurements.chest > 74  && measurements.chest < 82  && size1 === '82')  ||
+                    (measurements.chest > 82  && measurements.chest < 88  && size1 === '88')  ||
+                    (measurements.chest > 88  && measurements.chest < 94  && size1 === '94')  ||
+                    (measurements.chest > 94  && measurements.chest < 100 && size1 === '100') ||
+                    (measurements.chest > 100 && measurements.chest < 106 && size1 === '106') ||
+                    (measurements.chest > 106 && measurements.chest < 112 && size1 === '112') ||
+                    (measurements.chest > 112 && measurements.chest < 118 && size1 === '118') ||
+                    (measurements.chest > 118 && measurements.chest < 124 && size1 === '124') ||
+                    (measurements.chest > 124 && measurements.chest < 130 && size1 === '130') ||
+                    (measurements.chest > 130                             && size1 === '136')
                 )
             ) return true;
             break;
