@@ -28,6 +28,9 @@ function get_measurements() {
 function recommended_size(item_description, size, measurements) {
     console.log(measurements);
     console.log(size);
+    if (!isNan(size.size1)) size.size1 = Number(size.size1);
+    if (!isNan(size.size2)) size.size2 = Number(size.size2);
+    if (!isNan(size.size3)) size.size3 = Number(size.size3);
     switch (item_description.toLowerCase()) {
         case 'beret':
             if (measurements.head && 
