@@ -111,7 +111,7 @@ module.exports = function (m, fn) {
                         if (!lines || lines.length === 0) reject(new Error('No open lines on this loancard'))
                         else {
                             return fn.create_barcode(loancard.loancard_id)
-                            .then(barcodeCreated => {
+                            .then(result => {
                                 return createFile(loancard)
                                 .then(([doc, file, writeStream]) => {
                                     addPage(doc);

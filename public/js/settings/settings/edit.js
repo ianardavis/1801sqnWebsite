@@ -5,7 +5,7 @@ function settingEditBtn(setting_id) {
             new Link({
                 modal: 'setting_edit',
                 type: 'edit',
-                data:  {field: 'id', value: setting_id}
+                data:  [{field: 'id', value: setting_id}]
             }).e
         );
     });
@@ -83,5 +83,5 @@ window.addEventListener('load', function () {
     );
     addListener('btn_printers', getPrinters);
     modalOnShow('setting_edit', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});
-    modalOnShow('setting_view', function (event) {settingEditBtn(event.relatedTarget.dataset.id)});
+    modalOnShow('setting_view', function (event) {settingEditBtn( event.relatedTarget.dataset.id)});
 });
