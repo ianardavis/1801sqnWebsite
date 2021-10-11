@@ -38,15 +38,15 @@ function addEditSelect() {
                         div_details.setAttribute('id', `issue_${issue.issue_id}_details`);
                         cell.appendChild(div_details);
                         return issue;
-                    };
+                    } else return issue;
                 })
                 .then(issue => {
-                    console.log(cell.dataset.id);
-                    console.log(issue);
-                    if (issue.status === 1            && issue.size.issueable && typeof addApproveOption  === 'function') addApproveOption( issue.issue_id);
-                    if (issue.status === 2            && issue.size.orderable && typeof addOrderOption    === 'function') addOrderOption(   issue.issue_id);
-                    if ([2, 3].includes(issue.status) && issue.size.issueable && typeof addIssueOption    === 'function') addIssueOption(   issue.issue_id);
-                    if (issue.status === 4                                    && typeof addLoancardOption === 'function') addLoancardOption(issue.issue_id);
+                    if (issue) {
+                        if (issue.status === 1            && issue.size.issueable && typeof addApproveOption  === 'function') addApproveOption( issue.issue_id);
+                        if (issue.status === 2            && issue.size.orderable && typeof addOrderOption    === 'function') addOrderOption(   issue.issue_id);
+                        if ([2, 3].includes(issue.status) && issue.size.issueable && typeof addIssueOption    === 'function') addIssueOption(   issue.issue_id);
+                        if (issue.status === 4                                    && typeof addLoancardOption === 'function') addLoancardOption(issue.issue_id);
+                    };
                     resolve(true);
                 })
                 .catch(err => {
