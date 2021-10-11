@@ -30,7 +30,7 @@
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_date_due', 	 title: 'Date Due',  edit: true, modal: 'due_edit'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_updatedAt', 	 title: 'Last Updated'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_status',   	 title: 'Status'}) %>
-			<%- include(`${partials}/inputs/display`, {id: 'loancard_filename',  	 title: 'Filename'}) %>
+			<%- include(`${partials}/inputs/display`, {id: 'loancard_filename',  	 title: 'Filename', download: true, print: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_user',			 title: 'Raised By', link: true}) %>
 		</div>
 		<% if (permissions.access_loancard_lines) { %>

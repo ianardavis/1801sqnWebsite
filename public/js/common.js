@@ -218,11 +218,12 @@ function toggle_checkbox_on_row_click(event) {
     if (checkbox) checkbox.click();
 };
 function modalHide(id) {
-    let e = document.querySelector(`#mdl_${id}`);
-    console.log(e)
-    let modal = new bootstrap.Modal(e);
-    console.log(modal)
-    if (modal) modal.hide();
+    // let e = document.querySelector(`#mdl_${id}`);
+    // console.log(e)
+    let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`));
+    // console.log(modal)
+    // if (modal) modal.hide();
+    if (modal) modal.dispose();
 };
 function modalOnShow(id, func) {
     let modal = document.querySelector(`#mdl_${id}`);

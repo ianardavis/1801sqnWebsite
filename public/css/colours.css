@@ -8,6 +8,9 @@
 /* B9CBE2 */
 /* 010a1f */
 /* var(--main-color); */
+/* #337ab7 */
+/* #4f6a99 */
+/* hover colour #0101a1f */
 #col_headers .btn {
 	background-color: #bdffa3;
 	color:#010a1f;
@@ -148,7 +151,6 @@ table, th, td, thead {
 	color: var(--main-color);
 }
 
-
 .input-group-text {
 	color: var(--alt-color2);
 	background-color: var(--main-color);
@@ -157,7 +159,3 @@ table, th, td, thead {
 	color: var(--alt-color2);
 	background-color: var(--main-color);
 }
-
-/* #337ab7 */
-/* #4f6a99 */
-/* hover colour #0101a1f */
