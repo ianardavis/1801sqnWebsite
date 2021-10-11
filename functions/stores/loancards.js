@@ -113,6 +113,7 @@ module.exports = function (m, fn) {
         .moveTo(315, y_0).lineTo(315,    y).stroke()
         .moveTo(345, y_0).lineTo(345,    y).stroke()
         .moveTo(445, y_0).lineTo(445,    y).stroke();
+        return y;
     };
     fn.loancards.createPDF = function (loancard_id) {
         return new Promise((resolve, reject) => {
@@ -153,7 +154,7 @@ module.exports = function (m, fn) {
                                     // addHeader(doc, loancard);
                                     let y = 225;
                                     lines.forEach(line => {
-                                        add_line(doc, line, y, loancard);
+                                        y = add_line(doc, line, y, loancard);
                                         // if (y >= 761.89) {
                                         //     doc.text('END OF PAGE', 268, y);
                                         //     addPage(doc);
