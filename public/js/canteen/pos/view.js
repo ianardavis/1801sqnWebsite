@@ -36,7 +36,7 @@ function getSale() {
             set_innerText({id: 'sale_id', value: sale_id});
             document.querySelectorAll('.sale_id').forEach(e => e.setAttribute('value', sale_id));
             getSaleLines();
-        } else alert('Sale not found');
+        } else alert_toast('Sale not found');
     });
 };
 function getSaleLines() {

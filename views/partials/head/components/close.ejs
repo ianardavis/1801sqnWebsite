@@ -2,3 +2,12 @@
 <%- include(`${partials}/head/components/navbar_menu_user`) %>
 <%- include(`${partials}/head/components/navbar_close`) %>
 <%- include(`${partials}/head/components/flash`) %>
+<div id='div_toasts' style="position: relative;">
+    <div id='toast_alert' role="alert" aria-live="assertive" aria-atomic="true" class="toast" style="position: absolute; top: 0; right: 0;">
+        <div class="toast-header">
+            <strong class="me-auto" id='alert_title'>Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id='alert_text'></div>
+    </div>
+</div>

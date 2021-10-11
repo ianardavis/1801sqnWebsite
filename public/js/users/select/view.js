@@ -41,7 +41,7 @@ function selectUsers() {
             e.checked = false;
         });
         window.opener.selectedUsers(users);
-    } else alert('Source window not found');
+    } else alert_toast('Source window not found');
 };
 window.addEventListener('load', function () {
     addListener('tbl_users', toggle_checkbox_on_row_click);

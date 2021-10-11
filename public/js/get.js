@@ -145,7 +145,7 @@ function sendData(form, method, _location, options = {reload: false}) {
         try {
             let response = JSON.parse(event.target.responseText);
             if (response.success === true) {
-                if (!options.noConfirmAlert) alert(response.message);
+                if (!options.noConfirmAlert) alert_toast(response.message);
                 if (options.onComplete) {
                     if (Array.isArray(options.onComplete)) {
                         options.onComplete.forEach(func => {
@@ -184,7 +184,7 @@ function sendData(form, method, _location, options = {reload: false}) {
                     };
                 };
                 console.log(response);
-                alert(response.message || response.error || 'Unknown error');
+                alert_toast(response.message || response.error || 'Unknown error');
             };
         } catch (error) {
             console.log(error)
@@ -192,7 +192,7 @@ function sendData(form, method, _location, options = {reload: false}) {
     });
     XHR.addEventListener("error", function (event) {
         console.log(event);
-        alert('Something went wrong.');
+        alert_toast('Something went wrong.');
     });
     XHR.open(method, _location);
     XHR.send(FD);
