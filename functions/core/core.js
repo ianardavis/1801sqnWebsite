@@ -271,4 +271,7 @@ module.exports = function (m, fn) {
     fn.print_size_text = function (item) {
         return `${item.size_text1}${(item.size_text2 ? `/${item.size_text2}` : '')}${(item.size_text3 ? `/${item.size_text3}` : '')}`
     };
+    fn.print_nsn = function (nsn) {
+        return `${String(nsn.nsn_group.code).padStart(2, '0')}${String(nsn.nsn_class.code).padStart(2, '0')}-${String(nsn.nsn_country.code).padStart(2, '0')}-${nsn.item_number}`
+    };
 };
