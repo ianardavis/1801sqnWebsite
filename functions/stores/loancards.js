@@ -153,7 +153,7 @@ module.exports = function (m, fn) {
                                     // addHeader(doc, loancard);
                                     let y = 225;
                                     lines.forEach(line => {
-                                        add_line(doc, y, line, loancard);
+                                        add_line(doc, line, y, loancard);
                                         // if (y >= 761.89) {
                                         //     doc.text('END OF PAGE', 268, y);
                                         //     addPage(doc);
