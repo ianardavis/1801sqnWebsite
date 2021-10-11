@@ -365,6 +365,7 @@ module.exports = function (m, fn) {
                     required: true,
                     include: [{
                         model: m.action_links,
+                        as: 'link',
                         where: {
                             _table: 'demand_lines',
                             id: demand_line_id
