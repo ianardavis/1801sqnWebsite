@@ -10,7 +10,7 @@ function addEditSelect() {
                     query: [`issue_id=${cell.dataset.id}`]
                 })
                 .then(function ([issue, options]) {
-                    if ([1,2,3].includes(issue.status)) {
+                    if ([1, 2, 3, 4].includes(issue.status)) {
                         cell.innerHTML = '';
                         cell.appendChild(new Hidden({
                             attributes: [
@@ -37,7 +37,7 @@ function addEditSelect() {
                         let div_details = document.createElement('div');
                         div_details.setAttribute('id', `issue_${issue.issue_id}_details`);
                         cell.appendChild(div_details);
-                        return issue
+                        return issue;
                     };
                 })
                 .then(issue => {
