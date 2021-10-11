@@ -66,7 +66,7 @@ module.exports = function (m, fn) {
         if (y >= 640) {
             doc.text('END OF PAGE', 268, y);
             addPage(doc);
-            y = 30;
+            y = 50;
         };
         let close_text = `END OF LOANCARD, ${count} LINES ISSUED`,
             disclaimer = 'By signing in the box below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
