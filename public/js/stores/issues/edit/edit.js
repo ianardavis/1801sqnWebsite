@@ -41,6 +41,7 @@ function addEditSelect() {
                     };
                 })
                 .then(issue => {
+                    console.log(cell.dataset.id);
                     console.log(issue);
                     if (issue.status === 1            && issue.size.issueable && typeof addApproveOption  === 'function') addApproveOption( issue.issue_id);
                     if (issue.status === 2            && issue.size.orderable && typeof addOrderOption    === 'function') addOrderOption(   issue.issue_id);
