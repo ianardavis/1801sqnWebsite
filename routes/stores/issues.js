@@ -62,7 +62,7 @@ module.exports = (app, m, fn) => {
                 required: true,
                 include: [{
                     model: m.action_links,
-                    as: 'link',
+                    as: 'links',
                     required: true,
                     where: {
                         _table: 'issues',
