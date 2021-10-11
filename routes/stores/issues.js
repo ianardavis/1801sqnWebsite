@@ -66,7 +66,7 @@ module.exports = (app, m, fn) => {
                     required: true,
                     where: {
                         _table: 'issues',
-                        id: req.body.issue_id
+                        id: req.query.issue_id
                     }
                 }]
             }]
