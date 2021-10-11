@@ -32,6 +32,15 @@
                 <i class="fas fa-print"></i>
             </button>
         <% } %>
+        <% if (locals.delete) { %>
+            <button
+                class='btn btn-danger'
+                id='<%= id %>_delete'
+                form='form_delete_file'
+            >
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        <% } %>
         <% if (locals.edit) { %>
             <button
                 type='button'

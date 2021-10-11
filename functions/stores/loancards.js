@@ -129,7 +129,7 @@ module.exports = function (m, fn) {
                                         doc.text(line.qty,                  320, y);
                                         doc.text(line.size.item.description, 28, y);
                                         y += 15;
-                                        doc.text(`${line.size.item.size_text}: ${line.size.size}`, 28, y);
+                                        doc.text(`${print_size_text(line.size.item)}: ${print_size(line.size)}`, 28, y);
                                         if (line.nsn) {
                                             y += 15;
                                             doc.text(`NSN: ${String(line.nsn.nsn_group.code).padStart(2, '0')}${String(line.nsn.nsn_class.code).padStart(2, '0')}-${String(line.nsn.nsn_country.code).padStart(2, '0')}-${line.nsn.item_number}`, 28, y);
@@ -356,6 +356,41 @@ module.exports = function (m, fn) {
                     };
                 })
                 .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.loancards.delete_file = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            return fn.get(
+                'loancards',
+                {loancard_id: options.loancard_id}
+            )
+            .then(loancard => {
+                if (loancard.filename) {
+                    return fn.file_exists(`${process.env.ROOT}/public/res/loancards/${loancard.filename}`)
+                    .then(filepath => {
+                        return fn.rm(filepath)
+                        .then(result => {
+                            return fn.update(loancard, {filename: null})
+                            .then(result => {
+                                fn.actions.create(
+                                    'File deleted',
+                                    options.user_id,
+                                    [{table: 'loancards', id: loancard.loancard_id}]
+                                )
+                                .then(result => resolve(true))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(true);
+                                });
+                            })
+                            .catch(err => reject(err));
+                        })
+                        .catch(err => reject(err));
+                    })
+                    .catch(err => reject(err));
+                } else reject(new Error('No file for this loancard'));
             })
             .catch(err => reject(err));
         });

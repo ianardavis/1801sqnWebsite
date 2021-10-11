@@ -10,11 +10,12 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'complete', text: 'Complete', 	  modal: 'loancard_complete'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'download', text: 'Download', 	  btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'print', 	text: 'Print', 	  	  btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'action', 	text: 'Action Lines', form: 'actions'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   	  btn_form: {permission: 'loancard_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'complete',    text: 'Complete', 	 modal: 'loancard_complete'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'download',    text: 'Download', 	 btn_form: true}) %>
+				<%- include(`${partials}/menu/button`, {id: 'print', 	   text: 'Print', 	  	 btn_form: true}) %>
+				<%- include(`${partials}/menu/button`, {id: 'action', 	   text: 'Action Lines', form: 'actions'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete',   	 btn_form: {permission: 'loancard_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete_file', text: 'Delete File',  btn_form: {permission: 'loancard_edit'}}) %>
 				<%- include(`${partials}/common/notes/btn_add`) %>
 			</div>
 		</li>

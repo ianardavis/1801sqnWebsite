@@ -191,6 +191,9 @@ function print_account(account) {
 function print_size(size) {
     return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`
 };
+function print_size_text(item) {
+    return `${item.size_text1}${(item.size_text2 ? `/${item.size_text2}` : '')}${(item.size_text3 ? `/${item.size_text3}` : '')}`
+};
 function clear(id) {
     return new Promise((resolve, reject) => {
         let e = document.querySelector(`#${id}`);
