@@ -248,7 +248,7 @@ module.exports = function (m, fn) {
                                             'Issue removed from loancard',
                                             options.user_id,
                                             [
-                                                {table: 'issue_id',       id: issue.issue_id},
+                                                {table: 'issues',         id: issue.issue_id},
                                                 {table: 'loancard_lines', id: line.loancard_line_id}
                                             ]
                                         )];
