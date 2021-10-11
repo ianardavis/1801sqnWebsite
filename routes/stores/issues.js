@@ -194,7 +194,6 @@ module.exports = (app, m, fn) => {
                 })
             );
             req.body.issues.filter(e => e.status === '-2') .forEach(issue => {
-                console.log(issue);
                 actions.push(
                     fn.issues.remove_from_loancard({
                         issue_id: issue.issue_id,

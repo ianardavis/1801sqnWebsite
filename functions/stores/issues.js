@@ -210,9 +210,10 @@ module.exports = function (m, fn) {
             .then(link => {
                 if (!link) reject(new Error('Loancard line not found'))
                 else {
+                    console.log(link);
                     return fn.get(
                         'loancard_lines',
-                        {loancard_line: link.id},
+                        {loancard_line_id: link.id},
                         [fn.inc.stores.loancard()]
                     )
                     .then(line => resolve(line))
@@ -224,7 +225,6 @@ module.exports = function (m, fn) {
     };
     fn.issues.remove_from_loancard = function (options = {}) {
         return new Promise((resolve, reject) => {
-            console.log(options);
             fn.get(
                 'issues',
                 {issue_id: options.issue_id}
@@ -234,6 +234,7 @@ module.exports = function (m, fn) {
                 else {
                     return get_loancard_line_for_issue(issue.issue_id)
                     .then(line => {
+                        console.log(line);
                         if ([0, 2].includes(line.status)) {
                             reject(new Error(`Loancard line has already been ${(line.status === 0 ? 'cancelled' : 'completed')}`));
                         } else if (line.status === 1) {
