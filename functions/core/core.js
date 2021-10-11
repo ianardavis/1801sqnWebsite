@@ -265,4 +265,10 @@ module.exports = function (m, fn) {
             });
         });
     };
+    fn.print_size = function (size) {
+        return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`
+    };
+    fn.print_size_text = function (item) {
+        return `${item.size_text1}${(item.size_text2 ? `/${item.size_text2}` : '')}${(item.size_text3 ? `/${item.size_text3}` : '')}`
+    };
 };

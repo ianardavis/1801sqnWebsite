@@ -129,7 +129,7 @@ module.exports = function (m, fn) {
                                         doc.text(line.qty,                  320, y);
                                         doc.text(line.size.item.description, 28, y);
                                         y += 15;
-                                        doc.text(`${print_size_text(line.size.item)}: ${print_size(line.size)}`, 28, y);
+                                        doc.text(`${fn.print_size_text(line.size.item)}: ${fn.print_size(line.size)}`, 28, y);
                                         if (line.nsn) {
                                             y += 15;
                                             doc.text(`NSN: ${String(line.nsn.nsn_group.code).padStart(2, '0')}${String(line.nsn.nsn_class.code).padStart(2, '0')}-${String(line.nsn.nsn_country.code).padStart(2, '0')}-${line.nsn.item_number}`, 28, y);
