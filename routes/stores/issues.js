@@ -74,10 +74,10 @@ module.exports = (app, m, fn) => {
         .then(link => {
             if (!link) fn.send_error(res, new Error('Loancard not found'))
             else {
-                return fn.get({
-                    table: 'loancard_lines',
-                    where: {loancard_line_id: link.id}
-                })
+                return fn.get(
+                    'loancard_lines',
+                    {loancard_line_id: link.id}
+                )
                 .then(line => res.send({success: true,  result: line}))
                 .catch(err => fn.send_error(res, err));
             };
