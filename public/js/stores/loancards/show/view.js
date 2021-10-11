@@ -19,11 +19,15 @@ function getLoancard() {
         set_href({id: 'loancard_user_loancard_link', value: `/users/${loancard.user_id_loancard}`});
         set_href({id: 'loancard_user_link',          value: `/users/${loancard.user_id}`});
         if ((loancard.filename && loancard.filename !== '') || loancard.status >= 2) {
+            enable_button('loancard_filename_print', '');
+            enable_button('loancard_filename_download', '');
             enable_button('print');
             enable_button('download');
             set_attribute({id: 'form_download', attribute: 'method', value: 'GET'});
             set_attribute({id: 'form_download', attribute: 'action', value: `/loancards/${loancard.loancard_id}/download`});
         } else {
+            disable_button('loancard_filename_print', '');
+            disable_button('loancard_filename_download', '');
             remove_attribute({id: 'form_download', attribute: 'method'});
             remove_attribute({id: 'form_download', attribute: 'action'});
         };

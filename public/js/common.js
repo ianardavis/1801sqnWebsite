@@ -64,12 +64,12 @@ function yesno(boolean) {
     if (boolean === 1 || boolean === true) return 'Yes'
     else return 'No'
 };
-function enable_button(id) {
-    let button = document.querySelector(`#btn_${id}`);
+function enable_button(id, pretext = 'btn_') {
+    let button = document.querySelector(`#${pretext}${id}`);
     if (button) button.removeAttribute('disabled');
 };
-function disable_button(id) {
-    let button = document.querySelector(`#btn_${id}`);
+function disable_button(id, pretext = 'btn_') {
+    let button = document.querySelector(`#${pretext}${id}`);
     if (button) button.setAttribute('disabled', true);
 };
 function set_count(options = {}) {
