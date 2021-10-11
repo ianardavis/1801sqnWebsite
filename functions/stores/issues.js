@@ -188,6 +188,93 @@ module.exports = function (m, fn) {
             };
         });
     };
+    function get_loancard_line_for_issue(issue_id) {
+        return new Promise((resolve, reject) => {
+            return m.action_links.findOne({
+                where: {_table: 'loancard_lines'},
+                include: [{
+                    model: m.actions,
+                    required: true,
+                    where: {action: 'Issue added to loancard'},
+                    include: [{
+                        model: m.action_links,
+                        as: 'links',
+                        where: {
+                            _table: 'issues',
+                            id: issue_id
+                        },
+                        required: true
+                    }]
+                }]
+            })
+            .then(link => {
+                if (!link) reject(new Error('Loancard line not found'))
+                else {
+                    return fn.get(
+                        'loancard_lines',
+                        {loancard_line: link.id},
+                        [fn.inc.stores.loancard()]
+                    )
+                    .then(line => resolve(line))
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
+    fn.issues.remove_from_loancard = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            console.log(options);
+            fn.get(
+                'issues',
+                {issue_id: options.issue_id}
+            )
+            .then(issue => {
+                if (issue.status !== 4) reject(new Error('Issue has not been issued'))
+                else {
+                    return get_loancard_line_for_issue(issue.issue_id)
+                    .then(line => {
+                        if ([0, 2].includes(line.status)) {
+                            reject(new Error(`Loancard line has already been ${(line.status === 0 ? 'cancelled' : 'completed')}`));
+                        } else if (line.status === 1) {
+                            return fn.decrement(line, issue.qty)
+                            .then(result => {
+                                return fn.update(issue, {status: 2})
+                                .then(result => {
+                                    return line.reload()
+                                    .then(line => {
+                                        let actions = [fn.actions.create(
+                                            'Issue removed from loancard',
+                                            options.user_id,
+                                            [
+                                                {table: 'issue_id',       id: issue.issue_id},
+                                                {table: 'loancard_lines', id: line.loancard_line_id}
+                                            ]
+                                        )];
+                                        if (line.qty === 0) actions.push(line.update({status: 0}));
+                                        return Promise.allSettled(actions)
+                                        .then(results => resolve(true))
+                                        .catch(err => {
+                                            console.log(err);
+                                            resolve(false);
+                                        });
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                        resolve(false);
+                                    });
+                                })
+                                .catch(err => reject(err));
+                            })
+                            .catch(err => reject(err));
+                        } else reject(new Error('Unknown loancard line status'));
+                    })
+                    .catch(err => reject(err));
+                };
+            })
+            .catch(err => reject(err));
+        });
+    };
     function sort_issues(issues) {
         return new Promise((resolve, reject) => {
             let actions = [], users = [];

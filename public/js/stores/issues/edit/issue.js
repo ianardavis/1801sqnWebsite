@@ -53,14 +53,7 @@ function issueOptions() {
                             };
                         });
                     } else {
-                        let stock_select = new Select({
-                            small: true,
-                            attributes: [
-                                {field: 'name',     value: `issues[][${options.index}][stock_id]`},
-                                {field: 'required', value: true}
-                            ],
-                            options: [{text: 'Select Location'}]
-                        }).e;
+                        add_stock_select(div_details, options.index, issue.size_id);
                         let stock_qty = new Input({
                             small: true,
                             attributes: [
@@ -71,7 +64,6 @@ function issueOptions() {
                                 {field: 'required',    value: true}
                             ]
                         }).e;
-                        div_details.appendChild(stock_select);
                         div_details.appendChild(stock_qty);
                         get({
                             table: 'stocks',
@@ -79,13 +71,32 @@ function issueOptions() {
                             index: options.index
                         })
                         .then(function ([stocks, options]) {
-                            stocks.forEach(e => stock_select.appendChild(new Option({text: `${e.location.location} | Qty: ${e.qty}`, value: e.stock_id}).e));
                             stock_qty.setAttribute('max',   issue.qty);
                             stock_qty.setAttribute('value', issue.qty);
                         });
                     };
-                };
+                } else if (issue.status === 4) {
+                    add_stock_select(div_details, options.index, issue.size_id);
+                };;
             });
         };
+    });
+};
+function add_stock_select(div_details, index, size_id) {
+    let stock_select = new Select({
+        small: true,
+        attributes: [
+            {field: 'name',     value: `issues[][${index}][stock_id]`},
+            {field: 'required', value: true}
+        ],
+        options: [{text: 'Select Location'}]
+    }).e;
+    div_details.appendChild(stock_select);
+    get({
+        table: 'stocks',
+        query: [`size_id=${size_id}`]
+    })
+    .then(function ([stocks, options]) {
+        stocks.forEach(e => stock_select.appendChild(new Option({text: `${e.location.location} | Qty: ${e.qty}`, value: e.stock_id}).e));
     });
 };
