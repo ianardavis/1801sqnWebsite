@@ -377,17 +377,14 @@ module.exports = function (m, fn) {
             .then(links => {
                 let order_actions = [];
                 links.forEach(link => {
-                    let order_actions = [];
-                    links.forEach(link => {
-                        order_actions.push(new Promise(resolve => {
-                            return m.orders.findOne({where: {order_id: link.id}})
-                            .then(order => resolve((id_only ? order.order_id : order)))
-                            .catch(err => {
-                                console.log(err);
-                                resolve((id_only ? '' : {}));
-                            });
-                        }));
-                    });
+                    order_actions.push(new Promise(resolve => {
+                        return m.orders.findOne({where: {order_id: link.id}})
+                        .then(order => resolve((id_only ? order.order_id : order)))
+                        .catch(err => {
+                            console.log(err);
+                            resolve((id_only ? '' : {}));
+                        });
+                    }));
                 });
                 return Promise.all(order_actions)
                 .then(orders => resolve(orders || []))
@@ -542,17 +539,25 @@ module.exports = function (m, fn) {
                     new Promise((resolve, reject) => {
                         m.action_links.findAll({
                             where: {_table: 'issues'},
-                            include: [
-                                fn.inc.stores.actions({
-                                    where: {action: {[fn.op.or]: ['Order created from issue', 'Order incremented from issue']}},
-                                    include: [
-                                        fn.inc.stores.action_links({where: {
-                                            _table: 'orders',
-                                            id: order_id
-                                        }})
-                                    ]
-                                })
-                            ]
+                            include: [{
+                                model: m.actions,
+                                where: {
+                                    action: {[fn.op.or]: [
+                                        'Order created from issue',
+                                        'Order incremented from issue'
+                                    ]}
+                                },
+                                required: true,
+                                include: [{
+                                    model: m.action_links,
+                                    as: 'links',
+                                    required: true,
+                                    where: {
+                                        _table: 'orders',
+                                        id: order_id
+                                    }
+                                }]
+                            }]
                         })
                         .then(links => {
                             if (!links || links.length === 0) resolve([])

@@ -1,6 +1,6 @@
 module.exports = function (m, fn) {
     fn.orders = {};
-    fn.orders.create = function (line, user_id, issue_id = null) {
+    fn.orders.create  = function (line, user_id, issue_id = null) {
         return new Promise((resolve, reject) => {
             return fn.get('sizes', {size_id: line.size_id})
             .then(size => {
@@ -50,7 +50,7 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-    fn.orders.demand = function (orders, user_id) {
+    fn.orders.demand  = function (orders, user_id) {
         return new Promise((resolve, reject) => {
             return fn.allowed(user_id, 'demand_line_add')
             .then(result => {
@@ -133,10 +133,9 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
-
     fn.orders.receive = function (_order, user_id) {
         return new Promise((resolve, reject) => {
-            fn.allowed(user_id, 'order_edit')
+            return fn.allowed(user_id, 'order_edit')
             .then(allowed => {
                 return fn.get(
                     'orders',
