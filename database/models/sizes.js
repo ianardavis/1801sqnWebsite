@@ -21,12 +21,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     'size2': {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'size3': {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       comment: "null"
     },
     'orderable': {
