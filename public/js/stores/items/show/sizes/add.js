@@ -8,7 +8,8 @@ function getSuppliers() {
         listSuppliers({
             select:     'size_supplier', 
             blank:      true,
-            blank_text: 'None'
+            blank_text: 'None',
+            id_only:    true
         });
     };
 };
