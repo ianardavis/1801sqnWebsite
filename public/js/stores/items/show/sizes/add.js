@@ -6,7 +6,8 @@ function resetAddSize() {
 function getSuppliers() {
     if (typeof listSuppliers === 'function') {
         listSuppliers({
-            blank: true,
+            select:     'size_supplier', 
+            blank:      true,
             blank_text: 'None'
         });
     };
