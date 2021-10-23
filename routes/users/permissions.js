@@ -1,4 +1,27 @@
 module.exports = (app, m, fn) => {
+    // let permission_tree = [
+    //     {permission: 'access_settings'},
+    //     {permission: 'access_users',   children: [
+    //         {permission: 'user_admin'}
+    //     ]},
+    //     {permission: 'access_stores', children: [
+    //         {permission: 'issuer'},
+    //         {permission: 'authorised_demander'},
+    //         {permission: 'stock_admin'},
+    //         {permission: 'supplier_admin'}
+    //     ]},
+    //     {permission: 'access_canteen', children: [
+    //         {permission: 'pos_user',   children: [
+    //             {permission: 'pos_supervisor'}
+    //         ]},
+    //         {permission: 'stock_admin'},
+    //         {permission: 'pay_in_out'},
+    //         {permission: 'cash_admin'}
+    //     ]},
+    //     {permission: 'site_functions', children: [
+    //         {permission: 'gallery_admin'}
+    //     ]},
+    // ];
     let permission_tree = [
         {permission: 'core_functions', children: [
             {permission: 'access_actions',   children: []},

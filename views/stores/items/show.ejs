@@ -13,7 +13,7 @@
                 <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',         modal: 'item_edit'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category', modal: 'category_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'size_add',     text: 'Add Size',     modal: 'size_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',	  	  btn_form: {permission: 'item_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',	  	  btn_form: true}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
@@ -24,10 +24,10 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/inputs/display`, {id: 'item_description', title: 'Description'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender', permission: 'access_genders'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text1',  title: 'Size Text 1'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text2',  title: 'Size Text 2'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text3',  title: 'Size Text 3'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender', permission: 'access_genders'}) %>
             <% if (permissions.access_item_categories) { %>
                 <div id="div_categories">
                     <table class='table table-sm table-hover w-100'>

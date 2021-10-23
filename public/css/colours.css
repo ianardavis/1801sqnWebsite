@@ -89,7 +89,9 @@ hr {
 .modal-content {
 	background-color: var(--main-bg-color)
 }
-
+.toast {
+	background-color: var(--alt-color2);
+}
 
 .navbar-light .navbar-brand {
     color: var(--main-bg-color);
