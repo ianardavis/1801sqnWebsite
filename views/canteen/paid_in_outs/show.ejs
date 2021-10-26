@@ -11,8 +11,8 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'paid_in_out_complete', text: 'Complete', btn_form: {permission: 'paid_in_out_edit'}}) %>
-                <%- include(`${partials}/menu/button`, {id: 'paid_in_out_cancel',   text: 'Cancel',   btn_form: {permission: 'paid_in_out_delete'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'paid_in_out_complete', text: 'Complete', btn_form: true}) %>
+                <%- include(`${partials}/menu/button`, {id: 'paid_in_out_cancel',   text: 'Cancel',   btn_form: true}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
@@ -46,10 +46,6 @@
 <%- include(`${partials}/common/actions/scripts`) %>
 <%- include(`${partials}/common/notes/scripts`) %>
 <script async>getPaidInOut()</script>
-<% if (permissions.paid_in_out_edit) { %>
-    <script src="/js/canteen/paid_in_outs/show/edit.js"></script>
-<% } %>
-<% if (permissions.paid_in_out_delete) { %>
-    <script src="/js/canteen/paid_in_outs/show/delete.js"></script>
-<% } %>
+<script src="/js/canteen/paid_in_outs/show/edit.js"></script>
+<script src="/js/canteen/paid_in_outs/show/delete.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

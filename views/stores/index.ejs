@@ -2,30 +2,28 @@
 <%- include(`${partials}/head/components/close`) %>
 <section>
 	<div class="row container menu mx-auto">
-		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'access_suppliers'}) %>
-		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt', 	  permission: 'access_items'}) %>
+		<%- include(`${partials}/card`, {id: 'suppliers', href: '/suppliers', title: 'Suppliers', image: 'warehouse', permission: 'supplier_admin'}) %>
+		<%- include(`${partials}/card`, {id: 'items', 	  href: '/items', 	  title: 'Items', 	  image: 'tshirt'}) %>
 		<%- include(`${partials}/card`, {id: 'issues', 	  href: '/issues', 	  title: 'Issues', 	  image: 'address-card'}) %>
-		<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list', 	  permission: 'access_orders'}) %>
-		<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream', 	  permission: 'access_demands'}) %>
+		<%- include(`${partials}/card`, {id: 'orders', 	  href: '/orders', 	  title: 'Orders', 	  image: 'list', 	  permission: 'stores_stock_admin'}) %>
+		<%- include(`${partials}/card`, {id: 'demands',   href: '/demands',   title: 'Demands',   image: 'stream', 	  permission: 'authorised_demander'}) %>
 		<%- include(`${partials}/card`, {id: 'loancards', href: '/loancards', title: 'Loancards', image: 'address-card'}) %>
-		<%- include(`${partials}/card`, {id: 'reports',   href: '/reports',   title: 'Reports',   image: 'chart-pie', permission: 'access_reports'}) %>
+		<%- include(`${partials}/card`, {id: 'reports',   href: '/reports',   title: 'Reports',   image: 'chart-pie'}) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/index/view.js"></script>
-<% if (permissions.access_orders) { %>
+<% if (permissions.stores_stock_admin) { %>
 	<script async>getCount('orders',  	['status=1'], {text: 'Placed',    colour: 'danger',  float: 'start'})</script>
 	<script async>getCount('orders',  	['status=2'], {text: 'Demanded',  colour: 'warning', float: 'end'})</script>
 <% } %>
-<% if (permissions.access_demands) { %>
+<% if (permissions.authorised_demander) { %>
 	<script async>getCount('demands', 	['status=1'], {text: 'Draft', 	  colour: 'warning', float: 'start'})</script>
 	<script async>getCount('demands', 	['status=2'], {text: 'Open',  	  colour: 'success', float: 'end'})</script>
 <% } %>
-<% if (permissions.access_issues) { %>
+<% if (permissions.issuer) { %>
 	<script async>getCount('issues',  	['status=1'], {text: 'Requested', colour: 'danger',  float: 'start'})</script>
 	<script async>getCount('issues',  	['status=2'], {text: 'Approved',  colour: 'warning', float: 'end'})</script>
-<% } %>
-<% if (permissions.access_loancards) { %>
 	<script async>getCount('loancards', ['status=1'], {text: 'Draft', 	  colour: 'danger',  float: 'start'})</script>
 	<script async>getCount('loancards', ['status=2'], {text: 'Open',  	  colour: 'success', float: 'end'})</script>
 <% } %>

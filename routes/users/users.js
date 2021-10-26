@@ -51,13 +51,13 @@ module.exports = (app, m, fn) => {
         .catch(err =>  fn.send_error(res, err));
     });
 
-    app.post('/users',            fn.loggedIn(), fn.permissions.check('user_add'),           (req, res) => {
+    app.post('/users',            fn.loggedIn(), fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.create(req.body.user)
         .then(password => res.send({success: true, message: `User added. Password: ${password}. Password shown in UPPER CASE for readability. Password to be entered in lowercase, do not enter '-'. User must change at first login`}))
         .catch(err => fn.send_error(res, err));
     });
     
-    app.put('/password/:id',      fn.loggedIn(), fn.permissions.check('user_edit',    true), (req, res) => {
+    app.put('/password/:id',      fn.loggedIn(), fn.permissions.check('user_admin',   true), (req, res) => {
         if      (!req.allowed && String(req.user.user_id) !== String(req.params.id)) fn.send_error(res, 'Permission denied')
         else if (!req.body.password)                                                 fn.send_error(res, 'No password submitted')
         else {
@@ -66,13 +66,13 @@ module.exports = (app, m, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
-    app.put('/users/:id',         fn.loggedIn(), fn.permissions.check('user_edit'),          (req, res) => {
+    app.put('/users/:id',         fn.loggedIn(), fn.permissions.check('user_admin'),         (req, res) => {
         fn.users.edit(req.params.id, req.body.user)
         .then(result => res.send({success: true,  message: 'User saved'}))
         .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/users/:id',      fn.loggedIn(), fn.permissions.check('user_delete'),        (req, res) => {
+    app.delete('/users/:id',      fn.loggedIn(), fn.permissions.check('user_admin'),         (req, res) => {
         if (req.user.user_id == req.params.id) fn.send_error(res, 'You can not delete your own account')
         else {
             fn.users.delete(req.params.id)

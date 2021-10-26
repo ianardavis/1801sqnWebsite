@@ -1,5 +1,5 @@
 <%- include(`${partials}/head/app`, {text: 'Users'}) %>
-<%- include(`${partials}/menu/breadcrumb_add`, {modal: 'user_add', permission: 'user_add'}) %>
+<%- include(`${partials}/menu/breadcrumb_add`, {modal: 'user_add', permission: 'user_admin'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'users'}) %>
 <%- include(`${partials}/head/components/close`) %>
@@ -17,7 +17,7 @@
 		<tbody id="tbl_users"></tbody>
 	</table>
 	<div id="div_modals">
-		<% if (permissions.user_add) { %>
+		<% if (permissions.user_admin) { %>
 			<div id='mdl_user_add' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">
 					<form class="modal-content" id='form_user_add'>
@@ -46,7 +46,7 @@
 <script src="/js/utils/list/statuses.js"></script>
 <script src="/js/utils/list/ranks.js"></script>
 <script src="/js/users/index/view.js"></script>
-<% if (permissions.user_add) { %>
+<% if (permissions.user_admin) { %>
 	<script src="/js/users/index/add.js"></script>
 	<script src="/js/users/loginBaderMirror.js"></script>
 	<script src="/js/users/userFieldCheck.js"></script>

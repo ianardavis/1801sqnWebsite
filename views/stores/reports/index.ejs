@@ -3,11 +3,11 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <div class="row menu mx-auto">
-        <%- include(`${partials}/card`, {id: '1', href: '/reports/1', title: 'Negative Stock',      image: 'search-minus',   permission: 'adjustment_add'}) %>
-        <%- include(`${partials}/card`, {id: '2', href: '/reports/2', title: 'Issues Overdue',      image: 'calendar-check', permission: 'issue_edit'}) %>
-        <%- include(`${partials}/card`, {id: '3', href: '/reports/3', title: 'Orderable Items',     image: 'tshirt',         permission: 'order_add'}) %>
+        <%- include(`${partials}/card`, {id: '1', href: '/reports/1', title: 'Negative Stock',      image: 'search-minus',   permission: 'stores_stock_admin'}) %>
+        <%- include(`${partials}/card`, {id: '2', href: '/reports/2', title: 'Issues Overdue',      image: 'calendar-check', permission: 'issuer'}) %>
+        <%- include(`${partials}/card`, {id: '3', href: '/reports/3', title: 'Orderable Items',     image: 'tshirt',         permission: 'stores_stock_admin'}) %>
         <%- include(`${partials}/card`, {id: '4', href: '/reports/4', title: 'Stock - By Item',     image: 'tshirt'}) %>
-        <%- include(`${partials}/card`, {id: '5', href: '/reports/5', title: 'Stock - By Location', image: 'tshirt',         permission: 'adjustment_add'}) %>
+        <%- include(`${partials}/card`, {id: '5', href: '/reports/5', title: 'Stock - By Location', image: 'tshirt',         permission: 'stores_stock_admin'}) %>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>

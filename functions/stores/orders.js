@@ -52,7 +52,7 @@ module.exports = function (m, fn) {
     };
     fn.orders.demand  = function (orders, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.allowed(user_id, 'demand_line_add')
+            return fn.allowed(user_id, 'authorised_demander')
             .then(result => {
                 let order_actions = [], suppliers = [];
                 orders.forEach(order => {
@@ -135,7 +135,7 @@ module.exports = function (m, fn) {
     };
     fn.orders.receive = function (_order, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.allowed(user_id, 'order_edit')
+            return fn.allowed(user_id, 'authorised_demander')
             .then(allowed => {
                 return fn.get(
                     'orders',

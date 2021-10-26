@@ -1,10 +1,8 @@
 <%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Suppliers'}) %>
-<% if (permissions.supplier_add) { %>
-	<li class="nav-item">
-		<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_supplier_add"><i class="fas fa-plus"></i></a>
-	</li>
-<% } %>
+<li class="nav-item">
+	<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_supplier_add"><i class="fas fa-plus"></i></a>
+</li>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
 <%- include(`${partials}/head/components/close`) %>
@@ -12,43 +10,35 @@
 	<input class='form-control mt-1' type='text' id='supplierSearch' onkeyup='searchCards(this)' placeholder='Search by name...'>
 	<div class='menu row' id="tbl_suppliers"></div>
 	<div id="div_modals">
-		<% if (permissions.supplier_add) { %>
-			<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<form class="modal-content" id='form_supplier_add'>
-						<div class="modal-header">
-							<h5 class="modal-title">Add Supplier</h5>
-						</div>
-						<div class="modal-body">
-							<%- include(`${partials}/inputs/text`,   {title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'Account',   	  name: 'supplier[account_id]', id: 'sel_accounts', spinner_id: 'accounts', reload_id: 'reload_accounts', permission: 'access_accounts'}) %>
-							<%- include(`${partials}/inputs/select`, {title: 'RAF Stores?',   name: 'supplier[is_stores]',  options: [{value: '0', text: 'No', selected: true}, {value: '1', text: 'Yes'}]}) %>
-						</div>
-						<div class="modal-footer">
-							<input type="submit" class="btn btn-success w-100" value='Save Item'>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-						</div>
-					</form>
-				</div>
+		<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<form class="modal-content" id='form_supplier_add'>
+					<div class="modal-header">
+						<h5 class="modal-title">Add Supplier</h5>
+					</div>
+					<div class="modal-body">
+						<%- include(`${partials}/inputs/text`,   {title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
+						<%- include(`${partials}/inputs/select`, {title: 'Account',   	  name: 'supplier[account_id]', id: 'sel_accounts', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
+						<%- include(`${partials}/inputs/select`, {title: 'RAF Stores?',   name: 'supplier[is_stores]',  options: [{value: '0', text: 'No', selected: true}, {value: '1', text: 'Yes'}]}) %>
+					</div>
+					<div class="modal-footer">
+						<input type="submit" class="btn btn-success w-100" value='Save Item'>
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+					</div>
+				</form>
 			</div>
-		<% } %>
+		</div>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/search/cards.js'></script>
 <script src='/js/stores/suppliers/index/view.js'></script>
-<% if (permissions.access_sizes) { %>
 	<script src='/js/stores/suppliers/index/sizes/count.js'></script>
-<% } %>
 <% if (permissions.access_settings) { %>
 	<script src='/js/stores/suppliers/index/settings/default.js'></script>
 <% } %>
-<% if (permissions.supplier_add) { %>
-	<% if (permissions.access_accounts) { %>
-		<script src='/js/utils/list/accounts.js'></script>
-		<script src='/js/stores/suppliers/index/accounts/add.js'></script>
-	<% } %>
-	<script src='/js/stores/suppliers/index/add.js'></script>
-<% } %>
+<script src='/js/utils/list/accounts.js'></script>
+<script src='/js/stores/suppliers/index/accounts/add.js'></script>
+<script src='/js/stores/suppliers/index/add.js'></script>
 <script async>getSuppliers()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

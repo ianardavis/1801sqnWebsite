@@ -11,16 +11,16 @@
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'line_add', text: 'Add Item(s)',  modal: 'line_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'complete',	text: 'Complete',	  btn_form: {permission: 'demand_edit'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'complete',	text: 'Complete',	  btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'action',	text: 'Action Lines', form:  'action'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'close',	text: 'Close',	 	  btn_form: {permission: 'demand_edit'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'close',	text: 'Close',	 	  btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'download',	text: 'Download', 	  btn_form: true}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Cancel',	  	  btn_form: {permission: 'demand_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Cancel',	  	  btn_form: true}) %>
 				<%- include(`${partials}/common/notes/btn_add`) %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line', 	permission: 'access_demand_lines'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'demand_lines',  count_id: 'line'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
@@ -33,10 +33,9 @@
 			<%- include(`${partials}/inputs/display`, {id: 'demand_status',    title: 'Status'}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'demand_file',      title: 'Filename'}) %>
 		</div>
-		<% if (permissions.access_demand_lines) { %>
-			<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-				<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Pending'}, {value: 'status=2', text: 'Open'}, {value: 'status=3', text: 'Received'}]}) %>
-				<% if (permissions.demand_line_edit) { %><form id='form_action'><% } %>
+		<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
+			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Pending'}, {value: 'status=2', text: 'Open'}, {value: 'status=3', text: 'Received'}]}) %>
+			<form id='form_action'>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
 						<th class='w-30' onclick="sortTable(0,'tbl_lines')">Item</th>
@@ -47,47 +46,44 @@
 					</thead>
 					<tbody id='tbl_lines'></tbody>
 				</table>
-				<% if (permissions.demand_line_edit) { %></form><% } %>
-			</div>
-		<% } %>
+			</form>
+		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
-		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_demand_lines', table: 'Demand'}) %>
-		<% if (permissions.demand_line_add) { %>
-			<div id='mdl_line_add' class="modal fade" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<form class="modal-content" id='form_line_add'>
-						<div class="modal-header">
-							<h5 class="modal-title">
-								Add Line(s)
-								<%- include(`${partials}/spinner`, {id: 'line_add'}) %>
-							</h5>
-						</div>
-						<div class="modal-body">
-							<input type="hidden" class='demand_id' name='demand_id'>
-							<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'line_add_qty'}) %>
-							<button type='button' class='btn btn-success w-100 mb-1' id='btn_line_sizes'>Add Item(s)</button>
-							<table class='table table-sm table-hover'>
-								<thead class='thead-dark'>
-									<th class='w-30' onclick='sortTable(0, "tbl_line_add")'>Item</th>
-									<th class='w-60' onclick='sortTable(1, "tbl_line_add")'>Size</th>
-									<th class='w-20' onclick='sortTable(2, "tbl_line_add")'>Quantity</th>
-									<th><i class='fas fa-trash-alt'></i></th>
-								</thead>
-								<tbody id='tbl_line_add'></tbody>
-							</table></div>
-						<div class="modal-footer">
-							<input type="submit" class="btn btn-success w-100" value='Add Lines'>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-						</div>
-					</form>
-				</div>
+		<%- include(`${partials}/stores/mdl_line_view`, {table: 'Demand'}) %>
+		<div id='mdl_line_add' class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<form class="modal-content" id='form_line_add'>
+					<div class="modal-header">
+						<h5 class="modal-title">
+							Add Line(s)
+							<%- include(`${partials}/spinner`, {id: 'line_add'}) %>
+						</h5>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" class='demand_id' name='demand_id'>
+						<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'line_add_qty'}) %>
+						<button type='button' class='btn btn-success w-100 mb-1' id='btn_line_sizes'>Add Item(s)</button>
+						<table class='table table-sm table-hover'>
+							<thead class='thead-dark'>
+								<th class='w-30' onclick='sortTable(0, "tbl_line_add")'>Item</th>
+								<th class='w-60' onclick='sortTable(1, "tbl_line_add")'>Size</th>
+								<th class='w-20' onclick='sortTable(2, "tbl_line_add")'>Quantity</th>
+								<th><i class='fas fa-trash-alt'></i></th>
+							</thead>
+							<tbody id='tbl_line_add'></tbody>
+						</table></div>
+					<div class="modal-footer">
+						<input type="submit" class="btn btn-success w-100" value='Add Lines'>
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+					</div>
+				</form>
 			</div>
-		<% } %>
+		</div>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -98,24 +94,13 @@
 
 <script src="/js/stores/demands/show/view.js"></script>
 <script async>getDemand()</script>
-
-<% if (permissions.demand_edit) { %>
-	<script src="/js/stores/demands/show/edit.js"></script>
-<% } %>
-<% if (permissions.demand_delete) { %>
-	<script src="/js/stores/demands/show/delete.js"></script>
-<% } %>
-<% if (permissions.access_demand_lines) { %>
-	<script src="/js/stores/demands/show/lines/view.js"></script>
-	<script async>getLines()</script>
-	<% if (permissions.demand_line_add) { %>
-		<script src="/js/stores/sizes/select/showWindow.js"></script>
-		<script src="/js/stores/demands/show/lines/add.js"></script>
-	<% } %>
-	<% if (permissions.demand_line_edit) { %>
-		<script src="/js/stores/stocks/list.js"></script>
-		<script src="/js/stores/serials/list.js"></script>
-		<script src="/js/stores/demands/show/lines/edit.js"></script>
-	<% } %>
-<% } %>
+<script src="/js/stores/demands/show/edit.js"></script>
+<script src="/js/stores/demands/show/delete.js"></script>
+<script src="/js/stores/demands/show/lines/view.js"></script>
+<script async>getLines()</script>
+<script src="/js/stores/sizes/select/showWindow.js"></script>
+<script src="/js/stores/demands/show/lines/add.js"></script>
+<script src="/js/stores/stocks/list.js"></script>
+<script src="/js/stores/serials/list.js"></script>
+<script src="/js/stores/demands/show/lines/edit.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

@@ -1,8 +1,8 @@
 module.exports = (app, m, fn) => {
-    app.get('/writeoffs',     fn.loggedIn(), fn.permissions.get('access_writeoffs'),   (req, res) => res.render('canteen/writeoffs/index'));
-    app.get('/writeoffs/:id', fn.loggedIn(), fn.permissions.get('access_writeoffs'),   (req, res) => res.render('canteen/writeoffs/show'));
+    app.get('/writeoffs',     fn.loggedIn(), fn.permissions.get('canteen_stock_admin'),   (req, res) => res.render('canteen/writeoffs/index'));
+    app.get('/writeoffs/:id', fn.loggedIn(), fn.permissions.get('canteen_stock_admin'),   (req, res) => res.render('canteen/writeoffs/show'));
     
-    app.get('/get/writeoffs', fn.loggedIn(), fn.permissions.check('access_writeoffs'), (req, res) => {
+    app.get('/get/writeoffs', fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         m.writeoffs.findAll({
             include: [
                 fn.inc.users.user(),
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
         .then(writeoffs => res.send({success: true, result: writeoffs}))
         .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/writeoff',  fn.loggedIn(), fn.permissions.check('access_writeoffs'), (req, res) => {
+    app.get('/get/writeoff',  fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         fn.get(
             'writeoffs',
             req.query,
@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/writeoffs',    fn.loggedIn(), fn.permissions.check('writeoff_add'),     (req, res) => {
+    app.post('/writeoffs',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         if (!req.body.writeoff) fn.send_error(res, 'No body')
         else {
             fn.writeoffs.create(req.body.writeoff, req.user.user_Id)

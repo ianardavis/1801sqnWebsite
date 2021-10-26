@@ -62,8 +62,8 @@
                         </div>
                         <form id='form_sale_complete'>
                             <input type="hidden" class='sale_id' name='sale_id'>
-                            <%- include(`${partials}/inputs/select`,  {title: 'Debit from',    id: 'sel_credits', name: 'sale[user_id_debit]',  spinner_id: 'users_debit',  reload_id: 'reload_debit',  permission: 'access_credits'}) %>
-                            <%- include(`${partials}/inputs/select`,  {title: 'Credit change', id: 'sel_users',   name: 'sale[user_id_credit]', spinner_id: 'users_credit', reload_id: 'reload_credit', permission: 'access_users'}) %>
+                            <%- include(`${partials}/inputs/select`,  {title: 'Debit from',    id: 'sel_credits', name: 'sale[user_id_debit]',  spinner_id: 'users_debit',  reload_id: 'reload_debit'}) %>
+                            <%- include(`${partials}/inputs/select`,  {title: 'Credit change', id: 'sel_users',   name: 'sale[user_id_credit]', spinner_id: 'users_credit', reload_id: 'reload_credit'}) %>
                             <%- include(`${partials}/inputs/number`,  {title: 'Tendered (£)',  id: 'tendered',    name: 'sale[tendered]', step: '0.01', value: '0.00', required: true, classes: [, 'f-20']}) %>
                             <%- include(`${partials}/inputs/display`, {title: 'Change (£)',    id: 'change', classes: [, 'f-20']}) %>
                         </form>
@@ -75,7 +75,7 @@
                 </div>
             </div>
         </div>
-        <% if (permissions.pos_layout_edit) { %>
+        <% if (permissions.pos_supervisor) { %>
             <div id='mdl_layout_edit' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_layout_edit'>
@@ -102,7 +102,7 @@
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/common/alert.js"></script>
-<% if (permissions.pos_layout_edit) { %>
+<% if (permissions.pos_supervisor) { %>
     <script src="/js/canteen/pos/layouts/edit.js"></script>
 <% } %>
 <script src="/js/canteen/pos/view.js"></script>
@@ -110,7 +110,7 @@
     <script src="/js/utils/list/users.js"></script>
     <script src="/js/canteen/pos/credit.js"></script>
 <% } %>
-<% if (permissions.access_credits) { %>
+<% if (permissions.pos_user) { %>
     <script src="/js/canteen/pos/debit.js"></script>
 <% } %>
 <script async>getPages()</script>

@@ -15,21 +15,21 @@
                 <%- include(`${partials}/common/notes/btn_add`) %>
 				<%- include(`${partials}/menu/button`, {id: 'address_add',   text: 'Add Address', modal: 'address_add'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'contact_add',   text: 'Add Contact', modal: 'contact_add'}) %>
-                <% if (permissions.setting_edit) { %>
+                <% if (permissions.access_settings) { %>
                     <form id='form_set_default'>
                         <input class='supplier_id' type="hidden" name='supplier_id'>
                         <%- include(`${partials}/menu/button`, {id: 'default', text: 'Make Default'}) %>
                     </form>
                 <% } %>
-				<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete',   btn_form: {permission: 'supplier_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete',   btn_form: true}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'supplier'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file',    permission: 'access_files'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'addresses', title: 'Addresses', spinner: 'addresses', count_id: 'address', permission: 'access_supplier_addresses'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'contacts',  title: 'Contacts',  spinner: 'contacts',  count_id: 'contact', permission: 'access_supplier_contacts'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'items',     title: 'Items',     spinner: 'sizes',     count_id: 'size',    permission: 'access_sizes'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'demands',   title: 'Demands',   spinner: 'demands',   count_id: 'demand',  permission: 'access_demands'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'addresses', title: 'Addresses', spinner: 'addresses', count_id: 'address'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'contacts',  title: 'Contacts',  spinner: 'contacts',  count_id: 'contact'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'items',     title: 'Items',     spinner: 'sizes',     count_id: 'size'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'demands',   title: 'Demands',   spinner: 'demands',   count_id: 'demand',  permission: 'authorised_demander'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -40,57 +40,49 @@
             <%- include(`${partials}/inputs/display`, {id: 'supplier_is_stores',  title: 'RAF Stores'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_is_default', title: 'Default Supplier', permission: 'access_settings'}) %>
         </div>
-        <% if (permissions.access_files) { %>
-            <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-50" onclick="sortTable(0, 'tbl_files')">Filename</th>
-                        <th class="w-50" onclick="sortTable(1, 'tbl_files')">Description</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="tbl_files"></tbody>
-                </table>
-            </div>
-        <% } %>
-        <% if (permissions.access_supplier_addresses) { %>
-            <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-30" onclick="sortTable(0, 'tbl_addresses')">Type</th>
-                        <th class="w-30" onclick="sortTable(1, 'tbl_addresses')">Unit/Number</th>
-                        <th class="w-40" onclick="sortTable(1, 'tbl_addresses')">Street</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="tbl_addresses"></tbody>
-                </table>
-            </div>
-        <% } %>
-        <% if (permissions.access_supplier_contacts) { %>
-            <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-30" onclick="sortTable(0, 'tbl_contacts')">Type</th>
-                        <th class="w-30" onclick="sortTable(1, 'tbl_contacts')">Description</th>
-                        <th class="w-40" onclick="sortTable(1, 'tbl_contacts')">Contact</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="tbl_contacts"></tbody>
-                </table>
-            </div>
-        <% } %>
-        <% if (permissions.access_sizes) { %>
-            <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-                <table class="table table-sm table-hover">
-                    <thead class="thead-dark">
-                        <th class="w-50" onclick="sortTable(0, 'tbl_sizes')">Item</th>
-                        <th class="w-50" onclick="sortTable(1, 'tbl_sizes')">Size</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id="tbl_sizes"></tbody>
-                </table>
-            </div>
-        <% } %>
-        <% if (permissions.access_demands) { %>
+        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-50" onclick="sortTable(0, 'tbl_files')">Filename</th>
+                    <th class="w-50" onclick="sortTable(1, 'tbl_files')">Description</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_files"></tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-30" onclick="sortTable(0, 'tbl_addresses')">Type</th>
+                    <th class="w-30" onclick="sortTable(1, 'tbl_addresses')">Unit/Number</th>
+                    <th class="w-40" onclick="sortTable(1, 'tbl_addresses')">Street</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_addresses"></tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-30" onclick="sortTable(0, 'tbl_contacts')">Type</th>
+                    <th class="w-30" onclick="sortTable(1, 'tbl_contacts')">Description</th>
+                    <th class="w-40" onclick="sortTable(1, 'tbl_contacts')">Contact</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_contacts"></tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+            <table class="table table-sm table-hover">
+                <thead class="thead-dark">
+                    <th class="w-50" onclick="sortTable(0, 'tbl_sizes')">Item</th>
+                    <th class="w-50" onclick="sortTable(1, 'tbl_sizes')">Size</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id="tbl_sizes"></tbody>
+            </table>
+        </div>
+        <% if (permissions.authorised_demander) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
                 <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_demand_status', options: [{value: '', text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Complete'}, {value: 'status=3', text: 'Closed'}]}) %>
 	            <table class="table table-sm table-hover">
@@ -107,336 +99,293 @@
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
-        <% if (permissions.supplier_edit) { %>
-            <div id='mdl_supplier_edit' class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_supplier_edit'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Supplier</h5>
-                            <%- include(`${partials}/spinner`, {id: 'supplier_edit'}) %>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
-                            <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',       name: 'supplier[account_id]', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
-                            <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?',   name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Supplier'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </form>
+        <div id='mdl_supplier_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_supplier_edit'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Supplier</h5>
+                        <%- include(`${partials}/spinner`, {id: 'supplier_edit'}) %>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
+                        <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',       name: 'supplier[account_id]', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
+                        <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?',   name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100" value='Save Supplier'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id='mdl_account_view' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Account</h5>
+                        <%- include(`${partials}/spinner`, {id: 'account_view'}) %>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {id:'account_name',      title: 'Name'}) %>
+                        <%- include(`${partials}/inputs/display`, {id:'account_number',    title: 'Number'}) %>
+                        <%- include(`${partials}/inputs/display`, {id:'account_user',      title: 'Owner', link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id:'account_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id:'account_updatedAt', title: 'Updated'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <p class='me-auto text-start'>ID: <span id='account_id'></span></p>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
-        <% } %>
+        </div>
+        <div id='mdl_file_view' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">File</h5>
+                        <%- include(`${partials}/spinner`, {id: 'file_view'}) %>
+                        <span class="float-end">
+                            <form id="form_file_download" method='GET' class='float-end ms-1'>
+                                <button class='btn btn-primary'><i class="fas fa-file-download"></i></button>
+                            </form>
+                            <span id="span_file_edit_btn"   class='float-end ms-1'></span>
+                            <span id="span_file_delete_btn" class='float-end ms-1'></span>
+                        </span>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {id: 'file_filename',    title: 'Filename'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'file_description', title: 'Description'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'file_user',        title: 'Added By'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'file_createdAt',   title: 'Added'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'file_updatedAt',   title: 'Updated'}) %>
+                        <h4>Details</h4>
+                        <form id="form_file_detail_add">
+                            <input type="hidden" id='file_id_detail_add' name='detail[file_id]'>
+                            <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_add',  title: 'Name',  name: 'detail[name]',  required: true, list_id: 'file_detail_names'}) %>
+                            <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_add', title: 'Value', name: 'detail[value]', required: true}) %>
+                            <datalist id="file_detail_names"></datalist>
+                            <button class="btn btn-success w-100 mb-1">Save</button>
+                        </form>
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-dark">
+                                <th class="w-50" onclick="sortTable(0, 'tbl_file_details')">Name</th>
+                                <th class="w-50" onclick="sortTable(1, 'tbl_file_details')">Value</th>
+                                <th><i class="fas fa-pencil-alt"></i></th>
+                                <th><i class="fas fa-trash-alt"></i></th>
+                            </thead>
+                            <tbody id="tbl_file_details"></tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <p class='me-auto text-start'>ID: <span id='file_id'></span></p>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id='mdl_file_add' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id="form_file_add" encType="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add File</h5>
+                        <%- include(`${partials}/spinner`, {id: 'file_add'}) %>
+                    </div>
+                    <div class="modal-body">
+                        <input class='supplier_id' type="hidden" name='file[supplier_id]'>
+                        <%- include(`${partials}/inputs/text`, {id: 'file_description_add', title: 'Description', name: 'file[description]', required: true, list_id: 'file_descriptions'}) %>
+                        <datalist id="file_descriptions"></datalist>
+                        <input type="file" class="form-control text-align-start" name="uploaded" id="file_upload" required>
+                    </div>
+                    <div class="modal-footer">
+                        <input  type="submit" class="btn btn-success w-100" value='Save File'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id='mdl_file_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_file_edit'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit File</h5>
+                        <%- include(`${partials}/spinner`, {id: 'file_edit'}) %>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id='file_id_edit' name='file_id'>
+                        <%- include(`${partials}/inputs/text`, {id: 'file_description_edit', title: 'Description', name: 'file[description]', required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input  type="submit" class="btn btn-success w-100" value='Save File'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id='mdl_file_detail_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_file_detail_edit'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Detail</h5>
+                        <%- include(`${partials}/spinner`, {id: 'file_detail_edit'}) %>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id='file_detail_id_edit' name='file_detail_id'>
+                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_edit',  title: 'Name',  name: 'detail[name]',  required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_edit', title: 'Value', name: 'detail[value]', required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit"  class="btn btn-success w-100" value='Save File'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id='mdl_address_view' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Address: <span id="file_id_view"></span></h5>
+                        <%- include(`${partials}/spinner`, {id: 'address_view'}) %>
+                        <span class='float-end'>
+                            <span id='address_edit_btn' class='float-end me-1'></span>
+                            <span id='address_delete_btn' class='float-end me-1'></span>
+                        </span>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {id: 'address_type',        title: 'Type'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'address_unit_number', title: 'Unit/Number'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'address_street',      title: 'Street'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'address_town',        title: 'Town'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'address_county',      title: 'County'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'address_country',     title: 'Country'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'address_postcode',    title: 'Postcode'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'address_createdAt',   title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'address_updatedAt',   title: 'Updated'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <p class='me-auto text-start'>
+                            Address ID: <span id='address_id'></span><br>
+                            Link ID: <span id='supplier_address_id'></span>
+                        </p>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id='mdl_address_add' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id="form_address_add">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Address</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input class='supplier_id' type="hidden" name='supplier_id'>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_type_add',        name: 'type',                 title: 'Type',        required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_unit_number_add', name: 'address[unit_number]', title: 'Unit/Number', required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_street_add',      name: 'address[street]',      title: 'Street',      required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_town_add',        name: 'address[town]',        title: 'Town'}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_county_add',      name: 'address[county]',      title: 'County'}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_country_add',     name: 'address[country]',     title: 'Country'}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_postcode_add',    name: 'address[postcode]',    title: 'Postcode'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input  type="submit" class="btn btn-success w-100" value='Save Address'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id='mdl_address_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_address_edit'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Address</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id='supplier_address_id_edit' name='supplier_address_id'>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_type_edit',        name: 'address[type]',        title: 'Type',        required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_unit_number_edit', name: 'address[unit_number]', title: 'Unit/Number', required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_street_edit',      name: 'address[street]',      title: 'Street',      required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_town_edit',        name: 'address[town]',        title: 'Town'}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_county_edit',      name: 'address[county]',      title: 'County'}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_country_edit',     name: 'address[country]',     title: 'Country'}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'address_postcode_edit',    name: 'address[postcode]',    title: 'Postcode'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input  type="submit" class="btn btn-success w-100" value='Save Address'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-        <% if (permissions.access_accounts) { %>
-            <div id='mdl_account_view' class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Account</h5>
-                            <%- include(`${partials}/spinner`, {id: 'account_view'}) %>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id:'account_name',      title: 'Name'}) %>
-                            <%- include(`${partials}/inputs/display`, {id:'account_number',    title: 'Number'}) %>
-                            <%- include(`${partials}/inputs/display`, {id:'account_user',      title: 'Owner', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id:'account_createdAt', title: 'Created'}) %>
-                            <%- include(`${partials}/inputs/display`, {id:'account_updatedAt', title: 'Updated'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <p class='me-auto text-start'>ID: <span id='account_id'></span></p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
+        <div id='mdl_contact_view' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Contact</h5>
+                        <%- include(`${partials}/spinner`, {id: 'contact_view'}) %>
+                        <span class='float-end'>
+                            <span id='contact_edit_btn' class='float-end me-1'></span>
+                            <span id='contact_delete_btn' class='float-end me-1'></span>
+                        </span>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {id: 'contact_type',        title: 'Type'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'contact_description', title: 'Description'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'contact_contact',     title: 'Contact'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'contact_createdAt',   title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'contact_updatedAt',   title: 'Updated'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <p class='me-auto text-start'>
+                            Contact ID: <span id='contact_id'></span><br>
+                            Link ID: <span id='supplier_contact_id'></span>
+                        </p>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
-        <% } %>
-
-        <% if (permissions.access_files) { %>
-            <div id='mdl_file_view' class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">File</h5>
-                            <%- include(`${partials}/spinner`, {id: 'file_view'}) %>
-                            <span class="float-end">
-                                <form id="form_file_download" method='GET' class='float-end ms-1'>
-                                    <button class='btn btn-primary'><i class="fas fa-file-download"></i></button>
-                                </form>
-                                <% if (permissions.file_edit) { %>
-                                    <span id="span_file_edit_btn"   class='float-end ms-1'></span>
-                                <% } %>
-                                <% if (permissions.file_delete) { %>
-                                    <span id="span_file_delete_btn" class='float-end ms-1'></span>
-                                <% } %>
-                            </span>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'file_filename',    title: 'Filename'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'file_description', title: 'Description'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'file_user',        title: 'Added By'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'file_createdAt',   title: 'Added'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'file_updatedAt',   title: 'Updated'}) %>
-                            <% if (permissions.access_file_details) { %>
-                                <h4>Details</h4>
-                                <% if (permissions.file_detail_add) { %>
-                                    <form id="form_file_detail_add">
-                                        <input type="hidden" id='file_id_detail_add' name='detail[file_id]'>
-                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_add',  title: 'Name',  name: 'detail[name]',  required: true, list_id: 'file_detail_names'}) %>
-                                        <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_add', title: 'Value', name: 'detail[value]', required: true}) %>
-                                        <datalist id="file_detail_names"></datalist>
-                                        <button class="btn btn-success w-100 mb-1">Save</button>
-                                    </form>
-                                <% } %>
-                                <table class="table table-sm table-hover">
-                                    <thead class="thead-dark">
-                                        <th class="w-50" onclick="sortTable(0, 'tbl_file_details')">Name</th>
-                                        <th class="w-50" onclick="sortTable(1, 'tbl_file_details')">Value</th>
-                                        <th><i class="fas fa-pencil-alt"></i></th>
-                                        <th><i class="fas fa-trash-alt"></i></th>
-                                    </thead>
-                                    <tbody id="tbl_file_details"></tbody>
-                                </table>
-                            <% } %>
-                        </div>
-                        <div class="modal-footer">
-                            <p class='me-auto text-start'>ID: <span id='file_id'></span></p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
+        </div>
+        <div id='mdl_contact_add' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id="form_contact_add">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Contact</h5>
                     </div>
-                </div>
+                    <div class="modal-body">
+                        <input class='supplier_id' type="hidden" name='supplier_id'>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_type_add',        name: 'type',                 title: 'Type',        required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_description_add', name: 'contact[description]', title: 'Description', required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_contact_add',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input  type="submit" class="btn btn-success w-100" value='Save Contact'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
             </div>
-            <% if (permissions.file_add) { %>
-                <div id='mdl_file_add' class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <form class="modal-content" id="form_file_add" encType="multipart/form-data">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add File</h5>
-                                <%- include(`${partials}/spinner`, {id: 'file_add'}) %>
-                            </div>
-                            <div class="modal-body">
-                                <input class='supplier_id' type="hidden" name='file[supplier_id]'>
-                                <%- include(`${partials}/inputs/text`, {id: 'file_description_add', title: 'Description', name: 'file[description]', required: true, list_id: 'file_descriptions'}) %>
-                                <datalist id="file_descriptions"></datalist>
-                                <input type="file" class="form-control text-align-start" name="uploaded" id="file_upload" required>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save File'>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </form>
+        </div>
+        <div id='mdl_contact_edit' class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_contact_edit'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Contact</h5>
                     </div>
-                </div>
-            <% } %>
-            <% if (permissions.file_edit) { %>
-                <div id='mdl_file_edit' class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <form class="modal-content" id='form_file_edit'>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Edit File</h5>
-                                <%- include(`${partials}/spinner`, {id: 'file_edit'}) %>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" id='file_id_edit' name='file_id'>
-                                <%- include(`${partials}/inputs/text`, {id: 'file_description_edit', title: 'Description', name: 'file[description]', required: true}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save File'>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </form>
+                    <div class="modal-body">
+                        <input type="hidden" id='supplier_contact_id_edit' name='supplier_contact_id'>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_type_edit',        name: 'contact[type]',        title: 'Type',        required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_description_edit', name: 'contact[description]', title: 'Description', required: true}) %>
+                        <%- include(`${partials}/inputs/text`, {id: 'contact_contact_edit',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
                     </div>
-                </div>
-            <% } %>
-            <% if (permissions.file_detail_edit) { %>
-                <div id='mdl_file_detail_edit' class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <form class="modal-content" id='form_file_detail_edit'>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Edit Detail</h5>
-                                <%- include(`${partials}/spinner`, {id: 'file_detail_edit'}) %>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" id='file_detail_id_edit' name='file_detail_id'>
-                                <%- include(`${partials}/inputs/text`, {id: 'file_detail_name_edit',  title: 'Name',  name: 'detail[name]',  required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_edit', title: 'Value', name: 'detail[value]', required: true}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input type="submit"  class="btn btn-success w-100" value='Save File'>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </form>
+                    <div class="modal-footer">
+                        <input  type="submit" class="btn btn-success w-100" value='Save Contact'>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
-                </div>
-            <% } %>
-        <% } %>
-
-        <% if (permissions.access_supplier_addresses) { %>
-            <div id='mdl_address_view' class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Address: <span id="file_id_view"></span></h5>
-                            <%- include(`${partials}/spinner`, {id: 'address_view'}) %>
-                            <span class='float-end'>
-                                <% if (permissions.supplier_address_edit) { %>
-                                    <span id='address_edit_btn' class='float-end me-1'></span>
-                                <% } %>
-                                <% if (permissions.supplier_address_delete) { %>
-                                    <span id='address_delete_btn' class='float-end me-1'></span>
-                                <% } %>
-                            </span>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'address_type',        title: 'Type'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'address_unit_number', title: 'Unit/Number'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'address_street',      title: 'Street'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'address_town',        title: 'Town'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'address_county',      title: 'County'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'address_country',     title: 'Country'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'address_postcode',    title: 'Postcode'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'address_createdAt',   title: 'Created'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'address_updatedAt',   title: 'Updated'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <p class='me-auto text-start'>
-                                Address ID: <span id='address_id'></span><br>
-                                Link ID: <span id='supplier_address_id'></span>
-                            </p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
-            <% if (permissions.supplier_address_add) { %>
-                <div id='mdl_address_add' class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <form class="modal-content" id="form_address_add">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add Address</h5>
-                            </div>
-                            <div class="modal-body">
-                                <input class='supplier_id' type="hidden" name='supplier_id'>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_type_add',        name: 'type',                 title: 'Type',        required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_unit_number_add', name: 'address[unit_number]', title: 'Unit/Number', required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_street_add',      name: 'address[street]',      title: 'Street',      required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_town_add',        name: 'address[town]',        title: 'Town'}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_county_add',      name: 'address[county]',      title: 'County'}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_country_add',     name: 'address[country]',     title: 'Country'}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_postcode_add',    name: 'address[postcode]',    title: 'Postcode'}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save Address'>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <% } %>
-            <% if (permissions.supplier_address_edit) { %>
-                <div id='mdl_address_edit' class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <form class="modal-content" id='form_address_edit'>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Edit Address</h5>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" id='supplier_address_id_edit' name='supplier_address_id'>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_type_edit',        name: 'address[type]',        title: 'Type',        required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_unit_number_edit', name: 'address[unit_number]', title: 'Unit/Number', required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_street_edit',      name: 'address[street]',      title: 'Street',      required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_town_edit',        name: 'address[town]',        title: 'Town'}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_county_edit',      name: 'address[county]',      title: 'County'}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_country_edit',     name: 'address[country]',     title: 'Country'}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'address_postcode_edit',    name: 'address[postcode]',    title: 'Postcode'}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save Address'>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <% } %>
-        <% } %>
-
-        <% if (permissions.access_supplier_contacts) { %>
-            <div id='mdl_contact_view' class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Contact</h5>
-                            <%- include(`${partials}/spinner`, {id: 'contact_view'}) %>
-                            <span class='float-end'>
-                                <% if (permissions.supplier_contact_edit) { %>
-                                    <span id='contact_edit_btn' class='float-end me-1'></span>
-                                <% } %>
-                                <% if (permissions.supplier_contact_delete) { %>
-                                    <span id='contact_delete_btn' class='float-end me-1'></span>
-                                <% } %>
-                            </span>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'contact_type',        title: 'Type'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'contact_description', title: 'Description'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'contact_contact',     title: 'Contact'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'contact_createdAt',   title: 'Created'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'contact_updatedAt',   title: 'Updated'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <p class='me-auto text-start'>
-                                Contact ID: <span id='contact_id'></span><br>
-                                Link ID: <span id='supplier_contact_id'></span>
-                            </p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <% if (permissions.supplier_contact_add) { %>
-                <div id='mdl_contact_add' class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <form class="modal-content" id="form_contact_add">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add Contact</h5>
-                            </div>
-                            <div class="modal-body">
-                                <input class='supplier_id' type="hidden" name='supplier_id'>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_type_add',        name: 'type',                 title: 'Type',        required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_description_add', name: 'contact[description]', title: 'Description', required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_contact_add',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save Contact'>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <% } %>
-            <% if (permissions.supplier_contact_edit) { %>
-                <div id='mdl_contact_edit' class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <form class="modal-content" id='form_contact_edit'>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Edit Contact</h5>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" id='supplier_contact_id_edit' name='supplier_contact_id'>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_type_edit',        name: 'contact[type]',        title: 'Type',        required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_description_edit', name: 'contact[description]', title: 'Description', required: true}) %>
-                                <%- include(`${partials}/inputs/text`, {id: 'contact_contact_edit',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
-                            </div>
-                            <div class="modal-footer">
-                                <input  type="submit" class="btn btn-success w-100" value='Save Contact'>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <% } %>
-        <% } %>
+        </div>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -445,87 +394,45 @@
 
 <script src='/js/stores/suppliers/show/view.js'></script>
 <script async>getSupplier()</script>
-<% if (permissions.supplier_edit) { %>
-    <script src="/js/utils/list/accounts.js"></script>
-    <script src="/js/stores/suppliers/show/edit.js"></script>
-<% } %>
-<% if (permissions.supplier_delete) { %>
-    <script src="/js/stores/suppliers/show/delete.js"></script>
-<% } %>
+<script src="/js/utils/list/accounts.js"></script>
+<script src="/js/stores/suppliers/show/edit.js"></script>
+<script src="/js/stores/suppliers/show/delete.js"></script>
 
 <% if (permissions.access_settings) { %>
     <script src='/js/stores/suppliers/show/default/view.js'></script>
     <script async>getDefault()</script>
-    <% if (permissions.setting_edit) { %>
-        <script src='/js/stores/suppliers/show/default/edit.js'></script>
-        <script async>setDefaultBtn()</script>
-    <% } %>
+    <script src='/js/stores/suppliers/show/default/edit.js'></script>
+    <script async>setDefaultBtn()</script>
 <% } %>
 
-<% if (permissions.access_files) { %>
-    <script src="/js/stores/suppliers/show/files/view.js"></script>
-    <script async>getFiles()</script>
-    <% if (permissions.file_add) { %>
-        <script src="/js/stores/suppliers/show/files/add.js"></script>
-    <% } %>
-    <% if (permissions.file_edit) { %>
-        <script src="/js/stores/suppliers/show/files/edit.js"></script>
-    <% } %>
-    <% if (permissions.file_delete) { %>
-        <script src="/js/stores/suppliers/show/files/delete.js"></script>
-    <% } %>
-    <% if (permissions.access_file_details) { %>
-        <script src="/js/stores/suppliers/show/files/details/view.js"></script>
-        <% if (permissions.file_detail_delete) { %>
-            <script src="/js/stores/suppliers/show/files/details/delete.js"></script>
-        <% } %>
-        <% if (permissions.file_detail_add) { %>
-            <script src="/js/stores/suppliers/show/files/details/add.js"></script>
-        <% } %>
-        <% if (permissions.file_detail_edit) { %>
-            <script src="/js/stores/suppliers/show/files/details/edit.js"></script>
-        <% } %>
-    <% } %>
-<% } %>
+<script src="/js/stores/suppliers/show/files/view.js"></script>
+<script async>getFiles()</script>
+<script src="/js/stores/suppliers/show/files/add.js"></script>
+<script src="/js/stores/suppliers/show/files/edit.js"></script>
+<script src="/js/stores/suppliers/show/files/delete.js"></script>
+<script src="/js/stores/suppliers/show/files/details/view.js"></script>
+<script src="/js/stores/suppliers/show/files/details/delete.js"></script>
+<script src="/js/stores/suppliers/show/files/details/add.js"></script>
+<script src="/js/stores/suppliers/show/files/details/edit.js"></script>
 
-<% if (permissions.access_supplier_addresses) { %>
-    <script src="/js/stores/suppliers/show/addresses/view.js"></script>
-    <script async>getAddresses()</script>
-    <% if (permissions.supplier_address_add) { %>
-        <script src="/js/stores/suppliers/show/addresses/add.js"></script>
-    <% } %>
-    <% if (permissions.supplier_address_edit) { %>
-        <script src="/js/stores/suppliers/show/addresses/edit.js"></script>
-    <% } %>
-    <% if (permissions.supplier_address_delete) { %>
-        <script src="/js/stores/suppliers/show/addresses/delete.js"></script>
-    <% } %>
-<% } %>
-<% if (permissions.access_supplier_contacts) { %>
-    <script src="/js/stores/suppliers/show/contacts/view.js"></script>
-    <script async>getContacts()</script>
-    <% if (permissions.supplier_contact_add) { %>
-        <script src="/js/stores/suppliers/show/contacts/add.js"></script>
-    <% } %>
-    <% if (permissions.supplier_contact_edit) { %>
-        <script src="/js/stores/suppliers/show/contacts/edit.js"></script>
-    <% } %>
-    <% if (permissions.supplier_contact_delete) { %>
-        <script src="/js/stores/suppliers/show/contacts/delete.js"></script>
-    <% } %>
-<% } %>
+<script src="/js/stores/suppliers/show/addresses/view.js"></script>
+<script async>getAddresses()</script>
+<script src="/js/stores/suppliers/show/addresses/add.js"></script>
+<script src="/js/stores/suppliers/show/addresses/edit.js"></script>
+<script src="/js/stores/suppliers/show/addresses/delete.js"></script>
+<script src="/js/stores/suppliers/show/contacts/view.js"></script>
+<script async>getContacts()</script>
+<script src="/js/stores/suppliers/show/contacts/add.js"></script>
+<script src="/js/stores/suppliers/show/contacts/edit.js"></script>
+<script src="/js/stores/suppliers/show/contacts/delete.js"></script>
 
-<% if (permissions.access_sizes) { %>
-    <script src="/js/stores/suppliers/show/sizes/view.js"></script>
-    <script async>getSizes()</script>
-<% } %>
+<script src="/js/stores/suppliers/show/sizes/view.js"></script>
+<script async>getSizes()</script>
 
-<% if (permissions.access_demands) { %>
+<% if (permissions.authorised_demander) { %>
     <script src="/js/stores/suppliers/show/demands/view.js"></script>
     <script async>getDemands()</script>
 <% } %>
 
-<% if (permissions.access_accounts) { %>
     <script src="/js/stores/suppliers/show/accounts/view.js"></script>
-<% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

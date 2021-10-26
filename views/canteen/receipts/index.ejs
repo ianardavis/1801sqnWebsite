@@ -1,12 +1,10 @@
 <%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {href: '/receipts', text: 'Receipts'}) %>
-<% if (permissions.receipt_add) { %>
-    <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#mdl_receipt_add">
-            <i class="fas fa-plus"></i>
-        </a>
-    </li>
-<% } %>
+<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#mdl_receipt_add">
+        <i class="fas fa-plus"></i>
+    </a>
+</li>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'receipts'}) %>
 <%- include(`${partials}/head/components/close`) %>
@@ -22,35 +20,31 @@
         <tbody id="tbl_receipts"></tbody>
     </table>
     <div id="div_modals">
-        <% if (permissions.receipt_add) { %>
-            <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_receipt_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Add Receipt</h5>
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items',  name: 'receipts[0][item_id]', required: true}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total',                                               step: '0.01', min: '0.01'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',  name: 'receipts[0][cost]',    required: true, step: '0.01', min: '0.01'}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty',        name: 'receipts[0][qty]',     required: true,               min: '1'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Add Item'>
-                        </div>
-                    </form>
-                </div>
+        <div id='mdl_receipt_add' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_receipt_add'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Receipt</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items',  name: 'receipts[0][item_id]', required: true}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Total)', id: 'cost_total',                                               step: '0.01', min: '0.01'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Cost (Each)',  id: 'cost_each',  name: 'receipts[0][cost]',    required: true, step: '0.01', min: '0.01'}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Quantity',     id: 'qty',        name: 'receipts[0][qty]',     required: true,               min: '1'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100" value='Add Item'>
+                    </div>
+                </form>
             </div>
-        <% } %>
+        </div>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/receipts/index/view.js"></script>
 <script async>getReceipts()</script>
-<% if (permissions.receipt_add) { %>
-    <script src="/js/canteen/receipts/index/add.js"></script>
-<% } %>
+<script src="/js/canteen/receipts/index/add.js"></script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

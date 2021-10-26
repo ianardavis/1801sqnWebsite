@@ -16,7 +16,7 @@
                 <th class="w-15" onclick="sortTable(4, 'tbl_issues')">Date Issued</th>
                 <th class="w-15" onclick="sortTable(5, 'tbl_issues')">Date Due</th>
                 <th class="w-15">
-                    <% if (permissions.loancard_line_edit) { %>
+                    <% if (permissions.issuer) { %>
                         <select id="sel_all" class='form-select form-select-sm hidden'>
                             <option>Select All</option>
                             <option value="3">Return</option>

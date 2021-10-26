@@ -40,7 +40,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/settings',        fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
+    app.put('/settings',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.put(
             'settings',
             {setting_id: req.body.setting_id},
@@ -50,17 +50,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/settings',       fn.loggedIn(), fn.permissions.check('setting_add'),     (req, res) => {
+    app.post('/settings',       fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         m.settings.create({...req.body.setting, ...{user_id: req.user.user_id}})
         .then(setting => res.send({success: true, message: 'Setting created'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/printers',       fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
+    app.post('/printers',       fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.settings.set('printer', req.body.printer)
         .then(result => res.send({success: true, message: 'Printer saved'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/logs_flush',     fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
+    app.post('/logs_flush',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         try {
             const output = execSync('pm2 flush app', { encoding: 'utf-8' });
             console.log(output);
@@ -69,7 +69,7 @@ module.exports = (app, m, fn) => {
             fn.send_error(res, err);
         };
     });
-    app.post('/git_pull',       fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
+    app.post('/git_pull',       fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         try {
             const output = execSync(`git  -C ${process.env.ROOT} pull`, { encoding: 'utf-8' });
             console.log(output);
@@ -78,7 +78,7 @@ module.exports = (app, m, fn) => {
             fn.send_error(res, err);
         };
     });
-    app.post('/pm2_reload',     fn.loggedIn(), fn.permissions.check('setting_edit'),    (req, res) => {
+    app.post('/pm2_reload',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         try {
             const output = execSync('pm2 reload app', { encoding: 'utf-8' });
             console.log(output);
@@ -88,7 +88,7 @@ module.exports = (app, m, fn) => {
         };
     });
     
-    app.delete('/settings/:id', fn.loggedIn(), fn.permissions.check('setting_delete'),  (req, res) => {
+    app.delete('/settings/:id', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.get(
             'settings',
             {setting_id: req.params.id}

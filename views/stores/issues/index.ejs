@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Issues'}) %>
-<%- include(`${partials}/menu/breadcrumb_add`, {permission: 'issue_add', modal: 'issue_add'}) %>
+<%- include(`${partials}/menu/breadcrumb_add`, {permission: 'issuer', modal: 'issue_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'issues'}) %>
 <%- include(`${partials}/head/components/close`) %>
@@ -52,7 +52,7 @@
 			</div>
 		</div>
 	</div>
-	<% if (permissions.issue_edit) { %>
+	<% if (permissions.issuer) { %>
 		<form id='form_issue_edit'>
 		<button class='btn btn-success w-100 mb-1'>Action Selected Issues</button>
 	<% } %>
@@ -64,25 +64,23 @@
 				<th class="w-20" onclick="sortTable(3, 'tbl_issues')">Size</th>
 				<th class="w-10" onclick="sortTable(4, 'tbl_issues')">Quantity</th>
 				<th class="w-15">
-					<% if (permissions.issue_edit) { %>
-						<select id="sel_all" class='form-select form-select-sm hidden'>
-							<option>Select All</option>
-							<option value="-1">Decline</option>
-							<option value="0">Cancel</option>
-							<option value="2">Approve</option>
-							<option value="3">Order</option>
-							<option value="4">Issue</option>
-						</select>
-					<% } %>
+					<select id="sel_all" class='form-select form-select-sm hidden'>
+						<option>Select All</option>
+						<option value="-1">Decline</option>
+						<option value="0">Cancel</option>
+						<option value="2">Approve</option>
+						<option value="3">Order</option>
+						<option value="4">Issue</option>
+					</select>
 					Status
 				</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>
 			<tbody id="tbl_issues"></tbody>
 		</table>
-	<% if (permissions.issue_edit) { %></form><% } %>
+	<% if (permissions.issuer) { %></form><% } %>
 	<div id="div_modals">
-		<% if (permissions.issue_add) { %>
+		<% if (permissions.issuer) { %>
 			<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">
 				<div class="modal-dialog modal-xl">
 					<form class="modal-content" id='form_issue_add'>
@@ -125,25 +123,17 @@
 <script src='/js/utils/list/users.js'></script>
 <script src='/js/search/select.js'></script>
 <script src='/js/stores/issues/index/view.js'></script>
-<% if (permissions.issue_add) { %>
+<% if (permissions.issuer) { %>
 	<script src="/js/users/select/showWindow.js"></script>
 	<script src="/js/stores/sizes/select/showWindow.js"></script>
 	<script src='/js/stores/issues/index/add.js'></script>
-<% } %>
-<% if (permissions.issue_edit) { %>
 	<script src='/js/stores/issues/edit/edit.js'></script>
-	<% if (permissions.issue_add) { %>
-		<script src='/js/stores/issues/edit/approve.js'></script>
-	<% } %>
-	<% if (permissions.order_add) { %>
-		<script src='/js/stores/issues/edit/order.js'></script>
-	<% } %>
-	<% if (permissions.loancard_line_add) { %>
-		<script src='/js/stores/issues/edit/issue.js'></script>
-	<% } %>
-	<% if (permissions.loancard_line_edit) { %>
-		<script src='/js/stores/issues/edit/loancard.js'></script>
-	<% } %>
+	<script src='/js/stores/issues/edit/approve.js'></script>
+	<script src='/js/stores/issues/edit/issue.js'></script>
+	<script src='/js/stores/issues/edit/loancard.js'></script>
+<% } %>
+<% if (permissions.stores_stock_admin) { %>
+	<script src='/js/stores/issues/edit/order.js'></script>
 <% } %>
 <script async>getIssues()</script>
 <script async>getUsers()</script>

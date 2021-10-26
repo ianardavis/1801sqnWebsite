@@ -14,13 +14,13 @@
 				<%- include(`${partials}/menu/button`, {id: 'download',    text: 'Download', 	 btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'print', 	   text: 'Print', 	  	 btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'action', 	   text: 'Action Lines', form: 'actions'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete',   	 btn_form: {permission: 'loancard_delete'}}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete_file', text: 'Delete File',  btn_form: {permission: 'loancard_edit'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete',   	 btn_form: {permission: 'issue'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete_file', text: 'Delete File',  btn_form: {permission: 'issue'}}) %>
 				<%- include(`${partials}/common/notes/btn_add`) %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'loancard'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line', 	 permission: 'access_loancard_lines'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'lines',   title: 'Lines',	  spinner: 'loancard_lines', count_id: 'line'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
@@ -34,39 +34,37 @@
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_filename',  	 title: 'Filename', download: true, print: true, delete: true}) %>
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_user',			 title: 'Raised By', link: true}) %>
 		</div>
-		<% if (permissions.access_loancard_lines) { %>
-			<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-				<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Pending'}, {value: 'status=2', text: 'Open'}, {value: 'status=3', text: 'Returned'}]}) %>
-				<% if (permissions.loancard_line_edit) { %><form id='form_actions'><% } %>
-				<table class='table table-sm table-hover'>
-					<thead class='thead-dark'>
-						<th class='w-30' onclick="sortTable(0,'tbl_lines')">Item</th>
-						<th class='w-40' onclick="sortTable(1,'tbl_lines')">Size</th>
-						<th class='w-10' onclick="sortTable(2,'tbl_lines')">Qty</th>
-						<th class='w-20'>
-							<% if (permissions.loancard_line_edit) { %>
-								<select id="sel_all" class='form-select form-select-sm hidden'>
-									<option>Select All</option>
-									<option value="0">Cancel</option>
-									<option value="3">Return</option>
-								</select>
-							<% } %>
-							Status
-						</th>
-						<th><i class='fas fa-search'></i></th>
-					</thead>
-					<tbody id='tbl_lines'></tbody>
-				</table>
-				<% if (permissions.loancard_line_edit) { %></form><% } %>
-			</div>
-		<% } %>
+		<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
+			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Pending'}, {value: 'status=2', text: 'Open'}, {value: 'status=3', text: 'Returned'}]}) %>
+			<% if (permissions.issue) { %><form id='form_actions'><% } %>
+			<table class='table table-sm table-hover'>
+				<thead class='thead-dark'>
+					<th class='w-30' onclick="sortTable(0,'tbl_lines')">Item</th>
+					<th class='w-40' onclick="sortTable(1,'tbl_lines')">Size</th>
+					<th class='w-10' onclick="sortTable(2,'tbl_lines')">Qty</th>
+					<th class='w-20'>
+						<% if (permissions.issue) { %>
+							<select id="sel_all" class='form-select form-select-sm hidden'>
+								<option>Select All</option>
+								<option value="0">Cancel</option>
+								<option value="3">Return</option>
+							</select>
+						<% } %>
+						Status
+					</th>
+					<th><i class='fas fa-search'></i></th>
+				</thead>
+				<tbody id='tbl_lines'></tbody>
+			</table>
+			<% if (permissions.issue) { %></form><% } %>
+		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
 	</div>
 	<div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
-		<% if (permissions.loancard_edit) { %>
+		<% if (permissions.issue) { %>
 			<div id='mdl_loancard_complete' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<form id='form_complete' class="modal-content">
@@ -83,7 +81,7 @@
 				</div>
 			</div>
 		<% } %>
-		<% if (permissions.loancard_edit) { %>
+		<% if (permissions.issue) { %>
 			<div id='mdl_due_edit' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<form id='form_due_edit' class="modal-content">
@@ -100,7 +98,7 @@
 				</div>
 			</div>
 		<% } %>
-		<%- include(`${partials}/stores/mdl_line_view`, {permission: 'access_loancard_lines', table: 'Loancard'}) %>
+		<%- include(`${partials}/stores/mdl_line_view`, {table: 'Loancard'}) %>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -111,17 +109,15 @@
 
 <script src="/js/stores/loancards/show/view.js"></script>
 <script async>getLoancard()</script>
-<% if (permissions.loancard_edit) { %>
+<% if (permissions.issue) { %>
 	<script src="/js/stores/loancards/show/edit.js"></script>
 <% } %>
 
-<% if (permissions.access_loancard_lines) { %>
-	<script src="/js/stores/loancards/show/lines/view.js"></script>
-	<script async>getLines()</script>
-	<% if (permissions.loancard_line_edit) { %>
-		<script src="/js/utils/list/stocks.js"></script>
-		<script src="/js/utils/list/serials.js"></script>
-		<script src="/js/stores/loancard_lines/edit.js"></script>
-	<% } %>
+<script src="/js/stores/loancards/show/lines/view.js"></script>
+<script async>getLines()</script>
+<% if (permissions.issue) { %>
+	<script src="/js/utils/list/stocks.js"></script>
+	<script src="/js/utils/list/serials.js"></script>
+	<script src="/js/stores/loancard_lines/edit.js"></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

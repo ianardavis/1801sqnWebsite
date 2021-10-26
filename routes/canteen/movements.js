@@ -1,7 +1,7 @@
 module.exports = (app, m, fn) => {
-    app.get('/movements',             fn.loggedIn(), fn.permissions.get('access_movements'),   (req, res) => res.render('canteen/movements/index'));
-    app.get('/movements/:id',         fn.loggedIn(), fn.permissions.get('access_movements'),   (req, res) => res.render('canteen/movements/show'));
-    app.get('/get/movements',         fn.loggedIn(), fn.permissions.check('access_movements'), (req, res) => {
+    app.get('/movements',             fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/movements/index'));
+    app.get('/movements/:id',         fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/movements/show'));
+    app.get('/get/movements',         fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.movements.findAll({
             where: req.query,
             include: [
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/movement',          fn.loggedIn(), fn.permissions.check('access_movements'), (req, res) => {
+    app.get('/get/movement',          fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.movements.findOne({
             where: req.query,
             include: [
@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/movements_holding', fn.loggedIn(), fn.permissions.check('access_movements'), (req, res) => {
+    app.get('/get/movements_holding', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.movements.findAll({
             where: {
                 [fn.op.or]: [
@@ -44,7 +44,7 @@ module.exports = (app, m, fn) => {
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/movements',            fn.loggedIn(), fn.permissions.check('movement_add'),      (req, res) => {   
+    app.post('/movements',            fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {   
         if (!req.body.movement) fn.send_error(res, 'No details')
         else {
             fn.movements.create(req.body.movement, req.user.user_id)

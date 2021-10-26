@@ -1,5 +1,5 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/notes',    fn.loggedIn(), fn.permissions.check('access_notes'), (req, res) => {
+    app.get('/get/notes',    fn.loggedIn(), (req, res) => {
         m.notes.findAll({
             where:   req.query,
             include: [fn.inc.users.user()]
@@ -7,7 +7,7 @@ module.exports = (app, m, fn) => {
         .then(notes => res.send({success: true, result: notes}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/note',     fn.loggedIn(), fn.permissions.check('access_notes'), (req, res) => {
+    app.get('/get/note',     fn.loggedIn(), (req, res) => {
         fn.get(
             'notes',
             req.query,
@@ -17,7 +17,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/notes',       fn.loggedIn(), fn.permissions.check('note_add'),     (req, res) => {
+    app.post('/notes',       fn.loggedIn(), (req, res) => {
         fn.notes.create(
             req.body.note.note,
             req.user.user_id,
@@ -29,7 +29,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.put('/notes',        fn.loggedIn(), fn.permissions.check('note_edit'),    (req, res) => {
+    app.put('/notes',        fn.loggedIn(), (req, res) => {
         fn.get(
             'notes',
             {note_id: req.body.note_id}
@@ -45,7 +45,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/notes/:id', fn.loggedIn(), fn.permissions.check('note_delete'),  (req, res) => {
+    app.delete('/notes/:id', fn.loggedIn(), (req, res) => {
         fn.get(
             'notes',
             {note_id: req.params.id}

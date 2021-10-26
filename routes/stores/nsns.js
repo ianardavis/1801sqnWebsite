@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
-    app.get('/nsns/:id',          fn.loggedIn(), fn.permissions.get('access_nsns'),   (req, res) => res.render('stores/nsns/show'));
-    app.get('/get/nsns',          fn.loggedIn(), fn.permissions.check('access_nsns'), (req, res) => {
+    app.get('/nsns/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/nsns/show'));
+    app.get('/get/nsns',          fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.nsns.findAll({
             where: req.query,
             include: [
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
         .then(nsns => res.send({success: true, result: nsns}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/nsn',           fn.loggedIn(), fn.permissions.check('access_nsns'), (req, res) => {
+    app.get('/get/nsn',           fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'nsns',
             req.query,
@@ -27,24 +27,24 @@ module.exports = (app, m, fn) => {
         .then(nsn => res.send({success: true, result: nsn}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/nsn_groups',    fn.loggedIn(), fn.permissions.check('access_nsns'), (req, res) => {
+    app.get('/get/nsn_groups',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.nsn_groups.findAll({where: req.query})
         .then(nsn_groups => res.send({success: true, result: nsn_groups}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/nsn_classes',   fn.loggedIn(), fn.permissions.check('access_nsns'), (req, res) => {
+    app.get('/get/nsn_classes',   fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         if (req.query.nsn_group_id === '') req.query.nsn_group_id = null;
         m.nsn_classes.findAll({where: req.query})
         .then(nsn_classes => res.send({success: true, result: nsn_classes}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/nsn_countries', fn.loggedIn(), fn.permissions.check('access_nsns'), (req, res) => {
+    app.get('/get/nsn_countries', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.nsn_countries.findAll({where: req.query})
         .then(nsn_countries => res.send({success: true, result: nsn_countries}))
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/nsns',             fn.loggedIn(), fn.permissions.check('nsn_add'),     (req, res) => {
+    app.post('/nsns',             fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'sizes',
             {size_id: req.body.nsn.size_id}
@@ -96,7 +96,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.put('/nsns/:id',          fn.loggedIn(), fn.permissions.check('nsn_edit'),    (req, res) => {
+    app.put('/nsns/:id',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'nsns',
             {nsn_id: req.params.id},
@@ -136,7 +136,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.delete('/nsns/:id',       fn.loggedIn(), fn.permissions.check('nsn_delete'),  (req, res) => {
+    app.delete('/nsns/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'nsns',
             {nsn_id: req.params.id}

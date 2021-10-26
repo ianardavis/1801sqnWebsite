@@ -66,7 +66,7 @@ module.exports = function (m, fn) {
     };
     fn.issues.decline = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return fn.allowed(options.user_id, 'issue_add')
+            return fn.allowed(options.user_id, 'issuer')
             .then(result => {
                 return fn.get(
                     'issues',
@@ -87,7 +87,7 @@ module.exports = function (m, fn) {
     };
     fn.issues.cancel = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return fn.allowed(options.user_id, 'issue_delete', true)
+            return fn.allowed(options.user_id, 'issuer', true)
             .then(allowed => {
                 return fn.get(
                     'issues',
@@ -113,7 +113,7 @@ module.exports = function (m, fn) {
     };
     fn.issues.approve = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return fn.allowed(options.user_id, 'issue_add')
+            return fn.allowed(options.user_id, 'issuer')
             .then(result => {
                 return fn.get(
                     'issues',
@@ -134,7 +134,7 @@ module.exports = function (m, fn) {
     };
     fn.issues.order = function (options = {}) {
         return new Promise((resolve, reject) => {
-            return fn.allowed(options.user_id, 'order_add')
+            return fn.allowed(options.user_id, 'stores_stock_admin')
             .then(result => {
                 return fn.get(
                     'issues',
@@ -174,7 +174,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             if (!options.issues || options.issues.length === 0) resolve(false)
             else {
-                return fn.allowed(options.user_id, 'loancard_line_add')
+                return fn.allowed(options.user_id, 'issuer')
                 .then(result => {
                     return sort_issues(options.issues)
                     .then(users => {

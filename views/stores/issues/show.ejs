@@ -10,7 +10,7 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   btn_form: {permission: 'issue_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   btn_form: {permission: 'issuer'}}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
@@ -45,7 +45,7 @@
 
 <script src="/js/stores/issues/show/view.js"></script>
 <script async>getIssue()</script>
-<% if (permissions.issue_delete) { %>
+<% if (permissions.issuer) { %>
 	<script src="/js/stores/issues/show/delete.js"></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

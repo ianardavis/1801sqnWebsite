@@ -1,7 +1,7 @@
 module.exports = (app, m, fn) => {
-    app.get('/sales/:id',        fn.loggedIn(), fn.permissions.get('access_sales'),   (req, res) => res.render('canteen/sales/show'));
+    app.get('/sales/:id',        fn.loggedIn(), fn.permissions.get('pos_user'),   (req, res) => res.render('canteen/sales/show'));
 
-    app.get('/get/sales',        fn.loggedIn(), fn.permissions.check('access_sales'), (req, res) => {
+    app.get('/get/sales',        fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         m.sales.findAll({
             where: req.query,
             include: [
@@ -12,7 +12,7 @@ module.exports = (app, m, fn) => {
         .then(sales => res.send({success: true, result: sales}))
         .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/sale',         fn.loggedIn(), fn.permissions.check('access_sales'), (req, res) => {
+    app.get('/get/sale',         fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         fn.get(
             'sales',
             req.query,
@@ -21,7 +21,7 @@ module.exports = (app, m, fn) => {
         .then(sale => res.send({success: true,  result: sale}))
         .catch(err => fn.send_error(res, err))
     });
-    app.get('/get/sale_current', fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.get('/get/sale_current', fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         m.sessions.findAll({where: {status: 1}})
         .then(sessions => {
             if (sessions.length !== 1) fn.send_error(res, `${sessions.length} session(s) open`)
@@ -39,7 +39,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/sale_lines',   fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.get('/get/sale_lines',   fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         m.sale_lines.findAll({
             where:   req.query,
             include: [fn.inc.canteen.item()]
@@ -48,7 +48,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/sale_lines',      fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.post('/sale_lines',      fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         if (!req.body.line) fn.send_error(res, 'No line')
         else {
             fn.sales.lines.create(req.body.line)
@@ -57,7 +57,7 @@ module.exports = (app, m, fn) => {
         };
     });
     
-    app.put('/sale_lines',       fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.put('/sale_lines',       fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         if (!req.body.line) fn.send_error(res, 'No line specified')
         else {
             fn.sales.lines.edit(req.body.line)
@@ -65,7 +65,7 @@ module.exports = (app, m, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
-    app.put('/sales',            fn.loggedIn(), fn.permissions.check('access_pos'),   (req, res) => {
+    app.put('/sales',            fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         fn.sales.complete(
             req.body.sale_id,
             req.body.sale,

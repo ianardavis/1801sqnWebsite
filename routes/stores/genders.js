@@ -1,10 +1,10 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/genders',    fn.loggedIn(), fn.permissions.check('access_genders'), (req, res) => {
+    app.get('/get/genders',    fn.loggedIn(),                                      (req, res) => {
         m.genders.findAll({where: req.query})
         .then(genders => res.send({success: true, result: genders}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/gender',     fn.loggedIn(), fn.permissions.check('access_genders'), (req, res) => {
+    app.get('/get/gender',     fn.loggedIn(),                                      (req, res) => {
         fn.get(
             'genders',
             req.query
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/genders',        fn.loggedIn(), fn.permissions.check('gender_edit'),    (req, res) => {
+    app.put('/genders',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.put(
             'genders',
             {gender: req.body.gender.gender},
@@ -23,13 +23,13 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.post('/genders',       fn.loggedIn(), fn.permissions.check('gender_add'),     (req, res) => {
+    app.post('/genders',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.genders.create({...req.body.gender, ...{user_id: req.user.user_id}})
         .then(gender => res.send({success: true, message: 'Gender created'}))
         .catch(err => fn.send_error(res, err));
-    });
+    }); 
     
-    app.delete('/genders/:id', fn.loggedIn(), fn.permissions.check('gender_delete'),  (req, res) => {
+    app.delete('/genders/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.get(
             'genders',
             {gender_id: req.params.id}

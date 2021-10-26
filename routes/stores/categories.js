@@ -1,5 +1,5 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_categories'), (req, res) => {
+    app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
@@ -10,7 +10,7 @@ module.exports = (app, m, fn) => {
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/category',      fn.loggedIn(), fn.permissions.check('access_categories'), (req, res) => {
+    app.get('/get/category',      fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         for (let [key, value] of Object.entries(req.query)) {
             if (value === '') req.query[key] = null;
         };
@@ -23,7 +23,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/categories',        fn.loggedIn(), fn.permissions.check('category_edit'),     (req, res) => {
+    app.put('/categories',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         if (req.body.category.parent_category_id === '') req.body.category.parent_category_id = null;
         fn.put(
             'categories',
@@ -34,14 +34,14 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/categories',       fn.loggedIn(), fn.permissions.check('category_add'),      (req, res) => {
+    app.post('/categories',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         if (req.body.category.parent_category_id === '') delete req.body.category.parent_category_id;
         m.categories.create({...req.body.category, ...{user_id: req.user.user_id}})
         .then(category => res.send({success: true, message: 'Category created'}))
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/categories/:id', fn.loggedIn(), fn.permissions.check('category_delete'),   (req, res) => {
+    app.delete('/categories/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'categories',
             {category_id: req.params.id},

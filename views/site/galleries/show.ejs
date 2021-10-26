@@ -19,13 +19,9 @@
     </div>
     <div class="d-flex">
         <div class='ms-auto'>
-            <% if (permissions.gallery_image_add) { %>
+            <% if (permissions.gallery_admin) { %>
                 <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_image_add'><i class='fas fa-file-upload'></i></button>
-            <% } %>
-            <% if (permissions.gallery_image_edit) { %>
                 <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#mdl_image_edit'><i class='fas fa-pencil-alt'></i></button>
-            <% } %>
-            <% if (permissions.gallery_image_delete) { %>
                 <form id="form_image_delete" class='form_inline'>
                     <input type="hidden" name='image_id' id='image_id_delete'>
                     <button class='btn btn-danger' id='btn_image_delete'><i class='fas fa-trash-alt'></i></button>
@@ -35,7 +31,7 @@
     </div>
 </div>
 <div id="div_models">
-    <% if (permissions.gallery_image_add) { %>
+    <% if (permissions.gallery_admin) { %>
         <div id='mdl_image_add' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_image_add'>
@@ -57,8 +53,6 @@
                 </form>
             </div>
         </div>
-    <% } %>
-    <% if (permissions.gallery_image_edit) { %>
         <div id='mdl_image_edit' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_image_edit'>
@@ -82,13 +76,9 @@
 <script src="/js/site/galleries/show/view.js"></script>
 <script async>getGallery()</script>
 <script async>getImages()</script>
-<% if (permissions.gallery_image_add) { %>
+<% if (permissions.gallery_admin) { %>
     <script src="/js/site/galleries/show/add.js"></script>
-<% } %>
-<% if (permissions.gallery_image_edit) { %>
     <script src="/js/site/galleries/show/images/edit.js"></script>
-<% } %>
-<% if (permissions.gallery_image_delete) { %>
     <script src="/js/site/galleries/show/images/delete.js"></script>
 <% } %>
 <%- include(`${partials}/foot/site`) %>

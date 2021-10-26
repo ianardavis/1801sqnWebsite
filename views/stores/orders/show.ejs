@@ -10,7 +10,7 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   btn_form: {permission: 'order_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   btn_form: {permission: 'stores_stock_admin'}}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
 			</div>
 		</li>
@@ -43,7 +43,7 @@
 
 <script src="/js/stores/orders/show/view.js"></script>
 <script async>showOrder()</script>
-<% if (permissions.order_delete) { %>
+<% if (permissions.stores_stock_admin) { %>
 	<script src="/js/stores/orders/show/delete.js"></script>
 	<script async>setDeleteButton()</script>
 <% } %>

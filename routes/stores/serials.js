@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
-    app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_serials'),   (req, res) => res.render('stores/serials/show'));
-    app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_serials'), (req, res) => {
+    app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/serials/show'));
+    app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.serials.findAll({
             where:   req.query,
             include: [
@@ -12,7 +12,7 @@ module.exports = (app, m, fn) => {
         .then(serials => res.send({success: true, result: serials}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/current_serials', fn.loggedIn(), fn.permissions.check('access_serials'), (req, res) => {
+    app.get('/get/current_serials', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         req.query.location_id = {[fn.op.not]: null};
         req.query.issue_id    = null;
         m.serials.findAll({
@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
         .then(serials => res.send({success: true, result: serials}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/serial',          fn.loggedIn(), fn.permissions.check('access_serials'), (req, res) => {
+    app.get('/get/serial',          fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'serials',
             req.query,
@@ -40,7 +40,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/serials',            fn.loggedIn(), fn.permissions.check('serial_add'),     (req, res) => {
+    app.post('/serials',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         if (!req.body.location) fn.send_error(res, 'No location entered')
         else {
             fn.get(
@@ -68,7 +68,7 @@ module.exports = (app, m, fn) => {
         };
     });
     
-    app.put('/serials/:id',         fn.loggedIn(), fn.permissions.check('serial_edit'),    (req, res) => {
+    app.put('/serials/:id',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'serials',
             {serial_id: req.params.id}
@@ -88,7 +88,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/serials/:id',      fn.loggedIn(), fn.permissions.check('serial_delete'),  (req, res) => {
+    app.delete('/serials/:id',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'serials',
             {serial_id: req.params.id}

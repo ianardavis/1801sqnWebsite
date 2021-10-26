@@ -1,7 +1,7 @@
 const fs = require('fs');
 module.exports = (app, m, fn) => {
-    app.get('/files/:id',           fn.loggedIn(), fn.permissions.get('access_files'),          (req, res) => res.render('stores/files/show'));
-    app.get('/get/fs_files',        fn.loggedIn(), fn.permissions.check('access_files'),        (req, res) => {
+    app.get('/files/:id',           fn.loggedIn(), fn.permissions.get('supplier_admin'),    (req, res) => res.render('stores/files/show'));
+    app.get('/get/fs_files',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fs.readdir(
             `${process.env.ROOT}/public/res/files`,
             function(err, files) {
@@ -9,12 +9,12 @@ module.exports = (app, m, fn) => {
             }
         );
     });
-    app.get('/get/files',           fn.loggedIn(), fn.permissions.check('access_files'),        (req, res) => {
+    app.get('/get/files',           fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         m.files.findAll({where: req.query})
         .then(files => res.send({success: true, result: files}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/file',            fn.loggedIn(), fn.permissions.check('access_files'),        (req, res) => {
+    app.get('/get/file',            fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.get(
             'files',
             req.query,
@@ -23,12 +23,12 @@ module.exports = (app, m, fn) => {
         .then(file => res.send({success: true,  result: file}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/file_details',    fn.loggedIn(), fn.permissions.check('access_file_details'), (req, res) => {
+    app.get('/get/file_details',    fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         m.file_details.findAll({where: req.query})
         .then(details => res.send({success: true, result: details}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/file_detail',     fn.loggedIn(), fn.permissions.check('access_file_details'), (req, res) => {
+    app.get('/get/file_detail',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.get(
             'file_details',
             req.query
@@ -37,7 +37,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.get('/files/:id/download',  fn.loggedIn(), fn.permissions.check('access_files'),        (req, res) => {
+    app.get('/files/:id/download',  fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.get(
             'files',
             {file_id: req.params.id}
@@ -63,7 +63,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/files',               fn.loggedIn(), fn.permissions.check('file_edit'),           (req, res) => {
+    app.put('/files',               fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.put(
             'files',
             {file_id: req.body.file_id},
@@ -72,7 +72,7 @@ module.exports = (app, m, fn) => {
         .then(file => res.send({success: true,  message: 'File updated'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/file_details',        fn.loggedIn(), fn.permissions.check('file_detail_edit'),    (req, res) => {
+    app.put('/file_details',        fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.put(
             'file_details',
             {file_detail_id: req.body.file_detail_id},
@@ -82,7 +82,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/files',              fn.loggedIn(), fn.permissions.check('file_add'),            (req, res) => {
+    app.post('/files',              fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         if      (!req.files) fn.send_error(res, 'No file submitted')
         else if (Object.keys(req.files).length > 1) {
             let actions = [];
@@ -110,7 +110,7 @@ module.exports = (app, m, fn) => {
             });
         };
     });
-    app.post('/file_details',       fn.loggedIn(), fn.permissions.check('file_detail_add'),     (req, res) => {
+    app.post('/file_details',       fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.get(
             'files',
             {file_id: req.body.detail.file_id}
@@ -142,7 +142,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/files/:id',        fn.loggedIn(), fn.permissions.check('file_delete'),         (req, res) => {
+    app.delete('/files/:id',        fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.get(
             'files',
             {file_id: req.params.id}
@@ -158,12 +158,12 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.delete('/fs_files/:id',     fn.loggedIn(), fn.permissions.check('file_delete'),         (req, res) => {
+    app.delete('/fs_files/:id',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.rm(`${process.env.ROOT}/public/res/files/${req.params.id}`)
         .then(result => res.send({success: true,  message: 'File deleted'}))
         .catch(err =>   fn.send_error(res, err));
     });
-    app.delete('/file_details/:id', fn.loggedIn(), fn.permissions.check('file_detail_delete'),  (req, res) => {
+    app.delete('/file_details/:id', fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         m.file_details.destroy({
             where: {file_detail_id: req.params.id}
         })

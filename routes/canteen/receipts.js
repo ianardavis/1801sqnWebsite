@@ -1,8 +1,8 @@
 module.exports = (app, m, fn) => {
-    app.get('/receipts',        fn.loggedIn(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/index'));
-    app.get('/receipts/:id',    fn.loggedIn(), fn.permissions.get('access_receipts'),   (req, res) => res.render('canteen/receipts/show'));
+    app.get('/receipts',        fn.loggedIn(), fn.permissions.get('canteen_stock_admin'),   (req, res) => res.render('canteen/receipts/index'));
+    app.get('/receipts/:id',    fn.loggedIn(), fn.permissions.get('canteen_stock_admin'),   (req, res) => res.render('canteen/receipts/show'));
     
-    app.get('/get/receipts',    fn.loggedIn(), fn.permissions.check('access_receipts'), (req, res) => {
+    app.get('/get/receipts',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         m.receipts.findAll({
             where: req.query,
             include: [
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
         .then(receipts => res.send({success: true,  result: receipts}))
         .catch(err =>     fn.send_error(res, err))
     });
-    app.get('/get/receipt',     fn.loggedIn(), fn.permissions.check('access_receipts'), (req, res) => {
+    app.get('/get/receipt',     fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         fn.get(
             'receipts',
             req.query,
@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err))
     });
 
-    app.post('/receipts',       fn.loggedIn(), fn.permissions.check('receipt_add'),     (req, res) => {
+    app.post('/receipts',       fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         if (!req.body.receipts) fn.send_error(res, 'No items submitted')
         else {
             let actions = [];

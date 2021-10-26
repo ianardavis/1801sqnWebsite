@@ -11,13 +11,13 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				<%- include(`${partials}/menu/button`, {id: 'location_edit', text: 'Edit',   modal: 'location_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	     text: 'Delete', btn_form: {permission: 'location_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	     text: 'Delete', btn_form: {permission: 'stores_stock_admin'}}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'location'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stock',   spinner: 'stocks',  count_id: 'stock',  permission: 'access_stocks'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'serials', title: 'Serials', spinner: 'serials', count_id: 'serial', permission: 'access_serials'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'stocks',  title: 'Stock',   spinner: 'stocks',  count_id: 'stock'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'serials', title: 'Serials', spinner: 'serials', count_id: 'serial'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -26,39 +26,35 @@
             <%- include(`${partials}/inputs/display`, {id: 'location_createdAt', title: 'Created'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'location_updatedAt', title: 'Updated'}) %>
         </div>
-        <% if (permissions.access_stocks) { %>
-            <div class="tab-pane fade" id="stocks" role="tabpanel" aria-labelledby="stocks-tab">
-                <table class='table table-sm table-hover w-100'>
-                    <thead class='thead-dark'>
-                        <th class='w-40' onclick='sortTable(0, "tbl_stocks")'>Item</th>
-                        <th class='w-40' onclick='sortTable(1, "tbl_stocks")'>Size</th>
-                        <th class='w-20' onclick='sortTable(2, "tbl_stocks")'>Quantity</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id='tbl_stocks'></tbody>
-                </table>
-            </div>
-        <% } %>
-        <% if (permissions.access_serials) { %>
-            <div class="tab-pane fade" id="serials" role="tabpanel" aria-labelledby="serials-tab">
-                <table class='table table-sm table-hover w-100'>
-                    <thead class='thead-dark'>
-                        <th class='w-30' onclick='sortTable(0, "tbl_serials")'>Item</th>
-                        <th class='w-30' onclick='sortTable(1, "tbl_serials")'>Size</th>
-                        <th class='w-40' onclick='sortTable(1, "tbl_serials")'>Serial</th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id='tbl_serials'></tbody>
-                </table>
-            </div>
-        <% } %>
+        <div class="tab-pane fade" id="stocks" role="tabpanel" aria-labelledby="stocks-tab">
+            <table class='table table-sm table-hover w-100'>
+                <thead class='thead-dark'>
+                    <th class='w-40' onclick='sortTable(0, "tbl_stocks")'>Item</th>
+                    <th class='w-40' onclick='sortTable(1, "tbl_stocks")'>Size</th>
+                    <th class='w-20' onclick='sortTable(2, "tbl_stocks")'>Quantity</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id='tbl_stocks'></tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="serials" role="tabpanel" aria-labelledby="serials-tab">
+            <table class='table table-sm table-hover w-100'>
+                <thead class='thead-dark'>
+                    <th class='w-30' onclick='sortTable(0, "tbl_serials")'>Item</th>
+                    <th class='w-30' onclick='sortTable(1, "tbl_serials")'>Size</th>
+                    <th class='w-40' onclick='sortTable(1, "tbl_serials")'>Serial</th>
+                    <th><i class='fas fa-search'></i></th>
+                </thead>
+                <tbody id='tbl_serials'></tbody>
+            </table>
+        </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
-        <% if (permissions.location_edit) { %>
+        <% if (permissions.stores_stock_admin) { %>
             <div id='mdl_location_edit' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_location_edit'>
@@ -76,52 +72,48 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.access_stocks) { %>
-            <div id='mdl_stock_view'    class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Stock</h5>
-                            <a class='btn btn-primary float-end' id='btn_stock_link'><i class="fas fa-search"></i></a>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'stock_item',      title: 'Item', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'stock_size',      title: 'Size', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'stock_qty',       title: 'Quantity'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'stock_createdAt', title: 'Created'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'stock_updatedAt', title: 'Updated'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <p class='me-auto'>ID: <span id='stock_id'></span></p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
+        <div id='mdl_stock_view'    class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Stock</h5>
+                        <a class='btn btn-primary float-end' id='btn_stock_link'><i class="fas fa-search"></i></a>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {id: 'stock_item',      title: 'Item', link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'stock_size',      title: 'Size', link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'stock_qty',       title: 'Quantity'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'stock_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'stock_updatedAt', title: 'Updated'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <p class='me-auto'>ID: <span id='stock_id'></span></p>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
-        <% } %>
-        <% if (permissions.access_serials) { %>
-            <div id='mdl_serial_view'   class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Serial</h5>
-                            <a class='btn btn-primary float-end' id='btn_serial_link'><i class="fas fa-search"></i></a>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'serial_item',      title: 'Item', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'serial_size',      title: 'Size', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'serial_serial',    title: 'Serial #'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'serial_createdAt', title: 'Created'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'serial_updatedAt', title: 'Updated'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <p class='me-auto'>ID: <span id='serial_id'></span></p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
+        </div>
+        <div id='mdl_serial_view'   class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Serial</h5>
+                        <a class='btn btn-primary float-end' id='btn_serial_link'><i class="fas fa-search"></i></a>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/display`, {id: 'serial_item',      title: 'Item', link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'serial_size',      title: 'Size', link: true}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'serial_serial',    title: 'Serial #'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'serial_createdAt', title: 'Created'}) %>
+                        <%- include(`${partials}/inputs/display`, {id: 'serial_updatedAt', title: 'Updated'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <p class='me-auto'>ID: <span id='serial_id'></span></p>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
-        <% } %>
+        </div>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
@@ -130,18 +122,12 @@
 <%- include(`${partials}/common/actions/scripts`) %>
 <script src='/js/stores/locations/show/view.js'></script>
 <script async>getLocation()</script>
-<% if (permissions.location_edit) { %>
+<% if (permissions.stores_stock_admin) { %>
     <script src='/js/stores/locations/show/edit.js'></script>
-<% } %>
-<% if (permissions.location_delete) { %>
     <script src="/js/stores/locations/show/delete.js"></script>
 <% } %>
-<% if (permissions.access_stocks) { %>
-    <script src='/js/stores/locations/show/stocks/view.js'></script>
-    <script async>getStocks()</script>
-<% } %>
-<% if (permissions.access_serials) { %>
-    <script src='/js/stores/locations/show/serials/view.js'></script>
-    <script async>getSerials()</script>
-<% } %>
+<script src='/js/stores/locations/show/stocks/view.js'></script>
+<script async>getStocks()</script>
+<script src='/js/stores/locations/show/serials/view.js'></script>
+<script async>getSerials()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

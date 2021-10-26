@@ -1,13 +1,5 @@
-<% if (permissions.access_notes) { %>
-    <script src="/js/common/notes/view.js"></script>
-    <script async>getNotes()</script>
-    <% if (permissions.note_add) { %>
-        <script src="/js/common/notes/add.js"></script>
-    <% } %>
-    <% if (permissions.note_edit) { %>
-        <script src="/js/common/notes/edit.js"></script>
-    <% } %>
-    <% if (permissions.note_delete) { %>
-        <script src="/js/common/notes/delete.js"></script>
-    <% } %>
-<% } %>
+<script src="/js/common/notes/view.js"></script>
+<script async>getNotes()</script>
+<script src="/js/common/notes/add.js"></script>
+<script src="/js/common/notes/edit.js"></script>
+<script src="/js/common/notes/delete.js"></script>

@@ -1,10 +1,8 @@
 <%- include(`${partials}/head/app`, {text: 'Canteen'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Paid In/Outs'}) %>
-<% if (permissions.paid_in_out_add) { %>
-	<li class="nav-item">
-		<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_paid_in_out_add"><i class="fas fa-plus"></i></a>
-	</li>
-<% } %>
+<li class="nav-item">
+    <a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_paid_in_out_add"><i class="fas fa-plus"></i></a>
+</li>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'paid_in_outs'}) %>
 <%- include(`${partials}/head/components/close`) %>
@@ -23,35 +21,31 @@
         <tbody id="tbl_paid_in_outs"></tbody>
     </table>
     <div id="div_modals">
-        <% if (permissions.paid_in_out_add) { %>
-            <div id='mdl_paid_in_out_add' class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <form class="modal-content" id='form_paid_in_out_add'>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Pay In/Out</h5>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/select`, {title: 'Pay In/Out?', name: 'paid_in_out[paid_in]',             id: 'paid_in_out_paid_in', options: [{value: '1', text: 'Pay In', selected: true}, {value: '0', text: 'Pay Out'}]}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'Holding',     name: 'paid_in_out[holding_id]',          id: 'sel_holdings', spinner_id: 'users_current'}) %>
-                            <%- include(`${partials}/inputs/select`, {title: 'To/From',     name: 'paid_in_out[user_id_paid_in_out]', id: 'sel_users',    spinner_id: 'holdings'}) %>
-                            <%- include(`${partials}/inputs/text`,   {title: 'Reason',      name: 'paid_in_out[reason]',              id: 'paid_in_out_reason', required: true}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'paid_in_out[amount]',              id: 'paid_in_out_amount', required: true, step: '0.01', min: '0'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Item'>
-                        </div>
-                    </form>
-                </div>
+        <div id='mdl_paid_in_out_add' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form class="modal-content" id='form_paid_in_out_add'>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Pay In/Out</h5>
+                    </div>
+                    <div class="modal-body">
+                        <%- include(`${partials}/inputs/select`, {title: 'Pay In/Out?', name: 'paid_in_out[paid_in]',             id: 'paid_in_out_paid_in', options: [{value: '1', text: 'Pay In', selected: true}, {value: '0', text: 'Pay Out'}]}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'Holding',     name: 'paid_in_out[holding_id]',          id: 'sel_holdings', spinner_id: 'users_current'}) %>
+                        <%- include(`${partials}/inputs/select`, {title: 'To/From',     name: 'paid_in_out[user_id_paid_in_out]', id: 'sel_users',    spinner_id: 'holdings'}) %>
+                        <%- include(`${partials}/inputs/text`,   {title: 'Reason',      name: 'paid_in_out[reason]',              id: 'paid_in_out_reason', required: true}) %>
+                        <%- include(`${partials}/inputs/number`, {title: 'Amount',      name: 'paid_in_out[amount]',              id: 'paid_in_out_amount', required: true, step: '0.01', min: '0'}) %>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success w-100" value='Save Item'>
+                    </div>
+                </form>
             </div>
-        <% } %>
+        </div>
     </div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/canteen/paid_in_outs/index/view.js"></script>
-<% if (permissions.paid_in_out_add) { %>
-    <script src="/js/utils/list/users.js"></script>
-    <script src="/js/utils/list/holdings.js"></script>
-    <script src="/js/canteen/paid_in_outs/index/add.js"></script>
-<% } %>
+<script src="/js/utils/list/users.js"></script>
+<script src="/js/utils/list/holdings.js"></script>
+<script src="/js/canteen/paid_in_outs/index/add.js"></script>
 <script async>getPaidInOuts()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

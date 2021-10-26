@@ -13,14 +13,14 @@
                 <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',           modal: 'item_edit'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'writeoff_add', text: 'Writeoff Stock', modal: 'writeoff_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'receipt_add',  text: 'Receive Stock',  modal: 'receipt_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',         btn_form: {permission: 'item_delete'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',         btn_form: {permission: 'canteen_stock_admin'}}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',  spinner: 'canteen_item'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipts',   count_id: 'receipt',  permission: 'access_receipts'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoffs',  count_id: 'writeoff', permission: 'access_writeoffs'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines', count_id: 'sale',     permission: 'access_sales'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'receipts',  title: 'Receipts', spinner: 'receipts',   count_id: 'receipt',  permission: 'canteen_stock_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'writeoffs', title: 'Writeoff', spinner: 'writeoffs',  count_id: 'writeoff', permission: 'canteen_stock_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',     title: 'Sales',    spinner: 'sale_lines', count_id: 'sale',     permission: 'pos_user'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -31,7 +31,7 @@
             <%- include(`${partials}/inputs/display`, {id: 'item_qty',     title: 'Stock'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_current', title: 'Current Item'}) %>
         </div>
-        <% if (permissions.access_receipts) { %>
+        <% if (permissions.canteen_stock_admin) { %>
             <div class="tab-pane fade" id="receipts"  role="tabpanel" aria-labelledby="receipts-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
@@ -43,7 +43,7 @@
                 </table>
             </div>
         <% } %>
-        <% if (permissions.access_writeoffs) { %>
+        <% if (permissions.canteen_stock_admin) { %>
             <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
@@ -56,7 +56,7 @@
                 </table>
             </div>
         <% } %>
-        <% if (permissions.access_sales) { %>
+        <% if (permissions.pos_user) { %>
             <div class="tab-pane fade" id="sales"     role="tabpanel" aria-labelledby="sales-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
@@ -72,7 +72,7 @@
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
-        <% if (permissions.item_edit) { %>
+        <% if (permissions.canteen_stock_admin) { %>
             <div id='mdl_item_edit'    class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_item_edit'>
@@ -92,7 +92,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.receipt_add) { %>
+        <% if (permissions.canteen_stock_admin) { %>
             <div id='mdl_receipt_add'  class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_receipt_add'>
@@ -112,7 +112,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.writeoff_add) { %>
+        <% if (permissions.canteen_stock_admin) { %>
             <div id='mdl_writeoff_add' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_writeoff_add'>
@@ -138,28 +138,18 @@
 <%- include(`${partials}/common/notes/scripts`) %>
 <script src='/js/canteen/items/show/view.js'></script>
 <script async>getItem()</script>
-<% if (permissions.access_receipts) { %>
+<% if (permissions.canteen_stock_admin) { %>
     <script src='/js/canteen/items/show/receipts/view.js'></script>
     <script async>getReceipts()</script>
-    <% if (permissions.receipt_add) { %>
-        <script src='/js/canteen/items/show/receipts/add.js'></script>
-    <% } %>
-<% } %>
-<% if (permissions.access_writeoffs) { %>
+    <script src='/js/canteen/items/show/receipts/add.js'></script>
     <script src='/js/canteen/items/show/writeoffs/view.js'></script>
     <script async>getWriteoffs()</script>
-    <% if (permissions.writeoff_add) { %>
-        <script src='/js/canteen/items/show/writeoffs/add.js'></script>
-    <% } %>
+    <script src='/js/canteen/items/show/writeoffs/add.js'></script>
+    <script src='/js/canteen/items/show/edit.js'></script>
+    <script src='/js/canteen/items/show/delete.js'></script>
 <% } %>
-<% if (permissions.access_sales) { %>
+<% if (permissions.pos_user) { %>
     <script src='/js/canteen/items/show/sales/view.js'></script>
     <script async>getSales()</script>
-<% } %>
-<% if (permissions.item_edit) { %>
-    <script src='/js/canteen/items/show/edit.js'></script>
-<% } %>
-<% if (permissions.item_delete) { %>
-    <script src='/js/canteen/items/show/delete.js'></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

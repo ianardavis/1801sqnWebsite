@@ -1,13 +1,13 @@
 module.exports = (app, m, fn) => {
-    app.get('/canteen_items',        fn.loggedIn(), fn.permissions.get('access_canteen_items'),   (req, res) => res.render('canteen/items/index'));
-    app.get('/canteen_items/:id',    fn.loggedIn(), fn.permissions.get('access_canteen_items'),   (req, res) => res.render('canteen/items/show'));
+    app.get('/canteen_items',        fn.loggedIn(), fn.permissions.get('access_canteen'),        (req, res) => res.render('canteen/items/index'));
+    app.get('/canteen_items/:id',    fn.loggedIn(), fn.permissions.get('access_canteen'),        (req, res) => res.render('canteen/items/show'));
     
-    app.get('/get/canteen_items',    fn.loggedIn(), fn.permissions.check('access_canteen_items'), (req, res) => {
+    app.get('/get/canteen_items',    fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {
         m.canteen_items.findAll({where: req.query})
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/canteen_item',     fn.loggedIn(), fn.permissions.check('access_canteen_items'), (req, res) => {
+    app.get('/get/canteen_item',     fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {
         fn.get(
             'canteen_items',
             req.query
@@ -16,13 +16,13 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/canteen_items/:id',    fn.loggedIn(), fn.permissions.check('canteen_item_edit'),    (req, res) => {
+    app.put('/canteen_items/:id',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         fn.put('canteen_items', {item_id: req.params.id}, req.body.item)
         .then(result => res.send({success: true, message: 'Item updated'}))
         .catch(err => fn.send_error(res, err));
     });
     
-    app.post('/canteen_items',       fn.loggedIn(), fn.permissions.check('canteen_item_add'),     (req, res) => {
+    app.post('/canteen_items',       fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         if (!req.body.item) fn.send_error(res, 'No item')
         else {
             fn.canteen_items.create(req.body.item)
@@ -31,7 +31,7 @@ module.exports = (app, m, fn) => {
         };
     });
 
-    app.delete('/canteen_items/:id', fn.loggedIn(), fn.permissions.check('canteen_item_delete'),  (req, res) => {
+    app.delete('/canteen_items/:id', fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         fn.canteen_items.delete(req.params.id)
         .then(result => res.send({success: true,  message: 'Item deleted'}))
         .catch(err => fn.send_error(res, err));

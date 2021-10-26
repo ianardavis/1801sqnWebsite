@@ -1,8 +1,8 @@
 module.exports = (app, m, fn) => {
-    app.get("/galleries",                        fn.permissions.get('', true),                 (req, res) => res.render("site/galleries/index"));
-    app.get("/galleries/:id",                    fn.permissions.get('', true),                 (req, res) => res.render("site/galleries/show"));
+    app.get("/galleries",                        fn.permissions.get('', true),          (req, res) => res.render("site/galleries/index"));
+    app.get("/galleries/:id",                    fn.permissions.get('', true),          (req, res) => res.render("site/galleries/show"));
 
-    app.get('/get/galleries',                                                                  (req, res) => {
+    app.get('/get/galleries',                                                           (req, res) => {
         return m.galleries.findAll({
             where:   req.query,
             include: [fn.inc.users.user()]
@@ -10,7 +10,7 @@ module.exports = (app, m, fn) => {
         .then(galleries => res.send({success: true, result: galleries}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/gallery',                                                                    (req, res) => {
+    app.get('/get/gallery',                                                             (req, res) => {
         fn.get(
             'galleries',
             req.query,
@@ -20,7 +20,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.get('/get/gallery_images',                                                             (req, res) => {
+    app.get('/get/gallery_images',                                                      (req, res) => {
         return m.gallery_images.findAll({
             where:   req.query,
             include: [fn.inc.users.user()]
@@ -28,7 +28,7 @@ module.exports = (app, m, fn) => {
         .then(images => res.send({success: true, result: images}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/gallery_image',                                                              (req, res) => {
+    app.get('/get/gallery_image',                                                       (req, res) => {
         fn.get(
             'gallery_images',
             req.query,
@@ -38,7 +38,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/galleries',        fn.loggedIn(), fn.permissions.check('gallery_add'),          (req, res) => {
+    app.post('/galleries',        fn.loggedIn(), fn.permissions.check('gallery_admin'), (req, res) => {
         if (!req.body.gallery.name) fn.send_error(res, 'No name')
         else {
             m.galleries.create({
@@ -49,7 +49,7 @@ module.exports = (app, m, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
-    app.post('/gallery_images',   fn.loggedIn(), fn.permissions.check('gallery_image_add'),    (req, res) => {
+    app.post('/gallery_images',   fn.loggedIn(), fn.permissions.check('gallery_admin'), (req, res) => {
         let actions = [];
         if (Array.isArray(req.files.images)) {
             req.files.images.forEach(e => actions.push(fn.galleries.images.upload(e, req.body.image, req.user.user_id)));
@@ -59,7 +59,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/gallery_images',    fn.loggedIn(), fn.permissions.check('gallery_image_edit'),   (req, res) => {
+    app.put('/gallery_images',    fn.loggedIn(), fn.permissions.check('gallery_admin'), (req, res) => {
         fn.get(
             'gallery_images',
             {image_id: req.body.image_id},
@@ -69,7 +69,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.delete('/gallery_images', fn.loggedIn(), fn.permissions.check('gallery_image_delete'), (req, res) => {
+    app.delete('/gallery_images', fn.loggedIn(), fn.permissions.check('gallery_admin'), (req, res) => {
         fn.get(
             'gallery_images',
             {image_id: req.body.image_id}

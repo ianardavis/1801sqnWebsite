@@ -10,7 +10,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'user_edit',         text: 'Edit User',             modal: 'user_edit'}) %>
-                <%- include(`${partials}/menu/button`, {id: 'password_reset',    text: 'Toggle Reset Password', btn_form: {permission: 'user_edit'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'password_reset',    text: 'Toggle Reset Password', btn_form: {permission: 'user_admin'}}) %>
                 <%- include(`${partials}/menu/button`, {id: 'user_password',     text: 'Change Password',       modal: 'user_password'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'permissions_edit',  text: 'Edit Permissions',      modal: 'permissions_edit'}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
@@ -18,11 +18,11 @@
                 <%- include(`${partials}/menu/button`, {id: 'issue_add',         text: 'New Issue',             modal: 'issue_add'}) %>
                 <%- include(`${partials}/menu/button`, {id: 'issue_measurement', text: 'Issue by Measurement',  modal: 'issue_measurement'}) %>
                 <div class="dropdown-divider"></div>
-                <%- include(`${partials}/menu/button`, {id: 'user_delete',       text: 'Delete',                btn_form: {permission: 'user_delete'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'user_delete',       text: 'Delete',                btn_form: {permission: 'user_admin'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',     spinner: 'user',        title: 'Details'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'permissions', spinner: 'permissions', title: 'Permissions', count_id: 'permission', permission: 'access_permissions'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'permissions', spinner: 'permissions', title: 'Permissions', count_id: 'permission', permission: 'user_admin'}) %>
         <%- include(`${partials}/tab_head`, {id: 'issues',      spinner: 'issues',      title: 'Issues',      count_id: 'issue'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards',   spinner: 'loancards',   title: 'Loancards',   count_id: 'loancards'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
@@ -39,7 +39,7 @@
             <%- include(`${partials}/inputs/display`, {id: 'last_login',     title: 'Last Login'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'reset',          title: 'Change password on next login'}) %>
         </div>
-        <% if (permissions.access_permissions) { %>
+        <% if (permissions.user_admin) { %>
             <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
@@ -97,7 +97,7 @@
                     </div>
                 </div>
             </div>
-            <% if (permissions.issue_edit) { %>
+            <% if (permissions.issuer) { %>
                 <form id='form_issue_edit'>
                 <button class='btn btn-success w-100 mb-1'>Action Selected Issues</button>
             <% } %>
@@ -108,23 +108,21 @@
                     <th class="w-20" onclick="sortTable(2, 'tbl_issues')">Size</th>
                     <th class="w-10" onclick="sortTable(3, 'tbl_issues')">Qty</th>
                     <th class="w-20">
-                        <% if (permissions.issue_edit) { %>
-                            <select id="sel_all" class='form-select form-select-sm hidden'>
-                                <option>Select All</option>
-                                <option value="-1">Decline</option>
-                                <option value="0">Cancel</option>
-                                <option value="2">Approve</option>
-                                <option value="3">Order</option>
-                                <option value="4">Issue</option>
-                            </select>
-                        <% } %>
+                        <select id="sel_all" class='form-select form-select-sm hidden'>
+                            <option>Select All</option>
+                            <option value="-1">Decline</option>
+                            <option value="0">Cancel</option>
+                            <option value="2">Approve</option>
+                            <option value="3">Order</option>
+                            <option value="4">Issue</option>
+                        </select>
                         Status
                     </th>
                     <th><i class="fas fa-search"></i></th>
                 </thead>
                 <tbody id="tbl_issues"></tbody>
             </table>
-            <% if (permissions.issue_edit) { %></form><% } %>
+            <% if (permissions.issuer) { %></form><% } %>
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
             <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Open', selected: true}, {value: 'status=3', text: 'Closed'}]}) %>
@@ -142,7 +140,7 @@
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
-        <% if (permissions.user_edit) { %>
+        <% if (permissions.user_admin) { %>
             <div id='mdl_user_edit' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_user_edit'>
@@ -181,7 +179,7 @@
                 </form>
             </div>
         </div>
-        <% if (permissions.permission_edit) { %>
+        <% if (permissions.user_admin) { %>
             <div id='mdl_permissions_edit' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_permissions_edit'>
@@ -217,7 +215,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (permissions.issue_add) { %>
+        <% if (permissions.issuer) { %>
             <div id='mdl_issue_add' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -236,8 +234,6 @@
                     <div class="modal-footer"></div>
                 </div>
             </div>
-        <% } %>
-        <% if (permissions.issue_add) { %>
             <div id='mdl_issue_measurement' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-xl" role="document">
                     <div class="modal-content">
@@ -293,37 +289,25 @@
 <script>showTab('<%= tab %>');</script>
 <script src='/js/users/show/view.js'></script>
 <script async>getUser()</script>
-<% if (permissions.user_edit) { %>
+<% if (permissions.user_admin) { %>
     <script src="/js/users/show/edit.js"></script>
     <script src="/js/utils/list/statuses.js"></script>
     <script src="/js/utils/list/ranks.js"></script>
-<% } %>
-<% if (permissions.user_delete) { %>
     <script src="/js/users/show/delete.js"></script>
-<% } %>
-<% if (permissions.access_permissions) { %>
     <script src='/js/users/show/permissions/view.js'></script>
     <script async>getPermissions()</script>
-    <% if (permissions.permission_edit) { %>
-        <script src='/js/tree.js'></script>
-        <script src='/js/users/show/permissions/edit.js'></script>
-    <% } %>
+    <script src='/js/tree.js'></script>
+    <script src='/js/users/show/permissions/edit.js'></script>
 <% } %>
 <script src='/js/users/show/issues/view.js'></script>
 <script async>getIssues()</script>
-<% if (permissions.issue_edit) { %>
+<% if (permissions.issuer) { %>
 	<script src='/js/stores/issues/edit/edit.js'></script>
-	<% if (permissions.issue_add) { %>
-		<script src='/js/stores/issues/edit/approve.js'></script>
-	<% } %>
-	<% if (permissions.order_add) { %>
+	<script src='/js/stores/issues/edit/approve.js'></script>
+	<% if (permissions.stores_stock_admin) { %>
 		<script src='/js/stores/issues/edit/order.js'></script>
 	<% } %>
-	<% if (permissions.loancard_line_add) { %>
-		<script src='/js/stores/issues/edit/issue.js'></script>
-	<% } %>
-<% } %>
-<% if (permissions.issue_add) { %>
+	<script src='/js/stores/issues/edit/issue.js'></script>
     <script src='/js/stores/sizes/select/showWindow.js'></script>
     <script src='/js/users/show/issues/add.js'></script>
     <script src='/js/users/show/issues/measurement.js'></script>

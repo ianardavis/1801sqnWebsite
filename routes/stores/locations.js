@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
-    app.get('/locations/:id', fn.loggedIn(), fn.permissions.get('access_locations'),   (req, res) => res.render('stores/locations/show'));
-    app.get('/get/location',  fn.loggedIn(), fn.permissions.check('access_locations'), (req, res) => {
+    app.get('/locations/:id', fn.loggedIn(),                                      (req, res) => res.render('stores/locations/show'));
+    app.get('/get/location',  fn.loggedIn(),                                      (req, res) => {
         fn.get(
             'locations',
             req.query
@@ -8,13 +8,13 @@ module.exports = (app, m, fn) => {
         .then(location => res.send({success: true, result: location}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/locations', fn.loggedIn(), fn.permissions.check('access_locations'), (req, res) => {
+    app.get('/get/locations', fn.loggedIn(),                                      (req, res) => {
         m.locations.findAll({where: req.query})
         .then(locations => res.send({success: true, result: locations}))
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/locations/:id', fn.loggedIn(), fn.permissions.check('location_edit'),    (req, res) => {
+    app.put('/locations/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.locations.findOne({where: {location_id: req.params.id}})
         .then(location => {
             if (!location) fn.send_error(res, 'Location not found')
@@ -33,7 +33,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/locations',    fn.loggedIn(), fn.permissions.check('location_add'),     (req, res) => {
+    app.post('/locations',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.locations.create({location: req.body.location})
         .then(location => res.send({success: true, message: 'Location created'}))
         .catch(err => fn.send_error(res, err));

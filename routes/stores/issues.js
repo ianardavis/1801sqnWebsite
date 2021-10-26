@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
-    app.get('/issues',             fn.loggedIn(), fn.permissions.get('access_issues',   true), (req, res) => res.render('stores/issues/index'));
-    app.get('/issues/:id',         fn.loggedIn(), fn.permissions.get('access_issues',   true), (req, res) => {
+    app.get('/issues',             fn.loggedIn(), fn.permissions.get('access_stores',   true), (req, res) => res.render('stores/issues/index'));
+    app.get('/issues/:id',         fn.loggedIn(), fn.permissions.get('access_stores',   true), (req, res) => {
         fn.get(
             'issues',
             {issue_id: req.params.id}
@@ -18,13 +18,13 @@ module.exports = (app, m, fn) => {
         })
     });
 
-    app.get('/count/issues',       fn.loggedIn(), fn.permissions.check('access_issues', true), (req, res) => {
+    app.get('/count/issues',       fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.user_id_issue = req.user.user_id;
         m.issues.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_issues', true), (req, res) => {
+    app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.user_id_issue = req.user.user_id;
         m.issues.findAll({
             where: req.query,
@@ -37,7 +37,7 @@ module.exports = (app, m, fn) => {
         .then(issues => res.send({success: true, result: issues}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/issue',          fn.loggedIn(), fn.permissions.check('access_issues', true), (req, res) => {
+    app.get('/get/issue',          fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         fn.get(
             'issues',
             req.query,
@@ -53,7 +53,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/issue_loancard', fn.loggedIn(), fn.permissions.check('access_issues', true), (req, res) => {
+    app.get('/get/issue_loancard', fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         m.action_links.findOne({
             where: {_table: 'loancard_lines'},
             include: [{
@@ -85,7 +85,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/users/:id/issue',   fn.loggedIn(), fn.permissions.check('issue_add',     true), (req, res) => {
+    app.post('/users/:id/issue',   fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         let actions = [];
         if (req.body.lines) {
             req.body.lines.forEach(line => {
@@ -106,7 +106,7 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Issues created'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/sizes/:id/issue',   fn.loggedIn(), fn.permissions.check('issue_add',     true), (req, res) => {
+    app.post('/sizes/:id/issue',   fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         let actions = [];
         if (req.body.lines) {
             req.body.lines.forEach(line => {
@@ -127,7 +127,7 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Issues created'}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/issues',            fn.loggedIn(), fn.permissions.check('issue_add',     true), (req, res) => {
+    app.post('/issues',            fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         if      (!req.body.issues)                                             fn.send_error(res, 'No users or sizes entered')
         else if (!req.body.issues.users || req.body.issues.users.length === 0) fn.send_error(res, 'No users entered')
         else if (!req.body.issues.sizes || req.body.issues.sizes.length === 0) fn.send_error(res, 'No sizes entered')
@@ -151,7 +151,7 @@ module.exports = (app, m, fn) => {
         };
     });
 
-    app.put('/issues',             fn.loggedIn(), fn.permissions.check('issue_edit'),          (req, res) => {
+    app.put('/issues',             fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
@@ -212,7 +212,7 @@ module.exports = (app, m, fn) => {
         };
     });
 
-    app.delete('/issues/:id',      fn.loggedIn(), fn.permissions.check('issue_delete',  true), (req, res) => {
+    app.delete('/issues/:id',      fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         fn.issues.cancel({
             issue_id: req.params.id,
             user_id:  req.user.user_id

@@ -15,9 +15,9 @@
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',  title: 'Details',  spinner: 'session'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'sales',    title: 'Sales',    spinner: 'sales',            count_id: 'sale',    permission: 'access_sales'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', spinner: 'payments_session', count_id: 'payment', permission: 'access_payments'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',    spinner: 'items',            count_id: 'item',    permission: 'access_items'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'sales',    title: 'Sales',    spinner: 'sales',            count_id: 'sale'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'payments', title: 'Payments', spinner: 'payments_session', count_id: 'payment'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'items',    title: 'Items',    spinner: 'items',            count_id: 'item'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
@@ -27,9 +27,9 @@
             <%- include(`${partials}/inputs/display`, {id: 'session_user_open',    title: 'Opened By'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'session_datetime_end', title: 'Date/Time Closed'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'session_user_close',   title: 'Closed By'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_takings',      title: 'Takings',  permission: 'access_sales'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_paid_in',      title: 'Paid In',  permission: 'access_paid_in'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'session_paid_out',     title: 'Paid Out', permission: 'access_paid_out'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_takings',      title: 'Takings'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_paid_in',      title: 'Paid In',  permission: 'pay_in_out'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'session_paid_out',     title: 'Paid Out', permission: 'pay_in_out'}) %>
         </div>
         <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
             <table class="table table-sm table-hover">
@@ -68,7 +68,7 @@
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
-        <% if (permissions.session_edit) { %>
+        <% if (permissions.pos_supervisor) { %>
             <div id='mdl_session_close' class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_session_close'>
@@ -93,15 +93,11 @@
 <%- include(`${partials}/common/notes/scripts`) %>
 <script>showTab('<%= tab %>');</script>
 <script async>getSession()</script>
-<% if (permissions.access_sales) { %>
-    <script src="/js/canteen/sessions/show/sales/view.js"></script>
-    <script async>getSales()</script>
-<% } %>
-<% if (permissions.access_payments) { %>
-    <script src="/js/canteen/sessions/show/payments/view.js"></script>
-    <script async>getPayments()</script>
-<% } %>
-<% if (permissions.session_edit) { %>
+<script src="/js/canteen/sessions/show/sales/view.js"></script>
+<script async>getSales()</script>
+<script src="/js/canteen/sessions/show/payments/view.js"></script>
+<script async>getPayments()</script>
+<% if (permissions.pos_supervisor) { %>
     <script src="/js/canteen/sessions/show/edit.js"></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

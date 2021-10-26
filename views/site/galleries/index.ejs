@@ -5,7 +5,7 @@
             <div></div>
             <span>Galleries</span>
             <div>
-                <% if (permissions.gallery_add) { %>
+                <% if (permissions.gallery_admin) { %>
                     <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_gallery_add'><i class='fas fa-plus'></i></button>
                 <% } %>
             </div>
@@ -14,7 +14,7 @@
     <div class="row menu" id='div_galleries'></div>
 </div>
 <div id="div_models">
-    <% if (permissions.gallery_add) { %>
+    <% if (permissions.gallery_admin) { %>
         <div id='mdl_gallery_add' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_gallery_add'>
@@ -35,7 +35,7 @@
 </div>
 <script src="/js/site/galleries/index/view.js"></script>
 <script async>getGalleries()</script>
-<% if (permissions.gallery_add) { %>
+<% if (permissions.gallery_admin) { %>
     <script src="/js/site/galleries/index/add.js"></script>
 <% } %>
 <%- include(`${partials}/foot/site`) %>

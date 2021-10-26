@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
-    app.get('/stocks/:id',         fn.loggedIn(), fn.permissions.get('access_stocks'),   (req, res) => res.render('stores/stocks/show'));
-    app.get('/get/stocks',         fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
+    app.get('/stocks/:id',         fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/stocks/show'));
+    app.get('/get/stocks',         fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.stocks.findAll({
             where:   req.query,
             include: [
@@ -11,12 +11,12 @@ module.exports = (app, m, fn) => {
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/sum/stocks',         fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
+    app.get('/sum/stocks',         fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.stocks.sum('qty', {where: req.query})
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/negative_stock', fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
+    app.get('/get/negative_stock', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.stocks.findAll({
             where: {qty: {[fn.op.lt]: 0}},
             include: [
@@ -27,7 +27,7 @@ module.exports = (app, m, fn) => {
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/stock',          fn.loggedIn(), fn.permissions.check('access_stocks'), (req, res) => {
+    app.get('/get/stock',          fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'stocks',
             req.query,
@@ -40,7 +40,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/stocks',            fn.loggedIn(), fn.permissions.check('stock_add'),     (req, res) => {
+    app.post('/stocks',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'sizes',
             {size_id: req.body.stock.size_id}
@@ -61,7 +61,7 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.put('/stocks/:id',         fn.loggedIn(), fn.permissions.check('stock_edit'),    (req, res) => {
+    app.put('/stocks/:id',         fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'stocks',
             {stock_id: req.params.id}
@@ -79,7 +79,7 @@ module.exports = (app, m, fn) => {
         
     });
     
-    app.delete('/stocks/:id',      fn.loggedIn(), fn.permissions.check('stock_delete'),  (req, res) => {
+    app.delete('/stocks/:id',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         fn.get(
             'stocks',
             {stock_id: req.params.id}

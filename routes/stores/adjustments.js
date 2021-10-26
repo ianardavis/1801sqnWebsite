@@ -1,5 +1,5 @@
 module.exports = (app, m, fn) => {
-    app.get('/get/adjustment',  fn.loggedIn(), fn.permissions.check('access_adjustments'), (req, res) => {
+    app.get('/get/adjustment',  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.get(
             'adjustments',
             req.query,
@@ -12,7 +12,7 @@ module.exports = (app, m, fn) => {
         .then(adjustment => res.send({success: true, result: adjustment}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/adjustments', fn.loggedIn(), fn.permissions.check('access_adjustments'), (req, res) => {
+    app.get('/get/adjustments', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.adjustments.findAll({
             where: req.query,
             include: [
@@ -23,8 +23,7 @@ module.exports = (app, m, fn) => {
         .then(adjustments => res.send({success: true, result: adjustments}))
         .catch(err => fn.send_error(res, err));
     });
-
-    app.post('/adjustments',    fn.loggedIn(), fn.permissions.check('adjustment_add'),     (req, res) => {
+    app.post('/adjustments',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         if (!req.body.adjustments) fn.send_error(res, 'No adjustments')
         else {
             let actions = [];
