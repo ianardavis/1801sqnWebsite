@@ -42,7 +42,7 @@ function getLocations() {
                 add_cell(row, {
                     append: new Link({
                         small: true,
-                        href: `/sizes/${stock.stock_id}`
+                        href: `/stocks/${stock.stock_id}`
                     }).e
                 });
                 row_index++;
