@@ -1,6 +1,6 @@
 <%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Issues'}) %>
-<%- include(`${partials}/menu/breadcrumb_add`, {permission: 'issuer', modal: 'issue_add'}) %>
+<%- include(`${partials}/menu/breadcrumb_add`, {modal: 'issue_add'}) %>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'issues'}) %>
 <%- include(`${partials}/head/components/close`) %>
@@ -8,7 +8,7 @@
 	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
 		Filter
 	</button>
-	<div class="collapse" id="col-filter">
+	<div class="collapse mb-1" id="col-filter">
 		<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
 		<h5 class='text-start'>Status:</h5>
 		<div class="row">
@@ -80,53 +80,51 @@
 		</table>
 	<% if (permissions.issuer) { %></form><% } %>
 	<div id="div_modals">
-		<% if (permissions.issuer) { %>
-			<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">
-				<div class="modal-dialog modal-xl">
-					<form class="modal-content" id='form_issue_add'>
-						<div class="modal-header">
-							<h5 class="modal-title">Add Issue(s)</h5>
-						</div>
-						<div class="modal-body">
-							<button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_users'>Add User(s)</button>
-							<table class="table table-sm table-hover">
-								<thead class="thead-dark">
-									<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Service #</th>
-									<th class="w-60" onclick="sortTable(1, 'tbl_issue_add')">User</th>
-									<th><i class="fas fa-trash-alt"></i></th>
-								</thead>
-								<tbody id="tbl_issue_users_add"></tbody>
-							</table>
-							<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
-							<button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_sizes'>Add Item(s)</button>
-							<table class="table table-sm table-hover">
-								<thead class="thead-dark">
-									<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Item</th>
-									<th class="w-40" onclick="sortTable(1, 'tbl_issue_add')">Size</th>
-									<th class="w-20" onclick="sortTable(2, 'tbl_issue_add')">Quantity</th>
-									<th><i class="fas fa-trash-alt"></i></th>
-								</thead>
-								<tbody id="tbl_issue_sizes_add"></tbody>
-							</table>
-						</div>
-						<div class="modal-footer">
-							<input type="submit" class="btn btn-success w-100" value='Add Issues'>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-						</div>
-					</form>
-				</div>
+		<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-xl">
+				<form class="modal-content" id='form_issue_add'>
+					<div class="modal-header">
+						<h5 class="modal-title">Add Issue(s)</h5>
+					</div>
+					<div class="modal-body">
+						<button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_users'>Add User(s)</button>
+						<table class="table table-sm table-hover">
+							<thead class="thead-dark">
+								<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Service #</th>
+								<th class="w-60" onclick="sortTable(1, 'tbl_issue_add')">User</th>
+								<th><i class="fas fa-trash-alt"></i></th>
+							</thead>
+							<tbody id="tbl_issue_users_add"></tbody>
+						</table>
+						<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
+						<button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_sizes'>Add Item(s)</button>
+						<table class="table table-sm table-hover">
+							<thead class="thead-dark">
+								<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Item</th>
+								<th class="w-40" onclick="sortTable(1, 'tbl_issue_add')">Size</th>
+								<th class="w-20" onclick="sortTable(2, 'tbl_issue_add')">Quantity</th>
+								<th><i class="fas fa-trash-alt"></i></th>
+							</thead>
+							<tbody id="tbl_issue_sizes_add"></tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<input type="submit" class="btn btn-success w-100" value='Add Issues'>
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+					</div>
+				</form>
 			</div>
-		<% } %>
+		</div>
 	</div>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src='/js/utils/list/users.js'></script>
 <script src='/js/search/select.js'></script>
 <script src='/js/stores/issues/index/view.js'></script>
+<script src='/js/stores/issues/index/add.js'></script>
+<script src="/js/users/select/showWindow.js"></script>
+<script src="/js/stores/sizes/select/showWindow.js"></script>
 <% if (permissions.issuer) { %>
-	<script src="/js/users/select/showWindow.js"></script>
-	<script src="/js/stores/sizes/select/showWindow.js"></script>
-	<script src='/js/stores/issues/index/add.js'></script>
 	<script src='/js/stores/issues/edit/edit.js'></script>
 	<script src='/js/stores/issues/edit/approve.js'></script>
 	<script src='/js/stores/issues/edit/issue.js'></script>

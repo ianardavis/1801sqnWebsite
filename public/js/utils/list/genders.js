@@ -19,7 +19,7 @@ function listGenders(options = {}) {
 				genders.forEach(gender => {
 					let value = '';
 					if (options.id_only === true) value = gender.gender_id
-					else						  value = `gender_id=${gender.gender_id}`
+					else						  value = `"gender_id":"${gender.gender_id}"`
 					sel_genders.appendChild(
 						new Option({
 							selected: (options.selected === gender.gender_id),

@@ -39,21 +39,25 @@
             </div>
         </div>
         <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
-            <table class='table table-sm table-hover w-100'>
-                <thead class='thead-dark'>
-                    <th class='w-35' onclick='sortTable(0, "tbl_sizes")' id='size_text1_sizes_table'></th>
-                    <th class='w-35' onclick='sortTable(1, "tbl_sizes")' id='size_text2_sizes_table'></th>
-                    <th class='w-30' onclick='sortTable(2, "tbl_sizes")' id='size_text3_sizes_table'></th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id='tbl_sizes'></tbody>
-            </table>
+            <div class="row">
+                <div class="col-12 col-lg-4 mx-auto">
+                    <table class='table table-sm table-hover w-100'>
+                        <thead class='thead-dark'>
+                            <th class='w-35' onclick='sortTable(0, "tbl_sizes")' id='size_text1_sizes_table'></th>
+                            <th class='w-35' onclick='sortTable(1, "tbl_sizes")' id='size_text2_sizes_table'></th>
+                            <th class='w-30' onclick='sortTable(2, "tbl_sizes")' id='size_text3_sizes_table'></th>
+                            <th><i class='fas fa-search'></i></th>
+                        </thead>
+                        <tbody id='tbl_sizes'></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
     <div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
-        <div     id='mdl_category_view' class="modal fade" tabindex="-1" role="dialog">
+        <div id='mdl_category_view' class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -66,8 +70,8 @@
                         </span>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/display`,  {title: 'Category', id: 'category_category'}) %>
-                        <%- include(`${partials}/inputs/display`,  {title: 'Created',  id: 'category_createdAt'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Category', id: 'category_category'}) %>
+                        <%- include(`${partials}/inputs/display`, {title: 'Created',  id: 'category_createdAt'}) %>
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto text-start'>
@@ -98,7 +102,7 @@
                 </form>
             </div>
         </div>
-        <div id='mdl_item_edit' class="modal fade" tabindex="-1" role="dialog">
+        <div id='mdl_item_edit'     class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_item_edit'>
                     <div class="modal-header">
@@ -110,7 +114,7 @@
                     <div class="modal-body">
                         <datalist id="list_descriptions"></datalist>
                         <%- include(`${partials}/inputs/text`,   {id: 'description_edit', title: 'Description', name: 'item[description]', required: true}) %>
-                        <%- include(`${partials}/inputs/text`,   {id: 'size_text1_edit',  title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions',  required: true}) %>
+                        <%- include(`${partials}/inputs/text`,   {id: 'size_text1_edit',  title: 'Size Text 1', name: 'item[size_text1]',  list_id: 'list_descriptions', required: true}) %>
                         <%- include(`${partials}/inputs/text`,   {id: 'size_text2_edit',  title: 'Size Text 2', name: 'item[size_text2]',  list_id: 'list_descriptions'}) %>
                         <%- include(`${partials}/inputs/text`,   {id: 'size_text3_edit',  title: 'Size Text 3', name: 'item[size_text3]',  list_id: 'list_descriptions'}) %>
                         <%- include(`${partials}/inputs/select`, {id: 'sel_genders',      title: 'Gender',      spinner_id: 'genders'}) %>
@@ -121,8 +125,8 @@
                     </div>
                 </form>
             </div>
-        </div>
-        <div id='mdl_size_add' class="modal fade" tabindex="-1" role="dialog">
+        </div>  
+        <div id='mdl_size_add'      class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form class="modal-content" id='form_size_add'>
                     <div class="modal-header">

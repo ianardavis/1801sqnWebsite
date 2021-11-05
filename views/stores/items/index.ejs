@@ -11,13 +11,17 @@
 <section class='container'>
 	<%- include(`${partials}/inputs/select`, {id: 'sel_genders', title: 'Genders', spinner_id: 'genders', reload_id: 'reload_genders'}) %>
 	<input class='form-control mb-1' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
-	<table class='table table-sm table-hover'>
-		<thead class='thead-dark'>
-			<th class='w-100' onclick='sortTable(0, "tbl_items", this)'>Description</th>
-			<th><i class='fas fa-search'></i></th>
-		</thead>
-		<tbody id='tbl_items'></tbody>
-	</table>
+	<div class="row">
+		<div class="col-12 col-lg-5 mx-auto">
+			<table class='table table-sm table-hover'>
+				<thead class='thead-dark'>
+					<th class='w-100' onclick='sortByRow(this, getItems)' data-sort_col='description'>Description<span class='sort_ind float-end'></span></th>
+					<th><i class='fas fa-search'></i></th>
+				</thead>
+				<tbody id='tbl_items'></tbody>
+			</table>
+		</div>
+	</div>
 	<div id="div_modals">
 		<% if (permissions.stores_stock_admin) { %>
 			<div id='mdl_item_add' class="modal fade" tabindex="-1" role="dialog">

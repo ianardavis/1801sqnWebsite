@@ -31,7 +31,7 @@ module.exports = (m, fn) => {
             };
         };
     };
-    fn.permissions.check = function (_permission, options = {}) {
+    fn.permissions.check = function (_permission, allow = false) {
         return function (req, res, next) {
             return m.findOne({
                 where: {
@@ -41,7 +41,7 @@ module.exports = (m, fn) => {
                 attributes: ['permission']
             })
             .then(permission => {
-                if (permission || options.allow) {
+                if (permission || allow) {
                     req.allowed = (permission);
                     next();
                 } else res.send({success: false, error: `Permission denied - ${_permission}`});

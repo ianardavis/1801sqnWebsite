@@ -38,7 +38,7 @@ function get(options) {
             hide_spinner(options.spinner || options.table || '');
             reject(event);
         });
-        XHR.open(options.method || 'GET', `/get/${options.table}?${options.query.join('&')}`);
+        XHR.open(options.method || 'GET', `/get/${options.table}?where={${options.query.join(',')}}${options.sort ? `&sort=${JSON.stringify(options.sort)}` : ''}`);
         XHR.send();
     });
 };

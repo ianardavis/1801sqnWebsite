@@ -1,5 +1,106 @@
 module.exports = function (m, fn) {
     fn.orders = {};
+    fn.orders.createBulk  = function (lines, user_id) {
+        return new Promise((resolve, reject) => {
+            if (!lines || lines.length === 0) reject(new Error('No orders'))
+            else {
+                let actions = [];
+                lines.forEach(line => {
+                    if (line.qty && line.qty > 0) {
+                        actions.push(
+                            new Promise((resolve, reject) => {
+                                fn.get('sizes', {size_id: line.size_id})
+                                .then(size => {
+                                    if (size.orderable) {
+                                        let _return = {size_id: size.size_id, qty: line.qty};
+                                        if (line.issue_id) _return.issue_id = line.issue_id;
+                                        resolve(_return)
+                                    } else reject(new Error('Size not orderable'));
+                                })
+                                .catch(err => reject(err));
+                            })
+                        );
+                    };
+                });
+                return Promise.allSettled(actions)
+                .then(results => {
+                    let sizes = [];
+                    console.log(results.filter(e => e.status === 'rejected'));
+                    results.filter(e => e.status === 'fulfilled').forEach(line => {
+                        let sizeIndex = sizes.findIndex(e => e.size_id === line.size_id);
+                        if (sizeIndex === -1) {
+                            sizes.push({
+                                size_id: line.size_id,
+                                qty:     line.qty,
+                                issues:  (line.issue_id ? [line.issue_id] : [])
+                            })
+                        } else {
+                            sizes[sizeIndex].qty += line.qty;
+                            sizes[sizeIndex].issues.push(line.issue_id);
+                        };
+                    });
+                    let order_actions = [];
+                    sizes.forEach(size => {
+                        order_actions.push(
+                            new Promise((resolve, reject) => {
+                                return m.orders.findOrCreate({
+                                    where: {
+                                        size_id: size.size_id,
+                                        status:  1
+                                    },
+                                    defaults: {
+                                        qty:     size.qty,
+                                        user_id: user_id
+                                    }
+                                })
+                                .then(([order, created]) => {
+                                    if (created) resolve({order_id: order.order_id, issues: size.issues})
+                                    else {
+                                        return fn.increment(order, size.qty)
+                                        .then(result => {
+                                            fn.actions.create(
+                                                'INCREMENTED',
+                                                user_id,
+                                                [{table: 'orders', id: order.order_id}]
+                                            )
+                                            .then(action => resolve({order_id: order.order_id, issues: size.issues}))
+                                            .catch(err => {
+                                                console.log(err);
+                                                resolve({order_id: order.order_id, issues: size.issues});
+                                            });
+                                        })
+                                        .catch(err => reject(err));
+                                    };
+                                })
+                                .catch(err => reject(err));
+                            })
+                        );
+                    });
+                    return Promise.allSettled(order_actions)
+                    .then(results => {
+                        results.filter(e => e.status === 'fulfilled').forEach(order => {
+                            if (order.issues && order.issues.length > 0) {
+                                let links = [];
+                                order.issues.forEach(issue_id => links.push({table: 'issues', id: issue_id}));
+                                fn.actions.create(
+                                    'Issue ordered',
+                                    user_id,
+                                    [{table: 'orders', id: order.order_id}].concat(links)
+                                )
+                                .then(action => resolve(true))
+                                .catch(err => {
+                                    console.log(err);
+                                    resolve(true);
+                                });
+                            };
+                        });
+                    })
+                    .catch(err => reject(err));
+                })
+                .catch(err => reject(err));
+            };
+        });
+    };
     fn.orders.create  = function (line, user_id, issue_id = null) {
         return new Promise((resolve, reject) => {
             return fn.get('sizes', {size_id: line.size_id})

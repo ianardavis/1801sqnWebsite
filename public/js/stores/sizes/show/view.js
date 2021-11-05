@@ -4,7 +4,7 @@ function getSize() {
         query: [`size_id=${path[2]}`]
     })
     .then(function ([size, options]) {
-        set_breadcrumb({text: `${size.item.size_text || 'Size'}: ${print_size(size)}`});
+        set_breadcrumb({text: `${print_size_text(size.item)}: ${print_size(size)}`});
         set_innerText({id: 'issueable',     text: yesno(size.issueable)});
         set_innerText({id: 'orderable',     text: yesno(size.orderable)});
         set_innerText({id: 'has_serials',   text: yesno(size.has_serials)});

@@ -4,22 +4,24 @@ module.exports = (app, m, fn) => {
         if (req.allowed) res.render('users/index')
         else             res.redirect(`/users/${req.user.user_id}`);
     });
-    app.get('/users/select',      fn.loggedIn(), fn.permissions.get('access_users'),         (req, res) => res.render('users/select'));
+    app.get('/users/select',      fn.loggedIn(),                                             (req, res) => res.render('users/select'));
     app.get('/password/:id',      fn.loggedIn(),                                             (req, res) => res.render('users/password'));
     app.get('/users/:id',         fn.loggedIn(), fn.permissions.get('access_users',   true), (req, res) => {
         if (req.allowed || req.params.id == req.user.user_id) res.render('users/show')
         else                                                  res.redirect(`/users/${req.user.user_id}`);
     });
 
-    app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users'),       (req, res) => {
+    app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         m.users.findOne({
             where:      req.query,
             include:    [fn.inc.users.rank(), fn.inc.users.status()],
             attributes: ['user_id', 'full_name', 'service_number', 'first_name', 'surname', 'status_id', 'rank_id', 'login_id', 'reset', 'last_login']
         })
         .then(user => {
-            if (!user) fn.send_error(res, 'User not found')
-            else       res.send({success: true,  result: user});
+            if (user.user_id === req.user.user_id || req.allowed) {
+                if (!user) fn.send_error(res, 'User not found')
+                else res.send({success: true, result: user});
+            };
         })
         .catch(err => fn.send_error(res, err));
     });

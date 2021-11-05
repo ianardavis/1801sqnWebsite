@@ -277,7 +277,7 @@ module.exports = function (m, fn) {
                                             options.user_id,
                                             [
                                                 {table: 'demand_lines', id: line.demand_line_id},
-                                                (options.order_id ? {table: 'orders', id: options.order_id} : null)
+                                                (options.order_id ? {table: 'orders', id: options.order_id} : {})
                                             ]
                                         )
                                         .then(action => resolve(line.demand_line_id))

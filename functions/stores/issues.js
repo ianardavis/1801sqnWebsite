@@ -142,8 +142,8 @@ module.exports = function (m, fn) {
                     [fn.inc.stores.size()]
                 )
                 .then(issue => {
-                    if      (issue.status !== 2)    reject(new Error('Only approved issues can be ordered'))
-                    else if (!issue.size)           reject(new Error('Size not found'))
+                    if      (!issue.size)           reject(new Error('Size not found'))
+                    else if (issue.status !== 2)    reject(new Error('Only approved issues can be ordered'))
                     else if (!issue.size.orderable) reject(new Error('This size can not be ordered'))
                     else {
                         return fn.orders.create(

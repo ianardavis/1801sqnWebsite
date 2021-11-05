@@ -1,6 +1,7 @@
 module.exports = (app, m, fn) => {
     app.get('/get/genders',    fn.loggedIn(),                                      (req, res) => {
-        m.genders.findAll({where: req.query})
+        let query = JSON.parse(req.query.where);
+        m.genders.findAll({where: query})//req.query.where})
         .then(genders => res.send({success: true, result: genders}))
         .catch(err => fn.send_error(res, err));
     });

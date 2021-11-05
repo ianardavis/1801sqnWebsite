@@ -1,6 +1,6 @@
 module.exports = (app, m, fn) => {
-    app.get('/issues',             fn.loggedIn(), fn.permissions.get('access_stores',   true), (req, res) => res.render('stores/issues/index'));
-    app.get('/issues/:id',         fn.loggedIn(), fn.permissions.get('access_stores',   true), (req, res) => {
+    app.get('/issues',             fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => res.render('stores/issues/index'));
+    app.get('/issues/:id',         fn.loggedIn(), fn.permissions.get(  'access_stores', true), (req, res) => {
         fn.get(
             'issues',
             {issue_id: req.params.id}
@@ -24,32 +24,57 @@ module.exports = (app, m, fn) => {
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
+    function issues_allowed(allowed_stores, query, user_id) {
+        return new Promise((resolve, reject) => {
+            return fn.allowed(user_id, 'access_users', true)
+            .then(allowed_users => {
+                if (!allowed_users || !allowed_stores) {
+                    if (query.user_id_issue) {
+                        if (query.user_id_issue === user_id) resolve(false)
+                        else reject(new Error('Permission denied'));
+                    } else resolve(true);
+                } else resolve(false);
+            })
+            .catch(err => reject(err));
+        });
+    };
     app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        if (!req.allowed) req.query.user_id_issue = req.user.user_id;
-        m.issues.findAll({
-            where: req.query,
-            include: [
-                fn.inc.stores.size(),
-                fn.inc.users.user({as: 'user_issue'}),
-                fn.inc.users.user()
-            ]
+        issues_allowed(req.allowed, req.query, req.user.user_id)
+        .then(add_user_id_issue => {
+            if (add_user_id_issue) req.query.user_id_issue = req.user.user_id;
+            return m.issues.findAll({
+                where: req.query,
+                include: [
+                    fn.inc.stores.size(),
+                    fn.inc.users.user({as: 'user_issue'}),
+                    fn.inc.users.user()
+                ]
+            })
+            .then(issues => res.send({success: true, result: issues}))
+            .catch(err => fn.send_error(res, err));
         })
-        .then(issues => res.send({success: true, result: issues}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/issue',          fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        fn.get(
-            'issues',
-            req.query,
-            [
-                fn.inc.stores.size(),
-                fn.inc.users.user({as: 'user_issue'}),
-                fn.inc.users.user()
-            ]
-        )
-        .then(issue => {
-            if (!req.allowed && issue.user_id_issue !== req.user.user_id) fn.send_error(res, 'Permission denied')
-            else res.send({success: true,  result: issue});
+        fn.allowed(req.user.user_id, 'access_users', true)
+        .then(allowed_users => {
+            fn.get(
+                'issues',
+                req.query,
+                [
+                    fn.inc.stores.size(),
+                    fn.inc.users.user({as: 'user_issue'}),
+                    fn.inc.users.user()
+                ]
+            )
+            .then(issue => {
+                if (
+                    issue.user_id_issue === req.user.user_id ||
+                    allowed_users       &&  req.allowed
+                ) res.send({success: true, result: issue})
+                else fn.send_error(res, 'Permission denied');
+            })
+            .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));
     });
@@ -155,6 +180,14 @@ module.exports = (app, m, fn) => {
         if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
+            req.body.issues.filter(e => e.status === '-2') .forEach(issue => {
+                actions.push(
+                    fn.issues.remove_from_loancard({
+                        issue_id: issue.issue_id,
+                        user_id:  req.user.user_id
+                    })
+                );
+            });
             req.body.issues.filter(e => e.status === '-1').forEach(issue => {
                 actions.push(
                     fn.issues.decline({
@@ -193,14 +226,6 @@ module.exports = (app, m, fn) => {
                     user_id: req.user.user_id
                 })
             );
-            req.body.issues.filter(e => e.status === '-2') .forEach(issue => {
-                actions.push(
-                    fn.issues.remove_from_loancard({
-                        issue_id: issue.issue_id,
-                        user_id:  req.user.user_id
-                    })
-                );
-            });
             Promise.allSettled(actions)
             .then(results => {
                 if (results.filter(e => e.status === 'rejected').length > 0) {

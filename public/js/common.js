@@ -52,6 +52,42 @@ function sortTable(n, tableName, obj) {
     //     console.log(err)
     // });
 };
+function sortByRow(col, func) {
+    let add_sort = function (_col, dir) {
+            _col.classList.add('sort');
+            _col.setAttribute('data-sort_dir', dir);
+            let sort_ind = _col.querySelector('.sort_ind');
+            if (sort_ind) {
+                if      (dir === 'ASC')  sort_ind.innerHTML = '<i class="fas fa-sort-up"></i>'
+                else if (dir === 'DESC') sort_ind.innerHTML = '<i class="fas fa-sort-down"></i>'
+                else sort_ind.innerHTML = '';
+            }
+        },
+        remove_sort = function (_col) {
+            _col.classList.remove('sort');
+            _col.removeAttribute('data-sort_dir');
+            let sort_ind = _col.querySelector('.sort_ind');
+            if (sort_ind) sort_ind.innerHTML = '';
+        };
+    let sortCols = col.parentNode.querySelectorAll('.sort');
+    if (sortCols && sortCols.length > 0) {
+        sortCols.forEach(e => {
+            if (e === col) {
+                if (col.dataset.sort_dir === 'ASC') {
+                    add_sort(col, 'DESC');
+                } else if (col.dataset.sort_dir === 'DESC') {
+                    remove_sort(col);
+                };
+            } else {
+                remove_sort(e);
+                add_sort(col, 'ASC');
+            };
+        });
+    } else {
+        add_sort(col, 'ASC')
+    };
+    func();
+}
 function removeID(id) {
     if (typeof(id) === 'string') document.querySelector(`#${id}`).remove();
     else id.remove();
@@ -61,7 +97,7 @@ function clearElement(id) {
     if (element) element.innerHTML = '';
 };
 function yesno(boolean) {
-    if (boolean === 1 || boolean === true) return 'Yes'
+    if (boolean) return 'Yes'
     else return 'No'
 };
 function enable_button(id, pretext = 'btn_') {
@@ -75,6 +111,36 @@ function disable_button(id, pretext = 'btn_') {
 function set_count(options = {}) {
     let _count = document.querySelector(`#${options.id}_count`);
     if (_count) _count.innerText = options.count || '0';
+};
+function set_innerText(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element) element.innerText = options.text || options.value|| '';
+};
+function set_breadcrumb(options = {}) {
+    let breadcrumb = document.querySelector(`#${options.id || 'breadcrumb'}`);
+    if (breadcrumb) {
+        breadcrumb.innerText = options.text || '';
+        if (options.href) breadcrumb.setAttribute('href', options.href);
+    };
+};
+function set_href(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element) {
+        if (options.value) element.setAttribute('href', options.value);
+        else               element.removeAttribute('href');
+    };
+};
+function set_value(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element) element.value = options.value || options.text || '';
+};
+function set_attribute(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element && options.attribute) {
+        if (Array.isArray(options.attribute)) { 
+            options.attribute.forEach(e => element.setAttribute(e.attribute, e.value || ''));
+        } else element.setAttribute(options.attribute, options.value || '');
+    };
 };
 function add_cell(row, options = {}) {
     let cell = row.insertCell();
@@ -99,36 +165,6 @@ function show(id) {
 function hide(id) {
     let element = document.querySelector(`#${id}`);
     if (element) element.classList.add('hidden');
-};
-function set_innerText(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) element.innerText = options.text || options.value|| '';
-};
-function set_breadcrumb(options = {}) {
-    let breadcrumb = document.querySelector('#breadcrumb');
-    if (breadcrumb) {
-        breadcrumb.innerText = options.text || '';
-        if (options.href) breadcrumb.setAttribute('href', options.href);
-    };
-};
-function set_href(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) {
-        if (options.value) element.setAttribute('href', options.value);
-        else               element.removeAttribute('href');
-    };
-};
-function set_value(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) element.value = options.value || options.text || '';
-};
-function set_attribute(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element && options.attribute) {
-        if (Array.isArray(options.attribute)) { 
-            options.attribute.forEach(e => element.setAttribute(e.attribute, e.value || ''));
-        } else element.setAttribute(options.attribute, options.value || '');
-    };
 };
 function remove_attribute(options = {}) {
     let element = document.querySelector(`#${options.id}`);
@@ -163,13 +199,27 @@ function print_date(date, time = false) {
     if (date) {
         let str = new Date(date).toDateString();
         if (time) str += ` ${new Date(date).toLocaleTimeString()}`;
-        return str
+        return str;
     } else return '';
 };
 function print_time(date) {
-    if (date) {
-        return new Date(date).toLocaleTimeString()
+    if (date) return new Date(date).toLocaleTimeString()
+    else return '';
+};
+function print_nsn(nsn) {
+    if (nsn && nsn.nsn_group && nsn.nsn_class && nsn.nsn_country) {
+        return `${String(nsn.nsn_group.code).padStart(2, '0')}${String(nsn.nsn_class.code).padStart(2, '0')}-${String(nsn.nsn_country.code).padStart(2, '0')}-${nsn.item_number}`
     } else return '';
+};
+function print_account(account) {
+    if (account) return `${account.name} | ${account.number}`
+    else return '';
+};
+function print_size(size) {
+    return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`
+};
+function print_size_text(item) {
+    return `${item.size_text1}${(item.size_text2 ? `/${item.size_text2}` : '')}${(item.size_text3 ? `/${item.size_text3}` : '')}`
 };
 function table_date(date, time = false) {
     let _date = {
@@ -178,22 +228,6 @@ function table_date(date, time = false) {
     };
     return _date;
 }
-function print_nsn(nsn) {
-    if (nsn && nsn.nsn_group && nsn.nsn_class && nsn.nsn_country) {
-        return `${String(nsn.nsn_group.code).padStart(2, '0')}${String(nsn.nsn_class.code).padStart(2, '0')}-${String(nsn.nsn_country.code).padStart(2, '0')}-${nsn.item_number}`
-    } else return '';
-};
-function print_account(account) {
-    if (account) {
-        return `${account.name} | ${account.number}`
-    } else return '';
-};
-function print_size(size) {
-    return `${size.size1}${(size.size2 ? `/${size.size2}` : '')}${(size.size3 ? `/${size.size3}` : '')}`
-};
-function print_size_text(item) {
-    return `${item.size_text1}${(item.size_text2 ? `/${item.size_text2}` : '')}${(item.size_text3 ? `/${item.size_text3}` : '')}`
-};
 function clear(id) {
     return new Promise((resolve, reject) => {
         let e = document.querySelector(`#${id}`);
@@ -223,10 +257,11 @@ function toggle_checkbox_on_row_click(event) {
 function modalHide(id) {
     // let e = document.querySelector(`#mdl_${id}`);
     // console.log(e)
-    let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`));
-    // console.log(modal)
-    // if (modal) modal.hide();
-    if (modal) modal.dispose();
+    let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`), {});
+    console.log(modal);
+    console.log(modal.hide);
+    if (modal) modal.hide();
+    // if (modal) modal.dispose();
 };
 function modalOnShow(id, func) {
     let modal = document.querySelector(`#mdl_${id}`);
@@ -244,11 +279,11 @@ function showTab(tab) {
     if (tabBody) tabBody.classList.add('active', 'show');
 };
 function show_spinner(id) {
-    let spn_results = document.querySelector('#spn_' + id);
+    let spn_results = document.querySelector(`#spn_${id}`);
     if (spn_results) spn_results.classList.remove('hidden');
 };
 function hide_spinner(id) {
-    let spn_results = document.querySelector('#spn_' + id);
+    let spn_results = document.querySelector(`#spn_${id}`);
     if (spn_results) spn_results.classList.add('hidden');
 };
 function add_spinner(obj, options = {}) {

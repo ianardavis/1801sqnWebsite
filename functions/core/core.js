@@ -16,11 +16,11 @@ module.exports = function (m, fn) {
         let now = new Date();
         return new Date(now.getFullYear() + years, now.getMonth(), now.getDate());
     };
-    fn.allowed = function (user_id, permission, allow = false) {
+    fn.allowed = function (user_id, _permission, allow = false) {
         return new Promise((resolve, reject) => {
             return m.permissions.findOne({
                 where: {
-                    permission: permission,
+                    permission: _permission,
                     user_id:    user_id
                 },
                 attributes: ['permission']
@@ -28,7 +28,7 @@ module.exports = function (m, fn) {
             .then(permission => {
                 if (!permission) {
                     if (allow) resolve(false)
-                    else reject(new Error(`Permission denied: ${permission}`))
+                    else reject(new Error(`Permission denied: ${_permission}`))
                 } else resolve(true);
             })
             .catch(err => reject(err));
