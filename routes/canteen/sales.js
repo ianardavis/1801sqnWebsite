@@ -3,11 +3,12 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/sales',        fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         m.sales.findAll({
-            where: req.query,
+            where: JSON.parse(req.query.where),
             include: [
                 fn.inc.canteen.sale_lines({item: true}),
                 fn.inc.users.user()
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(sales => res.send({success: true, result: sales}))
         .catch(err => fn.send_error(res, err))
@@ -15,14 +16,17 @@ module.exports = (app, m, fn) => {
     app.get('/get/sale',         fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         fn.get(
             'sales',
-            req.query,
+            JSON.parse(req.query.where),
             [fn.inc.users.user()]
         )
         .then(sale => res.send({success: true,  result: sale}))
         .catch(err => fn.send_error(res, err))
     });
     app.get('/get/sale_current', fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
-        m.sessions.findAll({where: {status: 1}})
+        m.sessions.findAll({
+            where: {status: 1},
+            ...fn.sort(req.query.sort)
+        })
         .then(sessions => {
             if (sessions.length !== 1) fn.send_error(res, `${sessions.length} session(s) open`)
             else {
@@ -41,8 +45,9 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/sale_lines',   fn.loggedIn(), fn.permissions.check('pos_user'), (req, res) => {
         m.sale_lines.findAll({
-            where:   req.query,
-            include: [fn.inc.canteen.item()]
+            where:   JSON.parse(req.query.where),
+            include: [fn.inc.canteen.item()],
+            ...fn.sort(req.query.sort)
         })
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => fn.send_error(res, err))

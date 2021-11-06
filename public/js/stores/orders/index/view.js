@@ -3,11 +3,13 @@ function getOrders() {
     clear('tbl_orders')
     .then(tbl_orders => {
         let statuses = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query = [];
+            query = [],
+            sort_cols = tbl_orders.parentNode.querySelector('.sort') || null;
         statuses.forEach(e => query.push(e.value));
         get({
             table: 'orders',
-            query: [query.join('&')]
+            query: [query.join(',')],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([orders, options]) {
             let row_index = 0;

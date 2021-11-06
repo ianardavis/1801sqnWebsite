@@ -2,7 +2,11 @@ let statuses = {'0': 'Cancelled', '1': 'Entered', '2': 'Complete'};
 function getPaidInOuts() {
     clear('tbl_paid_in_outs')
     .then(tbl_paid_in_outs => {
-        get({table: 'paid_in_outs'})
+        let sort_cols = tbl_paid_in_outs.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'paid_in_outs',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([paid_in_outs, options]) {
             paid_in_outs.forEach(paid_in_out => {
                 let row = tbl_paid_in_outs.insertRow(-1);

@@ -1,7 +1,11 @@
 function getSettings() {
     clear('tbl_settings')
     .then(tbl_settings => {
-        get({table: 'settings'})
+        let sort_cols = tbl_settings.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'settings',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([settings, options]) {
             settings.forEach(setting => {
                 let row = tbl_settings.insertRow(-1);

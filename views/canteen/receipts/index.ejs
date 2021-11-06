@@ -11,10 +11,10 @@
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-40" onclick="sortTable(0, 'tbl_receipts')">Date</th>
-            <th class="w-40" onclick="sortTable(1, 'tbl_receipts')">Item</th>
-            <th class="w-10" onclick="sortTable(1, 'tbl_receipts')">Quantity</th>
-            <th class="w-10" onclick="sortTable(1, 'tbl_receipts')">Cost</th>
+            <th class='w-40' onclick='sortByRow(this, getReceipts)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
+            <th class='w-40' onclick='sortByRow(this, getReceipts)' data-sort_col='item_id'  >Item<span class='sort_ind float-end'></span></th>
+            <th class='w-10' onclick='sortByRow(this, getReceipts)' data-sort_col='qty'      >Qty <span class='sort_ind float-end'></span></th>
+            <th class='w-10' onclick='sortByRow(this, getReceipts)' data-sort_col='cost'     >Cost<span class='sort_ind float-end'></span></th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_receipts"></tbody>

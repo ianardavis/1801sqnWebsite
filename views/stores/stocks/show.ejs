@@ -34,10 +34,10 @@
             <div class="tab-pane fade" id="adjustments" role="tabpanel" aria-labelledby="adjustments-tab">
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
-                        <th class='w-40' onclick='sortTable(0, "tbl_adjustments")'>Date</th>
-                        <th class='w-40' onclick='sortTable(1, "tbl_adjustments")'>Type</th>
-                        <th class='w-10' onclick='sortTable(2, "tbl_adjustments")'>Qty</th>
-                        <th class='w-10' onclick='sortTable(3, "tbl_adjustments")'>Variance</th>
+                        <th class='w-40' onclick='sortByRow(this, getAdjustments)' data-sort_col='createdAt'>Date    <span class='sort_ind float-end'></span></th>
+                        <th class='w-40' onclick='sortByRow(this, getAdjustments)' data-sort_col='type'     >Type    <span class='sort_ind float-end'></span></th>
+                        <th class='w-10' onclick='sortByRow(this, getAdjustments)' data-sort_col='qty'      >Qty     <span class='sort_ind float-end'></span></th>
+                        <th class='w-10' onclick='sortByRow(this, getAdjustments)' data-sort_col='variance' >Variance<span class='sort_ind float-end'></span></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_adjustments'></tbody>

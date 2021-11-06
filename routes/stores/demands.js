@@ -38,7 +38,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/demand',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
         fn.get(
             'demands',
-            req.query,
+            JSON.parse(req.query.where),
             [
                 fn.inc.users.user(),
                 fn.inc.stores.supplier()
@@ -49,23 +49,25 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/demands',          fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
         m.demands.findAll({
-            where:   req.query,
+            where:   JSON.parse(req.query.where),
             include: [
                 fn.inc.users.user(),
                 fn.inc.stores.supplier()
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(demands => res.send({success: true, result: demands}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/demand_lines',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
         m.demand_lines.findAll({
-            where:   req.query,
+            where:   JSON.parse(req.query.where),
             include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
                 fn.inc.stores.demand()
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => fn.send_error(res, err));
@@ -73,7 +75,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/demand_line',      fn.loggedIn(), fn.permissions.check('stores_stock_admin'),         (req, res) => {
         fn.get(
             'demand_lines',
-            req.query,
+            JSON.parse(req.query.where),
             [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),

@@ -30,9 +30,9 @@
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
             <table class='table table-sm table-hover w-100'>
                 <thead class='thead-dark'>
-                    <th class='w-40' onclick='sortTable(0, "tbl_loancards")'>Date</th>
-                    <th class='w-40' onclick='sortTable(1, "tbl_loancards")'>Issued To</th>
-                    <th class='w-20' onclick='sortTable(2, "tbl_loancards")'>Status</th>
+					<th class='w-40' onclick='sortByRow(this, getLoancards)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
+					<th class='w-40'>Description</th>
+					<th class='w-20' onclick='sortByRow(this, getLoancards)' data-sort_col='status'   >Status<span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_loancards'></tbody>

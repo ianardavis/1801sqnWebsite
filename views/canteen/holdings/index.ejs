@@ -9,8 +9,8 @@
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-60" onclick="sortTable(0, 'tbl_holdings')">Description</th>
-            <th class="w-40" onclick="sortTable(1, 'tbl_holdings')">Cash</th>
+            <th class='w-40' onclick='sortByRow(this, getHoldings)' data-sort_col='description'>Description<span class='sort_ind float-end'></span></th>
+            <th class='w-60' onclick='sortByRow(this, getHoldings)' data-sort_col='cash'       >Cash<span class='sort_ind float-end'></span></th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_holdings"></tbody>

@@ -1,9 +1,11 @@
 function getAdjustments() {
     clear('tbl_adjustments')
     .then(tbl_adjustments => {
+        let sort_cols = tbl_adjustments.parentNode.querySelector('.sort') || null;
         get({
             table: 'adjustments',
-            query: [`stock_id=${path[2]}`]
+            query: [`stock_id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function([adjustments, options]) {
             set_count({id: 'adjustment', count: adjustments.length || '0'});

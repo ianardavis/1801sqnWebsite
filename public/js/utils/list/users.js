@@ -11,7 +11,7 @@ function listUsers(options = {}) {
             users.forEach(user => {
                 sel_users.appendChild(
                     new Option({
-                        value:    (options.id_only ? user.user_id : `user_id${options.append || ''}=${user.user_id}`),
+                        value:    (options.id_only ? user.user_id : `"user_id${options.append || ''}"="${user.user_id}"`),
                         text:     print_user(user),
                         selected: (options.selected === user.user_id)
                     }).e

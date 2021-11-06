@@ -2,10 +2,12 @@ let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Open', '3': 'Closed
 function getLines() {
     clear('tbl_lines')
     .then(tbl_lines => {
-        let sel_status = document.querySelector('#sel_status') || {value: ''};
+        let sel_status = document.querySelector('#sel_status') || {value: ''},
+            sort_cols  = tbl_lines.parentNode.querySelector('.sort') || null;
         get({
             table: 'demand_lines',
-            query: [`demand_id=${path[2]}`, sel_status.value]
+            query: [`demand_id=${path[2]}`, sel_status.value],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([lines, options]) {
             let row_index = 0;

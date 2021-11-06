@@ -37,7 +37,10 @@ module.exports = (app, m, fn) => {
     app.get('/get/permissions', fn.loggedIn(), fn.permissions.check('user_admin', true), (req, res) => {
         permissions_allowed(req.user.user_id, req.allowed)
         .then(allowed => {
-            return m.permissions.findAll({where: req.query})
+            return m.permissions.findAll({
+                where: JSON.parse(req.query.where),
+                ...fn.sort(req.query.sort)
+            })
             .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree}}))
             .catch(err => fn.send_error(res, err));
         })

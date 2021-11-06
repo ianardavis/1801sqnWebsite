@@ -13,7 +13,7 @@ function listSuppliers(options = {}) {
                 suppliers.forEach(supplier => {
                     sel_suppliers.appendChild(
                         new Option({
-                            value:    (options.id_only ? supplier.supplier_id : `supplier_id=${supplier.supplier_id}`),
+                            value:    (options.id_only ? supplier.supplier_id : `"supplier_id":"${supplier.supplier_id}"`),
                             text:     supplier.name,
                             selected: (options.selected === supplier.supplier_id)
                         }).e

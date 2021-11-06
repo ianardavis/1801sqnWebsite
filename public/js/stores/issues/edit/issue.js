@@ -8,7 +8,7 @@ function issueOptions() {
         if (this.value === '4') {
             get({
                 table: 'issue',
-                query: [`issue_id=${this.dataset.id}`],
+                query: [`"issue_id":"${this.dataset.id}"`],
                 index: this.dataset.index
             })
             .then(function ([issue, options]) {
@@ -25,7 +25,7 @@ function issueOptions() {
                         div_details.appendChild(nsn_select);
                         get({
                             table: 'nsns',
-                            query: [`size_id=${issue.size_id}`],
+                            query: [`"size_id":"${issue.size_id}"`],
                             index: options.index
                         })
                         .then(function ([nsns, options]) {
@@ -35,7 +35,7 @@ function issueOptions() {
                     if (issue.size.has_serials) {
                         get({
                             table: 'current_serials',
-                            query: [`size_id=${issue.size_id}`],
+                            query: [`"size_id":"${issue.size_id}"`],
                             index: options.index
                         })
                         .then(function ([serials, options]) {
@@ -67,7 +67,7 @@ function issueOptions() {
                         div_details.appendChild(stock_qty);
                         get({
                             table: 'stocks',
-                            query: [`size_id=${issue.size_id}`],
+                            query: [`"size_id":"${issue.size_id}"`],
                             index: options.index
                         })
                         .then(function ([stocks, options]) {
@@ -94,7 +94,7 @@ function add_stock_select(div_details, index, size_id) {
     div_details.appendChild(stock_select);
     get({
         table: 'stocks',
-        query: [`size_id=${size_id}`]
+        query: [`"size_id":"${size_id}"`]
     })
     .then(function ([stocks, options]) {
         stocks.forEach(e => stock_select.appendChild(new Option({text: `${e.location.location} | Qty: ${e.qty}`, value: e.stock_id}).e));

@@ -4,9 +4,11 @@ function getSales() {
     .then(tbl_items => {
         clear('tbl_sales')
         .then(tbl_sales => {
+            let sort_cols = tbl_payments.parentNode.querySelector('.sort') || null;
             get({
                 table: 'sales',
-                query: [`session_id=${path[2]}`]
+                query: [`session_id=${path[2]}`],
+                sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
             })
             .then(function ([sales, options]) {
                 set_count({id: 'sale', count: sales.length || '0'});

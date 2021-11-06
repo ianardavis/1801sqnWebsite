@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/user',          fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         m.users.findOne({
-            where:      req.query,
+            where:      JSON.parse(req.query.where),
             include:    [fn.inc.users.rank(), fn.inc.users.status()],
             attributes: ['user_id', 'full_name', 'service_number', 'first_name', 'surname', 'status_id', 'rank_id', 'login_id', 'reset', 'last_login']
         })
@@ -28,9 +28,10 @@ module.exports = (app, m, fn) => {
     app.get('/get/users',         fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         if (!req.allowed) req.query.user_id = req.user.user_id;
         m.users.findAll({
-            where:      req.query,
+            where:      JSON.parse(req.query.where),
             include:    [fn.inc.users.rank(), fn.inc.users.status()],
-            attributes: user_attributes
+            attributes: user_attributes,
+            ...fn.sort(req.query.sort)
         })
         .then(users => res.send({success: true,  result: users}))
         .catch(err =>  fn.send_error(res, err));
@@ -47,7 +48,8 @@ module.exports = (app, m, fn) => {
                     required: true
                 })
             ],
-            attributes: user_attributes
+            attributes: user_attributes,
+            ...fn.sort(req.query.sort)
         })
         .then(users => res.send({success: true,  result: users}))
         .catch(err =>  fn.send_error(res, err));

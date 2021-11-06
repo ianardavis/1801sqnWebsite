@@ -42,8 +42,8 @@
             <div id="div_details">
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
-                        <th class='w-30' onclick='sortTable(0, "tbl_details")'>Name</th>
-                        <th class='w-70' onclick='sortTable(1, "tbl_details")'>Value</th>
+                        <th class='w-30' onclick='sortByRow(this, getDetails)' data-sort_col='name' >Name <span class='sort_ind float-end'></span></th>
+                        <th class='w-70' onclick='sortByRow(this, getDetails)' data-sort_col='value'>Value<span class='sort_ind float-end'></span></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_details'></tbody>
@@ -54,7 +54,7 @@
             <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
-                    <th class='w-80' onclick='sortTable(0, "tbl_nsns")'>NSN</th>
+					<th class='w-80' onclick='sortByRow(this, getNSNs)' data-sort_col='item_number'>NSN<span class='sort_ind float-end'></span></th>
                     <th class='w-20'>Default</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
@@ -65,8 +65,8 @@
         <div id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade">
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
-                    <th class='w-50' onclick='sortTable(0, "tbl_serials")'>Serial #</th>
-                    <th class='w-50' onclick='sortTable(1, "tbl_serials")'>Location</th>
+					<th class='w-50' onclick='sortByRow(this, getSerials)' data-sort_col='serial'     >Serial #<span class='sort_ind float-end'></span></th>
+					<th class='w-50' onclick='sortByRow(this, getSerials)' data-sort_col='location_id'>Location<span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_serials'></tbody>
@@ -75,8 +75,8 @@
         <div id="stocks"  role="tabpanel" aria-labelledby="stocks-tab"  class="tab-pane fade">
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
-                    <th class='w-80' onclick='sortTable(0, "tbl_stock")'>Location</th>
-                    <th class='w-20' onclick='sortTable(1, "tbl_stock")'>Qty</th>
+					<th class='w-80' onclick='sortByRow(this, getStocks)' data-sort_col='location'>Location<span class='sort_ind float-end'></span></th>
+					<th class='w-20' onclick='sortByRow(this, getStocks)' data-sort_col='qty'     >Qty     <span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_stocks'></tbody>
@@ -87,9 +87,9 @@
                 <%- include(`${partials}/inputs/select`, {id: 'sel_order_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled', value: 'status=0'}, {text: 'Placed', value: 'status=1'}, {text: 'Demanded', value: 'status=2'}, {text: 'Received', value: 'status=3'}]}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-50' onclick='sortTable(0, "tbl_orders")'>Date</th>
-                        <th class='w-10' onclick='sortTable(1, "tbl_orders")'>Qty</th>
-                        <th class='w-40' onclick='sortTable(2, "tbl_orders")'>Status</th>
+                        <th class='w-50' onclick='sortByRow(this, getOrders)' data-sort_col='createdAt'>Date  <span class='sort_ind float-end'></span></th>
+                        <th class='w-10' onclick='sortByRow(this, getOrders)' data-sort_col='qty'      >Qty   <span class='sort_ind float-end'></span></th>
+                        <th class='w-40' onclick='sortByRow(this, getOrders)' data-sort_col='status'   >Status<span class='sort_ind float-end'></span></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_orders'></tbody>
@@ -100,10 +100,10 @@
             <%- include(`${partials}/inputs/select`, {id: 'sel_issue_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled/Declined', value: 'status=0'}, {text: 'Requested', value: 'status=1'}, {text: 'Approved', value: 'status=2'}, {text: 'Ordered', value: 'status=3'}, {text: 'Issued', value: 'status=4'}, {text: 'Returned', value: 'status=5'}]}) %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
-                    <th class='w-20' onclick='sortTable(0, "tbl_issues")'>Date</th>
-                    <th class='w-40' onclick='sortTable(1, "tbl_issues")'>To</th>
-                    <th class='w-10' onclick='sortTable(2, "tbl_issues")'>Qty</th>
-                    <th class='w-30' onclick='sortTable(3, "tbl_issues")'>Status</th>
+					<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='createdAt'    >Date  <span class='sort_ind float-end'></span></th>
+					<th class='w-40' onclick='sortByRow(this, getIssues)' data-sort_col='user_id_issue'>To    <span class='sort_ind float-end'></span></th>
+					<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='qty'          >Qty   <span class='sort_ind float-end'></span></th>
+					<th class='w-30' onclick='sortByRow(this, getIssues)' data-sort_col='status'       >Status<span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_issues'></tbody>

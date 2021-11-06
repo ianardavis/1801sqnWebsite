@@ -1,7 +1,11 @@
 function getGenders() {
     clear('tbl_genders')
     .then(tbl_genders => {
-        get({table: 'genders'})
+        let sort_cols = tbl_genders.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'genders',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([genders, options]) {
             genders.forEach(gender => {
                 let row = tbl_genders.insertRow(-1);

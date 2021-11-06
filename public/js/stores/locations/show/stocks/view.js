@@ -1,9 +1,11 @@
 function getStocks() {
     clear('tbl_stocks')
     .then(tbl_stocks => {
+        let sort_cols = tbl_stocks.parentNode.querySelector('.sort') || null;
         get({
             table: 'stocks',
-            query: [`location_id=${path[2]}`]
+            query: [`location_id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([stocks, options]) {
             set_count({id: 'stock', count: stocks.length || '0'});

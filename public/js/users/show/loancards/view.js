@@ -2,10 +2,12 @@ let loancard_statuses = {'0': 'Cancelled', '1':'Draft', '2': 'Open', '3': 'Close
 function getLoancards () {
     clear('tbl_loancards')
     .then(tbl_loancards => {
-        let sel_status = document.querySelector('#sel_status_loancards') || {value: ''};
+        let sel_status = document.querySelector('#sel_status_loancards') || {value: ''},
+            sort_cols  = tbl_loancards.parentNode.querySelector('.sort') || null;
         get({
             table: 'loancards',
-            query: [`user_id_loancard=${path[2]}`, sel_status.value]
+            query: [`user_id_loancard=${path[2]}`, sel_status.value],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([loancards, options]) {
             set_count({id: 'loancards', count: loancards.length || '0'});

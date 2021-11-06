@@ -58,7 +58,7 @@
             <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-100" onclick="sortTable(0, 'tbl_genders')">Gender</th>
+                        <th class='w-100' onclick='sortByRow(this, getGenders)' data-sort_col='gender'>Gender<span class='sort_ind float-end'></span></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_genders'></tbody>
@@ -69,9 +69,9 @@
             <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-20" onclick="sortTable(0, 'tbl_files')">File ID</th>
-                        <th class="w-60" onclick="sortTable(1, 'tbl_files')">File Name</th>
-                        <th class="w-20" onclick="sortTable(2, 'tbl_files')">File Exists</th>
+                        <th class='w-20' onclick='sortByRow(this, getFiles)' data-sort_col='file_id' >File ID <span class='sort_ind float-end'></span></th>
+                        <th class='w-60' onclick='sortByRow(this, getFiles)' data-sort_col='filename'>Filename<span class='sort_ind float-end'></span></th>
+                        <th class='w-20'>Gender</th>
                         <th><i class='fas fa-trash-alt'></i></th>
                     </thead>
                     <tbody id='tbl_files'></tbody>
@@ -82,9 +82,9 @@
             <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-40" onclick="sortTable(1, 'tbl_accounts')">Name</th>
-                        <th class="w-20" onclick="sortTable(2, 'tbl_accounts')">Number</th>
-                        <th class="w-40" onclick="sortTable(2, 'tbl_accounts')">Owner</th>
+                        <th class='w-40' onclick='sortByRow(this, getAccounts)' data-sort_col='name'   >Name  <span class='sort_ind float-end'></span></th>
+                        <th class='w-20' onclick='sortByRow(this, getAccounts)' data-sort_col='number' >Number<span class='sort_ind float-end'></span></th>
+                        <th class='w-40' onclick='sortByRow(this, getAccounts)' data-sort_col='user_id'>Owner <span class='sort_ind float-end'></span></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_accounts'></tbody>
@@ -94,9 +94,9 @@
         <% if (permissions.stores_stock_admin) { %>
             <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
                 <script>let dragging = false</script>
-                    <form id='form_category_move'>
-                        <input type="hidden" name='category_id' id='category_id_move'>
-                        <input type="hidden" name='category[category_id_parent]' id='category_id_parent_move'>
+                <form id='form_category_move'>
+                    <input type="hidden" name='category_id' id='category_id_move'>
+                    <input type="hidden" name='category[category_id_parent]' id='category_id_parent_move'>
                     <ul class="list-group category_ul" id='ul_category_'></ul>
                 </form>
             </div>
@@ -104,8 +104,8 @@
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-                    <th class="w-50" onclick="sortTable(0, 'tbl_settings')">Setting</th>
-                    <th class="w-50" onclick="sortTable(1, 'tbl_settings')">Value</th>
+					<th class='w-50' onclick='sortByRow(this, getSettings)' data-sort_col='name' >Setting<span class='sort_ind float-end'></span></th>
+					<th class='w-50' onclick='sortByRow(this, getSettings)' data-sort_col='value'>Value  <span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_settings'></tbody>

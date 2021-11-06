@@ -1,9 +1,11 @@
 function getSizes() {
     clear('tbl_sizes')
     .then(tbl_sizes => {
+        let sort_cols = tbl_sizes.parentNode.querySelector('.sort') || null;
         get({
             table: 'sizes',
-            query: [`supplier_id=${path[2]}`]
+            query: [`supplier_id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([sizes, options]) {
             set_count({id: 'size', count: sizes.length || '0'});

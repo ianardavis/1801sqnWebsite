@@ -3,19 +3,20 @@ module.exports = (app, m, fn) => {
     app.get('/movements/:id',         fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/movements/show'));
     app.get('/get/movements',         fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.movements.findAll({
-            where: req.query,
+            where: JSON.parse(req.query.where),
             include: [
                 fn.inc.canteen.session(),
                 fn.inc.canteen.holding({as: 'holding_to'}),
                 fn.inc.canteen.holding({as: 'holding_from'})
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/movement',          fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.movements.findOne({
-            where: req.query,
+            where: JSON.parse(req.query.where),
             include: [
                 fn.inc.canteen.session(),
                 fn.inc.canteen.holding({as: 'holding_to'}),
@@ -39,7 +40,8 @@ module.exports = (app, m, fn) => {
                 fn.inc.canteen.holding({as: 'holding_to'}),
                 fn.inc.canteen.holding({as: 'holding_from'}),
                 fn.inc.users.user()
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));

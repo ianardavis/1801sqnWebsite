@@ -1,9 +1,11 @@
 function getActions() {
     clear('tbl_actions')
     .then(tbl_actions => {
+        let sort_cols = tbl_actions.parentNode.querySelector('.sort') || null;
         get({
             table: 'actions',
-            query: [`_table=${path[1]}`, `id=${path[2]}`]
+            query: [`_table=${path[1]}`, `id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([actions, options]) {
             set_count({id: 'action', count: actions.length || '0'});

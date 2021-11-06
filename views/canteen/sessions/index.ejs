@@ -11,9 +11,9 @@
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-40" onclick="sortTable(0, 'tbl_sessions')">Start</th>
-            <th class="w-40" onclick="sortTable(1, 'tbl_sessions')">End</th>
-            <th class="w-20" onclick="sortTable(2, 'tbl_sessions')">Status</th>
+            <th class='w-40' onclick='sortByRow(this, getSessions)' data-sort_col='createdAt'   >Start<span class='sort_ind float-end'></span></th>
+            <th class='w-40' onclick='sortByRow(this, getSessions)' data-sort_col='datetime_end'>End<span class='sort_ind float-end'></span></th>
+            <th class='w-20' onclick='sortByRow(this, getSessions)' data-sort_col='status'      >Status<span class='sort_ind float-end'></span></th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_sessions"></tbody>

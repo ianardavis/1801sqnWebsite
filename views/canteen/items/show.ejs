@@ -35,8 +35,8 @@
             <div class="tab-pane fade" id="receipts"  role="tabpanel" aria-labelledby="receipts-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-80" onclick="sortTable(0, 'tbl_receipts')">Date</th>
-                        <th class="w-20" onclick="sortTable(1, 'tbl_receipts')">Qty</th>
+                        <th class='w-80' onclick='sortByRow(this, getReceipts)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
+                        <th class='w-20' onclick='sortByRow(this, getReceipts)' data-sort_col='qty'      >Qty<span class='sort_ind float-end'></span></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id="tbl_receipts"></tbody>
@@ -47,9 +47,9 @@
             <div class="tab-pane fade" id="writeoffs" role="tabpanel" aria-labelledby="writeoffs-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-30" onclick="sortTable(0, 'tbl_writeoffs')">Date</th>
-                        <th class="w-40" onclick="sortTable(1, 'tbl_writeoffs')">Qty</th>
-                        <th class="w-30" onclick="sortTable(2, 'tbl_writeoffs')">Qty</th>
+                        <th class='w-30' onclick='sortByRow(this, getWriteoffs)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
+                        <th class='w-40' onclick='sortByRow(this, getWriteoffs)' data-sort_col='reason'   >Reason<span class='sort_ind float-end'></span></th>
+                        <th class='w-30' onclick='sortByRow(this, getWriteoffs)' data-sort_col='qty'      >Qty<span class='sort_ind float-end'></span></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id="tbl_writeoffs"></tbody>
@@ -60,8 +60,8 @@
             <div class="tab-pane fade" id="sales"     role="tabpanel" aria-labelledby="sales-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-80" onclick="sortTable(0, 'tbl_sales')">Date</th>
-                        <th class="w-20" onclick="sortTable(1, 'tbl_sales')">Qty</th>
+                        <th class='w-80' onclick='sortByRow(this, getSales)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
+                        <th class='w-20' onclick='sortByRow(this, getSales)' data-sort_col='qty'      >Qty<span class='sort_ind float-end'></span></th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id="tbl_sales"></tbody>

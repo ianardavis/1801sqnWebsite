@@ -3,13 +3,16 @@ module.exports = (app, m, fn) => {
     app.get('/get/location',  fn.loggedIn(),                                      (req, res) => {
         fn.get(
             'locations',
-            req.query
+            JSON.parse(req.query.where)
         )
         .then(location => res.send({success: true, result: location}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/locations', fn.loggedIn(),                                      (req, res) => {
-        m.locations.findAll({where: req.query})
+        m.locations.findAll({
+            where: JSON.parse(req.query.where),
+            ...fn.sort(req.query.sort)
+        })
         .then(locations => res.send({success: true, result: locations}))
         .catch(err => fn.send_error(res, err));
     });

@@ -5,7 +5,6 @@ function getDemandLine() {
         query: [`demand_line_id=${path[2]}`]
     })
     .then(function ([line, options]) {
-        console.log(line);
         set_breadcrumb({text: `${line.size.item.description} | ${line.size.item.size_text1 || 'Size'}: ${print_size(line.size)}`});
         set_innerText({id: 'bcr_demand',     text: `${line.demand.supplier.name} - ${print_date(line.demand.createdAt)}`});
         set_innerText({id: 'line_item',      text: line.size.item.description});

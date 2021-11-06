@@ -1,7 +1,11 @@
 function getAccounts() {
     clear('tbl_accounts')
     .then(tbl_accounts => {
-        get({table: 'accounts'})
+        let sort_cols = tbl_accounts.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'accounts',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([accounts, options]) {
             accounts.forEach(account => {
                 let row = tbl_accounts.insertRow(-1);

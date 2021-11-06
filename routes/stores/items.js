@@ -3,13 +3,10 @@ module.exports = (app, m, fn) => {
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/show'));
     
     app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
-        console.log(req.query);
-        let query = JSON.parse(req.query.where),
-            sort  = (req.query.sort ? JSON.parse(req.query.sort) : null);
         m.items.findAll({
-            where:   query, //req.query.where,
+            where:   JSON.parse(req.query.where),
             include: [fn.inc.stores.gender()],
-            ...(sort ? {order: [[sort.col, sort.dir]]} : {})
+            ...fn.sort(req.query.sort)
         })
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
@@ -24,7 +21,8 @@ module.exports = (app, m, fn) => {
                     where: {category: 'Uniform'},
                     required: true
                 }]
-            }]
+            }],
+            ...fn.sort(req.query.sort)
         })
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
@@ -32,7 +30,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/item',               fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         fn.get(
             'items',
-            req.query,
+            JSON.parse(req.query.where),
             [m.genders]
         )
         .then(item => res.send({success: true, result: item}))
@@ -40,8 +38,9 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.item_categories.findAll({
-            where:   req.query,
-            include: [fn.inc.stores.category()]
+            where:   JSON.parse(req.query.where),
+            include: [fn.inc.stores.category()],
+            ...fn.sort(req.query.sort)
         })
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => fn.send_error(res, err));
@@ -49,7 +48,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/item_category',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         fn.get(
             'item_categories',
-            req.query,
+            JSON.parse(req.query.where),
             [m.categories]
         )
         .then(category => res.send({success: true, result: category}))

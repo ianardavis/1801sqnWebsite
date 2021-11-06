@@ -39,16 +39,17 @@ module.exports = (app, m, fn) => {
         });
     };
     app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        issues_allowed(req.allowed, req.query, req.user.user_id)
+        issues_allowed(req.allowed, JSON.parse(req.query.where), req.user.user_id)
         .then(add_user_id_issue => {
             if (add_user_id_issue) req.query.user_id_issue = req.user.user_id;
             return m.issues.findAll({
-                where: req.query,
+                where: JSON.parse(req.query.where),
                 include: [
                     fn.inc.stores.size(),
                     fn.inc.users.user({as: 'user_issue'}),
                     fn.inc.users.user()
-                ]
+                ],
+                ...fn.sort(req.query.sort)
             })
             .then(issues => res.send({success: true, result: issues}))
             .catch(err => fn.send_error(res, err));
@@ -60,7 +61,7 @@ module.exports = (app, m, fn) => {
         .then(allowed_users => {
             fn.get(
                 'issues',
-                req.query,
+                JSON.parse(req.query.where),
                 [
                     fn.inc.stores.size(),
                     fn.inc.users.user({as: 'user_issue'}),
@@ -91,10 +92,11 @@ module.exports = (app, m, fn) => {
                     required: true,
                     where: {
                         _table: 'issues',
-                        id: req.query.issue_id
+                        id: JSON.parse(req.query.where).issue_id
                     }
                 }]
-            }]
+            }],
+            ...fn.sort(req.query.sort)
         })
         .then(link => {
             if (!link) fn.send_error(res, new Error('Loancard not found'))

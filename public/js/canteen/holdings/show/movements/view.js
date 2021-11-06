@@ -1,10 +1,12 @@
 function getMovements() {
     clear('tbl_movements')
     .then(tbl_movements => {
+        let sort_cols = tbl_movements.parentNode.querySelector('.sort') || null;
         get({
             table: 'movements_holding',
             spinner: 'movements',
-            query: [`holding_id=${path[2]}`]
+            query: [`holding_id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([movements, options]) {
             set_count({id: 'movement', count: movements.length || '0'});

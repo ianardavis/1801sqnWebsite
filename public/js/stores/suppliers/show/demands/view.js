@@ -2,10 +2,12 @@ let demand_statuses = {'0': 'Cancelled', '1': 'Draft', '2': 'Complete', '3': 'Cl
 function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
-        let sel_status = document.querySelector('#sel_demand_status') || {value: ''};
+        let sel_status = document.querySelector('#sel_demand_status') || {value: ''},
+            sort_cols  = tbl_demands.parentNode.querySelector('.sort') || null;
         get({
             table: 'demands',
-            query: [`supplier_id=${path[2]}`, sel_status.value]
+            query: [`supplier_id=${path[2]}`, sel_status.value],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([demands, options]) {
             set_count({id: 'demand', count: demands.length || '0'});

@@ -1,9 +1,11 @@
 function getSales() {
     clear('tbl_sales')
     .then(tbl_sales => {
+        let sort_cols = tbl_sales.parentNode.querySelector('.sort') || null;
         get({
             table: 'sale_lines',
-            query: [`item_id=${path[2]}`]
+            query: [`item_id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([lines, options]) {
             set_count({id: 'sale', count: lines.length || '0'});

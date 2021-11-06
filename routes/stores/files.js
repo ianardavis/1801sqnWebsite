@@ -10,28 +10,34 @@ module.exports = (app, m, fn) => {
         );
     });
     app.get('/get/files',           fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        m.files.findAll({where: req.query})
+        m.files.findAll({
+            where: JSON.parse(req.query.where),
+            ...fn.sort(req.query.sort)
+        })
         .then(files => res.send({success: true, result: files}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file',            fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.get(
             'files',
-            req.query,
+            JSON.parse(req.query.where),
             [fn.inc.users.user()]
         )
         .then(file => res.send({success: true,  result: file}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file_details',    fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
-        m.file_details.findAll({where: req.query})
+        m.file_details.findAll({
+            where: JSON.parse(req.query.where),
+            ...fn.sort(req.query.sort)
+        })
         .then(details => res.send({success: true, result: details}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/file_detail',     fn.loggedIn(), fn.permissions.check('supplier_admin'),  (req, res) => {
         fn.get(
             'file_details',
-            req.query
+            JSON.parse(req.query.where)
         )
         .then(detail => res.send({success: true, result: detail}))
         .catch(err => fn.send_error(res, err));

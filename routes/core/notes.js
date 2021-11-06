@@ -1,8 +1,9 @@
 module.exports = (app, m, fn) => {
     app.get('/get/notes',    fn.loggedIn(), (req, res) => {
         m.notes.findAll({
-            where:   req.query,
-            include: [fn.inc.users.user()]
+            where:   JSON.parse(req.query.where),
+            include: [fn.inc.users.user()],
+            ...fn.sort(req.query.sort)
         })
         .then(notes => res.send({success: true, result: notes}))
         .catch(err => fn.send_error(res, err));
@@ -10,7 +11,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/note',     fn.loggedIn(), (req, res) => {
         fn.get(
             'notes',
-            req.query,
+            JSON.parse(req.query.where),
             [fn.inc.users.user()]
         )
         .then(note => res.send({success: true, result: note}))

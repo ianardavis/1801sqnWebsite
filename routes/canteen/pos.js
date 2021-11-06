@@ -23,7 +23,7 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/pos_layout',     fn.loggedIn(), fn.permissions.check('pos_user'),      (req, res) => {
         m.pos_layouts.findOne({
-            where: req.query,
+            where: JSON.parse(req.query.where),
             include: [fn.inc.canteen.item()]
         })
         .then(pos_layout => res.send({success: true, result: pos_layout}))

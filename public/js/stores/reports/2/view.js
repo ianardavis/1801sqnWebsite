@@ -3,7 +3,11 @@ function getLines() {
     disable_button('action');
     clear('tbl_issues')
     .then(tbl_issues => {
-        get({table: 'loancard_lines_due'})
+        let sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'loancard_lines_due',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([lines, options]) {
             let row_index = 0;
             lines.forEach(line => {

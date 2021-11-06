@@ -39,18 +39,19 @@
 			<% if (permissions.issue) { %><form id='form_actions'><% } %>
 			<table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
-					<th class='w-30' onclick="sortTable(0,'tbl_lines')">Item</th>
-					<th class='w-40' onclick="sortTable(1,'tbl_lines')">Size</th>
-					<th class='w-10' onclick="sortTable(2,'tbl_lines')">Qty</th>
-					<th class='w-20'>
-						<% if (permissions.issue) { %>
+					<th class='w-30'>Item</th>
+					<th class='w-40' onclick='sortByRow(this, getLines)' data-sort_col='size_id'>Size<span class='sort_ind float-end'></span></th>
+					<th class='w-10' onclick='sortByRow(this, getLines)' data-sort_col='qty'>Qty<span class='sort_ind float-end'></span></th>
+					<th class='w-20' onclick='sortByRow(this, getLines)' data-sort_col='status'>
+						Status
+						<% if (permissions.issuer) { %>
 							<select id="sel_all" class='form-select form-select-sm hidden'>
 								<option>Select All</option>
 								<option value="0">Cancel</option>
 								<option value="3">Return</option>
 							</select>
 						<% } %>
-						Status
+						<span class='sort_ind float-end'></span>
 					</th>
 					<th><i class='fas fa-search'></i></th>
 				</thead>

@@ -29,9 +29,9 @@
         <div class="tab-pane fade" id="stocks" role="tabpanel" aria-labelledby="stocks-tab">
             <table class='table table-sm table-hover w-100'>
                 <thead class='thead-dark'>
-                    <th class='w-40' onclick='sortTable(0, "tbl_stocks")'>Item</th>
-                    <th class='w-40' onclick='sortTable(1, "tbl_stocks")'>Size</th>
-                    <th class='w-20' onclick='sortTable(2, "tbl_stocks")'>Quantity</th>
+					<th class='w-40'>Item</th>
+					<th class='w-40' onclick='sortByRow(this, getStocks)' data-sort_col='size_id'>Size<span class='sort_ind float-end'></span></th>
+					<th class='w-20' onclick='sortByRow(this, getStocks)' data-sort_col='qty'    >Qty <span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_stocks'></tbody>
@@ -40,9 +40,9 @@
         <div class="tab-pane fade" id="serials" role="tabpanel" aria-labelledby="serials-tab">
             <table class='table table-sm table-hover w-100'>
                 <thead class='thead-dark'>
-                    <th class='w-30' onclick='sortTable(0, "tbl_serials")'>Item</th>
-                    <th class='w-30' onclick='sortTable(1, "tbl_serials")'>Size</th>
-                    <th class='w-40' onclick='sortTable(1, "tbl_serials")'>Serial</th>
+					<th class='w-100'>Item</th>
+					<th class='w-100' onclick='sortByRow(this, getSerials)' data-sort_col='size_id'>Size  <span class='sort_ind float-end'></span></th>
+					<th class='w-100' onclick='sortByRow(this, getSerials)' data-sort_col='serial' >Serial<span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_serials'></tbody>

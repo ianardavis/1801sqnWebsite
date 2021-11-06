@@ -43,7 +43,7 @@
             <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-100" onclick="sortTable(1, 'tbl_permissions')">Permission</th>
+                        <th class='w-100' onclick='sortByRow(this, getPermissions)' data-sort_col='permission'>Permission<span class='sort_ind float-end'></span></th>
                     </thead>
                     <tbody id="tbl_permissions"></tbody>
                 </table>

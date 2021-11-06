@@ -2,7 +2,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/adjustment',  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.get(
             'adjustments',
-            req.query,
+            JSON.parse(req.query.where),
             [
                 fn.inc.users.user(), 
                 fn.inc.stores.stock(),
@@ -14,11 +14,12 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/adjustments', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.adjustments.findAll({
-            where: req.query,
+            where: JSON.parse(req.query.where),
             include: [
                 fn.inc.users.user(), 
                 fn.inc.stores.stock()
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(adjustments => res.send({success: true, result: adjustments}))
         .catch(err => fn.send_error(res, err));

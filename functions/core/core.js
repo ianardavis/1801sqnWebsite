@@ -274,4 +274,10 @@ module.exports = function (m, fn) {
     fn.print_nsn = function (nsn) {
         return `${String(nsn.nsn_group.code).padStart(2, '0')}${String(nsn.nsn_class.code).padStart(2, '0')}-${String(nsn.nsn_country.code).padStart(2, '0')}-${nsn.item_number}`
     };
+    fn.sort = function (sort) {
+        if (sort) {
+            let json_sort = JSON.parse(sort);
+            return {order: [[json_sort.col, json_sort.dir]]};
+        } else return {};
+    };
 };

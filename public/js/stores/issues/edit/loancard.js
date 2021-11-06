@@ -1,7 +1,7 @@
 function addLoancardOption(issue_id) {
     get({
         table: 'issue_loancard',
-        query: [`issue_id=${issue_id}`]
+        query: [`"issue_id":"${issue_id}"`]
     })
     .then(function ([line, options]) {
         let select = document.querySelector(`#issue_${issue_id}`);
@@ -14,7 +14,7 @@ function loancardOptions() {
         if (this.value === '-2') {
             get({
                 table: 'issue',
-                query: [`issue_id=${this.dataset.id}`],
+                query: [`"issue_id":"${this.dataset.id}"`],
                 index: this.dataset.index
             })
             .then(function ([issue, options]) {
@@ -30,7 +30,7 @@ function loancardOptions() {
                     div_details.appendChild(stock_select);
                     get({
                         table: 'stocks',
-                        query: [`size_id=${issue.size_id}`],
+                        query: [`"size_id":"${issue.size_id}"`],
                         index: options.index
                     })
                     .then(function ([stocks, options]) {

@@ -12,10 +12,10 @@
     <%- include(`${partials}/inputs/select`, {title: 'Non-Current Items', id: 'current', options: [{value:'', text: 'Include', selected: true}, {value:'current=1', text: 'Exclude'}, {value:'current=0', text: 'Only'}]}) %>
 	<table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-30" onclick="sortTable(0, 'tbl_items')">Name</th>
-            <th class="w-30" onclick="sortTable(1, 'tbl_items')">Price</th>
-            <th class="w-30" onclick="sortTable(2, 'tbl_items')">Stock</th>
-            <th class="w-10" onclick="sortTable(3, 'tbl_items')">Current</th>
+            <th class='w-30' onclick='sortByRow(this, getItems)' data-sort_col='name'   >Name<span class='sort_ind float-end'></span></th>
+            <th class='w-30' onclick='sortByRow(this, getItems)' data-sort_col='price'  >Price<span class='sort_ind float-end'></span></th>
+            <th class='w-30' onclick='sortByRow(this, getItems)' data-sort_col='qty'    >Stock<span class='sort_ind float-end'></span></th>
+            <th class='w-10' onclick='sortByRow(this, getItems)' data-sort_col='current'>Current<span class='sort_ind float-end'></span></th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_items"></tbody>

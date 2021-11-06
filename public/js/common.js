@@ -73,19 +73,14 @@ function sortByRow(col, func) {
     if (sortCols && sortCols.length > 0) {
         sortCols.forEach(e => {
             if (e === col) {
-                if (col.dataset.sort_dir === 'ASC') {
-                    add_sort(col, 'DESC');
-                } else if (col.dataset.sort_dir === 'DESC') {
-                    remove_sort(col);
-                };
+                if      (col.dataset.sort_dir === 'ASC')  add_sort(col, 'DESC');
+                else if (col.dataset.sort_dir === 'DESC') remove_sort(col);
             } else {
                 remove_sort(e);
                 add_sort(col, 'ASC');
             };
         });
-    } else {
-        add_sort(col, 'ASC')
-    };
+    } else add_sort(col, 'ASC');
     func();
 }
 function removeID(id) {

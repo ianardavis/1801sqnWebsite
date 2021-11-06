@@ -1,8 +1,9 @@
 module.exports = (app, m, fn) => {
     app.get('/get/accounts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         return m.accounts.findAll({
-            where:   req.query,
-            include: [fn.inc.users.user()]
+            where:   JSON.parse(req.query.where),
+            include: [fn.inc.users.user()],
+            ...fn.sort(req.query.sort)
         })
         .then(accounts => res.send({success: true, result: accounts}))
         .catch(err => fn.send_error(res, err));
@@ -10,7 +11,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/account',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         fn.get(
             'accounts',
-            req.query,
+            JSON.parse(req.query.where),
             [fn.inc.users.user()]
         )
         .then(account => res.send({success: true, result: account}))

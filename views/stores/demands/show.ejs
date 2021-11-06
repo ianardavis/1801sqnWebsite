@@ -38,10 +38,10 @@
 			<form id='form_action'>
 				<table class='table table-sm table-hover'>
 					<thead class='thead-dark'>
-						<th class='w-30' onclick="sortTable(0,'tbl_lines')">Item</th>
-						<th class='w-40' onclick="sortTable(1,'tbl_lines')">Size</th>
-						<th class='w-10' onclick="sortTable(2,'tbl_lines')">Qty</th>
-						<th class='w-20' onclick="sortTable(3,'tbl_lines')">Status</th>
+						<th class='w-30'>Item</th>
+						<th class='w-40' onclick='sortByRow(this, getLines)' data-sort_col='size_id'>Size<span class='sort_ind float-end'></span></th>
+						<th class='w-10' onclick='sortByRow(this, getLines)' data-sort_col='qty'	>Qty<span class='sort_ind float-end'></span></th>
+						<th class='w-20' onclick='sortByRow(this, getLines)' data-sort_col='status'	>Status<span class='sort_ind float-end'></span></th>
 						<th><i class='fas fa-search'></i></th>
 					</thead>
 					<tbody id='tbl_lines'></tbody>
@@ -70,13 +70,14 @@
 						<button type='button' class='btn btn-success w-100 mb-1' id='btn_line_sizes'>Add Item(s)</button>
 						<table class='table table-sm table-hover'>
 							<thead class='thead-dark'>
-								<th class='w-30' onclick='sortTable(0, "tbl_line_add")'>Item</th>
-								<th class='w-60' onclick='sortTable(1, "tbl_line_add")'>Size</th>
-								<th class='w-20' onclick='sortTable(2, "tbl_line_add")'>Quantity</th>
+								<th class='w-30'>Item</th>
+								<th class='w-60'>Size</th>
+								<th class='w-20'>Qty </th>
 								<th><i class='fas fa-trash-alt'></i></th>
 							</thead>
 							<tbody id='tbl_line_add'></tbody>
-						</table></div>
+						</table>
+					</div>
 					<div class="modal-footer">
 						<input type="submit" class="btn btn-success w-100" value='Add Lines'>
 						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>

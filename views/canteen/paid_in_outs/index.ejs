@@ -9,13 +9,13 @@
 <section class='container'>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-15" onclick="sortTable(0, 'tbl_paid_in_outs')">Date</th>
-            <th class="w-10" onclick="sortTable(1, 'tbl_paid_in_outs')">Paid In/Out</th>
-            <th class="w-20" onclick="sortTable(2, 'tbl_paid_in_outs')">Holding</th>
-            <th class="w-20" onclick="sortTable(3, 'tbl_paid_in_outs')">To/From</th>
-            <th class="w-15" onclick="sortTable(4, 'tbl_paid_in_outs')">Reason</th>
-            <th class="w-10" onclick="sortTable(5, 'tbl_paid_in_outs')">Amount</th>
-            <th class="w-10" onclick="sortTable(6, 'tbl_paid_in_outs')">Status</th>
+            <th class='w-15' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='createdAt'          >Date<span class='sort_ind float-end'></span></th>
+            <th class='w-10' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='paid_in'            >Paid In/Out<span class='sort_ind float-end'></span></th>
+            <th class='w-20' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='holding_id'         >Holding<span class='sort_ind float-end'></span></th>
+            <th class='w-20' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='user_id_paid_in_out'>To/From<span class='sort_ind float-end'></span></th>
+            <th class='w-15' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='reason'             >Reason<span class='sort_ind float-end'></span></th>
+            <th class='w-10' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='amount'             >Amount<span class='sort_ind float-end'></span></th>
+            <th class='w-10' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='status'             >Status<span class='sort_ind float-end'></span></th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_paid_in_outs"></tbody>

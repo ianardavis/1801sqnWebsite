@@ -1,7 +1,11 @@
 function getWriteoffs() {
     clear('tbl_writeoffs')
     .then(tbl_writeoffs => {
-        get({table: 'writeoffs'})
+        let sort_cols = tbl_writeoffs.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'writeoffs',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([writeoffs, options]) {
             writeoffs.forEach(writeoff => {
                 let row = tbl_writeoffs.insertRow(-1);

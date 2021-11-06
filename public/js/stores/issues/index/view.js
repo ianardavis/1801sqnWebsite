@@ -4,11 +4,14 @@ function getIssues() {
     .then(tbl_issues => {
         let sel_users = document.querySelector('#sel_users') || {value: ''},
             statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query     = [];
+            query     = [],
+            sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
+        if (sel_users && sel_users.value !== '') query.push(sel_users.value)
         statuses.forEach(e => query.push(e.value));
         get({
             table: 'issues',
-            query: [query.join('&'), sel_users.value]
+            query: [query.join(',')],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([issues, options]) {
             let row_index = 0;

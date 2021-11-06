@@ -1,9 +1,11 @@
 function getCategories() {
     clear('tbl_categories')
     .then(tbl_categories => {
+        let sort_cols = tbl_categories.parentNode.querySelector('.sort') || null;
         get({
             table: 'item_categories',
-            query: [`item_id=${path[2]}`]
+            query: [`item_id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([categories, options]) {
             categories.forEach(category => {

@@ -4,11 +4,12 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/sessions', fn.loggedIn(), fn.permissions.check('pos_user'),       (req, res) => {
         m.sessions.findAll({
-            where: req.query,
+            where: JSON.parse(req.query.where),
             include: [
                 fn.inc.users.user({as: 'user_open'}),
                 fn.inc.users.user({as: 'user_close'}),
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(sessions => res.send({success: true, result: sessions}))
         .catch(err => fn.send_error(res, err));
@@ -16,7 +17,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/session',  fn.loggedIn(), fn.permissions.check('pos_user'),       (req, res) => {
         fn.get(
             'sessions',
-            req.query,
+            JSON.parse(req.query.where),
             [
                 fn.inc.users.user({as: 'user_open'}),
                 fn.inc.users.user({as: 'user_close'}),

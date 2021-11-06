@@ -7,7 +7,7 @@ function addEditSelect() {
             new Promise(resolve => {
                 get({
                     table: 'issue',
-                    query: [`issue_id=${cell.dataset.id}`]
+                    query: [`"issue_id":"${cell.dataset.id}"`]
                 })
                 .then(function ([issue, options]) {
                     if ([1, 2, 3, 4].includes(issue.status)) {

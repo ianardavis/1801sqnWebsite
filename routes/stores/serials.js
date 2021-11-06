@@ -2,12 +2,13 @@ module.exports = (app, m, fn) => {
     app.get('/serials/:id',         fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/serials/show'));
     app.get('/get/serials',         fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.serials.findAll({
-            where:   req.query,
+            where:   JSON.parse(req.query.where),
             include: [
                 fn.inc.stores.location(),
                 fn.inc.stores.issue(),
                 fn.inc.stores.size()
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(serials => res.send({success: true, result: serials}))
         .catch(err => fn.send_error(res, err));
@@ -16,12 +17,13 @@ module.exports = (app, m, fn) => {
         req.query.location_id = {[fn.op.not]: null};
         req.query.issue_id    = null;
         m.serials.findAll({
-            where:   req.query,
+            where:   JSON.parse(req.query.where),
             include: [
                 fn.inc.stores.location(),
                 fn.inc.stores.issue(),
                 fn.inc.stores.size()
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(serials => res.send({success: true, result: serials}))
         .catch(err => fn.send_error(res, err));
@@ -29,7 +31,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/serial',          fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'serials',
-            req.query,
+            JSON.parse(req.query.where),
             [
                 fn.inc.stores.location(),
                 fn.inc.stores.issue(),

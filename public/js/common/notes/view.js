@@ -1,14 +1,16 @@
 function getNotes() {
     clear('tbl_notes')
     .then(tbl_notes => {
-        let sel_system = document.querySelector('#sel_system') || {value: ''}
+        let sel_system = document.querySelector('#sel_system') || {value: ''},
+            sort_cols  = tbl_notes.parentNode.querySelector('.sort') || null;
         get({
             table: 'notes',
             query: [
                 `_table=${path[1]}`,
                 `id=${path[2]}`,
                 sel_system.value
-            ]
+            ],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([notes, options]) {
             set_count({id: 'note', count: notes.length || '0'});

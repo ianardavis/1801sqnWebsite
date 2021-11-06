@@ -2,8 +2,8 @@
     <%- include(`${partials}/inputs/select`, {id: 'sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: 'system=0', selected: true}, {text: 'Only', value: 'system=1'}]}) %>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class="w-30" onclick="sortTable(0, 'tbl_notes')">Date</th>
-            <th class="w-70" onclick="sortTable(1, 'tbl_notes')">Note</th>
+            <th class='w-30' onclick='sortByRow(this, getNotes)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
+            <th class='w-70' onclick='sortByRow(this, getNotes)' data-sort_col='note'     >Note<span class='sort_ind float-end'></span></th>
             <th><i class="fas fa-search"></i></th>
         </thead>
         <tbody id="tbl_notes"></tbody>

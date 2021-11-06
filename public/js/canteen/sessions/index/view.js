@@ -1,7 +1,11 @@
 function getSessions() {
     clear('tbl_sessions')
     .then(tbl_sessions => {
-        get({table: 'sessions'})
+        let sort_cols = tbl_sessions.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'sessions',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([sessions, options]) {
             let current_sessions = [];
             sessions.forEach(session => {

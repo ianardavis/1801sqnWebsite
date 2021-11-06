@@ -1,7 +1,11 @@
 function getReceipts() {
     clear('tbl_receipts')
     .then(tbl_receipts => {
-        get({table: 'receipts'})
+        let sort_cols = tbl_receipts.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'receipts',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([receipts, options]) {
             receipts.forEach(receipt => {
                 try {

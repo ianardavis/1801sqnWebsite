@@ -13,22 +13,22 @@
 		<h5 class='text-start'>Status:</h5>
 		<div class="row">
 			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: 'status=0', colour: 'secondary', classes: ['status']}) %>
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: '"status":0', colour: 'secondary', classes: ['status']}) %>
 			</div>
 			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: 'status=1', colour: 'warning', 	classes: ['status'], checked: true}) %>
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: '"status":1', colour: 'warning', 	classes: ['status'], checked: true}) %>
 			</div>
 			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: 'status=2', colour: 'success', 	classes: ['status'], checked: true}) %>
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: '"status":2', colour: 'success', 	classes: ['status'], checked: true}) %>
 			</div>
 			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: 'status=3', colour: 'primary', 	classes: ['status'], checked: true}) %>
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: '"status":3', colour: 'primary', 	classes: ['status'], checked: true}) %>
 			</div>
 			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: 'status=4', colour: 'info', 		classes: ['status']}) %>
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: '"status":4', colour: 'info', 		classes: ['status']}) %>
 			</div>
 			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: 'status=5', colour: 'secondary', classes: ['status']}) %>
+				<%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: '"status":5', colour: 'secondary', classes: ['status']}) %>
 			</div>
 		</div>
 		<div class="row">
@@ -54,16 +54,17 @@
 	</div>
 	<% if (permissions.issuer) { %>
 		<form id='form_issue_edit'>
-		<button class='btn btn-success w-100 mb-1'>Action Selected Issues</button>
+			<button class='btn btn-success w-100 mb-1'>Action Selected Issues</button>
 	<% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class="w-15" onclick="sortTable(0, 'tbl_issues')">Date</th>
-				<th class="w-20" onclick="sortTable(1, 'tbl_issues')">User</th>
-				<th class="w-20" onclick="sortTable(2, 'tbl_issues')">Item</th>
-				<th class="w-20" onclick="sortTable(3, 'tbl_issues')">Size</th>
-				<th class="w-10" onclick="sortTable(4, 'tbl_issues')">Quantity</th>
-				<th class="w-15">
+				<th class='w-15' onclick='sortByRow(this, getIssues)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
+				<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='user_id'  >User<span class='sort_ind float-end'></span></th>
+				<th class='w-20'>Description</th>
+				<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='size_id'  >Size<span class='sort_ind float-end'></span></th>
+				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='qty'	   >Qty <span class='sort_ind float-end'></span></th>
+				<th class='w-15' onclick='sortByRow(this, getIssues)' data-sort_col='status'>
+					Status
 					<select id="sel_all" class='form-select form-select-sm hidden'>
 						<option>Select All</option>
 						<option value="-1">Decline</option>
@@ -72,7 +73,7 @@
 						<option value="3">Order</option>
 						<option value="4">Issue</option>
 					</select>
-					Status
+					<span class='sort_ind float-end'></span>
 				</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>

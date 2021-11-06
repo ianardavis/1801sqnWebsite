@@ -1,7 +1,11 @@
 function getMovements() {
     clear('tbl_movements')
     .then(tbl_movements => {
-        get({table: 'movements'})
+        let sort_cols = tbl_movements.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'movements',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([movements, options]) {
             movements.forEach(movement => {
                 let row = tbl_movements.insertRow(-1);

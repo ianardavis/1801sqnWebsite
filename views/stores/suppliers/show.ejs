@@ -43,8 +43,8 @@
         <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-                    <th class="w-50" onclick="sortTable(0, 'tbl_files')">Filename</th>
-                    <th class="w-50" onclick="sortTable(1, 'tbl_files')">Description</th>
+					<th class='w-50' onclick='sortByRow(this, getFiles)' data-sort_col='filename'   >Filename   <span class='sort_ind float-end'></span></th>
+					<th class='w-50' onclick='sortByRow(this, getFiles)' data-sort_col='description'>Description<span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id="tbl_files"></tbody>
@@ -53,8 +53,8 @@
         <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-                    <th class="w-30" onclick="sortTable(0, 'tbl_addresses')">Type</th>
-                    <th class="w-30" onclick="sortTable(1, 'tbl_addresses')">Unit/Number</th>
+					<th class='w-30' onclick='sortByRow(this, getAddresses)' data-sort_col='type'>Type<span class='sort_ind float-end'></span></th>
+					<th class="w-30" onclick="sortTable(1, 'tbl_addresses')">Unit/Number</th>
                     <th class="w-40" onclick="sortTable(1, 'tbl_addresses')">Street</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
@@ -64,8 +64,8 @@
         <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-                    <th class="w-30" onclick="sortTable(0, 'tbl_contacts')">Type</th>
-                    <th class="w-30" onclick="sortTable(1, 'tbl_contacts')">Description</th>
+                    <th class='w-30' onclick='sortByRow(this, getContacts)' data-sort_col='type'>Type<span class='sort_ind float-end'></span></th>
+					<th class="w-30" onclick="sortTable(1, 'tbl_contacts')">Description</th>
                     <th class="w-40" onclick="sortTable(1, 'tbl_contacts')">Contact</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
@@ -76,7 +76,7 @@
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                     <th class="w-50" onclick="sortTable(0, 'tbl_sizes')">Item</th>
-                    <th class="w-50" onclick="sortTable(1, 'tbl_sizes')">Size</th>
+                    <th class='w-50' onclick='sortByRow(this, getSizes)' data-sort_col='size1'>Size<span class='sort_ind float-end'></span></th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id="tbl_sizes"></tbody>
@@ -87,9 +87,9 @@
                 <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_demand_status', options: [{value: '', text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Complete'}, {value: 'status=3', text: 'Closed'}]}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class="w-50" onclick="sortTable(0, 'tbl_demands')">Date</th>
-                        <th class="w-50" onclick="sortTable(2, 'tbl_demands')">Status</th>
-                        <th><i class="fas fa-search"></i></th>
+                        <th class='w-50' onclick='sortByRow(this, getDemands)' data-sort_col='createdAt'>Date  <span class='sort_ind float-end'></span></th>
+                        <th class='w-50' onclick='sortByRow(this, getDemands)' data-sort_col='status'   >Status<span class='sort_ind float-end'></span></th>
+					    <th><i class="fas fa-search"></i></th>
                     </thead>
                     <tbody id="tbl_demands"></tbody>
                 </table>

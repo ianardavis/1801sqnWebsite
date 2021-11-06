@@ -6,8 +6,9 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/settings',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         m.settings.findAll({
-            where:      req.query,
-            attributes: ['setting_id','name', 'value']
+            where:      JSON.parse(req.query.where),
+            attributes: ['setting_id','name', 'value'],
+            ...fn.sort(req.query.sort)
         })
         .then(settings => res.send({success: true, result: settings}))
         .catch(err => fn.send_error(res, err));
@@ -15,7 +16,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/setting',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.get(
             'settings',
-            req.query
+            JSON.parse(req.query.where)
         )
         .then(setting => res.send({success: true, result: setting}))
         .catch(err => fn.send_error(res, err));

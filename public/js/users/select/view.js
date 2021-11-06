@@ -15,18 +15,22 @@ function getStatuses() {
 function getUsers() {
     clear('tbl_users')
     .then(tbl_users => {
-        let ranks    = document.querySelector('#sel_ranks')    || {value: ''},
-            statuses = document.querySelector('#sel_statuses') || {value: ''};
+        let ranks     = document.querySelector('#sel_ranks')    || {value: ''},
+            statuses  = document.querySelector('#sel_statuses') || {value: ''},
+            sort_cols = tbl_users.parentNode.querySelector('.sort') || null;
         get({
             table: 'users',
             query: [ranks.value, statuses.value],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([users, options]) {
             users.forEach(user => {
                 let row = tbl_users.insertRow(-1);
                 add_cell(row, {append: new Checkbox({small: true, attributes: [{field: 'data-id', value: user.user_id}]}, {field: 'name', value: 'user'}).e});
                 add_cell(row, {text: user.service_number});
-                add_cell(row, {text: print_user(user)});
+                add_cell(row, {text: user.rank.rank});
+                add_cell(row, {text: user.surname});
+                add_cell(row, {text: user.first_name});
             });
         })
         .catch(err => console.log(err));

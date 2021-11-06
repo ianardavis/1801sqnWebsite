@@ -3,20 +3,26 @@ module.exports = (app, m, fn) => {
     app.get('/holdings/:id',        fn.loggedIn(), fn.permissions.get('cash_admin'),   (req, res) => res.render('canteen/holdings/show'));
     
     app.get('/get/holdings',        fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
-        m.holdings.findAll({where: req.query})
+        m.holdings.findAll({
+            where: JSON.parse(req.query.where),
+            ...fn.sort(req.query.sort)
+        })
         .then(holdings => res.send({success: true, result: holdings}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/holding',         fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         fn.get(
             'holdings',
-            req.query
+            JSON.parse(req.query.where)
         )
         .then(holding => res.send({success: true, result: holding}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/holdings_except', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
-        m.holdings.findAll({where: {holding_id: {[fn.op.ne]: req.query.holding_id}}})
+        m.holdings.findAll({
+            where: {holding_id: {[fn.op.ne]: req.query.holding_id}},
+            ...fn.sort(req.query.sort)
+        })
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
     });

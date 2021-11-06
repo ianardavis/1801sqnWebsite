@@ -4,8 +4,9 @@ module.exports = (app, m, fn) => {
             if (value === '') req.query[key] = null;
         };
         m.categories.findAll({
-            where: req.query,
-            include: [fn.inc.stores.categories({as: 'parent'})]
+            where:   JSON.parse(req.query.where),
+            include: [fn.inc.stores.categories({as: 'parent'})],
+            ...fn.sort(req.query.sort)
         })
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => fn.send_error(res, err));
@@ -16,7 +17,7 @@ module.exports = (app, m, fn) => {
         };
         fn.get(
             'categories',
-            req.query,
+            JSON.parse(req.query.where),
             [fn.inc.stores.categories({as: 'parent'})]
         )
         .then(category => res.send({success: true, result: category}))

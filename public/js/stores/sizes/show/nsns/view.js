@@ -1,9 +1,11 @@
 function getNSNs() {
     clear('tbl_nsns')
     .then(tbl_nsns => {
+        let sort_cols = tbl_nsns.parentNode.querySelector('.sort') || null;
         get({
             table: 'nsns',
-            query: [`size_id=${path[2]}`]
+            query: [`size_id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([nsns, options]) {
             set_count({id: 'nsn', count: nsns.length || '0'});

@@ -1,9 +1,11 @@
 function getContacts() {
     clear('tbl_contacts')
     .then(tbl_contacts => {
+        let sort_cols = tbl_contacts.parentNode.querySelector('.sort') || null;
         get({
             table: 'contacts',
-            query: [`supplier_id=${path[2]}`]
+            query: [`supplier_id=${path[2]}`],
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
         })
         .then(function ([contacts, options]) {
             set_count({id: 'contact', count: contacts.length || '0'});

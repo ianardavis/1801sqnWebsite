@@ -9,13 +9,13 @@
         <button id='btn_action' class="btn btn-success w-100 mb-1" disabled>Action lines</button>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
-                <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Issued To</th>
-                <th class="w-15" onclick="sortTable(1, 'tbl_issues')">Item</th>
-                <th class="w-15" onclick="sortTable(2, 'tbl_issues')">Size</th>
-                <th class="w-5"  onclick="sortTable(3, 'tbl_issues')">Quantity</th>
-                <th class="w-15" onclick="sortTable(4, 'tbl_issues')">Date Issued</th>
-                <th class="w-15" onclick="sortTable(5, 'tbl_issues')">Date Due</th>
-                <th class="w-15">
+                <th class='w-25'>Issued To</th>
+                <th class='w-15'>Description</th>
+                <th class='w-15' onclick='sortByRow(this, getLines)' data-sort_col='size_id'  >Size<span class='sort_ind float-end'></span></th>
+                <th class='w-5'  onclick='sortByRow(this, getLines)' data-sort_col='qty'      >Qty<span class='sort_ind float-end'></span></th>
+                <th class='w-15' onclick='sortByRow(this, getLines)' data-sort_col='createdAt'>Date Issued<span class='sort_ind float-end'></span></th>
+                <th class='w-15'>Date Due</th>
+                <th class='w-15' onclick='sortByRow(this, getLines)' data-sort_col='status'>
                     <% if (permissions.issuer) { %>
                         <select id="sel_all" class='form-select form-select-sm hidden'>
                             <option>Select All</option>
@@ -23,6 +23,7 @@
                         </select>
                     <% } %>
                     Status
+                    <span class='sort_ind float-end'></span>
                 </th>
                 <th><i class='fas fa-search'></i></th>
             </thead>

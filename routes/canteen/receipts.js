@@ -4,11 +4,12 @@ module.exports = (app, m, fn) => {
     
     app.get('/get/receipts',    fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         m.receipts.findAll({
-            where: req.query,
+            where: JSON.parse(req.query.where),
             include: [
                 fn.inc.users.user(),
                 fn.inc.canteen.item()
-            ]
+            ],
+            ...fn.sort(req.query.sort)
         })
         .then(receipts => res.send({success: true,  result: receipts}))
         .catch(err =>     fn.send_error(res, err))
@@ -16,7 +17,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/receipt',     fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         fn.get(
             'receipts',
-            req.query,
+            JSON.parse(req.query.where),
             [
                 fn.inc.users.user(),
                 fn.inc.canteen.item()

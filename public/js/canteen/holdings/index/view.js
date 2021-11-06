@@ -1,7 +1,11 @@
 function getHoldings() {
     clear('tbl_holdings')
     .then(tbl_holdings => {
-        get({table: 'holdings'})
+        let sort_cols = tbl_holdings.parentNode.querySelector('.sort') || null;
+        get({
+            table: 'holdings',
+            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+        })
         .then(function ([holdings, options]) {
             holdings.forEach(holding => {
                 let row = tbl_holdings.insertRow(-1);
