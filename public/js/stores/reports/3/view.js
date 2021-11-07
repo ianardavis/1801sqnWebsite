@@ -2,13 +2,15 @@ function getSizes() {
     disable_button('action');
     clear('form_sizes')
     .then(form => {
-        let p = document.createElement('p'),
-            supplier_id = document.querySelector('#sel_suppliers') || {value: ''};
+        let p           = document.createElement('p'),
+            supplier_id = document.querySelector('#sel_suppliers') || {value: ''},
+            query       = ['"orderable":1'];
+        if (supplier_id.value !== '') query.push(`"supplier_id":"${supplier_id.value}"`);
         p.setAttribute('id', 'col_headers');
         form.appendChild(p);
         get({
             table: 'sizes',
-            query: ['orderable=1', (supplier_id.value ? `supplier_id=${supplier_id.value}` : '')]
+            query: query
         })
         .then(function ([sizes, options]) {
             let row_index = 0;

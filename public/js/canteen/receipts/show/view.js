@@ -1,7 +1,7 @@
 function getReceipt() {
     get({
         table: 'receipt',
-        query: [`receipt_id=${path[2]}`]
+        query: [`"receipt_id":"${path[2]}"`]
     })
     .then(function ([receipt, options]) {
         set_breadcrumb({text: `${receipt.item.name} | ${print_date(receipt.createdAt, true)}`});

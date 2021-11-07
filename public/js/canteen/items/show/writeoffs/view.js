@@ -4,8 +4,8 @@ function getWriteoffs() {
         let sort_cols = tbl_writeoffs.parentNode.querySelector('.sort') || null;
         get({
             table: 'writeoffs',
-            query: [`item_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"item_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([writeoffs, options]) {
             set_count({id: 'writeoff', count: writeoffs.length || '0'});

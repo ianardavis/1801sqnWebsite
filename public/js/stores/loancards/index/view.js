@@ -2,16 +2,16 @@ let loancard_statuses   = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":
 function getLoancards() {
     clear('tbl_loancards')
     .then(tbl_loancards => {
-        let sel_users = document.querySelector('#sel_users')  || {value: ''},
+        let sel_users = document.querySelector('#sel_users') || {value: ''},
             statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
             query     = [];
-            statuses.forEach(e => query.push(e.value)),
             sort_cols = tbl_loancards.parentNode.querySelector('.sort') || null;
+        if (statuses && statuses.length > 0) query.push(status_query(statuses));
         if (sel_users && sel_users.value !== "") query.push(sel_users.value);
         get({
             table: 'loancards',
             query: [query.join(',')],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([loancards, options]) {
             loancards.forEach(loancard => {

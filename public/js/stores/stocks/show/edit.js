@@ -1,7 +1,7 @@
 function viewStockEdit() {
     get({
         table: 'stock',
-        query: [`stock_id=${path[2]}`]
+        query: [`"stock_id":"${path[2]}"`]
     })
     .then(function ([stock, options]) {
         set_value({id: 'stock_location_edit', value: stock.location.location});
@@ -22,5 +22,5 @@ window.addEventListener('load', function () {
     );
     modalOnShow('stock_edit', viewStockEdit);
     modalOnShow('stock_edit', getLocations);
-    addListener('reload_locations', getLocations);
-})
+    addListener('reload_locations_edit', getLocations);
+});

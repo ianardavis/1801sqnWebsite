@@ -4,8 +4,8 @@ function getStocks() {
         let sort_cols = tbl_stocks.parentNode.querySelector('.sort') || null;
         get({
             table: 'stocks',
-            query: [`size_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"size_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([stocks, options]) {
             set_count({id: 'stock', count: stocks.length || '0'});

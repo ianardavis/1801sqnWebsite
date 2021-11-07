@@ -6,12 +6,12 @@ function getIssues() {
             statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
             query     = [],
             sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
-        if (sel_users && sel_users.value !== '') query.push(sel_users.value)
-        statuses.forEach(e => query.push(e.value));
+        if (statuses && statuses.length > 0) query.push(status_query(statuses));
+        if (sel_users && sel_users.value !== '') query.push(sel_users.value);
         get({
             table: 'issues',
             query: [query.join(',')],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([issues, options]) {
             let row_index = 0;

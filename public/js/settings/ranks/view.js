@@ -4,7 +4,7 @@ function getRanks() {
         let sort_cols = tbl_ranks.parentNode.querySelector('.sort') || null;
         get({
             table: 'ranks',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([ranks, options]) {
             ranks.forEach(rank => {

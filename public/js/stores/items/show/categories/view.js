@@ -4,8 +4,8 @@ function getCategories() {
         let sort_cols = tbl_categories.parentNode.querySelector('.sort') || null;
         get({
             table: 'item_categories',
-            query: [`item_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"item_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([categories, options]) {
             categories.forEach(category => {
@@ -23,7 +23,7 @@ function getCategories() {
 function viewCategory(category_id) {
     get({
         table:   'item_category',
-        query:   [`item_category_id=${category_id}`],
+        query:   [`"item_category_id":"${category_id}"`],
         spinner: 'category_view'
     })
     .then(function ([category, options]) {

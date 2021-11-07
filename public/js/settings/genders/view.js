@@ -4,7 +4,7 @@ function getGenders() {
         let sort_cols = tbl_genders.parentNode.querySelector('.sort') || null;
         get({
             table: 'genders',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([genders, options]) {
             genders.forEach(gender => {
@@ -28,7 +28,7 @@ function getGenders() {
 function viewGender(gender_id) {
     get({
         table: 'gender',
-        query: [`gender_id=${gender_id}`]
+        query: [`"gender_id":"${gender_id}"`]
     })
     .then(function([gender, options]) {
         set_innerText({id: 'gender_id',        text: gender.gender_id});

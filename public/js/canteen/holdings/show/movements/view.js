@@ -5,8 +5,8 @@ function getMovements() {
         get({
             table: 'movements_holding',
             spinner: 'movements',
-            query: [`holding_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"holding_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([movements, options]) {
             set_count({id: 'movement', count: movements.length || '0'});

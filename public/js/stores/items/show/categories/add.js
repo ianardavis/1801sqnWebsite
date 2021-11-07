@@ -8,7 +8,7 @@ function listCategories(select, parent_id = '') {
     .then(sel_category => {
         get({
             table: 'categories',
-            query: [`category_id_parent=${parent_id}`]
+            query: [`"category_id_parent":"${parent_id}"`]
         })
         .then(function ([categories, options]) {
             if (categories.length === 0) sel_category.remove();
@@ -65,7 +65,7 @@ window.addEventListener('load', function () {
             reset_categories_add
         ]}
     );
-    listCategories('1');
+    modalOnShow('category_add', function () {listCategories('1')});
     addListener('sel_category_1', function () {
         let sub_categories = document.querySelector('#sub_categories');
         if (sub_categories) {

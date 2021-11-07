@@ -5,7 +5,7 @@ function getPaidInOuts() {
         let sort_cols = tbl_paid_in_outs.parentNode.querySelector('.sort') || null;
         get({
             table: 'paid_in_outs',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([paid_in_outs, options]) {
             paid_in_outs.forEach(paid_in_out => {

@@ -5,8 +5,8 @@ function getOrders() {
         let sort_cols = tbl_orders.parentNode.querySelector('.sort') || null;
         get({
             table: 'orders',
-            query: [`size_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"size_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([orders, options]) {
             set_count({id: 'order', count: orders.length});
@@ -31,7 +31,7 @@ function getOrders() {
 function viewOrder(order_id) {
     get({
         table: 'order',
-        query: [`order_id=${order_id}`],
+        query: [`"order_id":"${order_id}"`],
         spinner: 'order_view'
     })
     .then(function ([order, options]){

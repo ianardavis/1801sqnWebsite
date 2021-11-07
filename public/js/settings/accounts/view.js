@@ -4,7 +4,7 @@ function getAccounts() {
         let sort_cols = tbl_accounts.parentNode.querySelector('.sort') || null;
         get({
             table: 'accounts',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([accounts, options]) {
             accounts.forEach(account => {
@@ -31,7 +31,7 @@ function getAccounts() {
 function viewAccount(account_id) {
     get({
         table: 'account',
-        query: [`account_id=${account_id}`]
+        query: [`"account_id":"${account_id}"`]
     })
     .then(function ([account, options]) {
         set_innerText({id: 'account_id',        text: account.account_id});

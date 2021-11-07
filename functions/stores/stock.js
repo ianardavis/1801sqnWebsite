@@ -38,24 +38,26 @@ module.exports = function (m, fn) {
             } else reject(new Error('No size or stock ID submitted'));
         });
     };
-    fn.stocks.adjust = function (options = {}) {
+    fn.stocks.adjust = function (stock_id, type, qty, user_id) {
         return new Promise((resolve, reject) => {
-            return fn.stocks.get({stock_id: options.adjustment.stock_id})
+            return fn.stocks.get({stock_id: stock_id})
             .then(stock => {
-                let action = null, action_text = '';
-                switch (String(options.adjustment.type).toLowerCase()) {
+                let action = null, action_text = '', variance = 0;
+                switch (String(type).toLowerCase()) {
                     case 'count':
-                        action = fn.update(stock, {qty: options.adjustment.qty});
+                        variance = qty - stock.qty;
+                        action = fn.update(stock, {qty: qty});
                         action_text = `COUNT | ${(variance < 0 ? 
-                            `Decreased by ${variance}. New qty: ${options.adjustment.qty}` : (variance > 0 ? 
-                            `Increased by ${variance}. New qty: ${options.adjustment.qty}` : 
-                            `No variance. Qty: ${options.adjustment.qty}`
+                            `Decreased by ${variance}. New qty: ${qty}` : (variance > 0 ? 
+                            `Increased by ${variance}. New qty: ${qty}` : 
+                            `No variance. Qty: ${qty}`
                             )
                         )}`;
                         break
                     case 'scrap':
-                        action = fn.decrement(stock, options.adjustment.qty);
-                        action_text = `SCRAP | Decreased by ${options.adjustment.qty}. New qty: ${Number(stock.qty - options.adjustment.qty)}`
+                        variance = 0 - qty;
+                        action = fn.decrement(stock, qty);
+                        action_text = `SCRAP | Decreased by ${qty}. New qty: ${Number(stock.qty - qty)}`
                         break
                     default:
                         break
@@ -66,11 +68,11 @@ module.exports = function (m, fn) {
                     .then(result => {
                         return fn.actions.create(
                             action_text,
-                            options.user_id,
+                            user_id,
                             [{table: 'stocks', id: stock.stock_id}]
                         )
-                        .then(results => resolve(results))
-                        .catch(err => reject(err));
+                        .then(results => resolve(true))
+                        .catch(err => resolve(false));
                     })
                     .catch(err => reject(err));
                 };

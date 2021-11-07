@@ -152,6 +152,9 @@ table, th, td, thead {
 .table-hover tbody tr:hover {
 	color: var(--main-color);
 }
+.table {
+	--bs-table-hover-color: var(--main-color);
+}
 
 .input-group-text {
 	color: var(--alt-color2);

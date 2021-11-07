@@ -4,7 +4,7 @@ function getWriteoffs() {
         let sort_cols = tbl_writeoffs.parentNode.querySelector('.sort') || null;
         get({
             table: 'writeoffs',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([writeoffs, options]) {
             writeoffs.forEach(writeoff => {

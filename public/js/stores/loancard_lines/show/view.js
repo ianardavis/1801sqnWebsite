@@ -2,7 +2,7 @@ let line_statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Clos
 function getLoancardLine() {
     get({
         table: 'loancard_line',
-        query: [`loancard_line_id=${path[2]}`]
+        query: [`"loancard_line_id":"${path[2]}"`]
     })
     .then(function ([line, options]) {
         set_breadcrumb({text: `${line.size.item.description} | ${line.size.item.size_text || 'Size'}: ${print_size(line.size)}`});

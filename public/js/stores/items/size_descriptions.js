@@ -3,7 +3,7 @@ function get_size_descriptions() {
     .then(list_descriptions => {
         get({
             table: 'settings',
-            query: ['name=Size Description']
+            query: ['"name":"Size Description"']
         })
         .then(function ([descriptions, options]) {
             descriptions.forEach(e => list_descriptions.appendChild(new Option({value: e.value}).e));

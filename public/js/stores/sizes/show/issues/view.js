@@ -3,11 +3,13 @@ function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
         let status    = document.querySelector('#sel_issue_status') || {value: ''},
-            sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
+            sort_cols = tbl_issues.parentNode.querySelector('.sort') || null,
+            query     = [`"size_id":"${path[2]}"`];
+        if (status.value !== '') query.push(status.value);
         get({
             table: 'issues',
-            query: [`size_id=${path[2]}`, status.value],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: query,
+            ...sort_query(sort_cols)
         })
         .then(function ([issues, options]) {
             set_count({id: 'issue', count: issues.length});
@@ -33,7 +35,7 @@ function getIssues() {
 function viewIssue(issue_id) {
     get({
         table: 'issue',
-        query: [`issue_id=${issue_id}`],
+        query: [`"issue_id":"${issue_id}"`],
         spinner: 'issue_view'
     })
     .then(function ([issue, options]){

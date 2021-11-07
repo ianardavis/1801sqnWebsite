@@ -1,7 +1,7 @@
 function viewSupplierEdit() {
     get({
         table:   'supplier',
-        query:   [`supplier_id=${path[2]}`],
+        query:   [`"supplier_id":"${path[2]}"`],
         spinner: 'supplier_edit'
     })
     .then(function ([supplier, options]) {

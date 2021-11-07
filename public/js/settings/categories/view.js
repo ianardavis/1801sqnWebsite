@@ -5,7 +5,7 @@ function getCategories(parent_id = '') {
     .then(ul_category => {
         get({
             table: 'categories',
-            query: [`category_id_parent=${parent_id}`]
+            query: [`"category_id_parent":"${parent_id}"`]
         })
         .then(function ([categories, options]) {
             if (categories.length === 0) {
@@ -39,7 +39,7 @@ function getCategories(parent_id = '') {
 function viewCategory(category_id) {
     get({
         table: 'category',
-        query: [`category_id=${category_id}`]
+        query: [`"category_id":"${category_id}"`]
     })
     .then(function([category, options]) {
         set_innerText({id: 'category',           text: category.category});

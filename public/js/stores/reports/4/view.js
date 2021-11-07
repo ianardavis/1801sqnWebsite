@@ -6,7 +6,7 @@ function getSizes() {
         div.appendChild(p);
         get({
             table: 'sizes',
-            query: ['orderable=1']
+            query: ['"orderable":1']
         })
         .then(function ([sizes, options]) {
             sizes.forEach(size => {

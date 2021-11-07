@@ -3,7 +3,7 @@ function addCategoryDeleteBtn(category_id) {
     .then(category_delete_btn => {
         get({
             table: 'item_category',
-            query: [`item_category_id=${category_id}`]
+            query: [`"item_category_id":"${category_id}"`]
         })
         .then(function ([category, options]) {
             category_delete_btn.appendChild(

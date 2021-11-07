@@ -1,14 +1,16 @@
 let line_statuses = {'0': 'Cancelled', '1': 'Pending', '2': 'Issued', '3': 'Returned'};
 function getLines() {
     disable_button('action');
-    let sel_status = document.querySelector('#sel_status') || {value: ''},
-        sort_cols  = tbl_items.parentNode.querySelector('.sort') || null;
     clear('tbl_lines')
     .then(tbl_lines => {
+        let sel_status = document.querySelector('#sel_status') || {value: ''},
+            sort_cols  = tbl_items.parentNode.querySelector('.sort') || null,
+            query      = [`"loancard_id":"${path[2]}"`];
+        if (sel_status.value !== '') query.push(sel_status.value);
         get({
             table: 'loancard_lines',
-            query: [`loancard_id=${path[2]}`, sel_status.value],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: query,
+            ...sort_query(sort_cols)
         })
         .then(function ([lines, options]) {
             set_count({id: 'line', count: lines.length || '0'});
@@ -60,7 +62,7 @@ function getLines() {
 function viewLine(loancard_line_id) {
     get({
         table: 'loancard_line',
-        query: [`loancard_line_id=${loancard_line_id}`]
+        query: [`"loancard_line_id":"${loancard_line_id}"`]
     })
     .then(function ([line, options]) {
         set_innerText({id: 'loancard_line_id', text: line.loancard_line_id});

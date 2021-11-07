@@ -4,8 +4,8 @@ function getAddresses() {
         let sort_cols = tbl_addresses.parentNode.querySelector('.sort') || null;
         get({
             table: 'addresses',
-            query: [`supplier_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"supplier_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([addresses, options]) {
             set_count({id: 'address', count: addresses.length || '0'});
@@ -26,7 +26,7 @@ function getAddresses() {
 function viewAddress(supplier_address_id) {
     get({
         table: 'address',
-        query: [`supplier_address_id=${supplier_address_id}`],
+        query: [`"supplier_address_id":"${supplier_address_id}"`],
         spinner: 'address_view'
     })
     .then(function ([address, options]) {

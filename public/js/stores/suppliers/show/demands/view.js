@@ -3,11 +3,13 @@ function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
         let sel_status = document.querySelector('#sel_demand_status') || {value: ''},
-            sort_cols  = tbl_demands.parentNode.querySelector('.sort') || null;
+            sort_cols  = tbl_demands.parentNode.querySelector('.sort') || null,
+            query      = [`"supplier_id":"${path[2]}"`];
+        if (sel_status.value !== '') query.push(sel_status.value)
         get({
             table: 'demands',
-            query: [`supplier_id=${path[2]}`, sel_status.value],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: query,
+            ...sort_query(sort_cols)
         })
         .then(function ([demands, options]) {
             set_count({id: 'demand', count: demands.length || '0'});

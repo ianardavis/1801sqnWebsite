@@ -3,7 +3,7 @@ function getDetailOptions() {
     .then(list => {
         get({
             table: 'settings',
-            query: ['name=detail_option'],
+            query: ['"name":"detail_option"'],
             spinner: 'detail_options'
         })
         .then(function ([settings, options]) {

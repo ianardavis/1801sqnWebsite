@@ -1,7 +1,7 @@
 function getSize() {
     get({
         table: 'size',
-        query: [`size_id=${path[2]}`]
+        query: [`"size_id":"${path[2]}"`]
     })
     .then(function ([size, options]) {
         set_breadcrumb({text: `${print_size_text(size.item)}: ${print_size(size)}`});

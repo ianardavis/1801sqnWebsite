@@ -4,7 +4,7 @@ function setCompleteButton(status) {
 function editLoancardDueDate() {
     get({
         table: 'loancard',
-        query: [`loancard_id=${path[2]}`]
+        query: [`"loancard_id":"${path[2]}"`]
     })
     .then(function ([loancard, options]) {
         let current_date = new Date(loancard.date_due),
@@ -16,7 +16,7 @@ function editLoancardDueDate() {
 function completeLoancardDueDate() {
     get({
         table: 'loancard',
-        query: [`loancard_id=${path[2]}`]
+        query: [`"loancard_id":"${path[2]}"`]
     })
     .then(function ([loancard, options]) {
         let current_date = new Date(loancard.date_due),

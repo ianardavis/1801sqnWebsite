@@ -4,8 +4,8 @@ function getActions() {
         let sort_cols = tbl_actions.parentNode.querySelector('.sort') || null;
         get({
             table: 'actions',
-            query: [`_table=${path[1]}`, `id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"_table":"${path[1]}"`, `"id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([actions, options]) {
             set_count({id: 'action', count: actions.length || '0'});
@@ -27,7 +27,7 @@ function getLinks(action_id) {
     .then(tbl_links => {
         get({
             table: 'action_links',
-            query: [`action_id=${action_id}`]
+            query: [`"action_id":"${action_id}"`]
         })
         .then(function ([links, options]) {
             links.forEach(link => {
@@ -48,7 +48,7 @@ function getLinks(action_id) {
 function viewLine(action_id) {
     get({
         table: 'action',
-        query: [`action_id=${action_id}`]
+        query: [`"action_id":"${action_id}"`]
     })
     .then(function ([action, options]) {
         set_innerText({id: 'action_id',        text: action.action_id});

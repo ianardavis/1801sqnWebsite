@@ -14,7 +14,7 @@ function viewSettingEdit(setting_id) {
     modalHide('setting_view');
     get({
         table: 'setting',
-        query: [`setting_id=${setting_id}`]
+        query: [`"setting_id":"${setting_id}"`]
     })
     .then(function([setting, options]) {
         set_attribute({id: 'setting_id_edit', attribute: 'value', value: setting.setting_id});

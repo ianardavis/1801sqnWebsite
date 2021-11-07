@@ -1,7 +1,7 @@
 function getItem() {
     get({
         table: 'item',
-        query: [`item_id=${path[2]}`]
+        query: [`"item_id":"${path[2]}"`]
     })
     .then(function ([item, options]) {
         set_breadcrumb({text: item.description});

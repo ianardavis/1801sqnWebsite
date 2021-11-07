@@ -1,7 +1,7 @@
 function viewSerialEdit() {
     get({
         table: 'serial',
-        query: [`serial_id=${path[2]}`]
+        query: [`"serial_id":"${path[2]}"`]
     })
     .then(function ([serial, options]) {
         set_value({id: 'serial_serial_edit', value: serial.item_number});

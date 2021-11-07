@@ -1,7 +1,7 @@
 function getLocation() {
     get({
         table: 'location',
-        query: [`location_id=${path[2]}`]
+        query: [`"location_id":"${path[2]}"`]
     })
     .then(function ([location, options]) {
         set_breadcrumb({text: location.location})

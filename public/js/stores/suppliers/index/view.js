@@ -4,7 +4,7 @@ function getSuppliers() {
         let sort_cols = tbl_suppliers.parentNode.querySelector('.sort') || null;
         get({
             table: 'suppliers',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([suppliers, options]) {
             suppliers.forEach(supplier => {

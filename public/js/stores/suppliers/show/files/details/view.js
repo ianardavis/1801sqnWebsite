@@ -3,7 +3,7 @@ function viewDetails(file_id) {
     .then(tbl_file_details => {
         get({
             table: 'file_details',
-            query: [`file_id=${file_id}`]
+            query: [`"file_id":"${file_id}"`]
         })
         .then(function ([details, options]) {
             details.forEach(e => {

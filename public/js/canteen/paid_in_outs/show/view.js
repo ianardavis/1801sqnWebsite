@@ -2,7 +2,7 @@ let statuses = {'0': 'Cancelled', '1': 'Entered', '2': 'Complete'};
 function getPaidInOut() {
     get({
         table: 'paid_in_out',
-        query: [`paid_in_out_id=${path[2]}`]
+        query: [`"paid_in_out_id":"${path[2]}"`]
     })
     .then(function ([paid_in_out, options]) {
         set_breadcrumb({text: paid_in_out.paid_in_out_id});

@@ -15,7 +15,7 @@ function viewGenderEdit(gender_id) {
     modalHide('gender_view');
     get({
         table: 'gender',
-        query: [`gender_id=${gender_id}`]
+        query: [`"gender_id":"${gender_id}"`]
     })
     .then(function([gender, options]) {
         set_attribute({id: 'gender_id_edit', attribute: 'value', value: gender.gender_id});

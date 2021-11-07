@@ -1,6 +1,6 @@
 get({
     table: 'issue',
-    query: [`issue_id=${path[2]}`]
+    query: [`"issue_id":"${path[2]}"`]
 })
 .then(function([issue, options]) {
     disable_button('delete');

@@ -302,4 +302,15 @@ function get_stock(size_id) {
         });
     });
 };
+function status_query(statuses) {
+    let statuses_selected = [];
+    statuses.forEach(e => statuses_selected.push(e.value));
+    return `"status":[${statuses_selected.join(',')}]`;
+};
+function sort_query(sort_cols) {
+    if (sort_cols) {
+        return {sort: {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir}};
+    } else return {};
+};
+
 let path = window.location.pathname.toString().split('/');

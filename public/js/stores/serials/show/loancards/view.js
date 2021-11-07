@@ -4,8 +4,8 @@ function getLoancards() {
         let sort_cols = tbl_loancards.parentNode.querySelector('.sort') || null;
         get({
             table: 'loancard_lines',
-            query: [`serial_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"serial_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([lines, options]) {
             set_count({id: 'loancard', count: lines.length || '0'});
@@ -26,7 +26,7 @@ function getLoancards() {
 function viewLoancard(loancard_line_id) {
     get({
         table: 'loancard_line',
-        query: [`loancard_line_id=${loancard_line_id}`]
+        query: [`"loancard_line_id":"${loancard_line_id}"`]
     })
     .then(function ([line, options]) {
         set_innerText({id: 'loancard_id',             text: line.loancard_id});

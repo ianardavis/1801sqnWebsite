@@ -4,8 +4,8 @@ function getAdjustments() {
         let sort_cols = tbl_adjustments.parentNode.querySelector('.sort') || null;
         get({
             table: 'adjustments',
-            query: [`stock_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"stock_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function([adjustments, options]) {
             set_count({id: 'adjustment', count: adjustments.length || '0'});
@@ -27,7 +27,7 @@ function getAdjustments() {
 function viewAdjustment(adjustment_id) {
     get({
         table: 'adjustment',
-        query: [`adjustment_id=${adjustment_id}`]
+        query: [`"adjustment_id":"${adjustment_id}"`]
     })
     .then(function ([adjustment, options]) {
         set_innerText({id: 'adjustment_id',        text: adjustment.adjustment_id});

@@ -15,7 +15,7 @@ function addEditButtons() {
 function getButton(page_id, position) {
     get({
         table: 'pos_layout',
-        query: [`page_id=${page_id}`, `button=${position}`]
+        query: [`"page_id":"${page_id}"`, `"button":"${position}"`]
     })
     .then(([layout, options]) => viewButton(page_id, position, layout))
     .catch(err => viewButton(page_id, position))
@@ -25,7 +25,7 @@ function viewButton(page_id, position, layout = null) {
     .then(sel_items => {
         get({
             table: 'canteen_items',
-            query: ['current=1']
+            query: ['"current":1']
         })
         .then(function ([items, options]) {
             sel_items.appendChild(new Option({text: 'Select Item...', selected: (!layout)}).e);
@@ -37,7 +37,7 @@ function viewButton(page_id, position, layout = null) {
             .then(layout_delete_btn => {
                 get({
                     table: 'pos_layout',
-                    query: [`page_id=${page_id}`, `button=${position}`]
+                    query: [`"page_id":"${page_id}"`, `"button":"${position}"`]
                 })
                 .then(function ([layout, options]) {
                     if (layout) {

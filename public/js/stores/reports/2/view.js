@@ -6,7 +6,7 @@ function getLines() {
         let sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
         get({
             table: 'loancard_lines_due',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([lines, options]) {
             let row_index = 0;

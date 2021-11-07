@@ -4,8 +4,8 @@ function getDetails() {
         let sort_cols = tbl_details.parentNode.querySelector('.sort') || null;
         get({
             table: 'details',
-            query: [`size_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"size_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([details, options]) {
             details.forEach(detail => {

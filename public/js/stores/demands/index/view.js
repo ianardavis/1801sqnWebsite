@@ -1,17 +1,17 @@
+let demand_statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"};
 function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
-        let sel_suppliers   = document.querySelector('#sel_suppliers') || {value: ''},
-            demand_statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"},
-            statuses        = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query           = [],
-            sort_cols       = tbl_demands.parentNode.querySelector('.sort') || null;
+        let sel_suppliers = document.querySelector('#sel_suppliers') || {value: ''},
+            statuses      = document.querySelectorAll("input[type='checkbox']:checked") || [],
+            query         = [],
+            sort_cols     = tbl_demands.parentNode.querySelector('.sort') || null;
+        if (statuses && statuses.length > 0) query.push(status_query(statuses));
         if (sel_suppliers && sel_suppliers.value !== '') query.push(sel_suppliers.value);
-        statuses.forEach(e => query.push(e.value));;
         get({
             table: 'demands',
             query: [query.join(',')],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([demands, options]) {
             demands.forEach(demand => {

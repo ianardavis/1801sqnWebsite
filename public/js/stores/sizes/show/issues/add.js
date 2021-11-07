@@ -5,7 +5,7 @@ function selectedUsers(users) {
         users.forEach(user => {
             get({
                 table: 'user',
-                query: [`user_id=${user}`]
+                query: [`"user_id":"${user}"`]
             })
             .then(function([user, options]) {
                 if (!tbl_issue_add.querySelector(`#user-${user.user_id}`)) {

@@ -1,7 +1,7 @@
 function viewUserEdit() {
     get({
         table: 'user',
-        query: [`user_id=${path[2]}`]
+        query: [`"user_id":"${path[2]}"`]
     })
     .then(function ([user, options]) {
         listStatuses( {select: 'sel_statuses', selected: user.status_id, id_only: true});

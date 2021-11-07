@@ -1,7 +1,7 @@
 function getUser() {
     get({
         table: 'user',
-        query: [`user_id=${path[2]}`]
+        query: [`"user_id":"${path[2]}"`]
     })
     .then(function ([user, options]) {
         set_innerText({id: 'service_number', text: user.service_number});

@@ -7,7 +7,7 @@ function addEditSelect() {
             new Promise(resolve => {
                 get({
                     table: 'loancard_line',
-                    query: [`loancard_line_id=${cell.dataset.id}`]
+                    query: [`"loancard_line_id":"${cell.dataset.id}"`]
                 })
                 .then(function ([line, options]) {
                     if ([1, 2].includes(line.status)) {
@@ -56,7 +56,7 @@ function returnOptions() {
         if (this.value === '3') {
             get({
                 table: 'loancard_line',
-                query: [`loancard_line_id=${this.dataset.id}`],
+                query: [`"loancard_line_id":"${this.dataset.id}"`],
                 index: this.dataset.index
             })
             .then(function ([line, options]) {
@@ -64,7 +64,7 @@ function returnOptions() {
                     if (line.size.has_serials) {
                         get({
                             table: 'current_serials',
-                            query: [`size_id=${line.size_id}`],
+                            query: [`"size_id":"${line.size_id}"`],
                             index: options.index
                         })
                         .then(function ([serials, options]) {
@@ -108,7 +108,7 @@ function returnOptions() {
                         div_details.appendChild(stock_qty);
                         get({
                             table: 'stocks',
-                            query: [`size_id=${line.size_id}`],
+                            query: [`"size_id":"${line.size_id}"`],
                             index: options.index
                         })
                         .then(function ([stocks, options]) {

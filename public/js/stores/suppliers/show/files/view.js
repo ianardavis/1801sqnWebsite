@@ -4,8 +4,8 @@ function getFiles() {
         let sort_cols = tbl_files.parentNode.querySelector('.sort') || null;
         get({
             table: 'files',
-            query: [`supplier_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"supplier_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([files, options]) {
             set_count({id: 'file', count: files.length || '0'});
@@ -27,7 +27,7 @@ function getFiles() {
 function viewFile(file_id) {
     get({
         table: 'file',
-        query: [`file_id=${file_id}`]
+        query: [`"file_id":"${file_id}"`]
     })
     .then(function ([file, options]) {
         set_attribute({id: 'form_file_download', attribute: 'action', value: `/files/${file.file_id}/download`});

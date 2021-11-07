@@ -4,7 +4,7 @@ function getSessions() {
         let sort_cols = tbl_sessions.parentNode.querySelector('.sort') || null;
         get({
             table: 'sessions',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([sessions, options]) {
             let current_sessions = [];

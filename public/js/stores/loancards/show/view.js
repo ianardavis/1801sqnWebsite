@@ -8,7 +8,7 @@ function getLoancard() {
     disable_button('loancard_filename_download', '');
     get({
         table: 'loancard',
-        query: [`loancard_id=${path[2]}`]
+        query: [`"loancard_id":"${path[2]}"`]
     })
     .then(function ([loancard, options]) {
         set_breadcrumb({text: `${print_user(loancard.user_loancard)} | ${print_date(loancard.createdAt)}`});

@@ -4,8 +4,8 @@ function getContacts() {
         let sort_cols = tbl_contacts.parentNode.querySelector('.sort') || null;
         get({
             table: 'contacts',
-            query: [`supplier_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"supplier_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([contacts, options]) {
             set_count({id: 'contact', count: contacts.length || '0'});
@@ -26,7 +26,7 @@ function getContacts() {
 function viewContact(supplier_contact_id) {
     get({
         table: 'contact',
-        query: [`supplier_contact_id=${supplier_contact_id}`],
+        query: [`"supplier_contact_id":"${supplier_contact_id}"`],
         spinner: 'contact_view'
     })
     .then(function ([contact, options]) {

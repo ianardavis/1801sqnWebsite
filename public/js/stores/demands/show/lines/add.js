@@ -5,14 +5,14 @@ function selectedSizes(sizes) {
             qty          = document.querySelector('#line_add_qty') || {value: '1'};
         get({
             table: 'demand',
-            query: [`demand_id=${path[2]}`],
+            query: [`"demand_id":"${path[2]}"`],
             spinner: 'line_add'
         })
         .then(function ([demand, options]) {
             sizes.forEach(size => {
                 get({
                     table: 'size',
-                    query: [`size_id=${size}`],
+                    query: [`"size_id":"${size}"`],
                     spinner: 'line_add'
                 })
                 .then(function([size, options]) {
@@ -59,7 +59,7 @@ function selectedSizes(sizes) {
 function setAddButton() {
     get({
         table: 'demand',
-        query: [`demand_id=${path[2]}`]
+        query: [`"demand_id":"${path[2]}"`]
     })
     .then(function([demand, options]) {
         if (demand.status === 1) enable_button('line_add')

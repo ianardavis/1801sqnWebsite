@@ -3,11 +3,14 @@ function getUsers() {
     .then(tbl => {
         let status    = document.querySelector('#sel_statuses') || {value: ''},
             rank      = document.querySelector('#sel_ranks')    || {value: ''},
-            sort_cols = tbl.parentNode.querySelector('.sort') || null;
+            sort_cols = tbl.parentNode.querySelector('.sort')   || null,
+            query     = [];
+            if (status.value !== '') query.push(status.value);
+            if (rank  .value !== '') query.push(rank.value);
         get({
             table: 'users',
-            query: [status.value, rank.value],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: query,
+            ...sort_query(sort_cols)
         })
         .then(function ([users, options]) {
             users.forEach(user => {

@@ -30,7 +30,7 @@ function getNSNClassifications(options = {}) {
         if (group) {
             get({
                 table:    'nsn_classes',
-                query:    [`nsn_group_id=${group.value}`],
+                query:    [`"nsn_group_id":"${group.value}"`],
                 selected: options.selected || null
             })
             .then(function ([nsn_classes, options]) {

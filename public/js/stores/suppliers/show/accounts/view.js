@@ -1,7 +1,7 @@
 function viewAccount(account_id) {
     get({
         table: 'account',
-        query: [`account_id=${account_id}`]
+        query: [`"account_id":"${account_id}"`]
     })
     .then(function ([account, options]) {
         set_innerText({id: 'account_id',        text: account.account_id});

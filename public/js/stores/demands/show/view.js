@@ -2,7 +2,7 @@ let statuses = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3": "Closed"};
 function getDemand() {
     get({
         table: 'demand',
-        query: [`demand_id=${path[2]}`]
+        query: [`"demand_id":"${path[2]}"`]
     })
     .then(function ([demand, options]) {
         set_breadcrumb({text: `${demand.supplier.name} - ${print_date(demand.createdAt)}`});

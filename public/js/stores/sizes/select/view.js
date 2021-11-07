@@ -11,8 +11,8 @@ function getSizes(item_id) {
         let sort_cols = tbl_sizes.parentNode.querySelector('.sort') || null;
         get({
             table: 'item',
-            query: [`item_id=${item_id}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"item_id":"${item_id}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([item, options]) {
             set_innerText({id: 'size_text1', value: item.size_text1});
@@ -20,7 +20,7 @@ function getSizes(item_id) {
             set_innerText({id: 'size_text3', value: item.size_text3});
             get({
                 table: 'sizes',
-                query: [`item_id=${item_id}`]
+                query: [`"item_id":"${item_id}"`]
             })
             .then(function ([sizes, options]) {
                 sizes.forEach(size => {

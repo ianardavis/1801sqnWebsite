@@ -3,7 +3,7 @@ function listSerials(line_id, size) {
     .then(sel_serials => {
         get({
             table: 'serials',
-            query: [`size_id=${size.size_id}`]
+            query: [`"size_id":"${size.size_id}"`]
         })
         .then(function ([serials, options]) {
             serials.forEach(serial => {

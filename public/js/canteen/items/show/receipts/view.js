@@ -4,8 +4,8 @@ function getReceipts() {
         let sort_cols = tbl_receipts.parentNode.querySelector('.sort') || null;
         get({
             table: 'receipts',
-            query: [`item_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"item_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([receipts, options]) {
             set_count({id: 'receipt', count: receipts.length || '0'});

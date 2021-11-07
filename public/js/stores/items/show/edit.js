@@ -1,7 +1,7 @@
 function viewItemEdit() {
     get({
         table:   'item',
-        query:   [`item_id=${path[2]}`],
+        query:   [`"item_id":"${path[2]}"`],
         spinner: 'item_edit'
     })
     .then(function ([item, options]) {

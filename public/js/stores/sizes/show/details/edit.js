@@ -1,7 +1,7 @@
 function viewDetailEdit(detail_id) {
     get({
         table:   'detail',
-        query:   [`detail_id=${detail_id}`],
+        query:   [`"detail_id":"${detail_id}"`],
         spinner: 'detail_edit'
     })
     .then(function ([detail, options]) {
@@ -18,7 +18,7 @@ function addDetailEditBtn(detail_id) {
     .then(detail_edit_btn => {
         get({
             table: 'detail',
-            query: [`detail_id=${detail_id}`]
+            query: [`"detail_id":"${detail_id}"`]
         })
         .then(function ([detail, options]) {
             detail_edit_btn.appendChild(new Button({

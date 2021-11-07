@@ -58,22 +58,22 @@
                 <h5 class='text-start'>Status:</h5>
                 <div class="row">
                     <div class="col-6 col-sm-4">
-                        <%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: 'status=0', colour: 'secondary', classes: ['status']}) %>
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: '0', colour: 'secondary', classes: ['status']}) %>
                     </div>
                     <div class="col-6 col-sm-4">
-                        <%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: 'status=1', colour: 'warning', 	classes: ['status'], checked: true}) %>
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: '1', colour: 'warning', 	 classes: ['status'], checked: true}) %>
                     </div>
                     <div class="col-6 col-sm-4">
-                        <%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: 'status=2', colour: 'success', 	classes: ['status'], checked: true}) %>
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: '2', colour: 'success', 	 classes: ['status'], checked: true}) %>
                     </div>
                     <div class="col-6 col-sm-4">
-                        <%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: 'status=3', colour: 'primary', 	classes: ['status'], checked: true}) %>
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: '3', colour: 'primary', 	 classes: ['status'], checked: true}) %>
                     </div>
                     <div class="col-6 col-sm-4">
-                        <%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: 'status=4', colour: 'info', 		classes: ['status']}) %>
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: '4', colour: 'info',      classes: ['status']}) %>
                     </div>
                     <div class="col-6 col-sm-4">
-                        <%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: 'status=5', colour: 'secondary', classes: ['status']}) %>
+                        <%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: '5', colour: 'secondary', classes: ['status']}) %>
                     </div>
                 </div>
                 <div class="row">
@@ -125,7 +125,7 @@
             <% if (permissions.issuer) { %></form><% } %>
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
-            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Open', selected: true}, {value: 'status=3', text: 'Closed'}]}) %>
+            <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Draft'}, {value: '"status":2', text: 'Open', selected: true}, {value: '"status":3', text: 'Closed'}]}) %>
             <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
                     <th class="w-40" onclick="sortTable(0, 'tbl_loancards')">Date</th>

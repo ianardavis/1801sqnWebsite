@@ -4,8 +4,8 @@ function getStocks() {
         let sort_cols = tbl_stocks.parentNode.querySelector('.sort') || null;
         get({
             table: 'stocks',
-            query: [`location_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"location_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([stocks, options]) {
             set_count({id: 'stock', count: stocks.length || '0'});
@@ -26,7 +26,7 @@ function getStocks() {
 function viewStock(stock_id) {
     get({
         table: 'stock',
-        query: [`stock_id=${stock_id}`]
+        query: [`"stock_id":"${stock_id}"`]
     })
     .then(function ([stock, options]) {
         set_innerText({id: 'stock_id',        text: stock.stock_id});

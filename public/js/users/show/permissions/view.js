@@ -4,8 +4,8 @@ function getPermissions () {
         let sort_cols = tbl_permissions.parentNode.querySelector('.sort') || null;
         get({
             table: 'permissions',
-            query: [`user_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"user_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([permissions, options]) {
             set_count({id: 'permission', count: permissions.permissions.length || '0'});

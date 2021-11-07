@@ -3,13 +3,13 @@ function getIssues () {
     clear('tbl_issues')
     .then(tbl_issues => {
         let statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query     = [],
+            query     = [`"user_id_issue":"${path[2]}"`],
             sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
-        statuses.forEach(e => query.push(e.value));
+        if (statuses && statuses.length > 0) query.push(status_query(statuses));
         get({
             table: 'issues',
-            query: [`user_id_issue=${path[2]}`, query.join('&')],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [query.join('&')],
+            ...sort_query(sort_cols)
         })
         .then(function ([issues, options]) {
             let row_index = 0;

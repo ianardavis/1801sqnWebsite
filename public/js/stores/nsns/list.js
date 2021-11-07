@@ -3,7 +3,7 @@ function getNSNs(size_id, line_id, cell, nsn_id = null) {
     add_spinner(_cell, {id: `nsns_${line_id}`});
     get({
         table: 'nsns',
-        query: [`size_id=${size_id}`]
+        query: [`"size_id":"${size_id}"`]
     })
     .then(function ([nsns, options]) {
         let opts = [{value: '', text: '... Select NSN'}];

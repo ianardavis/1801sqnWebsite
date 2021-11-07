@@ -7,7 +7,7 @@ function addEditSelect() {
             new Promise(resolve => {
                 get({
                     table: 'order',
-                    query: [`order_id=${cell.dataset.id}`]
+                    query: [`"order_id":"${cell.dataset.id}"`]
                 })
                 .then(function ([order, options]) {
                     if (order.status === 1) {
@@ -61,7 +61,7 @@ function addReceiptOptions() {
         if (this.value === '3') {
             get({
                 table: 'order',
-                query: [`order_id=${this.dataset.id}`],
+                query: [`"order_id":"${this.dataset.id}"`],
                 index: this.dataset.index
             })
             .then(function ([order, options]) {
@@ -69,7 +69,7 @@ function addReceiptOptions() {
                     if (order.size.has_serials) {
                         get({
                             table: 'serials',
-                            query: [`size_id=${order.size_id}`]
+                            query: [`"size_id":"${order.size_id}"`]
                         })
                         .then(function ([serials, options]) {
                             let locations = document.createElement('datalist'),
@@ -103,7 +103,7 @@ function addReceiptOptions() {
                     } else {
                         get({
                             table: 'stocks',
-                            query: [`size_id=${order.size_id}`]
+                            query: [`"size_id":"${order.size_id}"`]
                         })
                         .then(function ([stocks, options]) {
                             let locations = document.createElement('datalist');

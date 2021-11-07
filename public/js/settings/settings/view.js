@@ -4,7 +4,7 @@ function getSettings() {
         let sort_cols = tbl_settings.parentNode.querySelector('.sort') || null;
         get({
             table: 'settings',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([settings, options]) {
             settings.forEach(setting => {
@@ -29,7 +29,7 @@ function getSettings() {
 function getPrinter() {
     get({
         table: 'setting',
-        query: ['name=printer'],
+        query: ['"name":"printer"'],
         spinner: 'printers'
     })
     .then(function ([setting, options]) {
@@ -41,7 +41,7 @@ function getErrorLog() {
     .then(log_error => {
         get({
             table: 'logs',
-            query: ['type=error'],
+            query: ['"type":"error"'],
             spinner: 'log_error',
             streamAction: function (char) {
                 log_error.innerText += char;
@@ -54,7 +54,7 @@ function getOutLog() {
     .then(log_out => {
         get({
             table: 'logs',
-            query: ['type=out'],
+            query: ['"type":"out"'],
             spinner: 'log_out',
             streamAction: function (char) {
                 log_out.innerText += char;
@@ -65,7 +65,7 @@ function getOutLog() {
 function viewSetting(setting_id) {
     get({
         table: 'setting',
-        query: [`setting_id=${setting_id}`]
+        query: [`"setting_id":"${setting_id}"`]
     })
     .then(function([setting, options]) {
         set_innerText({id: 'setting_id',        text: setting.setting_id});

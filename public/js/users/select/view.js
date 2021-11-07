@@ -1,3 +1,5 @@
+const { stat } = require("fs");
+
 function getRanks() {
     listRanks({
         select: 'sel_ranks',
@@ -15,13 +17,16 @@ function getStatuses() {
 function getUsers() {
     clear('tbl_users')
     .then(tbl_users => {
-        let ranks     = document.querySelector('#sel_ranks')    || {value: ''},
-            statuses  = document.querySelector('#sel_statuses') || {value: ''},
-            sort_cols = tbl_users.parentNode.querySelector('.sort') || null;
+        let ranks     = document.querySelector('#sel_ranks')        || {value: ''},
+            statuses  = document.querySelector('#sel_statuses')     || {value: ''},
+            sort_cols = tbl_users.parentNode.querySelector('.sort') || null,
+            query     = [];
+        if (ranks   .value !== '') query.push(ranks.value);
+        if (statuses.value !== '') query.push(statuses.value);
         get({
             table: 'users',
-            query: [ranks.value, statuses.value],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: query,
+            ...sort_query(sort_cols)
         })
         .then(function ([users, options]) {
             users.forEach(user => {

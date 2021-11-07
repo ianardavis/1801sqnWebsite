@@ -46,7 +46,7 @@ function getSaleLines() {
         .then(tbl_sale_lines => {
             get({
                 table: 'sale_lines',
-                query: [`sale_id=${sale_id.innerText}`]
+                query: [`"sale_id":"${sale_id.innerText}"`]
             })
             .then(function ([lines, options]) {
                 let total  = 0;
@@ -95,7 +95,7 @@ function getSaleLines() {
 function setPage() {
     get({
         table: 'settings',
-        query: ['name=default_pos_page']
+        query: ['"name":"default_pos_page"']
     })
     .then(function ([settings, options]) {
         if (!settings || settings.length === 0) showTab('all_items')
@@ -185,7 +185,7 @@ function getPages() {
         if (all_items) {
             get({
                 table: 'canteen_items',
-                query: ['current=1']
+                query: ['"current":1']
             })
             .then(function ([items, options]) {
                 items.forEach(item => {
@@ -258,7 +258,7 @@ function reset_sale_complete() {
 function getSession() {
     get({
         table: 'sessions',
-        query: ['status=1']
+        query: ['"status":1']
     })
     .then(function ([sessions, options]) {
         set_href({id: 'btn_session', value: `/sessions/${sessions[0].session_id}`})

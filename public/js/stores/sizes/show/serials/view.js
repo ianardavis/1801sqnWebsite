@@ -4,8 +4,8 @@ function getSerials() {
         let sort_cols = tbl_serials.parentNode.querySelector('.sort') || null;
         get({
             table: 'serials',
-            query: [`size_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"size_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([serials, options]) {
             set_count({id: 'serial', count: serials.length});

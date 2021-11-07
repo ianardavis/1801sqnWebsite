@@ -1,7 +1,7 @@
 function viewContactEdit(contact_id) {
     get({
         table:   'contact',
-        query:   [`supplier_contact_id=${contact_id}`],
+        query:   [`"supplier_contact_id":"${contact_id}"`],
         spinner: 'contact_edit'
     })
     .then(function ([contact, options]) {
@@ -20,7 +20,7 @@ function addContactEditBtn(contact_id) {
     .then(contact_edit_btn => {
         get({
             table: 'contact',
-            query: [`supplier_contact_id=${contact_id}`]
+            query: [`"supplier_contact_id":"${contact_id}"`]
         })
         .then(function ([contact, options]) {
             contact_edit_btn.appendChild(new Button({

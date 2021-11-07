@@ -1,7 +1,7 @@
 function getMovement() {
     get({
         table: 'movement',
-        query: [`movement_id=${path[2]}`]
+        query: [`"movement_id":"${path[2]}"`]
     })
     .then(function ([movement, options]) {
         set_breadcrumb({text: movement.description});

@@ -5,7 +5,7 @@ function getSizes() {
         let sort_cols = tbl_stocks.parentNode.querySelector('.sort') || null;
         get({
             table: 'negative_stock',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function([stocks, options]) {
             let row_index = 0;

@@ -3,7 +3,7 @@ function addContactDeleteBtn(supplier_contact_id) {
     .then(contact_delete_btn => {
         get({
             table: 'contact',
-            query: [`supplier_contact_id=${supplier_contact_id}`]
+            query: [`"supplier_contact_id":"${supplier_contact_id}"`]
         })
         .then(function ([contact, options]) {
             contact_delete_btn.appendChild(

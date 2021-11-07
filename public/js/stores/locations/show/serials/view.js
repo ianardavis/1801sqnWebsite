@@ -4,8 +4,8 @@ function getSerials() {
         let sort_cols = tbl_serials.parentNode.querySelector('.sort') || null;
         get({
             table: 'serials',
-            query: [`location_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"location_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([serials, options]) {
             set_count({id: 'serial', count: serials.length || '0'});
@@ -26,7 +26,7 @@ function getSerials() {
 function viewSerial(serial_id) {
     get({
         table: 'serial',
-        query: [`serial_id=${serial_id}`]
+        query: [`"serial_id":"${serial_id}"`]
     })
     .then(function ([serial, options]) {
         set_innerText({id: 'serial_id',        text: serial.serial_id});

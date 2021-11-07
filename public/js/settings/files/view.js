@@ -4,7 +4,7 @@ function getFiles() {
         let sort_cols = tbl_files.parentNode.querySelector('.sort') || null;
         get({
             table: 'files',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([files, options]) {
             get({table: 'fs_files'})

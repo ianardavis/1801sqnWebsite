@@ -1,7 +1,7 @@
 function setDeleteButton() {
     get({
         table: 'order',
-        query: [`order_id=${path[2]}`]
+        query: [`"order_id":"${path[2]}"`]
     })
     .then(function([result, options]) {
         set_attribute({id: `btn_delete`, attribute: 'disabled', value: true});

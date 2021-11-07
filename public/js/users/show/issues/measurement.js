@@ -1,10 +1,7 @@
 function get_items() {
     clear('tbl_items')
     .then(tbl_items => {
-        get({
-            table: 'items_uniform',
-            query: []
-        })
+        get({table: 'items_uniform'})
         .then(function ([items, options]) {
             items.forEach(item => {
                 let row = tbl_items.insertRow(-1);
@@ -93,12 +90,12 @@ function get_sizes() {
         document.querySelector('#tbl_items').querySelectorAll("input[type='checkbox']:checked").forEach(e => {
             get({
                 table: 'item',
-                query: [`item_id=${e.value}`]
+                query: [`"item_id":"${e.value}"`]
             })
             .then(function ([item, options]) {
                 get({
                     table: 'sizes',
-                    query: [`item_id=${e.value}`, 'issueable=1']
+                    query: [`"item_id":"${e.value}"`, '"issueable":1']
                 })
                 .then(function ([sizes, options]) {
                     if (

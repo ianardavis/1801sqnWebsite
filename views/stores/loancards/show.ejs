@@ -35,7 +35,7 @@
 			<%- include(`${partials}/inputs/display`, {id: 'loancard_user',			 title: 'Raised By', link: true}) %>
 		</div>
 		<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
-			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Pending'}, {value: 'status=2', text: 'Open'}, {value: 'status=3', text: 'Returned'}]}) %>
+			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Pending'}, {value: '"status":2', text: 'Open'}, {value: '"status":3', text: 'Returned'}]}) %>
 			<% if (permissions.issue) { %><form id='form_actions'><% } %>
 			<table class='table table-sm table-hover'>
 				<thead class='thead-dark'>

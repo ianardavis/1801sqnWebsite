@@ -4,7 +4,7 @@ function getHoldings() {
         let sort_cols = tbl_holdings.parentNode.querySelector('.sort') || null;
         get({
             table: 'holdings',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([holdings, options]) {
             holdings.forEach(holding => {

@@ -12,9 +12,10 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'stock_edit',     text: 'Edit',           modal: 'stock_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'adjustment_add', text: 'Add Adjustment', modal: 'adjustment_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	      text: 'Delete',         btn_form: {permission: 'stores_stock_admin'}}) %>
+                <%- include(`${partials}/menu/button`, {id: 'stock_edit',     text: 'Change Location', modal: 'stock_edit'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'transfer_add',   text: 'Transfer Stock',  modal: 'transfer_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'adjustment_add', text: 'Add Adjustment',  modal: 'adjustment_add'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	      text: 'Delete',          btn_form: {permission: 'stores_stock_admin'}}) %>
                 <%- include(`${partials}/common/notes/btn_add`) %>
             </div>
         </li>
@@ -24,7 +25,7 @@
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <div     class="tab-pane fade" id="details"     role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/inputs/display`, {id: 'stock_item',     title: 'Item',     link: true}) %>
             <%- include(`${partials}/inputs/display`, {id: 'stock_size',     title: 'Size',     link: true}) %>
             <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location', link: true}) %>
@@ -48,18 +49,18 @@
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
     <div id="div_modals">
+        <datalist id="locations_list"></datalist>
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
         <% if (permissions.stores_stock_admin) { %>
-            <div     id='mdl_stock_edit'      class="modal fade" tabindex="-1" role="dialog">
+            <div id='mdl_stock_edit'      class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_stock_edit'>
                         <div class="modal-header">
-                            <h5 class="modal-title">Edit Location</h5>
+                            <h5 class="modal-title">Change Location</h5>
                         </div>
                         <div class="modal-body">
-                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', spinner_id: 'locations', reload_id: 'reload_locations', list_id: 'locations_list'}) %>
-                            <datalist id="locations_list"></datalist>
+                            <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', spinner_id: 'locations', reload_id: 'reload_locations_edit', list_id: 'locations_list'}) %>
                         </div>
                         <div class="modal-footer">
                             <input type="submit"  class="btn btn-success w-100" value='Save Location'>
@@ -68,7 +69,24 @@
                     </form>
                 </div>
             </div>
-            <div     id='mdl_adjustment_view' class="modal fade" tabindex="-1" role="dialog">
+            <div id='mdl_transfer_add'    class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form class="modal-content" id='form_transfer_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Transfer Stock</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/text`,   {title: 'To Location', name: 'location_to', id: 'transfer_add_location', spinner_id: 'locations_transfer', reload_id: 'reload_locations_transfer', list_id: 'locations_list'}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity',    name: 'qty',         id: 'transfer_add_qty', min: '0'}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit"  class="btn btn-success w-100" value='Transfer'>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id='mdl_adjustment_view' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -125,5 +143,6 @@
     <script src='/js/stores/stocks/show/adjustments/view.js'></script>
     <script async>getAdjustments()</script>
     <script src='/js/stores/stocks/show/adjustments/add.js'></script>
+    <script src='/js/stores/stocks/show/transfers/add.js'></script>
 <% } %>
 <%- include(`${partials}/foot/components/htmlClose`) %>

@@ -4,6 +4,7 @@
         class="form-control<% if (locals.classes) { %><% classes.forEach(e => { %> <%= e %><% }) %><% } %>"
         type="number"
         inputMode='numeric'
+        autocomplete='<%= locals.autocomplete || 'off' %>'
         <% if (locals.data)  { %> data-<%= data.field %>='<%= data.value %>'<% } %>
         <% if (locals.id)    { %> id="<%= id %>"<% } %>
         <% if (locals.name)  { %> name='<%= name %>'<% } %>

@@ -5,7 +5,7 @@ function getHoldings() {
     .then(sel_holdings => {
         get({
             table: 'holdings_except',
-            query: [`holding_id=${path[2]}`],
+            query: [`"holding_id":"${path[2]}"`],
             spinner: 'holdings'
         })
         .then(function ([holdings, options]) {

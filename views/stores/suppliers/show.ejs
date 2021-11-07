@@ -84,7 +84,7 @@
         </div>
         <% if (permissions.authorised_demander) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">
-                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_demand_status', options: [{value: '', text: 'All', selected: true}, {value: 'status=0', text: 'Cancelled'}, {value: 'status=1', text: 'Draft'}, {value: 'status=2', text: 'Complete'}, {value: 'status=3', text: 'Closed'}]}) %>
+                <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_demand_status', options: [{value: '', text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Draft'}, {value: '"status":2', text: 'Complete'}, {value: '"status":3', text: 'Closed'}]}) %>
 	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th class='w-50' onclick='sortByRow(this, getDemands)' data-sort_col='createdAt'>Date  <span class='sort_ind float-end'></span></th>

@@ -2,7 +2,7 @@ let line_statuses = {"0": "Cancelled", "1": "Pending", "2": "Open", "3": "Closed
 function getDemandLine() {
     get({
         table: 'demand_line',
-        query: [`demand_line_id=${path[2]}`]
+        query: [`"demand_line_id":"${path[2]}"`]
     })
     .then(function ([line, options]) {
         set_breadcrumb({text: `${line.size.item.description} | ${line.size.item.size_text1 || 'Size'}: ${print_size(line.size)}`});

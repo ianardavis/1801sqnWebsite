@@ -4,8 +4,8 @@ function getNSNs() {
         let sort_cols = tbl_nsns.parentNode.querySelector('.sort') || null;
         get({
             table: 'nsns',
-            query: [`size_id=${path[2]}`],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: [`"size_id":"${path[2]}"`],
+            ...sort_query(sort_cols)
         })
         .then(function ([nsns, options]) {
             set_count({id: 'nsn', count: nsns.length || '0'});
@@ -29,7 +29,7 @@ function getNSNs() {
 function viewNSN(event) {
     get({
         table: 'nsn',
-        query: [`nsn_id=${event.relatedTarget.dataset.nsn_id}`],
+        query: [`"nsn_id":"${event.relatedTarget.dataset.nsn_id}"`],
         spinner: 'nsn_view'
     })
     .then(function([nsn, options]) {

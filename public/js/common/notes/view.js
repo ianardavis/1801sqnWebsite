@@ -1,16 +1,17 @@
 function getNotes() {
     clear('tbl_notes')
     .then(tbl_notes => {
-        let sel_system = document.querySelector('#sel_system') || {value: ''},
-            sort_cols  = tbl_notes.parentNode.querySelector('.sort') || null;
+        let sel_system = document.querySelector('#sel_system')       || {value: ''},
+            sort_cols  = tbl_notes.parentNode.querySelector('.sort') || null,
+            query      = [
+                `"_table":"${path[1]}"`,
+                `"id":"${path[2]}"`
+            ];
+        if (sel_system.value !== '') query.push(sel_system.value);
         get({
             table: 'notes',
-            query: [
-                `_table=${path[1]}`,
-                `id=${path[2]}`,
-                sel_system.value
-            ],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: query,
+            ...sort_query(sort_cols)
         })
         .then(function ([notes, options]) {
             set_count({id: 'note', count: notes.length || '0'});
@@ -31,7 +32,7 @@ function getNotes() {
 function viewNote(note_id) {
     get({
         table:   'note',
-        query:   [`note_id=${note_id}`],
+        query:   [`"note_id":"${note_id}"`],
         spinner: 'note_view'
     })
     .then(function ([note, options]) {

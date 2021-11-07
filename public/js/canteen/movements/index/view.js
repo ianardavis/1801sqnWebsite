@@ -4,7 +4,7 @@ function getMovements() {
         let sort_cols = tbl_movements.parentNode.querySelector('.sort') || null;
         get({
             table: 'movements',
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            ...sort_query(sort_cols)
         })
         .then(function ([movements, options]) {
             movements.forEach(movement => {

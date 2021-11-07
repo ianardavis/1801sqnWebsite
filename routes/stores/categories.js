@@ -1,10 +1,8 @@
 module.exports = (app, m, fn) => {
     app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        for (let [key, value] of Object.entries(req.query)) {
-            if (value === '') req.query[key] = null;
-        };
+        let query = fn.nullify(JSON.parse(req.query.where));
         m.categories.findAll({
-            where:   JSON.parse(req.query.where),
+            where:   query,
             include: [fn.inc.stores.categories({as: 'parent'})],
             ...fn.sort(req.query.sort)
         })

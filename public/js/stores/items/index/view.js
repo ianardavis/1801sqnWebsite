@@ -2,11 +2,13 @@ function getItems() {
     clear('tbl_items')
     .then(tbl_items => {
         let sel_genders = document.querySelector('#sel_genders')      || {value: ''},
-            sort_cols   = tbl_items.parentNode.querySelector('.sort') || null;
+            sort_cols   = tbl_items.parentNode.querySelector('.sort') || null,
+            query       = [];
+        if (sel_genders.value !== '') query.push(sel_genders.value);
         get({
             table: 'items',
-            query: [sel_genders.value],
-            sort:  (sort_cols ? {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir} : null)
+            query: query,
+            ...sort_query(sort_cols)
         })
         .then(function ([items, options]) {
             items.forEach(item => {

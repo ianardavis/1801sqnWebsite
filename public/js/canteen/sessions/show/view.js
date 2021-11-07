@@ -2,7 +2,7 @@ var statuses = {'0': 'Cancelled', '1': 'Open', '2': 'Closed'};
 function getSession() {
     get({
         table: 'session',
-        query: [`session_id=${path[2]}`]
+        query: [`"session_id":"${path[2]}"`]
     })
     .then(function ([session, options]) {
         set_breadcrumb({text: print_date(session.createdAt, true)});
