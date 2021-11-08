@@ -1,8 +1,13 @@
 module.exports = (app, m, fn) => {
     app.get('/get/actions',      fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.actions.findAll({
-            include: [
-                fn.inc.stores.action_links({where: JSON.parse(req.query.where)})
+            include: [{
+                model:    m.action_links,
+                as:       'links',
+                required: true,
+                where:    JSON.parse(req.query.where)
+            }
+                // fn.inc.stores.action_links({where: JSON.parse(req.query.where)})
             ],
             ...fn.sort(req.query.sort)
         })
