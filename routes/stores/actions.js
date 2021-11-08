@@ -6,9 +6,7 @@ module.exports = (app, m, fn) => {
                 as:       'links',
                 required: true,
                 where:    JSON.parse(req.query.where)
-            }
-                // fn.inc.stores.action_links({where: JSON.parse(req.query.where)})
-            ],
+            }],
             ...fn.sort(req.query.sort)
         })
         .then(actions => res.send({success: true, result: actions}))
