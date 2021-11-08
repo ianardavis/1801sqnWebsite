@@ -45,6 +45,7 @@ window.addEventListener('load', function () {
     enable_button('logs_flush');
     enable_button('git_pull');
     enable_button('pm2_reload');
+    enable_button('adjust_migrate');
     addFormListener(
         'setting_edit',
         'PUT',
