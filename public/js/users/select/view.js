@@ -1,5 +1,3 @@
-const { stat } = require("fs");
-
 function getRanks() {
     listRanks({
         select: 'sel_ranks',
