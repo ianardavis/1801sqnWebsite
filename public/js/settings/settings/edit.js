@@ -45,7 +45,6 @@ window.addEventListener('load', function () {
     enable_button('logs_flush');
     enable_button('git_pull');
     enable_button('pm2_reload');
-    enable_button('adjust_migrate');
     addFormListener(
         'setting_edit',
         'PUT',
@@ -81,11 +80,6 @@ window.addEventListener('load', function () {
         'pm2_reload',
         'POST',
         '/pm2_reload'
-    );
-    addFormListener(
-        'adjust_migrate',
-        'GET',
-        '/migrate_adjusts'
     );
     addListener('btn_printers', getPrinters);
     modalOnShow('setting_edit', function (event) {viewSettingEdit(event.relatedTarget.dataset.id)});

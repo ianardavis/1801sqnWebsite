@@ -53,7 +53,7 @@
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
         <% if (permissions.stores_stock_admin) { %>
-            <div id='mdl_stock_edit'      class="modal fade" tabindex="-1" role="dialog">
+            <div id='mdl_stock_edit'     class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_stock_edit'>
                         <div class="modal-header">
@@ -69,7 +69,7 @@
                     </form>
                 </div>
             </div>
-            <div id='mdl_transfer_add'    class="modal fade" tabindex="-1" role="dialog">
+            <div id='mdl_transfer_add'   class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <form class="modal-content" id='form_transfer_add'>
                         <div class="modal-header">
@@ -86,30 +86,7 @@
                     </form>
                 </div>
             </div>
-            <div id='mdl_adjustment_view' class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Adjustment</h5>
-                            <%- include(`${partials}/spinner`, {id: 'adjustment_view'}) %>
-                        </div>
-                        <div class="modal-body">
-                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_item',      title: 'Item', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_size',      title: 'Size', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_type',      title: 'Type'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_qty',       title: 'Quantity'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_variance',  title: 'Variance'}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_user',      title: 'User', link: true}) %>
-                            <%- include(`${partials}/inputs/display`, {id: 'adjustment_createdAt', title: 'Created'}) %>
-                        </div>
-                        <div class="modal-footer">
-                            <p class='me-auto'>ID: <span id='adjustment_id'></span></p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id='mdl_adjustment_add'  class="modal fade" tabindex="-1" role="dialog">
+            <div id='mdl_adjustment_add' class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <form class="modal-content" id='form_adjustment_add'>
                         <div class="modal-header">
@@ -140,8 +117,6 @@
     <script src="/js/stores/locations/getLocations.js"></script>
     <script src='/js/stores/stocks/show/edit.js'></script>
     <script src="/js/stores/stocks/show/delete.js"></script>
-    <script src='/js/stores/stocks/show/adjustments/view.js'></script>
-    <script async>getAdjustments()</script>
     <script src='/js/stores/stocks/show/adjustments/add.js'></script>
     <script src='/js/stores/stocks/show/transfers/add.js'></script>
 <% } %>

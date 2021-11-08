@@ -40,42 +40,6 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/migrate_adjusts', fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        m.adjustments.findAll()
-        .then(adjustments => {
-            let actions = [];
-            adjustments.forEach(adjustment => {
-                switch (adjustment.type.toLowerCase()) {
-                    case 'count':
-                        actions.push(fn.actions.create(
-                            `COUNT | ${(adjustment.variance < 0 ? `Decreased by ${adjustment.variance}. New qty: ${adjustment.qty}` : (adjustment.variance > 0 ? 
-                                `Increased by ${adjustment.variance}. New qty: ${adjustment.qty}` : 
-                                `No variance. Qty: ${adjustment.qty}`))}`,
-                            req.user.user_id,
-                            [{table: 'Stocks', id: adjustment.stock_id}]
-                        ));
-                        break;
-                    case 'scrap':
-                        actions.push(fn.actions.create(
-                            `SCRAP | Decreased by ${adjustment.qty}. New qty: ?`,
-                            req.user.user_id,
-                            [{table: 'Stocks', id: adjustment.stock_id}]
-                        ));
-                        break;
-                
-                    default:
-                        break;
-                };
-            });
-            return Promise.allSettled(actions)
-            .then(results => {
-                console.log(results);
-                res.send({success: true, message: 'Adjustments migrated'})
-            })
-            .catch(err => fn.send_error(res, err));
-        })
-        .catch(err => fn.send_error(res, err));
-    });
     
 
     app.put('/settings',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
