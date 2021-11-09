@@ -29,7 +29,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/logs',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.settings.get(`log ${req.query.type || ''}`)
+        fn.settings.get(`log ${JSON.parse(req.query.where).type || ''}`)
         .then(settings => {
             if (settings.length === 1) {
                 let readStream = fs.createReadStream(settings[0].value);
