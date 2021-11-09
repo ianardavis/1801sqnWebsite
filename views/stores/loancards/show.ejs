@@ -14,8 +14,8 @@
 				<%- include(`${partials}/menu/button`, {id: 'download',    text: 'Download', 	 btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'print', 	   text: 'Print', 	  	 btn_form: true}) %>
 				<%- include(`${partials}/menu/button`, {id: 'action', 	   text: 'Action Lines', form: 'actions'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete',   	 btn_form: {permission: 'issue'}}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete_file', text: 'Delete File',  btn_form: {permission: 'issue'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete',   	 btn_form: {permission: 'issuer'}}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete_file', text: 'Delete File',  btn_form: {permission: 'issuer'}}) %>
 				<%- include(`${partials}/common/notes/btn_add`) %>
 			</div>
 		</li>
@@ -36,7 +36,7 @@
 		</div>
 		<div class="tab-pane fade" id="lines" role="tabpanel" aria-labelledby="lines-tab">
 			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Pending'}, {value: '"status":2', text: 'Open'}, {value: '"status":3', text: 'Returned'}]}) %>
-			<% if (permissions.issue) { %><form id='form_actions'><% } %>
+			<% if (permissions.issuer) { %><form id='form_actions'><% } %>
 			<table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
 					<th class='w-30'>Item</th>
@@ -57,7 +57,7 @@
 				</thead>
 				<tbody id='tbl_lines'></tbody>
 			</table>
-			<% if (permissions.issue) { %></form><% } %>
+			<% if (permissions.issuer) { %></form><% } %>
 		</div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
