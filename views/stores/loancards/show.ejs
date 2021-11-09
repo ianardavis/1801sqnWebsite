@@ -65,7 +65,7 @@
 	<div id="div_modals">
         <%- include(`${partials}/common/notes/modals`) %>
         <%- include(`${partials}/common/actions/modals`) %>
-		<% if (permissions.issue) { %>
+		<% if (permissions.issuer) { %>
 			<div id='mdl_loancard_complete' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<form id='form_complete' class="modal-content">
@@ -82,7 +82,7 @@
 				</div>
 			</div>
 		<% } %>
-		<% if (permissions.issue) { %>
+		<% if (permissions.issuer) { %>
 			<div id='mdl_due_edit' class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<form id='form_due_edit' class="modal-content">
