@@ -4,7 +4,7 @@ function getSales() {
     .then(tbl_items => {
         clear('tbl_sales')
         .then(tbl_sales => {
-            let sort_cols = tbl_payments.parentNode.querySelector('.sort') || null;
+            let sort_cols = tbl_sales.parentNode.querySelector('.sort') || null;
             get({
                 table: 'sales',
                 query: [`"session_id":"${path[2]}"`],
