@@ -110,13 +110,11 @@
 
 <script src="/js/stores/loancards/show/view.js"></script>
 <script async>getLoancard()</script>
-<% if (permissions.issue) { %>
-	<script src="/js/stores/loancards/show/edit.js"></script>
-<% } %>
 
 <script src="/js/stores/loancards/show/lines/view.js"></script>
 <script async>getLines()</script>
-<% if (permissions.issue) { %>
+<% if (permissions.issuer) { %>
+	<script src="/js/stores/loancards/show/edit.js"></script>
 	<script src="/js/utils/list/stocks.js"></script>
 	<script src="/js/utils/list/serials.js"></script>
 	<script src="/js/stores/loancard_lines/edit.js"></script>
