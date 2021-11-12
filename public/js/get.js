@@ -164,7 +164,7 @@ function sendData(form, method, _location, options = {reload: false}) {
                     };
                 };
                 if      (options.reload)   window.location.reload();
-                else if (options.redirect) window.location.replace(options.redirect);
+                else if (options.redirect) window.location.assign(options.redirect);
             } else {
                 if (options.onFail) {
                     if (Array.isArray(options.onFail)) {

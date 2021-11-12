@@ -15,6 +15,6 @@ function getItem() {
         set_innerText({id: 'item_gender',            text: (item.gender ? item.gender.gender : '')});
         document.querySelectorAll('.item_id').forEach(e => e.setAttribute('value', item.item_id));
     })
-    .catch(err => window.location.replace('/items'));
+    .catch(err => window.location.assign('/items'));
 };
 addReloadListener(getItem);

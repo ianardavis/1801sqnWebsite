@@ -11,6 +11,6 @@ function getSupplier() {
         set_attribute({id: 'supplier_account_link', attribute: 'data-id', value: supplier.account_id});
         document.querySelectorAll('.supplier_id').forEach(e => e.value = supplier.supplier_id);
     })
-    .catch(err => window.location.replace('/suppliers'));
+    .catch(err => window.location.assign('/suppliers'));
 };
 addReloadListener(getSupplier);

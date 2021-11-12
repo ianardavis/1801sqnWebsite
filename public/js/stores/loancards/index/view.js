@@ -46,8 +46,45 @@ function getUsers() {
         append: '_loancard'
     })  
 };
+function ScanBarcode() {
+    Html5Qrcode.getCameras().then(devices => {
+        /**
+         * devices would be an array of objects of type:
+         * { id: "id", label: "label" }
+         */
+        if (devices && devices.length) {
+            const html5QrCode = new Html5Qrcode("reader");
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.EAN_13
+                ]
+            };
+            // If you want to prefer back camera
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText, decodedResult) => {
+                    window.location.assign(`/loancards/${decodedText}`)
+                    // do something when code is read
+                },
+                errorMessage => {
+                    // alert(errorMessage);
+                    // parse error, ignore it.
+                }
+            );
+        }
+    }).catch(err => {
+    // handle err
+        console.log(err);
+    });
+};
 addReloadListener(getLoancards);
 window.addEventListener('load', function () {
+    modalOnShow('loancard_open', ScanBarcode);
     getUsers();
     addListener('reload_users', getUsers);
     addListener('status_0',     getLoancards, 'change');

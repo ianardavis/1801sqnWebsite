@@ -62,7 +62,7 @@ module.exports = function (m, fn) {
         .moveTo(345, offset + 60).lineTo(345,    offset + 85).stroke()
         .moveTo(445, offset + 60).lineTo(445,    offset + 85).stroke();
     };
-    function addDeclaration(doc, count, y) {
+    function addDeclaration(doc, count, y, loancard_id) {
         if (y >= 640) {
             doc.text('END OF PAGE', 268, y);
             addPage(doc);
@@ -75,6 +75,7 @@ module.exports = function (m, fn) {
         doc.text(disclaimer, 28, y, {width: 539.28, align: 'center'});
         y += 30;
         doc.rect(197.64, y, 200, 100).stroke();
+        doc.image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}_qr.png`, 447, y, {width: 100, height: 100});
     };
     function addPageNumbers(doc, loancard_id) {
         const range = doc.bufferedPageRange();
@@ -83,7 +84,7 @@ module.exports = function (m, fn) {
             doc.switchToPage(i);
             doc
             .text(`Page ${i + 1} of ${range.count}`, 28, 28)
-            .image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}.png`, 28, 780, {width: 539.28, height: 50});
+            .image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}_128.png`, 28, 780, {width: 539.28, height: 50});
         };
     };
     function add_line(doc, line, y, loancard) {
@@ -145,41 +146,45 @@ module.exports = function (m, fn) {
                         else {
                             return fn.create_barcode(loancard.loancard_id)
                             .then(result => {
-                                return createFile(loancard)
-                                .then(([doc, file, writeStream]) => {
-                                    addPage(doc, true, true, loancard);
-                                    let y = 225;
-                                    lines.forEach(line => {
-                                        y = add_line(doc, line, y, loancard);
-                                    });
-                                    addDeclaration(doc, lines.length, y);
-                                    addPageNumbers(doc, loancard.loancard_id);
-                                    doc.end();
-                                    writeStream.on('error', err => reject(err));
-                                    writeStream.on('finish', function () {
-                                        fn.update(loancard, {filename: file})
-                                        .then(result => {
-                                            return fn.settings.get('Print loancard')
-                                            .then(settings => {
-                                                if (settings.length !== 1 ||settings[0].value !== '1') resolve(file)
-                                                else {
-                                                    return fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${file}`)
-                                                    .then(result => resolve(file))
-                                                    .catch(err => {
-                                                        console.log(err);
-                                                        resolve(file);
-                                                    });
-                                                };
+                                return fn.create_qr(loancard.loancard_id)
+                                .then(result => {
+                                    return createFile(loancard)
+                                    .then(([doc, file, writeStream]) => {
+                                        addPage(doc, true, true, loancard);
+                                        let y = 225;
+                                        lines.forEach(line => {
+                                            y = add_line(doc, line, y, loancard);
+                                        });
+                                        addDeclaration(doc, lines.length, y, loancard.loancard_id);
+                                        addPageNumbers(doc, loancard.loancard_id);
+                                        doc.end();
+                                        writeStream.on('error', err => reject(err));
+                                        writeStream.on('finish', function () {
+                                            fn.update(loancard, {filename: file})
+                                            .then(result => {
+                                                return fn.settings.get('Print loancard')
+                                                .then(settings => {
+                                                    if (settings.length !== 1 ||settings[0].value !== '1') resolve(file)
+                                                    else {
+                                                        return fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${file}`)
+                                                        .then(result => resolve(file))
+                                                        .catch(err => {
+                                                            console.log(err);
+                                                            resolve(file);
+                                                        });
+                                                    };
+                                                })
+                                                .catch(err => {
+                                                    console.log(err);
+                                                    resolve(file)
+                                                });
                                             })
-                                            .catch(err => {
-                                                console.log(err);
-                                                resolve(file)
-                                            });
-                                        })
-                                        .catch(err => reject(err));
-                                    });
+                                            .catch(err => reject(err));
+                                        });
+                                    })
+                                    .catch(err => reject(err));
                                 })
-                                .catch(err => reject(err));
+                            .catch(err => reject(err));
                             })
                             .catch(err => reject(err));
                         };

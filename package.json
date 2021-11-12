@@ -20,6 +20,7 @@
     "express-busboy": "^8.0.0",
     "express-fileupload": "^1.1.9",
     "express-session": "^1.17.1",
+    "html5-qrcode": "^2.1.2",
     "memorystore": "^1.6.4",
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",

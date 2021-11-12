@@ -23,6 +23,6 @@ function getDemand() {
         set_href({id: 'demand_user_link',     value: `/users/${demand.user_id}`});
         document.querySelectorAll('.demand_id').forEach(e => e.setAttribute('value', demand.demand_id))
     })
-    .catch(err => window.location.replace('/demands'));
+    .catch(err => window.location.assign('/demands'));
 };
 addReloadListener(getDemand);

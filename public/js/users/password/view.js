@@ -3,6 +3,6 @@ window.addEventListener('load', function () {
         'user_password',
         'PUT',
         `/password/${path[2]}`,
-        {onComplete: [window.location.replace('/resources')]}
+        {onComplete: [window.location.assign('/resources')]}
     );
 });

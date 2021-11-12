@@ -28,6 +28,6 @@ function getSize() {
         set_href(     {id: 'item', value: `/items/${size.item_id}`});
         document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
     })
-    .catch(err => window.location.replace('/items'));
+    .catch(err => window.location.assign('/items'));
 };
 addReloadListener(getSize);
