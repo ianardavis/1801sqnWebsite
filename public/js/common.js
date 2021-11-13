@@ -1,3 +1,15 @@
+function dateToday(addYears = 0) {
+    let current_date = new Date();
+    return `
+        ${current_date.getFullYear() + addYears}-
+        ${String(current_date.getMonth() + 1).padStart(2, '0')}-
+        ${String(current_date.getDate())     .padStart(2, '0')}
+    `;
+};
+function returnDate(_date) {
+    let date = new Date(_date);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
 function sortTable(n, tableName, obj) {
     let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.querySelector(`#${tableName}`);
@@ -250,17 +262,15 @@ function toggle_checkbox_on_row_click(event) {
     if (checkbox) checkbox.click();
 };
 function modalHide(id) {
-    // let e = document.querySelector(`#mdl_${id}`);
-    // console.log(e)
-    let modal = new bootstrap.Modal(document.querySelector(`#mdl_${id}`), {});
-    console.log(modal);
-    console.log(modal.hide);
-    if (modal) modal.hide();
-    // if (modal) modal.dispose();
+    bootstrap.Modal.getOrCreateInstance(document.querySelector(`#mdl_${id}`)).hide();
 };
 function modalOnShow(id, func) {
     let modal = document.querySelector(`#mdl_${id}`);
     if (modal) modal.addEventListener('show.bs.modal', function (event){func(event)});
+};
+function modalOnHide(id, func) {
+    let modal = document.querySelector(`#mdl_${id}`);
+    if (modal) modal.addEventListener('hide.bs.modal', function (event){func(event)});
 };
 function modalIsShown(id) {
     let modal = document.querySelector(`#mdl_${id}`);

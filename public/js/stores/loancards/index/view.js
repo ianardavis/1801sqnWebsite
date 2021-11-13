@@ -1,4 +1,5 @@
 let loancard_statuses   = {"0": "Cancelled", "1": "Draft", "2": "Complete", "3":"Closed"};
+const html5QrCode = new Html5Qrcode("reader");
 function getLoancards() {
     clear('tbl_loancards')
     .then(tbl_loancards => {
@@ -46,14 +47,17 @@ function getUsers() {
         append: '_loancard'
     })  
 };
-function ScanBarcode() {
+function gotoLoancard(loancard_id) {
+    window.location.assign(`/loancards/${loancard_id}`);
+};
+function StopScanning() {
+    html5QrCode.stop().then(ignore => {})
+    .catch(err => console.log(err));
+}
+function StartScanning() {
     Html5Qrcode.getCameras().then(devices => {
-        /**
-         * devices would be an array of objects of type:
-         * { id: "id", label: "label" }
-         */
         if (devices && devices.length) {
-            const html5QrCode = new Html5Qrcode("reader");
+            // const html5QrCode = new Html5Qrcode("reader");
             const config = {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
@@ -63,28 +67,23 @@ function ScanBarcode() {
                     Html5QrcodeSupportedFormats.EAN_13
                 ]
             };
-            // If you want to prefer back camera
             html5QrCode.start(
                 { facingMode: "environment" },
                 config,
-                (decodedText, decodedResult) => {
-                    window.location.assign(`/loancards/${decodedText}`)
-                    // do something when code is read
-                },
-                errorMessage => {
-                    // alert(errorMessage);
-                    // parse error, ignore it.
-                }
+                (decodedText, decodedResult) => gotoLoancard(decodedText),
+                err => console.log(err)
             );
         }
-    }).catch(err => {
-    // handle err
-        console.log(err);
-    });
+    }).catch(err => console.log(err));
+};
+function GoToEnter(input) {
+    if(event.key === 'Enter') gotoLoancard(input.value);
 };
 addReloadListener(getLoancards);
 window.addEventListener('load', function () {
-    modalOnShow('loancard_open', ScanBarcode);
+    addListener('goto_loancard_id', );
+    modalOnShow('loancard_open', StartScanning);
+    modalOnHide('loancard_open', StopScanning);
     getUsers();
     addListener('reload_users', getUsers);
     addListener('status_0',     getLoancards, 'change');

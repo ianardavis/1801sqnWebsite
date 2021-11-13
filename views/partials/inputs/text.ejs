@@ -12,6 +12,7 @@
         <% if (locals.data) { %>data-<%= data.field %>='<%= data.value %>'<% } %>
         <% if (locals.id)   { %>id='<%= id %>'<% } %>
         <% if (locals.name) { %>name='<%= name %>'<% } %>
+        <% if (locals.onkeydown) { %>onkeydown='<%= onkeydown %>'<% } %>
         <% if (locals.required) { %>
             placeholder='Required'
             required

@@ -1,5 +1,9 @@
 module.exports = function (m, fn) {
     fn.loancards = {lines: {}};
+    //string height @ 30: 38.19
+    //string height @ 15: 19.095
+    //string height @ 10: 12.7299999
+    // A4 (595.28 x 841.89)
     function createFile(loancard) {
         return new Promise((resolve, reject) => {
             try {
@@ -26,93 +30,88 @@ module.exports = function (m, fn) {
             };
         });
     };
-    function addLogos(doc) {
-        doc
-        .image(`${process.env.ROOT}/public/img/rafac_logo.png`, 28, 55, {fit: [112, 168]})
-        .image(`${process.env.ROOT}/public/img/sqnCrest.png`, 470.25, 55, {height: 100})
-        .fontSize(30)
-        .text('1801 SQUADRON ATC', 154.12, 48, {align: 'justify'})
-        .text('STORES LOAN CARD',  163.89, 98, {align: 'justify'});
-    };
-    function addPage(doc, logo = false, header = false, loancard = null, header_offset = 140) {
+    function addPage(doc) {
         let pageMetaData = {};
         pageMetaData.size    = 'A4';
         pageMetaData.margins = 28;
         doc.addPage(pageMetaData);
-        if (logo)   addLogos(doc);
-        if (header) addHeader(doc, loancard, header_offset);
+        return 28;
     };
-    function addHeader(doc, loancard, offset = 140) {
+    function addLogos(doc, y) {
         doc
-        .fontSize(15)
-        .text(`Rank: ${loancard.user_loancard.rank.rank}`,            28,  offset + 20)
-        .text(`Surname: ${loancard.user_loancard.surname}`,           140, offset + 20)
-        .text(`First Name: ${loancard.user_loancard.first_name}`,     380, offset + 20)
-        .text(`Service #: ${loancard.user_loancard.service_number}`,  28,  offset + 40)
-        .text(`Date: ${new Date(loancard.createdAt).toDateString()}`, 415, offset + 40)
-        .fontSize(10)
-        .text('Item',        161.29,  offset + 65)
-        .text('Qty',         320,     offset + 65)
-        .text('Return Date', 368.275, offset + 65)
-        .text('Signature',   484.365, offset + 65)
-        .moveTo( 28, offset + 20).lineTo(567.28, offset + 20).stroke()
-        .moveTo( 28, offset + 60).lineTo(567.28, offset + 60).stroke()
-        .moveTo( 28, offset + 85).lineTo(567.28, offset + 85).stroke()
-        .moveTo(315, offset + 60).lineTo(315,    offset + 85).stroke()
-        .moveTo(345, offset + 60).lineTo(345,    offset + 85).stroke()
-        .moveTo(445, offset + 60).lineTo(445,    offset + 85).stroke();
+            .image(`${process.env.ROOT}/public/img/rafac_logo.png`, 28,  y, {height: 80})
+            .image(`${process.env.ROOT}/public/img/sqnCrest.png`,   470, y, {height: 80})
+            .fontSize(30)
+            .text('1801 SQUADRON ATC', 28, y,    {width: 539, align: 'center'})
+            .text('STORES LOAN CARD',  28, y+40, {width: 539, align: 'center'});
+        return 85;
     };
-    function addDeclaration(doc, count, y, loancard_id) {
+    function addHeader(doc, loancard, y) {
+        doc
+            .fontSize(15)
+            .text(`Rank: ${      loancard.user_loancard.rank.rank}`,      28,  y)
+            .text(`Surname: ${   loancard.user_loancard.surname}`,        140, y)
+            .text(`First Name: ${loancard.user_loancard.first_name}`,     380, y)
+            .text(`Service #: ${ loancard.user_loancard.service_number}`, 28,  y+20)
+            .text(`Date: ${new Date(loancard.createdAt).toDateString()}`, 415, y+20)
+            .fontSize(10)
+            .text('Item',        161, y+40)
+            .text('Qty',         320, y+40)
+            .text('Return Date', 368, y+40)
+            .text('Signature',   484, y+40)
+            //Horizontal Lines
+            .moveTo( 28, y)   .lineTo(567, y)   .stroke()
+            .moveTo( 28, y+40).lineTo(567, y+40).stroke()
+            .moveTo( 28, y+55).lineTo(567, y+55).stroke()
+            //Vertical Lines
+            .moveTo(315, y+40).lineTo(315, y+55).stroke()
+            .moveTo(345, y+40).lineTo(345, y+55).stroke()
+            .moveTo(445, y+40).lineTo(445, y+55).stroke();
+        return 55;
+    };
+    function addDeclaration(doc, count, y) {
         if (y >= 640) {
-            doc.text('END OF PAGE', 268, y);
-            addPage(doc);
-            y = 50;
+            doc.text('END OF PAGE', 28, y, {width: 539, align: 'center'});
+            y = addPage(doc);
         };
-        let close_text = `END OF LOANCARD, ${count} LINES ISSUED`,
+        let close_text = `END OF LOANCARD, ${count} LINE(S) ISSUED`,
             disclaimer = 'By signing in the box below, I confirm I have received the items listed above. I understand I am responsible for any items issued to me and that I may be liable to pay for items lost or damaged through negligence';
-        doc.text(close_text, 297.64 - (doc.widthOfString(close_text) / 2), y);
-        y += 20;
-        doc.text(disclaimer, 28, y, {width: 539.28, align: 'center'});
-        y += 30;
-        doc.rect(197.64, y, 200, 100).stroke();
-        doc.image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}_qr.png`, 447, y, {width: 100, height: 100});
+        doc
+            .text(close_text, 28, y,    {width: 539, align: 'center'})
+            .text(disclaimer, 28, y+20, {width: 539, align: 'center'})
+            .rect(197.64, y+50, 200, 100).stroke();
     };
     function addPageNumbers(doc, loancard_id) {
         const range = doc.bufferedPageRange();
-        doc.fontSize(15);
+        doc.fontSize(10);
         for (let i = range.start; i < range.count; i++) {
             doc.switchToPage(i);
             doc
-            .text(`Page ${i + 1} of ${range.count}`, 28, 28)
-            .image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}_128.png`, 28, 780, {width: 539.28, height: 50});
+            .text(`Page ${i + 1} of ${range.count}`, 28, 723.89)
+            .image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}_128.png`, 28,  738.89, {width: 434, height: 75})
+            .image(`${process.env.ROOT}/public/res/barcodes/${loancard_id}_qr.png`,  492, 738.89, {width: 75,  height: 75});
         };
     };
-    function add_line(doc, line, y, loancard) {
-        if (y >= 761) {
-            doc.text('END OF PAGE', 268, y);
-            addPage(doc, false, true, loancard, 30);
-            y = 115;
-        };
-        let y_0 = y;
-        doc.text(line.qty,                  320, y);
-        doc.text(line.size.item.description, 28, y);
-        y += 15;
-        doc.text(`${fn.print_size_text(line.size.item)}: ${fn.print_size(line.size)}`, 28, y);
+    function add_line(doc, line, y) {
+        let y_c = 30;
+        doc
+            .text(line.qty,                                                            320, y)
+            .text(line.size.item.description,                                           28, y)
+            .text(`${fn.print_size_text(line.size.item)}: ${fn.print_size(line.size)}`, 28, y+15);
         if (line.nsn) {
-            y += 15;
-            doc.text(`NSN: ${fn.print_nsn(line.nsn)}`, 28, y);
+            doc.text(`NSN: ${fn.print_nsn(line.nsn)}`,  28, y+y_c);
+            y_c += 15;
         };
         if (line.serial) {
-            y += 15;
-            doc.text(`Serial #: ${line.serial.serial}`, 28, y);
+            doc.text(`Serial #: ${line.serial.serial}`, 28, y+y_c);
+            y_c += 15;
         };
-        y += 15;
         doc
-        .moveTo(28,  y)  .lineTo(567.28, y).stroke()
-        .moveTo(315, y_0).lineTo(315,    y).stroke()
-        .moveTo(345, y_0).lineTo(345,    y).stroke()
-        .moveTo(445, y_0).lineTo(445,    y).stroke();
-        return y;
+            .moveTo(28,  y+y_c).lineTo(567, y+y_c).stroke()
+            .moveTo(315, y)    .lineTo(315, y+y_c).stroke()
+            .moveTo(345, y)    .lineTo(345, y+y_c).stroke()
+            .moveTo(445, y)    .lineTo(445, y+y_c).stroke();
+        return y_c;
     };
     fn.loancards.createPDF = function (loancard_id) {
         return new Promise((resolve, reject) => {
@@ -144,47 +143,49 @@ module.exports = function (m, fn) {
                     .then(lines => {
                         if (!lines || lines.length === 0) reject(new Error('No open lines on this loancard'))
                         else {
-                            return fn.create_barcode(loancard.loancard_id)
+                            return fn.create_barcodes(loancard.loancard_id)
                             .then(result => {
-                                return fn.create_qr(loancard.loancard_id)
-                                .then(result => {
-                                    return createFile(loancard)
-                                    .then(([doc, file, writeStream]) => {
-                                        addPage(doc, true, true, loancard);
-                                        let y = 225;
-                                        lines.forEach(line => {
-                                            y = add_line(doc, line, y, loancard);
-                                        });
-                                        addDeclaration(doc, lines.length, y, loancard.loancard_id);
-                                        addPageNumbers(doc, loancard.loancard_id);
-                                        doc.end();
-                                        writeStream.on('error', err => reject(err));
-                                        writeStream.on('finish', function () {
-                                            fn.update(loancard, {filename: file})
-                                            .then(result => {
-                                                return fn.settings.get('Print loancard')
-                                                .then(settings => {
-                                                    if (settings.length !== 1 ||settings[0].value !== '1') resolve(file)
-                                                    else {
-                                                        return fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${file}`)
-                                                        .then(result => resolve(file))
-                                                        .catch(err => {
-                                                            console.log(err);
-                                                            resolve(file);
-                                                        });
-                                                    };
-                                                })
-                                                .catch(err => {
-                                                    console.log(err);
-                                                    resolve(file)
-                                                });
+                                return createFile(loancard)
+                                .then(([doc, file, writeStream]) => {
+                                    let y = addPage(doc);
+                                    y += addLogos(doc, y);
+                                    y += addHeader(doc, loancard, y);
+                                    lines.forEach(line => {
+                                        if (y >= 736) {
+                                            doc.text('END OF PAGE', 28, y, {width: 539, align: 'center'});
+                                            y  = addPage(doc);
+                                            y += addHeader(doc, loancard, y);
+                                        };
+                                        y += add_line(doc, line, y);
+                                    });
+                                    addDeclaration(doc, lines.length, y);
+                                    addPageNumbers(doc, loancard.loancard_id);
+                                    doc.end();
+                                    writeStream.on('error', err => reject(err));
+                                    writeStream.on('finish', function () {
+                                        fn.update(loancard, {filename: file})
+                                        .then(result => {
+                                            return fn.settings.get('Print loancard')
+                                            .then(settings => {
+                                                if (settings.length !== 1 ||settings[0].value !== '1') resolve(file)
+                                                else {
+                                                    return fn.print_pdf(`${process.env.ROOT}/public/res/loancards/${file}`)
+                                                    .then(result => resolve(file))
+                                                    .catch(err => {
+                                                        console.log(err);
+                                                        resolve(file);
+                                                    });
+                                                };
                                             })
-                                            .catch(err => reject(err));
-                                        });
-                                    })
-                                    .catch(err => reject(err));
+                                            .catch(err => {
+                                                console.log(err);
+                                                resolve(file)
+                                            });
+                                        })
+                                        .catch(err => reject(err));
+                                    });
                                 })
-                            .catch(err => reject(err));
+                                .catch(err => reject(err));
                             })
                             .catch(err => reject(err));
                         };

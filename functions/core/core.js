@@ -76,50 +76,46 @@ module.exports = function (m, fn) {
         return `
             ${String(current.getFullYear())}
             ${String(current.getMonth() + 1).padStart(2, '0')}
-            ${String(current.getDate()).padStart(2, '0')} 
-            ${String(current.getHours()).padStart(2, '0')}
-            ${String(current.getMinutes()).padStart(2, '0')}
-            ${String(current.getSeconds()).padStart(2, '0')}
+            ${String(current.getDate())     .padStart(2, '0')} 
+            ${String(current.getHours())    .padStart(2, '0')}
+            ${String(current.getMinutes())  .padStart(2, '0')}
+            ${String(current.getSeconds())  .padStart(2, '0')}
         `;
     };
-    fn.create_qr = function (uuid) {
-        return new Promise((resolve, reject) => {
-            bwipjs.toBuffer({
-                bcid:        'qrcode', // Barcode type
-                text:        uuid,     // Text to encode
-                scale:       3,        // 3x scaling factor
-                height:      30,       // Bar height, in millimeters
-                includetext: false,    // Show human-readable text
-                backgroundcolor: 'FFFFFF',
-                barcolor: '000000',
-                borderleft: '5',
-                borderright: '5'
-            })
-            .then(png => {
-                fs.writeFile(`${process.env.ROOT}/public/res/barcodes/${uuid}_qr.png`, png, () => resolve(true));
-            })
-            .catch(err => {
-                console.log(err);
-                reject(err);
-            });
-        });
-    };
-    fn.create_barcode = function (uuid) {
+    fn.create_barcodes = function (uuid) {
         return new Promise((resolve, reject) => {
             bwipjs.toBuffer({
                 bcid:        'code128', // Barcode type
                 text:        uuid,      // Text to encode
                 scale:       3,         // 3x scaling factor
                 height:      15,        // Bar height, in millimeters
-                includetext: true,      // Show human-readable text
-                textxalign:  'center',  // Always good to set this
+                includetext: false,     // Show human-readable text
                 backgroundcolor: 'FFFFFF',
                 barcolor: '000000',
                 borderleft: '5',
                 borderright: '5'
             })
-            .then(png => {
-                fs.writeFile(`${process.env.ROOT}/public/res/barcodes/${uuid}_128.png`, png, () => resolve(true));
+            .then(barcode => {
+                fs.writeFile(`${process.env.ROOT}/public/res/barcodes/${uuid}_128.png`, barcode, () => {
+                    return bwipjs.toBuffer({
+                        bcid:        'qrcode', // Barcode type
+                        text:        uuid,     // Text to encode
+                        scale:       3,        // 3x scaling factor
+                        height:      30,       // Bar height, in millimeters
+                        includetext: false,    // Show human-readable text
+                        backgroundcolor: 'FFFFFF',
+                        barcolor: '000000',
+                        borderleft: '5',
+                        borderright: '5'
+                    })
+                    .then(qr => {
+                        fs.writeFile(`${process.env.ROOT}/public/res/barcodes/${uuid}_qr.png`, qr, () => resolve(true));
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        reject(err);
+                    });
+                });
             })
             .catch(err => {
                 console.log(err);

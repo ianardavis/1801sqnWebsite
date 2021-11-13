@@ -8,7 +8,7 @@ function getIssues () {
         if (statuses && statuses.length > 0) query.push(status_query(statuses));
         get({
             table: 'issues',
-            query: [query.join('&')],
+            query: [query.join(',')],
             ...sort_query(sort_cols)
         })
         .then(function ([issues, options]) {

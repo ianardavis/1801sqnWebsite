@@ -6,6 +6,8 @@ function getLoancard() {
     disable_button('print');
     disable_button('loancard_filename_print', '');
     disable_button('loancard_filename_download', '');
+    disable_button('loancard_filename_delete', '');
+    disable_button('loancard_date_due_edit', '');
     get({
         table: 'loancard',
         query: [`"loancard_id":"${path[2]}"`]
@@ -26,6 +28,8 @@ function getLoancard() {
             enable_button('download');
             enable_button('loancard_filename_print', '');
             enable_button('loancard_filename_download', '');
+            enable_button('loancard_filename_delete', '');
+            enable_button('loancard_date_due_edit', '');
             set_attribute({id: 'form_download', attribute: 'method', value: 'GET'});
             set_attribute({id: 'form_download', attribute: 'action', value: `/loancards/${loancard.loancard_id}/download`});
         } else {

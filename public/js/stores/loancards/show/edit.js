@@ -7,23 +7,13 @@ function editLoancardDueDate() {
         query: [`"loancard_id":"${path[2]}"`]
     })
     .then(function ([loancard, options]) {
-        let current_date = new Date(loancard.date_due),
-            created_date = new Date(loancard.createdAt);
-        set_attribute({id: 'date_due_edit', attribute: 'value', value: `${current_date.getFullYear()}-${String(current_date.getMonth() + 1).padStart(2, '0')}-${String(current_date.getDate()).padStart(2, '0')}`});
-        set_attribute({id: 'date_due_edit', attribute: 'min',   value: `${created_date.getFullYear()}-${String(created_date.getMonth() + 1).padStart(2, '0')}-${String(created_date.getDate()).padStart(2, '0')}`});
+        set_attribute({id: 'date_due_edit', attribute: 'value', value: returnDate(loancard.date_due)});
+        set_attribute({id: 'date_due_edit', attribute: 'min',   value: returnDate(loancard.createdAt)});
     });
 };
 function completeLoancardDueDate() {
-    get({
-        table: 'loancard',
-        query: [`"loancard_id":"${path[2]}"`]
-    })
-    .then(function ([loancard, options]) {
-        let current_date = new Date(loancard.date_due),
-            created_date = new Date(loancard.createdAt);
-        set_attribute({id: 'date_due_complete', attribute: 'value', value: `${current_date.getFullYear() + 7}-${String(current_date.getMonth() + 1).padStart(2, '0')}-${String(current_date.getDate()).padStart(2, '0')}`});
-        set_attribute({id: 'date_due_complete', attribute: 'min',   value: `${created_date.getFullYear()}-${String(created_date.getMonth() + 1).padStart(2, '0')}-${String(created_date.getDate()).padStart(2, '0')}`});
-    });
+    set_attribute({id: 'date_due_complete', attribute: 'value', value: dateToday(7)});
+    set_attribute({id: 'date_due_complete', attribute: 'min',   value: dateToday()});
 };
 window.addEventListener( "load", function () {
     modalOnShow('due_edit',          editLoancardDueDate);

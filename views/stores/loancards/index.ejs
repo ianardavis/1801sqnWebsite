@@ -4,9 +4,18 @@
 <%- include(`${partials}/spinner`, {id: 'loancards'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
-		Filter
-	</button>
+	<div class="row mb-1">
+		<div class="col-12 col-md-6">
+			<button class="col-12 col-lg-6 btn btn-primary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
+				Filter
+			</button>
+		</div>
+		<div class="col-12 col-md-6">
+			<button class="col-12 col-lg-6 btn btn-success w-100" type="button" data-bs-toggle="modal"    data-bs-target="#mdl_loancard_open">
+				View Loancard
+			</button>
+		</div>
+	</div>
 	<div class="collapse mb-2" id="col-filter">
 		<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
 		<h5 class='text-start'>Status:</h5>
@@ -35,12 +44,11 @@
 			</div>
 		</div>
 	</div>
-	<button type="button" class="btn btn-primary w-100 mb-1" data-bs-toggle="modal" data-bs-target="#mdl_loancard_open">View Loancard</button>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
 			<th class='w-35' onclick='sortByRow(this, getLoancards)' data-sort_col='createdAt'		 >Date	<span class='sort_ind float-end'></span></th>
 			<th class='w-35' onclick='sortByRow(this, getLoancards)' data-sort_col='user_id_loancard'>User	<span class='sort_ind float-end'></span></th>
-			<th class='w-15'>Description</th>
+			<th class='w-15'>Lines</th>
 			<th class='w-15' onclick='sortByRow(this, getLoancards)' data-sort_col='status'			 >Status<span class='sort_ind float-end'></span></th>
 			<th><i class="fas fa-search"></i></th>
 		</thead>
@@ -49,17 +57,16 @@
 	<div id="div_modals">
 		<div id='mdl_loancard_open' class="modal fade" tabindex="-1" role="dialog">
 			<div class="modal-dialog modal-lg" role="document">
-				<form id='form_complete' class="modal-content">
+				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title">View Loancard</h5>
 					</div>
 					<div class="modal-body">
+						<%- include(`${partials}/inputs/text`, {id: 'goto_loancard_id', title: 'Loancard ID', onkeydown: 'GoToEnter(this)'}) %>
 						<div id="reader" width="600px"></div>
 					</div>
-					<div class="modal-footer">
-						<button class="btn btn-success w-100">Open</button>
-					</div>
-				</form>
+					<div class="modal-footer"></div>
+				</div>
 			</div>
 		</div>
 	</div>
