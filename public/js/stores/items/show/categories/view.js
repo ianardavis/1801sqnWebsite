@@ -8,6 +8,7 @@ function getCategories() {
             ...sort_query(sort_cols)
         })
         .then(function ([categories, options]) {
+            set_count({id: 'category', count: categories.length || '0'});
             categories.forEach(category => {
                 let row = tbl_categories.insertRow(-1);
                 add_cell(row, {text: category.category.category});

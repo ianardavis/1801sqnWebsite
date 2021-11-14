@@ -123,6 +123,10 @@ function set_innerText(options = {}) {
     let element = document.querySelector(`#${options.id}`);
     if (element) element.innerText = options.text || options.value|| '';
 };
+function set_innerHTML(options = {}) {
+    let element = document.querySelector(`#${options.id}`);
+    if (element) element.innerHTML = options.text || options.value|| '';
+};
 function set_breadcrumb(options = {}) {
     let breadcrumb = document.querySelector(`#${options.id || 'breadcrumb'}`);
     if (breadcrumb) {
