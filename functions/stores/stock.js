@@ -89,7 +89,7 @@ module.exports = function (m, fn) {
                     if (!result) reject(new Error('Stock not incremented'))
                     else {
                         fn.actions.create(
-                            `RECEIPT | Qty: ${qty}`,
+                            `RECEIPT | Qty: ${options.qty}`,
                             options.user_id,
                             [
                                 {table: 'stocks', id: stock.stock_id}
