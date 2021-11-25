@@ -55,7 +55,7 @@ function getLines() {
 function showLine(demand_line_id) {
     get({
         table: 'demand_line',
-        query: [`demand_line_id:${demand_line_id}`]
+        query: [`"demand_line_id":"${demand_line_id}"`]
     })
     .then(function ([line, options]) {
         set_innerText({id: 'demand_line_id', text: line.demand_line_id});
