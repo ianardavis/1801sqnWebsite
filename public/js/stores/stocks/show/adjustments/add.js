@@ -11,7 +11,6 @@ window.addEventListener('load', function () {
         {
             onComplete: [
                 getStock,
-                getAdjustments,
                 function () {modalHide('adjustment_add')}
             ]
         }
