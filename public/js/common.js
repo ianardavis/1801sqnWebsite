@@ -168,6 +168,7 @@ function add_cell(row, options = {}) {
     if (options.classes)  options.classes.forEach(e => cell.classList.add(e));
     if (options.data)     options.data.forEach(e => cell.setAttribute(`data-${e.field}`, e.value));
     if (options.ellipsis) cell.classList.add('ellipsis1');
+    return cell;
 };
 function show(id) {
     let element = document.querySelector(`#${id}`);

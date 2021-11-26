@@ -43,6 +43,10 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Detail saved'}))
         .catch(err => fn.send_error(res, err));
     });
+    app.put('/details',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
+        console.log(req.body.items);
+        res.send({success: true, message: 'Detail saved'});
+    });
 
     app.delete('/details/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'),   (req, res) => {
         m.details.destroy({where: {detail_id: req.params.id}})

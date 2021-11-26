@@ -1,0 +1,16 @@
+<%- include(`${partials}/head/app`, {text: 'Stores'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Reports', href: '/reports'}) %>
+<%- include(`${partials}/breadcrumb`, {text: 'Item Demand Settings'}) %>
+<%- include(`${partials}/reload`) %>
+<%- include(`${partials}/spinner`,    {id: 'items'}) %>
+<%- include(`${partials}/head/components/close`) %>
+<section class='container'>
+    <form id="form_items">
+        <button id='btn_save' class='btn btn-success w-100 mb-2' form='form_items'>Save Items</button>
+        <div id="div_items"></div>
+    </form>
+</section>
+<%- include(`${partials}/foot/app`) %>
+<script src="/js/stores/reports/6/view.js"></script>
+<script async>getItems()</script>
+<%- include(`${partials}/foot/components/htmlClose`) %>
