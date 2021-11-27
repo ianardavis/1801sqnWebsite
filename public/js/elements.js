@@ -281,6 +281,7 @@ function Card(options = {}) {
     if (options.href) a.setAttribute('href', options.href);
     a.classList.add('card', 'm-3', 'text-start');
     header.classList.add('card-header');
+    if (options.head_100) header.classList.add('h-100-px');
     title.classList.add('card-title');
     if (options.search && options.search.title === true) title.classList.add('search');
     title.innerText = options.title;

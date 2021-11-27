@@ -575,7 +575,7 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             return fn.get(
                 'loancard_lines',
-                options.loancard_line_id
+                {loancard_line_id: options.loancard_line_id}
             )
             .then(line => {
                 if      (line.status === 0) reject(new Error('This line has already been cancelled'))

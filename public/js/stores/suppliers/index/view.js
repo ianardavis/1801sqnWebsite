@@ -11,6 +11,7 @@ function getSuppliers() {
                 tbl_suppliers.appendChild(new Card({
                     href:     `/suppliers/${supplier.supplier_id}`,
                     title:    supplier.name,
+                    head_100: true,
                     search:   {title: true},
                     subtitle: {id: `default_${supplier.supplier_id}`},
                     body:     {data: {field: 'id', value: supplier.supplier_id}}

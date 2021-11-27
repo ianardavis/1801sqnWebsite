@@ -10,8 +10,10 @@
 				Menu
 			</a>
 			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-				<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete', btn_form: {permission: 'stores_stock_admin'}}) %>
-                <%- include(`${partials}/common/notes/btn_add`) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete', 		 text: 'Cancel', 		   btn_form: true}) %>
+				<%- include(`${partials}/menu/button`, {id: 'mark_placed', 	 text: 'Mark as Placed',   btn_form: true}) %>
+				<%- include(`${partials}/menu/button`, {id: 'mark_demanded', text: 'Mark as Demanded', btn_form: true}) %>
+				<%- include(`${partials}/menu/button`, {id: 'mark_received', text: 'Mark as Received', btn_form: true}) %>
 			</div>
 		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'order'}) %>

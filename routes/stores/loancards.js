@@ -198,16 +198,16 @@ module.exports = (app, m, fn) => {
                     )
                     .then(loancard => {
                         if      (loancard.status === 0) reject(new Error('Loancard has already been cancelled'))
-                        else if (loancard.status === 3) reject(new Error('Loancard has already been closed'))
-                        else if (loancard.status > 3 || loancard.status < 0) reject(new Error('Unknown loancard status'))
-                        else {
-                            let check_action = null;
-                            if (loancard.status === 1) check_action = fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: req.user.user_id, noforce: true})
-                            else                       check_action = fn.loancards.close( {loancard_id: loancard.loancard_id, user_id: req.user.user_id});
-                            return check_action
+                        else if (loancard.status === 1) {
+                            return fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: req.user.user_id, noforce: true})
                             .then(result => resolve(result))
                             .catch(err => reject(err));
-                        };
+                        } else if (loancard.status === 2) {
+                            return fn.loancards.close({loancard_id: loancard.loancard_id, user_id: req.user.user_id})
+                            .then(result => resolve(result))
+                            .catch(err => reject(err));
+                        } else if (loancard.status === 3) reject(new Error('Loancard has already been closed'))
+                        else reject(new Error('Unknown loancard status'));
                     })
                     .catch(err => reject(err));
                 }));

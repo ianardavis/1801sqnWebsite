@@ -19,4 +19,36 @@ function showOrder() {
     })
     .catch(err => window.location.href = '/orders');
 };
+window.addEventListener('load', function () {
+    enable_button('mark_placed');
+    enable_button('mark_demanded');
+    enable_button('mark_received');
+    addFormListener(
+        'mark_placed',
+        'PUT',
+        `/orders/${path[2]}/mark/1`,
+        {onComplete: [
+            showOrder,
+            getActions
+        ]}
+    );
+    addFormListener(
+        'mark_demanded',
+        'PUT',
+        `/orders/${path[2]}/mark/2`,
+        {onComplete: [
+            showOrder,
+            getActions
+        ]}
+    );
+    addFormListener(
+        'mark_received',
+        'PUT',
+        `/orders/${path[2]}/mark/3`,
+        {onComplete: [
+            showOrder,
+            getActions
+        ]}
+    );
+});
 addReloadListener(showOrder);

@@ -1,20 +1,20 @@
 module.exports = (app, m, fn) => {
     let receipts = {}, issues = {};
-    app.get('/orders',        fn.loggedIn(), fn.permissions.get('stores_stock_admin'),   (req, res) => res.render('stores/orders/index'));
-    app.get('/orders/:id',    fn.loggedIn(), fn.permissions.get('stores_stock_admin'),   (req, res) => res.render('stores/orders/show'));
+    app.get('/orders',                  fn.loggedIn(), fn.permissions.get('stores_stock_admin'),   (req, res) => res.render('stores/orders/index'));
+    app.get('/orders/:id',              fn.loggedIn(), fn.permissions.get('stores_stock_admin'),   (req, res) => res.render('stores/orders/show'));
     
-    app.get('/count/orders',  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/count/orders',            fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.orders.count({where: req.query})
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/sum/orders',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/sum/orders',              fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.orders.sum('qty', {where: req.query})
         .then(sum => res.send({success: true, result: sum}))
         .catch(err => fn.send_error(res, err));
     });
 
-    app.get('/get/orders',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/get/orders',              fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.orders.findAll({
             where: JSON.parse(req.query.where),
             include: [
@@ -26,7 +26,7 @@ module.exports = (app, m, fn) => {
         .then(orders => res.send({success: true, result: orders}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/order',     fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.get('/get/order',               fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.get(
             'orders',
             JSON.parse(req.query.where),
@@ -39,7 +39,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/orders',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.post('/orders',                 fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         // if (!req.body.orders || req.body.orders.length === 0) fn.send_error(res, 'No orders submitted')
         // else {
         //     let actions = [];
@@ -55,7 +55,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     
-    app.put('/orders',        fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.put('/orders',                  fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         let actions  = [],
             cancels  = req.body.orders.filter(e => e.status === '0'),
             demands  = req.body.orders.filter(e => e.status === '2'),
@@ -72,8 +72,37 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
+    app.put('/orders/:id/mark/:status', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        fn.get(
+            'orders',
+            {order_id: req.params.id}
+        )
+        .then(order => {
+            if (['1', '2', '3'].includes(req.params.status)) {
+                return order.update({status: req.params.status})
+                .then(result => {
+                    let status = (req.params.status === '1' ? 'PLACED' : (req.params.status === '2' ? 'DEMANDED' : 'RECEIVED'));
+                    fn.actions.create(
+                        `${status} | Set manually`,
+                        req.user.user_id,
+                        [{table: 'orders', id: order.order_id}]
+                    )
+                    .then(result => res.send({success: true, message: `Order marked as ${status.toLowerCase()}`}))
+                    .catch(err => {
+                        console.log(err);
+                        res.send({success: true, message: `Order marked as ${status.toLowerCase()}`});
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                    fn.send_error(res, err);
+                });
+            } else fn.send_error(res, new Error('Invalid status'));
+        })
+        .catch(err => fn.send_error(res, err));
+    });
     
-    app.delete('/orders/:id', fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.delete('/orders/:id',           fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.get(
             'orders',
             {order_id: req.params.id}
