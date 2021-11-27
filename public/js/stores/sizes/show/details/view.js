@@ -24,7 +24,7 @@ function getDetails() {
 function viewDetail(detail_id) {
     get({
         table:   'detail',
-        query:   [`detail_id=${detail_id}`],
+        query:   [`"detail_id":"${detail_id}"`],
         spinner: 'detail_view'
     })
     .then(function ([detail, options]) {
