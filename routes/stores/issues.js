@@ -238,6 +238,40 @@ module.exports = (app, m, fn) => {
             .catch(err => fn.send_error(res, err));
         };
     });
+    app.put('/issues/:id/size',    fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
+        fn.get(
+            'issues',
+            {issue_id: req.params.id},
+            [m.sizes]
+        )
+        .then(issue => {
+            fn.get(
+                'sizes',
+                {size_id: req.body.size_id}
+            )
+            .then(size => {
+                if      (size.item_id !== issue.size.item_id) fn.send_error(res, new Error('New size is for a different item'))
+                else if (issue.status === 1 || issue.status === 2) {
+                    return fn.update(issue, {size_id: size.size_id})
+                    .then(result => {
+                        fn.actions.create(
+                            `SIZE EDITED | From: ${fn.print_size(issue.size)} | To: ${fn.print_size(size)}`,
+                            req.user.user_id,
+                            [{table: 'issues', id: issue.issue_id}]
+                        )
+                        .then(result => res.send({success: true, message: 'Size edited'}))
+                        .catch(err => {
+                            console.log(err);
+                            res.send({success: true, message: 'Size edited'})
+                        });
+                    })
+                    .catch(err => fn.send_error(res, err));
+                } else fn.send_error(res, new Error('Only requested and approved issues can have their size edited'));
+            })
+            .catch(err => fn.send_error(res, err));
+        })
+        .catch(err => fn.send_error(res, err));
+    });
 
     app.delete('/issues/:id',      fn.loggedIn(), fn.permissions.check('issuer',        true), (req, res) => {
         fn.issues.cancel({

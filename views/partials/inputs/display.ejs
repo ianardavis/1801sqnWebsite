@@ -53,7 +53,8 @@
             >
                 <i class="fas fa-pencil-alt"></i>
             </button>
-        <% } else if (locals.link) { %>
+        <% } %>
+        <% if (locals.link) { %>
             <a
                 class='btn btn-primary'
                 id='<%= id %>_link'

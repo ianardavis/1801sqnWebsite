@@ -154,12 +154,12 @@ function Radio(options = {}) {
     let radio = document.createElement('input'),
         label = document.createElement('label');
     radio.setAttribute('type', 'radio');
+    radio.setAttribute('id', `rad_${options.id}`);
     radio.setAttribute('autocomplete', 'off');
-    radio.setAttribute('id', `chk_${options.id}`);
     radio.classList.add('btn-check');
     if (options.attributes) options.attributes.forEach(a => radio.setAttribute(a.field, a.value));
     label.classList.add('btn', 'btn-outline-success');
-    label.setAttribute('for', `chk_${options.id}`);
+    label.setAttribute('for', `rad_${options.id}`);
     label.innerHTML = _check();
     if (options.small) label.classList.add('btn-sm');
     if (options.float) this.e.classList.add('float-end');
@@ -368,3 +368,23 @@ function Notification (options = {}) {
     this.e.appendChild(heading);
     this.e.appendChild(body);
 };
+function TableRadio(options = {}) {
+    this.e = document.createElement('div');
+    this.e.classList.add('form-check');
+    let input = document.createElement('input');
+    input.classList.add('form-check-input');
+    input.setAttribute('type', 'radio');
+    input.setAttribute('name', options.name);
+    input.setAttribute('value', options.value);
+    this.e.appendChild(input);
+    // let label = document.createElement('label');
+    // label.classList.add('form-check-label');
+
+
+// <div class="form-check">
+//   <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+//   <label class="form-check-label" for="flexRadioDefault1">
+//      Default radio
+//   </label>
+// </div>
+}

@@ -13,7 +13,7 @@ window.addEventListener( "load", function () {
         `/issues/${path[2]}`,
         {
             onComplete: [
-                showIssue,
+                getIssue,
                 function() {if (typeof showActions === 'function') {showActions()}}
             ]
         }

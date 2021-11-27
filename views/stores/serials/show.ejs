@@ -10,9 +10,8 @@
                 Menu
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'serial_edit', text: 'Edit',     modal: 'serial_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete',   btn_form: {permission: 'stores_stock_admin'}}) %>
-                <%- include(`${partials}/common/notes/btn_add`) %>
+                <%- include(`${partials}/menu/button`, {id: 'serial_edit', text: 'Edit',   modal: 'serial_edit'}) %>
+				<%- include(`${partials}/menu/button`, {id: 'delete',	   text: 'Delete', btn_form: {permission: 'stores_stock_admin'}}) %>
             </div>
         </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'serial'}) %>
