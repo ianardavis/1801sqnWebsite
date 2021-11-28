@@ -5,51 +5,25 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <!-- <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown"> -->
-                <!-- <%- include(`${partials}/menu/button`, {id: 'item_edit',    text: 'Edit',         modal: 'item_edit'}) %> -->
-				<!-- <%- include(`${partials}/menu/button`, {id: 'category_add', text: 'Add Category', modal: 'category_add'}) %> -->
-                <!-- <%- include(`${partials}/menu/button`, {id: 'size_add',     text: 'Add Size',     modal: 'size_add'}) %> -->
-				<!-- <%- include(`${partials}/menu/button`, {id: 'delete',	    text: 'Delete',	  	  btn_form: true}) %> -->
-            <!-- </div>
-        </li> -->
         <%- include(`${partials}/tab_head`, {id: 'details',    title: 'Details',    spinner: 'item'}) %>
-        <li class="nav-item">
-            <a class="nav-link" role="tab" data-bs-toggle="modal" data-bs-target="#mdl_item_edit">
-                <i class="fas fa-pencil-alt"></i>
-            </a>
-        </li>
         <%- include(`${partials}/tab_head`, {id: 'categories', title: 'Categories', spinner: 'categories', count_id: 'category'}) %>
-        <li class="nav-item">
-            <a class="nav-link" role="tab" data-bs-toggle="modal" data-bs-target="#mdl_category_add">
-                <i class="fas fa-plus-circle"></i>
-            </a>
-        </li>
         <%- include(`${partials}/tab_head`, {id: 'sizes',      title: 'Sizes',      spinner: 'sizes',      count_id: 'size'}) %>
-        <li class="nav-item">
-            <a class="nav-link" role="tab" data-bs-toggle="modal" data-bs-target="#mdl_size_add">
-                <i class="fas fa-plus-circle"></i>
-            </a>
-        </li>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/btn_modal`, {text: 'Edit Item', type: 'warning', modal: 'item_edit'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_description', title: 'Description'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text1',  title: 'Size Text 1'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text2',  title: 'Size Text 2'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_size_text3',  title: 'Size Text 3'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender'}) %>
-            <form id="form_delete" class='float-start'>
-                <button class="btn btn-danger">Delete</button>
-            </form>
+            <%- include(`${partials}/btn_delete`) %>
         </div>
         <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
             <div class="row">
                 <div class="col-12 col-lg-5 mx-auto">
+                    <%- include(`${partials}/btn_modal`, {text: 'Add Category', type: 'success', modal: 'category_add'}) %>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th class='w-100' onclick='sortByRow(this, getCategories)' data-sort_col='category_id'>Category<span class='sort_ind float-end'></span></th>
@@ -63,6 +37,7 @@
         <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
             <div class="row">
                 <div class="col-12 col-lg-4 mx-auto">
+                    <%- include(`${partials}/btn_modal`, {text: 'Add Size', type: 'success', modal: 'size_add'}) %>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th class='w-35' onclick='sortByRow(this, getSizes)' data-sort_col='size1' id='size_text1_sizes_table'><span class='sort_ind float-end'></span></th>

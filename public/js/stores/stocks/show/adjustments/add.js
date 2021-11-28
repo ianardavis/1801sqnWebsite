@@ -1,17 +1,31 @@
-function reset_add_adjustment() {
-    set_value({id: 'adjustment_qty_add'});
+function reset_count_add() {
+    set_value({id: 'adjustment_qty_count'});
+};
+function reset_scrap_add() {
+    set_value({id: 'adjustment_qty_scrap'});
 };
 window.addEventListener('load', function () {
-    enable_button('adjustment_add');
-    modalOnShow('adjustment_add', reset_add_adjustment);
+    modalOnShow('count_add', reset_count_add);
+    modalOnShow('scrap_add', reset_scrap_add);
     addFormListener(
-        'adjustment_add',
-        'POST',
-        '/adjustments',
+        'count_add',
+        'PUT',
+        `/stocks/${path[2]}/count`,
         {
             onComplete: [
                 getStock,
-                function () {modalHide('adjustment_add')}
+                function () {modalHide('count_add')}
+            ]
+        }
+    );
+    addFormListener(
+        'scrap_add',
+        'PUT',
+        `/stocks/${path[2]}/scrap`,
+        {
+            onComplete: [
+                getStock,
+                function () {modalHide('scrap_add')}
             ]
         }
     );

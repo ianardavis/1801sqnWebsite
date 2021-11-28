@@ -5,24 +5,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'supplier_edit', text: 'Edit',        modal: 'supplier_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'file_add',      text: 'Add File',    modal: 'file_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'address_add',   text: 'Add Address', modal: 'address_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'contact_add',   text: 'Add Contact', modal: 'contact_add'}) %>
-                <% if (permissions.access_settings) { %>
-                    <form id='form_set_default'>
-                        <input class='supplier_id' type="hidden" name='supplier_id'>
-                        <%- include(`${partials}/menu/button`, {id: 'default', text: 'Make Default'}) %>
-                    </form>
-                <% } %>
-				<%- include(`${partials}/menu/button`, {id: 'delete', text: 'Delete',   btn_form: true}) %>
-            </div>
-        </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'supplier'}) %>
         <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file'}) %>
         <%- include(`${partials}/tab_head`, {id: 'addresses', title: 'Addresses', spinner: 'addresses', count_id: 'address'}) %>
@@ -33,13 +15,26 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/btn_modal`, {text: 'Edit Supplier', type: 'warning', modal: 'supplier_edit'}) %>
             <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_name',       title: 'Name'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_account',    title: 'Account', link: true, modal: 'account_view'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_is_stores',  title: 'RAF Stores'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'supplier_is_default', title: 'Default Supplier', permission: 'access_settings'}) %>
+            <% if (permissions.access_settings) { %>
+                <div class="input-group mb-1">
+                    <span class="input-group-text w-40">Default Supplier</span>
+                    <p class="form-control mb-0" id='supplier_is_default'></p>
+                    <form id='form_set_default'>
+                        <button class='btn btn-warning' id='btn_default'>
+                            Set as Default
+                        </button>
+                    </form>
+                </div>
+            <% } %>
+            <%- include(`${partials}/btn_delete`) %>
         </div>
         <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+            <%- include(`${partials}/btn_modal`, {text: 'Upload File', type: 'success', modal: 'file_add'}) %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
 					<th class='w-50' onclick='sortByRow(this, getFiles)' data-sort_col='filename'   >Filename   <span class='sort_ind float-end'></span></th>
@@ -50,6 +45,7 @@
             </table>
         </div>
         <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
+            <%- include(`${partials}/btn_modal`, {text: 'Add Address', type: 'success', modal: 'address_add'}) %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
 					<th class='w-30' onclick='sortByRow(this, getAddresses)' data-sort_col='type'>Type<span class='sort_ind float-end'></span></th>
@@ -61,6 +57,7 @@
             </table>
         </div>
         <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+            <%- include(`${partials}/btn_modal`, {text: 'Add Contact', type: 'success', modal: 'contact_add'}) %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                     <th class='w-30' onclick='sortByRow(this, getContacts)' data-sort_col='type'>Type<span class='sort_ind float-end'></span></th>
@@ -106,9 +103,9 @@
                         <%- include(`${partials}/spinner`, {id: 'supplier_edit'}) %>
                     </div>
                     <div class="modal-body">
-                        <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Supplier Name', name: 'supplier[name]',       required: true}) %>
-                        <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',       name: 'supplier[account_id]', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
-                        <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?',   name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
+                        <%- include(`${partials}/inputs/text`,   {id: 'supplier_name_edit',      title: 'Name',        name: 'supplier[name]',       required: true}) %>
+                        <%- include(`${partials}/inputs/select`, {id: 'sel_accounts',            title: 'Account',     name: 'supplier[account_id]', spinner_id: 'accounts', reload_id: 'reload_accounts'}) %>
+                        <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?', name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
                     </div>
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-success w-100" value='Save Supplier'>

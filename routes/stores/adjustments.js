@@ -24,25 +24,4 @@ module.exports = (app, m, fn) => {
         .then(adjustments => res.send({success: true, result: adjustments}))
         .catch(err => fn.send_error(res, err));
     });
-    app.post('/adjustments',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
-        if (!req.body.adjustments || req.body.adjustments.length === 0) fn.send_error(res, 'No adjustments')
-        else {
-            let actions = [];
-            req.body.adjustments.forEach(adjustment => {
-                if (adjustment.qty && adjustment.stock_id && adjustment.type) {
-                    actions.push(
-                        fn.stocks.adjust(adjustment.stock_id, adjustment.type, adjustment.qty, req.user.user_id)
-                    );
-                };
-            });
-            Promise.allSettled(actions)
-            .then(results => {
-                if (results.filter(e => e.status === 'rejected').length > 0) {
-                    console.log(results);
-                    res.send({success: true, message: 'Some adjustments failed'})
-                } else res.send({success: true, message: 'Adjustment(s) actioned'});
-            })
-            .catch(err => fn.send_error(res, err));
-        };
-    });
 };

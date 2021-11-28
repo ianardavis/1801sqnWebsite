@@ -128,6 +128,15 @@ module.exports = (app, m, fn) => {
         })
         .catch(err => fn.send_error(res, err));
     });
+    app.put('/stocks/:id/:type',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+        if      (!req.body[req.params.type])                                                             fn.send_error(res, 'No details')
+        else if (req.params.type.toLowerCase() !== 'scrap' && req.params.type.toLowerCase() !== 'count') fn.send_error(res, 'Invalid type')
+        else {
+            fn.stocks.adjust(req.params.id, req.params.type, req.body[req.params.type].qty, req.user.user_id)
+            .then(result => res.send({success: true, message: `${req.params.type} saved`}))
+            .catch(err => fn.send_error(res, err));
+        };
+    });
     
     app.delete('/stocks/:id',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.get(

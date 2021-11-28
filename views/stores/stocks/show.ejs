@@ -14,36 +14,25 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <%- include(`${partials}/menu/button`, {id: 'stock_edit',     text: 'Change Location', modal: 'stock_edit'}) %>
 				<%- include(`${partials}/menu/button`, {id: 'transfer_add',   text: 'Transfer Stock',  modal: 'transfer_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'adjustment_add', text: 'Add Adjustment',  modal: 'adjustment_add'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	      text: 'Delete',          btn_form: {permission: 'stores_stock_admin'}}) %>
             </div>
         </li>
-        <%- include(`${partials}/tab_head`, {id: 'details',     title: 'Details',     spinner: 'stock'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'adjustments', title: 'Adjustments', spinner: 'adjustments', count_id: 'adjustment', permission: 'stores_stock_admin'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'stock'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
-        <div     class="tab-pane fade" id="details"     role="tabpanel" aria-labelledby="details-tab">
+        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/inputs/display`, {id: 'stock_item',     title: 'Item',     link: true}) %>
             <%- include(`${partials}/inputs/display`, {id: 'stock_size',     title: 'Size',     link: true}) %>
             <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location', link: true}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'stock_qty',      title: 'Qty'}) %>
-        </div>
-        <% if (permissions.stores_stock_admin) { %>
-            <div class="tab-pane fade" id="adjustments" role="tabpanel" aria-labelledby="adjustments-tab">
-                <table class='table table-sm table-hover w-100'>
-                    <thead class='thead-dark'>
-                        <th class='w-40' onclick='sortByRow(this, getAdjustments)' data-sort_col='createdAt'>Date    <span class='sort_ind float-end'></span></th>
-                        <th class='w-40' onclick='sortByRow(this, getAdjustments)' data-sort_col='type'     >Type    <span class='sort_ind float-end'></span></th>
-                        <th class='w-10' onclick='sortByRow(this, getAdjustments)' data-sort_col='qty'      >Qty     <span class='sort_ind float-end'></span></th>
-                        <th class='w-10' onclick='sortByRow(this, getAdjustments)' data-sort_col='variance' >Variance<span class='sort_ind float-end'></span></th>
-                        <th><i class='fas fa-search'></i></th>
-                    </thead>
-                    <tbody id='tbl_adjustments'></tbody>
-                </table>
+            <div class="input-group mb-1">
+                <span class="input-group-text w-30">Quantity</span>
+                <p class="form-control mb-0" id='stock_qty'></p>
+                <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-pencil-alt"></i>', type: 'warning', modal: 'count_add', no_w: true}) %>
+                <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-trash-alt"></i>',  type: 'danger', modal: 'scrap_add', no_w: true}) %>
             </div>
-        <% } %>
+            <%- include(`${partials}/btn_delete`) %>
+        </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>
@@ -85,19 +74,33 @@
                     </form>
                 </div>
             </div>
-            <div id='mdl_adjustment_add' class="modal fade" tabindex="-1" role="dialog">
+            <div id='mdl_count_add'      class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
-                    <form class="modal-content" id='form_adjustment_add'>
+                    <form class="modal-content" id='form_count_add'>
                         <div class="modal-header">
-                            <h5 class="modal-title">Add Adjustment</h5>
+                            <h5 class="modal-title">Count</h5>
                         </div>
                         <div class="modal-body">
-                            <input type="hidden" class='stock_id' name='adjustments[][0][stock_id]'>
-                            <%- include(`${partials}/inputs/select`, {title: 'Type',     name: 'adjustments[][0][type]', options: [{value: 'Count', text: 'Count'}, {value: 'Scrap', text: 'Scrap'}]}) %>
-                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'adjustments[][0][qty]',  id: 'adjustment_qty_add', required: true}) %>
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'count[qty]', id: 'adjustment_qty_count', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Adjustment'>
+                            <input type="submit" class="btn btn-success w-100" value='Count Stock'>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id='mdl_scrap_add'      class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <form class="modal-content" id='form_scrap_add'>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Scrap</h5>
+                        </div>
+                        <div class="modal-body">
+                            <%- include(`${partials}/inputs/number`, {title: 'Quantity', name: 'scrap[qty]', id: 'adjustment_qty_scrap', required: true}) %>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success w-100" value='Scrap Stock'>
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
