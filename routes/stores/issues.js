@@ -182,6 +182,7 @@ module.exports = (app, m, fn) => {
         if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
+            console.log(req.body.issues);
             req.body.issues.filter(e => e.status === '-2') .forEach(issue => {
                 actions.push(
                     fn.issues.remove_from_loancard({

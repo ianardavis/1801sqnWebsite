@@ -183,6 +183,7 @@ module.exports = (app, m, fn) => {
     });
     app.put('/loancard_lines',               fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         let actions = [];
+        console.log(req.body.lines);
         req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(fn.loancards.lines.return({...line, user_id: req.user.user_id})));
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.loancards.lines.cancel({...line, user_id: req.user.user_id})));
         Promise.allSettled(actions)

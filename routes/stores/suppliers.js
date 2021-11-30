@@ -26,8 +26,8 @@ module.exports = (app, m, fn) => {
         .then(supplier => res.send({success: true, message: 'Supplier added'}))
         .catch(err => res.send({success: true, message: `Error creating supplier: ${err.message}`}));
     });
-    app.put('/suppliers/default', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
-        fn.settings.set('default_supplier', req.body.supplier_id)
+    app.put('/suppliers/:id/default', fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
+        fn.settings.set('default_supplier', req.params.id)
         .then(result => res.send({success: true, message: 'Supplier saved'}))
         .catch(err => res.send({success: true, message: `Error updating supplier: ${err.message}`}));
     });

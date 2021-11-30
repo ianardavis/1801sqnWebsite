@@ -22,7 +22,7 @@ function getUsers() {
         if (ranks   .value !== '') query.push(ranks.value);
         if (statuses.value !== '') query.push(statuses.value);
         get({
-            table: 'users',
+            table: 'users_current',
             query: query,
             ...sort_query(sort_cols)
         })

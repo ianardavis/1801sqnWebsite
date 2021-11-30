@@ -151,7 +151,7 @@ module.exports = function (m, fn) {
                                     y += addLogos(doc, y);
                                     y += addHeader(doc, loancard, y);
                                     lines.forEach(line => {
-                                        if (y >= 736) {
+                                        if (y >= 708-(line.nsn ? 15 : 0)-(line.serial ? 15 : 0)) {
                                             doc.text('END OF PAGE', 28, y, {width: 539, align: 'center'});
                                             y  = addPage(doc);
                                             y += addHeader(doc, loancard, y);
