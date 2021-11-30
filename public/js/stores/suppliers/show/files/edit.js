@@ -16,7 +16,7 @@ function fileEditBtn(file_id) {
         span_file_edit_btn.appendChild(
             new Link({
                 modal: 'file_edit',
-                data: {field: 'id', value: file_id},
+                data: [{field: 'id', value: file_id}],
                 type: 'edit'
             }).e
         );

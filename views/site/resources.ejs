@@ -6,11 +6,13 @@
     </a>
     <div class="collapse show mb-3" id="collapseLinks">
         <div class="menu row">
-            <%- include(`${partials}/card`, {href: '/canteen',                       title: 'Canteen',      text: 'Canteen management'}) %>
-            <%- include(`${partials}/card`, {href: '/stores',                        title: 'Stores',       text: 'Stores management'}) %>
-            <%- include(`${partials}/card`, {href: 'https://bader.mod.uk',           title: 'Bader',        text: 'Bader landing page'}) %>
-            <%- include(`${partials}/card`, {href: 'https://cadets.bader.mod.uk/',   title: 'Cadet Portal', text: 'Bader landing page'}) %>
-            <%- include(`${partials}/card`, {href: 'https://learning.bader.mod.uk/', title: 'UltiLearn',    text: 'Ultilearn login page'}) %>
+            <%- include(`${partials}/card`, {href: '/canteen',                       title: 'Canteen',      text: 'Canteen management',   body_100: true}) %>
+            <%- include(`${partials}/card`, {href: '/stores',                        title: 'Stores',       text: 'Stores management',    body_100: true}) %>
+            <%- include(`${partials}/card`, {href: '/users',                         title: 'Users',        text: 'User management',      body_100: true}) %>
+            <%- include(`${partials}/card`, {href: '/settings',                      title: 'Settings',     text: 'Settings',             body_100: true}) %>
+            <%- include(`${partials}/card`, {href: 'https://bader.mod.uk',           title: 'Bader',        text: 'Bader landing page',   body_100: true}) %>
+            <%- include(`${partials}/card`, {href: 'https://cadets.bader.mod.uk/',   title: 'Cadet Portal', text: 'Bader landing page',   body_100: true}) %>
+            <%- include(`${partials}/card`, {href: 'https://learning.bader.mod.uk/', title: 'UltiLearn',    text: 'Ultilearn login page', body_100: true}) %>
         </div>
     </div>
 </section>

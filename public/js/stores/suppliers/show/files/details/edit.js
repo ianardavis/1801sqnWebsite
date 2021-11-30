@@ -21,7 +21,7 @@ function addDetailEditBtns() {
             e.appendChild(
                 new Link({
                     modal: 'file_detail_edit',
-                    data:  {field: 'id', value: detail.file_detail_id},
+                    data:  [{field: 'id', value: detail.file_detail_id}],
                     small: true,
                     type:  'edit'
                 }).e

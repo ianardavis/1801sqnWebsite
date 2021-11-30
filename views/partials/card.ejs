@@ -5,7 +5,7 @@
                 <div class="card-header">
                     <h3><%= title %></h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body<% if (locals.body_100) { %> h-100-px<% } %>">
                     <% if (locals.image) { %>
                         <i class="fas fa-<%= image %> fa-5x"></i>
                     <% } else if (locals.text) { %>

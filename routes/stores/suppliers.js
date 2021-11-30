@@ -1,8 +1,8 @@
 module.exports = (app, m, fn) => {
-    app.get('/suppliers',         fn.loggedIn(), fn.permissions.get('supplier_admin'),   (req, res) => res.render('stores/suppliers/index'));
-    app.get('/suppliers/:id',     fn.loggedIn(), fn.permissions.get('supplier_admin'),   (req, res) => res.render('stores/suppliers/show'));
+    app.get('/suppliers',             fn.loggedIn(), fn.permissions.get('supplier_admin'),   (req, res) => res.render('stores/suppliers/index'));
+    app.get('/suppliers/:id',         fn.loggedIn(), fn.permissions.get('supplier_admin'),   (req, res) => res.render('stores/suppliers/show'));
 
-    app.get('/get/suppliers',     fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
+    app.get('/get/suppliers',         fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         m.suppliers.findAll({
             where: JSON.parse(req.query.where),
             ...fn.sort(req.query.sort)
@@ -10,7 +10,7 @@ module.exports = (app, m, fn) => {
         .then(suppliers => res.send({success: true, result: suppliers}))
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/supplier',      fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
+    app.get('/get/supplier',          fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.get(
             'suppliers',
             JSON.parse(req.query.where),
@@ -20,7 +20,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.post('/suppliers',        fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
+    app.post('/suppliers',            fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         req.body.supplier = fn.nullify(req.body.supplier);
         m.suppliers.create(req.body.supplier)
         .then(supplier => res.send({success: true, message: 'Supplier added'}))
@@ -31,7 +31,7 @@ module.exports = (app, m, fn) => {
         .then(result => res.send({success: true, message: 'Supplier saved'}))
         .catch(err => res.send({success: true, message: `Error updating supplier: ${err.message}`}));
     });
-    app.put('/suppliers/:id',     fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
+    app.put('/suppliers/:id',         fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.put(
             'suppliers',
             {supplier_id: req.params.id},
@@ -41,7 +41,7 @@ module.exports = (app, m, fn) => {
         .catch(err => res.send({success: true, message: `Error updating supplier: ${err.message}`}));
     });
 
-    app.delete('/suppliers/:id',  fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
+    app.delete('/suppliers/:id',      fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.get(
             'suppliers',
             {supplier_id: req.params.id}
