@@ -16,7 +16,14 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div     id="details" role="tabpanel" aria-labelledby="details-tab" class="tab-pane fade">
-            <%- include(`${partials}/btn_modal`, {text: 'Edit Size', type: 'warning', modal: 'size_edit'}) %>
+            <div id="div_details_menu" class="mb-1">
+                <span class="float-start">
+                    <%- include(`${partials}/btn_modal`, {icon: 'pencil-alt', type: 'warning', modal: 'size_edit'}) %>
+                </span>
+                <span class="float-end">
+                    <%- include(`${partials}/btn_delete`) %>
+                </span>
+            </div>
             <%- include(`${partials}/inputs/display`, {id: 'issueable',   title: 'Issueable'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'orderable',   title: 'Orderable'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'has_serials', title: 'Has Serials'}) %>
@@ -33,7 +40,6 @@
                     <tbody id='tbl_details'></tbody>
                 </table>
             </div>
-            <%- include(`${partials}/btn_delete`) %>
         </div>
         <div     id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
             <%- include(`${partials}/btn_modal`, {text: 'Add NSN', type: 'success', modal: 'nsn_add'}) %>
