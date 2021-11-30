@@ -1,5 +1,7 @@
 <div class="tab-pane fade" id="notes" role="tabpanel">
-    <%- include(`${partials}/btn_modal`, {text: 'Add Note', type: 'success', modal: 'note_add'}) %>
+    <span class="float-start">
+        <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'note_add'}) %>
+    </span>
     <%- include(`${partials}/inputs/select`, {id: 'sel_system', title: 'System Notes', options: [{text: 'Include', value: ''}, {text: 'Exclude', value: '"system":"0"', selected: true}, {text: 'Only', value: '"system":"1"'}]}) %>
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
