@@ -1,6 +1,5 @@
 function enable_radios(table) {
     let radios = table.querySelectorAll('input[type="radio"]');
-    console.log(radios);
     radios.forEach(e => e.removeAttribute('disabled'));
 };
 function addEditSelect() {

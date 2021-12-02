@@ -42,6 +42,7 @@ function getLines() {
                             colour: 'primary',
                             html: '<i class="fas fa-question"></i>',
                             attributes: [
+                                {field: 'name',     value: `lines[][${row_index}][status]`},
                                 {field: 'checked',  value: true},
                                 {field: 'disabled', value: true}
                             ]
