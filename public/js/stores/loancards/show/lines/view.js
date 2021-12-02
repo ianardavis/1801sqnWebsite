@@ -39,6 +39,7 @@ function getLines() {
                         new Radio({
                             id: `${line.loancard_line_id}_nil`,
                             classes: ['radio_nil'],
+                            colour: 'primary',
                             html: '<i class="fas fa-question"></i>',
                             attributes: [
                                 {field: 'checked',  value: true},
@@ -50,6 +51,7 @@ function getLines() {
                         new Radio({
                             id: `${line.loancard_line_id}_cancel`,
                             classes: ['radio_cancel'],
+                            colour: 'danger',
                             html: '<i class="fas fa-trash-alt"></i>',
                             attributes: [
                                 {field: 'name',     value: `lines[][${row_index}][status]`},
