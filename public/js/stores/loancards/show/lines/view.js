@@ -58,7 +58,7 @@ function getLines() {
                             ]
                         }).e
                     );
-                    if (line.status === 1) radios.push(
+                    if (line.status === 2) radios.push(
                         new Radio({
                             id: `${line.loancard_line_id}_nil`,
                             classes: ['radio_return'],
