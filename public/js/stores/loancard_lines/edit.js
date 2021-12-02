@@ -1,3 +1,8 @@
+function enable_radios(table) {
+    let radios = table.querySelectorAll('input[type="radio"]');
+    console.log(radios);
+    radios.forEach(e => e.removeAttribute('disabled'));
+};
 function addEditSelect() {
     hide('sel_all');
     let cells = document.querySelectorAll('.actions'),
@@ -34,9 +39,7 @@ function addEditSelect() {
                         }).e
                         select.addEventListener('change', returnOptions);
                         cell.appendChild(select);
-                        let div_details = document.createElement('div');
-                        div_details.setAttribute('id', `line_${line.loancard_line_id}_details`);
-                        cell.appendChild(div_details);
+                        cell.appendChild(new Div({attributes: [{field: 'id', value: `line_${line.loancard_line_id}_details`}]}).);
                         resolve(true);
                     } else resolve(false);
                 })
@@ -50,13 +53,14 @@ function addEditSelect() {
     Promise.all(actions)
     .then(result => show('sel_all'));
 };
-function returnOptions() {
-    clear(`line_${this.dataset.id}_details`)
+function return_options() {
+    clear(`${this.dataset.loancard_line_id}_details`)
     .then(div_details => {
-        if (this.value === '3') {
+        console.log(this.checked);
+        if (this.value === '3' && this.checked) {
             get({
                 table: 'loancard_line',
-                query: [`"loancard_line_id":"${this.dataset.id}"`],
+                query: [`"loancard_line_id":"${this.dataset.loancard_line_id}"`],
                 index: this.dataset.index
             })
             .then(function ([line, options]) {

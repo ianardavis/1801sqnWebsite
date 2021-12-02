@@ -15,14 +15,6 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-            <div id="div_details_menu" class="mb-1">
-                <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'pencil-alt', type: 'warning', modal: 'supplier_edit'}) %>
-                </span>
-                <span class="float-end">
-                    <%- include(`${partials}/btn_delete`) %>
-                </span>
-            </div>
             <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_name',       title: 'Name'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_account',    title: 'Account', link: true, modal: 'account_view'}) %>
@@ -36,13 +28,16 @@
                     </form>
                 </div>
             <% } %>
-        </div>
-        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-            <div id="div_files_menu" class="mb-1">
+            <div id="div_details_menu" class="mb-1">
                 <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'file-upload', type: 'success', modal: 'file_add'}) %>
+                    <%- include(`${partials}/btn_modal`, {icon: 'pencil-alt', type: 'warning', modal: 'supplier_edit'}) %>
+                </span>
+                <span class="float-end">
+                    <%- include(`${partials}/btn_delete`) %>
                 </span>
             </div>
+        </div>
+        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
 					<th class='w-50' onclick='sortByRow(this, getFiles)' data-sort_col='filename'   >Filename   <span class='sort_ind float-end'></span></th>
@@ -51,13 +46,13 @@
                 </thead>
                 <tbody id="tbl_files"></tbody>
             </table>
-        </div>
-        <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
-            <div id="div_addresses_menu" class="mb-1">
+            <div id="div_files_menu" class="mb-1">
                 <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'address_add'}) %>
+                    <%- include(`${partials}/btn_modal`, {icon: 'file-upload', type: 'success', modal: 'file_add'}) %>
                 </span>
             </div>
+        </div>
+        <div class="tab-pane fade" id="addresses" role="tabpanel" aria-labelledby="addresses-tab">
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
 					<th class='w-30' onclick='sortByRow(this, getAddresses)' data-sort_col='type'>Type<span class='sort_ind float-end'></span></th>
@@ -67,13 +62,13 @@
                 </thead>
                 <tbody id="tbl_addresses"></tbody>
             </table>
-        </div>
-        <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
-            <div id="div_contacts_menu" class="mb-1">
+            <div id="div_addresses_menu" class="mb-1">
                 <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'contact_add'}) %>
+                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'address_add'}) %>
                 </span>
             </div>
+        </div>
+        <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
                     <th class='w-30' onclick='sortByRow(this, getContacts)' data-sort_col='type'>Type<span class='sort_ind float-end'></span></th>
@@ -83,6 +78,11 @@
                 </thead>
                 <tbody id="tbl_contacts"></tbody>
             </table>
+            <div id="div_contacts_menu" class="mb-1">
+                <span class="float-start">
+                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'contact_add'}) %>
+                </span>
+            </div>
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
             <table class="table table-sm table-hover">

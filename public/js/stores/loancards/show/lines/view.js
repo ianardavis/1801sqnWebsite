@@ -21,21 +21,62 @@ function getLines() {
                     add_cell(row, {text: line.size.item.description});
                     add_cell(row, {text: print_size(line.size)});
                     add_cell(row, {text: line.qty});
-                    add_cell(row, {
-                        text: line_statuses[line.status],
-                        ...(
-                            (line.status === 1 && line.loancard.status === 1) ||
-                            (line.status === 2 && line.loancard.status === 2)
-                            ? {
-                                classes: ['actions'],
-                                data: [
-                                    {field: 'id',    value: line.loancard_line_id},
-                                    {field: 'index', value: row_index}
-                                ]
-                            }
-                            : {}
-                        )
-                    })
+                    add_cell(row, {text: line_statuses[line.status],
+                        // ...(
+                        //     (line.status === 1 && line.loancard.status === 1) ||
+                        //     (line.status === 2 && line.loancard.status === 2)
+                        //     ? {
+                        //         classes: ['actions'],
+                        //         data: [
+                        //             {field: 'id',    value: line.loancard_line_id},
+                        //             {field: 'index', value: row_index}
+                        //         ]
+                        //     }
+                        //     : {}
+                        // )
+                    });
+                    let radios = [
+                        new Radio({
+                            id: `${line.loancard_line_id}_nil`,
+                            classes: ['radio_nil'],
+                            html: '<i class="fas fa-question"></i>',
+                            attributes: [
+                                {field: 'checked',  value: true},
+                                {field: 'disabled', value: true}
+                            ]
+                        }).e
+                    ];
+                    if (line.status === 1) radios.push(
+                        new Radio({
+                            id: `${line.loancard_line_id}_nil`,
+                            classes: ['radio_cancel'],
+                            html: '<i class="fas fa-trash-alt"></i>',
+                            attributes: [
+                                {field: 'name',     value: `lines[][${row_index}][status]`},
+                                {field: 'value',    value: '0'},
+                                {field: 'disabled', value: true}
+                            ]
+                        }).e
+                    );
+                    if (line.status === 1) radios.push(
+                        new Radio({
+                            id: `${line.loancard_line_id}_nil`,
+                            classes: ['radio_return'],
+                            html: '<i class="fas fa-undo-alt"></i>',
+                            attributes: [
+                                {field: 'name',     value: `lines[][${row_index}][status]`},
+                                {field: 'value',    value: '3'},
+                                {field: 'disabled', value: true}
+                            ],
+                            ...(typeof return_options === 'function' ? {listener: {event: 'input', func: return_options}}: {})
+                        }).e
+                    );
+                    radios.push(new Div({attributes: [
+                        {field: 'id', value: `${line.loancard_line_id}_details`},
+                        {field: 'data-loancard_line_id', value: line.loancard_line_id},
+                        {field: 'data-index',            value: row_index}
+                    ]}).e);
+                    add_cell(row, {append: radios})
                     add_cell(row, {append: 
                         new Button({
                             small: true,
@@ -55,7 +96,8 @@ function getLines() {
             return true;
         })
         .then(result => {
-            if (typeof addEditSelect === 'function') addEditSelect();
+            if (typeof enable_radios === 'function') enable_radios(tbl_lines);
+            // if (typeof addEditSelect === 'function') addEditSelect();
         });
     });
 };
@@ -72,10 +114,10 @@ function viewLine(loancard_line_id) {
         set_innerText({id: 'line_user',        text: print_user(line.user)});
         set_innerText({id: 'line_createdAt',   text: print_date(line.createdAt, true)});
         set_innerText({id: 'line_updatedAt',   text: print_date(line.updatedAt, true)});
-        set_href({id: 'btn_line_link', value: `/loancard_lines/${line.loancard_line_id}`});
-        set_href({id: 'line_item_link',         value: `/items/${line.size.item_id}`});
-        set_href({id: 'line_size_link',         value: `/sizes/${line.size_id}`});
-        set_href({id: 'line_user_link',         value: `/users/${line.user_id}`});
+        set_href({id: 'btn_line_link',  value: `/loancard_lines/${line.loancard_line_id}`});
+        set_href({id: 'line_item_link', value: `/items/${line.size.item_id}`});
+        set_href({id: 'line_size_link', value: `/sizes/${line.size_id}`});
+        set_href({id: 'line_user_link', value: `/users/${line.user_id}`});
     });
 };
 addReloadListener(getLines);

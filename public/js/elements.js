@@ -157,12 +157,14 @@ function Radio(options = {}) {
     radio.setAttribute('id', `rad_${options.id}`);
     radio.setAttribute('autocomplete', 'off');
     radio.classList.add('btn-check');
+    if (options.classes)    options.classes.forEach(c => radio.classList.add(c));
     if (options.attributes) options.attributes.forEach(a => radio.setAttribute(a.field, a.value));
     label.classList.add('btn', 'btn-outline-success');
     label.setAttribute('for', `rad_${options.id}`);
-    label.innerHTML = _check();
+    label.innerHTML = options.html || _check();
     if (options.small) label.classList.add('btn-sm');
     if (options.float) this.e.classList.add('float-end');
+    if (options.listener) radio.addEventListener(options.listener.event, options.listener.func);
     this.e.appendChild(radio);
     this.e.appendChild(label);
 };

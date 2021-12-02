@@ -26,12 +26,23 @@
             <%- include(`${partials}/inputs/display`, {id: 'stock_size',     title: 'Size',     link: true}) %>
             <%- include(`${partials}/inputs/display`, {id: 'stock_location', title: 'Location', link: true}) %>
             <div class="input-group mb-1">
+                <span class="input-group-text w-30">Location</span>
+                <p class="form-control mb-0" id='stock_location'></p>
+                <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-share"></i>',      type: 'success', modal: 'transfer_add', no_w: true}) %>
+                <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-pencil-alt"></i>', type: 'warning', modal: 'stock_edit',   no_w: true}) %>
+                <a class='btn btn-primary' id='stock_location_link'><i class="fas fa-search"></i></a>
+            </div>
+            <div class="input-group mb-1">
                 <span class="input-group-text w-30">Quantity</span>
                 <p class="form-control mb-0" id='stock_qty'></p>
                 <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-pencil-alt"></i>', type: 'warning', modal: 'count_add', no_w: true}) %>
                 <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-trash-alt"></i>',  type: 'danger', modal: 'scrap_add', no_w: true}) %>
             </div>
-            <%- include(`${partials}/btn_delete`) %>
+            <div id="div_details_menu" class="mb-1">
+                <span class="float-end">
+                    <%- include(`${partials}/btn_delete`) %>
+                </span>
+            </div>
         </div>
         <%- include(`${partials}/common/actions/tab_body`) %>
         <%- include(`${partials}/common/notes/tab_body`) %>

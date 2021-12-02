@@ -16,6 +16,11 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div     id="details" role="tabpanel" aria-labelledby="details-tab" class="tab-pane fade">
+            <%- include(`${partials}/inputs/display`, {id: 'issueable',   title: 'Issueable'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'orderable',   title: 'Orderable'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'has_serials', title: 'Has Serials'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'has_nsns',    title: 'Has NSNs'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'supplier',    title: 'Supplier', link: true}) %>
             <div id="div_details_menu" class="mb-1">
                 <span class="float-start">
                     <%- include(`${partials}/btn_modal`, {icon: 'pencil-alt', type: 'warning', modal: 'size_edit'}) %>
@@ -24,13 +29,7 @@
                     <%- include(`${partials}/btn_delete`) %>
                 </span>
             </div>
-            <%- include(`${partials}/inputs/display`, {id: 'issueable',   title: 'Issueable'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'orderable',   title: 'Orderable'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'has_serials', title: 'Has Serials'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'has_nsns',    title: 'Has NSNs'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'supplier',    title: 'Supplier', link: true}) %>
             <div id="div_details">
-                <%- include(`${partials}/btn_modal`, {text: 'Add Detail', type: 'success', modal: 'detail_add'}) %>
                 <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
                         <th class='w-30' onclick='sortByRow(this, getDetails)' data-sort_col='name' >Name <span class='sort_ind float-end'></span></th>
@@ -39,10 +38,14 @@
                     </thead>
                     <tbody id='tbl_details'></tbody>
                 </table>
+                <div id="div_details_details_menu" class="mb-1">
+                    <span class="float-start">
+                        <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'detail_add'}) %>
+                    </span>
+                </div>
             </div>
         </div>
         <div     id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
-            <%- include(`${partials}/btn_modal`, {text: 'Add NSN', type: 'success', modal: 'nsn_add'}) %>
             <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
@@ -53,9 +56,13 @@
                 <tbody id='tbl_nsns'></tbody>
             </table>
             <% if (permissions.stores_stock_admin) { %></form><% } %>
+            <div id="div_nsns_menu" class="mb-1">
+                <span class="float-start">
+                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'nsn_add'}) %>
+                </span>
+            </div>
         </div>
         <div     id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade">
-            <%- include(`${partials}/btn_modal`, {text: 'Add Serial #', type: 'success', modal: 'serial_add'}) %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
 					<th class='w-50' onclick='sortByRow(this, getSerials)' data-sort_col='serial'     >Serial #<span class='sort_ind float-end'></span></th>
@@ -64,9 +71,13 @@
                 </thead>
                 <tbody id='tbl_serials'></tbody>
             </table>
+            <div id="div_serials_menu" class="mb-1">
+                <span class="float-start">
+                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'serial_add'}) %>
+                </span>
+            </div>
         </div>
         <div     id="stocks"  role="tabpanel" aria-labelledby="stocks-tab"  class="tab-pane fade">
-            <%- include(`${partials}/btn_modal`, {text: 'Add Stock Location', type: 'success', modal: 'stock_add'}) %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
 					<th class='w-80' onclick='sortByRow(this, getStocks)' data-sort_col='location'>Location<span class='sort_ind float-end'></span></th>
@@ -75,10 +86,14 @@
                 </thead>
                 <tbody id='tbl_stocks'></tbody>
             </table>
+            <div id="div_stocks_menu" class="mb-1">
+                <span class="float-start">
+                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'stock_add'}) %>
+                </span>
+            </div>
         </div>
         <% if (permissions.stores_stock_admin) { %>
             <div id="orders"  role="tabpanel" aria-labelledby="orders-tab"  class="tab-pane fade">
-                <%- include(`${partials}/btn_modal`, {text: 'Add Order', type: 'success', modal: 'order_add'}) %>
                 <%- include(`${partials}/inputs/select`, {id: 'sel_order_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled', value: '"status":0'}, {text: 'Placed', value: '"status":1'}, {text: 'Demanded', value: '"status":2'}, {text: 'Received', value: '"status":3'}]}) %>
                 <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
@@ -89,10 +104,14 @@
                     </thead>
                     <tbody id='tbl_orders'></tbody>
                 </table>
+                <div id="div_orders_menu" class="mb-1">
+                    <span class="float-start">
+                        <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'order_add'}) %>
+                    </span>
+                </div>
             </div>
         <% } %>
         <div     id="issues"  role="tabpanel" aria-labelledby="issues-tab"  class="tab-pane fade">
-            <%- include(`${partials}/btn_modal`, {text: 'Add Issue', type: 'success', modal: 'issue_add'}) %>
             <%- include(`${partials}/inputs/select`, {id: 'sel_issue_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled/Declined', value: '"status":0'}, {text: 'Requested', value: '"status":1'}, {text: 'Approved', value: '"status":2'}, {text: 'Ordered', value: '"status":3'}, {text: 'Issued', value: '"status":4'}, {text: 'Returned', value: '"status":5'}]}) %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
@@ -104,6 +123,11 @@
                 </thead>
                 <tbody id='tbl_issues'></tbody>
             </table>
+            <div id="div_issues_menu" class="mb-1">
+                <span class="float-start">
+                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'issue_add'}) %>
+                </span>
+            </div>
         </div>
         <%- include(`${partials}/common/notes/tab_body`) %>
     </div>

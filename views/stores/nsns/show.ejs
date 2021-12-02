@@ -5,15 +5,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Menu
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%- include(`${partials}/menu/button`, {id: 'nsn_edit', text: 'Edit',     modal: 'nsn_edit'}) %>
-				<%- include(`${partials}/menu/button`, {id: 'delete',	text: 'Delete',   btn_form: {permission: 'stores_stock_admin'}}) %>
-            </div>
-        </li>
         <%- include(`${partials}/tab_head`, {id: 'details',   title: 'Details',   spinner: 'nsn'}) %>
         <%- include(`${partials}/tab_head`, {id: 'loancards', title: 'Loancards', spinner: 'loancards', count_id: 'loancard'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
@@ -24,6 +15,14 @@
             <%- include(`${partials}/inputs/display`, {id: 'nsn_class',   title: 'Classification'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'nsn_country', title: 'Country'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'item_number', title: 'Item Number'}) %>
+            <div id="div_details_menu" class="mb-1">
+                <span class="float-start">
+                    <%- include(`${partials}/btn_modal`, {icon: 'pencil-alt', type: 'warning', modal: 'nsn_edit'}) %>
+                </span>
+                <span class="float-end">
+                    <%- include(`${partials}/btn_delete`) %>
+                </span>
+            </div>
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
             <table class='table table-sm table-hover w-100'>

@@ -12,6 +12,11 @@
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+            <%- include(`${partials}/inputs/display`, {id: 'item_description', title: 'Description'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_size_text1',  title: 'Size Text 1'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_size_text2',  title: 'Size Text 2'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_size_text3',  title: 'Size Text 3'}) %>
+            <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender'}) %>
             <div id="div_details_menu" class="mb-1">
                 <span class="float-start">
                     <%- include(`${partials}/btn_modal`, {icon: 'pencil-alt', type: 'warning', modal: 'item_edit'}) %>
@@ -20,20 +25,10 @@
                     <%- include(`${partials}/btn_delete`) %>
                 </span>
             </div>
-            <%- include(`${partials}/inputs/display`, {id: 'item_description', title: 'Description'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_size_text1',  title: 'Size Text 1'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_size_text2',  title: 'Size Text 2'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_size_text3',  title: 'Size Text 3'}) %>
-            <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender'}) %>
         </div>
         <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
             <div class="row">
                 <div class="col-12 col-lg-5 mx-auto">
-                    <div id="div_categories_menu" class="mb-1">
-                        <span class="float-start">
-                            <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'category_add'}) %>
-                        </span>
-                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th class='w-100' onclick='sortByRow(this, getCategories)' data-sort_col='category_id'>Category<span class='sort_ind float-end'></span></th>
@@ -41,17 +36,17 @@
                         </thead>
                         <tbody id='tbl_categories'></tbody>
                     </table>
+                    <div id="div_categories_menu" class="mb-1">
+                        <span class="float-start">
+                            <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'category_add'}) %>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="tab-pane fade" id="sizes" role="tabpanel" aria-labelledby="sizes-tab">
             <div class="row">
                 <div class="col-12 col-lg-4 mx-auto">
-                    <div id="div_sizes_menu" class="mb-1">
-                        <span class="float-start">
-                            <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'size_add'}) %>
-                        </span>
-                    </div>
                     <table class='table table-sm table-hover w-100'>
                         <thead class='thead-dark'>
                             <th class='w-35' onclick='sortByRow(this, getSizes)' data-sort_col='size1' id='size_text1_sizes_table'><span class='sort_ind float-end'></span></th>
@@ -61,6 +56,11 @@
                         </thead>
                         <tbody id='tbl_sizes'></tbody>
                     </table>
+                    <div id="div_sizes_menu" class="mb-1">
+                        <span class="float-start">
+                            <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'size_add'}) %>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
