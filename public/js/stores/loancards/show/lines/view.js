@@ -21,20 +21,7 @@ function getLines() {
                     add_cell(row, {text: line.size.item.description});
                     add_cell(row, {text: print_size(line.size)});
                     add_cell(row, {text: line.qty});
-                    add_cell(row, {text: line_statuses[line.status],
-                        // ...(
-                        //     (line.status === 1 && line.loancard.status === 1) ||
-                        //     (line.status === 2 && line.loancard.status === 2)
-                        //     ? {
-                        //         classes: ['actions'],
-                        //         data: [
-                        //             {field: 'id',    value: line.loancard_line_id},
-                        //             {field: 'index', value: row_index}
-                        //         ]
-                        //     }
-                        //     : {}
-                        // )
-                    });
+                    add_cell(row, {text: line_statuses[line.status]});
                     let radios = [
                         new Radio({
                             id: `${line.loancard_line_id}_nil`,
@@ -67,18 +54,16 @@ function getLines() {
                             classes: ['radio_return'],
                             html: '<i class="fas fa-undo-alt"></i>',
                             attributes: [
-                                {field: 'name',     value: `lines[][${row_index}][status]`},
-                                {field: 'value',    value: '3'},
-                                {field: 'disabled', value: true}
+                                {field: 'name',                  value: `lines[][${row_index}][status]`},
+                                {field: 'value',                 value: '3'},
+                                {field: 'data-loancard_line_id', value: line.loancard_line_id},
+                                {field: 'data-index',            value: row_index},
+                                {field: 'disabled',              value: true}
                             ],
                             ...(typeof return_options === 'function' ? {listener: {event: 'input', func: return_options}}: {})
                         }).e
                     );
-                    radios.push(new Div({attributes: [
-                        {field: 'id', value: `${line.loancard_line_id}_details`},
-                        {field: 'data-loancard_line_id', value: line.loancard_line_id},
-                        {field: 'data-index',            value: row_index}
-                    ]}).e);
+                    radios.push(new Div({attributes: [{field: 'id', value: `${line.loancard_line_id}_details`}]}).e);
                     add_cell(row, {append: radios})
                     add_cell(row, {append: 
                         new Button({
