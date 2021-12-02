@@ -48,7 +48,7 @@ function getLines() {
                     ];
                     if (line.status === 1) radios.push(
                         new Radio({
-                            id: `${line.loancard_line_id}_nil`,
+                            id: `${line.loancard_line_id}_cancel`,
                             classes: ['radio_cancel'],
                             html: '<i class="fas fa-trash-alt"></i>',
                             attributes: [
@@ -60,7 +60,7 @@ function getLines() {
                     );
                     if (line.status === 2) radios.push(
                         new Radio({
-                            id: `${line.loancard_line_id}_nil`,
+                            id: `${line.loancard_line_id}_return`,
                             classes: ['radio_return'],
                             html: '<i class="fas fa-undo-alt"></i>',
                             attributes: [
