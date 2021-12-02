@@ -55,7 +55,6 @@ function addEditSelect() {
 function return_options() {
     clear(`${this.dataset.loancard_line_id}_details`)
     .then(div_details => {
-        console.log(this.checked);
         if (this.value === '3' && this.checked) {
             get({
                 table: 'loancard_line',
