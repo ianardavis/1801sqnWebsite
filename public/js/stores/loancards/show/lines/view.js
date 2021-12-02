@@ -28,7 +28,7 @@ function getLines() {
                             classes: ['radio_nil'],
                             colour: 'primary',
                             html: '<i class="fas fa-question"></i>',
-                            listener: {event: 'input', func: function () {clear(`${this.dataset.loancard_line_id}_details`)}},
+                            listener: {event: 'input', func: function () {clear(`${line.loancard_line_id}_details`)}},
                             attributes: [
                                 {field: 'name',     value: `lines[][${row_index}][status]`},
                                 {field: 'checked',  value: true},
