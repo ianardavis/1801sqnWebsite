@@ -39,7 +39,7 @@ function addEditSelect() {
                         }).e
                         select.addEventListener('change', returnOptions);
                         cell.appendChild(select);
-                        cell.appendChild(new Div({attributes: [{field: 'id', value: `line_${line.loancard_line_id}_details`}]}).);
+                        cell.appendChild(new Div({attributes: [{field: 'id', value: `line_${line.loancard_line_id}_details`}]}).e);
                         resolve(true);
                     } else resolve(false);
                 })
