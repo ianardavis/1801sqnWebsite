@@ -21,10 +21,21 @@ function getLines() {
                     add_cell(row, {text: line.size.item.description});
                     add_cell(row, {text: print_size(line.size)});
                     add_cell(row, {text: line.qty});
-                    add_cell(row, {text: line_statuses[line.status]});
-                    let radios = [
+                    add_cell(row, {
+                        text: line_statuses[line.status],
+                        append: new Input({
+                            attributes: [
+                                {field: 'type',  value: 'hidden'},
+                                {field: 'name',  value: `lines[][${row_index}][loancard_line_id]`},
+                                {field: 'value', value: line.loancard_line_id}
+                            ]
+                        }).e
+                    });
+                    let radios = [];
+                    if (line.status === 1 || line.status === 2) radios.push(
                         new Radio({
                             id: `${line.loancard_line_id}_nil`,
+                            float_start: true,
                             classes: ['radio_nil'],
                             colour: 'primary',
                             html: '<i class="fas fa-question"></i>',
@@ -35,10 +46,11 @@ function getLines() {
                                 {field: 'disabled', value: true}
                             ]
                         }).e
-                    ];
+                    );
                     if (line.status === 1) radios.push(
                         new Radio({
                             id: `${line.loancard_line_id}_cancel`,
+                            float_start: true,
                             classes: ['radio_cancel'],
                             colour: 'danger',
                             html: '<i class="fas fa-trash-alt"></i>',
@@ -52,6 +64,7 @@ function getLines() {
                     if (line.status === 2) radios.push(
                         new Radio({
                             id: `${line.loancard_line_id}_return`,
+                            float_start: true,
                             classes: ['radio_return'],
                             html: '<i class="fas fa-undo-alt"></i>',
                             attributes: [
@@ -68,7 +81,6 @@ function getLines() {
                     add_cell(row, {append: radios})
                     add_cell(row, {append: 
                         new Button({
-                            small: true,
                             modal: 'line_view',
                             data: [{
                                 field: 'id',
@@ -86,7 +98,6 @@ function getLines() {
         })
         .then(result => {
             if (typeof enable_radios === 'function') enable_radios(tbl_lines);
-            // if (typeof addEditSelect === 'function') addEditSelect();
         });
     });
 };

@@ -151,6 +151,7 @@ function Checkbox(options = {}) {
 function Radio(options = {}) {
     if (!options.id) options.id = random_id();
     this.e = document.createElement('span');
+    if (options.float_start) this.e.classList.add('float-start');
     let radio = document.createElement('input'),
         label = document.createElement('label');
     radio.setAttribute('type', 'radio');

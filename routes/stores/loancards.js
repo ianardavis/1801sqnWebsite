@@ -183,7 +183,6 @@ module.exports = (app, m, fn) => {
     });
     app.put('/loancard_lines',               fn.loggedIn(), fn.permissions.check('issuer'),              (req, res) => {
         let actions = [];
-        console.log(req.body.lines);
         req.body.lines.filter(e => e.status === '3').forEach(line => actions.push(fn.loancards.lines.return({...line, user_id: req.user.user_id})));
         req.body.lines.filter(e => e.status === '0').forEach(line => actions.push(fn.loancards.lines.cancel({...line, user_id: req.user.user_id})));
         Promise.allSettled(actions)
@@ -195,22 +194,35 @@ module.exports = (app, m, fn) => {
                 loancard_checks.push(new Promise((resolve, reject) => {
                     return fn.get(
                         'loancards',
-                        {loancard_id: loancard}
+                        {loancard_id: loancard},
+                        [{
+                            model: m.loancard_lines,
+                            as:    'lines',
+                            where: {status: {[fn.op.or]: [1, 2]}},
+                            required: false
+                        }]
                     )
                     .then(loancard => {
                         if      (loancard.status === 0) reject(new Error('Loancard has already been cancelled'))
                         else if (loancard.status === 1) {
-                            return fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: req.user.user_id, noforce: true})
-                            .then(result => resolve(result))
-                            .catch(err => reject(err));
+                            if (!loancard.lines || loancard.lines.length === 0) {
+                                return fn.loancards.cancel({loancard_id: loancard.loancard_id, user_id: req.user.user_id, noforce: true})
+                                .then(result => resolve(result))
+                                .catch(err => reject(err));
+                            } else resolve(false);
                         } else if (loancard.status === 2) {
-                            return fn.loancards.close({loancard_id: loancard.loancard_id, user_id: req.user.user_id})
-                            .then(result => resolve(result))
-                            .catch(err => reject(err));
+                            if (!loancard.lines || loancard.lines.length === 0) {
+                                return fn.loancards.close({loancard_id: loancard.loancard_id, user_id: req.user.user_id})
+                                .then(result => resolve(result))
+                                .catch(err => reject(err));
+                            } else resolve(false);
                         } else if (loancard.status === 3) reject(new Error('Loancard has already been closed'))
                         else reject(new Error('Unknown loancard status'));
                     })
-                    .catch(err => reject(err));
+                    .catch(err => {
+                        console.log(err);
+                        reject(err);
+                    });
                 }));
             });
             return Promise.allSettled(loancard_checks)

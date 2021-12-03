@@ -182,7 +182,7 @@ module.exports = (app, m, fn) => {
         if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
-            console.log(req.body.issues);
+            // console.log(req.body.issues);
             req.body.issues.filter(e => e.status === '-2') .forEach(issue => {
                 actions.push(
                     fn.issues.remove_from_loancard({
@@ -232,7 +232,7 @@ module.exports = (app, m, fn) => {
             Promise.allSettled(actions)
             .then(results => {
                 if (results.filter(e => e.status === 'rejected').length > 0) {
-                    console.log(results);
+                    // console.log(results);
                     res.send({success: true, message: 'Some lines failed'});
                 } else res.send({success: true, message: 'Lines actioned'});
             })
