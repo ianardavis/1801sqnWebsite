@@ -28,9 +28,9 @@
     <div class="tab-content pt-3" id="myTabContent">
         <div class="tab-pane fade" id="printers" role="tabpanel" aria-labelledby="printers-tab">
             <%- include(`${partials}/inputs/display`, {title: 'Printer', id: 'setting_printer'}) %>
-            <button class='btn btn-sm btn-primary w-100 mb-1 mt-2' id='btn_printers'>Find Printers</button>
+            <%- include(`${partials}/button/button`, {text: 'Find Printer', type: 'primary', id: 'printers', classes: ['w-100']}) %>
             <form id='form_printers'>
-                <button class='btn btn-sm btn-success w-100 mb-1 mt-2'>Save Selected Printers</button>
+                <%- include(`${partials}/button/button`, {text: 'Save Selected Printer', type: 'success', classes: ['w-100']}) %>
                 <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th><i class='fas fa-check'></i></th>
@@ -131,7 +131,7 @@
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='setting_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>
@@ -147,8 +147,7 @@
                         <%- include(`${partials}/inputs/text`, {title: 'Value', name: 'setting[value]', required: true}) %>
                     </div>
                     <div class="modal-footer">
-                        <button class='btn btn-success w-100'>Save</button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -165,8 +164,7 @@
                         <%- include(`${partials}/inputs/text`, {title: 'Value', id: 'setting_value_edit', name: 'setting[value]', required: true}) %>
                     </div>
                     <div class="modal-footer">
-                        <button class='btn btn-success w-100'>Save</button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -189,7 +187,7 @@
                         </div>
                         <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='gender_id'></span></p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                         </div>
                     </div>
                 </div>
@@ -204,8 +202,7 @@
                             <%- include(`${partials}/inputs/text`, {title: 'Name', name: 'gender[gender]', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <button class='btn btn-success w-100'>Save</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -221,8 +218,7 @@
                             <%- include(`${partials}/inputs/text`, {title: 'Gender', id: 'gender_gender_edit', name: 'gender[gender]', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <button class='btn btn-success w-100'>Save</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -249,7 +245,7 @@
                         </div>
                         <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='account_id'></span></p>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                         </div>
                     </div>
                 </div>
@@ -266,8 +262,7 @@
                             <%- include(`${partials}/inputs/select`, {title: 'Owner',  name: 'account[user_id_account]', required: true, id: 'sel_account_user_add'}) %>
                         </div>
                         <div class="modal-footer">
-                            <button class='btn btn-success w-100'>Save</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -285,8 +280,7 @@
                             <%- include(`${partials}/inputs/select`, {title: 'Owner',  id: 'sel_account_user_edit', name: 'account[user_id_account]', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <button class='btn btn-success w-100'>Save</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -311,7 +305,7 @@
                             <%- include(`${partials}/inputs/display`, {title: 'Updated',  id: 'updatedAt_category'}) %>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                         </div>
                     </div>
                 </div>
@@ -327,8 +321,7 @@
                             <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[category]', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <button class='btn btn-success w-100'>Save</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -345,8 +338,7 @@
                             <%- include(`${partials}/inputs/text`,   {title: 'Category', name: 'category[category]',           id: 'category_edit', required: true}) %>
                         </div>
                         <div class="modal-footer">
-                            <button class='btn btn-success w-100'>Save</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>

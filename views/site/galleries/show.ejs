@@ -20,8 +20,8 @@
     <div class="d-flex">
         <div class='ms-auto'>
             <% if (permissions.gallery_admin) { %>
-                <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_image_add'><i class='fas fa-file-upload'></i></button>
-                <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#mdl_image_edit'><i class='fas fa-pencil-alt'></i></button>
+                <%- include(`${partials}/button/modal/open`, {type: 'success', icon: 'file-upload', modal: 'image_add'}) %>
+                <%- include(`${partials}/button/modal/open`, {type: 'warning', icon: 'pencil-alt',  modal: 'image_edit'}) %>
                 <form id="form_image_delete" class='form_inline'>
                     <input type="hidden" name='image_id' id='image_id_delete'>
                     <button class='btn btn-danger' id='btn_image_delete'><i class='fas fa-trash-alt'></i></button>
@@ -48,7 +48,7 @@
                     </div>
                     <div class="modal-footer">
                         <input  type="submit" class="btn btn-success w-100" value='Upload Image(s)'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </form>
             </div>
@@ -65,7 +65,7 @@
                         <%- include(`${partials}/inputs/text`, {title: 'Description', id: 'image_description_edit', name: 'image[description]'}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save'>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>

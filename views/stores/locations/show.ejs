@@ -64,8 +64,7 @@
                             <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'location_location_edit'}) %>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit"  class="btn btn-success w-100" value='Save Location'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+							<%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -87,7 +86,7 @@
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='stock_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>
@@ -108,7 +107,7 @@
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='serial_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>

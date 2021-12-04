@@ -242,7 +242,7 @@ function table_date(date, time = false) {
 }
 function clear(id) {
     return new Promise((resolve, reject) => {
-        let e = document.querySelector(`#${id}`);
+        let e = document.getElementById(id);
         if (!e) {
             console.log('Element not found');
             reject(new Error('Element not found'));

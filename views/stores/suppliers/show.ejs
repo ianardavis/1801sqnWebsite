@@ -30,10 +30,10 @@
             <% } %>
             <div id="div_details_menu" class="mb-1">
                 <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'pencil-alt', type: 'warning', modal: 'supplier_edit'}) %>
+                    <%- include(`${partials}/button/modal/open`, {icon: 'pencil-alt', type: 'warning', modal: 'supplier_edit'}) %>
                 </span>
                 <span class="float-end">
-                    <%- include(`${partials}/btn_delete`) %>
+                    <%- include(`${partials}/button/delete`) %>
                 </span>
             </div>
         </div>
@@ -48,7 +48,7 @@
             </table>
             <div id="div_files_menu" class="mb-1">
                 <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'file-upload', type: 'success', modal: 'file_add'}) %>
+                    <%- include(`${partials}/button/modal/open`, {icon: 'file-upload', type: 'success', modal: 'file_add'}) %>
                 </span>
             </div>
         </div>
@@ -64,7 +64,7 @@
             </table>
             <div id="div_addresses_menu" class="mb-1">
                 <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'address_add'}) %>
+                    <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'address_add'}) %>
                 </span>
             </div>
         </div>
@@ -80,7 +80,7 @@
             </table>
             <div id="div_contacts_menu" class="mb-1">
                 <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'contact_add'}) %>
+                    <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'contact_add'}) %>
                 </span>
             </div>
         </div>
@@ -124,8 +124,7 @@
                         <%- include(`${partials}/inputs/select`, {id: 'supplier_is_stores_edit', title: 'RAF Stores?', name: 'supplier[stores]',     options: [{text: 'No', value: '0'}, {text: 'Yes', value: '1'}]}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save Supplier'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -146,7 +145,7 @@
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto text-start'>ID: <span id='account_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>
@@ -191,7 +190,7 @@
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto text-start'>ID: <span id='file_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>
@@ -210,8 +209,7 @@
                         <input type="file" class="form-control text-align-start" name="uploaded" id="file_upload" required>
                     </div>
                     <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Save File'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -228,8 +226,7 @@
                         <%- include(`${partials}/inputs/text`, {id: 'file_description_edit', title: 'Description', name: 'file[description]', required: true}) %>
                     </div>
                     <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Save File'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -247,8 +244,7 @@
                         <%- include(`${partials}/inputs/text`, {id: 'file_detail_value_edit', title: 'Value', name: 'detail[value]', required: true}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit"  class="btn btn-success w-100" value='Save File'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -280,7 +276,7 @@
                             Address ID: <span id='address_id'></span><br>
                             Link ID: <span id='supplier_address_id'></span>
                         </p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>
@@ -302,8 +298,7 @@
                         <%- include(`${partials}/inputs/text`, {id: 'address_postcode_add',    name: 'address[postcode]',    title: 'Postcode'}) %>
                     </div>
                     <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Save Address'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -325,8 +320,7 @@
                         <%- include(`${partials}/inputs/text`, {id: 'address_postcode_edit',    name: 'address[postcode]',    title: 'Postcode'}) %>
                     </div>
                     <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Save Address'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -355,7 +349,7 @@
                             Contact ID: <span id='contact_id'></span><br>
                             Link ID: <span id='supplier_contact_id'></span>
                         </p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>
@@ -373,8 +367,7 @@
                         <%- include(`${partials}/inputs/text`, {id: 'contact_contact_add',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
                     </div>
                     <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Save Contact'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -392,8 +385,7 @@
                         <%- include(`${partials}/inputs/text`, {id: 'contact_contact_edit',     name: 'contact[contact]',     title: 'Contact',     required: true}) %>
                     </div>
                     <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Save Contact'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>

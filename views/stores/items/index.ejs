@@ -39,8 +39,7 @@
 							<%- include(`${partials}/inputs/select`, {title: 'Gender',		name: 'item[gender_id]',   id: 'sel_genders_add', spinner_id: 'genders_add', reload_id: 'reload_genders_add'}) %>
 						</div>
 						<div class="modal-footer">
-							<input type="submit" class="btn btn-success w-100" value='Save Item'>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+							<%- include(`${partials}/button/save`) %>
 						</div>
 					</form>
 				</div>

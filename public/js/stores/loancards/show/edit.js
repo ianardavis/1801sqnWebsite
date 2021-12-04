@@ -1,5 +1,5 @@
 function setCompleteButton(status) {
-    if (status === 1) enable_button('complete');
+    if (status === 1) enable_button('loancard_complete');
 };
 function editLoancardDueDate() {
     get({
@@ -41,7 +41,7 @@ window.addEventListener( "load", function () {
         }
     );
     addFormListener(
-        'delete_file',
+        'loancard_file_delete',
         'DELETE',
         `/loancards/${path[2]}/delete_file`,
         {onComplete: [getLoancard]}

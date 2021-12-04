@@ -56,8 +56,7 @@
                             <datalist id="locations_list"></datalist>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit"  class="btn btn-success w-100" value='Save Location'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -93,7 +92,7 @@
                             Loancard ID: <span id='loancard_id'></span><br>
                             Line ID: <span id='loancard_line_id'></span>
                         </p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>
@@ -119,7 +118,7 @@
                     </div>
                     <div class="modal-footer">
                         <p class='me-auto'>ID: <span id='action_id'></span></p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>

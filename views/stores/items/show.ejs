@@ -19,10 +19,10 @@
             <%- include(`${partials}/inputs/display`, {id: 'item_gender',      title: 'Gender'}) %>
             <div id="div_details_menu" class="mb-1">
                 <span class="float-start">
-                    <%- include(`${partials}/btn_modal`, {icon: 'pencil-alt', type: 'warning', modal: 'item_edit'}) %>
+                    <%- include(`${partials}/button/modal/open`, {icon: 'pencil-alt', type: 'warning', modal: 'item_edit'}) %>
                 </span>
                 <span class="float-end">
-                    <%- include(`${partials}/btn_delete`) %>
+                    <%- include(`${partials}/button/delete`) %>
                 </span>
             </div>
         </div>
@@ -38,7 +38,7 @@
                     </table>
                     <div id="div_categories_menu" class="mb-1">
                         <span class="float-start">
-                            <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'category_add'}) %>
+                            <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'category_add'}) %>
                         </span>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                     </table>
                     <div id="div_sizes_menu" class="mb-1">
                         <span class="float-start">
-                            <%- include(`${partials}/btn_modal`, {icon: 'plus-square', type: 'success', modal: 'size_add'}) %>
+                            <%- include(`${partials}/button/modal/open`, {icon: 'plus-square', type: 'success', modal: 'size_add'}) %>
                         </span>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                             Category ID: <span id='category_id'></span><br>
                             Link ID: <span id='item_category_id'></span>
                         </p>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+						<%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </div>
             </div>
@@ -107,8 +107,7 @@
                         <div id="sub_categories"></div>
                     </div>
                     <div class="modal-footer">
-                        <input  type="submit" class="btn btn-success w-100" value='Add Category'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+						<%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -131,8 +130,7 @@
                         <%- include(`${partials}/inputs/select`, {id: 'sel_genders',      title: 'Gender',      spinner_id: 'genders'}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit"  class="btn btn-success w-100" value='Save Item'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+						<%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>
@@ -155,8 +153,7 @@
                         <%- include(`${partials}/inputs/select`, {name: 'size[supplier_id]', title: 'Supplier',     id: 'size_supplier',    spinner_id: 'suppliers', reload_id: 'reload_suppliers', permission: 'supplier_admin'}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save Size'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+						<%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>

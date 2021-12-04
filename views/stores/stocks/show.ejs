@@ -28,19 +28,19 @@
             <div class="input-group mb-1">
                 <span class="input-group-text w-30">Location</span>
                 <p class="form-control mb-0" id='stock_location'></p>
-                <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-share"></i>',      type: 'success', modal: 'transfer_add', no_w: true}) %>
-                <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-pencil-alt"></i>', type: 'warning', modal: 'stock_edit',   no_w: true}) %>
+                <%- include(`${partials}/button/modal/open`, {icon: 'share',      type: 'success', modal: 'transfer_add'}) %>
+                <%- include(`${partials}/button/modal/open`, {icon: 'pencil-alt', type: 'warning', modal: 'stock_edit'}) %>
                 <a class='btn btn-primary' id='stock_location_link'><i class="fas fa-search"></i></a>
             </div>
             <div class="input-group mb-1">
                 <span class="input-group-text w-30">Quantity</span>
                 <p class="form-control mb-0" id='stock_qty'></p>
-                <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-pencil-alt"></i>', type: 'warning', modal: 'count_add', no_w: true}) %>
-                <%- include(`${partials}/btn_display_modal`, {text: '<i class="fas fa-trash-alt"></i>',  type: 'danger', modal: 'scrap_add', no_w: true}) %>
+                <%- include(`${partials}/button/modal/open`, {icon: 'pencil-alt', type: 'warning', modal: 'count_add'}) %>
+                <%- include(`${partials}/button/modal/open`, {icon: 'trash-alt',  type: 'danger',  modal: 'scrap_add'}) %>
             </div>
             <div id="div_details_menu" class="mb-1">
                 <span class="float-end">
-                    <%- include(`${partials}/btn_delete`) %>
+                    <%- include(`${partials}/button/delete`) %>
                 </span>
             </div>
         </div>
@@ -62,8 +62,7 @@
                             <%- include(`${partials}/inputs/text`, {title: 'Location', name: 'location', id: 'stock_location_edit', spinner_id: 'locations', reload_id: 'reload_locations_edit', list_id: 'locations_list'}) %>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit"  class="btn btn-success w-100" value='Save Location'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -80,7 +79,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="submit"  class="btn btn-success w-100" value='Transfer'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <%- include(`${partials}/button/modal/close`) %>
                         </div>
                     </form>
                 </div>
@@ -96,7 +95,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Count Stock'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <%- include(`${partials}/button/modal/close`) %>
                         </div>
                     </form>
                 </div>
@@ -112,7 +111,7 @@
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-success w-100" value='Scrap Stock'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <%- include(`${partials}/button/modal/close`) %>
                         </div>
                     </form>
                 </div>

@@ -66,7 +66,7 @@
 					<div class="modal-body">
 						<input type="hidden" class='demand_id' name='demand_id'>
 						<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'line_add_qty'}) %>
-						<button type='button' class='btn btn-success w-100 mb-1' id='btn_line_sizes'>Add Item(s)</button>
+						<%- include(`${partials}/button/button`, {type: 'success', id: 'line_sizes', text: 'Add Item(s)', type_att: true, classes: ['w-100']}) %>
 						<table class='table table-sm table-hover'>
 							<thead class='thead-dark'>
 								<th class='w-30'>Item</th>
@@ -79,7 +79,7 @@
 					</div>
 					<div class="modal-footer">
 						<input type="submit" class="btn btn-success w-100" value='Add Lines'>
-						<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+						<%- include(`${partials}/button/modal/close`) %>
 					</div>
 				</form>
 			</div>

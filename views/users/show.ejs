@@ -155,8 +155,7 @@
                             <%- include(`${partials}/inputs/text`,   {title: 'Login ID',   name: 'user[login_id]',       required: true, id: 'inp_login_id'}) %>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" id='save_user' class="btn btn-success w-100" value='Save User'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>
@@ -173,7 +172,7 @@
                     </div>
                     <div class="modal-footer">
                         <input type="submit" id='save_password' class="btn btn-success w-100" value='Save Password' disabled>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </form>
             </div>
@@ -207,8 +206,7 @@
                             <ul id="ul_tree" class='list-group'></ul>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-success w-100" value='Save Permissions'>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <%- include(`${partials}/button/save`) %>
                         </div>
                     </form>
                 </div>

@@ -131,7 +131,7 @@ function return_options() {
     })
 };
 function setActionButton(status) {
-    if ([1,2].includes(status)) enable_button('action');
+    if ([1,2].includes(status)) enable_button('lines_action');
 };
 function select_all() {
     if (this.value !== 'Select All') {

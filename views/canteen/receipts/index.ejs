@@ -25,9 +25,6 @@
                 <form class="modal-content" id='form_receipt_add'>
                     <div class="modal-header">
                         <h5 class="modal-title">Add Receipt</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
                     </div>
                     <div class="modal-body">
                         <%- include(`${partials}/inputs/select`, {title: 'Item',         id: 'sel_items',  name: 'receipts[0][item_id]', required: true}) %>
@@ -37,6 +34,7 @@
                     </div>
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-success w-100" value='Add Item'>
+                        <%- include(`${partials}/button/modal/close`) %>
                     </div>
                 </form>
             </div>

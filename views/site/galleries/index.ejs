@@ -6,7 +6,7 @@
             <span>Galleries</span>
             <div>
                 <% if (permissions.gallery_admin) { %>
-                    <button class='btn btn-success' data-bs-toggle='modal' data-bs-target='#mdl_gallery_add'><i class='fas fa-plus'></i></button>
+                    <%- include(`${partials}/button/modal/open`, {type: 'success', icon: 'plus', modal: 'gallery_add'}) %>
                 <% } %>
             </div>
         </div>
@@ -25,8 +25,7 @@
                         <%- include(`${partials}/inputs/text`, {title: 'Description', name: 'gallery[name]', required: true}) %>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-success w-100" value='Save Gallery'>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <%- include(`${partials}/button/save`) %>
                     </div>
                 </form>
             </div>

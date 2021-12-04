@@ -1,0 +1,7 @@
+<button
+    <% if (locals.type_att) { %>type='button'<% } %>
+    class='btn btn-sm btn-<%- type %><% if (locals.classes) { %><% classes.forEach(c => { %> <%= c %><% }) %><% } %>'
+    <% if (locals.id) { %> id='btn_<%= id %>'<% } %>
+>
+    <%= text %>
+</button>

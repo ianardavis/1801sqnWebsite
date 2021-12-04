@@ -6,13 +6,6 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
 	<ul class="nav nav-tabs" id="mainTab" role="tablist">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="optionsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Menu
-			</a>
-			<div class="dropdown-menu" aria-labelledby="optionsDropdown">
-			</div>
-		</li>
         <%- include(`${partials}/tab_head`, {id: 'details', title: 'Details', spinner: 'demand_line'}) %>
         <%- include(`${partials}/common/actions/tab_head`) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
