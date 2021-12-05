@@ -5,76 +5,72 @@
 <%- include(`${partials}/spinner`, {id: 'issues'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-	<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
-		Filter
-	</button>
-	<div class="collapse mb-1" id="col-filter">
-		<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
-		<h5 class='text-start'>Status:</h5>
-		<div class="row">
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: '0', colour: 'secondary', classes: ['status']}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: '1', colour: 'warning', 	classes: ['status'], checked: true}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: '2', colour: 'success', 	classes: ['status'], checked: true}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: '3', colour: 'primary', 	classes: ['status'], checked: true}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: '4', colour: 'info', 		classes: ['status']}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: '5', colour: 'secondary', classes: ['status']}) %>
+	<div class="row">
+		<div class="col-12 col-md-6">
+			<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
+				Filter
+			</button>
+			<div class="collapse mb-1" id="col-filter">
+				<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
+				<h5 class='text-start'>Status:</h5>
+				<div class="row">
+					<div class="col-6 col-sm-4">
+						<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: '0', colour: 'secondary', classes: ['status']}) %>
+					</div>
+					<div class="col-6 col-sm-4">
+						<%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: '1', colour: 'warning', 	classes: ['status'], checked: true}) %>
+					</div>
+					<div class="col-6 col-sm-4">
+						<%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: '2', colour: 'success', 	classes: ['status'], checked: true}) %>
+					</div>
+					<div class="col-6 col-sm-4">
+						<%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: '3', colour: 'primary', 	classes: ['status'], checked: true}) %>
+					</div>
+					<div class="col-6 col-sm-4">
+						<%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: '4', colour: 'info', 		classes: ['status']}) %>
+					</div>
+					<div class="col-6 col-sm-4">
+						<%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: '5', colour: 'secondary', classes: ['status']}) %>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-6">
+						<h5 class='text-start'>Date From:</h5>
+						<input type="date" class='form-control' id='createdAt_from'>
+					</div>
+					<div class="col-sm-6">
+						<h5 class='text-start'>Date To:</h5>
+						<input type="date" class='form-control' id='createdAt_to'>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-6">
+						<h5 class='text-start'>Item:</h5>
+						<input type="text" class='form-control' id='item'>
+					</div>
+					<div class="col-sm-6">
+						<h5 class='text-start'>Size:</h5>
+						<input type="text" class='form-control' id='size'>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-sm-6">
-				<h5 class='text-start'>Date From:</h5>
-				<input type="date" class='form-control' id='createdAt_from'>
-			</div>
-			<div class="col-sm-6">
-				<h5 class='text-start'>Date To:</h5>
-				<input type="date" class='form-control' id='createdAt_to'>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-6">
-				<h5 class='text-start'>Item:</h5>
-				<input type="text" class='form-control' id='item'>
-			</div>
-			<div class="col-sm-6">
-				<h5 class='text-start'>Size:</h5>
-				<input type="text" class='form-control' id='size'>
-			</div>
+		<div class="col-12 col-md-6">
+			<%- include(`${partials}/button/button`, {id: 'action_lines', type: 'success', text: 'Action Selected Issues', classes: ['w-100', 'mb-1'], form: 'issue_edit', disabled: true}) %>
 		</div>
 	</div>
 	<% if (permissions.issuer) { %>
 		<form id='form_issue_edit'>
-			<%- include(`${partials}/button/button`, {text: 'Action Selected Issues', classes: ['w-100']}) %>
 	<% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class='w-15' onclick='sortByRow(this, getIssues)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
-				<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='user_id'  >User<span class='sort_ind float-end'></span></th>
+				<th class='w-15' onclick='sortByRow(this, getIssues)' data-sort_col='createdAt'>Date  <span class='sort_ind float-end'></span></th>
+				<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='user_id'  >User  <span class='sort_ind float-end'></span></th>
 				<th class='w-20'>Description</th>
-				<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='size_id'  >Size<span class='sort_ind float-end'></span></th>
-				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='qty'	   >Qty <span class='sort_ind float-end'></span></th>
-				<th class='w-15' onclick='sortByRow(this, getIssues)' data-sort_col='status'>
-					Status
-					<select id="sel_all" class='form-select form-select-sm hidden'>
-						<option>Select All</option>
-						<option value="-1">Decline</option>
-						<option value="0">Cancel</option>
-						<option value="2">Approve</option>
-						<option value="3">Order</option>
-						<option value="4">Issue</option>
-					</select>
-					<span class='sort_ind float-end'></span>
-				</th>
+				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='size_id'  >Size  <span class='sort_ind float-end'></span></th>
+				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='qty'	   >Qty   <span class='sort_ind float-end'></span></th>
+				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='status'   >Status<span class='sort_ind float-end'></span></th>
+				<th class='w-15'>Actions</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>
 			<tbody id="tbl_issues"></tbody>
@@ -88,7 +84,7 @@
 						<h5 class="modal-title">Add Issue(s)</h5>
 					</div>
 					<div class="modal-body">
-						<%- include(`${partials}/button/button`, {type_att: true, id: 'issue_users', text: 'Add User(s)', classes: ['w-100']}) %>
+						<%- include(`${partials}/button/button`, {type: 'success', type_att: true, id: 'issue_users', text: 'Add User(s)', classes: ['w-100']}) %>
 						<table class="table table-sm table-hover">
 							<thead class="thead-dark">
 								<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Service #</th>
@@ -98,7 +94,7 @@
 							<tbody id="tbl_issue_users_add"></tbody>
 						</table>
 						<%- include(`${partials}/inputs/number`, {title: 'Quantity', value: '1', min: '1', id: 'issue_add_qty'}) %>
-						<%- include(`${partials}/button/button`, {type_att: true, id: 'issue_sizes', text: 'Add Item(s)', classes: ['w-100']}) %>
+						<%- include(`${partials}/button/button`, {type: 'success', type_att: true, id: 'issue_sizes', text: 'Add Item(s)', classes: ['w-100']}) %>
 						<table class="table table-sm table-hover">
 							<thead class="thead-dark">
 								<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Item</th>
@@ -126,13 +122,10 @@
 <script src="/js/users/select/showWindow.js"></script>
 <script src="/js/stores/sizes/select/showWindow.js"></script>
 <% if (permissions.issuer) { %>
-	<script src='/js/stores/issues/edit/edit.js'></script>
-	<script src='/js/stores/issues/edit/approve.js'></script>
-	<script src='/js/stores/issues/edit/issue.js'></script>
-	<script src='/js/stores/issues/edit/loancard.js'></script>
-<% } %>
-<% if (permissions.stores_stock_admin) { %>
-	<script src='/js/stores/issues/edit/order.js'></script>
+	<script src='/js/stores/issues/edit/issuer.js'></script>
+	<% if (permissions.stores_stock_admin) { %>
+		<script src='/js/stores/issues/edit/stock_admin.js'></script>
+	<% } %>
 <% } %>
 <script async>getIssues()</script>
 <script async>getUsers()</script>

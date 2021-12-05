@@ -1,7 +1,9 @@
 <button
+    class='btn<% if (locals.small) { %> btn-sm<% } %> btn-<%- type %><% if (locals.classes) { %><% classes.forEach(c => { %> <%= c %><% }) %><% } %>'
     <% if (locals.type_att) { %>type='button'<% } %>
-    class='btn btn-sm btn-<%- type %><% if (locals.classes) { %><% classes.forEach(c => { %> <%= c %><% }) %><% } %>'
-    <% if (locals.id) { %> id='btn_<%= id %>'<% } %>
+    <% if (locals.id)       { %>id='btn_<%= id %>'<% } %>
+    <% if (locals.form)     { %>form='form_<%= form %>'<% } %>
+    <% if (locals.disabled) { %>disabled<% } %>
 >
     <%= text %>
 </button>

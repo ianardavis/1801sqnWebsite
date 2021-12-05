@@ -6,7 +6,7 @@ function getIssues() {
             statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
             query     = [],
             sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
-        if (statuses && statuses.length > 0) query.push(status_query(statuses));
+        if (statuses  && statuses.length > 0)    query.push(status_query(statuses));
         if (sel_users && sel_users.value !== '') query.push(sel_users.value);
         get({
             table: 'issues',
@@ -24,27 +24,49 @@ function getIssues() {
                 add_cell(row, {text: issue.qty});
                 add_cell(row, {
                     text: issue_statuses[issue.status] || 'Unknown',
-                    ...(
-                        [1, 2, 3, 4].includes(issue.status) ?
-                        {
-                            classes: ['actions'],
-                            data:    [
-                                {field: 'id',    value: issue.issue_id},
-                                {field: 'index', value: row_index}
-                            ]
-                        } : {}
-                    )
+                    append: new Input({
+                        attributes: [
+                            {field: 'type',  value: 'hidden'},
+                            {field: 'name',  value: `issues[][${row_index}][issue_id]`},
+                            {field: 'value', value: issue.issue_id}
+                        ]
+                    }).e
                 });
+                let radios = [];
+                if (issue.status === 1 || issue.status === 2 || issue.status === 3) {
+                    if (typeof nil_radio === 'function') radios.push(nil_radio(issue.issue_id, row_index));
+                };
+                if (issue.status === 1) {
+                    if (typeof decline_radio === 'function') radios.push(decline_radio(issue.issue_id, row_index));
+                    if (typeof approve_radio === 'function') radios.push(approve_radio(issue.issue_id, row_index));
+                };
+                if (issue.status === 2 || issue.status === 3) {
+                    if (typeof cancel_radio === 'function') radios.push(cancel_radio(issue.issue_id, row_index));
+                };
+                if (issue.status === 2) {
+                    if (typeof order_radio === 'function') radios.push(order_radio(issue.issue_id, row_index));
+                };
+                if (issue.status === 2 || issue.status === 3) {
+                    if (typeof issue_radio === 'function') radios.push(issue_radio(issue.issue_id, row_index));
+                };
+                if (issue.status === 4) {
+
+                };
+                radios.push(new Div({attributes: [{field: 'id', value: `${issue.issue_id}_details`}]}).e);
+                add_cell(row, {append: radios});
                 add_cell(row, {append: new Link({
                     href: `/issues/${issue.issue_id}`,
                     small: true
                 }).e})
                 row_index ++;
             });
-            if (typeof addEditSelect === 'function') addEditSelect();
-            return tbl_issues;
+            return true;
         })
-        .then(tbl_issues => filter(tbl_issues));
+        .then(result => {
+            if (typeof enable_radios === 'function') enable_radios(tbl_issues);
+            return true;
+        })
+        .then(result => filter(tbl_issues));
     });
 };
 function filter(tbl_issues) {

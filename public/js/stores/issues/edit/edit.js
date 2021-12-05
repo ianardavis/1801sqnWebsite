@@ -65,7 +65,7 @@ function select_all() {
             if (select.innerHTML.indexOf(`value="${this.value}"`) !== -1) {
                 if (!select.value) {
                     select.value = String(this.value);
-                    if (typeof issueOptions === 'function') issueOptions.call(select);
+                    if (typeof issue_options === 'function') issue_options.call(select);
                 };
             };
         });

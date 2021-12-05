@@ -78,7 +78,7 @@ function getLines() {
                         }).e
                     );
                     radios.push(new Div({attributes: [{field: 'id', value: `${line.loancard_line_id}_details`}]}).e);
-                    add_cell(row, {append: radios})
+                    add_cell(row, {append: radios});
                     add_cell(row, {append: 
                         new Button({
                             modal: 'line_view',

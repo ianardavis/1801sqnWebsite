@@ -2,7 +2,7 @@ function addIssueOption(issue_id) {
     let select = document.querySelector(`#issue_${issue_id}`);
     if (select) select.appendChild(new Option({text: 'Issue', value: '4'}).e)
 };
-function issueOptions() {
+function issue_options() {
     clear(`issue_${this.dataset.id}_details`)
     .then(div_details => {
         if (this.value === '4') {
