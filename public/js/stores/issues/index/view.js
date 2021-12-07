@@ -33,7 +33,7 @@ function getIssues() {
                     }).e
                 });
                 let radios = [];
-                if (issue.status === 1 || issue.status === 2 || issue.status === 3) {
+                if (issue.status === 1 || issue.status === 2 || issue.status === 3 || (issue.status === 4)) {
                     if (typeof nil_radio === 'function') radios.push(nil_radio(issue.issue_id, row_index));
                 };
                 if (issue.status === 1) {
@@ -49,8 +49,16 @@ function getIssues() {
                 if (issue.status === 2 || issue.status === 3) {
                     if (typeof issue_radio === 'function') radios.push(issue_radio(issue.issue_id, row_index));
                 };
-                if (issue.status === 4) {
-
+                if (issue.status === 4 ) {
+                    get({
+                        table: 'issue_loancard',
+                        query: [`"issue_id":"${issue.issue_id}"`]
+                    })
+                    .then(function ([loancard_line, options]) {
+                        if (loancard_line.status === 1) {
+                            if (typeof loancard_radio === 'function') radios.push(loancard_radio(issue.issue_id, row_index));
+                        };
+                    })
                 };
                 radios.push(new Div({attributes: [{field: 'id', value: `${issue.issue_id}_details`}]}).e);
                 add_cell(row, {append: radios});

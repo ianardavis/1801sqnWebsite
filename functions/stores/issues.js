@@ -195,7 +195,7 @@ module.exports = function (m, fn) {
                 include: [{
                     model: m.actions,
                     required: true,
-                    where: {action: 'Issue added to loancard'},
+                    where: {action: 'ISSUED | Added to loancard'},
                     include: [{
                         model: m.action_links,
                         as: 'links',

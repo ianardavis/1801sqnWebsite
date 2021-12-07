@@ -21,7 +21,7 @@ function decline_radio(issue_id, index) {
         html: '<i class="fas fa-times-circle"></i>',
         attributes: [
             {field: 'name',     value: `issues[][${index}][status]`},
-            {field: 'value',    value: '2'},
+            {field: 'value',    value: '-1'},
             {field: 'disabled', value: true}
         ]
     }).e
@@ -34,8 +34,6 @@ function nil_radio(issue_id, index) {
         colour: 'primary',
         html: '<i class="fas fa-question"></i>',
         attributes: [
-            {field: 'name',          value: `issues[][${index}][status]`},
-            {field: 'value',         value: '0'},
             {field: 'data-issue_id', value: issue_id},
             {field: 'disabled',      value: true},
             {field: 'checked',       value: true}
@@ -52,7 +50,7 @@ function cancel_radio(issue_id, index) {
         html: '<i class="fas fa-trash-alt"></i>',
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
-            {field: 'value',         value: '-1'},
+            {field: 'value',         value: '0'},
             {field: 'data-issue_id', value: issue_id},
             {field: 'disabled',      value: true}
         ],
@@ -68,7 +66,24 @@ function issue_radio(issue_id, index) {
         html: '<i class="fas fa-address-card"></i>',
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
-            {field: 'value',         value: '4'},
+            {field: 'value',         value: '-2'},
+            {field: 'data-issue_id', value: issue_id},
+            {field: 'data-index',    value: index},
+            {field: 'disabled',      value: true}
+        ],
+        ...(typeof issue_options === 'function' ? {listener: {event: 'input', func: issue_options}}: {})
+    }).e;
+};
+function loancard_radio(issue_id, index) {
+    return new Radio({
+        id: `${issue_id}_issue`,
+        float_start: true,
+        classes: ['radio_issue'],
+        colour: 'success',
+        html: '<i class="fas fa-address-card"></i>',
+        attributes: [
+            {field: 'name',          value: `issues[][${index}][status]`},
+            {field: 'value',         value: '-2'},
             {field: 'data-issue_id', value: issue_id},
             {field: 'data-index',    value: index},
             {field: 'disabled',      value: true}

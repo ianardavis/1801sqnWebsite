@@ -534,7 +534,7 @@ module.exports = function (m, fn) {
                 {_table: table},
                 [
                     fn.inc.stores.actions({
-                        where: {action: 'Issue added to loancard'},
+                        where: {action: 'ISSUED | Added to loancard'},
                         include: [
                             fn.inc.stores.action_links({where: {
                                 _table: 'loancard_lines',
@@ -554,7 +554,7 @@ module.exports = function (m, fn) {
                 where: {_table: table},
                 include: [
                     fn.inc.stores.actions({
-                        where: {action: 'Issue added to loancard'},
+                        where: {action: 'ISSUED | Added to loancard'},
                         include: [
                             fn.inc.stores.action_links({where: {
                                 _table: 'loancard_lines',
@@ -699,7 +699,7 @@ module.exports = function (m, fn) {
                                 return fn.update(issue, {status: 4})
                                 .then(result => {
                                     return fn.actions.create(
-                                        'Issue added to loancard',
+                                        'ISSUED | Added to loancard', // 'Issue added to loancard'
                                         options.user_id,
                                         [
                                             {table: 'issues', id: issue.issue_id},

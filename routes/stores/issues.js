@@ -84,7 +84,7 @@ module.exports = (app, m, fn) => {
             where: {_table: 'loancard_lines'},
             include: [{
                 model: m.actions,
-                where: {action: 'Issue added to loancard'},
+                where: {action: 'ISSUED | Added to loancard'},
                 required: true,
                 include: [{
                     model: m.action_links,
@@ -182,7 +182,6 @@ module.exports = (app, m, fn) => {
         if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
-            // console.log(req.body.issues);
             req.body.issues.filter(e => e.status === '-2') .forEach(issue => {
                 actions.push(
                     fn.issues.remove_from_loancard({
