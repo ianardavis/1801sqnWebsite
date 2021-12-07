@@ -534,7 +534,7 @@ module.exports = function (m, fn) {
                 {_table: table},
                 [
                     fn.inc.stores.actions({
-                        where: {action: 'ISSUED | Added to loancard'},
+                        where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}, //'ISSUED | Added to loancard'},
                         include: [
                             fn.inc.stores.action_links({where: {
                                 _table: 'loancard_lines',
@@ -554,7 +554,7 @@ module.exports = function (m, fn) {
                 where: {_table: table},
                 include: [
                     fn.inc.stores.actions({
-                        where: {action: 'ISSUED | Added to loancard'},
+                        where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}, //'ISSUED | Added to loancard'},
                         include: [
                             fn.inc.stores.action_links({where: {
                                 _table: 'loancard_lines',
