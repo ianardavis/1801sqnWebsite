@@ -84,12 +84,10 @@ module.exports = (app, m, fn) => {
             where: {_table: 'loancard_lines'},
             include: [{
                 model: m.actions,
-                where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}, //'ISSUED | Added to loancard'},
-                // required: true,
+                where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}}, //'ISSUED | Added to loancard'},
                 include: [{
                     model: m.action_links,
                     as: 'links',
-                    // required: true,
                     where: {
                         _table: 'issues',
                         id: JSON.parse(req.query.where).issue_id

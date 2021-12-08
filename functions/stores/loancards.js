@@ -532,17 +532,18 @@ module.exports = function (m, fn) {
             return fn.get(
                 'action_links',
                 {_table: table},
-                [
-                    fn.inc.stores.actions({
-                        where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}, //'ISSUED | Added to loancard'},
-                        include: [
-                            fn.inc.stores.action_links({where: {
-                                _table: 'loancard_lines',
-                                id:     loancard_line_id
-                            }})
-                        ]
-                    })
-                ]
+                [{
+                    model: m.actions,
+                    where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}}, //'ISSUED | Added to loancard'},
+                    include: [{
+                        model: m.action_links,
+                        as: 'links',
+                        where: {
+                            _table: 'loancard_lines',
+                            id: loancard_line_id
+                        }
+                    }]
+                }]
             )
             .then(link => resolve(link))
             .catch(err => reject(err));
@@ -552,17 +553,18 @@ module.exports = function (m, fn) {
         return new Promise((resolve, reject) => {
             return m.action_links.findAll({
                 where: {_table: table},
-                include: [
-                    fn.inc.stores.actions({
-                        where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}, //'ISSUED | Added to loancard'},
-                        include: [
-                            fn.inc.stores.action_links({where: {
-                                _table: 'loancard_lines',
-                                id:     loancard_line_id
-                            }})
-                        ]
-                    })
-                ]
+                include: [{
+                    model: m.actions,
+                    where: {action: {[fn.op.or]: ['ISSUED | Added to loancard', 'Issue added to loancard']}}, //'ISSUED | Added to loancard'},
+                    include: [{
+                        model: m.action_links,
+                        as: 'links',
+                        where: {
+                            _table: 'loancard_lines',
+                            id: loancard_line_id
+                        }
+                    }]
+                }]
             })
             .then(link => {
                 if (!link) reject(new Error(`No link found for ${table}`))
