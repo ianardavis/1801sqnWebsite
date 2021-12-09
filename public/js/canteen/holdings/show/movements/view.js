@@ -9,7 +9,7 @@ function getMovements() {
             ...sort_query(sort_cols)
         })
         .then(function ([movements, options]) {
-            set_count({id: 'movement', count: movements.length || '0'});
+            set_count('movement', movements.length || '0');
             movements.forEach(movement => {
                 let row = tbl_movements.insertRow(-1);
                 add_cell(row, {text: print_date(movement.createdAt)});
@@ -17,12 +17,7 @@ function getMovements() {
                 add_cell(row, {text: movement.type});
                 add_cell(row, {text: `£${Number(movement.amount).toFixed(2)}`});
                 add_cell(row, {text: movement.description});
-                add_cell(row,{
-                    append: new Link({
-                        href: `/movements/${movement.movement_id}`,
-                        small: true
-                    }).e
-                });
+                add_cell(row, {append: new Link({href: `/movements/${movement.movement_id}`}).e});
             });
         });
     });

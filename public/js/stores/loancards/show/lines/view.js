@@ -13,7 +13,7 @@ function getLines() {
             ...sort_query(sort_cols)
         })
         .then(function ([lines, options]) {
-            set_count({id: 'line', count: lines.length || '0'});
+            set_count('line', lines.length || '0');
             let row_index = 0;
             lines.forEach(line => {
                 try {
@@ -107,17 +107,17 @@ function viewLine(loancard_line_id) {
         query: [`"loancard_line_id":"${loancard_line_id}"`]
     })
     .then(function ([line, options]) {
-        set_innerText({id: 'loancard_line_id', text: line.loancard_line_id});
-        set_innerText({id: 'line_item',        text: line.size.item.description});
-        set_innerText({id: 'line_size',        text: print_size(line.size)});
-        set_innerText({id: 'line_qty',         text: line.qty});
-        set_innerText({id: 'line_user',        text: print_user(line.user)});
-        set_innerText({id: 'line_createdAt',   text: print_date(line.createdAt, true)});
-        set_innerText({id: 'line_updatedAt',   text: print_date(line.updatedAt, true)});
-        set_href({id: 'btn_line_link',  value: `/loancard_lines/${line.loancard_line_id}`});
-        set_href({id: 'line_item_link', value: `/items/${line.size.item_id}`});
-        set_href({id: 'line_size_link', value: `/sizes/${line.size_id}`});
-        set_href({id: 'line_user_link', value: `/users/${line.user_id}`});
+        set_innerText('loancard_line_id', line.loancard_line_id);
+        set_innerText('line_item',        line.size.item.description);
+        set_innerText('line_size',        print_size(line.size));
+        set_innerText('line_qty',         line.qty);
+        set_innerText('line_user',        print_user(line.user));
+        set_innerText('line_createdAt',   print_date(line.createdAt, true));
+        set_innerText('line_updatedAt',   print_date(line.updatedAt, true));
+        set_href('btn_line_link',  `/loancard_lines/${line.loancard_line_id}`);
+        set_href('line_item_link', `/items/${line.size.item_id}`);
+        set_href('line_size_link', `/sizes/${line.size_id}`);
+        set_href('line_user_link', `/users/${line.user_id}`);
     });
 };
 addReloadListener(getLines);

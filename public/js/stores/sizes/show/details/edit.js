@@ -5,9 +5,9 @@ function viewDetailEdit(detail_id) {
         spinner: 'detail_edit'
     })
     .then(function ([detail, options]) {
-        set_attribute({id: 'detail_id_edit', attribute: 'value', value: detail.detail_id});
-        set_value({id: 'detail_name_edit',  value: detail.name});
-        set_innerText({id: 'detail_value_edit', text: detail.value});
+        set_attribute('detail_id_edit', 'value', detail.detail_id);
+        set_value('detail_name_edit', detail.name);
+        set_innerText('detail_value_edit', detail.value);
     })
     .catch(err => {
         modalHide('detail_edit');

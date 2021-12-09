@@ -19,7 +19,6 @@ function getItems() {
                     sizes.forEach(size => {
                         let row   = tbl.insertRow(-1),
                             index = Number(`${String(options.item_index)}${String(size_index).padStart(5, '0')}`);
-                        console.log(index);
                         add_cell(row, {text: print_size(size), append: new Hidden({
                             attributes: [
                                 {field: 'name',  value: `items[][${index}][size_id]`},
@@ -28,12 +27,7 @@ function getItems() {
                         }).e});
                         let page_cell = add_cell(row, {id: `${size.size_id}_page`}),
                             cell_cell = add_cell(row, {id: `${size.size_id}_cell`});
-                        add_cell(row, {
-                            append: new Link({
-                                small: true,
-                                href: `/sizes/${size.size_id}`
-                            }).e
-                        });
+                        add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
                         get({
                             table: 'detail',
                             query: [`"size_id":"${size.size_id}"`,'"name":"Demand Page"']
@@ -63,9 +57,7 @@ function getItems() {
 };
 function addInput(cell, index, col) {
     cell.appendChild(new Input({
-        attributes: [
-            {field: 'name', value: `items[][${index}][${col}]`}
-        ]
+        attributes: [{field: 'name', value: `items[][${index}][${col}]`}]
     }).e);
 }
 function addItem(div, p, item_id, description) {

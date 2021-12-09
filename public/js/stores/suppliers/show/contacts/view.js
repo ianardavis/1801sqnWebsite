@@ -8,7 +8,7 @@ function getContacts() {
             ...sort_query(sort_cols)
         })
         .then(function ([contacts, options]) {
-            set_count({id: 'contact', count: contacts.length || '0'});
+            set_count('contact', contacts.length || '0');
             contacts.forEach(contact => {
                 let row = tbl_contacts.insertRow(-1);
                 add_cell(row, {text: contact.contact.type});
@@ -30,13 +30,13 @@ function viewContact(supplier_contact_id) {
         spinner: 'contact_view'
     })
     .then(function ([contact, options]) {
-        set_innerText({id: 'supplier_contact_id', text: contact.supplier_contact_id});
-        set_innerText({id: 'contact_id',          text: contact.contact_id});
-        set_innerText({id: 'contact_type',        text: contact.contact.type});
-        set_innerText({id: 'contact_description', text: contact.contact.description});
-        set_innerText({id: 'contact_contact',     text: contact.contact.contact});
-        set_innerText({id: 'contact_createdAt',   text: print_date(contact.contact.createdAt, true)});
-        set_innerText({id: 'contact_updatedAt',   text: print_date(contact.contact.updatedAt, true)});
+        set_innerText('supplier_contact_id', contact.supplier_contact_id);
+        set_innerText('contact_id',          contact.contact_id);
+        set_innerText('contact_type',        contact.contact.type);
+        set_innerText('contact_description', contact.contact.description);
+        set_innerText('contact_contact',     contact.contact.contact);
+        set_innerText('contact_createdAt',   print_date(contact.contact.createdAt, true));
+        set_innerText('contact_updatedAt',   print_date(contact.contact.updatedAt, true));
     });
 };
 addReloadListener(getContacts);

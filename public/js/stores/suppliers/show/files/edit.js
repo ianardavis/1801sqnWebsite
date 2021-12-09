@@ -6,8 +6,8 @@ function viewFileEdit(file_id) {
         spinner: 'file_edit'
     })
     .then(function ([file, options]) {
-        set_attribute({id: 'file_id_edit', attribute: 'value', value: file.file_id});
-        set_value({id: 'file_description_edit', value: file.description});
+        set_attribute('file_id_edit', 'value', file.file_id);
+        set_value('file_description_edit', file.description);
     });
 };
 function fileEditBtn(file_id) {
@@ -17,7 +17,8 @@ function fileEditBtn(file_id) {
             new Link({
                 modal: 'file_edit',
                 data: [{field: 'id', value: file_id}],
-                type: 'edit'
+                type: 'edit',
+                large: true
             }).e
         );
     });

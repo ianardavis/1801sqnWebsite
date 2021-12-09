@@ -31,11 +31,11 @@ function viewGender(gender_id) {
         query: [`"gender_id":"${gender_id}"`]
     })
     .then(function([gender, options]) {
-        set_innerText({id: 'gender_id',        text: gender.gender_id});
-        set_innerText({id: 'gender_gender',    text: gender.gender});
-        set_innerText({id: 'gender_user',      text: print_user(gender.user)});
-        set_innerText({id: 'gender_createdAt', text: print_date(gender.createdAt, true)});
-        set_innerText({id: 'gender_updatedAt', text: print_date(gender.updatedAt, true)});
+        set_innerText('gender_id',        gender.gender_id);
+        set_innerText('gender_gender',    gender.gender);
+        set_innerText('gender_user',      print_user(gender.user));
+        set_innerText('gender_createdAt', print_date(gender.createdAt, true));
+        set_innerText('gender_updatedAt', print_date(gender.updatedAt, true));
     });
 };
 addReloadListener(getGenders)

@@ -4,9 +4,9 @@ function getGallery() {
         query: [`"gallery_id":"${path[2]}"`]
     })
     .then(function ([gallery, options]) {
-        set_innerText({id: 'gallery_name',      value: gallery.name});
-        set_innerText({id: 'gallery_createdAt', value: print_date(gallery.createdAt, true)});
-        set_innerText({id: 'gallery_user',      value: print_user(gallery.user)});
+        set_innerText('gallery_name',      gallery.name);
+        set_innerText('gallery_createdAt', print_date(gallery.createdAt, true));
+        set_innerText('gallery_user',      print_user(gallery.user));
     });
 };
 window.addEventListener('load', function () {

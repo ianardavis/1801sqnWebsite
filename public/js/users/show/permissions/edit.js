@@ -9,10 +9,10 @@ function getPermissionsEdit () {
         .then(function ([permissions, options]) {
             permissions.tree.forEach(e => {
                 ul_tree.appendChild(
-                    new List_Item({
-                        text:  e.permission,
-                        caret: (e.children && e.children.length > 0)
-                    }).e
+                    new List_Item(
+                        e.permission,
+                        (e.children && e.children.length > 0)
+                    ).e
                 );
                 if (e.children && e.children.length > 0) {
                     e.children.forEach(f => {
@@ -31,10 +31,10 @@ function getPermissionsEdit () {
 function add_permission(parent, e) {
     if (parent) {
         parent.appendChild(
-            new List_Item({
-                text:  e.permission,
-                caret: (e.children && e.children.length > 0)
-            }).e
+            new List_Item(
+                e.permission,
+                (e.children && e.children.length > 0)
+            ).e
         );
         if (e.children && e.children.length > 0) {
             e.children.forEach(f => {

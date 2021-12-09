@@ -20,7 +20,7 @@ function getDemands() {
                 add_cell(row, {text: demand.supplier.name});
                 add_cell(row, {classes: ['demand'], data: [{field: 'id', value: demand.demand_id}]});
                 add_cell(row, {text: demand_statuses[demand.status]});
-                add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`, small: true}).e});
+                add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`}).e});
             });
             return tbl_demands;
         })

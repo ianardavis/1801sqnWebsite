@@ -15,14 +15,9 @@ function getSizes() {
                 let row = tbl.insertRow(-1);
                 add_cell(row, {text: print_size(size)});
                 add_cell(row, {id: `stock-${size.size_id}`});
-                add_cell(row, {
-                    append: new Link({
-                        small: true,
-                        href: `/sizes/${size.size_id}`
-                    }).e
-                });
+                add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
                 get_stock(size.size_id)
-                .then(stock => set_innerText({id: `stock-${size.size_id}`, value: stock || '0'}));
+                .then(stock => set_innerText(`stock-${size.size_id}`, stock || '0'));
             });
         });
     });

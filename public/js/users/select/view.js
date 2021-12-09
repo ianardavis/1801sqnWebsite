@@ -29,7 +29,13 @@ function getUsers() {
         .then(function ([users, options]) {
             users.forEach(user => {
                 let row = tbl_users.insertRow(-1);
-                add_cell(row, {append: new Checkbox({small: true, attributes: [{field: 'data-id', value: user.user_id}]}, {field: 'name', value: 'user'}).e});
+                add_cell(row, {append: new Checkbox({
+                    small: true,
+                    attributes: [
+                        {field: 'data-id', value: user.user_id},
+                        {field: 'name', value: 'user'}
+                    ]
+                }).e});
                 add_cell(row, {text: user.service_number});
                 add_cell(row, {text: user.rank.rank});
                 add_cell(row, {text: user.surname});

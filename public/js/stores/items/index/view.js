@@ -17,10 +17,7 @@ function getItems() {
                     text: item.description,
                     classes: ['search']
                 });
-                add_cell(row, {append: new Link({
-                    href: `/items/${item.item_id}`,
-                    small: true
-                }).e});
+                add_cell(row, {append: new Link({href: `/items/${item.item_id}`}).e});
             });
         });
     });

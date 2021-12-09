@@ -42,10 +42,10 @@ function viewCategory(category_id) {
         query: [`"category_id":"${category_id}"`]
     })
     .then(function([category, options]) {
-        set_innerText({id: 'category',           text: category.category});
-        set_innerText({id: 'parent',             text: (category.parent ? category.parent.category : '')});
-        set_innerText({id: 'createdAt_category', text: print_date(category.createdAt, true)});
-        set_innerText({id: 'updatedAt_category', text: print_date(category.updatedAt, true)});
+        set_innerText('category',           category.category);
+        set_innerText('parent',             (category.parent ? category.parent.category : ''));
+        set_innerText('createdAt_category', print_date(category.createdAt, true));
+        set_innerText('updatedAt_category', print_date(category.updatedAt, true));
     });
 };
 addReloadListener(getCategories)

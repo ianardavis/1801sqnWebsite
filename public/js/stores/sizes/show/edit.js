@@ -5,13 +5,13 @@ function viewSizeEdit() {
     })
     .then(function ([size, options]) {
         getSuppliers(size.supplier_id);
-        set_value({id: 'sel_issueable', value: (size.issueable   ? '1' : '0')});
-        set_value({id: 'sel_orderable', value: (size.orderable   ? '1' : '0')});
-        set_value({id: 'sel_serials',   value: (size.has_serials ? '1' : '0')});
-        set_value({id: 'sel_nsns',      value: (size.has_nsns    ? '1' : '0')});
-        set_value({id: 'size1_edit',    value: size.size1});
-        set_value({id: 'size2_edit',    value: size.size2});
-        set_value({id: 'size3_edit',    value: size.size3});
+        set_value('sel_issueable', (size.issueable   ? '1' : '0'));
+        set_value('sel_orderable', (size.orderable   ? '1' : '0'));
+        set_value('sel_serials',   (size.has_serials ? '1' : '0'));
+        set_value('sel_nsns',      (size.has_nsns    ? '1' : '0'));
+        set_value('size1_edit',    size.size1);
+        set_value('size2_edit',    size.size2);
+        set_value('size3_edit',    size.size3);
     });
 };
 function getSuppliers(selected = null) {

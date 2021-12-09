@@ -28,11 +28,11 @@ function viewDetail(detail_id) {
         spinner: 'detail_view'
     })
     .then(function ([detail, options]) {
-        set_innerText({id: 'detail_id',        text: detail.detail_id});
-        set_innerText({id: 'detail_name',      text: detail.name});
-        set_innerText({id: 'detail_value',     text: detail.value});
-        set_innerText({id: 'detail_createdAt', text: print_date(detail.createdAt)});
-        set_innerText({id: 'detail_updatedAt', text: print_date(detail.updatedAt)});
+        set_innerText('detail_id',        detail.detail_id);
+        set_innerText('detail_name',      detail.name);
+        set_innerText('detail_value',     detail.value);
+        set_innerText('detail_createdAt', print_date(detail.createdAt));
+        set_innerText('detail_updatedAt', print_date(detail.updatedAt));
     });
 };
 addReloadListener(getDetails);

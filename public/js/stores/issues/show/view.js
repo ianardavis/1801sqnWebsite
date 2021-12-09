@@ -5,20 +5,20 @@ function getIssue() {
         query: [`"issue_id":"${path[2]}"`]
     })
     .then(function ([issue, options]) {
-        set_innerText({id: `issue_user_issue`,      text: print_user(issue.user_issue)});
-        set_attribute({id: `issue_user_issue_link`, attribute: 'href', value: `/users/${issue.user_id_issue}`});
-        set_innerText({id: 'issue_size',            text: print_size(issue.size)});
-        set_attribute({id: 'issue_size_link',       attribute: 'href', value: `/sizes/${issue.size_id}`});
-        set_innerText({id: 'issue_item',            text: issue.size.item.description});
-        set_attribute({id: 'issue_item_link',       attribute: 'href', value: `/items/${issue.size.item_id}`});
-        set_innerText({id: 'issue_qty',             text: issue.qty});
-        set_innerText({id: 'issue_createdAt',       text: print_date(issue.createdAt, true)});
-        set_innerText({id: 'issue_updatedAt',       text: print_date(issue.updatedAt, true)});
-        set_innerText({id: 'issue_status',          text: statuses[issue.status]});
-        set_innerText({id: 'issue_user',            text: print_user(issue.user)});
-        set_attribute({id: 'issue_user_link',       attribute: 'href', value: `/users/${issue.user_id}`});
-        set_breadcrumb({text: issue.issue_id});
-        set_attribute({id: 'issue_size_edit', attribute: 'data-item_id', value: issue.size.item_id});
+        set_breadcrumb(issue.issue_id);
+        set_innerText('issue_user_issue', print_user(issue.user_issue));
+        set_innerText('issue_size',       print_size(issue.size));
+        set_innerText('issue_item',       issue.size.item.description);
+        set_innerText('issue_qty',        issue.qty);
+        set_innerText('issue_createdAt',  print_date(issue.createdAt, true));
+        set_innerText('issue_updatedAt',  print_date(issue.updatedAt, true));
+        set_innerText('issue_status',     statuses[issue.status]);
+        set_innerText('issue_user',       print_user(issue.user));
+        set_href('issue_user_link',       `/users/${issue.user_id}`);
+        set_href('issue_user_issue_link', `/users/${issue.user_id_issue}`);
+        set_href('issue_size_link',       `/sizes/${issue.size_id}`);
+        set_href('issue_item_link',       `/items/${issue.size.item_id}`);
+        set_data('issue_size_edit', 'item_id', issue.size.item_id);
     })
     .catch(err => window.location.href = '/issues');
 };

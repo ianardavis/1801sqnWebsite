@@ -4,13 +4,13 @@ function viewAccount(account_id) {
         query: [`"account_id":"${account_id}"`]
     })
     .then(function ([account, options]) {
-        set_innerText({id: 'account_id',        text: account.account_id});
-        set_innerText({id: 'account_name',      text: account.name});
-        set_innerText({id: 'account_number',    text: account.number});
-        set_innerText({id: 'account_user',      text: print_user(account.user)});
-        set_attribute({id: 'account_user_link', attribute: 'href', value: `/users/${account.user_id}`});
-        set_innerText({id: 'account_createdAt', text: print_date(account.createdAt, true)});
-        set_innerText({id: 'account_updatedAt', text: print_date(account.updatedAt, true)});
+        set_innerText('account_id',        account.account_id);
+        set_innerText('account_name',      account.name);
+        set_innerText('account_number',    account.number);
+        set_innerText('account_user',      print_user(account.user));
+        set_innerText('account_createdAt', print_date(account.createdAt, true));
+        set_innerText('account_updatedAt', print_date(account.updatedAt, true));
+        set_href('account_user_link', `/users/${account.user_id}`);
     });
 };
 window.addEventListener('load', function () {

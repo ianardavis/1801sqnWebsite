@@ -4,7 +4,7 @@ function viewLocationEdit() {
         query: [`"location_id":"${path[2]}"`]
     })
     .then(function ([location, options]) {
-        set_value({id: 'location_location_edit', value: location.location});
+        set_value('location_location_edit', location.location);
     });
 };
 window.addEventListener('load', function () {

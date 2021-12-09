@@ -39,28 +39,23 @@ function getSizes() {
                         ]
                     }).e
                 ]});
-                add_cell(row, {
-                    append: new Link({
-                        small: true,
-                        href: `/sizes/${size.size_id}`
-                    }).e
-                });
+                add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
                 row_index++;
                 get_stock(size.size_id)
-                .then(stock => set_innerText({id: `stock-${size.size_id}`, value: stock || '0'}));
+                .then(stock => set_innerText(`stock-${size.size_id}`, stock || '0'));
                 sum({
                     table: 'orders',
                     query: [`size_id=${size.size_id}`, 'status=1']
                 })
                 .then(function([orders, options]) {
-                    set_innerText({id: `order-${size.size_id}`, value: orders || '0'});
+                    set_innerText(`order-${size.size_id}`, orders || '0');
                 });
                 sum({
                     table: 'demand_lines',
                     query: [`size_id=${size.size_id}`, 'status=1', 'status=2']
                 })
                 .then(function([demands, options]) {
-                    set_innerText({id: `demanded-${size.size_id}`, value: demands || '0'});
+                    set_innerText(`demanded-${size.size_id}`, demands || '0');
                 });
             });
             enable_button('action');

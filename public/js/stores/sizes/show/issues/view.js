@@ -12,7 +12,7 @@ function getIssues() {
             ...sort_query(sort_cols)
         })
         .then(function ([issues, options]) {
-            set_count({id: 'issue', count: issues.length});
+            set_count('issue', issues.length);
             issues.forEach(issue => {
                 try {
                     let row = tbl_issues.insertRow(-1);
@@ -39,16 +39,16 @@ function viewIssue(issue_id) {
         spinner: 'issue_view'
     })
     .then(function ([issue, options]){
-        set_innerText({id: 'issue_user_to',   text: print_user(issue.user_issue)});
-        set_innerText({id: 'issue_user_by',   text: print_user(issue.user)});
-        set_innerText({id: 'issue_qty',       text: issue.qty});
-        set_innerText({id: 'issue_status',    text: issue_statuses[issue.status]});
-        set_innerText({id: 'issue_createdAt', text: print_date(issue.createdAt)});
-        set_innerText({id: 'issue_updatedAt', text: print_date(issue.updatedAt)});
-        set_innerText({id: 'issue_id',        text: issue.issue_id});
-        set_href({id: 'btn_issue_link', value: `/issues/${issue.issue_id}`});
-        set_href({id: 'issue_user_to_link', value: `/users/${issue.user_id_issue}`});
-        set_href({id: 'issue_user_by_link', value: `/users/${issue.user_id}`});
+        set_innerText('issue_user_to',   print_user(issue.user_issue));
+        set_innerText('issue_user_by',   print_user(issue.user));
+        set_innerText('issue_qty',       issue.qty);
+        set_innerText('issue_status',    issue_statuses[issue.status]);
+        set_innerText('issue_createdAt', print_date(issue.createdAt));
+        set_innerText('issue_updatedAt', print_date(issue.updatedAt));
+        set_innerText('issue_id',        issue.issue_id);
+        set_href('btn_issue_link',     `/issues/${issue.issue_id}`);
+        set_href('issue_user_to_link', `/users/${issue.user_id_issue}`);
+        set_href('issue_user_by_link', `/users/${issue.user_id}`);
     })
     .catch(err => console.log(err));
 };

@@ -8,7 +8,7 @@ function getPermissions () {
             ...sort_query(sort_cols)
         })
         .then(function ([permissions, options]) {
-            set_count({id: 'permission', count: permissions.permissions.length || '0'});
+            set_count('permission', permissions.permissions.length || '0');
             permissions.permissions.forEach(e => {
                 let row = tbl_permissions.insertRow(-1);
                 add_cell(row, {text: e.permission.replaceAll('_', ' ')});

@@ -8,17 +8,13 @@ function getSerials() {
             ...sort_query(sort_cols)
         })
         .then(function ([serials, options]) {
-            set_count({id: 'serial', count: serials.length});
+            set_count('serial', serials.length);
                 serials.forEach(serial => {
                 try {
                     let row = tbl_serials.insertRow(-1);
                     add_cell(row, {text: serial.serial});
                     add_cell(row, {text: (serial.location ? serial.location.location : (serial.issue ? 'Issued' : 'Unknown'))});
-                    add_cell(row, {append: new Link({
-                        href: `/serials/${serial.serial_id}`,
-                        small: true
-                    }).e}
-                    );
+                    add_cell(row, {append: new Link({href: `/serials/${serial.serial_id}`}).e});
                 } catch (error) {
                     console.log(error);
                 };

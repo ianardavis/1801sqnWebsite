@@ -5,22 +5,22 @@ function getDemand() {
         query: [`"demand_id":"${path[2]}"`]
     })
     .then(function ([demand, options]) {
-        set_breadcrumb({text: `${demand.supplier.name} - ${print_date(demand.createdAt)}`});
-        set_innerText({id: 'demand_supplier',  text: demand.supplier.name});
-        set_innerText({id: 'demand_user',      text: print_user(demand.user)});
-        set_innerText({id: 'demand_createdAt', text: print_date(demand.createdAt, true)});
-        set_innerText({id: 'demand_updatedAt', text: print_date(demand.updatedAt, true)});
-        set_innerText({id: 'demand_status',    text: statuses[demand.status]});
-        set_innerText({id: 'demand_file',      text: (demand.filename ? demand.filename : '')});
+        set_breadcrumb(`${demand.supplier.name} - ${print_date(demand.createdAt)}`);
+        set_innerText('demand_supplier',  demand.supplier.name);
+        set_innerText('demand_user',      print_user(demand.user));
+        set_innerText('demand_createdAt', print_date(demand.createdAt, true));
+        set_innerText('demand_updatedAt', print_date(demand.updatedAt, true));
+        set_innerText('demand_status',    statuses[demand.status]);
+        set_innerText('demand_file',      (demand.filename ? demand.filename : ''));
         if (demand.status > 1 || demand.filename) {
-            set_attribute({id: 'form_download', attribute: 'action', value: `/demands/${path[2]}/download`});
+            set_attribute('form_download', 'action', `/demands/${path[2]}/download`);
             enable_button('download');
         } else {
-            remove_attribute({id: 'form_download', attribute: 'action'});
+            set_attribute('form_download', 'action');
             disable_button('download');
         };
-        set_href({id: 'demand_supplier_link', value: `/suppliers/${demand.supplier_id}`});
-        set_href({id: 'demand_user_link',     value: `/users/${demand.user_id}`});
+        set_href('demand_supplier_link', `/suppliers/${demand.supplier_id}`);
+        set_href('demand_user_link',     `/users/${demand.user_id}`);
         document.querySelectorAll('.demand_id').forEach(e => e.setAttribute('value', demand.demand_id))
     })
     .catch(err => window.location.assign('/demands'));

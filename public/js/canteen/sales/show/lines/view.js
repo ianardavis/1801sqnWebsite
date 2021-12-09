@@ -8,7 +8,7 @@ function getSaleLines() {
             ...sort_query(sort_cols)
         })
         .then(function ([lines, options]) {
-            set_count({id: 'line', count: lines.length || '0'});
+            set_count('line', lines.length || '0');
             lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);

@@ -1,9 +1,9 @@
 function reset_add_paid_in_out() {
     getHoldings();
     getUsers();
-    set_value({id: 'paid_in_out_paid_in', value: '1'});
-    set_value({id: 'paid_in_out_reason'});
-    set_value({id: 'paid_in_out_amount'});
+    set_value('paid_in_out_paid_in', '1');
+    set_value('paid_in_out_reason');
+    set_value('paid_in_out_amount');
 };
 function getHoldings() {
     listHoldings({

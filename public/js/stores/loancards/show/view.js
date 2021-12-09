@@ -13,16 +13,16 @@ function getLoancard() {
         query: [`"loancard_id":"${path[2]}"`]
     })
     .then(function ([loancard, options]) {
-        set_breadcrumb({text: `${print_user(loancard.user_loancard)} | ${print_date(loancard.createdAt)}`});
-        set_innerText({id: 'loancard_user_loancard', text: print_user(loancard.user_loancard)});
-        set_innerText({id: 'loancard_user',          text: print_user(loancard.user)});
-        set_innerText({id: 'loancard_createdAt',     text: print_date(loancard.createdAt, true)});
-        set_innerText({id: 'loancard_date_due',      text: print_date(loancard.date_due)});
-        set_innerText({id: 'loancard_updatedAt',     text: print_date(loancard.updatedAt, true)});
-        set_innerText({id: 'loancard_status',        text: statuses[loancard.status]});
-        set_innerText({id: 'loancard_filename',      text: loancard.filename || ''})
-        set_href({id: 'loancard_user_loancard_link', value: `/users/${loancard.user_id_loancard}`});
-        set_href({id: 'loancard_user_link',          value: `/users/${loancard.user_id}`});
+        set_breadcrumb(`${print_user(loancard.user_loancard)} | ${print_date(loancard.createdAt)}`);
+        set_innerText('loancard_user_loancard', print_user(loancard.user_loancard));
+        set_innerText('loancard_user',          print_user(loancard.user));
+        set_innerText('loancard_createdAt',     print_date(loancard.createdAt, true));
+        set_innerText('loancard_date_due',      print_date(loancard.date_due));
+        set_innerText('loancard_updatedAt',     print_date(loancard.updatedAt, true));
+        set_innerText('loancard_status',        statuses[loancard.status]);
+        set_innerText('loancard_filename',      loancard.filename || '')
+        set_href('loancard_user_loancard_link', `/users/${loancard.user_id_loancard}`);
+        set_href('loancard_user_link',          `/users/${loancard.user_id}`);
         if (loancard.status >= 2) {
             enable_button('print');
             enable_button('download');
@@ -30,11 +30,11 @@ function getLoancard() {
             enable_button('loancard_file_download');
             if (loancard.filename) enable_button('loancard_file_delete');
             enable_button('loancard_date_due_edit', '');
-            set_attribute({id: 'form_download', attribute: 'method', value: 'GET'});
-            set_attribute({id: 'form_download', attribute: 'action', value: `/loancards/${loancard.loancard_id}/download`});
+            set_attribute('form_download', 'method', 'GET');
+            set_attribute('form_download', 'action', `/loancards/${loancard.loancard_id}/download`);
         } else {
-            remove_attribute({id: 'form_download', attribute: 'method'});
-            remove_attribute({id: 'form_download', attribute: 'action'});
+            set_attribute('form_download', 'method');
+            set_attribute('form_download', 'action');
         };
         return loancard.status;
     })

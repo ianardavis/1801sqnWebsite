@@ -15,9 +15,9 @@ function getSizes(item_id) {
             ...sort_query(sort_cols)
         })
         .then(function ([item, options]) {
-            set_innerText({id: 'size_text1', value: item.size_text1});
-            set_innerText({id: 'size_text2', value: item.size_text2});
-            set_innerText({id: 'size_text3', value: item.size_text3});
+            set_innerText('size_text1', item.size_text1);
+            set_innerText('size_text2', item.size_text2);
+            set_innerText('size_text3', item.size_text3);
             get({
                 table: 'sizes',
                 query: [`"item_id":"${item_id}"`]
@@ -27,7 +27,10 @@ function getSizes(item_id) {
                     get_stock(size.size_id)
                     .then(stock => {
                         let row = tbl_sizes.insertRow(-1);
-                        add_cell(row, {append: new Checkbox({small: true, attributes: [{field: 'data-id', value: size.size_id}]}).e});
+                        add_cell(row, {append: new Checkbox({
+                            small: true,
+                            attributes: [{field: 'data-id', value: size.size_id}]}).e
+                        });
                         add_cell(row, {text: size.size1});
                         add_cell(row, (size.size2 ? {text: size.size2} : {}));
                         add_cell(row, (size.size3 ? {text: size.size3} : {}));

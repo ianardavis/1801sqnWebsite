@@ -18,10 +18,7 @@ function getSessions() {
                     (session.status === 2 ? 'Closed'    : 'Unknown')))
                 });
                 if (session.status === 1) current_sessions.push(session.session_id);
-                add_cell(row, {append: new Link({
-                    href: `/sessions/${session.session_id}`,
-                    small: true
-                }).e});
+                add_cell(row, {append: new Link({href: `/sessions/${session.session_id}`}).e});
             });
         });
     });

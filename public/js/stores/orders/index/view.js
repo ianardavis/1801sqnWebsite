@@ -32,10 +32,7 @@ function getOrders() {
                         } : {}
                     )
                 });
-                add_cell(row, {append: new Link({
-                    href: `/orders/${order.order_id}`,
-                    small: true
-                }).e})
+                add_cell(row, {append: new Link({href: `/orders/${order.order_id}`}).e});
                 row_index ++;
             });
             if (typeof addEditSelect === 'function') addEditSelect();

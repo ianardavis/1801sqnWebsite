@@ -5,8 +5,8 @@ function viewNoteEdit(note_id) {
         spinner: 'note_edit'
     })
     .then(function ([note, options]) {
-        set_attribute({id: 'note_id_edit', attribute: 'value', value: note.note_id});
-        set_innerText({id: 'note_edit',    text: note.note});
+        set_attribute('note_id_edit', 'value', note.note_id);
+        set_innerText('note_edit', note.note);
     })
     .catch(err => {
         modalHide('note_edit');

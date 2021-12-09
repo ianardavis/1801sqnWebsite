@@ -7,13 +7,13 @@ function editLoancardDueDate() {
         query: [`"loancard_id":"${path[2]}"`]
     })
     .then(function ([loancard, options]) {
-        set_attribute({id: 'date_due_edit', attribute: 'value', value: returnDate(loancard.date_due)});
-        set_attribute({id: 'date_due_edit', attribute: 'min',   value: returnDate(loancard.createdAt)});
+        set_attribute('date_due_edit', 'value', returnDate(loancard.date_due));
+        set_attribute('date_due_edit', 'min',   returnDate(loancard.createdAt));
     });
 };
 function completeLoancardDueDate() {
-    set_attribute({id: 'date_due_complete', attribute: 'value', value: dateToday(7)});
-    set_attribute({id: 'date_due_complete', attribute: 'min',   value: dateToday()});
+    set_attribute('date_due_complete', 'value', dateToday(7));
+    set_attribute('date_due_complete', 'min',   dateToday());
 };
 window.addEventListener( "load", function () {
     modalOnShow('due_edit',          editLoancardDueDate);

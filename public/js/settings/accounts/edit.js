@@ -5,7 +5,8 @@ function accountEditBtn(account_id) {
             new Link({
                 modal: 'account_edit',
                 type: 'edit',
-                data:  {field: 'id', value: account_id}
+                data:  {field: 'id', value: account_id},
+                large: true
             }).e
         );
     })
@@ -17,9 +18,9 @@ function viewAccountEdit(account_id) {
         query: [`"account_id":"${account_id}"`]
     })
     .then(function([account, options]) {
-        set_value({id: 'account_id_edit',     value: account.account_id});
-        set_value({id: 'account_name_edit',   value: account.name});
-        set_value({id: 'account_number_edit', value: account.number});
+        set_value('account_id_edit',     account.account_id);
+        set_value('account_name_edit',   account.name);
+        set_value('account_number_edit', account.number);
         listUsers({
             select:   'sel_account_user_edit',
             id_only:  true,

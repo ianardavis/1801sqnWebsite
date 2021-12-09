@@ -8,7 +8,7 @@ function getCategories() {
             ...sort_query(sort_cols)
         })
         .then(function ([categories, options]) {
-            set_count({id: 'category', count: categories.length || '0'});
+            set_count('category', categories.length || '0');
             categories.forEach(category => {
                 let row = tbl_categories.insertRow(-1);
                 add_cell(row, {text: category.category.category});
@@ -28,10 +28,10 @@ function viewCategory(category_id) {
         spinner: 'category_view'
     })
     .then(function ([category, options]) {
-        set_innerText({id: 'category_id',        text: category.category_id});
-        set_innerText({id: 'item_category_id',   text: category.item_category_id});
-        set_innerText({id: 'category_category',  text: category.category.category});
-        set_innerText({id: 'category_createdAt', text: print_date(category.createdAt)});
+        set_innerText('category_id',        category.category_id);
+        set_innerText('item_category_id',   category.item_category_id);
+        set_innerText('category_category',  category.category.category);
+        set_innerText('category_createdAt', print_date(category.createdAt));
     });
 };
 addReloadListener(getCategories);

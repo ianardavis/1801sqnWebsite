@@ -4,6 +4,6 @@ function getDefault() {
         query: ['"name":"default_supplier"']
     })
     .then(function ([setting, options]) {
-        set_innerText({id: `default_${setting.value}`, text: 'Default'});
+        set_innerText(`default_${setting.value}`, 'Default');
     });
 };

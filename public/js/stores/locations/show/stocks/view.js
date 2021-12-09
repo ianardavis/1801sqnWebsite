@@ -8,7 +8,7 @@ function getStocks() {
             ...sort_query(sort_cols)
         })
         .then(function ([stocks, options]) {
-            set_count({id: 'stock', count: stocks.length || '0'});
+            set_count('stock', stocks.length || '0');
             stocks.forEach(stock => {
                 let row = tbl_stocks.insertRow(-1);
                 add_cell(row, {text: stock.size.item.description});
@@ -29,15 +29,15 @@ function viewStock(stock_id) {
         query: [`"stock_id":"${stock_id}"`]
     })
     .then(function ([stock, options]) {
-        set_innerText({id: 'stock_id',        text: stock.stock_id});
-        set_innerText({id: 'stock_item',      text: stock.size.item.description});
-        set_innerText({id: 'stock_size',      text: print_size(stock.size)});
-        set_innerText({id: 'stock_qty',       text: stock.qty});
-        set_innerText({id: 'stock_createdAt', text: print_date(stock.createdAt, true)});
-        set_innerText({id: 'stock_updatedAt', text: print_date(stock.updatedAt, true)});
-        set_href({id: 'stock_item_link', value: `/items/${stock.size.item_id}`});
-        set_href({id: 'stock_size_link', value: `/sizes/${stock.size_id}`});
-        set_href({id: 'btn_stock_link',  value: `/stocks/${stock.stock_id}`});
+        set_innerText('stock_id',        stock.stock_id);
+        set_innerText('stock_item',      stock.size.item.description);
+        set_innerText('stock_size',      print_size(stock.size));
+        set_innerText('stock_qty',       stock.qty);
+        set_innerText('stock_createdAt', print_date(stock.createdAt, true));
+        set_innerText('stock_updatedAt', print_date(stock.updatedAt, true));
+        set_href('stock_item_link', `/items/${stock.size.item_id}`);
+        set_href('stock_size_link', `/sizes/${stock.size_id}`);
+        set_href('btn_stock_link',  `/stocks/${stock.stock_id}`);
     })
 };
 window.addEventListener('load', function () {

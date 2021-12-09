@@ -26,14 +26,14 @@ function backspace() {
 function set_tendered(amt) {
     amt = String(amt).padStart(3, '0');
     amt = amt.substring(0, amt.length - 2) + "." + amt.substring(amt.length - 2);
-    set_value({id: 'tendered', value: amt});
+    set_value('tendered', amt);
 };
 
 function getSale() {
     get({table: 'sale_current'})
     .then(function ([sale_id, options]) {
         if (sale_id) {
-            set_innerText({id: 'sale_id', value: sale_id});
+            set_innerText('sale_id', sale_id);
             document.querySelectorAll('.sale_id').forEach(e => e.setAttribute('value', sale_id));
             getSaleLines();
         } else alert_toast('Sale not found');
@@ -98,10 +98,10 @@ function setPage() {
         query: ['"name":"default_pos_page"']
     })
     .then(function ([settings, options]) {
-        if (!settings || settings.length === 0) showTab('all_items')
-        else showTab(`page_${settings[0].value}`);
+        if (!settings || settings.length === 0) show_tab('all_items')
+        else show_tab(`page_${settings[0].value}`);
     })
-    .catch(err => showTab('all_items'));
+    .catch(err => show_tab('all_items'));
 }
 function addSaleLine() {
     sendData(
@@ -122,7 +122,7 @@ function getPages() {
         let tab_headers = document.querySelector('#tab_headers'),
             tab_pages   = document.querySelector('#tab_pages');
         pages.forEach(page => {
-            let tab_page = new Tab_Body(  {id: `page_${page.pos_page_id}`}).e;
+            let tab_page = new Tab_Body(`page_${page.pos_page_id}`).e;
             for (let r = 0; r <= 3; r++) {
                 let row = document.createElement('div');
                 row.classList.add('row', 'h-150-px');
@@ -134,10 +134,12 @@ function getPages() {
                         new Form({
                             classes: ['h-100', 'form_view'],
                             append: [
-                                new Hidden({attributes:[
-                                    {field: 'name', value: 'line[item_id]'},
-                                    {field: 'id',   value: `item_id_${page.pos_page_id}_${r}${c}`}
-                                ]}).e,
+                                new Hidden({
+                                    attributes:[
+                                        {field: 'name', value: 'line[item_id]'},
+                                        {field: 'id',   value: `item_id_${page.pos_page_id}_${r}${c}`}
+                                    ]
+                                }).e,
                                 new Hidden({
                                     attributes: [{field: 'name', value: 'line[sale_id]'}],
                                     classes:    ['sale_id']
@@ -175,7 +177,7 @@ function getPages() {
                 };
                 tab_page.appendChild(row);
             };
-            tab_headers.appendChild(new Tab_Header({id: `page_${page.pos_page_id}`, text: page.title}).e);
+            tab_headers.appendChild(new Tab_Header(`page_${page.pos_page_id}`, page.title).e);
             tab_pages  .appendChild(tab_page);
         });
         return true;
@@ -197,10 +199,12 @@ function getPages() {
                                     attributes:[{field: 'name', value: 'line[sale_id]'}],
                                     classes: ['sale_id']
                                 }).e,
-                                new Hidden({attributes:[
-                                    {field: 'name',  value: 'line[item_id]'},
-                                    {field: 'value', value: String(item.item_id)}
-                                ]}).e,
+                                new Hidden({
+                                    attributes:[
+                                        {field: 'name',  value: 'line[item_id]'},
+                                        {field: 'value', value: String(item.item_id)}
+                                    ]
+                                }).e,
                                 new Button({
                                     text: `${item.name}\n£${Number(item.price).toFixed(2)}`,
                                     classes: ['w-100', 'h-100', 'btn', 'btn-primary'],
@@ -226,8 +230,8 @@ function getPages() {
         get({table: 'pos_layouts'})
         .then(function ([layouts, options]) {
             layouts.forEach(layout => {
-                set_value({id: `item_id_${layout.page_id}_${layout.button}`, value: layout.item_id});
-                set_attribute({id: `div_${layout.page_id}_${layout.button}`, attribute: 'data-id', value: layout.item_id});
+                set_value(`item_id_${layout.page_id}_${layout.button}`, layout.item_id);
+                set_data(`div_${layout.page_id}_${layout.button}`, 'id', layout.item_id);
                 let btn_form  = document.querySelector(`#btn_${layout.page_id}_${layout.button}`),
                     span_form = document.querySelector(`#span_${layout.page_id}_${layout.button}`)
                 if (btn_form && span_form) {
@@ -253,7 +257,7 @@ function reset_sale_complete() {
     change.innerText = '';
     hide('btn_close_sale_complete');
     show('btn_sale_complete');
-    set_value({id: 'tendered', value: '0.00'})
+    set_value('tendered', '0.00')
 };
 function getSession() {
     get({
@@ -261,7 +265,7 @@ function getSession() {
         query: ['"status":1']
     })
     .then(function ([sessions, options]) {
-        set_href({id: 'btn_session', value: `/sessions/${sessions[0].session_id}`})
+        set_href('btn_session', `/sessions/${sessions[0].session_id}`);
     });
 };
 addReloadListener(getSale);
@@ -278,7 +282,7 @@ window.addEventListener('load', function () {
                 getSale,
                 function (response) {
                     if (typeof getCredits === 'function') getCredits;
-                    set_innerText({id: 'change', text: `${Number(response.change).toFixed(2)}`})
+                    set_innerText('change', `${Number(response.change).toFixed(2)}`)
                     show('btn_close_sale_complete');
                     hide('btn_sale_complete');
                 }

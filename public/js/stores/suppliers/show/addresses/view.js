@@ -8,7 +8,7 @@ function getAddresses() {
             ...sort_query(sort_cols)
         })
         .then(function ([addresses, options]) {
-            set_count({id: 'address', count: addresses.length || '0'});
+            set_count('address', addresses.length || '0');
             addresses.forEach(address => {
                 let row = tbl_addresses.insertRow(-1);
                 add_cell(row, {text: address.address.type});
@@ -30,17 +30,17 @@ function viewAddress(supplier_address_id) {
         spinner: 'address_view'
     })
     .then(function ([address, options]) {
-        set_innerText({id: 'supplier_address_id', text: address.supplier_address_id});
-        set_innerText({id: 'address_id',          text: address.address_id});
-        set_innerText({id: 'address_type',        text: address.address.type});
-        set_innerText({id: 'address_unit_number', text: address.address.unit_number});
-        set_innerText({id: 'address_street',      text: address.address.street});
-        set_innerText({id: 'address_town',        text: address.address.town});
-        set_innerText({id: 'address_county',      text: address.address.country});
-        set_innerText({id: 'address_country',     text: address.address.country});
-        set_innerText({id: 'address_postcode',    text: address.address.postcode});
-        set_innerText({id: 'address_createdAt',   text: print_date(address.address.createdAt, true)});
-        set_innerText({id: 'address_updatedAt',   text: print_date(address.address.updatedAt, true)});
+        set_innerText('supplier_address_id', address.supplier_address_id);
+        set_innerText('address_id',          address.address_id);
+        set_innerText('address_type',        address.address.type);
+        set_innerText('address_unit_number', address.address.unit_number);
+        set_innerText('address_street',      address.address.street);
+        set_innerText('address_town',        address.address.town);
+        set_innerText('address_county',      address.address.country);
+        set_innerText('address_country',     address.address.country);
+        set_innerText('address_postcode',    address.address.postcode);
+        set_innerText('address_createdAt',   print_date(address.address.createdAt, true));
+        set_innerText('address_updatedAt',   print_date(address.address.updatedAt, true));
     });
 };
 addReloadListener(getAddresses);

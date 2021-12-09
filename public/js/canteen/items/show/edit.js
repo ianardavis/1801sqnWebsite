@@ -4,10 +4,10 @@ function getItemEdit() {
         query: [`"item_id":"${path[2]}"`]
     })
     .then(function([item, options]) {
-        set_value({id: 'item_name_edit',    value: item.name});
-        set_value({id: 'item_price_edit',   value: item.price});
-        set_value({id: 'item_cost_edit',    value: item.cost});
-        set_value({id: 'item_current_edit', value: (item.current ? '1' : '0')});
+        set_value('item_name_edit',    item.name);
+        set_value('item_price_edit',   item.price);
+        set_value('item_cost_edit',    item.cost);
+        set_value('item_current_edit', (item.current ? '1' : '0'));
     });
 };
 window.addEventListener('load', function () {

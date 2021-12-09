@@ -5,7 +5,8 @@ function settingEditBtn(setting_id) {
             new Link({
                 modal: 'setting_edit',
                 type: 'edit',
-                data:  [{field: 'id', value: setting_id}]
+                data:  [{field: 'id', value: setting_id}],
+                large: true
             }).e
         );
     });
@@ -17,9 +18,9 @@ function viewSettingEdit(setting_id) {
         query: [`"setting_id":"${setting_id}"`]
     })
     .then(function([setting, options]) {
-        set_attribute({id: 'setting_id_edit', attribute: 'value', value: setting.setting_id});
-        set_value({id: 'setting_name_edit',  value: setting.name});
-        set_value({id: 'setting_value_edit', value: setting.value});
+        set_attribute('setting_id_edit', 'value', setting.setting_id);
+        set_value('setting_name_edit',  setting.name);
+        set_value('setting_value_edit', setting.value);
     });
 };
 function getPrinters() {

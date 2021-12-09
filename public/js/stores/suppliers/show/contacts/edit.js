@@ -5,10 +5,10 @@ function viewContactEdit(contact_id) {
         spinner: 'contact_edit'
     })
     .then(function ([contact, options]) {
-        set_attribute({id: 'supplier_contact_id_edit', attribute: 'value', value: contact.supplier_contact_id});
-        set_value({id: 'contact_type_edit',        value: contact.contact.type});
-        set_value({id: 'contact_description_edit', value: contact.contact.description});
-        set_value({id: 'contact_contact_edit',     value: contact.contact.contact});
+        set_attribute('supplier_contact_id_edit', 'value', contact.supplier_contact_id);
+        set_value('contact_type_edit',        contact.contact.type);
+        set_value('contact_description_edit', contact.contact.description);
+        set_value('contact_contact_edit',     contact.contact.contact);
         modalHide('contact_view');
     })
     .catch(err => {

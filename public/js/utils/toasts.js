@@ -6,7 +6,7 @@ function alert_toast(message) {
     let toastEl = document.querySelector('#toast_alert'),
         toast = bootstrap.Toast.getInstance(toastEl);
     if (toast) {
-        set_innerText({id: 'alert_text',  text: message});
+        set_innerText('alert_text', message);
         toast.show();
     };
 };

@@ -7,7 +7,10 @@ function listHoldings(options = {}) {
                 ...options
             })
             .then(function ([holdings, options]) {
-                sel_holdings.appendChild(new Option({text: options.blank_text || '', selected: (options.selected === '')}).e);
+                sel_holdings.appendChild(new Option({
+                    text: options.blank_text || '',
+                    selected: (options.selected === '')
+                }).e);
                 holdings.forEach(holding => {
                     sel_holdings.appendChild(
                         new Option({

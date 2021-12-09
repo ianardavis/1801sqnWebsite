@@ -4,13 +4,13 @@ function getSize() {
         query: [`"size_id":"${path[2]}"`]
     })
     .then(function ([size, options]) {
-        set_breadcrumb({text: `${print_size_text(size.item)}: ${print_size(size)}`});
-        set_innerText({id: 'issueable',     text: yesno(size.issueable)});
-        set_innerText({id: 'orderable',     text: yesno(size.orderable)});
-        set_innerText({id: 'has_serials',   text: yesno(size.has_serials)});
-        set_innerText({id: 'has_nsns',      text: yesno(size.has_nsns)});
-        set_innerText({id: 'supplier',      text: (size.supplier ? size.supplier.name : '')});
-        set_attribute({id: 'supplier_link', attribute: 'href', value: (size.supplier ? `/suppliers/${size.supplier_id}` : '')});
+        set_breadcrumb(`${print_size_text(size.item)}: ${print_size(size)}`);
+        set_innerText('issueable',   yesno(size.issueable));
+        set_innerText('orderable',   yesno(size.orderable));
+        set_innerText('has_serials', yesno(size.has_serials));
+        set_innerText('has_nsns',    yesno(size.has_nsns));
+        set_innerText('supplier',    (size.supplier ? size.supplier.name : ''));
+        set_href('supplier_link', (size.supplier ? `/suppliers/${size.supplier_id}` : ''));
         let stock_elements  = document.querySelectorAll('.stock_element'),
             serial_elements = document.querySelectorAll('.serial_element');
         if (size.has_serials) {
@@ -24,8 +24,8 @@ function getSize() {
             if (size[e]) document.querySelectorAll(`.${e}_element`).forEach(e => e.classList.remove('hidden'))
             else         document.querySelectorAll(`.${e}_element`).forEach(e => e.classList.add('hidden'));
         });
-        set_innerText({id: 'item', text: size.item.description});
-        set_href(     {id: 'item', value: `/items/${size.item_id}`});
+        set_innerText('item', size.item.description);
+        set_href(     'item', `/items/${size.item_id}`);
         document.querySelectorAll('.size_id').forEach(e => e.setAttribute('value', size.size_id));
     })
     .catch(err => window.location.assign('/items'));

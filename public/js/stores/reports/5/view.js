@@ -39,12 +39,7 @@ function getLocations() {
                         ]
                     }).e
                 ]});
-                add_cell(row, {
-                    append: new Link({
-                        small: true,
-                        href: `/stocks/${stock.stock_id}`
-                    }).e
-                });
+                add_cell(row, {append: new Link({href: `/stocks/${stock.stock_id}`}).e});
                 row_index++;
             });
             enable_button('action');

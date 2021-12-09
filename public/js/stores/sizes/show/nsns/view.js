@@ -8,7 +8,7 @@ function getNSNs() {
             ...sort_query(sort_cols)
         })
         .then(function ([nsns, options]) {
-            set_count({id: 'nsn', count: nsns.length || '0'});
+            set_count('nsn', nsns.length || '0');
             nsns.forEach(nsn => {
                 try {
                     let row = tbl_nsns.insertRow(-1);
@@ -17,8 +17,7 @@ function getNSNs() {
                     add_cell(row, {
                         append: new Link({
                             data:  [{field: 'nsn_id', value: nsn.nsn_id}],
-                            modal: 'nsn_view',
-                            small: true
+                            modal: 'nsn_view'
                         }).e}
                     );
                 } catch (error) {console.log(error)};
@@ -33,14 +32,14 @@ function viewNSN(event) {
         spinner: 'nsn_view'
     })
     .then(function([nsn, options]) {
-        set_innerText({id: 'nsn_group_id',   text: `${String(nsn.nsn_group.code).padStart(2, '0')} | ${nsn.nsn_group.group}`});
-        set_innerText({id: 'nsn_class_id',   text: `${String(nsn.nsn_class.code).padStart(2, '0')} | ${nsn.nsn_class.class}`});
-        set_innerText({id: 'nsn_country_id', text: `${String(nsn.nsn_country.code).padStart(2, '0')} | ${nsn.nsn_country.country}`});
-        set_innerText({id: 'item_number',    text: nsn.item_number});
-        set_innerText({id: 'nsn_id',         text: nsn.nsn_id});
-        set_innerText({id: 'nsn_view',       text: print_nsn(nsn)});
-        set_innerText({id: '_default',       text: yesno((nsn.nsn_id === nsn.size.nsn_id))});
-        set_attribute({id: 'btn_nsn_link',   attribute: 'href', value: `/nsns/${nsn.nsn_id}`});
+        set_innerText('nsn_group_id',   `${String(nsn.nsn_group.code).padStart(2, '0')} | ${nsn.nsn_group.group}`);
+        set_innerText('nsn_class_id',   `${String(nsn.nsn_class.code).padStart(2, '0')} | ${nsn.nsn_class.class}`);
+        set_innerText('nsn_country_id', `${String(nsn.nsn_country.code).padStart(2, '0')} | ${nsn.nsn_country.country}`);
+        set_innerText('item_number',    nsn.item_number);
+        set_innerText('nsn_id',         nsn.nsn_id);
+        set_innerText('nsn_view',       print_nsn(nsn));
+        set_innerText('_default',       yesno((nsn.nsn_id === nsn.size.nsn_id)));
+        set_href('btn_nsn_link', `/nsns/${nsn.nsn_id}`);
     });
 };
 addReloadListener(getNSNs);

@@ -16,8 +16,8 @@ function getDetailOptions() {
     });
 };
 function reset_add_detail() {
-    set_value({id: 'detail_name_add'});
-    set_value({id: 'detail_value_add'});
+    set_value('detail_name_add');
+    set_value('detail_value_add');
 };
 window.addEventListener('load', function () {
     addListener('reload_options', getDetailOptions)
@@ -33,8 +33,8 @@ window.addEventListener('load', function () {
                 reset_add_detail,
                 getDetails,
                 function () {
-                    set_value({id: 'inp_detail_name',  value: ''});
-                    set_value({id: 'inp_detail_value', value: ''});
+                    set_value('inp_detail_name',);
+                    set_value('inp_detail_value');
                 }
             ]
         }

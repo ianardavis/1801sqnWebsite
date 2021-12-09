@@ -8,7 +8,7 @@ function getFiles() {
             ...sort_query(sort_cols)
         })
         .then(function ([files, options]) {
-            set_count({id: 'file', count: files.length || '0'});
+            set_count('file', files.length || '0');
             files.forEach(file => {
                 let row = tbl_files.insertRow(-1);
                 add_cell(row, {text: file.filename})
@@ -16,8 +16,7 @@ function getFiles() {
                 add_cell(row, {
                     append: new Link({
                         modal: 'file_view',
-                        data: [{field: 'id', value: file.file_id}],
-                        small: true
+                        data: [{field: 'id', value: file.file_id}]
                     }).e
                 });
             });
@@ -30,13 +29,13 @@ function viewFile(file_id) {
         query: [`"file_id":"${file_id}"`]
     })
     .then(function ([file, options]) {
-        set_attribute({id: 'form_file_download', attribute: 'action', value: `/files/${file.file_id}/download`});
-        set_innerText({id: 'file_id',          text: file.file_id});
-        set_innerText({id: 'file_filename',    text: file.filename});
-        set_innerText({id: 'file_description', text: file.description});
-        set_innerText({id: 'file_user',        text: print_user(file.user)});
-        set_innerText({id: 'file_createdAt',   text: print_date(file.createdAt, true)});
-        set_innerText({id: 'file_updatedAt',   text: print_date(file.updatedAt, true)});
+        set_attribute('form_file_download', 'action', `/files/${file.file_id}/download`);
+        set_innerText('file_id',          file.file_id);
+        set_innerText('file_filename',    file.filename);
+        set_innerText('file_description', file.description);
+        set_innerText('file_user',        print_user(file.user));
+        set_innerText('file_createdAt',   print_date(file.createdAt, true));
+        set_innerText('file_updatedAt',   print_date(file.updatedAt, true));
     });
 };
 window.addEventListener('load', function () {

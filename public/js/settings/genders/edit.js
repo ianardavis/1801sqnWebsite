@@ -5,7 +5,8 @@ function genderEditBtn(gender_id) {
             new Link({
                 modal: 'gender_edit',
                 type: 'edit',
-                data:  {field: 'id', value: gender_id}
+                data:  {field: 'id', value: gender_id},
+                large: true
             }).e
         );
 
@@ -18,8 +19,8 @@ function viewGenderEdit(gender_id) {
         query: [`"gender_id":"${gender_id}"`]
     })
     .then(function([gender, options]) {
-        set_attribute({id: 'gender_id_edit', attribute: 'value', value: gender.gender_id});
-        set_value({id: 'gender_gender_edit', value: gender._gender});
+        set_attribute('gender_id_edit', 'value', gender.gender_id);
+        set_value('gender_gender_edit', gender.gender);
     });
 };
 window.addEventListener('load', function () {

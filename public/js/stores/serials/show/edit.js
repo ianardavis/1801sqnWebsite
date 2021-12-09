@@ -4,7 +4,7 @@ function viewSerialEdit() {
         query: [`"serial_id":"${path[2]}"`]
     })
     .then(function ([serial, options]) {
-        set_value({id: 'serial_serial_edit', value: serial.item_number});
+        set_value('serial_serial_edit', serial.item_number);
     })
 };
 window.addEventListener( "load", function () {

@@ -109,7 +109,10 @@ function get_sizes() {
                                     tbl_items_selected,
                                     item,
                                     index,
-                                    [new Option({text: `${print_size(size)} | Qty: ${stock}`, value: size.size_id}).e]
+                                    [new Option({
+                                        text: `${print_size(size)} | Qty: ${stock}`,
+                                        value: size.size_id
+                                    }).e]
                                 );
                                 index++;
                             });

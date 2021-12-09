@@ -1,6 +1,6 @@
 function resetTransferAdd() {
-    set_value({id: 'transfer_add_location'});
-    set_value({id: 'transfer_add_qty'});
+    set_value('transfer_add_location');
+    set_value('transfer_add_qty');
 };
 function viewTransferAdd() {
     get({
@@ -12,7 +12,7 @@ function viewTransferAdd() {
             alert_toast('This stock location has not stock. Transfer is not possible');
             modalHide('transfer_add');
         } else {
-            set_attribute({id: 'transfer_add_qty', attribute: 'max', value: stock.qty});
+            set_attribute('transfer_add_qty', 'max', stock.qty);
         };
     });
 };

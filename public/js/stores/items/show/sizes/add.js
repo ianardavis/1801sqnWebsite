@@ -1,6 +1,6 @@
 function resetAddSize() {
-    ['issueable', 'orderable', 'has_nsns', 'has_serials'].forEach(e => set_value({id: `size_${e}`, value: '0'}));
-    ['size1', 'size2', 'size3'].forEach(e => set_value({id: `size_${e}`, value: ''}));
+    ['issueable', 'orderable', 'has_nsns', 'has_serials'].forEach(e => set_value(`size_${e}`, '0'));
+    ['size1', 'size2', 'size3'].forEach(e => set_value(`size_${e}`));
     getSuppliers();
 };
 function getSuppliers() {
@@ -22,7 +22,7 @@ window.addEventListener('load', function () {
         '/sizes',
         {onComplete: [
             getSizes,
-            function () {['size1', 'size2', 'size3'].forEach(e => set_value({id: `size_${e}`, value: ''}));}
+            function () {['size1', 'size2', 'size3'].forEach(e => set_value(`size_${e}`));}
         ]}
     );
     addListener('reload_suppliers', getSuppliers);

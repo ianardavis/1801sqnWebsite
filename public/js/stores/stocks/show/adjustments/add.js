@@ -1,8 +1,8 @@
 function reset_count_add() {
-    set_value({id: 'adjustment_qty_count'});
+    set_value('adjustment_qty_count');
 };
 function reset_scrap_add() {
-    set_value({id: 'adjustment_qty_scrap'});
+    set_value('adjustment_qty_scrap');
 };
 window.addEventListener('load', function () {
     modalOnShow('count_add', reset_count_add);

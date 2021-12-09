@@ -12,16 +12,13 @@ function getDemands() {
             ...sort_query(sort_cols)
         })
         .then(function ([demands, options]) {
-            set_count({id: 'demand', count: demands.length || '0'});
+            set_count('demand', demands.length || '0');
             demands.forEach(demand => {
                 try {
                     let row = tbl_demands.insertRow(-1);
                     add_cell(row, table_date(demand.createdAt));
                     add_cell(row, {text: demand_statuses[demand.status]});
-                    add_cell(row, {append: new Link({
-                        href: `/demands/${demand.demand_id}`,
-                        small: true
-                    }).e});
+                    add_cell(row, {append: new Link({href: `/demands/${demand.demand_id}`}).e});
                 } catch (err) {
                     console.log(err);
                 };

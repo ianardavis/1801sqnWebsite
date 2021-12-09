@@ -5,10 +5,10 @@ function getSale() {
         query: [`"sale_id":"${path[2]}"`]
     })
     .then(function ([sale, options]) {
-        set_innerText({id: 'sale_createdAt', value: print_date(sale.createdAt, true)});
-        set_innerText({id: 'sale_user',      value: print_user(sale.user)});
-        set_innerText({id: 'sale_status',    value: statuses[sale.status] || 'Unknown'});
-        set_breadcrumb({text: sale.sale_id});
+        set_breadcrumb(sale.sale_id);
+        set_innerText('sale_createdAt', print_date(sale.createdAt, true));
+        set_innerText('sale_user',      print_user(sale.user));
+        set_innerText('sale_status',    statuses[sale.status] || 'Unknown');
     });
 };
 addReloadListener(getSale);

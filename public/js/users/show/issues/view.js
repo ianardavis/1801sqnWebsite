@@ -13,7 +13,7 @@ function getIssues () {
         })
         .then(function ([issues, options]) {
             let row_index = 0;
-            set_count({id: 'issue', count: issues.length || '0'});
+            set_count('issue', issues.length || '0');
             issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, table_date(issue.createdAt));
@@ -33,12 +33,7 @@ function getIssues () {
                         } : {}
                     )
                 });
-                add_cell(row, {
-                    append: new Link({
-                        href: `/issues/${issue.issue_id}`,
-                        small: true
-                    }).e
-                });
+                add_cell(row, {append: new Link({href: `/issues/${issue.issue_id}`}).e});
                 row_index ++;
             });
             if (typeof addEditSelect === 'function') addEditSelect();

@@ -4,14 +4,14 @@ function getWriteoff() {
         query: [`"writeoff_id":"${path[2]}"`]
     })
     .then(function ([writeoff, options]) {
-        set_breadcrumb({text: `${writeoff.item.name} | ${print_date(writeoff.createdAt, true)}`});
-        set_innerText({id: 'writeoff_item', value: writeoff.item.name});
-        set_innerText({id: 'writeoff_qty',  value: writeoff.qty});
-        set_innerText({id: 'writeoff_cost', value: `£${Number(writeoff.cost).toFixed(2)}`});
-        set_innerText({id: 'writeoff_reason', value: writeoff.reason});
-        set_innerText({id: 'writeoff_createdAt', value: print_date(writeoff.createdAt, true)});
-        set_innerText({id: 'writeoff_user',  value: print_user(writeoff.user)});
-        set_href({id: 'writeoff_user_link', value: `/users/${writeoff.user_id}`});
+        set_breadcrumb(`${writeoff.item.name} | ${print_date(writeoff.createdAt, true)}`);
+        set_innerText('writeoff_item',      writeoff.item.name);
+        set_innerText('writeoff_qty',       writeoff.qty);
+        set_innerText('writeoff_cost',      `£${Number(writeoff.cost).toFixed(2)}`);
+        set_innerText('writeoff_reason',    writeoff.reason);
+        set_innerText('writeoff_createdAt', print_date(writeoff.createdAt, true));
+        set_innerText('writeoff_user',      print_user(writeoff.user));
+        set_href('writeoff_user_link', `/users/${writeoff.user_id}`);
     });
 };
 addReloadListener(getWriteoff);

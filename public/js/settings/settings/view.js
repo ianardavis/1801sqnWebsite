@@ -33,7 +33,7 @@ function getPrinter() {
         spinner: 'printers'
     })
     .then(function ([setting, options]) {
-        set_innerText({id: 'setting_printer', value: setting.value})
+        set_innerText('setting_printer', setting.value)
     })
 };
 function getErrorLog() {
@@ -68,11 +68,11 @@ function viewSetting(setting_id) {
         query: [`"setting_id":"${setting_id}"`]
     })
     .then(function([setting, options]) {
-        set_innerText({id: 'setting_id',        text: setting.setting_id});
-        set_innerText({id: 'setting_name',      text: setting.name});
-        set_innerText({id: 'setting_value',     text: setting.value});
-        set_innerText({id: 'setting_createdAt', text: print_date(setting.createdAt, true)});
-        set_innerText({id: 'setting_updatedAt', text: print_date(setting.updatedAt, true)});
+        set_innerText('setting_id',        setting.setting_id);
+        set_innerText('setting_name',      setting.name);
+        set_innerText('setting_value',     setting.value);
+        set_innerText('setting_createdAt', print_date(setting.createdAt, true));
+        set_innerText('setting_updatedAt', print_date(setting.updatedAt, true));
     });
 };
 addReloadListener(getErrorLog);

@@ -7,7 +7,10 @@ function getNSNGroups(options = {}) {
             selected_classification: options.selected_classification || null
         })
         .then(function ([nsn_groups, options]) {
-            sel_nsn_groups.appendChild(new Option({text: 'Select Group Code', selected: (options.selected === null)}).e);
+            sel_nsn_groups.appendChild(new Option({
+                text: 'Select Group Code',
+                selected: (options.selected === null)
+            }).e);
             let selected = options.selected;
             nsn_groups.forEach(e => {
                 if (!options.selected && e.code === 84) selected = true

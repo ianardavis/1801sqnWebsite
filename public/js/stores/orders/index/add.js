@@ -1,6 +1,6 @@
 function reset_order_add() {
     clear('tbl_order_add');
-    set_value({id: 'order_add_qty', value: '0'});
+    set_value('order_add_qty', '0');
 };
 let row_count = 0;
 function selectedSizes(sizes) {

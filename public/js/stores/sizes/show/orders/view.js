@@ -9,7 +9,7 @@ function getOrders() {
             ...sort_query(sort_cols)
         })
         .then(function ([orders, options]) {
-            set_count({id: 'order', count: orders.length});
+            set_count('order', orders.length);
             orders.forEach(order => {
                 try {
                     let row = tbl_orders.insertRow(-1);
@@ -36,14 +36,14 @@ function viewOrder(order_id) {
     })
     .then(function ([order, options]){
         console.log(order)
-        set_innerText({id: 'order_user',      text: print_user(order.user)});
-        set_innerText({id: 'order_qty',       text: order.qty});
-        set_innerText({id: 'order_status',    text: order_statuses[order.status]});
-        set_innerText({id: 'order_createdAt', text: print_date(order.createdAt)});
-        set_innerText({id: 'order_updatedAt', text: print_date(order.updatedAt)});
-        set_innerText({id: 'order_id',        text: order.order_id});
-        set_href({id: 'btn_order_link',  value: `/orders/${order.order_id}`});
-        set_href({id: 'order_user_link', value: `/users/${order.user_id}`});
+        set_innerText('order_user',      print_user(order.user));
+        set_innerText('order_qty',       order.qty);
+        set_innerText('order_status',    order_statuses[order.status]);
+        set_innerText('order_createdAt', print_date(order.createdAt));
+        set_innerText('order_updatedAt', print_date(order.updatedAt));
+        set_innerText('order_id',        order.order_id);
+        set_href('btn_order_link',  `/orders/${order.order_id}`);
+        set_href('order_user_link', `/users/${order.user_id}`);
     })
     .catch(err => console.log(err));
 };

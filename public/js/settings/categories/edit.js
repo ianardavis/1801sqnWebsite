@@ -5,7 +5,8 @@ function categoryEditBtn(category_id) {
             new Link({
                 modal: 'category_edit',
                 type:  'edit',
-                data:  {field: 'id', value: category_id}
+                data:  {field: 'id', value: category_id},
+                large: true
             }).e
         );
     });
@@ -28,8 +29,8 @@ function viewCategoryEdit(category_id) {
         query: [`"category_id":"${category_id}"`]
     })
     .then(function([category, options]) {
-        set_value({id: 'category_id_edit', value: category.category_id});
-        set_value({id: '_category_edit',   value: category.category});
+        set_value('category_id_edit', category.category_id);
+        set_value('_category_edit',   category.category);
         listCategories({select: 'sel_category_edit', selected: category.parent_category_id || ''});
     });
 };
@@ -69,8 +70,8 @@ window.addEventListener('load', function () {
             if (id) {
                 let ele = document.querySelector(`.list-group-item [data-id="${id}"]`);
                 if (ele) {
-                    set_attribute({id: 'category_id_move', attribute: 'value', value: id});
-                    remove_attribute({id: 'parent_category_id_move', attribute: 'value'});
+                    set_attribute('category_id_move', 'value', id);
+                    set_attribute('parent_category_id_move', 'value');
                     ele.classList.add('green');
                     dragging = true;
                 };
@@ -81,7 +82,7 @@ window.addEventListener('load', function () {
             if (id) {
                 let ele = document.querySelector(`.list-group-item [data-id="${id}"]`);
                 if (ele) {
-                    set_attribute({id: 'parent_category_id_move', attribute: 'value', value: id});
+                    set_attribute('parent_category_id_move', 'value', id);
                     document.querySelectorAll('.green').forEach(e => e.classList.remove('green'));
                     document.querySelectorAll('.red')  .forEach(e => e.classList.remove('red'));
                     dragging = false;

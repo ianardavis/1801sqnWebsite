@@ -7,8 +7,7 @@ function approve_radio(issue_id, index) {
         html: '<i class="fas fa-times-circle"></i>',
         attributes: [
             {field: 'name',     value: `issues[][${index}][status]`},
-            {field: 'value',    value: '0'},
-            {field: 'disabled', value: true}
+            {field: 'value',    value: '0'}
         ]
     }).e;
 };
@@ -21,8 +20,7 @@ function decline_radio(issue_id, index) {
         html: '<i class="fas fa-times-circle"></i>',
         attributes: [
             {field: 'name',     value: `issues[][${index}][status]`},
-            {field: 'value',    value: '-1'},
-            {field: 'disabled', value: true}
+            {field: 'value',    value: '-1'}
         ]
     }).e
 };
@@ -34,8 +32,7 @@ function nil_radio(issue_id, index) {
         colour: 'primary',
         html: '<i class="fas fa-question"></i>',
         attributes: [
-            {field: 'data-issue_id', value: issue_id},
-            {field: 'disabled',      value: true},
+            {field: 'data-issue_id', value: issue_id}
             {field: 'checked',       value: true}
         ],
         listener: {event: 'input', func: function () {clear(`${this.dataset.issue_id}_details`)}}
@@ -51,8 +48,7 @@ function cancel_radio(issue_id, index) {
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
             {field: 'value',         value: '0'},
-            {field: 'data-issue_id', value: issue_id},
-            {field: 'disabled',      value: true}
+            {field: 'data-issue_id', value: issue_id}
         ],
         listener: {event: 'input', func: function () {clear(`${this.dataset.issue_id}_details`)}}
     }).e;
@@ -68,8 +64,7 @@ function issue_radio(issue_id, index) {
             {field: 'name',          value: `issues[][${index}][status]`},
             {field: 'value',         value: '-2'},
             {field: 'data-issue_id', value: issue_id},
-            {field: 'data-index',    value: index},
-            {field: 'disabled',      value: true}
+            {field: 'data-index',    value: index}
         ],
         ...(typeof issue_options === 'function' ? {listener: {event: 'input', func: issue_options}}: {})
     }).e;
@@ -79,14 +74,13 @@ function loancard_radio(issue_id, index) {
         id: `${issue_id}_issue`,
         float_start: true,
         classes: ['radio_issue'],
-        colour: 'success',
+        colour: 'danger',
         html: '<i class="fas fa-address-card"></i>',
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
             {field: 'value',         value: '-2'},
             {field: 'data-issue_id', value: issue_id},
-            {field: 'data-index',    value: index},
-            {field: 'disabled',      value: true}
+            {field: 'data-index',    value: index}
         ],
         ...(typeof issue_options === 'function' ? {listener: {event: 'input', func: issue_options}}: {})
     }).e;
@@ -119,7 +113,10 @@ function issue_options() {
                             index: options.index
                         })
                         .then(function ([nsns, options]) {
-                            nsns.forEach(e => nsn_select.appendChild(new Option({text: print_nsn(e), value: e.nsn_id}).e));
+                            nsns.forEach(e => nsn_select.appendChild(new Option({
+                                text: print_nsn(e),
+                                value: e.nsn_id
+                            }).e));
                         });
                     };
                     if (issue.size.has_serials) {
@@ -187,7 +184,10 @@ function add_stock_select(div_details, index, size_id) {
         query: [`"size_id":"${size_id}"`]
     })
     .then(function ([stocks, options]) {
-        stocks.forEach(e => stock_select.appendChild(new Option({text: `${e.location.location} | Qty: ${e.qty}`, value: e.stock_id}).e));
+        stocks.forEach(e => stock_select.appendChild(new Option({
+            text: `${e.location.location} | Qty: ${e.qty}`,
+            value: e.stock_id
+        }).e));
     });
 };
 function loancard_options() {
@@ -216,16 +216,15 @@ function loancard_options() {
                         index: options.index
                     })
                     .then(function ([stocks, options]) {
-                        stocks.forEach(e => stock_select.appendChild(new Option({text: `${e.location.location} | Qty: ${e.qty}`, value: e.stock_id}).e));
+                        stocks.forEach(e => stock_select.appendChild(new Option({
+                            text: `${e.location.location} | Qty: ${e.qty}`,
+                            value: e.stock_id
+                        }).e));
                     });
                 };
             });
         };
     });
-};
-function enable_radios(table) {
-    let radios = table.querySelectorAll('input[type="radio"]');
-    radios.forEach(e => e.removeAttribute('disabled'));
 };
 window.addEventListener('load', function () {
     enable_button('action_lines');

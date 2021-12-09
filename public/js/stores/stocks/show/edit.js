@@ -4,7 +4,7 @@ function viewStockEdit() {
         query: [`"stock_id":"${path[2]}"`]
     })
     .then(function ([stock, options]) {
-        set_value({id: 'stock_location_edit', value: stock.location.location});
+        set_value('stock_location_edit', stock.location.location);
     });
 };
 window.addEventListener('load', function () {

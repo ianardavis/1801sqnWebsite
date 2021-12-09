@@ -22,13 +22,13 @@ window.addEventListener('load', function () {
             onComplete: function () {
                 let file_id = document.querySelector('#file_id');
                 if (file_id) viewDetails(file_id.innerText);
-                set_value({id: 'file_detail_name_add',  value: ''});
-                set_value({id: 'file_detail_value_add', value: ''});
+                set_value('file_detail_name_add');
+                set_value('file_detail_value_add');
             }
         }
     );
     modalOnShow('file_view', function (event) {
         getFileDetailNames();
-        set_attribute({id: 'file_id_detail_add', attribute: 'value', value: event.relatedTarget.dataset.id});
+        set_attribute('file_id_detail_add', 'value', event.relatedTarget.dataset.id);
     });
 });

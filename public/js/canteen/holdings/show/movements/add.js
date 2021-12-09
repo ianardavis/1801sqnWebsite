@@ -1,6 +1,6 @@
 function getHoldings() {
-    set_value({id: 'movement_add_amount'});
-    set_value({id: 'movement_add_description'});
+    set_value('movement_add_amount');
+    set_value('movement_add_description');
     clear('sel_holdings')
     .then(sel_holdings => {
         get({

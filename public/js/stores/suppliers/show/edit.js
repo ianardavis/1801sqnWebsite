@@ -5,8 +5,8 @@ function viewSupplierEdit() {
         spinner: 'supplier_edit'
     })
     .then(function ([supplier, options]) {
-        set_value({id: 'supplier_name_edit',      value: supplier.name});
-        set_value({id: 'supplier_is_stores_edit', value: (supplier.is_stores ? '1' : '0')});
+        set_value('supplier_name_edit',      supplier.name);
+        set_value('supplier_is_stores_edit', (supplier.is_stores ? '1' : '0'));
         listAccounts({selected: supplier.account_id});
     });
 };

@@ -6,9 +6,9 @@ function viewDetailEdit(file_detail_id) {
         spinner: 'file_detail_edit'
     })
     .then(function ([detail, options]) {
-        set_attribute({id: 'file_detail_id_edit',    attribute: 'value', value: detail.file_detail_id});
-        set_value(    {id: 'file_detail_name_edit',  value: detail.name});
-        set_value(    {id: 'file_detail_value_edit', value: detail.value});
+        set_attribute('file_detail_id_edit', 'value', detail.file_detail_id);
+        set_value('file_detail_name_edit',  detail.name);
+        set_value('file_detail_value_edit', detail.value);
     });
 };
 function addDetailEditBtns() {
@@ -22,7 +22,6 @@ function addDetailEditBtns() {
                 new Link({
                     modal: 'file_detail_edit',
                     data:  [{field: 'id', value: detail.file_detail_id}],
-                    small: true,
                     type:  'edit'
                 }).e
             );

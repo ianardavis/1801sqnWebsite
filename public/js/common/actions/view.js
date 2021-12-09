@@ -8,7 +8,7 @@ function getActions() {
             ...sort_query(sort_cols)
         })
         .then(function ([actions, options]) {
-            set_count({id: 'action', count: actions.length || '0'});
+            set_count('action', actions.length || '0');
             actions.forEach(action => {
                 let row = tbl_actions.insertRow(-1);
                 add_cell(row, table_date(action.createdAt));
@@ -36,10 +36,7 @@ function getLinks(action_id) {
                 add_cell(row, (
                     link._table === path[1] && link.id === path[2] ?
                     {text: 'This record'} : 
-                    {append: new Link({
-                        href: `/${link._table}/${link.id}`,
-                        small: true
-                    }).e}
+                    {append: new Link({href: `/${link._table}/${link.id}`}).e}
                 ));
             });
         });
@@ -51,11 +48,11 @@ function viewLine(action_id) {
         query: [`"action_id":"${action_id}"`]
     })
     .then(function ([action, options]) {
-        set_innerText({id: 'action_id',        text: action.action_id});
-        set_innerText({id: 'action_action',    text: action.action});
-        set_innerText({id: 'action_user',      text: print_user(action.user)});
-        set_innerText({id: 'action_createdAt', text: print_date(action.createdAt, true)});
-        set_href({id: 'action_user_link', value: `/users/${action.user_id}`});
+        set_innerText('action_id',        action.action_id);
+        set_innerText('action_action',    action.action);
+        set_innerText('action_user',      print_user(action.user));
+        set_innerText('action_createdAt', print_date(action.createdAt, true));
+        set_href('action_user_link', `/users/${action.user_id}`);
     });
 };
 addReloadListener(getActions);

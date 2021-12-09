@@ -5,14 +5,14 @@ function viewAddressEdit(address_id) {
         spinner: 'address_edit'
     })
     .then(function ([address, options]) {
-        set_attribute({id: 'supplier_address_id_edit', attribute: 'value', value: address.supplier_address_id});
-        set_value({id: 'address_type_edit',        value: address.address.type});
-        set_value({id: 'address_unit_number_edit', value: address.address.unit_number});
-        set_value({id: 'address_street_edit',      value: address.address.street});
-        set_value({id: 'address_town_edit',        value: address.address.town});
-        set_value({id: 'address_county_edit',      value: address.address.county});
-        set_value({id: 'address_country_edit',     value: address.address.country});
-        set_value({id: 'address_postcode_edit',    value: address.address.postcode});
+        set_attribute('supplier_address_id_edit', 'value', address.supplier_address_id);
+        set_value('address_type_edit',        address.address.type);
+        set_value('address_unit_number_edit', address.address.unit_number);
+        set_value('address_street_edit',      address.address.street);
+        set_value('address_town_edit',        address.address.town);
+        set_value('address_county_edit',      address.address.county);
+        set_value('address_country_edit',     address.address.country);
+        set_value('address_postcode_edit',    address.address.postcode);
         modalHide('address_view');
     })
     .catch(err => {

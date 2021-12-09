@@ -1,6 +1,6 @@
 function set_image_id_delete() {
     let image = document.querySelector('.carousel-inner .active');
-    if (image) set_value({id: 'image_id_delete', value: image.dataset.id})
+    if (image) set_value('image_id_delete', image.dataset.id)
 };
 window.addEventListener('load', function () {
     addListener('btn_image_delete', set_image_id_delete)

@@ -4,9 +4,9 @@ function getLocation() {
         query: [`"location_id":"${path[2]}"`]
     })
     .then(function ([location, options]) {
-        set_breadcrumb({text: location.location})
-        set_innerText({id: 'location_location', text: location.location});
-        set_innerText({id: 'location_createdAt', text: print_date(location.createdAt, true)});
-        set_innerText({id: 'location_updatedAt', text: print_date(location.updatedAt, true)});
+        set_breadcrumb(location.location)
+        set_innerText('location_location',  location.location);
+        set_innerText('location_createdAt', print_date(location.createdAt, true));
+        set_innerText('location_updatedAt', print_date(location.updatedAt, true));
     });
 };

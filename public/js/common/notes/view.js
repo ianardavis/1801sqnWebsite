@@ -14,7 +14,7 @@ function getNotes() {
             ...sort_query(sort_cols)
         })
         .then(function ([notes, options]) {
-            set_count({id: 'note', count: notes.length || '0'});
+            set_count('note', notes.length || '0');
             notes.forEach(note => {
                 let row = tbl_notes.insertRow(-1);
                 add_cell(row, table_date(note.createdAt));
@@ -36,12 +36,12 @@ function viewNote(note_id) {
         spinner: 'note_view'
     })
     .then(function ([note, options]) {
-        set_innerText({id: 'note_id_view',   text: note.note_id});
-        set_innerText({id: 'note_createdAt', text: print_date(note.createdAt, true)});
-        set_innerText({id: 'note_user',      text: note.user.full_name});
-        set_href(     {id: 'note_user_link', value: `/users/${note.user_id}`});
-        set_innerText({id: 'note_system',    text: yesno(note.system)});
-        set_innerText({id: 'note_note',      text: note.note});
+        set_innerText('note_id_view',   note.note_id);
+        set_innerText('note_createdAt', print_date(note.createdAt, true));
+        set_innerText('note_user',      note.user.full_name);
+        set_innerText('note_system',    yesno(note.system));
+        set_innerText('note_note',      note.note);
+        set_href('note_user_link', `/users/${note.user_id}`);
     });
 };
 addReloadListener(getNotes);

@@ -29,10 +29,14 @@ function viewButton(page_id, position, layout = null) {
         })
         .then(function ([items, options]) {
             sel_items.appendChild(new Option({text: 'Select Item...', selected: (!layout)}).e);
-            items.forEach(e => sel_items.appendChild(new Option({value: e.item_id, text: e.name, selected: (layout && layout.item_id === e.item_id ? true : false)}).e));
-            set_value({id: 'layout_button_edit', value: position});
-            set_value({id: 'layout_page_edit',   value: page_id});
-            set_value({id: 'colour_edit',        value: (layout ? `${layout.colour}` : '#31639e')});
+            items.forEach(e => sel_items.appendChild(new Option({
+                value: e.item_id,
+                text:  e.name,
+                selected: (layout && layout.item_id === e.item_id ? true : false)
+            }).e));
+            set_value('layout_button_edit', position);
+            set_value('layout_page_edit',   page_id);
+            set_value('colour_edit',        (layout ? `${layout.colour}` : '#31639e'));
             clear('layout_delete_btn')
             .then(layout_delete_btn => {
                 get({

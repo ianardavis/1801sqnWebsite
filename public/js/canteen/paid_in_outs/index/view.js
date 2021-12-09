@@ -17,10 +17,7 @@ function getPaidInOuts() {
                 add_cell(row, {text: paid_in_out.reason});
                 add_cell(row, {text: `£${Number(paid_in_out.amount).toFixed(2)}`});
                 add_cell(row, {text: statuses[paid_in_out.status]});
-                add_cell(row, {append: new Link({
-                    href: `/paid_in_outs/${paid_in_out.paid_in_out_id}`,
-                    small: true
-                }).e});
+                add_cell(row, {append: new Link({href: `/paid_in_outs/${paid_in_out.paid_in_out_id}`}).e});
             });
         })
     });

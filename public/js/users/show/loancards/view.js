@@ -12,18 +12,13 @@ function getLoancards () {
             ...sort_query(sort_cols)
         })
         .then(function ([loancards, options]) {
-            set_count({id: 'loancards', count: loancards.length || '0'});
+            set_count('loancards', loancards.length || '0');
             loancards.forEach(loancard => {
                 let row = tbl_loancards.insertRow(-1);
                 add_cell(row, table_date(loancard.createdAt));
                 add_cell(row, {text: loancard.lines.length || '0'});
                 add_cell(row, {text: loancard_statuses[loancard.status]})
-                add_cell(row, {
-                    append: new Link({
-                        href: `/loancards/${loancard.loancard_id}`,
-                        small: true
-                    }).e
-                });
+                add_cell(row, {append: new Link({href: `/loancards/${loancard.loancard_id}`}).e});
             });
         });
     })

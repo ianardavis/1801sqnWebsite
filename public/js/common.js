@@ -96,12 +96,12 @@ function sortByRow(col, func) {
     func();
 }
 function removeID(id) {
-    if (typeof(id) === 'string') document.querySelector(`#${id}`).remove();
+    if (typeof id === 'string') document.querySelector(`#${id}`).remove();
     else id.remove();
 };
 function clearElement(id) {
-    let element = document.querySelector(`#${id}`);
-    if (element) element.innerHTML = '';
+    let e = document.querySelector(`#${id}`);
+    if (e) e.innerHTML = '';
 };
 function yesno(boolean) {
     if (boolean) return 'Yes'
@@ -109,49 +109,53 @@ function yesno(boolean) {
 };
 function enable_button(id, pretext = 'btn_') {
     let button = document.querySelector(`#${pretext}${id}`);
-    console.log(button);
     if (button) button.removeAttribute('disabled');
 };
-function disable_button(id, pretext = 'btn_') {
-    let button = document.querySelector(`#${pretext}${id}`);
+function disable_button(id) {
+    let button = document.querySelector(`#btn_${id}`);
     if (button) button.setAttribute('disabled', true);
 };
-function set_count(options = {}) {
-    let _count = document.querySelector(`#${options.id}_count`);
-    if (_count) _count.innerText = options.count || '0';
+function set_count(id, count) {
+    let _count = document.querySelector(`#${id}_count`);
+    if (_count) _count.innerText = count;
 };
-function set_innerText(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) element.innerText = options.text || options.value|| '';
+function set_innerText(id, text = '') {
+    let e = document.querySelector(`#${id}`);
+    if (e) e.innerText = text;
 };
-function set_innerHTML(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) element.innerHTML = options.text || options.value|| '';
+function set_innerHTML(id, html = '') {
+    let e = document.querySelector(`#${id}`);
+    if (e) e.innerHTML = html;
 };
-function set_breadcrumb(options = {}) {
-    let breadcrumb = document.querySelector(`#${options.id || 'breadcrumb'}`);
-    if (breadcrumb) {
-        breadcrumb.innerText = options.text || '';
-        if (options.href) breadcrumb.setAttribute('href', options.href);
+function set_breadcrumb(text, id = 'breadcrumb', href = null) {
+    let e = document.querySelector(`#${id}`);
+    if (e) {
+        e.innerText = text;
+        if (href) e.setAttribute('href', href);
     };
 };
-function set_href(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) {
-        if (options.value) element.setAttribute('href', options.value);
-        else               element.removeAttribute('href');
+function set_href(id, value = null) {
+    let e = document.querySelector(`#${id}`);
+    if (e) {
+        if (value) e.setAttribute('href', value);
+        else       e.removeAttribute('href');
     };
 };
-function set_value(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element) element.value = options.value || options.text || '';
+function set_data(id, field, value) {
+    let e = document.querySelector(`#${id}`);
+    if (e) {
+        if (options.value) e.setAttribute(`data-${field}`, value);
+    };
 };
-function set_attribute(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element && options.attribute) {
-        if (Array.isArray(options.attribute)) { 
-            options.attribute.forEach(e => element.setAttribute(e.attribute, e.value || ''));
-        } else element.setAttribute(options.attribute, options.value || '');
+function set_value(id, text = '') {
+    let e = document.querySelector(`#${id}`);
+    if (e) e.value = text || '';
+};
+function set_attribute(id, attribute, value = null) {
+    let e = document.querySelector(`#${id}`);
+    if (e) {
+        if (value) e.setAttribute(   attribute, value)
+        else       e.removeAttribute(attribute);
     };
 };
 function add_cell(row, options = {}) {
@@ -172,32 +176,12 @@ function add_cell(row, options = {}) {
     return cell;
 };
 function show(id) {
-    let element = document.querySelector(`#${id}`);
-    if (element) element.classList.remove('hidden');
+    let e = document.querySelector(`#${id}`);
+    if (e) e.classList.remove('hidden');
 };
 function hide(id) {
-    let element = document.querySelector(`#${id}`);
-    if (element) element.classList.add('hidden');
-};
-function remove_attribute(options = {}) {
-    let element = document.querySelector(`#${options.id}`);
-    if (element && options.attribute) {
-        if (Array.isArray(options.attribute)) {
-            options.attribute.forEach(e => element.removeAttribute(e))
-        } else element.removeAttribute(options.attribute);
-    };
-};
-function add_class(options) {
-    let e = document.querySelector(`#${options.id}`);
-    if (e && options.class) e.classList.add(options.class);
-};
-function add_classes(options) {
-    let e = document.querySelector(`#${options.id}`);
-    if (e && options.classes) options.classes.forEach(_class => e.classList.add(options.class));
-};
-function remove_class(options) {
-    let e = document.querySelector(`#${options.id}`);
-    if (e && options.class) e.classList.remove(options.class);
+    let e = document.querySelector(`#${id}`);
+    if (e) e.classList.add('hidden');
 };
 function isShown(id) {
     let e = document.querySelector(`#${id}`);
@@ -255,8 +239,8 @@ function clear(id) {
 };
 function addReloadListener(func) {
     window.addEventListener('load', function () {
-        let reload = document.querySelector('#reload')
-        if (reload) reload.addEventListener('click', func);
+        let e = document.querySelector('#reload')
+        if (e) e.addEventListener('click', func);
     });
 };
 function addListener(btn, func, event = 'click') {
@@ -264,26 +248,26 @@ function addListener(btn, func, event = 'click') {
     if (e) e.addEventListener(event, func);
 };
 function toggle_checkbox_on_row_click(event) {
-    let checkbox = event.target.parentNode.childNodes[0].querySelector('input');
-    if (checkbox) checkbox.click();
+    let e = event.target.parentNode.childNodes[0].querySelector('input');
+    if (e) e.click();
 };
 function modalHide(id) {
     bootstrap.Modal.getOrCreateInstance(document.querySelector(`#mdl_${id}`)).hide();
 };
 function modalOnShow(id, func) {
-    let modal = document.querySelector(`#mdl_${id}`);
-    if (modal) modal.addEventListener('show.bs.modal', function (event){func(event)});
+    let e = document.querySelector(`#mdl_${id}`);
+    if (e) e.addEventListener('show.bs.modal', function (event){func(event)});
 };
 function modalOnHide(id, func) {
-    let modal = document.querySelector(`#mdl_${id}`);
-    if (modal) modal.addEventListener('hide.bs.modal', function (event){func(event)});
+    let e = document.querySelector(`#mdl_${id}`);
+    if (e) e.addEventListener('hide.bs.modal', function (event){func(event)});
 };
 function modalIsShown(id) {
-    let modal = document.querySelector(`#mdl_${id}`);
-    if (modal && modal.classList.contains('show')) return true
+    let e = document.querySelector(`#mdl_${id}`);
+    if (e && e.classList.contains('show')) return true
     else return false;
 };
-function showTab(tab) {
+function show_tab(tab) {
     let tabHead = document.querySelector(`#${tab}-tab`),
         tabBody = document.querySelector(`#${tab}`);
     if (tabHead) tabHead.classList.add('active');

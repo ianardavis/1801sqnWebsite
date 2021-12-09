@@ -11,7 +11,7 @@ function viewNSNEdit() {
         getNSNCountries({
             selected: nsn.nsn_country_id
         });
-        set_value({id: 'nsn_item_number_edit', value: nsn.item_number});
+        set_value('nsn_item_number_edit', nsn.item_number);
     })
 };
 window.addEventListener( "load", function () {

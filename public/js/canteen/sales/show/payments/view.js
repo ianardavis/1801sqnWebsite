@@ -8,7 +8,7 @@ function getPayments() {
             ...sort_query(sort_cols)
         })
         .then(function ([payments, options]) {
-            set_count({id: 'payment', count: payments.length || '0'});
+            set_count('payment', payments.length || '0');
             payments.forEach(payment => {
                 try {
                     let row = tbl_payments.insertRow(-1);
