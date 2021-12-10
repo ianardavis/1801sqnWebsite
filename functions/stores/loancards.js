@@ -701,7 +701,7 @@ module.exports = function (m, fn) {
                                 return fn.update(issue, {status: 4})
                                 .then(result => {
                                     return fn.actions.create(
-                                        'ISSUED | Added to loancard', // 'Issue added to loancard'
+                                        'ISSUED | Added to loancard',
                                         options.user_id,
                                         [
                                             {table: 'issues', id: issue.issue_id},

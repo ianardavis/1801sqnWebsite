@@ -318,3 +318,34 @@ function Notification (options = {}) {
     this.e.appendChild(heading);
     this.e.appendChild(body);
 };
+function TH(options = {}) {
+    this.e = document.createElement('th');
+    if      (options.text) this.e.innerText = options.text
+    else if (options.html) this.e.innerHTML = options.html
+    if (options.width) this.e.classList.add(`w-${options.width}`);
+    if (options.sort)  {
+        this.e.setAttribute('onclick',       `sortByRow(this, ${options.sort.func})`);
+        this.e.setAttribute('data-sort_col', options.sort.col);
+        this.e.appendChild(new Span({classes: ['sort_ind', 'float-end']}).e);
+    };
+};
+function THEAD() {
+    this.e = document.createElement('thead');
+    this.e.classList.add('thead-dark');
+};
+function TBODY(id) {
+    this.e = document.createElement('tbody');
+    this.e.setAttribute('id', `tbl_${id}`);
+}
+function Table() {
+    this.e = document.createElement('table');
+    this.e.classList.add('table', 'table-sm', 'table-hover');
+};
+function H5(options = {}) {
+    this.e = document.createElement('h5');
+    if (options.text) this.e.innerText = options.text;
+};
+function P(options = {}) {
+    this.e = document.createElement('p');
+    if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+};

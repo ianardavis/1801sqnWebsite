@@ -85,14 +85,7 @@
             </div>
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-            <table class="table table-sm table-hover">
-                <thead class="thead-dark">
-                    <th class="w-50" onclick="sortTable(0, 'tbl_sizes')">Item</th>
-                    <th class='w-50' onclick='sortByRow(this, getSizes)' data-sort_col='size1'>Size<span class='sort_ind float-end'></span></th>
-                    <th><i class='fas fa-search'></i></th>
-                </thead>
-                <tbody id="tbl_sizes"></tbody>
-            </table>
+            <div id="div_sizes"></div>
         </div>
         <% if (permissions.authorised_demander) { %>
             <div class="tab-pane fade" id="demands" role="tabpanel" aria-labelledby="demands-tab">

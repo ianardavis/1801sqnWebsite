@@ -69,7 +69,11 @@ module.exports = (app, m, fn) => {
         m.loancards.findAll({
             where: JSON.parse(req.query.where),
             include: [
-                fn.inc.stores.loancard_lines(),
+                {
+                    model: m.loancard_lines,
+                    as: 'lines',
+                    where: {status: {[fn.op.ne]: 0}}
+                },
                 fn.inc.users.user(),
                 fn.inc.users.user({as: 'user_loancard'})
             ],

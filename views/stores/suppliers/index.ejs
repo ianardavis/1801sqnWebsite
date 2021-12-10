@@ -1,13 +1,11 @@
 <%- include(`${partials}/head/app`, {text: 'Stores'}) %>
 <%- include(`${partials}/breadcrumb`, {text: 'Suppliers'}) %>
-<li class="nav-item">
-	<a class='nav-link' data-bs-toggle="modal" data-bs-target="#mdl_supplier_add"><i class="fas fa-plus"></i></a>
-</li>
 <%- include(`${partials}/reload`) %>
 <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
-	<input class='form-control mt-1' type='text' id='supplierSearch' onkeyup='searchCards(this)' placeholder='Search by name...'>
+	<%- include(`${partials}/button/modal/open`, {type: 'success', text: 'Add Supplier', modal: 'supplier_add', classes: ['w-100'], small: true}) %>
+	<input class='form-control my-1' type='text' id='supplierSearch' onkeyup='searchCards(this)' placeholder='Search by name...'>
 	<div class='menu row' id="tbl_suppliers"></div>
 	<div id="div_modals">
 		<div id='mdl_supplier_add' class="modal fade" tabindex="-1" role="dialog">

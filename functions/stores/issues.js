@@ -241,7 +241,7 @@ module.exports = function (m, fn) {
                                     return line.reload()
                                     .then(line => {
                                         let actions = [fn.actions.create(
-                                            'Issue removed from loancard',
+                                            'ISSUED | Removed from loancard',
                                             options.user_id,
                                             [
                                                 {table: 'issues',         id: issue.issue_id},

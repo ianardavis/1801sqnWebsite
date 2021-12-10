@@ -64,17 +64,54 @@
 	<% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class='w-15' onclick='sortByRow(this, getIssues)' data-sort_col='createdAt'>Date  <span class='sort_ind float-end'></span></th>
-				<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='user_id'  >User  <span class='sort_ind float-end'></span></th>
+				<th class='w-15' onclick='sortByRow(this, getIssues)' data-sort_col='createdAt'	   >Date  <span class='sort_ind float-end'></span></th>
+				<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='user_id_issue'>User  <span class='sort_ind float-end'></span></th>
 				<th class='w-20'>Description</th>
-				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='size_id'  >Size  <span class='sort_ind float-end'></span></th>
-				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='qty'	   >Qty   <span class='sort_ind float-end'></span></th>
-				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='status'   >Status<span class='sort_ind float-end'></span></th>
+				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='size_id'  	   >Size  <span class='sort_ind float-end'></span></th>
+				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='qty'	   	   >Qty   <span class='sort_ind float-end'></span></th>
+				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='status'   	   >Status<span class='sort_ind float-end'></span></th>
 				<th class='w-15'>Actions</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>
 			<tbody id="tbl_issues"></tbody>
 		</table>
+		<nav class='float-start'>
+			<ul class="pagination pagination-sm">
+				<li class="page-item">
+					<input class='btn-check' type="radio" id='offset_1',  name='radio_offset' autocomplete='off' value='1'>
+					<label class="page-link btn btn-outline-primary" for="offset_1">1</label>
+				</li>
+				<li class="page-item">
+					<input class='btn-check' type="radio" id='offset_2',  name='radio_offset' autocomplete='off' value='2'>
+					<label class="page-link btn btn-outline-primary" for="offset_2">2</label>
+				</li>
+				<li class="page-item">
+					<input class='btn-check' type="radio" id='offset_3',  name='radio_offset' autocomplete='off' value='3'>
+					<label class="page-link btn btn-outline-primary" for="offset_3">3</label>
+				</li>
+			</ul>
+		</nav>
+		<nav class='float-end'>
+			<ul class="pagination pagination-sm">
+				<li class="page-item disabled"><p class="page-link">Issues per page:</p></li>
+				<li class="page-item">
+					<input class='btn-check' type="radio" id='limit_10',  name='radio_limit' autocomplete='off' value='10'>
+					<label class="page-link btn btn-outline-primary" for="limit_10">10 </label>
+				</li>
+				<li class="page-item">
+					<input class='btn-check' type="radio" id='limit_20',  name='radio_limit' autocomplete='off' value='20'>
+					<label class="page-link btn btn-outline-primary" for="limit_20">20 </label>
+				</li>
+				<li class="page-item">
+					<input class='btn-check' type="radio" id='limit_30',  name='radio_limit' autocomplete='off' value='30'>
+					<label class="page-link btn btn-outline-primary" for="limit_30">30 </label>
+				</li>
+				<li class="page-item">
+					<input class='btn-check' type="radio" id='limit_all', name='radio_limit' autocomplete='off'>
+					<label class="page-link btn btn-outline-primary" for="limit_all">All</label>
+				</li>
+			</ul>
+		</nav>
 	<% if (permissions.issuer) { %></form><% } %>
 	<div id="div_modals">
 		<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">

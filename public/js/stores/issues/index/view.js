@@ -2,8 +2,10 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let sel_users = document.querySelector('#sel_users') || {value: ''},
-            statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
+        let limit     = document.querySelector('input[name=radio_limit]:checked')  || {value: null},
+            offset    = document.querySelector('input[name=radio_offset]:checked') || {value: '0'},
+            sel_users = document.querySelector('#sel_users') || {value: ''},
+            statuses  = document.querySelectorAll("input[type=checkbox]:checked") || [],
             query     = [],
             sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
         if (statuses  && statuses.length > 0)    query.push(status_query(statuses));
@@ -11,6 +13,8 @@ function getIssues() {
         get({
             table: 'issues',
             query: [query.join(',')],
+            ...(limit .value ? {limit:  limit .value} : {}),
+            ...(offset.value ? {offset: offset.value} : {}),
             ...sort_query(sort_cols)
         })
         .then(function ([issues, options]) {
@@ -53,22 +57,31 @@ function getIssues() {
                 if (issue.status === 2 || issue.status === 3) {
                     if (typeof issue_radio   === 'function') radios.push(issue_radio(  issue.issue_id, row_index));
                 };
+                let div = new Div({attributes: [{field: 'id', value: `${issue.issue_id}_details`}]}).e;
                 if (issue.status === 4 ) {
                     if (typeof loancard_radio === 'function') {
                         get({
                             table: 'issue_loancard',
-                            query: [`"issue_id":"${issue.issue_id}"`]
+                            query: [`"issue_id":"${issue.issue_id}"`],
+                            index: row_index
                         })
                         .then(function ([loancard_line, options]) {
                             if (loancard_line.status === 1) {
-                                if (typeof nil_radio === 'function') radios.push(nil_radio(issue.issue_id, row_index));
-                                radios.push(loancard_radio(issue.issue_id, row_index));
+                                let radio_div   = tbl_issues.querySelector(`#${issue.issue_id}_row`),
+                                    details_div = tbl_issues.querySelector(`#${issue.issue_id}_details`);
+                                if (radio_div) {
+                                    if (typeof nil_radio === 'function') radio_div.insertBefore(nil_radio(issue.issue_id, options.index), details_div);
+                                    radio_div.insertBefore(loancard_radio(issue.issue_id, options.index), details_div);
+                                };
                             };
                         });
                     };
                 };
-                radios.push(new Div({attributes: [{field: 'id', value: `${issue.issue_id}_details`}]}).e);
-                add_cell(row, {append: radios});
+                radios.push(div);
+                add_cell(row, {
+                    id: `${issue.issue_id}_row`,
+                    append: radios
+                });
                 add_cell(row, {append: new Link({href: `/issues/${issue.issue_id}`}).e});
                 row_index ++;
             });
@@ -80,7 +93,7 @@ function getIssues() {
 function filter(tbl_issues) {
     if (!tbl_issues) tbl_issues = document.querySelector('#tbl_issues');
     let from = new Date(document.querySelector('#createdAt_from').value).getTime() || '',
-        to   = new Date(document.querySelector('#createdAt_to').value)  .getTime() || '',
+        to   = new Date(document.querySelector('#createdAt_to')  .value).getTime() || '',
         item = document.querySelector('#item').value.trim() || '',
         size = document.querySelector('#size').value.trim() || '';
     tbl_issues.childNodes.forEach(row => {

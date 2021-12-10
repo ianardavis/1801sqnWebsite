@@ -6,8 +6,8 @@ function approve_radio(issue_id, index) {
         colour: 'danger',
         html: '<i class="fas fa-times-circle"></i>',
         attributes: [
-            {field: 'name',     value: `issues[][${index}][status]`},
-            {field: 'value',    value: '0'}
+            {field: 'name',  value: `issues[][${index}][status]`},
+            {field: 'value', value: '2'}
         ]
     }).e;
 };
@@ -19,8 +19,8 @@ function decline_radio(issue_id, index) {
         colour: 'success',
         html: '<i class="fas fa-times-circle"></i>',
         attributes: [
-            {field: 'name',     value: `issues[][${index}][status]`},
-            {field: 'value',    value: '-1'}
+            {field: 'name',  value: `issues[][${index}][status]`},
+            {field: 'value', value: '-1'}
         ]
     }).e
 };
@@ -32,7 +32,8 @@ function nil_radio(issue_id, index) {
         colour: 'primary',
         html: '<i class="fas fa-question"></i>',
         attributes: [
-            {field: 'data-issue_id', value: issue_id}
+            {field: 'name',          value: `issues[][${index}][status]`},
+            {field: 'data-issue_id', value: issue_id},
             {field: 'checked',       value: true}
         ],
         listener: {event: 'input', func: function () {clear(`${this.dataset.issue_id}_details`)}}
@@ -62,7 +63,7 @@ function issue_radio(issue_id, index) {
         html: '<i class="fas fa-address-card"></i>',
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
-            {field: 'value',         value: '-2'},
+            {field: 'value',         value: '4'},
             {field: 'data-issue_id', value: issue_id},
             {field: 'data-index',    value: index}
         ],
@@ -82,13 +83,14 @@ function loancard_radio(issue_id, index) {
             {field: 'data-issue_id', value: issue_id},
             {field: 'data-index',    value: index}
         ],
-        ...(typeof issue_options === 'function' ? {listener: {event: 'input', func: issue_options}}: {})
+        ...(typeof issue_options === 'function' ? {listener: {event: 'input', func: loancard_options}}: {})
     }).e;
 };
 
 function issue_options() {
     clear(`${this.dataset.issue_id}_details`)
     .then(div_details => {
+        div_details.appendChild(new Spinner({id: this.dataset.issue_id}).e);
         if (this.value === '4') {
             get({
                 table: 'issue',
@@ -164,7 +166,8 @@ function issue_options() {
                     };
                 } else if (issue.status === 4) {
                     add_stock_select(div_details, options.index, issue.size_id);
-                };;
+                };
+                remove_spinner(issue.issue_id);
             });
         };
     });
@@ -191,12 +194,13 @@ function add_stock_select(div_details, index, size_id) {
     });
 };
 function loancard_options() {
-    clear(`issue_${this.dataset.id}_details`)
+    clear(`${this.dataset.issue_id}_details`)
     .then(div_details => {
+        div_details.appendChild(new Spinner({id: this.dataset.issue_id}).e);
         if (this.value === '-2') {
             get({
                 table: 'issue',
-                query: [`"issue_id":"${this.dataset.id}"`],
+                query: [`"issue_id":"${this.dataset.issue_id}"`],
                 index: this.dataset.index
             })
             .then(function ([issue, options]) {
@@ -220,6 +224,7 @@ function loancard_options() {
                             text: `${e.location.location} | Qty: ${e.qty}`,
                             value: e.stock_id
                         }).e));
+                        remove_spinner(issue.issue_id);
                     });
                 };
             });

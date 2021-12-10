@@ -42,6 +42,7 @@ module.exports = (app, m, fn) => {
         issues_allowed(req.allowed, JSON.parse(req.query.where), req.user.user_id)
         .then(add_user_id_issue => {
             if (add_user_id_issue) req.query.user_id_issue = req.user.user_id;
+            console.log(req.query);
             return m.issues.findAll({
                 where: JSON.parse(req.query.where),
                 include: [
@@ -49,6 +50,8 @@ module.exports = (app, m, fn) => {
                     fn.inc.users.user({as: 'user_issue'}),
                     fn.inc.users.user()
                 ],
+                ...(req.query.limit  ? {limit:  req.query.limit} : {}),
+                ...(req.query.offset ? {offset: Number(req.query.offset || 0) * Number(req.query.limit || 0)} : {}),
                 ...fn.sort(req.query.sort)
             })
             .then(issues => res.send({success: true, result: issues}))

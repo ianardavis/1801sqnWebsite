@@ -8,8 +8,7 @@ function order_radio(issue_id, index) {
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
             {field: 'value',         value: '3'},
-            {field: 'data-issue_id', value: issue_id},
-            {field: 'disabled',      value: true}
+            {field: 'data-issue_id', value: issue_id}
         ],
         listener: {event: 'input', func: function () {clear(`${this.dataset.issue_id}_details`)}}
     }).e;

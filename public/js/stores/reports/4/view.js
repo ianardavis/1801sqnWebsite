@@ -1,19 +1,26 @@
 function getSizes() {
     clear('div_sizes')
-    .then(div => {
-        let p = document.createElement('p');
-        p.setAttribute('id', 'col_headers');
-        div.appendChild(p);
+    .then(div_sizes => {
+        let p_head = new P({attributes: [{field: 'id', value: 'col_headers'}]}).e,
+            p_body = new P({attributes: [{field: 'id', value: 'col_body'}]}).e,
+            div_row = new Div({classes: ['row']}).e,
+            div_col = new Div({classes: ['col-12', 'col-md-8', 'mx-auto']}).e;
+        div_sizes.appendChild(p_head);
+        div_col.appendChild(p_body);
+        div_row.appendChild(div_col);
+        div_sizes.appendChild(div_row);
         get({
             table: 'sizes',
-            query: ['"orderable":1']
+            query: ['"orderable":"1"']
         })
         .then(function ([sizes, options]) {
             sizes.forEach(size => {
                 let tbl = document.querySelector(`#tbl_${size.item_id}`);
-                if (!tbl) tbl = addItem(div, p, size.item_id, size.item.description);
+                if (!tbl) tbl = addItem(p_head, p_body, size.item);
                 let row = tbl.insertRow(-1);
-                add_cell(row, {text: print_size(size)});
+                add_cell(row, {text: size.size1});
+                add_cell(row, {text: size.size2});
+                add_cell(row, {text: size.size3});
                 add_cell(row, {id: `stock-${size.size_id}`});
                 add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
                 get_stock(size.size_id)
@@ -22,45 +29,39 @@ function getSizes() {
         });
     });
 };
-function addItem(div, p, item_id, description) {
-    let new_div = document.createElement('div'),
-        btn = document.createElement('button'),
-        div_h = document.createElement('h5'),
-        div_table      = document.createElement('table'),
-        div_table_head = document.createElement('thead'),
-        div_table_body = document.createElement('tbody'),
-        div_table_head_col1 = document.createElement('th'),
-        div_table_head_col2 = document.createElement('th'),
-        div_table_head_col3 = document.createElement('th');
-    new_div.setAttribute('id', `item-${item_id}`)
-    new_div.classList.add('collapse');
-    div_h.innerText = description;
-    div_table.classList.add('table', 'table-sm', 'table-hover');
-    div_table_head.classList.add('thead-dark');
-    div_table_head_col1.innerText = 'Size';
-    div_table_head_col1.classList.add('w-90');
-    div_table_head_col1.setAttribute('onclick', `sortTable(0, 'tbl_${item_id}')`);
-    div_table_head_col2.innerText = 'In Stock';
-    div_table_head_col2.classList.add('w-10');
-    div_table_head_col2.setAttribute('onclick', `sortTable(1, 'tbl_${item_id}')`);
-    div_table_head_col3.innerHTML = '<i class="fas fa-search"></i>';
-    div_table_body.setAttribute('id', `tbl_${item_id}`);
-    div_table_head.appendChild(div_table_head_col1);
-    div_table_head.appendChild(div_table_head_col2);
-    div_table_head.appendChild(div_table_head_col3);
-    div_table.appendChild(div_table_head);
-    div_table.appendChild(div_table_body);
-    new_div.appendChild(div_h);
-    new_div.appendChild(div_table);
-    btn.classList.add('btn', 'm-1', 'collapsed');
-    btn.setAttribute('type', 'button');
-    btn.setAttribute('data-bs-toggle', 'collapse');
-    btn.setAttribute('data-bs-target', `#item-${item_id}`);
-    btn.setAttribute('aria-expanded', 'false');
-    btn.setAttribute('aria-controls', `item-${item_id}`);
-    btn.innerText = description;
-    div.appendChild(new_div);
-    p.appendChild(btn);
-    return div_table_body;
+function addItem(p_head, p_body, item) {
+    let div = new Div({
+            attributes: [{field: 'id', value: `item-${item.item_id}`}],
+            classes: ['collapse']
+        }).e,
+        table = new Table().e,
+        head  = new THEAD().e,
+        body  = new TBODY(item.item_id).e;
+    // div_table_head.appendChild(new TH({text: item.size_text1, width: '25', sort: {func: 'getSizes', col: 'size1'}}).e);
+    // div_table_head.appendChild(new TH({text: item.size_text2, width: '25', sort: {func: 'getSizes', col: 'size2'}}).e);
+    // div_table_head.appendChild(new TH({text: item.size_text3, width: '25', sort: {func: 'getSizes', col: 'size2'}}).e);
+    head.appendChild(new TH({text: item.size_text1, width: '25'}).e);
+    head.appendChild(new TH({text: item.size_text2, width: '25'}).e);
+    head.appendChild(new TH({text: item.size_text3, width: '25'}).e);
+    head.appendChild(new TH({text: 'In Stock', width: '25'}).e);
+    head.appendChild(new TH({html: '<i class="fas fa-search"></i>'}).e);
+    table.appendChild(head);
+    table.appendChild(body);
+    div.appendChild(new H5({text: item.description}).e);
+    div.appendChild(table);
+    p_body.appendChild(div);
+    p_head.appendChild(new Button({
+        classes: ['m-1', 'collapsed'],
+        data: [
+            {field: 'bs-toggle', value: 'collapse'},
+            {field: 'bs-target', value: `#item-${item.item_id}`}
+        ],
+        attributes: [
+            {field: 'aria-expanded', value: 'false'},
+            {field: 'aria-controls', value: `item-${item.item_id}`}
+        ],
+        text: item.description
+    }).e);
+    return body;
 };
 addReloadListener(getSizes);

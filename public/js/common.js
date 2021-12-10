@@ -143,9 +143,7 @@ function set_href(id, value = null) {
 };
 function set_data(id, field, value) {
     let e = document.querySelector(`#${id}`);
-    if (e) {
-        if (options.value) e.setAttribute(`data-${field}`, value);
-    };
+    if (e) e.setAttribute(`data-${field}`, value);
 };
 function set_value(id, text = '') {
     let e = document.querySelector(`#${id}`);
