@@ -2,24 +2,20 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let limit     = document.querySelector('input[name=radio_limit]:checked')  || {value: null},
-            offset    = document.querySelector('input[name=radio_offset]:checked') || {value: '0'},
-            sel_users = document.querySelector('#sel_users') || {value: ''},
-            statuses  = document.querySelectorAll("input[type=checkbox]:checked") || [],
-            query     = [],
-            sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
-        if (statuses  && statuses.length > 0)    query.push(status_query(statuses));
-        if (sel_users && sel_users.value !== '') query.push(sel_users.value);
+        let query = [
+            checked_statuses(),
+            selected_user()
+        ];
         get({
             table: 'issues',
-            query: [query.join(',')],
-            ...(limit .value ? {limit:  limit .value} : {}),
-            ...(offset.value ? {offset: offset.value} : {}),
-            ...sort_query(sort_cols)
+            query: [query.filter(a => a).join(',')],
+            ...pagination(tbl_issues),
+            ...sort_query(tbl_issues)
         })
-        .then(function ([issues, options]) {
+        .then(function ([result, options]) {
+            add_page_links(result.count, result.limit, result.offset);
             let row_index = 0;
-            issues.forEach(issue => {
+            result.issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, table_date(issue.createdAt));
                 add_cell(row, {text: print_user(issue.user_issue)});
@@ -124,6 +120,10 @@ window.addEventListener('load', function () {
     addListener('status_3',  getIssues, 'change');
     addListener('status_4',  getIssues, 'change');
     addListener('status_5',  getIssues, 'change');
+    addListener('limit_10',  getIssues, 'input');
+    addListener('limit_20',  getIssues, 'input');
+    addListener('limit_30',  getIssues, 'input');
+    addListener('limit_all', getIssues, 'input');
     addListener('createdAt_from', function (){filter()}, 'change');
     addListener('createdAt_to',   function (){filter()}, 'change');
     addListener('item',           function (){filter()}, 'input');

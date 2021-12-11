@@ -41,20 +41,36 @@ module.exports = (app, m, fn) => {
     app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         issues_allowed(req.allowed, JSON.parse(req.query.where), req.user.user_id)
         .then(add_user_id_issue => {
-            if (add_user_id_issue) req.query.user_id_issue = req.user.user_id;
-            console.log(req.query);
+            // !limit !offset   -> ok       -> show all
+            //  limit !offset   -> ok       -> show limit offset = 0
+            // !limit  offset   -> not ok   ->            offset to 0
+            //  limit  offset   -> ok       -> show limit from offset
+            let _offset = (req.query.offset && !isNaN(req.query.offset)),
+                _limit  = (req.query.limit  && !isNaN(req.query.limit));
+            if      ( _limit && !_offset) req.query.offset = 0
+            else if (!_limit && _offset)  req.query.offset = 0;
+            let where      = JSON.parse(req.query.where),
+                pagination = {};
+            if (req.query.limit  && !isNaN(req.query.limit))  pagination.limit  = Number(req.query.limit);
+            if (req.query.offset && !isNaN(req.query.offset)) pagination.offset = Number(req.query.offset);
+            if (add_user_id_issue) where.user_id_issue = req.user.user_id;
             return m.issues.findAll({
-                where: JSON.parse(req.query.where),
+                where: where,
                 include: [
                     fn.inc.stores.size(),
                     fn.inc.users.user({as: 'user_issue'}),
                     fn.inc.users.user()
                 ],
-                ...(req.query.limit  ? {limit:  req.query.limit} : {}),
-                ...(req.query.offset ? {offset: Number(req.query.offset || 0) * Number(req.query.limit || 0)} : {}),
+                ...pagination,
                 ...fn.sort(req.query.sort)
             })
-            .then(issues => res.send({success: true, result: issues}))
+            .then(issues => {
+                return m.issues.count({where: where})
+                .then(count => {
+                    res.send({success: true, result: {issues: issues, count: count, ...pagination}});
+                })
+                .catch(err => fn.send_error(res, err));
+            })
             .catch(err => fn.send_error(res, err));
         })
         .catch(err => fn.send_error(res, err));

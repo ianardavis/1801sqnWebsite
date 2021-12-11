@@ -336,7 +336,7 @@ function THEAD() {
 function TBODY(id) {
     this.e = document.createElement('tbody');
     this.e.setAttribute('id', `tbl_${id}`);
-}
+};
 function Table() {
     this.e = document.createElement('table');
     this.e.classList.add('table', 'table-sm', 'table-hover');
@@ -348,4 +348,25 @@ function H5(options = {}) {
 function P(options = {}) {
     this.e = document.createElement('p');
     if (options.attributes) options.attributes.forEach(a => this.e.setAttribute(a.field, a.value));
+};
+function LI(options = {}) {
+    this.e = document.createElement('li');
+    if (options.classes) options.classes.forEach(e => this.e.classList.add(e));
+};
+function Page_Number(options = {}) {
+    this.e = new LI({classes: ['page-item']}).e;
+    let _input = document.createElement('input'),
+        _label = document.createElement('label');   
+    _input.classList.add('btn-check');
+    _input.setAttribute('type', 'radio');
+    _input.setAttribute('id',   `offset_${options.offset}`);
+    _input.setAttribute('name', 'radio_offset');
+    _input.setAttribute('value', options.offset);
+    if (options.selected === options.offset) _input.setAttribute('checked', true);
+    if (options.listener) _input.addEventListener('input', options.listener);
+    _label.classList.add('page-link', 'btn', 'btn-outline-primary');
+    _label.setAttribute('for', `offset_${options.offset}`);
+    _label.innerText = Number(options.offset) + 1;
+    this.e.appendChild(_input);
+    this.e.appendChild(_label);
 };

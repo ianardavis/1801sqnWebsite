@@ -1,5 +1,5 @@
 <input
-    class="btn-check"
+    class="btn-check<% if (locals.classes) { classes.forEach(c => { %> <%= c %><% })} %>"
     type="checkbox"
     <% if (locals.name) { %>name='<%= name %>'<% } %>
     <% if (locals.value) { %>value='<%= value %>'<% } %>
