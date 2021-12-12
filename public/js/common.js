@@ -328,10 +328,13 @@ function pagination(tbl) {
     return pagination;
 };
 function add_page_links(count, limit, offset) {
+    count = Number(count);
+    limit = Number(limit);
+    offset = Number(offset);
     clear('page_buttons')
     .then(page_buttons => {
         let page_count = Math.ceil(count/limit);
-        if (page_count <  offset) offset = -1;
+        if (page_count <  offset) offset = 0;
         if (limit) {
             for (let i = 0; i < page_count; i++) {
                 page_buttons.appendChild(new Page_Number({offset: i, listener: getIssues, selected: offset}).e);

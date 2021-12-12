@@ -24,13 +24,13 @@ module.exports = (app, m, fn) => {
         .then(count => res.send({success: true, result: count}))
         .catch(err => fn.send_error(res, err));
     });
-    function issues_allowed(allowed_stores, query, user_id) {
+    function issues_allowed(allowed_stores, user_id_issue, user_id) {
         return new Promise((resolve, reject) => {
             return fn.allowed(user_id, 'access_users', true)
             .then(allowed_users => {
                 if (!allowed_users || !allowed_stores) {
-                    if (query.user_id_issue) {
-                        if (query.user_id_issue === user_id) resolve(false)
+                    if (user_id_issue && user_id_issue !== '') {
+                        if (user_id_issue === user_id) resolve(false)
                         else reject(new Error('Permission denied'));
                     } else resolve(true);
                 } else resolve(false);
@@ -38,13 +38,67 @@ module.exports = (app, m, fn) => {
             .catch(err => reject(err));
         });
     };
+    // !limit !offset   -> ok       -> show all
+    //  limit !offset   -> ok       -> show limit offset = 0
+    // !limit  offset   -> not ok   ->            offset = 0
+    //  limit  offset   -> ok       -> show limit from offset
+    app.post('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
+        issues_allowed(req.allowed, req.body.filter.user_id_issue, req.user.user_id)
+        .then(add_user_id_issue => {
+            if (!req.body.page.offset || isNaN(req.body.page.offset)) req.body.page.offset = 0;
+            if (isNaN(req.body.page.limit))                    delete req.body.page.limit;
+            if (add_user_id_issue) req.body.filter.user_id_issue = req.user.user_id;
+            let where   = {},
+                include = [
+                    {
+                        model: m.sizes,
+                        where: {
+                            ...(req.body.filter.size.size1 ? {size1: {[fn.op.substring]: req.body.filter.size.size1}} : {}),
+                            ...(req.body.filter.size.size2 ? {size2: {[fn.op.substring]: req.body.filter.size.size2}} : {}),
+                            ...(req.body.filter.size.size3 ? {size3: {[fn.op.substring]: req.body.filter.size.size3}} : {})
+                        },
+                        include: [{
+                            model: m.items,
+                            where: (req.body.filter.item ? {description: {[fn.op.substring]: req.body.filter.item}} : {})
+                        }]
+                    },
+                    {
+                        model: m.users,
+                        as: 'user_issue',
+                        where: (req.body.filter.user_id_issue ? {user_id: req.body.filter.user_id_issue} : {}),
+                        include: [m.ranks]
+                    }
+                ];
+            if (req.body.filter.status && req.body.filter.status.length > 0) where.status = {[fn.op.or]: req.body.filter.status};
+            if (req.body.filter.createdAt.from || req.body.filter.createdAt.to) {
+                if (req.body.filter.createdAt.from && req.body.filter.createdAt.to) {
+                    where.createdAt = {[fn.op.between]: [req.body.filter.createdAt.from, req.body.filter.createdAt.to]}
+                };
+                if (req.body.filter.createdAt.from && !req.body.filter.createdAt.to) {
+                    where.createdAt = {[fn.op.gt]: req.body.filter.createdAt.from}
+                };
+                if (!req.body.filter.createdAt.from && req.body.filter.createdAt.to) {
+                    where.createdAt = {[fn.op.gt]: req.body.filter.createdAt.from}
+                };
+            };
+            return m.issues.findAll({
+                where: where,
+                include: include,
+                ...req.body.page,
+                ...fn.sort(req.query.sort)
+            })
+            .then(issues => {
+                return m.issues.count({where: where, include: include})
+                .then(count => res.send({success: true, result: {issues: issues, count: count, ...req.body.page}}))
+                .catch(err => fn.send_error(res, err));
+            })
+            .catch(err => fn.send_error(res, err));
+        })
+        .catch(err => fn.send_error(res, err));
+    });
     app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         issues_allowed(req.allowed, JSON.parse(req.query.where), req.user.user_id)
         .then(add_user_id_issue => {
-            // !limit !offset   -> ok       -> show all
-            //  limit !offset   -> ok       -> show limit offset = 0
-            // !limit  offset   -> not ok   ->            offset to 0
-            //  limit  offset   -> ok       -> show limit from offset
             let _offset = (req.query.offset && !isNaN(req.query.offset)),
                 _limit  = (req.query.limit  && !isNaN(req.query.limit));
             if      ( _limit && !_offset) req.query.offset = 0

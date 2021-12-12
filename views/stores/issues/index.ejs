@@ -15,49 +15,14 @@
 			<%- include(`${partials}/button/button`, {id: 'action_lines', type: 'success', text: 'Action Selected Issues', classes: ['w-100', 'mb-1'], form: 'issue_edit', disabled: true}) %>
 		</div>
 	</div>
-	<div class="collapse mb-1" id="col-filter">
-		<%- include(`${partials}/inputs/select`, {title: 'Filter By User', id: 'sel_users', spinner_id: 'users', reload_id: 'reload_users'}) %>
-		<h5 class='text-start'>Status:</h5>
-		<div class="row">
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Cancelled', id: 'status_0', value: '0', colour: 'secondary', classes: ['status']}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Requested', id: 'status_1', value: '1', colour: 'warning', 	 classes: ['status'], checked: true}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Approved', 	id: 'status_2', value: '2', colour: 'success', 	 classes: ['status'], checked: true}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Ordered', 	id: 'status_3', value: '3', colour: 'primary',   classes: ['status'], checked: true}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Issued', 	id: 'status_4', value: '4', colour: 'info', 	 classes: ['status']}) %>
-			</div>
-			<div class="col-6 col-sm-4">
-				<%- include(`${partials}/inputs/checkbox`, {title: 'Returned', 	id: 'status_5', value: '5', colour: 'secondary', classes: ['status']}) %>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-6">
-				<h5 class='text-start'>Date From:</h5>
-				<input type="date" class='form-control' id='createdAt_from'>
-			</div>
-			<div class="col-sm-6">
-				<h5 class='text-start'>Date To:</h5>
-				<input type="date" class='form-control' id='createdAt_to'>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-6">
-				<h5 class='text-start'>Item:</h5>
-				<input type="text" class='form-control' id='item'>
-			</div>
-			<div class="col-sm-6">
-				<h5 class='text-start'>Size:</h5>
-				<input type="text" class='form-control' id='size'>
-			</div>
-		</div>
+	<div class="collapse show mb-1" id="col-filter">
+		<form id="form_filter">
+			<%- include(`${partials}/filter/user`, {append: '_issue'}) %>
+			<%- include(`${partials}/filter/status`, {statuses: [{text: 'Cancelled', value: '0', colour: 'secondary'}, {text: 'Requested', value: '1', colour: 'warning', checked: true}, {text: 'Approved', value: '2', colour: 'success', checked: true}, {text: 'Ordered', value: '3', colour: 'primary', checked: true}, {text: 'Issued', value: '4', colour: 'info'}, {text: 'Returned', value: '5', colour: 'secondary'}]}) %>
+			<%- include(`${partials}/filter/date`,   {field: 'createdAt'}) %>
+			<%- include(`${partials}/filter/size`) %>
+			<button class="btn btn-success w-100 mt-1">Show Issues</button>
+		</form>
 	</div>
 	<% if (permissions.issuer) { %>
 		<form id='form_issue_edit'>
@@ -82,19 +47,19 @@
 			<ul class="pagination pagination-sm">
 				<li class="page-item disabled"><p class="page-link">Issues per page:</p></li>
 				<li class="page-item">
-					<input class='btn-check' type="radio" id='limit_10',  name='radio_limit' value='10' checked>
+					<input class='btn-check' type="radio" id='limit_10'  form='form_filter' name='page[limit]' value='10' checked>
 					<label class="page-link btn btn-outline-primary" for="limit_10">10 </label>
 				</li>
 				<li class="page-item">
-					<input class='btn-check' type="radio" id='limit_20',  name='radio_limit' value='20'>
+					<input class='btn-check' type="radio" id='limit_20'  form='form_filter' name='page[limit]' value='20'>
 					<label class="page-link btn btn-outline-primary" for="limit_20">20 </label>
 				</li>
 				<li class="page-item">
-					<input class='btn-check' type="radio" id='limit_30',  name='radio_limit' value='30'>
+					<input class='btn-check' type="radio" id='limit_30'  form='form_filter' name='page[limit]' value='30'>
 					<label class="page-link btn btn-outline-primary" for="limit_30">30 </label>
 				</li>
 				<li class="page-item">
-					<input class='btn-check' type="radio" id='limit_all', name='radio_limit' >
+					<input class='btn-check' type="radio" id='limit_all' form='form_filter' name='page[limit]' >
 					<label class="page-link btn btn-outline-primary" for="limit_all">All</label>
 				</li>
 			</ul>
@@ -151,6 +116,6 @@
 		<script src='/js/stores/issues/edit/stock_admin.js'></script>
 	<% } %>
 <% } %>
-<script async>getIssues()</script>
+<!-- <script async>getIssues()</script> -->
 <script async>getUsers()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

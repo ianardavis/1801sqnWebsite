@@ -1,0 +1,12 @@
+<div class="row">
+    <div class="col-12">
+        <h5 class='text-start'>Status:</h5>
+    </div>
+    <% if (locals.statuses) { %>
+        <% statuses.forEach(status => { %>
+            <div class="col-6 col-sm-4">
+                <%- include(`${partials}/inputs/checkbox`, {title: status.text, id: `status_${status.value}`, value: status.value, colour: status.colour, classes: ['status'], checked: status.checked || false, name:'filter[status][]'}) %>
+            </div>
+        <% }) %>
+    <% } %>
+</div>

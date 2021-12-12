@@ -124,15 +124,15 @@ function addFormListener(form_id, method, location, options = {reload: false}) {
     try {
         let form = document.querySelector(`#form_${form_id}`);
         if (form) {
-            let submit_func = function (event) {
+            form.addEventListener("submit", function (event) {
                 event.preventDefault();
+                if (options.spinner) show_spinner(options.spinner);
                 if (
                     method.toUpperCase() === 'GET' ||
-                    options.noConfirm === true     ||
+                    options.noConfirm    === true  ||
                     confirm('Are you sure?')
                 ) sendData(form, method, location, options);
-            };
-            form.addEventListener("submit", submit_func);
+            });
         } else console.log(`${form_id} not found`);
     } catch (error) {
         console.log(`Error on form: ${form_id}`, error, )

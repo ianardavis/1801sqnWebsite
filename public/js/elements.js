@@ -360,7 +360,8 @@ function Page_Number(options = {}) {
     _input.classList.add('btn-check');
     _input.setAttribute('type', 'radio');
     _input.setAttribute('id',   `offset_${options.offset}`);
-    _input.setAttribute('name', 'radio_offset');
+    _input.setAttribute('name', 'page[offset]');
+    _input.setAttribute('form', 'form_filter');
     _input.setAttribute('value', options.offset);
     if (options.selected === options.offset) _input.setAttribute('checked', true);
     if (options.listener) _input.addEventListener('input', options.listener);
