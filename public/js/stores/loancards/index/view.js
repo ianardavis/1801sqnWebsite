@@ -4,9 +4,7 @@ function getLoancards() {
     clear('tbl_loancards')
     .then(tbl_loancards => {
         let sel_users = document.querySelector('#sel_users') || {value: ''},
-            statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query     = [];
-        if (statuses  && statuses.length > 0)    query.push(checked_statuses());
+            query     = [checked_statuses()];
         if (sel_users && sel_users.value !== "") query.push(sel_users.value);
         get({
             table: 'loancards',

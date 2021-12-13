@@ -2,12 +2,13 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function getIssues () {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let statuses = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query    = [`"user_id_issue":"${path[2]}"`];
-        if (statuses && statuses.length > 0) query.push(status_query(statuses));
+        let query = [
+            `"user_id_issue":"${path[2]}"`,
+            checked_statuses()
+        ];
         get({
             table: 'issues',
-            query: [query.join(',')],
+            query: [query.filter(a => a).join(',')],
             ...sort_query(tbl_issues)
         })
         .then(function ([issues, options]) {

@@ -2,12 +2,10 @@ let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Re
 function getOrders() {
     clear('tbl_orders')
     .then(tbl_orders => {
-        let statuses = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query    = [];
-        if (statuses && statuses.length > 0) query.push(status_query(statuses));
+        let query = [checked_statuses()];
         get({
             table: 'orders',
-            query: [query.join(',')],
+            query: [query.filter(a => a).join(',')],
             ...sort_query(tbl_orders)
         })
         .then(function ([orders, options]) {

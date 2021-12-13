@@ -3,13 +3,11 @@ function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
         let sel_suppliers = document.querySelector('#sel_suppliers') || {value: ''},
-            statuses      = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query         = [];
-        if (statuses && statuses.length > 0) query.push(status_query(statuses));
+            query         = [checked_statuses()];
         if (sel_suppliers && sel_suppliers.value !== '') query.push(sel_suppliers.value);
         get({
             table: 'demands',
-            query: [query.join(',')],
+            query: [query.filter(a => a).join(',')],
             ...sort_query(tbl_demands)
         })
         .then(function ([demands, options]) {
