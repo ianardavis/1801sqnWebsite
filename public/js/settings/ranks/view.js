@@ -1,10 +1,9 @@
 function getRanks() {
     clear('tbl_ranks')
     .then(tbl_ranks => {
-        let sort_cols = tbl_ranks.parentNode.querySelector('.sort') || null;
         get({
             table: 'ranks',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_ranks)
         })
         .then(function ([ranks, options]) {
             ranks.forEach(rank => {

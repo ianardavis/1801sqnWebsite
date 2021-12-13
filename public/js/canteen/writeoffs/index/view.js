@@ -1,10 +1,9 @@
 function getWriteoffs() {
     clear('tbl_writeoffs')
     .then(tbl_writeoffs => {
-        let sort_cols = tbl_writeoffs.parentNode.querySelector('.sort') || null;
         get({
             table: 'writeoffs',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_writeoffs)
         })
         .then(function ([writeoffs, options]) {
             writeoffs.forEach(writeoff => {

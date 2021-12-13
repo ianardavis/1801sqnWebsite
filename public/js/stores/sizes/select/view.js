@@ -8,11 +8,10 @@ function getItems() {
 function getSizes(item_id) {
     clear('tbl_sizes')
     .then(tbl_sizes => {
-        let sort_cols = tbl_sizes.parentNode.querySelector('.sort') || null;
         get({
             table: 'item',
             query: [`"item_id":"${item_id}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_sizes)
         })
         .then(function ([item, options]) {
             set_innerText('size_text1', item.size_text1);

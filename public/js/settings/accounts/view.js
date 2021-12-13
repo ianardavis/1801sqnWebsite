@@ -1,10 +1,9 @@
 function getAccounts() {
     clear('tbl_accounts')
     .then(tbl_accounts => {
-        let sort_cols = tbl_accounts.parentNode.querySelector('.sort') || null;
         get({
             table: 'accounts',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_accounts)
         })
         .then(function ([accounts, options]) {
             accounts.forEach(account => {

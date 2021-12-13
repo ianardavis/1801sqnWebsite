@@ -1,10 +1,9 @@
 function getSessions() {
     clear('tbl_sessions')
     .then(tbl_sessions => {
-        let sort_cols = tbl_sessions.parentNode.querySelector('.sort') || null;
         get({
             table: 'sessions',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_sessions)
         })
         .then(function ([sessions, options]) {
             let current_sessions = [];

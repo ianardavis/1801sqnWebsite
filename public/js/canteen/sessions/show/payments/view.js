@@ -1,11 +1,10 @@
 function getPayments() {
     clear('tbl_payments')
     .then(tbl_payments => {
-        let sort_cols = tbl_payments.parentNode.querySelector('.sort') || null;
         get({
             table: 'payments_session',
             query: [`"session_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_payments)
         })
         .then(function ([payments, options]) {
             set_count('payment', payments.length || '0');

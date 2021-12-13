@@ -17,14 +17,13 @@ function getUsers() {
     .then(tbl_users => {
         let ranks     = document.querySelector('#sel_ranks')        || {value: ''},
             statuses  = document.querySelector('#sel_statuses')     || {value: ''},
-            sort_cols = tbl_users.parentNode.querySelector('.sort') || null,
             query     = [];
         if (ranks   .value !== '') query.push(ranks.value);
         if (statuses.value !== '') query.push(statuses.value);
         get({
             table: 'users_current',
             query: query,
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_users)
         })
         .then(function ([users, options]) {
             users.forEach(user => {

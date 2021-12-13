@@ -3,10 +3,9 @@ function getLines() {
     disable_button('action');
     clear('tbl_issues')
     .then(tbl_issues => {
-        let sort_cols = tbl_issues.parentNode.querySelector('.sort') || null;
         get({
             table: 'loancard_lines_due',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_issues)
         })
         .then(function ([lines, options]) {
             let row_index = 0;

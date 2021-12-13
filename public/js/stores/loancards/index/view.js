@@ -6,13 +6,12 @@ function getLoancards() {
         let sel_users = document.querySelector('#sel_users') || {value: ''},
             statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
             query     = [];
-            sort_cols = tbl_loancards.parentNode.querySelector('.sort') || null;
         if (statuses && statuses.length > 0) query.push(status_query(statuses));
         if (sel_users && sel_users.value !== "") query.push(sel_users.value);
         get({
             table: 'loancards',
             query: [query.join(',')],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_loancards)
         })
         .then(function ([loancards, options]) {
             loancards.forEach(loancard => {

@@ -2,14 +2,13 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let status    = document.querySelector('#sel_issue_status') || {value: ''},
-            sort_cols = tbl_issues.parentNode.querySelector('.sort') || null,
-            query     = [`"size_id":"${path[2]}"`];
+        let status = document.querySelector('#sel_issue_status') || {value: ''},
+            query  = [`"size_id":"${path[2]}"`];
         if (status.value !== '') query.push(status.value);
         get({
             table: 'issues',
             query: query,
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_issues)
         })
         .then(function ([issues, options]) {
             set_count('issue', issues.length);

@@ -3,13 +3,12 @@ function getLoancards () {
     clear('tbl_loancards')
     .then(tbl_loancards => {
         let sel_status = document.querySelector('#sel_status_loancards') || {value: ''},
-            sort_cols  = tbl_loancards.parentNode.querySelector('.sort') || null,
             query      = [`"user_id_loancard":"${path[2]}"`];
         if (sel_status.value !== '') query.push(sel_status.value);
         get({
             table: 'loancards',
             query: query,
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_loancards)
         })
         .then(function ([loancards, options]) {
             set_count('loancards', loancards.length || '0');

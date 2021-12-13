@@ -1,10 +1,9 @@
 function getMovements() {
     clear('tbl_movements')
     .then(tbl_movements => {
-        let sort_cols = tbl_movements.parentNode.querySelector('.sort') || null;
         get({
             table: 'movements',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_movements)
         })
         .then(function ([movements, options]) {
             movements.forEach(movement => {

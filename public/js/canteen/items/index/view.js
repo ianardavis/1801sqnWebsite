@@ -1,14 +1,13 @@
 function getItems() {
     clear('tbl_items')
     .then(tbl_items => {
-        let current   = document.querySelector('#current')          || {value: ''},
-            sort_cols = tbl_items.parentNode.querySelector('.sort') || null,
-            query     = [];
+        let current = document.querySelector('#current') || {value: ''},
+            query   = [];
         if (current.value !== '') query.push(current.value);
         get({
             table: 'canteen_items',
             query: query,
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_items)
         })
         .then(function ([items, options]) {
             items.forEach(item => {

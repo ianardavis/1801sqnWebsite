@@ -1,11 +1,10 @@
 function getDetails() {
     clear('tbl_details')
     .then(tbl_details => {
-        let sort_cols = tbl_details.parentNode.querySelector('.sort') || null;
         get({
             table: 'details',
             query: [`"size_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_details)
         })
         .then(function ([details, options]) {
             details.forEach(detail => {

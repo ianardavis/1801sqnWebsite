@@ -1,10 +1,9 @@
 function getSettings() {
     clear('tbl_settings')
     .then(tbl_settings => {
-        let sort_cols = tbl_settings.parentNode.querySelector('.sort') || null;
         get({
             table: 'settings',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_settings)
         })
         .then(function ([settings, options]) {
             settings.forEach(setting => {

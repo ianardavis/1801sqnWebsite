@@ -1,11 +1,10 @@
 function getSerials() {
     clear('tbl_serials')
     .then(tbl_serials => {
-        let sort_cols = tbl_serials.parentNode.querySelector('.sort') || null;
         get({
             table: 'serials',
             query: [`"location_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_serials)
         })
         .then(function ([serials, options]) {
             set_count('serial', serials.length || '0');

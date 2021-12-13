@@ -1,10 +1,9 @@
 function getGenders() {
     clear('tbl_genders')
     .then(tbl_genders => {
-        let sort_cols = tbl_genders.parentNode.querySelector('.sort') || null;
         get({
             table: 'genders',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_genders)
         })
         .then(function ([genders, options]) {
             genders.forEach(gender => {

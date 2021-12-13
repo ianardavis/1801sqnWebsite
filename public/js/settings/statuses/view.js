@@ -1,10 +1,9 @@
 function getStatuses() {
     clear('tbl_statuses')
     .then(tbl_statuses => {
-        let sort_cols = tbl_statuses.parentNode.querySelector('.sort') || null;
         get({
             table: 'statuses',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_statuses)
         })
         .then(function ([statuses, options]) {
             statuses.forEach(status => {

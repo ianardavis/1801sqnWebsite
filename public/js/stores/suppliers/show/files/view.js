@@ -1,11 +1,10 @@
 function getFiles() {
     clear('tbl_files')
     .then(tbl_files => {
-        let sort_cols = tbl_files.parentNode.querySelector('.sort') || null;
         get({
             table: 'files',
             query: [`"supplier_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_files)
         })
         .then(function ([files, options]) {
             set_count('file', files.length || '0');

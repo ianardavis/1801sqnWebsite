@@ -4,14 +4,13 @@ function getDemands() {
     .then(tbl_demands => {
         let sel_suppliers = document.querySelector('#sel_suppliers') || {value: ''},
             statuses      = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            query         = [],
-            sort_cols     = tbl_demands.parentNode.querySelector('.sort') || null;
+            query         = [];
         if (statuses && statuses.length > 0) query.push(status_query(statuses));
         if (sel_suppliers && sel_suppliers.value !== '') query.push(sel_suppliers.value);
         get({
             table: 'demands',
             query: [query.join(',')],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_demands)
         })
         .then(function ([demands, options]) {
             demands.forEach(demand => {

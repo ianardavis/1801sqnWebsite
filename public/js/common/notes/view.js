@@ -2,7 +2,6 @@ function getNotes() {
     clear('tbl_notes')
     .then(tbl_notes => {
         let sel_system = document.querySelector('#sel_system')       || {value: ''},
-            sort_cols  = tbl_notes.parentNode.querySelector('.sort') || null,
             query      = [
                 `"_table":"${path[1]}"`,
                 `"id":"${path[2]}"`
@@ -11,7 +10,7 @@ function getNotes() {
         get({
             table: 'notes',
             query: query,
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_notes)
         })
         .then(function ([notes, options]) {
             set_count('note', notes.length || '0');

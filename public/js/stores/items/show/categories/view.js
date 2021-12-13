@@ -1,11 +1,10 @@
 function getCategories() {
     clear('tbl_categories')
     .then(tbl_categories => {
-        let sort_cols = tbl_categories.parentNode.querySelector('.sort') || null;
         get({
             table: 'item_categories',
             query: [`"item_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_categories)
         })
         .then(function ([categories, options]) {
             set_count('category', categories.length || '0');

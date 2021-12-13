@@ -1,11 +1,10 @@
 function getAddresses() {
     clear('tbl_addresses')
     .then(tbl_addresses => {
-        let sort_cols = tbl_addresses.parentNode.querySelector('.sort') || null;
         get({
             table: 'addresses',
             query: [`"supplier_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_addresses)
         })
         .then(function ([addresses, options]) {
             set_count('address', addresses.length || '0');

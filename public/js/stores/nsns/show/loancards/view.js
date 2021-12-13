@@ -1,11 +1,10 @@
 function getLoancards() {
     clear('tbl_loancards')
     .then(tbl_loancards => {
-        let sort_cols = tbl_loancards.parentNode.querySelector('.sort') || null;
         get({
             table: 'loancard_lines',
             query: [`"nsn_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_loancards)
         })
         .then(function ([lines, options]) {
             set_count('loancard', lines.length || '0');

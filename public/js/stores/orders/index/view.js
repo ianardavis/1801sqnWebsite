@@ -2,14 +2,13 @@ let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Re
 function getOrders() {
     clear('tbl_orders')
     .then(tbl_orders => {
-        let statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
-            sort_cols = tbl_orders.parentNode.querySelector('.sort') || null,
-            query     = [];
+        let statuses = document.querySelectorAll("input[type='checkbox']:checked") || [],
+            query    = [];
         if (statuses && statuses.length > 0) query.push(status_query(statuses));
         get({
             table: 'orders',
             query: [query.join(',')],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_orders)
         })
         .then(function ([orders, options]) {
             let row_index = 0;

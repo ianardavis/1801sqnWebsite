@@ -2,11 +2,10 @@ let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Re
 function getOrders() {
     clear('tbl_orders')
     .then(tbl_orders => {
-        let sort_cols = tbl_orders.parentNode.querySelector('.sort') || null;
         get({
             table: 'orders',
             query: [`"size_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_orders)
         })
         .then(function ([orders, options]) {
             set_count('order', orders.length);

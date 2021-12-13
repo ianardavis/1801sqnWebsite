@@ -1,10 +1,9 @@
 function getHoldings() {
     clear('tbl_holdings')
     .then(tbl_holdings => {
-        let sort_cols = tbl_holdings.parentNode.querySelector('.sort') || null;
         get({
             table: 'holdings',
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_holdings)
         })
         .then(function ([holdings, options]) {
             holdings.forEach(holding => {

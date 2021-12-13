@@ -4,13 +4,12 @@ function getLines() {
     clear('tbl_lines')
     .then(tbl_lines => {
         let sel_status = document.querySelector('#sel_status') || {value: ''},
-            sort_cols  = tbl_lines.parentNode.querySelector('.sort') || null,
             query      = [`"loancard_id":"${path[2]}"`];
         if (sel_status.value !== '') query.push(sel_status.value);
         get({
             table: 'loancard_lines',
             query: query,
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_lines)
         })
         .then(function ([lines, options]) {
             set_count('line', lines.length || '0');

@@ -1,11 +1,10 @@
 function getReceipts() {
     clear('tbl_receipts')
     .then(tbl_receipts => {
-        let sort_cols = tbl_receipts.parentNode.querySelector('.sort') || null;
         get({
             table: 'receipts',
             query: [`"item_id":"${path[2]}"`],
-            ...sort_query(sort_cols)
+            ...sort_query(tbl_receipts)
         })
         .then(function ([receipts, options]) {
             set_count('receipt', receipts.length || '0');

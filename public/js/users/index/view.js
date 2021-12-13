@@ -1,16 +1,15 @@
 function getUsers() {
     clear('tbl_users')
     .then(tbl => {
-        let status    = document.querySelector('#sel_statuses') || {value: ''},
-            rank      = document.querySelector('#sel_ranks')    || {value: ''},
-            sort_cols = tbl.parentNode.querySelector('.sort')   || null,
-            query     = [];
+        let status = document.querySelector('#sel_statuses') || {value: ''},
+            rank   = document.querySelector('#sel_ranks')    || {value: ''},
+            query  = [];
             if (status.value !== '') query.push(status.value);
             if (rank  .value !== '') query.push(rank.value);
         get({
             table: 'users',
             query: query,
-            ...sort_query(sort_cols)
+            ...sort_query(tbl)
         })
         .then(function ([users, options]) {
             users.forEach(user => {
