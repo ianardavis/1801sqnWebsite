@@ -6,11 +6,11 @@ function getLoancards() {
         let sel_users = document.querySelector('#sel_users') || {value: ''},
             statuses  = document.querySelectorAll("input[type='checkbox']:checked") || [],
             query     = [];
-        if (statuses && statuses.length > 0) query.push(status_query(statuses));
+        if (statuses  && statuses.length > 0)    query.push(checked_statuses());
         if (sel_users && sel_users.value !== "") query.push(sel_users.value);
         get({
             table: 'loancards',
-            query: [query.join(',')],
+            query: [query.filter(a => a).join(',')],
             ...sort_query(tbl_loancards)
         })
         .then(function ([loancards, options]) {
