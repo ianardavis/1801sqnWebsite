@@ -85,7 +85,8 @@ function getUsers() {
         table:      'users',
         append:     '_issue',
         blank:      true,
-        blank_text: 'All'
+        blank_text: 'All',
+        id_only: true
     });
 };
 addReloadListener(getIssues);
