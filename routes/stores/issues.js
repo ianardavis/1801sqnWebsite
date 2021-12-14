@@ -38,96 +38,63 @@ module.exports = (app, m, fn) => {
             .catch(err => reject(err));
         });
     };
-    // !limit !offset   -> ok       -> show all
-    //  limit !offset   -> ok       -> show limit offset = 0
-    // !limit  offset   -> not ok   ->            offset = 0
-    //  limit  offset   -> ok       -> show limit from offset
-    app.post('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        issues_allowed(req.allowed, req.body.filter.user_id_issue, req.user.user_id)
-        .then(add_user_id_issue => {
-            if (!req.body.page.offset || isNaN(req.body.page.offset)) req.body.page.offset = 0;
-            if (isNaN(req.body.page.limit))                    delete req.body.page.limit;
-            if (add_user_id_issue) req.body.filter.user_id_issue = req.user.user_id;
-            let where   = {},
-                include = [
-                    {
-                        model: m.sizes,
-                        where: {
-                            ...(req.body.filter.size.size1 ? {size1: {[fn.op.substring]: req.body.filter.size.size1}} : {}),
-                            ...(req.body.filter.size.size2 ? {size2: {[fn.op.substring]: req.body.filter.size.size2}} : {}),
-                            ...(req.body.filter.size.size3 ? {size3: {[fn.op.substring]: req.body.filter.size.size3}} : {})
+    app.get('/get/issues',        fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
+        try {
+            let query = JSON.parse(req.query.filter);
+            issues_allowed(req.allowed, query.filter.user_id_issue, req.user.user_id)
+            .then(add_user_id_issue => {
+                if (!query.page.offset || isNaN(query.page.offset)) query.page.offset = 0;
+                if (isNaN(query.page.limit))                    delete query.page.limit;
+                if (add_user_id_issue) query.filter.user_id_issue = req.user.user_id;
+                let where   = {},
+                    include = [
+                        {
+                            model: m.sizes,
+                            where: {
+                                ...(query.filter.size.size1 ? {size1: {[fn.op.substring]: query.filter.size.size1}} : {}),
+                                ...(query.filter.size.size2 ? {size2: {[fn.op.substring]: query.filter.size.size2}} : {}),
+                                ...(query.filter.size.size3 ? {size3: {[fn.op.substring]: query.filter.size.size3}} : {})
+                            },
+                            include: [{
+                                model: m.items,
+                                where: (query.filter.item && query.filter.item !== '' ? {description: {[fn.op.substring]: query.filter.item}} : {})
+                            }]
                         },
-                        include: [{
-                            model: m.items,
-                            where: (req.body.filter.item ? {description: {[fn.op.substring]: req.body.filter.item}} : {})
-                        }]
-                    },
-                    {
-                        model: m.users,
-                        as: 'user_issue',
-                        where: (req.body.filter.user_id_issue ? {user_id: req.body.filter.user_id_issue} : {}),
-                        include: [m.ranks]
-                    }
-                ];
-            if (req.body.filter.status && req.body.filter.status.length > 0) where.status = {[fn.op.or]: req.body.filter.status};
-            if (req.body.filter.createdAt.from || req.body.filter.createdAt.to) {
-                if (req.body.filter.createdAt.from && req.body.filter.createdAt.to) {
-                    where.createdAt = {[fn.op.between]: [req.body.filter.createdAt.from, req.body.filter.createdAt.to]}
+                        {
+                            model:   m.users,
+                            as:      'user_issue',
+                            where:   (query.filter.user_id_issue ? {user_id: query.filter.user_id_issue} : {}),
+                            include: [m.ranks]
+                        }
+                    ];
+                if (query.filter.status && query.filter.status.length > 0) where.status = {[fn.op.or]: query.filter.status};
+                if (query.filter.createdAt.from || query.filter.createdAt.to) {
+                    if (query.filter.createdAt.from && query.filter.createdAt.to) {
+                        where.createdAt = {[fn.op.between]: [query.filter.createdAt.from, query.filter.createdAt.to]}
+                    };
+                    if (query.filter.createdAt.from && !query.filter.createdAt.to) {
+                        where.createdAt = {[fn.op.gt]: query.filter.createdAt.from}
+                    };
+                    if (!query.filter.createdAt.from && query.filter.createdAt.to) {
+                        where.createdAt = {[fn.op.lt]: query.filter.createdAt.to}
+                    };
                 };
-                if (req.body.filter.createdAt.from && !req.body.filter.createdAt.to) {
-                    where.createdAt = {[fn.op.gt]: req.body.filter.createdAt.from}
-                };
-                if (!req.body.filter.createdAt.from && req.body.filter.createdAt.to) {
-                    where.createdAt = {[fn.op.gt]: req.body.filter.createdAt.from}
-                };
-            };
-            return m.issues.findAll({
-                where: where,
-                include: include,
-                ...req.body.page,
-                ...fn.sort(req.query.sort)
-            })
-            .then(issues => {
-                return m.issues.count({where: where, include: include})
-                .then(count => res.send({success: true, result: {issues: issues, count: count, ...req.body.page}}))
-                .catch(err => fn.send_error(res, err));
-            })
-            .catch(err => fn.send_error(res, err));
-        })
-        .catch(err => fn.send_error(res, err));
-    });
-    app.get('/get/issues',         fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
-        issues_allowed(req.allowed, JSON.parse(req.query.where), req.user.user_id)
-        .then(add_user_id_issue => {
-            let _offset = (req.query.offset && !isNaN(req.query.offset)),
-                _limit  = (req.query.limit  && !isNaN(req.query.limit));
-            if      ( _limit && !_offset) req.query.offset = 0
-            else if (!_limit && _offset)  req.query.offset = 0;
-            let where      = JSON.parse(req.query.where),
-                pagination = {};
-            if (req.query.limit  && !isNaN(req.query.limit))  pagination.limit  = Number(req.query.limit);
-            if (req.query.offset && !isNaN(req.query.offset)) pagination.offset = Number(req.query.offset);
-            if (add_user_id_issue) where.user_id_issue = req.user.user_id;
-            return m.issues.findAll({
-                where: where,
-                include: [
-                    fn.inc.stores.size(),
-                    fn.inc.users.user({as: 'user_issue'}),
-                    fn.inc.users.user()
-                ],
-                ...pagination,
-                ...fn.sort(req.query.sort)
-            })
-            .then(issues => {
-                return m.issues.count({where: where})
-                .then(count => {
-                    res.send({success: true, result: {issues: issues, count: count, ...pagination}});
+                return m.issues.findAll({
+                    where: where,
+                    include: include,
+                    ...query.page
+                })
+                .then(issues => {
+                    return m.issues.count({where: where, include: include})
+                    .then(count => res.send({success: true, result: {issues: issues, count: count, ...query.page}}))
+                    .catch(err => fn.send_error(res, err));
                 })
                 .catch(err => fn.send_error(res, err));
             })
             .catch(err => fn.send_error(res, err));
-        })
-        .catch(err => fn.send_error(res, err));
+        } catch (err) {
+            fn.send_error(res, err);
+        };
     });
     app.get('/get/issue',          fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         fn.allowed(req.user.user_id, 'access_users', true)
@@ -253,6 +220,14 @@ module.exports = (app, m, fn) => {
         if (!req.body.issues || req.body.issues.filter(e => e.status !== '').length === 0) fn.send_error(res, 'No lines submitted')
         else {
             let actions = [];
+            req.body.issues.filter(e => e.status === '-3') .forEach(issue => {
+                actions.push(
+                    fn.issues.restore({
+                        issue_id: issue.issue_id,
+                        user_id:  req.user.user_id
+                    })
+                );
+            });
             req.body.issues.filter(e => e.status === '-2') .forEach(issue => {
                 actions.push(
                     fn.issues.remove_from_loancard({
@@ -302,7 +277,6 @@ module.exports = (app, m, fn) => {
             Promise.allSettled(actions)
             .then(results => {
                 if (results.filter(e => e.status === 'rejected').length > 0) {
-                    // console.log(results);
                     res.send({success: true, message: 'Some lines failed'});
                 } else res.send({success: true, message: 'Lines actioned'});
             })

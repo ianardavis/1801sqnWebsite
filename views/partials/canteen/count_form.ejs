@@ -27,7 +27,7 @@
         document.querySelectorAll('.balance').forEach(e => {
             total += Number(e.value);
         });
-        set_innerText({id: 'balance_total', value: `£${total.toFixed(2)}`});
+        set_innerText('balance_total', `£${total.toFixed(2)}`);
     };
     function clearAllBalances() {
         document.querySelectorAll('.balance').forEach(e => e.value = '');

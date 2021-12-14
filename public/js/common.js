@@ -308,10 +308,21 @@ function checked_statuses() {
         return `"status":[${selected.join(',')}]`;
     } else return null;
 };
-function selected_user() {
-    let sel_users = document.querySelector('#sel_users') || {value: ''};
-    if (sel_users && sel_users.value !== '') return sel_users.value
-    else return null
+function _checked_statuses() {
+    let selected = [],
+        statuses = document.querySelectorAll(".status:checked") || [];
+    if (statuses && statuses.length > 0) statuses.forEach(e => selected.push(e.value));
+    return selected
+};
+function selected_user(id = 'sel_users') {
+    let sel_users = document.querySelector(`#${id}`) || {value: ''};
+    return sel_users.value;
+};
+function selected_dates(table) {
+    let dates = {};
+    dates.from = document.querySelector(`#filter_${table}_createdAt_from`).value;
+    dates.to   = document.querySelector(`#filter_${table}_createdAt_to`)  .value;
+    return dates;
 };
 function sort_query(tbl) {
     let sort_cols = tbl.parentNode.querySelector('.sort') || null;
@@ -327,7 +338,7 @@ function pagination(tbl) {
     if (offset.value) pagination.offset = offset.value;
     return pagination;
 };
-function add_page_links(count, limit, offset) {
+function add_page_links(count, limit, offset, table) {
     count = Number(count);
     limit = Number(limit);
     offset = Number(offset);
@@ -337,9 +348,9 @@ function add_page_links(count, limit, offset) {
         if (page_count <  offset) offset = 0;
         if (limit) {
             for (let i = 0; i < page_count; i++) {
-                page_buttons.appendChild(new Page_Number({offset: i, listener: getIssues, selected: offset}).e);
+                page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: i, listener: getIssues, selected: offset}).e);
             };
-        } else  page_buttons.appendChild(new Page_Number({offset: 0, listener: getIssues, selected: 0}).e);
+        } else  page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: 0, listener: getIssues, selected: 0}).e);
     });
 };
 let path = window.location.pathname.toString().split('/');

@@ -358,6 +358,7 @@ function Page_Number(options = {}) {
     let _input = document.createElement('input'),
         _label = document.createElement('label');   
     _input.classList.add('btn-check');
+    if (options.classes) options.classes.forEach(e => _input.classList.add(e));
     _input.setAttribute('type', 'radio');
     _input.setAttribute('id',   `offset_${options.offset}`);
     _input.setAttribute('name', 'page[offset]');

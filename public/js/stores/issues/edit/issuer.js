@@ -1,10 +1,10 @@
 function approve_radio(issue_id, index) {
     return new Radio({
-        id: `${issue_id}_decline`,
+        id:          `${issue_id}_decline`,
         float_start: true,
-        classes: ['radio_decline'],
-        colour: 'danger',
-        html: '<i class="fas fa-times-circle"></i>',
+        classes:     ['radio_decline'],
+        colour:      'danger',
+        html:        '<i class="fas fa-times-circle"></i>',
         attributes: [
             {field: 'name',  value: `issues[][${index}][status]`},
             {field: 'value', value: '2'}
@@ -13,11 +13,11 @@ function approve_radio(issue_id, index) {
 };
 function decline_radio(issue_id, index) {
     return new Radio({
-        id: `${issue_id}_approve`,
+        id:          `${issue_id}_approve`,
         float_start: true,
-        classes: ['radio_approve'],
-        colour: 'success',
-        html: '<i class="fas fa-times-circle"></i>',
+        classes:     ['radio_approve'],
+        colour:      'success',
+        html:        '<i class="fas fa-times-circle"></i>',
         attributes: [
             {field: 'name',  value: `issues[][${index}][status]`},
             {field: 'value', value: '-1'}
@@ -26,11 +26,11 @@ function decline_radio(issue_id, index) {
 };
 function nil_radio(issue_id, index) {
     return new Radio({
-        id: `${issue_id}_nil`,
+        id:          `${issue_id}_nil`,
         float_start: true,
-        classes: ['radio_nil'],
-        colour: 'primary',
-        html: '<i class="fas fa-question"></i>',
+        classes:     ['radio_nil'],
+        colour:      'primary',
+        html:        '<i class="fas fa-question"></i>',
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
             {field: 'data-issue_id', value: issue_id},
@@ -41,11 +41,11 @@ function nil_radio(issue_id, index) {
 };
 function cancel_radio(issue_id, index) {
     return new Radio({
-        id: `${issue_id}_cancel`,
+        id:          `${issue_id}_cancel`,
         float_start: true,
-        classes: ['radio_cancel'],
-        colour: 'danger',
-        html: '<i class="fas fa-trash-alt"></i>',
+        classes:     ['radio_cancel'],
+        colour:      'danger',
+        html:        '<i class="fas fa-trash-alt"></i>',
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
             {field: 'value',         value: '0'},
@@ -56,11 +56,11 @@ function cancel_radio(issue_id, index) {
 };
 function issue_radio(issue_id, index) {
     return new Radio({
-        id: `${issue_id}_issue`,
+        id:          `${issue_id}_issue`,
         float_start: true,
-        classes: ['radio_issue'],
-        colour: 'success',
-        html: '<i class="fas fa-address-card"></i>',
+        classes:     ['radio_issue'],
+        colour:      'success',
+        html:        '<i class="fas fa-address-card"></i>',
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
             {field: 'value',         value: '4'},
@@ -72,11 +72,11 @@ function issue_radio(issue_id, index) {
 };
 function loancard_radio(issue_id, index) {
     return new Radio({
-        id: `${issue_id}_issue`,
+        id:          `${issue_id}_issue`,
         float_start: true,
-        classes: ['radio_issue'],
-        colour: 'danger',
-        html: '<i class="fas fa-address-card"></i>',
+        classes:     ['radio_issue'],
+        colour:      'danger',
+        html:        '<i class="fas fa-address-card"></i>',
         attributes: [
             {field: 'name',          value: `issues[][${index}][status]`},
             {field: 'value',         value: '-2'},
@@ -84,6 +84,20 @@ function loancard_radio(issue_id, index) {
             {field: 'data-index',    value: index}
         ],
         ...(typeof issue_options === 'function' ? {listener: {event: 'input', func: loancard_options}}: {})
+    }).e;
+};
+function restore_radio(issue_id, index) {
+    return new Radio({
+        id:          `${issue_id}_restore`,
+        float_start: true,
+        classes:     ['radio_restore'],
+        colour:      'success',
+        html:        '<i class="fas fa-trash-restore-alt"></i>',
+        attributes: [
+            {field: 'name',          value: `issues[][${index}][status]`},
+            {field: 'value',         value: '-3'},
+            {field: 'data-issue_id', value: issue_id}
+        ]
     }).e;
 };
 

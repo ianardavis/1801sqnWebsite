@@ -1,7 +1,7 @@
 function get(options) {
     return new Promise((resolve, reject) => {
         show_spinner(options.spinner || options.table || '');
-        if (!options.query) options.query = [];
+        if (!options.query && !options.filter) options.query = [];
         const XHR = new XMLHttpRequest();
         XHR.addEventListener("load", function (event) {
             hide_spinner(options.spinner || options.table || '');
@@ -38,7 +38,7 @@ function get(options) {
             hide_spinner(options.spinner || options.table || '');
             reject(event);
         });
-        XHR.open(options.method || 'GET', `/get/${options.table}?where={${options.query.join(',')}}${options.sort ? `&sort=${JSON.stringify(options.sort)}` : ''}${options.limit ? `&limit=${options.limit}` : ''}${options.offset ? `&offset=${options.offset}` : ''}`);
+        XHR.open(options.method || 'GET', `/get/${options.table}?${(options.filter ? `filter=${ options.filter}` : (options.query ? `where={${options.query.join(',')}}` : ''))}${(options.sort ? `&sort=${JSON.stringify(options.sort)}` : '')}${(options.limit ? `&limit=${ options.limit}` : '')}${(options.offset ? `&offset=${options.offset}` : '')}`);
         XHR.send();
     });
 };

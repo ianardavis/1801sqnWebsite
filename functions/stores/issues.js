@@ -132,6 +132,27 @@ module.exports = function (m, fn) {
             .catch(err => reject(err));
         });
     };
+    fn.issues.restore = function (options = {}) {
+        return new Promise((resolve, reject) => {
+            return fn.allowed(options.user_id, 'issuer')
+            .then(result => {
+                return fn.get(
+                    'issues',
+                    {issue_id: options.issue_id}
+                )
+                .then(issue => {
+                    if (issue.status !== 0) reject(new Error('Issue is not cancelled/declined'))
+                    else {
+                        return update_issue(issue, 2, options.user_id, 'restored')
+                        .then(action => resolve(true))
+                        .catch(err => reject(err));
+                    };
+                })
+                .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+    };
     fn.issues.order = function (options = {}) {
         return new Promise((resolve, reject) => {
             return fn.allowed(options.user_id, 'stores_stock_admin')

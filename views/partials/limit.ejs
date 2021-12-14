@@ -1,0 +1,24 @@
+<nav class='float-start'>
+    <ul class="pagination pagination-sm" id='page_buttons'></ul>
+</nav>
+<nav class='float-end'>
+    <ul class="pagination pagination-sm">
+        <li class="page-item disabled"><p class="page-link">Issues per page:</p></li>
+        <li class="page-item">
+            <input class='btn-check limit_<%= table%>' type="radio" id='limit_<%= table%>_10'  form='form_filter' name='page[limit]' value='10' checked>
+            <label class="page-link btn btn-outline-primary" for="limit_<%= table%>_10">10 </label>
+        </li>
+        <li class="page-item">
+            <input class='btn-check limit_<%= table%>' type="radio" id='limit_<%= table%>_20'  form='form_filter' name='page[limit]' value='20'>
+            <label class="page-link btn btn-outline-primary" for="limit_<%= table%>_20">20 </label>
+        </li>
+        <li class="page-item">
+            <input class='btn-check limit_<%= table%>' type="radio" id='limit_<%= table%>_30'  form='form_filter' name='page[limit]' value='30'>
+            <label class="page-link btn btn-outline-primary" for="limit_<%= table%>_30">30 </label>
+        </li>
+        <li class="page-item">
+            <input class='btn-check limit_<%= table%>' type="radio" id='limit_<%= table%>_all' form='form_filter' name='page[limit]' value='All'>
+            <label class="page-link btn btn-outline-primary" for="limit_<%= table%>_all">All</label>
+        </li>
+    </ul>
+</nav>

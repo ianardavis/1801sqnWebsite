@@ -6,64 +6,29 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class="container">
 	<div class="row">
-		<div class="col-12 col-md-6">
-			<button class="btn btn-primary w-100 mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#col-filter" aria-expanded="false" aria-controls="col-filter">
-				Filter
-			</button>
+		<div class="col-6">
+			<%- include(`${partials}/filter/button`, {id: 'issue'}) %>
 		</div>
-		<div class="col-12 col-md-6">
+		<div class="col-6">
 			<%- include(`${partials}/button/button`, {id: 'action_lines', type: 'success', text: 'Action Selected Issues', classes: ['w-100', 'mb-1'], form: 'issue_edit', disabled: true}) %>
 		</div>
 	</div>
-	<div class="collapse show mb-1" id="col-filter">
-		<form id="form_filter">
-			<%- include(`${partials}/filter/user`, {append: '_issue'}) %>
-			<%- include(`${partials}/filter/status`, {statuses: [{text: 'Cancelled', value: '0', colour: 'secondary'}, {text: 'Requested', value: '1', colour: 'warning', checked: true}, {text: 'Approved', value: '2', colour: 'success', checked: true}, {text: 'Ordered', value: '3', colour: 'primary', checked: true}, {text: 'Issued', value: '4', colour: 'info'}, {text: 'Returned', value: '5', colour: 'secondary'}]}) %>
-			<%- include(`${partials}/filter/date`,   {field: 'createdAt'}) %>
-			<%- include(`${partials}/filter/size`) %>
-			<button class="btn btn-success w-100 mt-1">Show Issues</button>
-		</form>
-	</div>
-	<% if (permissions.issuer) { %>
-		<form id='form_issue_edit'>
-	<% } %>
+	<%- include(`${partials}/filter/stores/issues/collapse`, {user: true}) %>
+	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class='w-15' onclick='sortByRow(this, getIssues)' data-sort_col='createdAt'	   >Date  <span class='sort_ind float-end'></span></th>
-				<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='user_id_issue'>User  <span class='sort_ind float-end'></span></th>
+				<th class='w-15'>Date</th>
+				<th class='w-20'>User</th>
 				<th class='w-20'>Description</th>
-				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='size_id'  	   >Size  <span class='sort_ind float-end'></span></th>
-				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='qty'	   	   >Qty   <span class='sort_ind float-end'></span></th>
-				<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='status'   	   >Status<span class='sort_ind float-end'></span></th>
+				<th class='w-10'>Size</th>
+				<th class='w-10'>Qty</th>
+				<th class='w-10'>Status</th>
 				<th class='w-15'>Actions</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>
 			<tbody id="tbl_issues"></tbody>
 		</table>
-		<nav class='float-start'>
-			<ul class="pagination pagination-sm" id='page_buttons'></ul>
-		</nav>
-		<nav class='float-end'>
-			<ul class="pagination pagination-sm">
-				<li class="page-item disabled"><p class="page-link">Issues per page:</p></li>
-				<li class="page-item">
-					<input class='btn-check' type="radio" id='limit_10'  form='form_filter' name='page[limit]' value='10' checked>
-					<label class="page-link btn btn-outline-primary" for="limit_10">10 </label>
-				</li>
-				<li class="page-item">
-					<input class='btn-check' type="radio" id='limit_20'  form='form_filter' name='page[limit]' value='20'>
-					<label class="page-link btn btn-outline-primary" for="limit_20">20 </label>
-				</li>
-				<li class="page-item">
-					<input class='btn-check' type="radio" id='limit_30'  form='form_filter' name='page[limit]' value='30'>
-					<label class="page-link btn btn-outline-primary" for="limit_30">30 </label>
-				</li>
-				<li class="page-item">
-					<input class='btn-check' type="radio" id='limit_all' form='form_filter' name='page[limit]' >
-					<label class="page-link btn btn-outline-primary" for="limit_all">All</label>
-				</li>
-			</ul>
-		</nav>
+		<%- include(`${partials}/limit`, {table: 'issues'}) %>
 	<% if (permissions.issuer) { %></form><% } %>
 	<div id="div_modals">
 		<div class="modal fade" id="mdl_issue_add" tabindex="-1" aria-hidden="true">
@@ -116,6 +81,7 @@
 		<script src='/js/stores/issues/edit/stock_admin.js'></script>
 	<% } %>
 <% } %>
-<!-- <script async>getIssues()</script> -->
+<script>AddSortColumns()</script>
+<script async>getIssues()</script>
 <script async>getUsers()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>
