@@ -120,6 +120,7 @@ function sum(options) {
         XHR.send();
     });
 };
+
 function addFormListener(form_id, method, location, options = {reload: false}) {
     try {
         let form = document.querySelector(`#form_${form_id}`);
@@ -135,7 +136,7 @@ function addFormListener(form_id, method, location, options = {reload: false}) {
             });
         } else console.log(`${form_id} not found`);
     } catch (error) {
-        console.log(`Error on form: ${form_id}`, error, )
+        console.log(`Error on form: ${form_id}. `, error)
     };
 };
 function sendData(form, method, _location, options = {reload: false}) {
