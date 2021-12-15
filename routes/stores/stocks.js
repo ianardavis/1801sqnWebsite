@@ -67,6 +67,7 @@ module.exports = (app, m, fn) => {
     app.put('/stocks/counts',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         if (!req.body.counts) fn.send_error(res, 'No details')
         else {
+            console.log(req.body.counts);
             let actions = [];
             req.body.counts.filter(e => e.qty && e.qty > 0).forEach(count => {
                 actions.push(fn.stocks.adjust(count.stock_id, 'Count', count.qty, req.user.user_id))
