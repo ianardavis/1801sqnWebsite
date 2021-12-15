@@ -19,7 +19,7 @@ function getLocations() {
                     new Input({
                         attributes: [
                             {field: 'type', value: 'number'},
-                            {field: 'name', value: `adjustments[][${row_index}][qty]`},
+                            {field: 'name', value: `counts[][${row_index}][qty]`},
                             {field: 'min',  value: '0'}
                         ],
                         small: true
@@ -27,15 +27,8 @@ function getLocations() {
                     new Input({
                         attributes: [
                             {field: 'type',  value: 'hidden'},
-                            {field: 'name',  value: `adjustments[][${row_index}][stock_id]`},
+                            {field: 'name',  value: `counts[][${row_index}][stock_id]`},
                             {field: 'value', value: stock.stock_id}
-                        ]
-                    }).e,
-                    new Input({
-                        attributes: [
-                            {field: 'type',  value: 'hidden'},
-                            {field: 'name',  value: `adjustments[][${row_index}][type]`},
-                            {field: 'value', value: 'Count'}
                         ]
                     }).e
                 ]});
@@ -101,7 +94,7 @@ window.addEventListener('load', function () {
     addFormListener(
         'stocks',
         'POST',
-        '/adjustments',
+        '/stocks/counts',
         {onComplete: getLocations}
     );
 });
