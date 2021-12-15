@@ -5,8 +5,22 @@
 <%- include(`${partials}/spinner`,    {id: 'stocks'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <button id='btn_action' class='btn btn-success w-100 mb-2' form='form_stocks' disabled>Action Counts</button>
-    <form id="form_stocks"></form>
+    <form id="form_stocks">
+        <button id='btn_action' class='btn btn-success w-100 mb-2'>Action Counts</button>
+        <%- include(`${partials}/inputs/select`, {title: 'Select Location', id: 'sel_location'}) %>
+        <table class="table table-sm table-hover">
+            <thead class="thead-dark">
+                <th class='w-40'>Item</th>
+                <th class='w-40'>Size 1</th>
+                <th class='w-40'>Size 3</th>
+                <th class='w-40'>Size 1</th>
+                <th class='w-40'>Stock Qty</th>
+                <th class='w-40'>Count</th>
+                <th class="w-10"><i class="fas fa-pencil-alt"></i></th>
+            </thead>
+            <tbody id="tbl_stocks"></tbody>
+        </table>
+    </form>
 </section>
 <%- include(`${partials}/foot/app`) %>
 <script src="/js/stores/reports/5/view.js"></script>

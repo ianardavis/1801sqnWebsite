@@ -67,14 +67,13 @@ module.exports = (app, m, fn) => {
     app.put('/stocks/counts',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         if (!req.body.counts) fn.send_error(res, 'No details')
         else {
-            console.log(req.body.counts);
             let actions = [];
             req.body.counts.filter(e => e.qty && e.qty > 0).forEach(count => {
                 actions.push(fn.stocks.adjust(count.stock_id, 'Count', count.qty, req.user.user_id))
             })
             Promise.allSettled(actions)
             .then(results => {
-                console.log(results);
+                results.filter(e => e.status === 'rejected').forEach(e => console.log(e));
                 res.send({success: true, message: `${req.params.type} saved`});
             })
             .catch(err => fn.send_error(res, err));
