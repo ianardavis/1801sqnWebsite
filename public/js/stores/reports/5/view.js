@@ -93,7 +93,7 @@ addReloadListener(getLocations);
 window.addEventListener('load', function () {
     addFormListener(
         'stocks',
-        'POST',
+        'PUT',
         '/stocks/counts',
         {onComplete: getLocations}
     );
