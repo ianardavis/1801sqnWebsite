@@ -1,14 +1,43 @@
 let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
 function stringify_query() {
-    let query = {filter: {}, page: {}};
+    let query  = {filter: {}, page: {}};
+    //     where  = {},
+    //     like   = [],
+    //     gt     = null,
+    //     lt     = null,
+    //     limit  = document.querySelector('.limit_issues:checked').value,
+    //     offset = document.querySelector('.offset_issues:checked') || {value: '0'};
+    //     sort   = {
+    //         col: document.querySelector('#sort_issues'    ).value,
+    //         dir: document.querySelector('#sort_issues_dir').value
+    //     }
+
+    // where.status        = _checked_statuses;
+    // where.user_id_issue = selected_user('filter_issues_user');
+    // let date_from = document.querySelector(`#filter_issues_createdAt_from`) || {value: ''},
+    //     date_to   = document.querySelector(`#filter_issues_createdAt_from`) || {value: ''};
+    // if (date_from) gt = {column: 'createdAt', value: date_from.value};
+    // if (date_lt)   lt = {column: 'createdAt', value: date_to  .value};
+    // let item  = document.querySelector('#filter_issues_item')   || {value: ''},
+    //     size1 = document.querySelector('#filter_issues_size_1') || {value: ''},
+    //     size2 = document.querySelector('#filter_issues_size_2') || {value: ''},
+    //     size3 = document.querySelector('#filter_issues_size_3') || {value: ''};
+    // if (item ) like.push(`"description":"${item.value}"`);
+    // if (size1) like.push(`"size1":"${      size1.value}"`);
+    // if (size2) like.push(`"size1":"${      size2.value}"`);
+    // if (size3) like.push(`"size1":"${      size3.value}"`);
+
     query.filter.status        = _checked_statuses();
     query.filter.user_id_issue = selected_user('filter_issues_user');
+
     query.filter.createdAt     = selected_dates('issues');
+
     query.filter.item = document.querySelector('#filter_issues_item').value;
     query.filter.size = {};
     query.filter.size.size1 = document.querySelector('#filter_issues_size_1').value;
     query.filter.size.size2 = document.querySelector('#filter_issues_size_2').value;
     query.filter.size.size3 = document.querySelector('#filter_issues_size_3').value;
+
     query.page.limit = document.querySelector('.limit_issues:checked').value
     let offset       = document.querySelector('.offset_issues:checked') || {value: '0'};
     query.page.offset = offset.value;
@@ -20,11 +49,47 @@ function stringify_query() {
     return JSON.stringify(query);
 };
 function getIssues() {
+    let where  = {},
+        like   = {},
+        gt     = null,
+        lt     = null,
+        limit  = document.querySelector('.limit_issues:checked')  || {value: '10'},
+        offset = document.querySelector('.offset_issues:checked') || {value: '0'};
+        order   = {
+            col: document.querySelector('#sort_issues'    ).value,
+            dir: document.querySelector('#sort_issues_dir').value
+        };
+    let sel_statuses = _checked_statuses();
+    if (sel_statuses) where.status = sel_statuses
+    let sel_user = selected_user('filter_issues_user');
+    if (sel_user) where.user_id_issue = sel_user;
+    let date_from = document.querySelector(`#filter_issues_createdAt_from`) || {value: ''},
+        date_to   = document.querySelector(`#filter_issues_createdAt_to`)   || {value: ''};
+    if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
+    if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
+    let item  = document.querySelector('#filter_issues_item')   || {value: ''},
+        size1 = document.querySelector('#filter_issues_size_1') || {value: ''},
+        size2 = document.querySelector('#filter_issues_size_2') || {value: ''},
+        size3 = document.querySelector('#filter_issues_size_3') || {value: ''};
+    if (item  && item .value !=='') like.description = item.value;
+    if (size1 && size1.value !=='') like.size1       = size1.value;
+    if (size2 && size2.value !=='') like.size2       = size2.value;
+    if (size3 && size3.value !=='') like.size3       = size3.value;
+
+
+
     clear('tbl_issues')
     .then(tbl_issues => {
         get({
-            table: 'issues',
-            filter: stringify_query()
+            table:  'issues',
+            where:  where,
+            like:   like,
+            gt:     gt,
+            lt:     lt,
+            limit:  limit.value,
+            offset: offset.value,
+            order:  order
+            // filter: stringify_query()
         })
         .then(function ([result, options]) {
             add_page_links(result.count, result.limit, result.offset, 'issues');
@@ -150,7 +215,7 @@ window.addEventListener('load', function () {
     addListener('filter_issues_item', getIssues, 'input');
     addListener('filter_issues_size_1', getIssues, 'input');
     addListener('filter_issues_size_2', getIssues, 'input');
-    addListener('filter_issues_size_2', getIssues, 'input');
+    addListener('filter_issues_size_3', getIssues, 'input');
     addListener('sort_issues', getIssues, 'input');
     addListener('sort_issues_dir', getIssues, 'input');
 });

@@ -6,17 +6,18 @@
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
     <form id="form_stocks">
-        <button id='btn_action' class='btn btn-success w-100 mb-2'>Action Counts</button>
-        <%- include(`${partials}/inputs/select`, {title: 'Select Location', id: 'sel_location'}) %>
+        <input type="hidden" name='location_id' id='location_id'>
+        <button id='btn_action' class='btn btn-success w-100 mb-1'>Action Counts</button>
+        <select class='form-select mb-1' id="sel_location"></select>
         <table class="table table-sm table-hover">
             <thead class="thead-dark">
-                <th class='w-40'>Item</th>
-                <th class='w-40'>Size 1</th>
-                <th class='w-40'>Size 3</th>
-                <th class='w-40'>Size 1</th>
-                <th class='w-40'>Stock Qty</th>
-                <th class='w-40'>Count</th>
-                <th class="w-10"><i class="fas fa-pencil-alt"></i></th>
+                <th class='w-35'>Item</th>
+                <th class='w-15'>Size 1</th>
+                <th class='w-15'>Size 2</th>
+                <th class='w-15'>Size 3</th>
+                <th class='w-10'>Stock Qty</th>
+                <th class='w-10'>Count</th>
+                <th><i class="fas fa-pencil-alt"></i></th>
             </thead>
             <tbody id="tbl_stocks"></tbody>
         </table>

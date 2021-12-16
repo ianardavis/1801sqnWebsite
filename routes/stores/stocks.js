@@ -64,17 +64,17 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
 
-    app.put('/stocks/counts',    fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
+    app.put('/stocks/counts',       fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         if (!req.body.counts) fn.send_error(res, 'No details')
         else {
             let actions = [];
-            req.body.counts.filter(e => e.qty && e.qty > 0).forEach(count => {
+            req.body.counts.filter(a => a.qty).forEach(count => {
                 actions.push(fn.stocks.adjust(count.stock_id, 'Count', count.qty, req.user.user_id))
             })
             Promise.allSettled(actions)
             .then(results => {
                 results.filter(e => e.status === 'rejected').forEach(e => console.log(e));
-                res.send({success: true, message: `${req.params.type} saved`});
+                res.send({success: true, message: 'Counts saved', result: req.body.location_id});
             })
             .catch(err => fn.send_error(res, err));
         };

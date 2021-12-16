@@ -1,7 +1,7 @@
 function get(options) {
     return new Promise((resolve, reject) => {
         show_spinner(options.spinner || options.table || '');
-        if (!options.query && !options.filter) options.query = [];
+        // if (!options.query && !options.filter) options.query = [];
         const XHR = new XMLHttpRequest();
         XHR.addEventListener("load", function (event) {
             hide_spinner(options.spinner || options.table || '');
@@ -32,13 +32,22 @@ function get(options) {
             };
         });
         XHR.addEventListener("error", function (event) {
-            console.log(`********* Error getting ${options.table} *********`);
-            console.log(event);
-            console.log('*******************************************');
-            hide_spinner(options.spinner || options.table || '');
+            XHR_Error(event, 'getting', options.spinner || options.table || '');
             reject(event);
         });
-        XHR.open(options.method || 'GET', `/get/${options.table}?${(options.filter ? `filter=${ options.filter}` : (options.query ? `where={${options.query.join(',')}}` : ''))}${(options.sort ? `&sort=${JSON.stringify(options.sort)}` : '')}${(options.limit ? `&limit=${ options.limit}` : '')}${(options.offset ? `&offset=${options.offset}` : '')}`);
+        let queries = [];
+        if (options.where )  queries.push(`where=${JSON.stringify(options.where)}`);
+        if (options.like  )  queries.push(`like=${ JSON.stringify(options.like)}`);
+        if (options.lt    )  queries.push(`lt=${   JSON.stringify(options.lt)}`);
+        if (options.gt    )  queries.push(`gt=${   JSON.stringify(options.gt)}`);
+        if (options.order )  queries.push(`order={"col":"${options.order.col}","dir":"${options.order.dir}"}`);
+        if (options.limit )  queries.push(`limit=${ options.limit}`);
+        if (options.offset)  queries.push(`offset=${options.offset}`);
+
+        if (options.filter)  queries.push(`filter=${options.filter}`);
+        if (options.query )  queries.push(`where={${options.query.join(',')}}`);
+        if (options.sort  )  queries.push(`sort=${JSON.stringify(options.sort)}`);
+        XHR.open(options.method || 'GET', `/get/${options.table}?${queries.join('&')}`);
         XHR.send();
     });
 };
@@ -71,10 +80,7 @@ function count(options) {
             };
         });
         XHR.addEventListener("error", function (event) {
-            console.log(`********* Error counting ${options.table} *********`);
-            console.log(event);
-            console.log('*******************************************');
-            hide_spinner(options.spinner || options.table || '');
+            XHR_Error(event, 'counting', options.spinner || options.table || '');
             reject(event);
         });
         XHR.open('GET', `/count/${options.table}?${options.query.join('&')}`);
@@ -110,10 +116,7 @@ function sum(options) {
             };
         });
         XHR.addEventListener("error", function (event) {
-            console.log(`********* Error summing ${options.table} *********`);
-            console.log(event);
-            console.log('*******************************************');
-            hide_spinner(options.spinner || options.table || '');
+            XHR_Error(event, 'summing', options.spinner || options.table || '');
             reject(event);
         });
         XHR.open('GET', `/sum/${options.table}?${options.query.join('&')}`);
@@ -197,4 +200,11 @@ function sendData(form, method, _location, options = {reload: false}) {
     });
     XHR.open(method, _location);
     XHR.send(FD);
+};
+function XHR_Error(event, action, spinner) {
+    console.log(`********* Error ${action} ${options.table} *********`);
+    console.log(event);
+    console.log('*******************************************');
+    hide_spinner(spinner);
+    reject(event);
 };

@@ -27,8 +27,10 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/users',         fn.loggedIn(), fn.permissions.check('access_users', true), (req, res) => {
         if (!req.allowed) req.query.user_id = req.user.user_id;
+        let where = {};
+        if (req.query.where) where = JSON.parse(req.query.where);
         m.users.findAll({
-            where:      JSON.parse(req.query.where),
+            where:      where,
             include:    [fn.inc.users.rank(), fn.inc.users.status()],
             attributes: user_attributes,
             ...fn.sort(req.query.sort)

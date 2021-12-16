@@ -40,53 +40,57 @@ module.exports = (app, m, fn) => {
     };
     app.get('/get/issues',        fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         try {
-            let query = JSON.parse(req.query.filter);
-            issues_allowed(req.allowed, query.filter.user_id_issue, req.user.user_id)
+            let query = fn.parse_query(req.query);
+            if (!query.where) query.where = {};
+            console.log(query);
+            issues_allowed(req.allowed, query.where.user_id_issue, req.user.user_id)
             .then(add_user_id_issue => {
-                if (!query.page.offset || isNaN(query.page.offset)) query.page.offset = 0;
-                if (isNaN(query.page.limit))                    delete query.page.limit;
-                if (add_user_id_issue) query.filter.user_id_issue = req.user.user_id;
+                if (!query.offset || isNaN(query.offset)) query.offset = 0;
+                if (isNaN(query.limit))                   delete query.limit;
+                if (add_user_id_issue) query.where.user_id_issue = req.user.user_id;
                 let where   = {},
                     include = [
                         {
                             model: m.sizes,
                             where: {
-                                ...(query.filter.size.size1 ? {size1: {[fn.op.substring]: query.filter.size.size1}} : {}),
-                                ...(query.filter.size.size2 ? {size2: {[fn.op.substring]: query.filter.size.size2}} : {}),
-                                ...(query.filter.size.size3 ? {size3: {[fn.op.substring]: query.filter.size.size3}} : {})
+                                ...(query.like.size1 ? {size1: {[fn.op.substring]: query.like.size1}} : {}),
+                                ...(query.like.size2 ? {size2: {[fn.op.substring]: query.like.size2}} : {}),
+                                ...(query.like.size3 ? {size3: {[fn.op.substring]: query.like.size3}} : {})
                             },
                             include: [{
                                 model: m.items,
-                                where: (query.filter.item && query.filter.item !== '' ? {description: {[fn.op.substring]: query.filter.item}} : {})
+                                where: (query.like.item && query.like.item !== '' ? {description: {[fn.op.substring]: query.like.item}} : {})
                             }]
                         },
                         {
                             model:   m.users,
                             as:      'user_issue',
-                            where:   (query.filter.user_id_issue ? {user_id: query.filter.user_id_issue} : {}),
+                            where:   (query.where.user_id_issue ? {user_id: query.where.user_id_issue} : {}),
                             include: [m.ranks]
                         }
                     ];
-                if (query.filter.status && query.filter.status.length > 0) where.status = {[fn.op.or]: query.filter.status};
-                if (query.filter.createdAt.from || query.filter.createdAt.to) {
-                    if (query.filter.createdAt.from && query.filter.createdAt.to) {
-                        where.createdAt = {[fn.op.between]: [query.filter.createdAt.from, query.filter.createdAt.to]}
+                if (query.where.status && query.where.status.length > 0) where.status = {[fn.op.or]: query.where.status};
+                if (query.gt || query.lt) {
+                    if (query.gt && query.lt) {
+                        where.createdAt = {[fn.op.between]: [query.gt.value, query.lt.value]}
                     };
-                    if (query.filter.createdAt.from && !query.filter.createdAt.to) {
-                        where.createdAt = {[fn.op.gt]: query.filter.createdAt.from}
+                    if (query.gt && !query.lt) {
+                        where.createdAt = {[fn.op.gt]: query.gt.value}
                     };
-                    if (!query.filter.createdAt.from && query.filter.createdAt.to) {
-                        where.createdAt = {[fn.op.lt]: query.filter.createdAt.to}
+                    if (!querygt && querylt) {
+                        where.createdAt = {[fn.op.lt]: query.lt.value}
                     };
                 };
                 return m.issues.findAll({
                     where: where,
                     include: include,
-                    ...query.page
+                    order: [[query.order.col, query.order.dir]],
+                    limit: query.limit,
+                    offset: query.offset
                 })
                 .then(issues => {
                     return m.issues.count({where: where, include: include})
-                    .then(count => res.send({success: true, result: {issues: issues, count: count, ...query.page}}))
+                    .then(count => res.send({success: true, result: {issues: issues, count: count, ...{limit: query.limit, offset: query.offset}}}))
                     .catch(err => fn.send_error(res, err));
                 })
                 .catch(err => fn.send_error(res, err));

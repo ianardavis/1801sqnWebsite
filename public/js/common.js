@@ -309,14 +309,18 @@ function checked_statuses() {
     } else return null;
 };
 function _checked_statuses() {
-    let selected = [],
+    let selected = null,
         statuses = document.querySelectorAll(".status:checked") || [];
-    if (statuses && statuses.length > 0) statuses.forEach(e => selected.push(e.value));
+    if (statuses && statuses.length > 0) {
+        selected = []
+        statuses.forEach(e => selected.push(e.value));
+    };
     return selected
 };
 function selected_user(id = 'sel_users') {
     let sel_users = document.querySelector(`#${id}`) || {value: ''};
-    return sel_users.value;
+    if (sel_users && sel_users.value !== '') return sel_users.value;
+    else return null
 };
 function selected_dates(table) {
     let dates = {};

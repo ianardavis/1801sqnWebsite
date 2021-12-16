@@ -298,4 +298,17 @@ module.exports = function (m, fn) {
             return {order: [[json_sort.col, json_sort.dir]]};
         } else return {};
     };
+    fn.parse_query = function (query) {
+        let result = {};
+        ['where', 'like', 'lt', 'gt', 'order', 'limit', 'offset'].forEach(e => {
+            try {
+                if (query[e]) result[e] = JSON.parse(query[e]);
+            } catch (err) {
+                console.log(`Error parsing query: ${e}`);
+                console.log(`Line: ${query[e]}`);
+                console.log(`Error: ${err}`);
+            };
+        });
+        return result;
+    };
 };
