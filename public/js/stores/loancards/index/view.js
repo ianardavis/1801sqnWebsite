@@ -4,12 +4,13 @@ function getLoancards() {
     clear('tbl_loancards')
     .then(tbl_loancards => {
         let sel_users = document.querySelector('#sel_users') || {value: ''},
-            query     = [checked_statuses()];
-        if (sel_users && sel_users.value !== "") query.push(sel_users.value);
+            where     = {};
+        let statuses = checked_statuses()
+        if (statuses) where.status = statuses;
+        if (sel_users && sel_users.value !== "") where.user_id_loancard = sel_users.value;
         get({
             table: 'loancards',
-            query: [query.filter(a => a).join(',')],
-            ...sort_query(tbl_loancards)
+            where: where
         })
         .then(function ([loancards, options]) {
             loancards.forEach(loancard => {

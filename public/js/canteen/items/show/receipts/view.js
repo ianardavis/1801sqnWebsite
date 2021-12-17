@@ -3,11 +3,10 @@ function getReceipts() {
     .then(tbl_receipts => {
         get({
             table: 'receipts',
-            query: [`"item_id":"${path[2]}"`],
-            ...sort_query(tbl_receipts)
+            where: {item_id: path[2]}
         })
         .then(function ([receipts, options]) {
-            set_count('receipt', receipts.length || '0');
+            set_count('receipt', receipts.length);
             receipts.forEach(receipt => {
                 try {
                     let row = tbl_receipts.insertRow(-1);

@@ -30,10 +30,11 @@
                 </span>
             </div>
             <div id="div_details">
-                <table class='table table-sm table-hover w-100'>
+                <%- include(`${partials}/filter/sort`, {table: 'details'}) %>
+	            <table class='table table-sm table-hover w-100'>
                     <thead class='thead-dark'>
-                        <th class='w-30' onclick='sortByRow(this, getDetails)' data-sort_col='name' >Name <span class='sort_ind float-end'></span></th>
-                        <th class='w-70' onclick='sortByRow(this, getDetails)' data-sort_col='value'>Value<span class='sort_ind float-end'></span></th>
+                        <th class='w-30'>Name </th>
+                        <th class='w-70'>Value</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_details'></tbody>
@@ -46,10 +47,11 @@
             </div>
         </div>
         <div     id="nsns"    role="tabpanel" aria-labelledby="nsns-tab"    class="tab-pane fade">
-            <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
+            <%- include(`${partials}/filter/sort`, {table: 'nsns'}) %>
+	        <% if (permissions.stores_stock_admin) { %><form id='form_nsn_default'><% } %>
             <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
-					<th class='w-80' onclick='sortByRow(this, getNSNs)' data-sort_col='item_number'>NSN<span class='sort_ind float-end'></span></th>
+					<th class='w-80'>NSN</th>
                     <th class='w-20'>Default</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
@@ -63,10 +65,11 @@
             </div>
         </div>
         <div     id="serials" role="tabpanel" aria-labelledby="serials-tab" class="tab-pane fade">
-            <table class='table table-sm table-hover'>
+            <%- include(`${partials}/filter/sort`, {table: 'serials'}) %>
+	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
-					<th class='w-50' onclick='sortByRow(this, getSerials)' data-sort_col='serial'     >Serial #<span class='sort_ind float-end'></span></th>
-					<th class='w-50' onclick='sortByRow(this, getSerials)' data-sort_col='location_id'>Location<span class='sort_ind float-end'></span></th>
+					<th class='w-50'>Serial #</th>
+					<th class='w-50'>Location</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_serials'></tbody>
@@ -78,10 +81,11 @@
             </div>
         </div>
         <div     id="stocks"  role="tabpanel" aria-labelledby="stocks-tab"  class="tab-pane fade">
-            <table class='table table-sm table-hover'>
+            <%- include(`${partials}/filter/sort`, {table: 'stocks'}) %>
+	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
-					<th class='w-80' onclick='sortByRow(this, getStocks)' data-sort_col='location'>Location<span class='sort_ind float-end'></span></th>
-					<th class='w-20' onclick='sortByRow(this, getStocks)' data-sort_col='qty'     >Qty     <span class='sort_ind float-end'></span></th>
+					<th class='w-80'>Location</th>
+					<th class='w-20'>Qty     </th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_stocks'></tbody>
@@ -95,11 +99,12 @@
         <% if (permissions.stores_stock_admin) { %>
             <div id="orders"  role="tabpanel" aria-labelledby="orders-tab"  class="tab-pane fade">
                 <%- include(`${partials}/inputs/select`, {id: 'sel_order_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled', value: '"status":0'}, {text: 'Placed', value: '"status":1'}, {text: 'Demanded', value: '"status":2'}, {text: 'Received', value: '"status":3'}]}) %>
-                <table class='table table-sm table-hover'>
+                <%- include(`${partials}/filter/sort`, {table: 'orders'}) %>
+	            <table class='table table-sm table-hover'>
                     <thead class='thead-dark'>
-                        <th class='w-50' onclick='sortByRow(this, getOrders)' data-sort_col='createdAt'>Date  <span class='sort_ind float-end'></span></th>
-                        <th class='w-10' onclick='sortByRow(this, getOrders)' data-sort_col='qty'      >Qty   <span class='sort_ind float-end'></span></th>
-                        <th class='w-40' onclick='sortByRow(this, getOrders)' data-sort_col='status'   >Status<span class='sort_ind float-end'></span></th>
+                        <th class='w-50'>Date</th>
+                        <th class='w-10'>Qty</th>
+                        <th class='w-40'>Status</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_orders'></tbody>
@@ -113,12 +118,13 @@
         <% } %>
         <div     id="issues"  role="tabpanel" aria-labelledby="issues-tab"  class="tab-pane fade">
             <%- include(`${partials}/inputs/select`, {id: 'sel_issue_status', title: 'Status', options: [{text: 'All'}, {text: 'Cancelled/Declined', value: '"status":0'}, {text: 'Requested', value: '"status":1'}, {text: 'Approved', value: '"status":2'}, {text: 'Ordered', value: '"status":3'}, {text: 'Issued', value: '"status":4'}, {text: 'Returned', value: '"status":5'}]}) %>
-            <table class='table table-sm table-hover'>
+            <%- include(`${partials}/filter/sort`, {table: 'issues'}) %>
+	        <table class='table table-sm table-hover'>
                 <thead class='thead-dark'>
-					<th class='w-20' onclick='sortByRow(this, getIssues)' data-sort_col='createdAt'    >Date  <span class='sort_ind float-end'></span></th>
-					<th class='w-40' onclick='sortByRow(this, getIssues)' data-sort_col='user_id_issue'>To    <span class='sort_ind float-end'></span></th>
-					<th class='w-10' onclick='sortByRow(this, getIssues)' data-sort_col='qty'          >Qty   <span class='sort_ind float-end'></span></th>
-					<th class='w-30' onclick='sortByRow(this, getIssues)' data-sort_col='status'       >Status<span class='sort_ind float-end'></span></th>
+					<th class='w-20'>Date</th>
+					<th class='w-40'>To</th>
+					<th class='w-10'>Qty</th>
+					<th class='w-30'>Status</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_issues'></tbody>
@@ -295,9 +301,9 @@
                             <button type='button' class='btn btn-success w-100 mb-1' id='btn_issue_users'>Add Users</button>
                             <table class='table table-sm table-hover'>
                                 <thead class='thead-dark'>
-                                    <th class='w-30' onclick='sortTable(0, "tbl_issue_add")'>Service Number</th>
-                                    <th class='w-60' onclick='sortTable(1, "tbl_issue_add")'>User</th>
-                                    <th class='w-20' onclick='sortTable(2, "tbl_issue_add")'>Quantity</th>
+                                    <th class='w-30'>Service Number</th>
+                                    <th class='w-60'>User</th>
+                                    <th class='w-20'>Quantity</th>
                                     <th><i class='fas fa-trash-alt'></i></th>
                                 </thead>
                                 <tbody id='tbl_issue_add'></tbody>

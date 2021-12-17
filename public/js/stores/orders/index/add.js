@@ -10,7 +10,7 @@ function selectedSizes(sizes) {
             sizes.forEach(size => {
                 get({
                     table: 'size',
-                    query: [`"size_id":"${size}"`],
+                    where: {size_id: size},
                     spinner: 'line_add'
                 })
                 .then(function([size, options]) {

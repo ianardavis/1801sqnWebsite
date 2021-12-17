@@ -3,11 +3,10 @@ function getCategories() {
     .then(tbl_categories => {
         get({
             table: 'item_categories',
-            query: [`"item_id":"${path[2]}"`],
-            ...sort_query(tbl_categories)
+            where: {item_id: path[2]}
         })
         .then(function ([categories, options]) {
-            set_count('category', categories.length || '0');
+            set_count('category', categories.length);
             categories.forEach(category => {
                 let row = tbl_categories.insertRow(-1);
                 add_cell(row, {text: category.category.category});
@@ -23,7 +22,7 @@ function getCategories() {
 function viewCategory(category_id) {
     get({
         table:   'item_category',
-        query:   [`"item_category_id":"${category_id}"`],
+        where:   {item_category_id: category_id},
         spinner: 'category_view'
     })
     .then(function ([category, options]) {

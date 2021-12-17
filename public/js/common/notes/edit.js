@@ -1,7 +1,7 @@
 function viewNoteEdit(note_id) {
     get({
         table:   'note',
-        query:   [`"note_id":"${note_id}"`],
+        where:   {note_id: note_id},
         spinner: 'note_edit'
     })
     .then(function ([note, options]) {
@@ -17,7 +17,7 @@ function addNoteEditBtn(note_id) {
     .then(note_edit_btn => {
         get({
             table: 'note',
-            query: [`"note_id":"${note_id}"`]
+            where: {note_id: note_id}
         })
         .then(function ([note, options]) {
             if (!note.system) {

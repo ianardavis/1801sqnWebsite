@@ -3,8 +3,7 @@ function getPaidInOuts() {
     clear('tbl_paid_in_outs')
     .then(tbl_paid_in_outs => {
         get({
-            table: 'paid_in_outs',
-            ...sort_query(tbl_paid_in_outs)
+            table: 'paid_in_outs'
         })
         .then(function ([paid_in_outs, options]) {
             paid_in_outs.forEach(paid_in_out => {

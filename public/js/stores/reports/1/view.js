@@ -3,8 +3,7 @@ function getSizes() {
     clear('tbl_stocks')
     .then(tbl_stocks => {
         get({
-            table: 'negative_stock',
-            ...sort_query(tbl_stocks)
+            table: 'negative_stock'
         })
         .then(function([stocks, options]) {
             let row_index = 0;

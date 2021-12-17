@@ -4,15 +4,16 @@
     <div id="div_filters">
         <%- include(`${partials}/inputs/select`, {id: 'sel_ranks',    title: 'Rank',   spinner_id: 'ranks',    reload_id: 'reload_ranks'}) %>
         <%- include(`${partials}/inputs/select`, {id: 'sel_statuses', title: 'Status', spinner_id: 'statuses', reload_id: 'reload_statuses'}) %>
-    </div>
+        <%- include(`${partials}/filter/sort`, {table: 'users'}) %>
+	</div>
     <div id="div_users">
         <table class='table table-sm table-hover'>
             <thead class='thead-dark'>
                 <th class='w-20'><i class="fas fa-check"></i></th>
-                <th class='w-20' onclick='sortByRow(this, getUsers)' data-sort_col='service_number'>Bader/Service #<span class='sort_ind float-end'></span></th>
-                <th class='w-10' onclick='sortByRow(this, getUsers)' data-sort_col='rank_id'	   >Rank		   <span class='sort_ind float-end'></span></th>
-                <th class='w-40' onclick='sortByRow(this, getUsers)' data-sort_col='surname'	   >Surname		   <span class='sort_ind float-end'></span></th>
-                <th class='w-30' onclick='sortByRow(this, getUsers)' data-sort_col='first_name'	   >First Name	   <span class='sort_ind float-end'></span></th>
+                <th class='w-20'>Bader/Service #</th>
+                <th class='w-10'>Rank		   </th>
+                <th class='w-40'>Surname		   </th>
+                <th class='w-30'>First Name	   </th>
             </thead>
             <tbody id='tbl_users'></tbody>
         </table>

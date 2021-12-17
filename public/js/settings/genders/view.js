@@ -2,8 +2,7 @@ function getGenders() {
     clear('tbl_genders')
     .then(tbl_genders => {
         get({
-            table: 'genders',
-            ...sort_query(tbl_genders)
+            table: 'genders'
         })
         .then(function ([genders, options]) {
             genders.forEach(gender => {
@@ -27,7 +26,7 @@ function getGenders() {
 function viewGender(gender_id) {
     get({
         table: 'gender',
-        query: [`"gender_id":"${gender_id}"`]
+        where: {gender_id: gender_id}
     })
     .then(function([gender, options]) {
         set_innerText('gender_id',        gender.gender_id);

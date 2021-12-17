@@ -3,5 +3,4 @@
     <%- include(`${partials}/filter/status`, {table: 'issues', statuses: [{text: 'Cancelled', value: '0', colour: 'secondary'}, {text: 'Requested', value: '1', colour: 'warning', checked: true}, {text: 'Approved', value: '2', colour: 'success', checked: true}, {text: 'Ordered', value: '3', colour: 'primary', checked: true}, {text: 'Issued', value: '4', colour: 'info'}, {text: 'Returned', value: '5', colour: 'secondary'}]}) %>
     <%- include(`${partials}/filter/date`,   {table: 'issues', field: 'createdAt'}) %>
     <%- include(`${partials}/filter/size`,   {table: 'issues'}) %>
-    <%- include(`${partials}/filter/sort`,   {table: 'issues'}) %>
 </div>

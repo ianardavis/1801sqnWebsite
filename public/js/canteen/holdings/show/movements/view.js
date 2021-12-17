@@ -4,11 +4,10 @@ function getMovements() {
         get({
             table: 'movements_holding',
             spinner: 'movements',
-            query: [`"holding_id":"${path[2]}"`],
-            ...sort_query(tbl_movements)
+            where: {holding_id: path[2]}
         })
         .then(function ([movements, options]) {
-            set_count('movement', movements.length || '0');
+            set_count('movement', movements.length);
             movements.forEach(movement => {
                 let row = tbl_movements.insertRow(-1);
                 add_cell(row, {text: print_date(movement.createdAt)});

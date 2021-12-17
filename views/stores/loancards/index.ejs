@@ -44,12 +44,13 @@
 			</div>
 		</div>
 	</div>
+	<%- include(`${partials}/filter/sort`, {table: 'loancards'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
-			<th class='w-35' onclick='sortByRow(this, getLoancards)' data-sort_col='createdAt'		 >Date	<span class='sort_ind float-end'></span></th>
-			<th class='w-35' onclick='sortByRow(this, getLoancards)' data-sort_col='user_id_loancard'>User	<span class='sort_ind float-end'></span></th>
+			<th class='w-35'>Date</th>
+			<th class='w-35'>User</th>
 			<th class='w-15'>Lines</th>
-			<th class='w-15' onclick='sortByRow(this, getLoancards)' data-sort_col='status'			 >Status<span class='sort_ind float-end'></span></th>
+			<th class='w-15'>Status</th>
 			<th><i class="fas fa-search"></i></th>
 		</thead>
 		<tbody id="tbl_loancards"></tbody>

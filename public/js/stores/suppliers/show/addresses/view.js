@@ -3,11 +3,10 @@ function getAddresses() {
     .then(tbl_addresses => {
         get({
             table: 'addresses',
-            query: [`"supplier_id":"${path[2]}"`],
-            ...sort_query(tbl_addresses)
+            where: {supplier_id: path[2]}
         })
         .then(function ([addresses, options]) {
-            set_count('address', addresses.length || '0');
+            set_count('address', addresses.length);
             addresses.forEach(address => {
                 let row = tbl_addresses.insertRow(-1);
                 add_cell(row, {text: address.address.type});
@@ -25,7 +24,7 @@ function getAddresses() {
 function viewAddress(supplier_address_id) {
     get({
         table: 'address',
-        query: [`"supplier_address_id":"${supplier_address_id}"`],
+        where: {supplier_address_id: supplier_address_id},
         spinner: 'address_view'
     })
     .then(function ([address, options]) {

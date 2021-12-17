@@ -5,7 +5,7 @@ function listSizes(options = {}) {
             if (options.blank) sel_sizes.appendChild(new Option({selected: (!options.selected), text: options.blank_text || ''}).e);
             get({
                 table: 'sizes',
-                query: options.query || [],
+                where: options.where || {},
                 ...options
             })
             .then(function ([sizes, options]) {

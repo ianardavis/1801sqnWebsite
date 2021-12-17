@@ -2,8 +2,7 @@ function getFiles() {
     clear('tbl_files')
     .then(tbl_files => {
         get({
-            table: 'files',
-            ...sort_query(tbl_files)
+            table: 'files'
         })
         .then(function ([files, options]) {
             get({table: 'fs_files'})

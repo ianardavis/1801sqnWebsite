@@ -1,8 +1,8 @@
 module.exports = (app, m, fn) => {
     app.get('/get/genders',    fn.loggedIn(),                                      (req, res) => {
         m.genders.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(genders => res.send({success: true, result: genders}))
         .catch(err => fn.send_error(res, err));
@@ -10,7 +10,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/gender',     fn.loggedIn(),                                      (req, res) => {
         fn.get(
             'genders',
-            JSON.parse(req.query.where)
+            req.query.where
         )
         .then(gender => res.send({success: true, result: gender}))
         .catch(err => fn.send_error(res, err));

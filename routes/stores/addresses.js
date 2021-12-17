@@ -1,9 +1,9 @@
 module.exports = (app, m, fn) => {
     app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         m.supplier_addresses.findAll({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [fn.inc.stores.address()],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(addresses => res.send({success: true, result: addresses}))
         .catch(err => fn.send_error(res, err));
@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/address',      fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         fn.get(
             'supplier_addresses',
-            JSON.parse(req.query.where),
+            req.query.where,
            [fn.inc.stores.address()]
         )
         .then(address => res.send({success: true, result: address}))

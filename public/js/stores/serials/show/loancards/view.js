@@ -3,11 +3,10 @@ function getLoancards() {
     .then(tbl_loancards => {
         get({
             table: 'loancard_lines',
-            query: [`"serial_id":"${path[2]}"`],
-            ...sort_query(tbl_loancards)
+            where: {serial_id: path[2]}
         })
         .then(function ([lines, options]) {
-            set_count('loancard', lines.length || '0');
+            set_count('loancard', lines.length);
             lines.forEach(line => {
                 let row = tbl_loancards.insertRow(-1);
                 add_cell(row, table_date(line.createdAt));
@@ -25,7 +24,7 @@ function getLoancards() {
 function viewLoancard(loancard_line_id) {
     get({
         table: 'loancard_line',
-        query: [`"loancard_line_id":"${loancard_line_id}"`]
+        where: {loancard_line_id: loancard_line_id}
     })
     .then(function ([line, options]) {
         set_innerText('loancard_id',             line.loancard_id);

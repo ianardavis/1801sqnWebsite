@@ -6,12 +6,13 @@
 <section class='container'>
 	<%- include(`${partials}/inputs/select`, {title: 'Ranks', 	 id: 'sel_ranks',    spinner_id: 'ranks', 	 reload_id: 'reload_ranks'}) %>
 	<%- include(`${partials}/inputs/select`, {title: 'Statuses', id: 'sel_statuses', spinner_id: 'statuses', reload_id: 'reload_statuses'}) %>
+	<%- include(`${partials}/filter/sort`, {table: 'users'}) %>
 	<table class="table table-sm table-hover">
 		<thead class="thead-dark">
-			<th class='w-20' onclick='sortByRow(this, getUsers)' data-sort_col='service_number'>Bader/Service #<span class='sort_ind float-end'></span></th>
-			<th class='w-10' onclick='sortByRow(this, getUsers)' data-sort_col='rank_id'	   >Rank		   <span class='sort_ind float-end'></span></th>
-			<th class='w-40' onclick='sortByRow(this, getUsers)' data-sort_col='surname'	   >Surname		   <span class='sort_ind float-end'></span></th>
-			<th class='w-30' onclick='sortByRow(this, getUsers)' data-sort_col='first_name'	   >First Name	   <span class='sort_ind float-end'></span></th>
+			<th class='w-20'>Bader/Service #</th>
+			<th class='w-10'>Rank		   </th>
+			<th class='w-40'>Surname		   </th>
+			<th class='w-30'>First Name	   </th>
 			<th><i class='fas fa-search'></i></th>
 		</thead>
 		<tbody id="tbl_users"></tbody>
@@ -51,15 +52,4 @@
 	<script src="/js/users/loginBaderMirror.js"></script>
 	<script src="/js/users/userFieldCheck.js"></script>
 <% } %>
-<script async>
-	let actions = [];
-	actions.push(getStatuses());
-	actions.push(getRanks());
-	Promise.allSettled(actions)
-	.then(results => getUsers())
-	.catch(error => {
-		console.log(error);
-		getUsers();
-	});
-</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

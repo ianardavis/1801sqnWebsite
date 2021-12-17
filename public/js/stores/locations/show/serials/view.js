@@ -3,11 +3,10 @@ function getSerials() {
     .then(tbl_serials => {
         get({
             table: 'serials',
-            query: [`"location_id":"${path[2]}"`],
-            ...sort_query(tbl_serials)
+            where: {location_id: path[2]}
         })
         .then(function ([serials, options]) {
-            set_count('serial', serials.length || '0');
+            set_count('serial', serials.length);
             serials.forEach(serial => {
                 let row = tbl_serials.insertRow(-1);
                 add_cell(row, {text: serial.size.item.description});
@@ -25,7 +24,7 @@ function getSerials() {
 function viewSerial(serial_id) {
     get({
         table: 'serial',
-        query: [`"serial_id":"${serial_id}"`]
+        where: {serial_id: serial_id}
     })
     .then(function ([serial, options]) {
         set_innerText('serial_id',        serial.serial_id);

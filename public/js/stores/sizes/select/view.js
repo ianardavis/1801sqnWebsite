@@ -10,8 +10,7 @@ function getSizes(item_id) {
     .then(tbl_sizes => {
         get({
             table: 'item',
-            query: [`"item_id":"${item_id}"`],
-            ...sort_query(tbl_sizes)
+            where: {item_id: item_id}
         })
         .then(function ([item, options]) {
             set_innerText('size_text1', item.size_text1);
@@ -19,7 +18,7 @@ function getSizes(item_id) {
             set_innerText('size_text3', item.size_text3);
             get({
                 table: 'sizes',
-                query: [`"item_id":"${item_id}"`]
+                where: {item_id: item_id}
             })
             .then(function ([sizes, options]) {
                 sizes.forEach(size => {

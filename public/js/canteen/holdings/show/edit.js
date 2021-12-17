@@ -1,7 +1,7 @@
 function viewHoldingEdit() {
     get({
         table: 'holding',
-        query: [`"holding_id":"${path[2]}"`]
+        where: {holding_id: path[2]}
     })
     .then(function([holding, options]) {
         set_value('holding_description_edit', holding.description);

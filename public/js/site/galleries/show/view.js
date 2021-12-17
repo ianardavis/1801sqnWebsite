@@ -1,7 +1,7 @@
 function getGallery() {
     get({
         table: 'gallery',
-        query: [`"gallery_id":"${path[2]}"`]
+        where: {gallery_id: path[2]}
     })
     .then(function ([gallery, options]) {
         set_innerText('gallery_name',      gallery.name);

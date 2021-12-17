@@ -4,8 +4,8 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/suppliers',         fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         m.suppliers.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(suppliers => res.send({success: true, result: suppliers}))
         .catch(err => fn.send_error(res, err));
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/supplier',          fn.loggedIn(), fn.permissions.check('supplier_admin'), (req, res) => {
         fn.get(
             'suppliers',
-            JSON.parse(req.query.where),
+            req.query.where,
             [fn.inc.stores.account()]
         )
         .then(supplier => res.send({success: true,  result: supplier}))

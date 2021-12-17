@@ -4,8 +4,7 @@ function getOrders() {
     .then(tbl_orders => {
         get({
             table: 'orders',
-            query: [`"size_id":"${path[2]}"`],
-            ...sort_query(tbl_orders)
+            where: {size_id: path[2]}
         })
         .then(function ([orders, options]) {
             set_count('order', orders.length);
@@ -30,7 +29,7 @@ function getOrders() {
 function viewOrder(order_id) {
     get({
         table: 'order',
-        query: [`"order_id":"${order_id}"`],
+        where: {order_id: order_id},
         spinner: 'order_view'
     })
     .then(function ([order, options]){

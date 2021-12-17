@@ -2,12 +2,11 @@ function getItems() {
     clear('tbl_items')
     .then(tbl_items => {
         let current = document.querySelector('#current') || {value: ''},
-            query   = [];
-        if (current.value !== '') query.push(current.value);
+            where   = null;
+        if (current.value !== '') where = {current: true};
         get({
             table: 'canteen_items',
-            query: query,
-            ...sort_query(tbl_items)
+            where: where
         })
         .then(function ([items, options]) {
             items.forEach(item => {

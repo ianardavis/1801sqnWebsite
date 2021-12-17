@@ -4,8 +4,9 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/galleries',                                                           (req, res) => {
         return m.galleries.findAll({
-            where:   JSON.parse(req.query.where),
-            include: [fn.inc.users.user()]
+            where:   req.query.where,
+            include: [fn.inc.users.user()],
+            ...fn.pagination(req.query)
         })
         .then(galleries => res.send({success: true, result: galleries}))
         .catch(err => fn.send_error(res, err));
@@ -13,7 +14,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/gallery',                                                             (req, res) => {
         fn.get(
             'galleries',
-            JSON.parse(req.query.where),
+            req.query.where,
             [fn.inc.users.user()]
         )
         .then(gallery => res.send({success: true,  result: gallery}))
@@ -22,8 +23,9 @@ module.exports = (app, m, fn) => {
     
     app.get('/get/gallery_images',                                                      (req, res) => {
         return m.gallery_images.findAll({
-            where:   JSON.parse(req.query.where),
-            include: [fn.inc.users.user()]
+            where:   req.query.where,
+            include: [fn.inc.users.user()],
+            ...fn.pagination(req.query)
         })
         .then(images => res.send({success: true, result: images}))
         .catch(err => fn.send_error(res, err));
@@ -31,7 +33,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/gallery_image',                                                       (req, res) => {
         fn.get(
             'gallery_images',
-            JSON.parse(req.query.where),
+            req.query.where,
             [fn.inc.users.user()]
         )
         .then(image => res.send({success: true,  result: image}))

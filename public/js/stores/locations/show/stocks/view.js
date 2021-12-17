@@ -3,11 +3,10 @@ function getStocks() {
     .then(tbl_stocks => {
         get({
             table: 'stocks',
-            query: [`"location_id":"${path[2]}"`],
-            ...sort_query(tbl_stocks)
+            where: {location_id: path[2]}
         })
         .then(function ([stocks, options]) {
-            set_count('stock', stocks.length || '0');
+            set_count('stock', stocks.length);
             stocks.forEach(stock => {
                 let row = tbl_stocks.insertRow(-1);
                 add_cell(row, {text: stock.size.item.description});
@@ -25,7 +24,7 @@ function getStocks() {
 function viewStock(stock_id) {
     get({
         table: 'stock',
-        query: [`"stock_id":"${stock_id}"`]
+        where: {stock_id: stock_id}
     })
     .then(function ([stock, options]) {
         set_innerText('stock_id',        stock.stock_id);

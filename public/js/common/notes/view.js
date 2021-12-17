@@ -1,19 +1,18 @@
 function getNotes() {
     clear('tbl_notes')
     .then(tbl_notes => {
-        let sel_system = document.querySelector('#sel_system')       || {value: ''},
-            query      = [
-                `"_table":"${path[1]}"`,
-                `"id":"${path[2]}"`
-            ];
-        if (sel_system.value !== '') query.push(sel_system.value);
+        let sel_system = document.querySelector('#sel_system') || {value: ''},
+            where = {
+                _table: path[1],
+                id:     path[2]
+            };
+        if (sel_system.value !== '') where.system = (sel_system.value === '1');
         get({
             table: 'notes',
-            query: query,
-            ...sort_query(tbl_notes)
+            where: where
         })
         .then(function ([notes, options]) {
-            set_count('note', notes.length || '0');
+            set_count('note', notes.length);
             notes.forEach(note => {
                 let row = tbl_notes.insertRow(-1);
                 add_cell(row, table_date(note.createdAt));
@@ -31,7 +30,7 @@ function getNotes() {
 function viewNote(note_id) {
     get({
         table:   'note',
-        query:   [`"note_id":"${note_id}"`],
+        where:   {note_id: note_id},
         spinner: 'note_view'
     })
     .then(function ([note, options]) {

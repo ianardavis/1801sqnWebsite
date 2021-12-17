@@ -1,13 +1,12 @@
 function getItems() {
     clear('tbl_items')
     .then(tbl_items => {
-        let sel_genders = document.querySelector('#sel_genders')      || {value: ''},
-            query       = [];
-        if (sel_genders.value !== '') query.push(sel_genders.value);
+        let sel_genders = document.querySelector('#sel_genders') || {value: ''},
+            where       = {};
+        if (sel_genders.value !== '') where.gender_id = sel_genders.value;
         get({
             table: 'items',
-            query: query,
-            ...sort_query(tbl_items)
+            where: where
         })
         .then(function ([items, options]) {
             items.forEach(item => {

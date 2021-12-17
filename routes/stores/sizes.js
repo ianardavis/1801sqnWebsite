@@ -9,12 +9,12 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/sizes',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.sizes.findAll({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [
                 fn.inc.stores.item(),
                 fn.inc.stores.supplier()
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(sizes => res.send({success: true, result: sizes}))
         .catch(err => fn.send_error(res, err));
@@ -22,7 +22,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/size',     fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'sizes',
-            JSON.parse(req.query.where),
+            req.query.where,
             [
                 fn.inc.stores.item(),
                 fn.inc.stores.supplier()

@@ -4,7 +4,10 @@ function getSizes(event) {
     .then(tbl_sizes => {
         get({
             table: 'sizes',
-            query: [`"item_id":"${event.relatedTarget.dataset.item_id}"`,'"orderable":"1"']
+            where:{
+                item_id: event.relatedTarget.dataset.item_id,
+                orderable: true
+            }
         })
         .then(function ([sizes, options]) {
             sizes.forEach(size => {

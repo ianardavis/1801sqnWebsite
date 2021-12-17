@@ -292,23 +292,11 @@ module.exports = function (m, fn) {
     fn.print_nsn = function (nsn) {
         return `${String(nsn.nsn_group.code).padStart(2, '0')}${String(nsn.nsn_class.code).padStart(2, '0')}-${String(nsn.nsn_country.code).padStart(2, '0')}-${nsn.item_number}`
     };
-    fn.sort = function (sort) {
-        if (sort) {
-            let json_sort = JSON.parse(sort);
-            return {order: [[json_sort.col, json_sort.dir]]};
-        } else return {};
-    };
-    fn.parse_query = function (query) {
-        let result = {};
-        ['where', 'like', 'lt', 'gt', 'order', 'limit', 'offset'].forEach(e => {
-            try {
-                if (query[e]) result[e] = JSON.parse(query[e]);
-            } catch (err) {
-                console.log(`Error parsing query: ${e}`);
-                console.log(`Line: ${query[e]}`);
-                console.log(`Error: ${err}`);
-            };
-        });
-        return result;
+    fn.pagination = function (query) {
+        let pagination = {};
+        if (query.order ) pagination.order = [[query.order.col, query.order.dir]];
+        if (query.limit ) pagination.limit = query.limit;
+        if (query.offset) pagination.offset = query.offset;
+        return pagination;
     };
 };

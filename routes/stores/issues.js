@@ -40,9 +40,8 @@ module.exports = (app, m, fn) => {
     };
     app.get('/get/issues',        fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         try {
-            let query = fn.parse_query(req.query);
+            let query = req.query;
             if (!query.where) query.where = {};
-            console.log(query);
             issues_allowed(req.allowed, query.where.user_id_issue, req.user.user_id)
             .then(add_user_id_issue => {
                 if (!query.offset || isNaN(query.offset)) query.offset = 0;
@@ -53,13 +52,13 @@ module.exports = (app, m, fn) => {
                         {
                             model: m.sizes,
                             where: {
-                                ...(query.like.size1 ? {size1: {[fn.op.substring]: query.like.size1}} : {}),
-                                ...(query.like.size2 ? {size2: {[fn.op.substring]: query.like.size2}} : {}),
-                                ...(query.like.size3 ? {size3: {[fn.op.substring]: query.like.size3}} : {})
+                                ...(query.like && query.like.size1 ? {size1: {[fn.op.substring]: query.like.size1}} : {}),
+                                ...(query.like && query.like.size2 ? {size2: {[fn.op.substring]: query.like.size2}} : {}),
+                                ...(query.like && query.like.size3 ? {size3: {[fn.op.substring]: query.like.size3}} : {})
                             },
                             include: [{
                                 model: m.items,
-                                where: (query.like.item && query.like.item !== '' ? {description: {[fn.op.substring]: query.like.item}} : {})
+                                where: (query.like && query.like.item && query.like.item !== '' ? {description: {[fn.op.substring]: query.like.item}} : {})
                             }]
                         },
                         {
@@ -84,9 +83,7 @@ module.exports = (app, m, fn) => {
                 return m.issues.findAll({
                     where: where,
                     include: include,
-                    order: [[query.order.col, query.order.dir]],
-                    limit: query.limit,
-                    offset: query.offset
+                    ...fn.pagination(query)
                 })
                 .then(issues => {
                     return m.issues.count({where: where, include: include})
@@ -105,7 +102,7 @@ module.exports = (app, m, fn) => {
         .then(allowed_users => {
             fn.get(
                 'issues',
-                JSON.parse(req.query.where),
+                req.query.where,
                 [
                     fn.inc.stores.size(),
                     fn.inc.users.user({as: 'user_issue'}),
@@ -134,11 +131,11 @@ module.exports = (app, m, fn) => {
                     as: 'links',
                     where: {
                         _table: 'issues',
-                        id: JSON.parse(req.query.where).issue_id
+                        id: req.query.where.issue_id
                     }
                 }]
             }],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(link => {
             if (!link) fn.send_error(res, new Error('Loancard not found'))

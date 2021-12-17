@@ -8,7 +8,7 @@ function listCategories(select, parent_id = '') {
     .then(sel_category => {
         get({
             table: 'categories',
-            query: [`"category_id_parent":"${parent_id}"`]
+            where: {category_id_parent: parent_id}
         })
         .then(function ([categories, options]) {
             if (categories.length === 0) sel_category.remove();

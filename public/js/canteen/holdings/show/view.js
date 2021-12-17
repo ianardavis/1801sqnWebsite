@@ -1,7 +1,7 @@
 function getHolding() {
     get({
         table: 'holding',
-        query: [`"holding_id":"${path[2]}"`]
+        where: {holding_id: path[2]}
     })
     .then(function ([holding, options]) {
         set_breadcrumb(holding.description);

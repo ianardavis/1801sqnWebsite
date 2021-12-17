@@ -2,8 +2,7 @@ function getSettings() {
     clear('tbl_settings')
     .then(tbl_settings => {
         get({
-            table: 'settings',
-            ...sort_query(tbl_settings)
+            table: 'settings'
         })
         .then(function ([settings, options]) {
             settings.forEach(setting => {
@@ -27,8 +26,8 @@ function getSettings() {
 };
 function getPrinter() {
     get({
-        table: 'setting',
-        query: ['"name":"printer"'],
+        table:   'setting',
+        where:   {name: 'printer'},
         spinner: 'printers'
     })
     .then(function ([setting, options]) {
@@ -40,7 +39,7 @@ function getErrorLog() {
     .then(log_error => {
         get({
             table: 'logs',
-            query: ['"type":"error"'],
+            where: {type: 'error'},
             spinner: 'log_error',
             streamAction: function (char) {
                 log_error.innerText += char;
@@ -53,7 +52,7 @@ function getOutLog() {
     .then(log_out => {
         get({
             table: 'logs',
-            query: ['"type":"out"'],
+            where: {type: 'out'},
             spinner: 'log_out',
             streamAction: function (char) {
                 log_out.innerText += char;
@@ -64,7 +63,7 @@ function getOutLog() {
 function viewSetting(setting_id) {
     get({
         table: 'setting',
-        query: [`"setting_id":"${setting_id}"`]
+        where: {setting_id: setting_id}
     })
     .then(function([setting, options]) {
         set_innerText('setting_id',        setting.setting_id);

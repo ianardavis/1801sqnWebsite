@@ -4,12 +4,12 @@ module.exports = (app, m, fn) => {
     
     app.get('/get/writeoffs', fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         m.writeoffs.findAll({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [
                 fn.inc.users.user(),
                 fn.inc.canteen.item()
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(writeoffs => res.send({success: true, result: writeoffs}))
         .catch(err => fn.send_error(res, err))
@@ -17,7 +17,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/writeoff',  fn.loggedIn(), fn.permissions.check('canteen_stock_admin'), (req, res) => {
         fn.get(
             'writeoffs',
-            JSON.parse(req.query.where),
+            req.query.where,
             [
                 fn.inc.users.user(),
                 fn.inc.canteen.item()

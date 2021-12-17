@@ -1,7 +1,6 @@
 function get(options) {
     return new Promise((resolve, reject) => {
         show_spinner(options.spinner || options.table || '');
-        // if (!options.query && !options.filter) options.query = [];
         const XHR = new XMLHttpRequest();
         XHR.addEventListener("load", function (event) {
             hide_spinner(options.spinner || options.table || '');

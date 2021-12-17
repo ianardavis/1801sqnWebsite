@@ -16,12 +16,12 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/orders',              fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         m.orders.findAll({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user()
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(orders => res.send({success: true, result: orders}))
         .catch(err => fn.send_error(res, err));
@@ -29,7 +29,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/order',               fn.loggedIn(), fn.permissions.check('stores_stock_admin'), (req, res) => {
         fn.get(
             'orders',
-            JSON.parse(req.query.where),
+            req.query.where,
             [
                 fn.inc.stores.size(),
                 fn.inc.users.user()

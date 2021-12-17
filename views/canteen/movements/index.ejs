@@ -4,12 +4,13 @@
 <%- include(`${partials}/spinner`, {id: 'movements'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <table class="table table-sm table-hover">
+    <%- include(`${partials}/filter/sort`, {table: 'movements'}) %>
+	<table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class='w-30' onclick='sortByRow(this, getMovements)' data-sort_col='holding_id_from'>From<span class='sort_ind float-end'></span></th>
-            <th class='w-30' onclick='sortByRow(this, getMovements)' data-sort_col='holding_id_to'  >To<span class='sort_ind float-end'></span></th>
-            <th class='w-30' onclick='sortByRow(this, getMovements)' data-sort_col='description'    >Description<span class='sort_ind float-end'></span></th>
-            <th class='w-10' onclick='sortByRow(this, getMovements)' data-sort_col='amount'         >Amount<span class='sort_ind float-end'></span></th>
+            <th class='w-30'>From</th>
+            <th class='w-30'>To</th>
+            <th class='w-30'>Description</th>
+            <th class='w-10'>Amount</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_movements"></tbody>

@@ -15,7 +15,7 @@ window.addEventListener( "load", function () {
 function setDeleteButton() {
     get({
         table: 'demand',
-        query: [`"demand_id":"${path[2]}"`]
+        where: {demand_id: path[2]}
     })
     .then(function([demand, options]) {
         if ([1, 2].includes(demand.status)) enable_button('delete')

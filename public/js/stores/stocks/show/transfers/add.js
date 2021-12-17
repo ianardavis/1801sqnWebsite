@@ -5,7 +5,7 @@ function resetTransferAdd() {
 function viewTransferAdd() {
     get({
         table: 'stock',
-        query: [`"stock_id":"${path[2]}"`]
+        where: {stock_id: path[2]}
     })
     .then(function ([stock, options]) {
         if (stock.qty <= 0) {

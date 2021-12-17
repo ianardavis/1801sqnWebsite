@@ -3,7 +3,7 @@ function addDetailDeleteBtn(detail_id) {
     .then(detail_delete_btn => {
         get({
             table: 'detail',
-            query: [`"detail_id":"${detail_id}"`]
+            where: {detail_id: detail_id}
         })
         .then(function ([detail, options]) {
             detail_delete_btn.appendChild(

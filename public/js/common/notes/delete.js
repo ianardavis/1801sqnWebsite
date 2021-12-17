@@ -3,7 +3,7 @@ function addNoteDeleteBtn(note_id) {
     .then(note_delete_btn => {
         get({
             table: 'note',
-            query: [`"note_id":"${note_id}"`]
+            where: {note_id: note_id}
         })
         .then(function ([note, options]) {
             if (!note.system) {

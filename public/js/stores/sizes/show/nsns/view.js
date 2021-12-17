@@ -3,11 +3,10 @@ function getNSNs() {
     .then(tbl_nsns => {
         get({
             table: 'nsns',
-            query: [`"size_id":"${path[2]}"`],
-            ...sort_query(tbl_nsns)
+            where: {size_id: path[2]}
         })
         .then(function ([nsns, options]) {
-            set_count('nsn', nsns.length || '0');
+            set_count('nsn', nsns.length);
             nsns.forEach(nsn => {
                 try {
                     let row = tbl_nsns.insertRow(-1);
@@ -27,7 +26,7 @@ function getNSNs() {
 function viewNSN(event) {
     get({
         table: 'nsn',
-        query: [`"nsn_id":"${event.relatedTarget.dataset.nsn_id}"`],
+        where: {nsn_id: event.relatedTarget.dataset.nsn_id},
         spinner: 'nsn_view'
     })
     .then(function([nsn, options]) {

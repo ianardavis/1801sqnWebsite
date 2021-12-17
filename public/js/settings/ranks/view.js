@@ -2,8 +2,7 @@ function getRanks() {
     clear('tbl_ranks')
     .then(tbl_ranks => {
         get({
-            table: 'ranks',
-            ...sort_query(tbl_ranks)
+            table: 'ranks'
         })
         .then(function ([ranks, options]) {
             ranks.forEach(rank => {

@@ -2,11 +2,12 @@ let order_statuses = {'0': 'Cancelled', '1': 'Placed', '2': 'Demanded', '3': 'Re
 function getOrders() {
     clear('tbl_orders')
     .then(tbl_orders => {
-        let query = [checked_statuses()];
+        let statuses = checked_statuses(),
+            where = {};
+        if (statuses) where.status = statuses;
         get({
             table: 'orders',
-            query: [query.filter(a => a).join(',')],
-            ...sort_query(tbl_orders)
+            where: where
         })
         .then(function ([orders, options]) {
             let row_index = 0;

@@ -3,16 +3,15 @@ function getLines() {
     clear('tbl_lines')
     .then(tbl_lines => {
         let sel_status = document.querySelector('#sel_status') || {value: ''},
-            query = [`"demand_id":"${path[2]}"`];
-            if (sel_status.value !== '') query.push(sel_status.value);
+            where = {demand_id: path[2]};
+        if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'demand_lines',
-            query: query,
-            ...sort_query(tbl_lines)
+            where: where
         })
         .then(function ([lines, options]) {
             let row_index = 0;
-            set_count('line', lines.length || '0');
+            set_count('line', lines.length);
             lines.forEach(line => {
                 try {
                     let row = tbl_lines.insertRow(-1);
@@ -54,7 +53,7 @@ function getLines() {
 function showLine(demand_line_id) {
     get({
         table: 'demand_line',
-        query: [`"demand_line_id":"${demand_line_id}"`]
+        where: {demand_line_id: demand_line_id}
     })
     .then(function ([line, options]) {
         set_innerText('demand_line_id', line.demand_line_id);

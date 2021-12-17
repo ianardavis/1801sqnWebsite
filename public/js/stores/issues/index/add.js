@@ -11,7 +11,7 @@ function selectedSizes(sizes) {
             sizes.forEach(size => {
                 get({
                     table: 'size',
-                    query: [`"size_id":"${size}"`],
+                    where: {size_id: size},
                     spinner: 'line_add'
                 })
                 .then(function([size, options]) {
@@ -60,7 +60,7 @@ function selectedUsers(users) {
         users.forEach(user => {
             get({
                 table: 'user',
-                query: [`"user_id":"${user}"`]
+                where: {user_id: user}
             })
             .then(function([user, options]) {
                 if (!tbl_issue_users_add.querySelector(`#user-${user.user_id}`)) {

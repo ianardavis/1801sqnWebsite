@@ -31,10 +31,11 @@
             <%- include(`${partials}/button/button`, {text: 'Find Printer', type: 'primary', id: 'printers', classes: ['w-100']}) %>
             <form id='form_printers'>
                 <%- include(`${partials}/button/button`, {text: 'Save Selected Printer', type: 'success', classes: ['w-100']}) %>
-                <table class="table table-sm table-hover">
+                <%- include(`${partials}/filter/sort`, {table: 'printers'}) %>
+	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
                         <th><i class='fas fa-check'></i></th>
-                        <th class="w-100" onclick="sortTable(1, 'tbl_printers')">Printer</th>
+                        <th class="w-100">Printer</th>
                     </thead>
                     <tbody id='tbl_printers'></tbody>
                 </table>
@@ -56,9 +57,10 @@
         </div>
         <% if (permissions.stores_stock_admin) { %>
             <div class="tab-pane fade" id="genders" role="tabpanel" aria-labelledby="genders-tab">
-                <table class="table table-sm table-hover">
+                <%- include(`${partials}/filter/sort`, {table: 'genders'}) %>
+	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class='w-100' onclick='sortByRow(this, getGenders)' data-sort_col='gender'>Gender<span class='sort_ind float-end'></span></th>
+                        <th class='w-100'>Gender</th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_genders'></tbody>
@@ -67,10 +69,11 @@
         <% } %>
         <% if (permissions.supplier_admin) { %>
             <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                <table class="table table-sm table-hover">
+                <%- include(`${partials}/filter/sort`, {table: 'files'}) %>
+	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class='w-20' onclick='sortByRow(this, getFiles)' data-sort_col='file_id' >File ID <span class='sort_ind float-end'></span></th>
-                        <th class='w-60' onclick='sortByRow(this, getFiles)' data-sort_col='filename'>Filename<span class='sort_ind float-end'></span></th>
+                        <th class='w-20'>File ID </th>
+                        <th class='w-60'>Filename</th>
                         <th class='w-20'>Gender</th>
                         <th><i class='fas fa-trash-alt'></i></th>
                     </thead>
@@ -80,11 +83,12 @@
         <% } %>
         <% if (permissions.supplier_admin) { %>
             <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab">
-                <table class="table table-sm table-hover">
+                <%- include(`${partials}/filter/sort`, {table: 'accounts'}) %>
+	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class='w-40' onclick='sortByRow(this, getAccounts)' data-sort_col='name'   >Name  <span class='sort_ind float-end'></span></th>
-                        <th class='w-20' onclick='sortByRow(this, getAccounts)' data-sort_col='number' >Number<span class='sort_ind float-end'></span></th>
-                        <th class='w-40' onclick='sortByRow(this, getAccounts)' data-sort_col='user_id'>Owner <span class='sort_ind float-end'></span></th>
+                        <th class='w-40'>Name  </th>
+                        <th class='w-20'>Number</th>
+                        <th class='w-40'>Owner </th>
                         <th><i class='fas fa-search'></i></th>
                     </thead>
                     <tbody id='tbl_accounts'></tbody>
@@ -102,10 +106,11 @@
             </div>
         <% } %>
         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-            <table class="table table-sm table-hover">
+            <%- include(`${partials}/filter/sort`, {table: 'settings'}) %>
+	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-					<th class='w-50' onclick='sortByRow(this, getSettings)' data-sort_col='name' >Setting<span class='sort_ind float-end'></span></th>
-					<th class='w-50' onclick='sortByRow(this, getSettings)' data-sort_col='value'>Value  <span class='sort_ind float-end'></span></th>
+					<th class='w-50'>Setting</th>
+					<th class='w-50'>Value  </th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id='tbl_settings'></tbody>

@@ -2,8 +2,7 @@ function getSessions() {
     clear('tbl_sessions')
     .then(tbl_sessions => {
         get({
-            table: 'sessions',
-            ...sort_query(tbl_sessions)
+            table: 'sessions'
         })
         .then(function ([sessions, options]) {
             let current_sessions = [];

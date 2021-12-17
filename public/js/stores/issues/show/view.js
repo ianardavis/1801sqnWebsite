@@ -2,7 +2,7 @@ let statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Order
 function getIssue() {
     get({
         table: 'issue',
-        query: [`"issue_id":"${path[2]}"`]
+        where: {issue_id: path[2]}
     })
     .then(function ([issue, options]) {
         set_breadcrumb(issue.issue_id);

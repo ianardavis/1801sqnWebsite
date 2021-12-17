@@ -2,7 +2,7 @@ function getLineActions() {
     document.querySelectorAll('.actions').forEach(e => {
         get({
             table: 'demand_line',
-            query: [`"demand_line_id":"${e.dataset.id}"`]
+            where: {demand_line_id: e.dataset.id},
         })
         .then(function ([line, options]) {
             if ([1, 2].includes(line.status)) {
@@ -37,7 +37,7 @@ function getLineActions() {
                             add_spinner(div_details, {id: line.demand_line_id});
                             get({
                                 table: 'size',
-                                query: [`"size_id":"${line.size_id}"`]
+                                where: {size_id: line.size_id}
                             })
                             .then(function ([size, options]) {
                                 if (size.has_serials) addSerialEntry(div_details, e.dataset.index, line.qty)
@@ -86,7 +86,7 @@ function addStockEntry(div_details, index, qty, size_id) {
     add_spinner(div_details, {id: `stocks_${index}`});
     get({
         table: 'stocks',
-        query: [`"size_id":"${size_id}"`]
+        where: {size_id: size_id}
     })
     .then(function ([stocks, options]) {
         let location_list = document.createElement('datalist');
@@ -123,7 +123,7 @@ function addStockEntry(div_details, index, qty, size_id) {
 function setActionButton() {
     get({
         table: 'demand',
-        query: [`"demand_id":"${path[2]}"`]
+        where: {demand_id: path[2]}
     })
     .then(function([demand, options]) {
         if ([1,2].includes(demand.status)) enable_button('action')

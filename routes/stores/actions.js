@@ -2,12 +2,11 @@ module.exports = (app, m, fn) => {
     app.get('/get/actions',      fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.actions.findAll({
             include: [{
-                model:    m.action_links,
-                as:       'links',
-                required: true,
-                where:    JSON.parse(req.query.where)
+                model: m.action_links,
+                as:    'links',
+                where: req.query.where
             }],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(actions => res.send({success: true, result: actions}))
         .catch(err => fn.send_error(res, err));
@@ -15,7 +14,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/action',       fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'actions',
-            JSON.parse(req.query.where),
+            req.query.where,
             [fn.inc.users.user()]
         )
         .then(action => res.send({success: true, result: action}))
@@ -23,8 +22,8 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/action_links', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.action_links.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(links => res.send({success: true, result: links}))
         .catch(err => fn.send_error(res, err));
@@ -32,7 +31,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/action_link',  fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'action_links',
-            JSON.parse(req.query.where)
+            req.query.where
         )
         .then(link => res.send({success: true, result: link}))
         .catch(err => fn.send_error(res, err));

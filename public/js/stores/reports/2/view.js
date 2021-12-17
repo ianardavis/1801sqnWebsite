@@ -4,8 +4,7 @@ function getLines() {
     clear('tbl_issues')
     .then(tbl_issues => {
         get({
-            table: 'loancard_lines_due',
-            ...sort_query(tbl_issues)
+            table: 'loancard_lines_due'
         })
         .then(function ([lines, options]) {
             let row_index = 0;

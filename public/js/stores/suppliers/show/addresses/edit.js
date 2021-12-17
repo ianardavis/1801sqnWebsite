@@ -1,7 +1,7 @@
 function viewAddressEdit(address_id) {
     get({
         table:   'address',
-        query:   [`"supplier_address_id":"${address_id}"`],
+        where: {supplier_address_id: address_id},
         spinner: 'address_edit'
     })
     .then(function ([address, options]) {
@@ -24,7 +24,7 @@ function addAddressEditBtn(address_id) {
     .then(address_edit_btn => {
         get({
             table: 'address',
-            query: [`"supplier_address_id":"${address_id}"`]
+            where: {supplier_address_id: address_id}
         })
         .then(function ([address, options]) {
             address_edit_btn.appendChild(new Button({

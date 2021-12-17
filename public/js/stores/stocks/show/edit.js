@@ -1,7 +1,7 @@
 function viewStockEdit() {
     get({
         table: 'stock',
-        query: [`"stock_id":"${path[2]}"`]
+        where: {stock_id: path[2]}
     })
     .then(function ([stock, options]) {
         set_value('stock_location_edit', stock.location.location);

@@ -3,13 +3,12 @@ function getUsers() {
     .then(tbl => {
         let status = document.querySelector('#sel_statuses') || {value: ''},
             rank   = document.querySelector('#sel_ranks')    || {value: ''},
-            query  = [];
-            if (status.value !== '') query.push(status.value);
-            if (rank  .value !== '') query.push(rank.value);
+            where = {};
+            if (status.value !== '') where.status_id = status.value;
+            if (rank  .value !== '') where.rank_id = rank.value;
         get({
             table: 'users',
-            query: query,
-            ...sort_query(tbl)
+            where: where
         })
         .then(function ([users, options]) {
             users.forEach(user => {
@@ -25,14 +24,14 @@ function getUsers() {
     .catch(err => console.log(err));
 };
 function getStatuses() {
-    listStatuses({
+    return listStatuses({
         select: 'sel_statuses',
         blank: true,
         blank_text: 'All'
     });
 };
 function getRanks() {
-    listRanks({
+    return listRanks({
         select: 'sel_ranks',
         blank: true,
         blank_text: 'All'
@@ -44,4 +43,13 @@ window.addEventListener("load", function () {
     addListener('sel_ranks',    getUsers, 'change');
     addListener('reload_statuses', getStatuses);
     addListener('reload_ranks',    getRanks);
+	Promise.allSettled([
+		getStatuses(),
+		getRanks()
+	])
+	.then(results => getUsers())
+	.catch(err => {
+		console.log(err);
+		getUsers();
+	});
 });

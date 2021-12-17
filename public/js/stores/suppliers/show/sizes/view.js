@@ -11,10 +11,10 @@ function getSizes() {
         div_sizes.appendChild(div_row);
         get({
             table: 'sizes',
-            query: [`"supplier_id":"${path[2]}"`]
+            where: {supplier_id: path[2]}
         })
         .then(function ([sizes, options]) {
-            set_count('size', sizes.length || '0');
+            set_count('size', sizes.length);
             sizes.forEach(size => {
                 let tbl = document.querySelector(`#tbl_${size.item_id}`);
                 if (!tbl) tbl = addItem(p_head, p_body, size.item);
@@ -35,9 +35,6 @@ function addItem(p_head, p_body, item) {
         table = new Table().e,
         head  = new THEAD().e,
         body  = new TBODY(item.item_id).e;
-    // div_table_head.appendChild(new TH({text: item.size_text1, width: '25', sort: {func: 'getSizes', col: 'size1'}}).e);
-    // div_table_head.appendChild(new TH({text: item.size_text2, width: '25', sort: {func: 'getSizes', col: 'size2'}}).e);
-    // div_table_head.appendChild(new TH({text: item.size_text3, width: '25', sort: {func: 'getSizes', col: 'size2'}}).e);
     head.appendChild(new TH({text: item.size_text1, width: '25'}).e);
     head.appendChild(new TH({text: item.size_text2, width: '25'}).e);
     head.appendChild(new TH({text: item.size_text3, width: '25'}).e);

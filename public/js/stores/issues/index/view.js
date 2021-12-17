@@ -1,98 +1,48 @@
 let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 'Ordered', '4': 'Issued', '5': 'Returned'};
-function stringify_query() {
-    let query  = {filter: {}, page: {}};
-    //     where  = {},
-    //     like   = [],
-    //     gt     = null,
-    //     lt     = null,
-    //     limit  = document.querySelector('.limit_issues:checked').value,
-    //     offset = document.querySelector('.offset_issues:checked') || {value: '0'};
-    //     sort   = {
-    //         col: document.querySelector('#sort_issues'    ).value,
-    //         dir: document.querySelector('#sort_issues_dir').value
-    //     }
-
-    // where.status        = _checked_statuses;
-    // where.user_id_issue = selected_user('filter_issues_user');
-    // let date_from = document.querySelector(`#filter_issues_createdAt_from`) || {value: ''},
-    //     date_to   = document.querySelector(`#filter_issues_createdAt_from`) || {value: ''};
-    // if (date_from) gt = {column: 'createdAt', value: date_from.value};
-    // if (date_lt)   lt = {column: 'createdAt', value: date_to  .value};
-    // let item  = document.querySelector('#filter_issues_item')   || {value: ''},
-    //     size1 = document.querySelector('#filter_issues_size_1') || {value: ''},
-    //     size2 = document.querySelector('#filter_issues_size_2') || {value: ''},
-    //     size3 = document.querySelector('#filter_issues_size_3') || {value: ''};
-    // if (item ) like.push(`"description":"${item.value}"`);
-    // if (size1) like.push(`"size1":"${      size1.value}"`);
-    // if (size2) like.push(`"size1":"${      size2.value}"`);
-    // if (size3) like.push(`"size1":"${      size3.value}"`);
-
-    query.filter.status        = _checked_statuses();
-    query.filter.user_id_issue = selected_user('filter_issues_user');
-
-    query.filter.createdAt     = selected_dates('issues');
-
-    query.filter.item = document.querySelector('#filter_issues_item').value;
-    query.filter.size = {};
-    query.filter.size.size1 = document.querySelector('#filter_issues_size_1').value;
-    query.filter.size.size2 = document.querySelector('#filter_issues_size_2').value;
-    query.filter.size.size3 = document.querySelector('#filter_issues_size_3').value;
-
-    query.page.limit = document.querySelector('.limit_issues:checked').value
-    let offset       = document.querySelector('.offset_issues:checked') || {value: '0'};
-    query.page.offset = offset.value;
-    query.page.order  = [];
-    let sort = [];
-    sort.push(document.querySelector('#sort_issues').value);
-    sort.push(document.querySelector('#sort_issues_dir').value);
-    query.page.order.push(sort);
-    return JSON.stringify(query);
-};
-function getIssues() {
-    let where  = {},
-        like   = {},
-        gt     = null,
-        lt     = null,
-        limit  = document.querySelector('.limit_issues:checked')  || {value: '10'},
-        offset = document.querySelector('.offset_issues:checked') || {value: '0'};
-        order   = {
-            col: document.querySelector('#sort_issues'    ).value,
-            dir: document.querySelector('#sort_issues_dir').value
-        };
-    let sel_statuses = _checked_statuses();
-    if (sel_statuses) where.status = sel_statuses
-    let sel_user = selected_user('filter_issues_user');
+function query() {
+    let where = null,
+        like  = null,
+        gt    = null,
+        lt    = null;
+    
+    let sel_statuses = checked_statuses(),
+        sel_user     = selected_user('filter_issues_user');
+    if (sel_statuses || sel_user) where = {};
+    if (sel_statuses) where.status = sel_statuses;
     if (sel_user) where.user_id_issue = sel_user;
+
     let date_from = document.querySelector(`#filter_issues_createdAt_from`) || {value: ''},
         date_to   = document.querySelector(`#filter_issues_createdAt_to`)   || {value: ''};
     if (date_from && date_from.value !== '') gt = {column: 'createdAt', value: date_from.value};
     if (date_to   && date_to.value   !== '') lt = {column: 'createdAt', value: date_to  .value};
+
     let item  = document.querySelector('#filter_issues_item')   || {value: ''},
         size1 = document.querySelector('#filter_issues_size_1') || {value: ''},
         size2 = document.querySelector('#filter_issues_size_2') || {value: ''},
         size3 = document.querySelector('#filter_issues_size_3') || {value: ''};
-    if (item  && item .value !=='') like.description = item.value;
-    if (size1 && size1.value !=='') like.size1       = size1.value;
-    if (size2 && size2.value !=='') like.size2       = size2.value;
-    if (size3 && size3.value !=='') like.size3       = size3.value;
+    if (item.value || size1.value || size2.value || size3.value) like = {};
+    if (item .value !=='') like.description = item.value;
+    if (size1.value !=='') like.size1       = size1.value;
+    if (size2.value !=='') like.size2       = size2.value;
+    if (size3.value !=='') like.size3       = size3.value;
 
-
-
+    return {
+        where: where,
+        like:  like,
+        gt:    gt,
+        lt:    lt
+    };
+};
+function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
         get({
             table:  'issues',
-            where:  where,
-            like:   like,
-            gt:     gt,
-            lt:     lt,
-            limit:  limit.value,
-            offset: offset.value,
-            order:  order
-            // filter: stringify_query()
+            ...query(),
+            ...pagination('issues')
         })
         .then(function ([result, options]) {
-            add_page_links(result.count, result.limit, result.offset, 'issues');
+            add_page_links(result.count, result.limit, result.offset, 'issues', getIssues);
             let row_index = 0;
             result.issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
@@ -141,7 +91,7 @@ function getIssues() {
                     if (typeof loancard_radio === 'function') {
                         get({
                             table: 'issue_loancard',
-                            query: [`"issue_id":"${issue.issue_id}"`],
+                            where: {issue_id: issue.issue_id},
                             index: row_index
                         })
                         .then(function ([loancard_line, options]) {
@@ -168,33 +118,34 @@ function getIssues() {
         });
     });
 };
-function AddSortColumns() {
-    clear('sort_issues')
-    .then(sort_issues => {
-        clear('sort_issues_dir')
-        .then(sort_issues_dir => {
-            sort_issues.appendChild(new Option({value: 'createdAt',     text: 'Date', selected: true}).e);
-            sort_issues.appendChild(new Option({value: 'user_id_issue', text: 'User'}).e);
-            sort_issues.appendChild(new Option({value: 'description',   text: 'Item'}).e);
-            sort_issues.appendChild(new Option({value: 'size1',         text: 'Size 1'}).e);
-            sort_issues.appendChild(new Option({value: 'size2',         text: 'Size 2'}).e);
-            sort_issues.appendChild(new Option({value: 'size3',         text: 'Size 3'}).e);
-            sort_issues.appendChild(new Option({value: 'qty',           text: 'Qty'}).e);
-            sort_issues.appendChild(new Option({value: 'status',        text: 'Status'}).e);
-            sort_issues_dir.appendChild(new Option({value: 'ASC',  text: 'Asc', selected: true}).e);
-            sort_issues_dir.appendChild(new Option({value: 'DESC', text: 'Desc'}).e);
-        });
-    });
-    
-};
 function getUsers() {
-    listUsers({
+    return listUsers({
         select:     'filter_issues_user',
         table:      'users',
         append:     '_issue',
         blank:      true,
         blank_text: 'All',
         id_only:    true
+    });
+};
+function addSortOptions() {
+    return new Promise(resolve => {
+        clear('sort_issues')
+        .then(sort_issues => {
+            sort_issues.appendChild(new Option({value: 'createdAt',     text: 'Date'}).e);
+            sort_issues.appendChild(new Option({value: 'user_id_issue', text: 'User'}).e);
+            sort_issues.appendChild(new Option({value: 'description',   text: 'Description'}).e);
+            sort_issues.appendChild(new Option({value: 'size1',         text: 'Size 1'}).e);
+            sort_issues.appendChild(new Option({value: 'size2',         text: 'Size 2'}).e);
+            sort_issues.appendChild(new Option({value: 'size3',         text: 'Size 3'}).e);
+            sort_issues.appendChild(new Option({value: 'qty',           text: 'Qty'}).e);
+            sort_issues.appendChild(new Option({value: 'status',        text: 'Status'}).e);
+            resolve(true);
+        })
+        .catch(err => {
+            console.log(err);
+            resolve(false);
+        });
     });
 };
 addReloadListener(getIssues);
@@ -218,4 +169,9 @@ window.addEventListener('load', function () {
     addListener('filter_issues_size_3', getIssues, 'input');
     addListener('sort_issues', getIssues, 'input');
     addListener('sort_issues_dir', getIssues, 'input');
+    Promise.all([
+        getUsers(),
+        addSortOptions()
+    ])
+    .then(result => getIssues());
 });

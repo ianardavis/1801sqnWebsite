@@ -3,11 +3,10 @@ function getContacts() {
     .then(tbl_contacts => {
         get({
             table: 'contacts',
-            query: [`"supplier_id":"${path[2]}"`],
-            ...sort_query(tbl_contacts)
+            where: {supplier_id: path[2]}
         })
         .then(function ([contacts, options]) {
-            set_count('contact', contacts.length || '0');
+            set_count('contact', contacts.length);
             contacts.forEach(contact => {
                 let row = tbl_contacts.insertRow(-1);
                 add_cell(row, {text: contact.contact.type});
@@ -25,7 +24,7 @@ function getContacts() {
 function viewContact(supplier_contact_id) {
     get({
         table: 'contact',
-        query: [`"supplier_contact_id":"${supplier_contact_id}"`],
+        where: {supplier_contact_id: supplier_contact_id},
         spinner: 'contact_view'
     })
     .then(function ([contact, options]) {

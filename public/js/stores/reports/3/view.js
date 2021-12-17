@@ -4,13 +4,13 @@ function getSizes() {
     .then(form => {
         let p           = document.createElement('p'),
             supplier_id = document.querySelector('#sel_suppliers') || {value: ''},
-            query       = ['"orderable":1'];
-        if (supplier_id.value !== '') query.push(`"supplier_id":"${supplier_id.value}"`);
+            where = {orderable: true};
+        if (supplier_id.value !== '') where.supplier_id = supplier_id.value;
         p.setAttribute('id', 'col_headers');
         form.appendChild(p);
         get({
             table: 'sizes',
-            query: query
+            where: where
         })
         .then(function ([sizes, options]) {
             let row_index = 0;
@@ -89,16 +89,12 @@ function addItem(form, p, item_id, description) {
     div_table_head.classList.add('thead-dark');
     div_table_head_col1.innerText = 'Size';
     div_table_head_col1.classList.add('w-55');
-    div_table_head_col1.setAttribute('onclick', `sortTable(0, 'tbl_${item_id}')`);
     div_table_head_col2.innerText = 'In Stock';
     div_table_head_col2.classList.add('w-10');
-    div_table_head_col2.setAttribute('onclick', `sortTable(1, 'tbl_${item_id}')`);
     div_table_head_col3.innerText = 'On Order';
     div_table_head_col3.classList.add('w-10');
-    div_table_head_col3.setAttribute('onclick', `sortTable(2, 'tbl_${item_id}')`);
     div_table_head_col4.innerText = 'Demanded';
     div_table_head_col4.classList.add('w-10');
-    div_table_head_col4.setAttribute('onclick', `sortTable(3, 'tbl_${item_id}')`);
     div_table_head_col5.innerText = 'Order';
     div_table_head_col5.classList.add('w-15');
     div_table_head_col6.innerHTML = '<i class="fas fa-search"></i>';

@@ -1,7 +1,7 @@
 function viewSizeEdit() {
     get({
         table: 'size',
-        query: [`"size_id":"${path[2]}"`]
+        where: {size_id: path[2]}
     })
     .then(function ([size, options]) {
         getSuppliers(size.supplier_id);

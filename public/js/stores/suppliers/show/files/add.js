@@ -3,7 +3,7 @@ function getFileDescriptions() {
     .then(list => {
         get({
             table: 'settings',
-            query: ['"name":"file_description"']
+            where: {name: 'file_description'}
         })
         .then(function ([descriptions, options]) {
             descriptions.forEach(description => {

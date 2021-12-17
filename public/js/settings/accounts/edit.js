@@ -15,7 +15,7 @@ function viewAccountEdit(account_id) {
     modalHide('account_view');
     get({
         table: 'account',
-        query: [`"account_id":"${account_id}"`]
+        where: {account_id: account_id}
     })
     .then(function([account, options]) {
         set_value('account_id_edit',     account.account_id);

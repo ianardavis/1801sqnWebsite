@@ -7,15 +7,16 @@
 <%- include(`${partials}/spinner`, {id: 'paid_in_outs'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <table class="table table-sm table-hover">
+    <%- include(`${partials}/filter/sort`, {table: 'paid_in_outs'}) %>
+	<table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class='w-15' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='createdAt'          >Date<span class='sort_ind float-end'></span></th>
-            <th class='w-10' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='paid_in'            >Paid In/Out<span class='sort_ind float-end'></span></th>
-            <th class='w-20' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='holding_id'         >Holding<span class='sort_ind float-end'></span></th>
-            <th class='w-20' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='user_id_paid_in_out'>To/From<span class='sort_ind float-end'></span></th>
-            <th class='w-15' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='reason'             >Reason<span class='sort_ind float-end'></span></th>
-            <th class='w-10' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='amount'             >Amount<span class='sort_ind float-end'></span></th>
-            <th class='w-10' onclick='sortByRow(this, getPaidInOuts)' data-sort_col='status'             >Status<span class='sort_ind float-end'></span></th>
+            <th class='w-15'>Date</th>
+            <th class='w-10'>Paid In/Out</th>
+            <th class='w-20'>Holding</th>
+            <th class='w-20'>To/From</th>
+            <th class='w-15'>Reason</th>
+            <th class='w-10'>Amount</th>
+            <th class='w-10'>Status</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_paid_in_outs"></tbody>

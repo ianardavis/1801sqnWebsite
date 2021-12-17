@@ -1,10 +1,10 @@
 module.exports = (app, m, fn) => {
     app.get('/get/categories',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
-        let query = fn.nullify(JSON.parse(req.query.where));
+        let query = fn.nullify(req.query.where);
         m.categories.findAll({
             where:   query,
             include: [fn.inc.stores.categories({as: 'parent'})],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => fn.send_error(res, err));
@@ -15,7 +15,7 @@ module.exports = (app, m, fn) => {
         };
         fn.get(
             'categories',
-            JSON.parse(req.query.where),
+            req.query.where,
             [fn.inc.stores.categories({as: 'parent'})]
         )
         .then(category => res.send({success: true, result: category}))

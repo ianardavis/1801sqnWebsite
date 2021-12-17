@@ -9,12 +9,13 @@
 <%- include(`${partials}/spinner`, {id: 'receipts'}) %>
 <%- include(`${partials}/head/components/close`) %>
 <section class='container'>
-    <table class="table table-sm table-hover">
+    <%- include(`${partials}/filter/sort`, {table: 'receipts'}) %>
+	<table class="table table-sm table-hover">
         <thead class="thead-dark">
-            <th class='w-40' onclick='sortByRow(this, getReceipts)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
-            <th class='w-40' onclick='sortByRow(this, getReceipts)' data-sort_col='item_id'  >Item<span class='sort_ind float-end'></span></th>
-            <th class='w-10' onclick='sortByRow(this, getReceipts)' data-sort_col='qty'      >Qty <span class='sort_ind float-end'></span></th>
-            <th class='w-10' onclick='sortByRow(this, getReceipts)' data-sort_col='cost'     >Cost<span class='sort_ind float-end'></span></th>
+            <th class='w-40'>Date</th>
+            <th class='w-40'>Item</th>
+            <th class='w-10'>Qty </th>
+            <th class='w-10'>Cost</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id="tbl_receipts"></tbody>

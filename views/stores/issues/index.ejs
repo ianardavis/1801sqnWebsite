@@ -14,6 +14,7 @@
 		</div>
 	</div>
 	<%- include(`${partials}/filter/stores/issues/collapse`, {user: true}) %>
+	<%- include(`${partials}/filter/sort`, {table: 'issues'}) %>
 	<% if (permissions.issuer) { %><form id='form_issue_edit'><% } %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
@@ -41,8 +42,8 @@
 						<%- include(`${partials}/button/button`, {type: 'success', type_att: true, id: 'issue_users', text: 'Add User(s)', classes: ['w-100']}) %>
 						<table class="table table-sm table-hover">
 							<thead class="thead-dark">
-								<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Service #</th>
-								<th class="w-60" onclick="sortTable(1, 'tbl_issue_add')">User</th>
+								<th class="w-40">Service #</th>
+								<th class="w-60">User</th>
 								<th><i class="fas fa-trash-alt"></i></th>
 							</thead>
 							<tbody id="tbl_issue_users_add"></tbody>
@@ -51,9 +52,9 @@
 						<%- include(`${partials}/button/button`, {type: 'success', type_att: true, id: 'issue_sizes', text: 'Add Item(s)', classes: ['w-100']}) %>
 						<table class="table table-sm table-hover">
 							<thead class="thead-dark">
-								<th class="w-40" onclick="sortTable(0, 'tbl_issue_add')">Item</th>
-								<th class="w-40" onclick="sortTable(1, 'tbl_issue_add')">Size</th>
-								<th class="w-20" onclick="sortTable(2, 'tbl_issue_add')">Quantity</th>
+								<th class="w-40">Item</th>
+								<th class="w-40">Size</th>
+								<th class="w-20">Quantity</th>
 								<th><i class="fas fa-trash-alt"></i></th>
 							</thead>
 							<tbody id="tbl_issue_sizes_add"></tbody>
@@ -81,7 +82,4 @@
 		<script src='/js/stores/issues/edit/stock_admin.js'></script>
 	<% } %>
 <% } %>
-<script>AddSortColumns()</script>
-<script async>getIssues()</script>
-<script async>getUsers()</script>
 <%- include(`${partials}/foot/components/htmlClose`) %>

@@ -2,8 +2,7 @@ function getSuppliers() {
     clear('tbl_suppliers')
     .then(tbl_suppliers => {
         get({
-            table: 'suppliers',
-            ...sort_query(tbl_suppliers)
+            table: 'suppliers'
         })
         .then(function ([suppliers, options]) {
             suppliers.forEach(supplier => {

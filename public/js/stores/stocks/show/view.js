@@ -1,7 +1,7 @@
 function getStock() {
     get({
         table: 'stock',
-        query: [`"stock_id":"${path[2]}"`]
+        where: {stock_id: path[2]}
     })
     .then(function ([stock, options]) {
         set_breadcrumb(stock.size.item.description,                                      'breadcrumb_item', `/items/${stock.size.item_id}`);

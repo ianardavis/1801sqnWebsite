@@ -4,9 +4,9 @@ module.exports = (app, m, fn) => {
     
     app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.items.findAll({
-            where:   JSON.parse(req.query.where),
+            where:   req.query.where,
             include: [fn.inc.stores.gender()],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
@@ -22,7 +22,7 @@ module.exports = (app, m, fn) => {
                     required: true
                 }]
             }],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
@@ -30,7 +30,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/item',               fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         fn.get(
             'items',
-            JSON.parse(req.query.where),
+            req.query.where,
             [m.genders]
         )
         .then(item => res.send({success: true, result: item}))
@@ -38,9 +38,9 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/item_categories',    fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.item_categories.findAll({
-            where:   JSON.parse(req.query.where),
+            where:   req.query.where,
             include: [fn.inc.stores.category()],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(categories => res.send({success: true, result: categories}))
         .catch(err => fn.send_error(res, err));
@@ -48,7 +48,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/item_category',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         fn.get(
             'item_categories',
-            JSON.parse(req.query.where),
+            req.query.where,
             [m.categories]
         )
         .then(category => res.send({success: true, result: category}))

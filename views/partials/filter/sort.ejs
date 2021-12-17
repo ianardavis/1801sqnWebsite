@@ -1,10 +1,8 @@
-<div class="row">
-    <div class="col-6">
-        <h5 class='text-start'>Sort By:</h5>
-        <select class="form-select" id='sort_<%= table %>'></select>
+<div class="row mb-1">
+    <div class="col-12 col-md-6">
+        <%- include(`${partials}/inputs/select`, {title: 'Sort By',  id: `sort_${table}`}) %>
     </div>
-    <div class="col-6">
-        <h5 class='text-start'>Asc/Desc:</h5>
-        <select class="form-select" id='sort_<%= table %>_dir'></select>
+    <div class="col-12 col-md-6">
+        <%- include(`${partials}/inputs/select`, {title: 'Asc/Desc', id: `sort_${table}_dir`, options: [{value: 'ASC', text: 'Ascending', selected: true}, {value: 'DESC', text: 'Descending'}]}) %>
     </div>
 </div>

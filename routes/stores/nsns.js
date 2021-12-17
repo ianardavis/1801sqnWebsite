@@ -2,14 +2,14 @@ module.exports = (app, m, fn) => {
     app.get('/nsns/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),   (req, res) => res.render('stores/nsns/show'));
     app.get('/get/nsns',          fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.nsns.findAll({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [
                 fn.inc.stores.nsn_group(),
                 fn.inc.stores.nsn_class(),
                 fn.inc.stores.nsn_country(),
                 fn.inc.stores.size()
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(nsns => res.send({success: true, result: nsns}))
         .catch(err => fn.send_error(res, err));
@@ -17,7 +17,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/nsn',           fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'nsns',
-            JSON.parse(req.query.where),
+            req.query.where,
             [
                 fn.inc.stores.nsn_group(),
                 fn.inc.stores.nsn_class(),
@@ -30,8 +30,8 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/nsn_groups',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.nsn_groups.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(nsn_groups => res.send({success: true, result: nsn_groups}))
         .catch(err => fn.send_error(res, err));
@@ -39,16 +39,16 @@ module.exports = (app, m, fn) => {
     app.get('/get/nsn_classes',   fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         if (req.query.nsn_group_id === '') req.query.nsn_group_id = null;
         m.nsn_classes.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(nsn_classes => res.send({success: true, result: nsn_classes}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/nsn_countries', fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.nsn_countries.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(nsn_countries => res.send({success: true, result: nsn_countries}))
         .catch(err => fn.send_error(res, err));

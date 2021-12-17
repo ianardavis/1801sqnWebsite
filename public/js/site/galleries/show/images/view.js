@@ -36,7 +36,7 @@ function getImages() {
         .then(div_images => {
             get({
                 table: 'gallery_images',
-                query: [`"gallery_id":"${path[2]}"`]
+                where: {gallery_id: path[2]}
             })
             .then(function ([images, options]) {
                 let index = 0;

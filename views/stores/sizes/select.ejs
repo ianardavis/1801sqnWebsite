@@ -6,18 +6,14 @@
         <%- include(`${partials}/inputs/select`, {title: 'Items',        id: 'sel_items', size: 10}) %>
     </div>
     <div id="div_sizes" class=''>
-        <table class='table table-sm table-hover'>
+        <%- include(`${partials}/filter/sort`, {table: 'sizes'}) %>
+	    <table class='table table-sm table-hover'>
             <thead class='thead-dark'>
                 <th class='w-10'><i class="fas fa-check"></i></th>
-                <th class='w-25' onclick='sortByRow(this, getItems)' data-sort_col='size1' id='size_text1'><span class='sort_ind float-end'></span></th>
-                <th class='w-25' onclick='sortByRow(this, getItems)' data-sort_col='size2' id='size_text2'><span class='sort_ind float-end'></span></th>
-                <th class='w-25' onclick='sortByRow(this, getItems)' data-sort_col='size3' id='size_text3'><span class='sort_ind float-end'></span></th>
-                <th class='w-15' onclick='sortByRow(this, getItems)' data-sort_col='qty'>Qty<span class='sort_ind float-end'></span></th>
-                <!-- <th class='w-10' onclick="sortTable(0,'tbl_sizes')"><i class="fas fa-check"></i></th>
-                <th class='w-25' onclick="sortTable(1,'tbl_sizes')"></th>
-                <th class='w-25' onclick="sortTable(2,'tbl_sizes')"></th>
-                <th class='w-25' onclick="sortTable(3,'tbl_sizes')"></th>
-                <th class='w-15' onclick="sortTable(4,'tbl_sizes')">Stock</th> -->
+                <th class='w-25' id='size_text1'></th>
+                <th class='w-25' id='size_text2'></th>
+                <th class='w-25' id='size_text3'></th>
+                <th class='w-15'>Qty</th>
             </thead>
             <tbody id='tbl_sizes'></tbody>
         </table>

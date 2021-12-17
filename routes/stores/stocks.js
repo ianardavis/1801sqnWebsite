@@ -2,12 +2,12 @@ module.exports = (app, m, fn) => {
     app.get('/stocks/:id',          fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/stocks/show'));
     app.get('/get/stocks',          fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.stocks.findAll({
-            where:   JSON.parse(req.query.where),
+            where:   req.query.where,
             include: [
                 fn.inc.stores.size(),
                 fn.inc.stores.location()
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => fn.send_error(res, err));
@@ -24,7 +24,7 @@ module.exports = (app, m, fn) => {
                 fn.inc.stores.size(),
                 fn.inc.stores.location()
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(stocks => res.send({success: true, result: stocks}))
         .catch(err => fn.send_error(res, err));
@@ -32,7 +32,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/stock',           fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         fn.get(
             'stocks',
-            JSON.parse(req.query.where),
+            req.query.where,
             [
                 fn.inc.stores.size(),
                 fn.inc.stores.location()

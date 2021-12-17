@@ -10,7 +10,7 @@ function getLoancard() {
     disable_button('loancard_date_due_edit');
     get({
         table: 'loancard',
-        query: [`"loancard_id":"${path[2]}"`]
+        where: {loancard_id: path[2]}
     })
     .then(function ([loancard, options]) {
         set_breadcrumb(`${print_user(loancard.user_loancard)} | ${print_date(loancard.createdAt)}`);

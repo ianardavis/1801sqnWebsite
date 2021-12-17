@@ -1,8 +1,9 @@
 <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+    <%- include(`${partials}/filter/sort`, {table: 'actions'}) %>
     <table class='table table-sm table-hover'>
         <thead class='thead-dark'>
-            <th class='w-40' onclick='sortByRow(this, getActions)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
-            <th class='w-60' onclick='sortByRow(this, getActions)' data-sort_col='action'   >Action<span class='sort_ind float-end'></span></th>
+            <th class='w-40'>Date</th>
+            <th class='w-60'>Action</th>
             <th><i class='fas fa-search'></i></th>
         </thead>
         <tbody id='tbl_actions'></tbody>

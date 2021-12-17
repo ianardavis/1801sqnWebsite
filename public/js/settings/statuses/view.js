@@ -2,8 +2,7 @@ function getStatuses() {
     clear('tbl_statuses')
     .then(tbl_statuses => {
         get({
-            table: 'statuses',
-            ...sort_query(tbl_statuses)
+            table: 'statuses'
         })
         .then(function ([statuses, options]) {
             statuses.forEach(status => {

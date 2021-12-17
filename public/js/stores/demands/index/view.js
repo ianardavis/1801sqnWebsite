@@ -3,12 +3,13 @@ function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
         let sel_suppliers = document.querySelector('#sel_suppliers') || {value: ''},
-            query         = [checked_statuses()];
-        if (sel_suppliers && sel_suppliers.value !== '') query.push(sel_suppliers.value);
+            statuses = checked_statuses(),
+            where = {};
+        if (statuses) where.status = statuses;
+        if (sel_suppliers && sel_suppliers.value !== '') where.supplier_id = sel_suppliers.value;
         get({
             table: 'demands',
-            query: [query.filter(a => a).join(',')],
-            ...sort_query(tbl_demands)
+            where: where
         })
         .then(function ([demands, options]) {
             demands.forEach(demand => {

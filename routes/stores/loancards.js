@@ -54,7 +54,7 @@ module.exports = (app, m, fn) => {
         if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
         fn.get(
             'loancards',
-            JSON.parse(req.query.where),
+            req.query.where,
             [
                 fn.inc.stores.loancard_lines(),
                 fn.inc.users.user(),
@@ -67,7 +67,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/loancards',                fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         if (!req.allowed) req.query.user_id_loancard = req.user.user_id;
         m.loancards.findAll({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [
                 {
                     model: m.loancard_lines,
@@ -77,14 +77,14 @@ module.exports = (app, m, fn) => {
                 fn.inc.users.user(),
                 fn.inc.users.user({as: 'user_loancard'})
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(loancards => res.send({success: true, result: loancards}))
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/loancard_lines',           fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         m.loancard_lines.findAll({
-            where:   JSON.parse(req.query.where),
+            where:   req.query.where,
             include: [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
@@ -99,7 +99,7 @@ module.exports = (app, m, fn) => {
                     ]
                 })
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(lines => res.send({success: true, result: lines}))
         .catch(err => fn.send_error(res, err));
@@ -107,7 +107,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/loancard_line',            fn.loggedIn(), fn.permissions.check('access_stores', true), (req, res) => {
         fn.get(
             'loancard_lines',
-            JSON.parse(req.query.where),
+            req.query.where,
             [
                 fn.inc.stores.size(),
                 fn.inc.users.user(),
@@ -140,7 +140,7 @@ module.exports = (app, m, fn) => {
                     include: [fn.inc.users.user({as: 'user_loancard'})]
                 })
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(issues => res.send({success: true, result: issues}))
         .catch(err => fn.send_error(res, err));

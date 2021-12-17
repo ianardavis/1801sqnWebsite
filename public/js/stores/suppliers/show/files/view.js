@@ -3,11 +3,10 @@ function getFiles() {
     .then(tbl_files => {
         get({
             table: 'files',
-            query: [`"supplier_id":"${path[2]}"`],
-            ...sort_query(tbl_files)
+            where: {supplier_id: path[2]}
         })
         .then(function ([files, options]) {
-            set_count('file', files.length || '0');
+            set_count('file', files.length);
             files.forEach(file => {
                 let row = tbl_files.insertRow(-1);
                 add_cell(row, {text: file.filename})
@@ -25,7 +24,7 @@ function getFiles() {
 function viewFile(file_id) {
     get({
         table: 'file',
-        query: [`"file_id":"${file_id}"`]
+        where: {file_id: file_id}
     })
     .then(function ([file, options]) {
         set_attribute('form_file_download', 'action', `/files/${file.file_id}/download`);

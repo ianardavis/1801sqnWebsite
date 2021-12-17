@@ -1,9 +1,9 @@
 module.exports = (app, m, fn) => {
     app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         m.supplier_contacts.findAll({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [fn.inc.stores.contact()],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(contacts => res.send({success: true, result: contacts}))
         .catch(err => fn.send_error(res, err));
@@ -11,7 +11,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/contact',     fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
         fn.get(
             'supplier_contacts',
-            JSON.parse(req.query.where),
+            req.query.where,
             [fn.inc.stores.contact()]
         )
         .then(contact => res.send({success: true, result: contact}))

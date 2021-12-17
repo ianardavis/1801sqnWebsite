@@ -3,7 +3,7 @@ function viewImage() {
     if (image) {
         get({
             table: 'gallery_image',
-            query: [`"image_id":"${image.dataset.id}"`]
+            where: {image_id: image.dataset.id}
         })
         .then(function ([image, options]) {
             set_value('image_id_edit',          image.image_id)

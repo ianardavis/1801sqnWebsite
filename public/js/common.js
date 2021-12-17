@@ -10,91 +10,6 @@ function returnDate(_date) {
     let date = new Date(_date);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 };
-function sortTable(n, tableName, obj) {
-    let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.querySelector(`#${tableName}`);
-    switching = true;
-    dir = "asc";
-    // new Promise(resolve => {
-    //     let id = random_id();
-    //     add_spinner(obj, {id: id});
-    //     resolve(id);
-    // })
-    // .then(id => {
-        while (switching) {
-            switching = false;
-            rows = table.rows;
-            for (i = 0; i < (rows.length - 1); i++) {
-                shouldSwitch = false;
-                x = rows[i]    .querySelectorAll("td")[n].dataset.sort || rows[i]    .querySelectorAll("td")[n].innerText.toLowerCase();
-                y = rows[i + 1].querySelectorAll("td")[n].dataset.sort || rows[i + 1].querySelectorAll("td")[n].innerText.toLowerCase();
-                if (!isNaN(x)) x = Number(x);
-                if (!isNaN(y)) y = Number(y);
-                if (dir == "asc") {
-                    if (x > y) {
-                        shouldSwitch = true;
-                        break;
-                    };
-                } else if (dir == "desc") {
-                    if (x < y) {
-                        shouldSwitch = true;
-                        break;
-                    };
-                };
-            };
-            if (shouldSwitch) {
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                switching = true;
-                switchcount ++;
-            } else {
-                if (switchcount == 0 && dir == "asc") {
-                    dir = "desc";
-                    switching = true;
-                };
-            };
-        };
-    //     return id
-    // })
-    // .then(id => {
-    //     // remove_spinner(id);
-    //     return id;
-    // })
-    // .catch(err => {
-    //     // remove_spinner(id);
-    //     console.log(err)
-    // });
-};
-function sortByRow(col, func) {
-    let add_sort = function (_col, dir) {
-            _col.classList.add('sort');
-            _col.setAttribute('data-sort_dir', dir);
-            let sort_ind = _col.querySelector('.sort_ind');
-            if (sort_ind) {
-                if      (dir === 'ASC')  sort_ind.innerHTML = '<i class="fas fa-sort-up"></i>'
-                else if (dir === 'DESC') sort_ind.innerHTML = '<i class="fas fa-sort-down"></i>'
-                else sort_ind.innerHTML = '';
-            }
-        },
-        remove_sort = function (_col) {
-            _col.classList.remove('sort');
-            _col.removeAttribute('data-sort_dir');
-            let sort_ind = _col.querySelector('.sort_ind');
-            if (sort_ind) sort_ind.innerHTML = '';
-        };
-    let sortCols = col.parentNode.querySelectorAll('.sort');
-    if (sortCols && sortCols.length > 0) {
-        sortCols.forEach(e => {
-            if (e === col) {
-                if      (col.dataset.sort_dir === 'ASC')  add_sort(col, 'DESC');
-                else if (col.dataset.sort_dir === 'DESC') remove_sort(col);
-            } else {
-                remove_sort(e);
-                add_sort(col, 'ASC');
-            };
-        });
-    } else add_sort(col, 'ASC');
-    func();
-}
 function removeID(id) {
     if (typeof id === 'string') document.querySelector(`#${id}`).remove();
     else id.remove();
@@ -117,7 +32,7 @@ function disable_button(id) {
 };
 function set_count(id, count) {
     let _count = document.querySelector(`#${id}_count`);
-    if (_count) _count.innerText = count;
+    if (_count) _count.innerText = count || '0';
 };
 function set_innerText(id, text = '') {
     let e = document.querySelector(`#${id}`);
@@ -167,7 +82,6 @@ function add_cell(row, options = {}) {
     };
 
     if (options.id)       cell.setAttribute('id', options.id);
-    if (options.sort)     cell.setAttribute('data-sort', options.sort);
     if (options.classes)  options.classes.forEach(e => cell.classList.add(e));
     if (options.data)     options.data.forEach(e => cell.setAttribute(`data-${e.field}`, e.value));
     if (options.ellipsis) cell.classList.add('ellipsis1');
@@ -218,7 +132,6 @@ function print_size_text(item) {
 };
 function table_date(date, time = false) {
     let _date = {
-        sort: new Date(date).getTime(),
         text: print_date(date, time)
     };
     return _date;
@@ -301,14 +214,6 @@ function get_stock(size_id) {
     });
 };
 function checked_statuses() {
-    let selected = [],
-        statuses = document.querySelectorAll(".status:checked") || [];
-    if (statuses && statuses.length > 0) {
-        statuses.forEach(e => selected.push(e.value));
-        return `"status":[${selected.join(',')}]`;
-    } else return null;
-};
-function _checked_statuses() {
     let selected = null,
         statuses = document.querySelectorAll(".status:checked") || [];
     if (statuses && statuses.length > 0) {
@@ -322,27 +227,20 @@ function selected_user(id = 'sel_users') {
     if (sel_users && sel_users.value !== '') return sel_users.value;
     else return null
 };
-function selected_dates(table) {
-    let dates = {};
-    dates.from = document.querySelector(`#filter_${table}_createdAt_from`).value;
-    dates.to   = document.querySelector(`#filter_${table}_createdAt_to`)  .value;
-    return dates;
+function pagination(table) {
+    let limit  = document.querySelector(`.limit_${table}:checked`)  || {value: '10'},
+        offset = document.querySelector(`.offset_${table}:checked`) || {value: '0'};
+        order  = {
+            col: document.querySelector(`#sort_${table}`    ).value,
+            dir: document.querySelector(`#sort_${table}_dir`).value
+        };
+    return {
+        limit: limit.value,
+        offset: offset.value,
+        order: order
+    };
 };
-function sort_query(tbl) {
-    let sort_cols = tbl.parentNode.querySelector('.sort') || null;
-    if (sort_cols) {
-        return {sort: {col: sort_cols.dataset.sort_col, dir: sort_cols.dataset.sort_dir}};
-    } else return {};
-};
-function pagination(tbl) {
-    let limit  = tbl.parentNode.parentNode.querySelector('input[name=radio_limit]:checked')  || {value: null},
-        offset = tbl.parentNode.parentNode.querySelector('input[name=radio_offset]:checked') || {value: '0'},
-        pagination = {};
-    if (limit .value) pagination.limit  = limit .value;
-    if (offset.value) pagination.offset = offset.value;
-    return pagination;
-};
-function add_page_links(count, limit, offset, table) {
+function add_page_links(count, limit, offset, table, listener) {
     count = Number(count);
     limit = Number(limit);
     offset = Number(offset);
@@ -352,9 +250,9 @@ function add_page_links(count, limit, offset, table) {
         if (page_count <  offset) offset = 0;
         if (limit) {
             for (let i = 0; i < page_count; i++) {
-                page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: i, listener: getIssues, selected: offset}).e);
+                page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: i, listener: listener, selected: offset}).e);
             };
-        } else  page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: 0, listener: getIssues, selected: 0}).e);
+        } else  page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: 0, listener: listener, selected: 0}).e);
     });
 };
 let path = window.location.pathname.toString().split('/');

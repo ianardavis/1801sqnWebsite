@@ -11,11 +11,11 @@
             <thead class="thead-dark">
                 <th class='w-25'>Issued To</th>
                 <th class='w-15'>Description</th>
-                <th class='w-15' onclick='sortByRow(this, getLines)' data-sort_col='size_id'  >Size<span class='sort_ind float-end'></span></th>
-                <th class='w-5'  onclick='sortByRow(this, getLines)' data-sort_col='qty'      >Qty<span class='sort_ind float-end'></span></th>
-                <th class='w-15' onclick='sortByRow(this, getLines)' data-sort_col='createdAt'>Date Issued<span class='sort_ind float-end'></span></th>
+                <th class='w-15'>Size</th>
+                <th class='w-5'>Qty</th>
+                <th class='w-15'>Date Issued</th>
                 <th class='w-15'>Date Due</th>
-                <th class='w-15' onclick='sortByRow(this, getLines)' data-sort_col='status'>
+                <th class='w-15'>
                     <% if (permissions.issuer) { %>
                         <select id="sel_all" class='form-select form-select-sm hidden'>
                             <option>Select All</option>
@@ -23,7 +23,7 @@
                         </select>
                     <% } %>
                     Status
-                    <span class='sort_ind float-end'></span>
+                    
                 </th>
                 <th><i class='fas fa-search'></i></th>
             </thead>

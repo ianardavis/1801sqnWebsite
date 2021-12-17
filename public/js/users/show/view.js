@@ -1,7 +1,7 @@
 function getUser() {
     get({
         table: 'user',
-        query: [`"user_id":"${path[2]}"`]
+        where: {user_Id: path[2]}
     })
     .then(function ([user, options]) {
         set_breadcrumb(print_user(user));

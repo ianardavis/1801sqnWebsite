@@ -2,8 +2,7 @@ function getWriteoffs() {
     clear('tbl_writeoffs')
     .then(tbl_writeoffs => {
         get({
-            table: 'writeoffs',
-            ...sort_query(tbl_writeoffs)
+            table: 'writeoffs'
         })
         .then(function ([writeoffs, options]) {
             writeoffs.forEach(writeoff => {

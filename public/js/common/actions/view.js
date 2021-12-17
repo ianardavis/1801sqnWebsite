@@ -3,11 +3,13 @@ function getActions() {
     .then(tbl_actions => {
         get({
             table: 'actions',
-            query: [`"_table":"${path[1]}"`, `"id":"${path[2]}"`],
-            ...sort_query(tbl_actions)
+            where: {
+                _table: path[1],
+                id:     path[2]
+            }
         })
         .then(function ([actions, options]) {
-            set_count('action', actions.length || '0');
+            set_count('action', actions.length);
             actions.forEach(action => {
                 let row = tbl_actions.insertRow(-1);
                 add_cell(row, table_date(action.createdAt));
@@ -26,7 +28,7 @@ function getLinks(action_id) {
     .then(tbl_links => {
         get({
             table: 'action_links',
-            query: [`"action_id":"${action_id}"`]
+            where: {action_id: action_id}
         })
         .then(function ([links, options]) {
             links.forEach(link => {
@@ -44,7 +46,7 @@ function getLinks(action_id) {
 function viewLine(action_id) {
     get({
         table: 'action',
-        query: [`"action_id":"${action_id}"`]
+        where: {action_id: action_id}
     })
     .then(function ([action, options]) {
         set_innerText('action_id',        action.action_id);

@@ -22,10 +22,10 @@
             <%- include(`${partials}/inputs/display`, {title: 'Total (£)', id: 'total', classes: ['total']}) %>
             <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-                    <th class="w-40" onclick="sortTable(0, 'tbl_sale_lines')">Item</th>
-                    <th class="w-25" onclick="sortTable(1, 'tbl_sale_lines')">£/Each</th>
-                    <th class="w-10" onclick="sortTable(2, 'tbl_sale_lines')">Qty</th>
-                    <th class="w-25" onclick="sortTable(3, 'tbl_sale_lines')">£/Total</th>
+                    <th class="w-40">Item</th>
+                    <th class="w-25">£/Each</th>
+                    <th class="w-10">Qty</th>
+                    <th class="w-25">£/Total</th>
                     <th><i class='fas fa-minus'></i></th>
                 </thead>
                 <tbody id="tbl_sale_lines"></tbody>

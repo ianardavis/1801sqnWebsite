@@ -3,7 +3,7 @@ function getStock(size_id, line_id, cell, entry = false) {
     add_spinner(_cell, {id: `stocks_${line_id}`});
     get({
         table: 'stocks',
-        query: [`"size_id":"${size_id}"`]
+        where: {size_id: size_id}
     })
     .then(function ([stocks, options]) {
         let locations = [{value: '', text: '... Select Location'}];

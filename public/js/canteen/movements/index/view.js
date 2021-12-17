@@ -2,8 +2,7 @@ function getMovements() {
     clear('tbl_movements')
     .then(tbl_movements => {
         get({
-            table: 'movements',
-            ...sort_query(tbl_movements)
+            table: 'movements'
         })
         .then(function ([movements, options]) {
             movements.forEach(movement => {

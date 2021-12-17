@@ -1,7 +1,7 @@
 function getItemEdit() {
     get({
         table: 'canteen_item',
-        query: [`"item_id":"${path[2]}"`]
+        where: {item_id: path[2]}
     })
     .then(function([item, options]) {
         set_value('item_name_edit',    item.name);

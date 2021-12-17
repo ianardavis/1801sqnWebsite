@@ -50,12 +50,13 @@
 			<%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status', options: [{value: '', text: 'All', selected: true}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Pending'}, {value: '"status":2', text: 'Open'}, {value: '"status":3', text: 'Returned'}]}) %>
 			<% if (permissions.issuer) { %><form id='form_actions'><% } %>
 			<%- include(`${partials}/button/button`, {id: 'lines_action', text: 'Action Lines', type: 'success', classes: ['mb-1', 'w-100']}) %>
-			<table class='table table-sm table-hover'>
+			<%- include(`${partials}/filter/sort`, {table: 'loancard_lines'}) %>
+	        <table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
 					<th class='w-35'>Item</th>
-					<th class='w-35' onclick='sortByRow(this, getLines)' data-sort_col='size_id'>Size<span class='sort_ind float-end'></span></th>
-					<th class='w-10' onclick='sortByRow(this, getLines)' data-sort_col='qty'	>Qty<span class='sort_ind float-end'></span></th>
-					<th class='w-10' onclick='sortByRow(this, getLines)' data-sort_col='status'	>Status<span class='sort_ind float-end'></span></th>
+					<th class='w-35'>Size</th>
+					<th class='w-10'>Qty</th>
+					<th class='w-10'>Status</th>
 					<th class='w-10'>Actions</th>
 					<th><i class='fas fa-search'></i></th>
 				</thead>

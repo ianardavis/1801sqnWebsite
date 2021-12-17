@@ -3,7 +3,7 @@ function getFileDetailNames() {
     .then(list => {
         get({
             table: 'settings',
-            query: ['"name":"file_detail"']
+            where: {name: 'file_detail'}
         })
         .then(function ([detail_names, options]) {
             detail_names.forEach(detail => {

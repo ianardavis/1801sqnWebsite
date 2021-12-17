@@ -2,18 +2,16 @@ let issue_statuses = {'0': 'Cancelled', '1': 'Requested', '2': 'Approved', '3': 
 function getIssues () {
     clear('tbl_issues')
     .then(tbl_issues => {
-        let query = [
-            `"user_id_issue":"${path[2]}"`,
-            checked_statuses()
-        ];
+        let statuses = checked_statuses(),
+            where = {user_id_issue: path[2]};
+        if (statuses) where.status = statuses;
         get({
             table: 'issues',
-            query: [query.filter(a => a).join(',')],
-            ...sort_query(tbl_issues)
+            where: where
         })
         .then(function ([issues, options]) {
             let row_index = 0;
-            set_count('issue', issues.length || '0');
+            set_count('issue', issues.length);
             issues.forEach(issue => {
                 let row = tbl_issues.insertRow(-1);
                 add_cell(row, table_date(issue.createdAt));

@@ -108,7 +108,7 @@ function issue_options() {
         if (this.value === '4') {
             get({
                 table: 'issue',
-                query: [`"issue_id":"${this.dataset.issue_id}"`],
+                where: {issue_id: this.dataset.issue_id},
                 index: this.dataset.index
             })
             .then(function ([issue, options]) {
@@ -125,7 +125,7 @@ function issue_options() {
                         div_details.appendChild(nsn_select);
                         get({
                             table: 'nsns',
-                            query: [`"size_id":"${issue.size_id}"`],
+                            where: {size_id: issue.size_id},
                             index: options.index
                         })
                         .then(function ([nsns, options]) {
@@ -138,7 +138,7 @@ function issue_options() {
                     if (issue.size.has_serials) {
                         get({
                             table: 'current_serials',
-                            query: [`"size_id":"${issue.size_id}"`],
+                            where: {size_id: issue.size_id},
                             index: options.index
                         })
                         .then(function ([serials, options]) {
@@ -170,7 +170,7 @@ function issue_options() {
                         div_details.appendChild(stock_qty);
                         get({
                             table: 'stocks',
-                            query: [`"size_id":"${issue.size_id}"`],
+                            where: {size_id: issue.size_id},
                             index: options.index
                         })
                         .then(function ([stocks, options]) {
@@ -198,6 +198,7 @@ function add_stock_select(div_details, index, size_id) {
     div_details.appendChild(stock_select);
     get({
         table: 'stocks',
+        where: {size_id: size_id},
         query: [`"size_id":"${size_id}"`]
     })
     .then(function ([stocks, options]) {
@@ -214,7 +215,7 @@ function loancard_options() {
         if (this.value === '-2') {
             get({
                 table: 'issue',
-                query: [`"issue_id":"${this.dataset.issue_id}"`],
+                where: {issue_id: this.dataset.issue_id},
                 index: this.dataset.index
             })
             .then(function ([issue, options]) {
@@ -230,7 +231,7 @@ function loancard_options() {
                     div_details.appendChild(stock_select);
                     get({
                         table: 'stocks',
-                        query: [`"size_id":"${issue.size_id}"`],
+                        where: {size_id: issue.size_id},
                         index: options.index
                     })
                     .then(function ([stocks, options]) {

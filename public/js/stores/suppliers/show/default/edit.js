@@ -1,7 +1,7 @@
 function setDefaultBtn() {
     get({
         table: 'setting',
-        query: ['"name":"default_supplier"']
+        where: {name: 'default_supplier'}
     })
     .then(function ([setting, options]) {
         if (setting.value === path[2]) disable_button('default');

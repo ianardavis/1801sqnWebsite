@@ -40,9 +40,10 @@
         </div>
         <% if (permissions.user_admin || permissions.edit_own_permissions) { %>
             <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                <table class="table table-sm table-hover">
+                <%- include(`${partials}/filter/sort`, {table: 'permissions'}) %>
+	            <table class="table table-sm table-hover">
                     <thead class="thead-dark">
-                        <th class='w-100' onclick='sortByRow(this, getPermissions)' data-sort_col='permission'>Permission<span class='sort_ind float-end'></span></th>
+                        <th class='w-100'>Permission</th>
                     </thead>
                     <tbody id="tbl_permissions"></tbody>
                 </table>
@@ -100,12 +101,13 @@
                 <form id='form_issue_edit'>
                 <button class='btn btn-success w-100 mb-1'>Action Selected Issues</button>
             <% } %>
-            <table class='table table-sm table-hover'>
+            <%- include(`${partials}/filter/sort`, {table: 'issues'}) %>
+	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
-                    <th class="w-20" onclick="sortTable(0, 'tbl_issues')">Date</th>
-                    <th class="w-30" onclick="sortTable(1, 'tbl_issues')">Item</th>
-                    <th class="w-20" onclick="sortTable(2, 'tbl_issues')">Size</th>
-                    <th class="w-10" onclick="sortTable(3, 'tbl_issues')">Qty</th>
+                    <th class="w-20">Date</th>
+                    <th class="w-30">Item</th>
+                    <th class="w-20">Size</th>
+                    <th class="w-10">Qty</th>
                     <th class="w-20">
                         <select id="sel_all" class='form-select form-select-sm hidden'>
                             <option>Select All</option>
@@ -125,11 +127,12 @@
         </div>
         <div class="tab-pane fade" id="loancards" role="tabpanel" aria-labelledby="loancards-tab">
             <%- include(`${partials}/inputs/select`, {title: 'Status', id: 'sel_status_loancards', options: [{text: 'All'}, {value: '"status":0', text: 'Cancelled'}, {value: '"status":1', text: 'Draft'}, {value: '"status":2', text: 'Open', selected: true}, {value: '"status":3', text: 'Closed'}]}) %>
-            <table class='table table-sm table-hover'>
+            <%- include(`${partials}/filter/sort`, {table: 'loancards'}) %>
+	        <table class='table table-sm table-hover'>
                 <thead class="thead-dark">
-                    <th class="w-40" onclick="sortTable(0, 'tbl_loancards')">Date</th>
-                    <th class="w-20" onclick="sortTable(1, 'tbl_loancards')">Lines</th>
-                    <th class="w-40" onclick="sortTable(2, 'tbl_loancards')">Status</th>
+                    <th class="w-40">Date</th>
+                    <th class="w-20">Lines</th>
+                    <th class="w-40">Status</th>
                     <th><i class="fas fa-search"></i></th>
                 </thead>
                 <tbody id="tbl_loancards"></tbody>
@@ -256,7 +259,7 @@
                                 <table class='table table-sm table-hover'>
                                     <thead class="thead-dark">
                                         <th><i class="fas fa-check"></i></th>
-                                        <th class="w-100" onclick="sortTable(1, 'tbl_items')">Item</th>
+                                        <th class="w-100">Item</th>
                                     </thead>
                                     <tbody id="tbl_items"></tbody>
                                 </table>
@@ -265,9 +268,9 @@
                                 <h5>Select Sizes and Quantities</h5>
                                 <table class='table table-sm table-hover'>
                                     <thead class="thead-dark">
-                                        <th class="w-50" onclick="sortTable(0, 'tbl_items_selected')">Item</th>
-                                        <th class="w-30" onclick="sortTable(1, 'tbl_items_selected')">Size</th>
-                                        <th class="w-20" onclick="sortTable(2, 'tbl_items_selected')">Qty</th>
+                                        <th class="w-50">Item</th>
+                                        <th class="w-30">Size</th>
+                                        <th class="w-20">Qty</th>
                                         <th><i class="fas fa-trash-alt"></i></th>
                                     </thead>
                                     <tbody id="tbl_items_selected"></tbody>

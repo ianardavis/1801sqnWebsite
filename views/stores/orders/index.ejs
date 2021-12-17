@@ -49,13 +49,14 @@
 		<form id='form_order_edit'>
 		<button class='btn btn-success w-100 mb-1'>Action Selected Orders</button>
 	<% } %>
+		<%- include(`${partials}/filter/sort`, {table: 'orders'}) %>
 		<table class="table table-sm table-hover">
 			<thead class="thead-dark">
-				<th class='w-20' onclick='sortByRow(this, getOrders)' data-sort_col='createdAt'>Date<span class='sort_ind float-end'></span></th>
+				<th class='w-20'>Date</th>
 				<th class='w-25'>Description</th>
-				<th class='w-20' onclick='sortByRow(this, getOrders)' data-sort_col='size_id'  >Size<span class='sort_ind float-end'></span></th>
-				<th class='w-15' onclick='sortByRow(this, getOrders)' data-sort_col='qty'	   >Qty <span class='sort_ind float-end'></span></th>
-				<th class='w-20' onclick='sortByRow(this, getOrders)' data-sort_col='status'>
+				<th class='w-20'>Size</th>
+				<th class='w-15'>Qty </th>
+				<th class='w-20'>
 					<select id="sel_all" class='form-select form-select-sm hidden'>
 						<option>Select All</option>
 						<option value="0">Cancel</option>
@@ -63,7 +64,7 @@
 						<option value="3">Receive</option>
 					</select>
 					Status
-					<span class='sort_ind float-end'></span>
+					
 				</th>
 				<th><i class="fas fa-search"></i></th>
 			</thead>
@@ -83,9 +84,9 @@
 							<button type='button' class='btn btn-success w-100 mb-1' id='btn_order_sizes'>Add Item(s)</button>
 							<table class="table table-sm table-hover">
 								<thead class="thead-dark">
-									<th class="w-40" onclick="sortTable(0, 'tbl_order_add')">Item</th>
-									<th class="w-40" onclick="sortTable(1, 'tbl_order_add')">Size</th>
-									<th class="w-20" onclick="sortTable(2, 'tbl_order_add')">Quantity</th>
+									<th class="w-40">Item</th>
+									<th class="w-40">Size</th>
+									<th class="w-20">Quantity</th>
 									<th><i class="fas fa-trash-alt"></i></th>
 								</thead>
 								<tbody id="tbl_order_add"></tbody>

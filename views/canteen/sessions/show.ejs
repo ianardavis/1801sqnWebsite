@@ -31,33 +31,36 @@
             <%- include(`${partials}/inputs/display`, {id: 'session_paid_out',     title: 'Paid Out', permission: 'pay_in_out'}) %>
         </div>
         <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
-            <table class="table table-sm table-hover">
+            <%- include(`${partials}/filter/sort`, {table: 'sales'}) %>
+	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-					<th class='w-30' onclick='sortByRow(this, getSales)' data-sort_col='createdAt'>Time<span class='sort_ind float-end'></span></th>
-					<th class='w-50' onclick='sortByRow(this, getSales)' data-sort_col='user_id'  >User<span class='sort_ind float-end'></span></th>
+					<th class='w-30'>Time</th>
+					<th class='w-50'>User</th>
 					<th class='w-10'>Lines</th>
-					<th class='w-10' onclick='sortByRow(this, getSales)' data-sort_col='status'   >Status<span class='sort_ind float-end'></span></th>
+					<th class='w-10'>Status</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id="tbl_sales"></tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-            <table class="table table-sm table-hover">
+            <%- include(`${partials}/filter/sort`, {table: 'payments'}) %>
+	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-					<th class='w-50' onclick='sortByRow(this, getPayments)' data-sort_col='type'  >Type<span class='sort_ind float-end'></span></th>
-					<th class='w-50' onclick='sortByRow(this, getPayments)' data-sort_col='amount'>Amount<span class='sort_ind float-end'></span></th>
+					<th class='w-50'>Type</th>
+					<th class='w-50'>Amount</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id="tbl_payments"></tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-            <table class="table table-sm table-hover">
+            <%- include(`${partials}/filter/sort`, {table: 'items'}) %>
+	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
-					<th class='w-60' onclick='sortByRow(this, getSales)' data-sort_col='name'>Name<span class='sort_ind float-end'></span></th>
+					<th class='w-60'>Name</th>
 					<th class='w-20'>Sales</th>
-					<th class='w-20' onclick='sortByRow(this, getSales)' data-sort_col='qty'>Qty<span class='sort_ind float-end'></span></th>
+					<th class='w-20'>Qty</th>
                     <th><i class='fas fa-search'></i></th>
                 </thead>
                 <tbody id="tbl_items"></tbody>

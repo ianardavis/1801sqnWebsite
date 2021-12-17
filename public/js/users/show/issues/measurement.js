@@ -90,12 +90,15 @@ function get_sizes() {
         document.querySelector('#tbl_items').querySelectorAll("input[type='checkbox']:checked").forEach(e => {
             get({
                 table: 'item',
-                query: [`"item_id":"${e.value}"`]
+                where: {item_id: e.value}
             })
             .then(function ([item, options]) {
                 get({
                     table: 'sizes',
-                    query: [`"item_id":"${e.value}"`, '"issueable":1']
+                    where: {
+                        item_id: e.value,
+                        issueable: true
+                    }
                 })
                 .then(function ([sizes, options]) {
                     if (

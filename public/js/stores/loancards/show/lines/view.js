@@ -4,15 +4,14 @@ function getLines() {
     clear('tbl_lines')
     .then(tbl_lines => {
         let sel_status = document.querySelector('#sel_status') || {value: ''},
-            query      = [`"loancard_id":"${path[2]}"`];
-        if (sel_status.value !== '') query.push(sel_status.value);
+            where = {loancard_id: path[2]};
+        if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'loancard_lines',
-            query: query,
-            ...sort_query(tbl_lines)
+            where: where
         })
         .then(function ([lines, options]) {
-            set_count('line', lines.length || '0');
+            set_count('line', lines.length);
             let row_index = 0;
             lines.forEach(line => {
                 try {
@@ -103,7 +102,7 @@ function getLines() {
 function viewLine(loancard_line_id) {
     get({
         table: 'loancard_line',
-        query: [`"loancard_line_id":"${loancard_line_id}"`]
+        where: {loancard_line_id: loancard_line_id}
     })
     .then(function ([line, options]) {
         set_innerText('loancard_line_id', line.loancard_line_id);

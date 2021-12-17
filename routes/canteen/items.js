@@ -4,8 +4,8 @@ module.exports = (app, m, fn) => {
     
     app.get('/get/canteen_items',    fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {
         m.canteen_items.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(items => res.send({success: true, result: items}))
         .catch(err => fn.send_error(res, err));
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/canteen_item',     fn.loggedIn(), fn.permissions.check('access_canteen'),      (req, res) => {
         fn.get(
             'canteen_items',
-            JSON.parse(req.query.where)
+            req.query.where
         )
         .then(item => res.send({success: true,  result: item}))
         .catch(err => fn.send_error(res, err));

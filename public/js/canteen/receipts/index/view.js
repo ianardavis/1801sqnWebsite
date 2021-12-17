@@ -2,8 +2,7 @@ function getReceipts() {
     clear('tbl_receipts')
     .then(tbl_receipts => {
         get({
-            table: 'receipts',
-            ...sort_query(tbl_receipts)
+            table: 'receipts'
         })
         .then(function ([receipts, options]) {
             receipts.forEach(receipt => {

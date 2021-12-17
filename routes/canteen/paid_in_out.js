@@ -4,7 +4,7 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/paid_in_out',     fn.loggedIn(), fn.permissions.check('pay_in_out'), (req, res) => {
         m.paid_in_outs.findOne({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [
                 fn.inc.users.user({as: 'user_paid_in_out'}),
                 fn.inc.users.user(),
@@ -16,12 +16,12 @@ module.exports = (app, m, fn) => {
     });
     app.get('/get/paid_in_outs',    fn.loggedIn(), fn.permissions.check('pay_in_out'), (req, res) => {
         m.paid_in_outs.findAll({
-            where: JSON.parse(req.query.where),
+            where: req.query.where,
             include: [
                 fn.inc.users.user({as: 'user_paid_in_out'}),
                 fn.inc.canteen.holding()
             ],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(paid_ins => res.send({success: true, result: paid_ins}))
         .catch(err => fn.send_error(res, err));

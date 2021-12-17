@@ -3,8 +3,7 @@ function getSerials() {
     .then(tbl_serials => {
         get({
             table: 'serials',
-            query: [`"size_id":"${path[2]}"`],
-            ...sort_query(tbl_serials)
+            where: {size_id: path[2]}
         })
         .then(function ([serials, options]) {
             set_count('serial', serials.length);

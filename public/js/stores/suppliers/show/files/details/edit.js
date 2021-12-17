@@ -2,7 +2,7 @@ function viewDetailEdit(file_detail_id) {
     modalHide('file_view');
     get({
         table:   'file_detail',
-        query:   [`"file_detail_id":"${file_detail_id}"`],
+        where:   {file_detail_id: file_detail_id},
         spinner: 'file_detail_edit'
     })
     .then(function ([detail, options]) {
@@ -15,7 +15,7 @@ function addDetailEditBtns() {
     document.querySelectorAll('.file_details_edit').forEach(e => {
         get({
             table: 'file_detail',
-            query: [`"file_detail_id":"${e.dataset.id}"`]
+            where: {file_detail_id: e.dataset.id}
         })
         .then(function ([detail, options]) {
             e.appendChild(

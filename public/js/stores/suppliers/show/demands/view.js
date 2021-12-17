@@ -3,15 +3,14 @@ function getDemands() {
     clear('tbl_demands')
     .then(tbl_demands => {
         let sel_status = document.querySelector('#sel_demand_status') || {value: ''},
-            query      = [`"supplier_id":"${path[2]}"`];
-        if (sel_status.value !== '') query.push(sel_status.value)
+            where = {supplier_id: path[2]};
+        if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'demands',
-            query: query,
-            ...sort_query(tbl_demands)
+            where: where
         })
         .then(function ([demands, options]) {
-            set_count('demand', demands.length || '0');
+            set_count('demand', demands.length);
             demands.forEach(demand => {
                 try {
                     let row = tbl_demands.insertRow(-1);

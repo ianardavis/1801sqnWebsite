@@ -3,11 +3,10 @@ function getWriteoffs() {
     .then(tbl_writeoffs => {
         get({
             table: 'writeoffs',
-            query: [`"item_id":"${path[2]}"`],
-            ...sort_query(tbl_writeoffs)
+            where: {item_id: path[2]}
         })
         .then(function ([writeoffs, options]) {
-            set_count('writeoff', writeoffs.length || '0');
+            set_count('writeoff', writeoffs.length);
             writeoffs.forEach(writeoff => {
                 try {
                     let row = tbl_writeoffs.insertRow(-1);

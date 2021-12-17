@@ -3,15 +3,14 @@ function getLoancards () {
     clear('tbl_loancards')
     .then(tbl_loancards => {
         let sel_status = document.querySelector('#sel_status_loancards') || {value: ''},
-            query      = [`"user_id_loancard":"${path[2]}"`];
-        if (sel_status.value !== '') query.push(sel_status.value);
+            where = {user_id_loancard: path[2]};
+        if (sel_status.value !== '') where.status = sel_status.value;
         get({
             table: 'loancards',
-            query: query,
-            ...sort_query(tbl_loancards)
+            where: where
         })
         .then(function ([loancards, options]) {
-            set_count('loancards', loancards.length || '0');
+            set_count('loancards', loancards.length);
             loancards.forEach(loancard => {
                 let row = tbl_loancards.insertRow(-1);
                 add_cell(row, table_date(loancard.createdAt));

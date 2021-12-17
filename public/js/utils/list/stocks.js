@@ -3,7 +3,7 @@ function listStocks(issue_id, size, blank = false) {
     .then(sel_stocks => {
         get({
             table: 'stocks',
-            query: [`"size_id":"${size.size_id}"`]
+            where: {size_id: size.size_id}
         })
         .then(function ([stocks, options]) {
             if (blank) sel_stocks.appendChild(new Option({text: 'Select Location'}).e)

@@ -1,7 +1,7 @@
 function getNSN() {
     get({
         table: 'nsn',
-        query: [`"nsn_id":"${path[2]}"`]
+        where: {nsn_id: path[2]}
     })
     .then(function ([nsn, options]) {
         set_breadcrumb(print_nsn(nsn));

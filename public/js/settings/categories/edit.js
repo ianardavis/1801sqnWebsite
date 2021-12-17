@@ -26,7 +26,7 @@ function viewCategoryEdit(category_id) {
     modalHide('category_view');
     get({
         table: 'category',
-        query: [`"category_id":"${category_id}"`]
+        where: {category_id: category_id}
     })
     .then(function([category, options]) {
         set_value('category_id_edit', category.category_id);

@@ -13,9 +13,10 @@
 	<input class='form-control mb-1' type='text' id='itemSearch' onkeyup='searchTable(this)' placeholder='Search by description...'>
 	<div class="row">
 		<div class="col-12 col-lg-5 mx-auto">
-			<table class='table table-sm table-hover'>
+			<%- include(`${partials}/filter/sort`, {table: 'items'}) %>
+	        <table class='table table-sm table-hover'>
 				<thead class='thead-dark'>
-					<th class='w-100' onclick='sortByRow(this, getItems)' data-sort_col='description'>Description<span class='sort_ind float-end'></span></th>
+					<th class='w-100'>Description</th>
 					<th><i class='fas fa-search'></i></th>
 				</thead>
 				<tbody id='tbl_items'></tbody>

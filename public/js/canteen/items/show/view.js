@@ -1,7 +1,7 @@
 function getItem() {
     get({
         table: 'canteen_item',
-        query: [`"item_id":"${path[2]}"`]
+        where: {item_id: path[2]}
     })
     .then(function ([item, options]) {
         set_breadcrumb(item.name);

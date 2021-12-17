@@ -2,7 +2,7 @@ function addDetailDeleteBtns() {
     document.querySelectorAll('.file_details_delete').forEach(e => {
         get({
             table: 'file_detail',
-            query: [`"file_detail_id":"${e.dataset.id}"`]
+            where: {file_detail_id: e.dataset.id}
         })
         .then(function ([detail, options]) {
             e.appendChild(

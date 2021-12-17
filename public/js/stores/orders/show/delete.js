@@ -1,7 +1,7 @@
 function setDeleteButton() {
     get({
         table: 'order',
-        query: [`"order_id":"${path[2]}"`]
+        where: {order_id: path[2]}
     })
     .then(function([result, options]) {
         disable_button('delete');

@@ -1,8 +1,8 @@
 module.exports = (app, m, fn) => {
     app.get('/get/details',    fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         m.details.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(details => res.send({success: true, result: details}))
         .catch(err =>    fn.send_error(res, err));
@@ -10,7 +10,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/detail',     fn.loggedIn(), fn.permissions.check('access_stores'), (req, res) => {
         fn.get(
             'details',
-            JSON.parse(req.query.where)
+            req.query.where
         )
         .then(detail => res.send({success: true, result: detail}))
         .catch(err => fn.send_error(res, err));

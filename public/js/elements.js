@@ -323,11 +323,6 @@ function TH(options = {}) {
     if      (options.text) this.e.innerText = options.text
     else if (options.html) this.e.innerHTML = options.html
     if (options.width) this.e.classList.add(`w-${options.width}`);
-    if (options.sort)  {
-        this.e.setAttribute('onclick',       `sortByRow(this, ${options.sort.func})`);
-        this.e.setAttribute('data-sort_col', options.sort.col);
-        this.e.appendChild(new Span({classes: ['sort_ind', 'float-end']}).e);
-    };
 };
 function THEAD() {
     this.e = document.createElement('thead');

@@ -18,7 +18,7 @@ function getStocks(location_id) {
         if (location_id) {
             get({
                 table: 'stocks',
-                query: [`"location_id":"${location_id}"`]
+                where: {location_id: location_id}
             })
             .then(function ([stocks, options]) {
                 let row_index = 0;

@@ -6,11 +6,10 @@ function getSales() {
         .then(tbl_sales => {
             get({
                 table: 'sales',
-                query: [`"session_id":"${path[2]}"`],
-                ...sort_query(tbl_sales)
+                where: {session_id: path[2]}
             })
             .then(function ([sales, options]) {
-                set_count('sale', sales.length || '0');
+                set_count('sale', sales.length);
                 let items = [], takings = 0.00;
                 sales.forEach(sale => {
                     let row = tbl_sales.insertRow(-1);
@@ -36,7 +35,7 @@ function getSales() {
                     });
                 });
                 set_innerText('session_takings', `£${Number(takings).toFixed(2)}`);
-                set_count('item', items.length || '0');
+                set_count('item', items.length);
                 items.forEach(item => {
                     let row = tbl_items.insertRow(-1);
                     add_cell(row, {text: item.name});

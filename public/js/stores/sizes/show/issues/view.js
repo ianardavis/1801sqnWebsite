@@ -3,12 +3,11 @@ function getIssues() {
     clear('tbl_issues')
     .then(tbl_issues => {
         let status = document.querySelector('#sel_issue_status') || {value: ''},
-            query  = [`"size_id":"${path[2]}"`];
-        if (status.value !== '') query.push(status.value);
+            where = {size_id: path[2]};
+        if (status.value !== '') where.status = status.value;
         get({
             table: 'issues',
-            query: query,
-            ...sort_query(tbl_issues)
+            where: where
         })
         .then(function ([issues, options]) {
             set_count('issue', issues.length);
@@ -34,7 +33,7 @@ function getIssues() {
 function viewIssue(issue_id) {
     get({
         table: 'issue',
-        query: [`"issue_id":"${issue_id}"`],
+        where: {issue_id: issue_id},
         spinner: 'issue_view'
     })
     .then(function ([issue, options]){

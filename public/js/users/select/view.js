@@ -15,15 +15,14 @@ function getStatuses() {
 function getUsers() {
     clear('tbl_users')
     .then(tbl_users => {
-        let ranks     = document.querySelector('#sel_ranks')        || {value: ''},
-            statuses  = document.querySelector('#sel_statuses')     || {value: ''},
-            query     = [];
-        if (ranks   .value !== '') query.push(ranks.value);
-        if (statuses.value !== '') query.push(statuses.value);
+        let ranks     = document.querySelector('#sel_ranks')    || {value: ''},
+            statuses  = document.querySelector('#sel_statuses') || {value: ''},
+            where = {};
+        if (ranks   .value !== '') where.rank_id = ranks.value;
+        if (statuses.value !== '') where.status_id = statuses.value;
         get({
             table: 'users_current',
-            query: query,
-            ...sort_query(tbl_users)
+            where: where
         })
         .then(function ([users, options]) {
             users.forEach(user => {

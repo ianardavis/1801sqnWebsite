@@ -2,7 +2,7 @@ function viewFileEdit(file_id) {
     modalHide('file_view');
     get({
         table: 'file',
-        query: [`"file_id":"${file_id}"`],
+        where: {file_id: file_id},
         spinner: 'file_edit'
     })
     .then(function ([file, options]) {

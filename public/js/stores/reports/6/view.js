@@ -11,7 +11,10 @@ function getItems() {
                 let tbl = addItem(div, p, item.item_id, item.description);
                 get({
                     table: 'sizes',
-                    query: ['"orderable":"1"', `"item_id":"${item.item_id}"`],
+                    where: {
+                        orderable: true,
+                        item_id: item.item_id
+                    },
                     item_index: item_index
                 })
                 .then(function ([sizes, options]) {
@@ -30,7 +33,10 @@ function getItems() {
                         add_cell(row, {append: new Link({href: `/sizes/${size.size_id}`}).e});
                         get({
                             table: 'detail',
-                            query: [`"size_id":"${size.size_id}"`,'"name":"Demand Page"']
+                            where: {
+                                size_id: size.size_id,
+                                name: 'Demand Page'
+                            }
                         })
                         .then(function ([detail, options]) {
                             page_cell.innerText = detail.value;
@@ -39,7 +45,10 @@ function getItems() {
                         .catch(err => addInput(page_cell, index, 'demand_page'));
                         get({
                             table: 'detail',
-                            query: [`"size_id":"${size.size_id}"`,'"name":"Demand Cell"']
+                            where: {
+                                size_id: size.size_id,
+                                name: 'Demand Cell'
+                            }
                         })
                         .then(function ([detail, options]) {
                             cell_cell.innerText = detail.value;

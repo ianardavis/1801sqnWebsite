@@ -3,7 +3,7 @@ function addAddressDeleteBtn(supplier_address_id) {
     .then(address_delete_btn => {
         get({
             table: 'address',
-            query: [`"supplier_address_id":"${supplier_address_id}"`]
+            where: {supplier_address_id: supplier_address_id}
         })
         .then(function ([address, options]) {
             address_delete_btn.appendChild(

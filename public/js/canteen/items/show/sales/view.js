@@ -3,11 +3,10 @@ function getSales() {
     .then(tbl_sales => {
         get({
             table: 'sale_lines',
-            query: [`"item_id":"${path[2]}"`],
-            ...sort_query(tbl_sales)
+            where: {item_id: path[2]}
         })
         .then(function ([lines, options]) {
-            set_count('sale', lines.length || '0');
+            set_count('sale', lines.length);
             lines.forEach(line => {
                 try {
                     let row = tbl_sales.insertRow(-1);

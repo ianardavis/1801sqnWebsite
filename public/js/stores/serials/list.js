@@ -3,7 +3,7 @@ function getSerials(size_id, line_id, cell, entry = false) {
     add_spinner(_cell, {id: `serials_${line_id}`});
     get({
         table: 'serials',
-        query: [`"size_id":"${size_id}"`]
+        where: {size_id: size_id}
     })
     .then(function ([serials, options]) {
         let _serials = [{value: '', text:  '... Select Serial #'}];

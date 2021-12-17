@@ -38,8 +38,8 @@ module.exports = (app, m, fn) => {
         permissions_allowed(req.user.user_id, req.allowed)
         .then(allowed => {
             return m.permissions.findAll({
-                where: JSON.parse(req.query.where),
-                ...fn.sort(req.query.sort)
+                where: req.query.where,
+                ...fn.pagination(req.query)
             })
             .then(permissions => res.send({success: true, result: {permissions: permissions, tree: permission_tree}}))
             .catch(err => fn.send_error(res, err));

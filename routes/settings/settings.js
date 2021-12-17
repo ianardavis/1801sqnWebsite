@@ -6,9 +6,9 @@ module.exports = (app, m, fn) => {
 
     app.get('/get/settings',    fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         m.settings.findAll({
-            where:      JSON.parse(req.query.where),
+            where:      req.query.where,
             attributes: ['setting_id','name', 'value'],
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(settings => res.send({success: true, result: settings}))
         .catch(err => fn.send_error(res, err));
@@ -16,7 +16,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/setting',     fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
         fn.get(
             'settings',
-            JSON.parse(req.query.where)
+            req.query.where
         )
         .then(setting => res.send({success: true, result: setting}))
         .catch(err => fn.send_error(res, err));
@@ -29,7 +29,7 @@ module.exports = (app, m, fn) => {
         .catch(err => fn.send_error(res, err));
     });
     app.get('/get/logs',        fn.loggedIn(), fn.permissions.check('access_settings'), (req, res) => {
-        fn.settings.get(`log ${JSON.parse(req.query.where).type || ''}`)
+        fn.settings.get(`log ${req.query.where.type || ''}`)
         .then(settings => {
             if (settings.length === 1) {
                 let readStream = fs.createReadStream(settings[0].value);

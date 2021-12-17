@@ -2,7 +2,7 @@ let statuses = {'0': 'Cancelled', '1': 'Open', '2': 'Complete'}
 function getSale() {
     get({
         table: 'sale',
-        query: [`"sale_id":"${path[2]}"`]
+        where: {sale_id: path[2]}
     })
     .then(function ([sale, options]) {
         set_breadcrumb(sale.sale_id);

@@ -2,8 +2,7 @@ function getHoldings() {
     clear('tbl_holdings')
     .then(tbl_holdings => {
         get({
-            table: 'holdings',
-            ...sort_query(tbl_holdings)
+            table: 'holdings'
         })
         .then(function ([holdings, options]) {
             holdings.forEach(holding => {

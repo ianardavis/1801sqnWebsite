@@ -1,7 +1,7 @@
 function getWriteoff() {
     get({
         table: 'writeoff',
-        query: [`"writeoff_id":"${path[2]}"`]
+        where: {writeoff_id: path[2]}
     })
     .then(function ([writeoff, options]) {
         set_breadcrumb(`${writeoff.item.name} | ${print_date(writeoff.createdAt, true)}`);

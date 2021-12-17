@@ -4,7 +4,7 @@ function setCompleteButton(status) {
 function editLoancardDueDate() {
     get({
         table: 'loancard',
-        query: [`"loancard_id":"${path[2]}"`]
+        where: {loancard_id: path[2]}
     })
     .then(function ([loancard, options]) {
         set_attribute('date_due_edit', 'value', returnDate(loancard.date_due));

@@ -3,7 +3,7 @@ function getPermissionsEdit () {
     .then(ul_tree => {
         get({
             table: 'permissions',
-            query: [`"user_id":"${path[2]}"`],
+            where: {user_id: path[2]},
             spinner: 'permission_edit'
         })
         .then(function ([permissions, options]) {

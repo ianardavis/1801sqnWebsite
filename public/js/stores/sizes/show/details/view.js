@@ -3,8 +3,7 @@ function getDetails() {
     .then(tbl_details => {
         get({
             table: 'details',
-            query: [`"size_id":"${path[2]}"`],
-            ...sort_query(tbl_details)
+            where: {size_id: path[2]}
         })
         .then(function ([details, options]) {
             details.forEach(detail => {
@@ -23,7 +22,7 @@ function getDetails() {
 function viewDetail(detail_id) {
     get({
         table:   'detail',
-        query:   [`"detail_id":"${detail_id}"`],
+        where:   {detail_id: detail_id},
         spinner: 'detail_view'
     })
     .then(function ([detail, options]) {

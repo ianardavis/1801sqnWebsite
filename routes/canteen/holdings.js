@@ -4,8 +4,8 @@ module.exports = (app, m, fn) => {
     
     app.get('/get/holdings',        fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.holdings.findAll({
-            where: JSON.parse(req.query.where),
-            ...fn.sort(req.query.sort)
+            where: req.query.where,
+            ...fn.pagination(req.query)
         })
         .then(holdings => res.send({success: true, result: holdings}))
         .catch(err => fn.send_error(res, err));
@@ -13,7 +13,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/holding',         fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         fn.get(
             'holdings',
-            JSON.parse(req.query.where)
+            req.query.where
         )
         .then(holding => res.send({success: true, result: holding}))
         .catch(err => fn.send_error(res, err));
@@ -21,7 +21,7 @@ module.exports = (app, m, fn) => {
     app.get('/get/holdings_except', fn.loggedIn(), fn.permissions.check('cash_admin'), (req, res) => {
         m.holdings.findAll({
             where: {holding_id: {[fn.op.ne]: req.query.holding_id}},
-            ...fn.sort(req.query.sort)
+            ...fn.pagination(req.query)
         })
         .then(movements => res.send({success: true, result: movements}))
         .catch(err => fn.send_error(res, err));
