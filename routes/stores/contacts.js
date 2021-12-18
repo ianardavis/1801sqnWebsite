@@ -1,8 +1,10 @@
 module.exports = (app, m, fn) => {
     app.get('/get/contacts',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.supplier_contacts.findAll({
-            where: req.query.where,
-            include: [fn.inc.stores.contact()],
+        m.contacts.findAll({
+            include: [{
+                model: m.supplier_contacts,
+                where: req.query.where
+            }],
             ...fn.pagination(req.query)
         })
         .then(contacts => res.send({success: true, result: contacts}))

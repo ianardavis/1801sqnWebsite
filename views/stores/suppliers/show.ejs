@@ -9,12 +9,12 @@
         <%- include(`${partials}/tab_head`, {id: 'files',     title: 'Files',     spinner: 'files',     count_id: 'file'}) %>
         <%- include(`${partials}/tab_head`, {id: 'addresses', title: 'Addresses', spinner: 'addresses', count_id: 'address'}) %>
         <%- include(`${partials}/tab_head`, {id: 'contacts',  title: 'Contacts',  spinner: 'contacts',  count_id: 'contact'}) %>
-        <%- include(`${partials}/tab_head`, {id: 'items',     title: 'Items',     spinner: 'sizes',     count_id: 'size'}) %>
+        <%- include(`${partials}/tab_head`, {id: 'items',     title: 'Items',     spinner: 'items',     count_id: 'item'}) %>
         <%- include(`${partials}/tab_head`, {id: 'demands',   title: 'Demands',   spinner: 'demands',   count_id: 'demand',  permission: 'authorised_demander'}) %>
         <%- include(`${partials}/common/notes/tab_head`) %>
     </ul>
     <div class="tab-content pt-3" id="myTabContent">
-        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <div class="tab-pane fade" id="details"   role="tabpanel" aria-labelledby="details-tab">
             <%- include(`${partials}/spinner`, {id: 'suppliers'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_name',       title: 'Name'}) %>
             <%- include(`${partials}/inputs/display`, {id: 'supplier_account',    title: 'Account', link: true, modal: 'account_view'}) %>
@@ -37,7 +37,7 @@
                 </span>
             </div>
         </div>
-        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+        <div class="tab-pane fade" id="files"     role="tabpanel" aria-labelledby="files-tab">
             <%- include(`${partials}/filter/sort`, {table: 'files'}) %>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
@@ -70,7 +70,7 @@
                 </span>
             </div>
         </div>
-        <div class="tab-pane fade" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+        <div class="tab-pane fade" id="contacts"  role="tabpanel" aria-labelledby="contacts-tab">
             <%- include(`${partials}/filter/sort`, {table: 'contacts'}) %>
 	        <table class="table table-sm table-hover">
                 <thead class="thead-dark">
@@ -87,7 +87,23 @@
                 </span>
             </div>
         </div>
-        <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
+        <div class="tab-pane fade" id="items"     role="tabpanel" aria-labelledby="items-tab">
+            <div class="row">
+                <div class="col-12 col-md-6 mx-auto">
+                    <%- include(`${partials}/filter/sort`, {table: 'items'}) %>
+	                <select class='form-select mb-1' id="sel_items"></select>
+                    <%- include(`${partials}/filter/sort`, {table: 'sizes'}) %>
+                    <table class="table table-sm table-hover">
+                        <thead class="thead-dark">
+                            <th class='w-35'>Size 1</th>
+                            <th class='w-35'>Size 2</th>
+                            <th class='w-30'>Size 3</th>
+                            <th><i class="fas fa-search"></i></th>
+                        </thead>
+                        <tbody id="tbl_sizes"></tbody>
+                    </table>
+                </div>
+            </div>
             <div id="div_sizes"></div>
         </div>
         <% if (permissions.authorised_demander) { %>
@@ -407,7 +423,6 @@
 <% } %>
 
 <script src="/js/stores/suppliers/show/files/view.js"></script>
-<script async>getFiles()</script>
 <script src="/js/stores/suppliers/show/files/add.js"></script>
 <script src="/js/stores/suppliers/show/files/edit.js"></script>
 <script src="/js/stores/suppliers/show/files/delete.js"></script>
@@ -417,22 +432,18 @@
 <script src="/js/stores/suppliers/show/files/details/edit.js"></script>
 
 <script src="/js/stores/suppliers/show/addresses/view.js"></script>
-<script async>getAddresses()</script>
 <script src="/js/stores/suppliers/show/addresses/add.js"></script>
 <script src="/js/stores/suppliers/show/addresses/edit.js"></script>
 <script src="/js/stores/suppliers/show/addresses/delete.js"></script>
 <script src="/js/stores/suppliers/show/contacts/view.js"></script>
-<script async>getContacts()</script>
 <script src="/js/stores/suppliers/show/contacts/add.js"></script>
 <script src="/js/stores/suppliers/show/contacts/edit.js"></script>
 <script src="/js/stores/suppliers/show/contacts/delete.js"></script>
 
 <script src="/js/stores/suppliers/show/sizes/view.js"></script>
-<script async>getSizes()</script>
 
 <% if (permissions.authorised_demander) { %>
     <script src="/js/stores/suppliers/show/demands/view.js"></script>
-    <script async>getDemands()</script>
 <% } %>
 
     <script src="/js/stores/suppliers/show/accounts/view.js"></script>

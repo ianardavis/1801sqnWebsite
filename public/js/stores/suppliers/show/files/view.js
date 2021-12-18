@@ -36,7 +36,16 @@ function viewFile(file_id) {
         set_innerText('file_updatedAt',   print_date(file.updatedAt, true));
     });
 };
+sort_listeners('files', getFiles);
 window.addEventListener('load', function () {
     modalOnShow('file_view', function (event) {viewFile(event.relatedTarget.dataset.id)});
     document.querySelector('#reload').addEventListener('click', getFiles);
+    addSortOptions(
+        'files',
+        [
+            {value: 'filename',    text: 'Filename', selected: true},
+            {value: 'description', text: 'Description'}
+        ]
+    )
+    .then(result => getFiles());
 });

@@ -59,8 +59,8 @@ module.exports = function (m) {
     m.sizes             .hasMany(  m.stocks,          {foreignKey: 'size_id',            targetKey: 'size_id'});
     m.sizes             .hasMany(  m.serials,         {foreignKey: 'size_id',            targetKey: 'size_id'});
     m.sizes             .hasMany(  m.details,         {foreignKey: 'size_id',            sourceKey: 'size_id'});
-    m.sizes         .hasMany(  m.nsns,          {foreignKey: 'size_id',        targetKey: 'size_id'});
-    m.sizes         .hasOne(   m.nsns,          {foreignKey: 'nsn_id',         targetKey: 'nsn_id',         constraints: false});
+    m.sizes             .hasMany(  m.nsns,          {foreignKey: 'size_id',        targetKey: 'size_id'});
+    m.sizes             .hasOne(   m.nsns,          {foreignKey: 'nsn_id',         targetKey: 'nsn_id',         constraints: false});
     m.sizes             .hasOne(   m.suppliers,    {foreignKey: 'supplier_id', sourceKey: 'supplier_id', constraints: false});
     
     m.stocks            .belongsTo(m.sizes,           {foreignKey: 'size_id',            targetKey: 'size_id'});
@@ -73,4 +73,6 @@ module.exports = function (m) {
     m.suppliers         .hasMany(  m.files,        {foreignKey: 'supplier_id', targetKey: 'supplier_id'});
     m.supplier_addresses.hasOne(   m.addresses,    {foreignKey: 'address_id',  sourceKey: 'address_id',  constraints: false});
     m.supplier_contacts .hasOne(   m.contacts,     {foreignKey: 'contact_id',  sourceKey: 'contact_id',  constraints: false});
+    m.addresses         .belongsTo(m.supplier_addresses, {foreignKey: 'address_id', targetKey: 'address_id'});
+    m.contacts          .belongsTo(m.supplier_contacts,  {foreignKey: 'contact_id', targetKey: 'contact_id'});
 };

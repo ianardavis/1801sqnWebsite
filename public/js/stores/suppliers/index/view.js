@@ -21,3 +21,14 @@ function getSuppliers() {
     });
 };
 addReloadListener(getSuppliers);
+sort_listeners('suppliers', getSuppliers);
+window.addEventListener('load', function () {
+    addSortOptions(
+        'suppliers',
+        [
+            {value: 'createdAt', text: 'Created'},
+            {value: 'name',      text: 'Name', selected: true}
+        ]
+    )
+    .then(result => getSuppliers());
+});

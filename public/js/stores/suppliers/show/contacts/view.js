@@ -9,9 +9,9 @@ function getContacts() {
             set_count('contact', contacts.length);
             contacts.forEach(contact => {
                 let row = tbl_contacts.insertRow(-1);
-                add_cell(row, {text: contact.contact.type});
-                add_cell(row, {text: contact.contact.description});
-                add_cell(row, {text: contact.contact.contact});
+                add_cell(row, {text: contact.type});
+                add_cell(row, {text: contact.description});
+                add_cell(row, {text: contact.contact});
                 add_cell(row, {append: new Button({
                     modal: 'contact_view',
                     data: [{field: 'id', value: contact.supplier_contact_id}],
@@ -37,7 +37,17 @@ function viewContact(supplier_contact_id) {
         set_innerText('contact_updatedAt',   print_date(contact.contact.updatedAt, true));
     });
 };
+sort_listeners('contacts', getContacts);
 addReloadListener(getContacts);
 window.addEventListener('load', function () {
     modalOnShow('contact_view', function (event) {viewContact(event.relatedTarget.dataset.id)});
+    addSortOptions(
+        'contacts',
+        [
+            {value: 'type',        text: 'Type', selected: true},
+            {value: 'description', text: 'Description'},
+            {value: 'contact',     text: 'Contact'}
+        ]
+    )
+    .then(result => getContacts());
 });

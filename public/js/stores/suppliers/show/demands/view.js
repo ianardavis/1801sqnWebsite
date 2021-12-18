@@ -25,6 +25,17 @@ function getDemands() {
     })
 };
 addReloadListener(getDemands);
+sort_listeners('demands', getDemands);
 window.addEventListener('load', function () {
     addListener('sel_demand_status', getDemands, 'change');
+    addSortOptions(
+        'demands',
+        [
+            {value: 'createdAt', text: 'Created'},
+            {value: 'status',    text: 'Status'},
+            {value: 'filename',  text: 'Filename'},
+            {value: 'user_id',   text: 'User'}
+        ]
+    )
+    .then(result => getDemands());
 });

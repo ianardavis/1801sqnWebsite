@@ -128,27 +128,8 @@ function getUsers() {
         id_only:    true
     });
 };
-function addSortOptions() {
-    return new Promise(resolve => {
-        clear('sort_issues')
-        .then(sort_issues => {
-            sort_issues.appendChild(new Option({value: 'createdAt',     text: 'Date'}).e);
-            sort_issues.appendChild(new Option({value: 'user_id_issue', text: 'User'}).e);
-            sort_issues.appendChild(new Option({value: 'description',   text: 'Description'}).e);
-            sort_issues.appendChild(new Option({value: 'size1',         text: 'Size 1'}).e);
-            sort_issues.appendChild(new Option({value: 'size2',         text: 'Size 2'}).e);
-            sort_issues.appendChild(new Option({value: 'size3',         text: 'Size 3'}).e);
-            sort_issues.appendChild(new Option({value: 'qty',           text: 'Qty'}).e);
-            sort_issues.appendChild(new Option({value: 'status',        text: 'Status'}).e);
-            resolve(true);
-        })
-        .catch(err => {
-            console.log(err);
-            resolve(false);
-        });
-    });
-};
 addReloadListener(getIssues);
+sort_listeners('issues', getIssues);
 window.addEventListener('load', function () {
     addListener('limit_issues_10',  getIssues, 'input');
     addListener('limit_issues_20',  getIssues, 'input');
@@ -167,11 +148,21 @@ window.addEventListener('load', function () {
     addListener('filter_issues_size_1', getIssues, 'input');
     addListener('filter_issues_size_2', getIssues, 'input');
     addListener('filter_issues_size_3', getIssues, 'input');
-    addListener('sort_issues', getIssues, 'input');
-    addListener('sort_issues_dir', getIssues, 'input');
     Promise.all([
         getUsers(),
-        addSortOptions()
+        addSortOptions(
+            'issues',
+            [
+                {value: 'createdAt',     text: 'Date', selected: true},
+                {value: 'user_id_issue', text: 'User'},
+                {value: 'description',   text: 'Description'},
+                {value: 'size1',         text: 'Size 1'},
+                {value: 'size2',         text: 'Size 2'},
+                {value: 'size3',         text: 'Size 3'},
+                {value: 'qty',           text: 'Qty'},
+                {value: 'status',        text: 'Status'}
+            ]
+        )
     ])
     .then(result => getIssues());
 });

@@ -9,12 +9,12 @@ function getAddresses() {
             set_count('address', addresses.length);
             addresses.forEach(address => {
                 let row = tbl_addresses.insertRow(-1);
-                add_cell(row, {text: address.address.type});
-                add_cell(row, {text: address.address.unit_number});
-                add_cell(row, {text: address.address.street});
+                add_cell(row, {text: address.type});
+                add_cell(row, {text: address.unit_number});
+                add_cell(row, {text: address.street});
                 add_cell(row, {append: new Button({
                     modal: 'address_view',
-                    data: [{field: 'id', value: address.supplier_address_id}],
+                    data: [{field: 'id', value: address.supplier_address.supplier_address_id}],
                     small: true
                 }).e});
             });
@@ -41,7 +41,22 @@ function viewAddress(supplier_address_id) {
         set_innerText('address_updatedAt',   print_date(address.address.updatedAt, true));
     });
 };
+sort_listeners('addresses', getAddresses);
 addReloadListener(getAddresses);
 window.addEventListener('load', function () {
     modalOnShow('address_view', function (event) {viewAddress(event.relatedTarget.dataset.id)});
+    addSortOptions(
+        'addresses',
+        [
+            {value: 'type',        text: 'Type', selected: true},
+            {value: 'unit_number', text: 'Unit Number'},
+            {value: 'street',      text: 'Street'},
+            {value: 'town',        text: 'Town'},
+            {value: 'county',      text: 'County'},
+            {value: 'country',     text: 'Country'},
+            {value: 'postcode',    text: 'Postcode'},
+            {value: 'createdAt',   text: 'Created'}
+        ]
+    )
+    .then(result => getAddresses());
 });

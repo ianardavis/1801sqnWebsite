@@ -230,14 +230,9 @@ function selected_user(id = 'sel_users') {
 function pagination(table) {
     let limit  = document.querySelector(`.limit_${table}:checked`)  || {value: '10'},
         offset = document.querySelector(`.offset_${table}:checked`) || {value: '0'};
-        order  = {
-            col: document.querySelector(`#sort_${table}`    ).value,
-            dir: document.querySelector(`#sort_${table}_dir`).value
-        };
     return {
         limit: limit.value,
-        offset: offset.value,
-        order: order
+        offset: offset.value
     };
 };
 function add_page_links(count, limit, offset, table, listener) {
@@ -253,6 +248,25 @@ function add_page_links(count, limit, offset, table, listener) {
                 page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: i, listener: listener, selected: offset}).e);
             };
         } else  page_buttons.appendChild(new Page_Number({classes: [`offset_${table}`], offset: 0, listener: listener, selected: 0}).e);
+    });
+};
+function addSortOptions(table, options) {
+    return new Promise(resolve => {
+        clear(`sort_${table}`)
+        .then(sort => {
+            options.forEach(o => sort.appendChild(new Option({value: o.value, text: o.text, selected: o.selected}).e));
+            resolve(true);
+        })
+        .catch(err => {
+            console.log(err);
+            resolve(false);
+        });
+    });
+};
+function sort_listeners(table, func) {
+    window.addEventListener('load', function () {
+        addListener(`sort_${table}`,     func, 'input');
+        addListener(`sort_${table}_dir`, func, 'input');
     });
 };
 let path = window.location.pathname.toString().split('/');

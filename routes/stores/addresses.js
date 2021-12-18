@@ -1,8 +1,10 @@
 module.exports = (app, m, fn) => {
     app.get('/get/addresses',    fn.loggedIn(), fn.permissions.check('access_stores'),  (req, res) => {
-        m.supplier_addresses.findAll({
-            where: req.query.where,
-            include: [fn.inc.stores.address()],
+        m.addresses.findAll({
+            include: [{
+                model: m.supplier_addresses,
+                where: req.query.where
+            }],
             ...fn.pagination(req.query)
         })
         .then(addresses => res.send({success: true, result: addresses}))

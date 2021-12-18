@@ -2,16 +2,22 @@ module.exports = (app, m, fn) => {
     app.get('/items',                  fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/index'));
     app.get('/items/:id',              fn.loggedIn(), fn.permissions.get('access_stores'),        (req, res) => res.render('stores/items/show'));
     
-    app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
+    app.get('/get/items/supplier',     fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.items.findAll({
-            where:   req.query.where,
-            include: [fn.inc.stores.gender()],
+            include: [{
+                model: m.sizes,
+                where: req.query.where
+            }],
             ...fn.pagination(req.query)
         })
-        .then(items => res.send({success: true, result: items}))
+        .then(items => {
+            console.log(req.query.where);
+            delete items.sizes;
+            res.send({success: true, result: items});
+        })
         .catch(err => fn.send_error(res, err));
     });
-    app.get('/get/items_uniform',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
+    app.get('/get/items/uniform',      fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
         m.items.findAll({
             include: [{
                 model: m.item_categories,
@@ -22,6 +28,15 @@ module.exports = (app, m, fn) => {
                     required: true
                 }]
             }],
+            ...fn.pagination(req.query)
+        })
+        .then(items => res.send({success: true, result: items}))
+        .catch(err => fn.send_error(res, err));
+    });
+    app.get('/get/items',              fn.loggedIn(), fn.permissions.check('access_stores'),      (req, res) => {
+        m.items.findAll({
+            where:   req.query.where,
+            include: [fn.inc.stores.gender()],
             ...fn.pagination(req.query)
         })
         .then(items => res.send({success: true, result: items}))

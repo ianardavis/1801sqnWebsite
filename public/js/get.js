@@ -34,19 +34,24 @@ function get(options) {
             XHR_Error(event, 'getting', options.spinner || options.table || '');
             reject(event);
         });
+        
+        let order_col = document.querySelector(`#sort_${options.table}`),
+            order_dir = document.querySelector(`#sort_${options.table}_dir`);
+        if (order_col && order_dir) options.order = {col: order_col.value, dir: order_dir.value};
+
         let queries = [];
-        if (options.where )  queries.push(`where=${JSON.stringify(options.where)}`);
-        if (options.like  )  queries.push(`like=${ JSON.stringify(options.like)}`);
-        if (options.lt    )  queries.push(`lt=${   JSON.stringify(options.lt)}`);
-        if (options.gt    )  queries.push(`gt=${   JSON.stringify(options.gt)}`);
-        if (options.order )  queries.push(`order={"col":"${options.order.col}","dir":"${options.order.dir}"}`);
+        if (options.where )  queries.push(`where=${ JSON.stringify(options.where)}`);
+        if (options.like  )  queries.push(`like=${  JSON.stringify(options.like)}`);
+        if (options.lt    )  queries.push(`lt=${    JSON.stringify(options.lt)}`);
+        if (options.gt    )  queries.push(`gt=${    JSON.stringify(options.gt)}`);
+        if (options.order )  queries.push(`order=${ JSON.stringify(options.order)}`);
         if (options.limit )  queries.push(`limit=${ options.limit}`);
         if (options.offset)  queries.push(`offset=${options.offset}`);
 
         if (options.filter)  queries.push(`filter=${options.filter}`);
         if (options.query )  queries.push(`where={${options.query.join(',')}}`);
         if (options.sort  )  queries.push(`sort=${JSON.stringify(options.sort)}`);
-        XHR.open(options.method || 'GET', `/get/${options.table}?${queries.join('&')}`);
+        XHR.open(options.method || 'GET', `/get/${options.location || options.table}?${queries.join('&')}`);
         XHR.send();
     });
 };
